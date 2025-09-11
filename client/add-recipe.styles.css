@@ -20,7 +20,10 @@ button:hover { transition: all 0.2s ease-in-out; }
 
 /* Grid styling improvements */
 .ingredient-row { transition: background-color 0.2s ease-in-out; }
-.ingredient-row:hover { background-color: #f8fafc; }
+/* Do not change color on hover */
+.ingredient-row:hover { background-color: transparent; }
+/* Keep input background stable on hover */
+.ingredients-grid input:hover { background-color: inherit !important; }
 
 /* Unified grid so headers and rows align perfectly */
 .ingredients-grid { display: grid; grid-template-columns: 8rem 6rem 1fr 1fr 7rem 8rem; column-gap: 0.5rem; }
