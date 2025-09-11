@@ -406,7 +406,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     [recipes],
   );
 
-  const value = useMemo<AppData & { updateImage: (id: string, patch: Partial<GalleryImage>) => void; addTagsToImages: (ids: string[], tags: string[]) => void; reorderImages: (dragId: string, overId: string) => void }>(() => ({
+  const value = useMemo<AppData>(() => ({
     recipes,
     images,
     addImages,
@@ -420,11 +420,10 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     clearImages,
     searchRecipes,
     linkImagesToRecipesByFilename,
-    // extras not in AppData type but exported through context
     updateImage,
     addTagsToImages,
     reorderImages,
-  }), [recipes, images, addImages, addRecipesFromJsonFiles, addRecipesFromDocxFiles, addFromZipArchive, updateRecipe, getRecipeById, attachImageToRecipeFromGallery, searchRecipes, linkImagesToRecipesByFilename]);
+  }), [recipes, images, addImages, addRecipesFromJsonFiles, addRecipesFromDocxFiles, addFromZipArchive, updateRecipe, getRecipeById, attachImageToRecipeFromGallery, searchRecipes, linkImagesToRecipesByFilename, updateImage, addTagsToImages, reorderImages]);
 
   return <CTX.Provider value={value}>{children}</CTX.Provider>;
 }
