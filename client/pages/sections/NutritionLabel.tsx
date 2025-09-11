@@ -9,15 +9,19 @@ export default function NutritionLabel({ data, servings, perServing }: { data: a
   const carbs = fmt(data?.totalNutrients?.CHOCDF?.quantity || 0);
   const protein = fmt(data?.totalNutrients?.PROCNT?.quantity || 0);
   const breakdown = Array.isArray((data as any)?.breakdown) ? (data as any).breakdown as any[] : [];
+  const baseN = (x:number)=> perServing && servings>0 ? x/servings : x;
+  // FDA reference values for 2,000 calorie diet
+  const DV = { kcal: 2000, fat: 78, carbs: 275, protein: 50 };
+  const pct = (val:number, ref:number)=> Math.round((Math.max(0,val)/ref)*100);
   return (
     <div className="flex gap-4 items-start">
-      <div className="border p-3 rounded-lg w-64 bg-white text-black">
+      <div className="border p-3 rounded-lg w-72 bg-white text-black">
         <div className="text-2xl font-extrabold border-b pb-1">Nutrition Facts</div>
         <div className="mt-2 text-sm">Calories <span className="float-right font-semibold">{calories}</span></div>
-        <div className="mt-2 text-sm">Fat <span className="float-right">{fat} g</span></div>
-        <div className="mt-1 text-sm">Carbs <span className="float-right">{carbs} g</span></div>
-        <div className="mt-1 text-sm">Protein <span className="float-right">{protein} g</span></div>
-        <div className="mt-3 text-[10px] text-gray-600">Auto-generated summary. Totals scaled {perServing? 'per serving' : 'for whole recipe'}.</div>
+        <div className="mt-2 text-sm">Fat <span className="float-right">{fat} g • {pct(baseN(Number(data?.totalNutrients?.FAT?.quantity||0)), DV.fat)}%</span></div>
+        <div className="mt-1 text-sm">Carbs <span className="float-right">{carbs} g • {pct(baseN(Number(data?.totalNutrients?.CHOCDF?.quantity||0)), DV.carbs)}%</span></div>
+        <div className="mt-1 text-sm">Protein <span className="float-right">{protein} g • {pct(baseN(Number(data?.totalNutrients?.PROCNT?.quantity||0)), DV.protein)}%</span></div>
+        <div className="mt-3 text-[10px] text-gray-600">% Daily Value based on a 2,000 calorie diet. Totals scaled {perServing? 'per serving' : 'for whole recipe'}.</div>
       </div>
       {breakdown.length>0 && (
         <div className="text-xs bg-white text-black rounded-lg border p-3 max-h-64 overflow-auto w-72">
