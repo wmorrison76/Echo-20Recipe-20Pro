@@ -77,6 +77,7 @@ const RecipeInputPage = () => {
     if (location.hash.startsWith('#r=')) try { const data = JSON.parse(atob(decodeURIComponent(location.hash.slice(3)))); restore(data); } catch {}
   },[]);
   useEffect(()=>{ const handler = (e: any) => { if (e?.detail?.image) setImage(e.detail.image); setShowImagePopup(true); }; window.addEventListener('openImageEditor', handler as any); return ()=>window.removeEventListener('openImageEditor', handler as any); },[]);
+  useEffect(()=>{ const onAction = (ev: any)=>{ const t=ev?.detail?.type; if(!t) return; if(t==='convertUnits') convertUnits(); if(t==='cycleCurrency') cycleCurrency(); if(t==='scale') scaleRecipe(); if(t==='saveVersion') pushHistory({ ...serialize(), ts: Date.now() }); }; window.addEventListener('recipe:action', onAction as any); return ()=>window.removeEventListener('recipe:action', onAction as any); }, [ingredients, portionCount, currentUnits, currentCurrency]);
   useEffect(()=>{ const id = setTimeout(()=>{ const s = serialize(); localStorage.setItem('recipe:draft', JSON.stringify(s)); }, 600); return ()=>clearTimeout(id); }, [recipeName, ingredients, directions, isDarkMode, yieldQty, yieldUnit, portionCount, portionUnit, cookTime, cookTemp, selectedAllergens, selectedNationality, selectedCourses, selectedRecipeType, selectedPrepMethod, selectedCookingEquipment, selectedRecipeAccess, image]);
   useEffect(()=>{ const t = setTimeout(()=> setIsRightSidebarCollapsed(true), 450); return ()=> clearTimeout(t); }, []);
 
@@ -304,7 +305,7 @@ const RecipeInputPage = () => {
               <button onClick={()=>window.print()} className="flex items-center gap-1 text-gray-700 hover:text-black"><Printer className="w-4 h-4"/>Print</button>
               <button onClick={shareLink} className="flex items-center gap-1 text-gray-700 hover:text-black"><Share2 className="w-4 h-4"/>Share</button>
             </div>
-            <button onClick={analyzeNutrition} disabled={nutritionLoading} className={`text-xs px-3 py-2 rounded ${isDarkMode ? 'border border-cyan-400/50 hover:bg-cyan-900/20 text-cyan-300' : 'border border-gray-400 hover:bg-gray-100 text-gray-800'}`}>{nutritionLoading? 'Analyzing…':'Generate Nutrition Label'}</button>
+            <button onClick={analyzeNutrition} disabled={nutritionLoading} className={`text-xs px-3 py-2 rounded ${isDarkMode ? 'border border-cyan-400/50 hover:bg-cyan-900/20 text-cyan-300' : 'border border-gray-400 hover:bg-gray-100 text-gray-800'}`}>{nutritionLoading? 'Analyzing��':'Generate Nutrition Label'}</button>
           </div>
 
           <div className={`mt-3 rounded-2xl p-6 border ${isDarkMode ? 'bg-gray-900/50 border-cyan-400/30' : 'bg-white/80 border-gray-200 shadow-sm'}`}>
