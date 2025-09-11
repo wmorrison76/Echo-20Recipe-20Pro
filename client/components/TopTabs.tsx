@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Scale, NotebookPen, ArrowLeftRight, CircleDollarSign } from "lucide-react";
 
 function TabLink({ to, label }: { to: string; label: string }) {
   const loc = useLocation();
