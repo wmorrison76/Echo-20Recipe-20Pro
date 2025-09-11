@@ -203,6 +203,24 @@ export default function GallerySection() {
                 await doImport(files, ["demo","food"]);
               } catch {}
             }}>Load sample images</Button>
+            <Button variant="outline" onClick={async()=>{
+              try {
+                const cakeUrls = [
+                  "https://images.unsplash.com/photo-1532634896-26909d0d4b6a?auto=format&fit=crop&w=1400&q=80",
+                  "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=1400&q=80",
+                  "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1400&q=80",
+                  "https://images.unsplash.com/photo-1488477304112-4944851de03b?auto=format&fit=crop&w=1400&q=80",
+                  "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=1400&q=80"
+                ];
+                const files: File[] = [];
+                for (const [i,u] of cakeUrls.entries()) {
+                  const res = await fetch(u);
+                  const b = await res.blob();
+                  files.push(new File([b], `cake-${i}.jpg`, { type: b.type || "image/jpeg" }));
+                }
+                await doImport(files, ["cake","dessert"]);
+              } catch {}
+            }}>Load cake images</Button>
             <Button variant="outline" size="sm" onClick={exportAllZip}><Download className="w-4 h-4 mr-1"/>Export all (ZIP)</Button>
             <Button variant="destructive" size="sm" onClick={() => clearImages()}>Clear</Button>
           </div>
