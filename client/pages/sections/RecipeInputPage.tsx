@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import RightSidebar from './RightSidebar';
 import ImageEditorModal from './ImageEditorModal';
 import NutritionLabel from './NutritionLabel';
-import { Save, Image as ImageIcon, Settings, PlusCircle, MinusCircle, Menu, Plus, Minus, Bold, Italic, Underline, Scale, NotebookPen, ArrowLeftRight, CircleDollarSign, Share2, FileDown, Printer } from 'lucide-react';
+import { Save, Image as ImageIcon, Settings, PlusCircle, MinusCircle, Menu, Plus, Minus, Bold, Italic, Underline, Sun, Moon, Scale, NotebookPen, ArrowLeftRight, CircleDollarSign, Share2, FileDown, Printer } from 'lucide-react';
 
 const RecipeInputPage = () => {
   const [recipeName, setRecipeName] = useState('');
