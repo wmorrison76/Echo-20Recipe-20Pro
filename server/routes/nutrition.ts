@@ -123,6 +123,7 @@ export async function handleNutritionAnalyze(req: Request, res: Response) {
       totalWeight: totalG,
       yieldQty,
       yieldUnit,
+      breakdown,
     };
 
     res.json(data);
