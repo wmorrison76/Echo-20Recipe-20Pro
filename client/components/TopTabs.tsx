@@ -25,6 +25,14 @@ export default function TopTabs() {
           <TabLink to="/?tab=input" label="Recipe Input" />
           <TabLink to="/?tab=gallery" label="Gallery" />
           <TabLink to="/?tab=add-recipe" label="Add Recipe" />
+          {new URLSearchParams(useLocation().search).get('tab') === 'add-recipe' && (
+            <div className="ml-2 flex items-center gap-2">
+              <button title="Scale" onClick={()=>window.dispatchEvent(new CustomEvent('recipe:action',{detail:{type:'scale'}}))} className="p-1 rounded hover:bg-black/10"><Scale className="w-4 h-4"/></button>
+              <button title="Save Snapshot" onClick={()=>window.dispatchEvent(new CustomEvent('recipe:action',{detail:{type:'saveVersion'}}))} className="p-1 rounded hover:bg-black/10"><NotebookPen className="w-4 h-4"/></button>
+              <button title="Convert Units" onClick={()=>window.dispatchEvent(new CustomEvent('recipe:action',{detail:{type:'convertUnits'}}))} className="p-1 rounded hover:bg-black/10"><ArrowLeftRight className="w-4 h-4"/></button>
+              <button title="Currency" onClick={()=>window.dispatchEvent(new CustomEvent('recipe:action',{detail:{type:'cycleCurrency'}}))} className="p-1 rounded hover:bg-black/10"><CircleDollarSign className="w-4 h-4"/></button>
+            </div>
+          )}
         </nav>
         <div className="flex items-center gap-2">
           <ThemeToggle />
