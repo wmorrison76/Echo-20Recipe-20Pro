@@ -29,11 +29,7 @@ export default function Index() {
         </Tabs>
       </main>
 
-      <footer className="border-t">
-        <div className="container mx-auto py-6 text-xs text-muted-foreground">
-          Built with love • Light & Dark mode �� Drag-and-drop 50+ recipes
-        </div>
-      </footer>
+      {/* Footer removed per request */}
     </div>
   );
 }
