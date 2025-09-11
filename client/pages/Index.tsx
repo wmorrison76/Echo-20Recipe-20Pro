@@ -13,7 +13,10 @@ export default function Index() {
             <div className="h-7 w-7 rounded bg-primary" />
             <span className="font-semibold tracking-tight">Recipe Studio</span>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <div className="h-6 w-6 rounded bg-blue-500" />
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
