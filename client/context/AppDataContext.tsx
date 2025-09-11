@@ -353,7 +353,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     if (nextRecipes.length) setRecipes((prev) => [...nextRecipes, ...prev]);
     setTimeout(linkImagesToRecipesByFilename, 0);
 
-    return { addedRecipes: nextRecipes.length, addedImages: nextImages.length, errors };
+    return { addedRecipes: nextRecipes.length, addedImages: nextImages.length, errors, titles };
   }, [images, linkImagesToRecipesByFilename]);
 
   const clearRecipes = useCallback(() => setRecipes([]), []);
