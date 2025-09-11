@@ -76,6 +76,7 @@ const RecipeInputPage = () => {
     // URL share restore
     if (location.hash.startsWith('#r=')) try { const data = JSON.parse(atob(decodeURIComponent(location.hash.slice(3)))); restore(data); } catch {}
   },[]);
+  useEffect(()=>{ const handler = (e: any) => { if (e?.detail?.image) setImage(e.detail.image); setShowImagePopup(true); }; window.addEventListener('openImageEditor', handler as any); return ()=>window.removeEventListener('openImageEditor', handler as any); },[]);
   useEffect(()=>{ const id = setTimeout(()=>{ const s = serialize(); localStorage.setItem('recipe:draft', JSON.stringify(s)); }, 600); return ()=>clearTimeout(id); }, [recipeName, ingredients, directions, isDarkMode, yieldQty, yieldUnit, portionCount, portionUnit, cookTime, cookTemp, selectedAllergens, selectedNationality, selectedCourses, selectedRecipeType, selectedPrepMethod, selectedCookingEquipment, selectedRecipeAccess, image]);
 
   useEffect(()=>{
