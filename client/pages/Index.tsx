@@ -4,6 +4,7 @@ import RecipeInputSection from "./sections/RecipeInput";
 import GallerySection from "./sections/Gallery";
 import AddRecipeSection from "./sections/AddRecipe";
 import TopTabs from "@/components/TopTabs";
+import SubtleBottomGlow from "@/components/SubtleBottomGlow";
 import { useSearchParams } from "react-router-dom";
 
 export default function Index() {
@@ -29,7 +30,7 @@ export default function Index() {
         </Tabs>
       </main>
 
-      {/* Footer removed per request */}
+      <SubtleBottomGlow />
     </div>
   );
 }

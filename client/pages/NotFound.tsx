@@ -1,6 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import TopTabs from "@/components/TopTabs";
+import SubtleBottomGlow from "@/components/SubtleBottomGlow";
 
 const NotFound = () => {
   const location = useLocation();
@@ -22,6 +23,7 @@ const NotFound = () => {
           <a href="/?tab=search" className="text-blue-500 hover:text-blue-700 underline">Return to Home</a>
         </div>
       </div>
+      <SubtleBottomGlow />
     </>
   );
 };

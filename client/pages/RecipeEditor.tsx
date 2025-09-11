@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import TopTabs from "@/components/TopTabs";
+import SubtleBottomGlow from "@/components/SubtleBottomGlow";
 import { useAppData } from "@/context/AppDataContext";
 
 function Labeled({ label, children }: { label: string; children: React.ReactNode }) {
@@ -104,6 +105,7 @@ export default function RecipeEditor() {
         </div>
       </div>
       </div>
+      <SubtleBottomGlow />
     </>
   );
 }
