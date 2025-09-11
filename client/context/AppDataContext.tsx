@@ -507,7 +507,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
               lower.endsWith(".gif") ? "image/gif" : "image/jpeg";
             const typedBlob = blob.type ? blob : new Blob([blob], { type: mime });
             const dataUrl = await dataUrlFromBlob(typedBlob);
-            nextImages.push({ id: uid(), name: base, dataUrl, createdAt: Date.now() });
+            nextImages.push({ id: uid(), name: base, dataUrl, createdAt: Date.now(), tags: [], favorite: false, order: images.length + nextImages.length, type: typedBlob.type });
           }
         } catch (e: any) {
           errors.push({ entry: entry.name, error: e?.message ?? "Failed to read entry" });
