@@ -10,6 +10,9 @@ type Row = { qty: string; unit: string; item: string; prep: string; yieldPct: st
 const ALLERGENS = ["Corn","Dairy","Eggs","Fish","Gluten","Mustard","Nuts","Peanuts","Sesame","Shellfish","Soy","Sulphite"];
 const NATIONALITY = ["Chinese","French","Greek","Indian","Italian","Japanese","Korean","Mexican","Middle Eastern","Spanish","Thai","Vietnamese"];
 
+import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarSeparator, SidebarTrigger } from "@/components/ui/sidebar";
+import { Home, BookOpen, ChefHat, Settings, HelpCircle, Bell, Github, Link } from "lucide-react";
+
 export default function AddRecipeSection() {
   const [name, setName] = useState("");
   const [cookTime, setCookTime] = useState("");
