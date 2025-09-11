@@ -316,7 +316,7 @@ export default function RecipeSearchSection() {
                   </div>
                 ) : null}
                 <div className="flex flex-wrap gap-2 pt-2">
-                  <a className="button border px-3 py-1 rounded" href={`/recipe/${preview.id}`}>Open</a>
+                  <a className="button border px-3 py-1 rounded" href={`/recipe/${preview.id}/view`}>Open</a>
                   <button className="border px-3 py-1 rounded" onClick={()=>{ const body=encodeURIComponent(`${preview.title}`); location.href=`sms:?&body=${body}`; }}>SMS</button>
                   <button className="border px-3 py-1 rounded" onClick={()=>window.print()}>Print</button>
                 </div>
