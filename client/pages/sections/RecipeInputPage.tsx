@@ -309,6 +309,7 @@ const RecipeInputPage = () => {
     setSelectedPrepMethod(s.selectedPrepMethod || []);
     setSelectedCookingEquipment(s.selectedCookingEquipment || []);
     setSelectedRecipeAccess(s.selectedRecipeAccess || []);
+    if (s.taxonomy) setTaxonomy({ ...defaultSelection, ...s.taxonomy });
     setImage(s.image || null);
   };
   const pushHistory = (snap: any) => {
