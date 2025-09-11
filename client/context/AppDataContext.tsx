@@ -159,32 +159,44 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
   const normalizeRecipe = (raw: any): Omit<Recipe, "id" | "createdAt"> | null => {
     if (!raw || typeof raw !== "object") return null;
-    const title = String(raw.title ?? raw.name ?? "").trim();
+
+    // Some sources nest the recipe under keys like { recipe: {...} } or { data: {...attributes} }
+    const r = raw.recipe ? raw.recipe : (raw.data && raw.data.attributes ? raw.data.attributes : raw);
+
+    // Title
+    const title = String(r.title ?? r.name ?? r.label ?? r.slug ?? "").trim();
     if (!title) return null;
-    const description = raw.description ?? raw.summary ?? undefined;
-    const ingredients = Array.isArray(raw.ingredients)
-      ? raw.ingredients.map(String)
-      : Array.isArray(raw.ingredientLines)
-      ? raw.ingredientLines.map(String)
-      : undefined;
-    const instructions = Array.isArray(raw.instructions)
-      ? raw.instructions.map(String)
-      : Array.isArray(raw.directions)
-      ? raw.directions.map(String)
-      : Array.isArray(raw.steps)
-      ? raw.steps.map((s: any) => (typeof s === "string" ? s : s?.step ?? "").toString())
-      : undefined;
-    const tags = Array.isArray(raw.tags) ? raw.tags.map(String) : undefined;
-    const imageNames = Array.isArray(raw.images)
-      ? raw.images.map((x: any) => String(x.name ?? x.fileName ?? x).trim()).filter(Boolean)
-      : raw.image
-      ? [String(raw.image).split("/").pop()!]
-      : undefined;
+
+    const description = r.description ?? r.summary ?? r.subtitle ?? undefined;
+
+    // Ingredients accept several shapes: array of strings, array of objects, newline string
+    const extractLines = (val: any): string[] | undefined => {
+      if (!val) return undefined;
+      if (Array.isArray(val)) {
+        if (val.every((x) => typeof x === 'string')) return (val as string[]).map(String);
+        return val.map((x: any) => String(x?.text ?? x?.name ?? x?.line ?? x?.value ?? x)).filter(Boolean);
+      }
+      if (typeof val === 'string') return val.split(/\r?\n|\u2028|\u2029/).map((s) => s.trim()).filter(Boolean);
+      return undefined;
+    };
+
+    const ingredients = extractLines(r.ingredients ?? r.ingredientLines ?? r.ingredientsText ?? r.ings);
+    const instructions = extractLines(r.instructions ?? r.directions ?? r.steps ?? r.method ?? r.instructionsText);
+
+    const tags = Array.isArray(r.tags) ? r.tags.map(String) : (typeof r.tags === 'string' ? r.tags.split(',').map((t:string)=>t.trim()).filter(Boolean) : undefined);
+
+    // Images: support {images:[{secure_url|url|src|publicId}]}, or single 'image'
+    const imagesSrc: string[] = Array.isArray(r.images)
+      ? r.images.map((x: any) => String(x?.name ?? x?.fileName ?? x?.secure_url ?? x?.url ?? x?.src ?? x).trim()).filter(Boolean)
+      : r.image
+      ? [String(r.image)]
+      : [];
+    const imageNames = imagesSrc.length ? imagesSrc.map((u) => (u.includes('/') ? u.split('/').pop()! : u)) : undefined;
 
     const extra: Record<string, unknown> = {};
-    for (const k of Object.keys(raw)) {
-      if (["title","name","description","summary","ingredients","ingredientLines","instructions","directions","steps","tags","images","image"].includes(k)) continue;
-      extra[k] = (raw as any)[k];
+    for (const k of Object.keys(r)) {
+      if (["title","name","label","slug","description","summary","subtitle","ingredients","ingredientLines","ingredientsText","ings","instructions","directions","steps","method","instructionsText","tags","images","image"].includes(k)) continue;
+      extra[k] = (r as any)[k];
     }
 
     return { title, description, ingredients, instructions, tags, imageNames, extra };
