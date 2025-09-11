@@ -14,12 +14,6 @@ export default function Index() {
       <TopTabs />
       <main className="container mx-auto py-6">
         <Tabs value={active} onValueChange={(v)=>{ params.set('tab', v); setParams(params, { replace: true }); }} className="w-full">
-          <TabsList>
-            <TabsTrigger value="search">Recipe Search</TabsTrigger>
-            <TabsTrigger value="input">Recipe Input</TabsTrigger>
-            <TabsTrigger value="gallery">Gallery</TabsTrigger>
-            <TabsTrigger value="add-recipe">Add Recipe</TabsTrigger>
-          </TabsList>
           <TabsContent value="search">
             <RecipeSearchSection />
           </TabsContent>
