@@ -328,6 +328,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             const html = await convertDocxArrayBufferToHtml(ab);
             const recs = htmlToRecipes(html, base);
             nextRecipes.push(...recs);
+            titles.push(...recs.map((r) => r.title));
           } else if (/(\.png|\.jpg|\.jpeg|\.webp|\.gif)$/i.test(lower)) {
             if (existingImageNames.has(base)) continue;
             const blob = await entry.async("blob");
