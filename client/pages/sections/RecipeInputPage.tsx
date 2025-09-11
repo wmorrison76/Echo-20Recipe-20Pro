@@ -172,73 +172,73 @@ const RecipeInputPage = () => {
           </div>
         </div>
 
-        <div className="flex items-end gap-4">
-          <div className={`w-2/3 border p-4 rounded-xl shadow-lg ${isDarkMode ? 'border-cyan-400/30 bg-black/50 shadow-cyan-400/20' : 'border-gray-200 bg-white shadow-gray-200/50'} backdrop-blur-sm`}>
-            <input type="text" maxLength={50} value={recipeName} onChange={(e)=>setRecipeName(e.target.value)} placeholder="RECIPE NAME" className={`w-full text-lg font-semibold uppercase bg-transparent focus:outline-none transition-colors ${isDarkMode ? 'text-cyan-400 placeholder-cyan-600' : 'text-gray-900 placeholder-gray-500'} focus:placeholder-gray-400`} />
-          </div>
-          <div className={`border rounded-xl w-1/3 flex flex-col justify-end shadow-lg ${isDarkMode ? 'bg-red-900/20 border-red-400/30 shadow-red-400/20' : 'bg-red-50/80 border-red-200 shadow-gray-200/50'} backdrop-blur-sm`} style={{ minHeight: '3rem' }}>
-            <div className="p-3 flex flex-col">
-              <div className={`font-semibold text-xs mb-2 ${isDarkMode ? 'text-red-400' : 'text-red-700'}`}>ALLERGENS</div>
-              {selectedAllergens.length ? (
-                <div className={`grid grid-cols-5 gap-1 text-xs ${isDarkMode ? 'text-red-300' : 'text-red-700'}`}>{selectedAllergens.map(a=> <div key={a}>{a}</div>)}</div>
-              ) : (
-                <div className={`text-xs italic ${isDarkMode ? 'text-red-500' : 'text-red-400'}`}>No allergens selected</div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-start gap-4 mt-1">
-          <div className="w-2/3 flex flex-col space-y-6" style={{ minHeight: '18rem' }}>
-            <div className="flex flex-col space-y-4">
-              <div className="flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-2"><span className={`font-bold ${isDarkMode ? 'text-cyan-300' : 'text-black'}`}>COOK TIME:</span><input value={cookTime} onChange={(e)=>setCookTime(e.target.value)} placeholder="2:30" className={`w-24 p-3 ${inputClass}`} /></div>
-                <div className="flex items-center gap-2"><span className={`font-bold ${isDarkMode ? 'text-cyan-300' : 'text-black'}`}>COOK TEMP:</span><input value={cookTemp} onChange={(e)=>setCookTemp(e.target.value)} placeholder="350F" className={`w-24 p-3 ${inputClass}`} /></div>
-              </div>
-              <div className={`text-sm space-y-2 ${isDarkMode ? 'text-cyan-300' : 'text-gray-700'}`}>
-                <div className="flex items-center gap-4">
-                  <span><span className="font-bold">FULL RECIPE:</span> {getCurrencySymbol(currentCurrency)}{calculateTotalCost().toFixed(2)}</span>
-                  <span className="flex items-center gap-1"><span className="font-bold">YIELD:</span><input type="number" value={yieldQty} onChange={(e)=>setYieldQty(Math.max(0, Number(e.target.value)))} className={`w-16 px-2 py-1 border rounded text-sm ${isDarkMode ? 'bg-black/50 border-cyan-400/50 text-cyan-300' : 'bg-white border-gray-300'}`} /><input value={yieldUnit} onChange={(e)=>setYieldUnit(e.target.value.toUpperCase())} className={`w-14 px-2 py-1 border rounded text-sm uppercase ${isDarkMode ? 'bg-black/50 border-cyan-400/50 text-cyan-300' : 'bg-white border-gray-300'}`} /></span>
-                  <span><span className="font-bold">RECIPE ACCESS:</span> {selectedRecipeAccess.length ? selectedRecipeAccess.join(', ').toUpperCase() : 'NONE'}</span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className="flex items-center gap-1"><span className="font-bold">PORTION:</span><input type="number" value={portionCount} onChange={(e)=>setPortionCount(Math.max(1, Number(e.target.value)))} className={`w-16 px-2 py-1 border rounded text-sm ${isDarkMode ? 'bg-black/50 border-cyan-400/50 text-cyan-300' : 'bg-white border-gray-300'}`} /></span>
-                  <span className="flex items-center gap-1"><span className="font-bold">UNIT:</span><input value={portionUnit} onChange={(e)=>setPortionUnit(e.target.value.toUpperCase())} className={`w-14 px-2 py-1 border rounded text-sm uppercase ${isDarkMode ? 'bg-black/50 border-cyan-400/50 text-cyan-300' : 'bg-white border-gray-300'}`} /></span>
-                  <span><span className="font-bold">PORTION COST:</span> {getCurrencySymbol(currentCurrency)}{calculatePortionCost().toFixed(2)}</span>
-                  <span title="Theoretical Yield"><span className="font-bold">Ψ:</span> {yieldQty} {yieldUnit}</span>
-                </div>
-              </div>
-            </div>
-            <div className={`border rounded-xl p-4 h-full shadow-lg ${isDarkMode ? 'bg-blue-900/20 border-blue-400/30 shadow-blue-400/20' : 'bg-blue-50/80 border-blue-200 shadow-gray-200/50'} backdrop-blur-sm`}>
-              <div className={`font-semibold text-sm mb-3 ${isDarkMode ? 'text-blue-400' : 'text-blue-700'}`}>MODIFIERS</div>
-              {(selectedNationality.length || selectedCourses.length || selectedRecipeType.length || selectedPrepMethod.length || selectedCookingEquipment.length) ? (
-                <div className={`grid grid-cols-7 gap-1 text-xs ${isDarkMode ? 'text-blue-300' : 'text-blue-700'}`}>
-                  {selectedNationality.map((x)=><div key={x}>{x}</div>)}
-                  {selectedCourses.map((x)=><div key={x}>{x}</div>)}
-                  {selectedRecipeType.map((x)=><div key={x}>{x}</div>)}
-                  {selectedPrepMethod.map((x)=><div key={x}>{x}</div>)}
-                  {selectedCookingEquipment.map((x)=><div key={x}>{x}</div>)}
-                </div>
-              ) : (
-                <div className={`text-xs italic ${isDarkMode ? 'text-blue-500' : 'text-blue-400'}`}>No modifiers selected</div>
-              )}
-            </div>
-          </div>
-
-          <div className="w-1/3">
-            <div className="flex-shrink-0" style={{ width: '17rem', height: '17rem' }}>
-              {image ? (
-                <img src={image} alt="Recipe" className="w-full h-full object-contain rounded-md bg-white" style={{ border: '0.5px solid #000', boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2)' }} />
-              ) : (
-                <div className="w-full h-full bg-gray-100 border rounded-md flex items-center justify-center"><span className="text-xs text-gray-400">Recipe Image</span></div>
-              )}
-            </div>
-          </div>
-        </div>
       </div>
 
-      <div className="pt-[26rem] h-full overflow-y-auto">
-        <div className="pl-8 pr-8 space-y-6 pb-8">
+      <div className="pt-24 h-full overflow-y-auto">
+        <div className="container mx-auto px-6 space-y-6 pb-8">
+          <div className="flex items-end gap-4">
+            <div className={`w-2/3 border p-4 rounded-xl shadow-lg ${isDarkMode ? 'border-cyan-400/30 bg-black/50 shadow-cyan-400/20' : 'border-gray-200 bg-white shadow-gray-200/50'} backdrop-blur-sm`}>
+              <input type="text" maxLength={50} value={recipeName} onChange={(e)=>setRecipeName(e.target.value)} placeholder="RECIPE NAME" className={`w-full text-lg font-semibold uppercase bg-transparent focus:outline-none transition-colors ${isDarkMode ? 'text-cyan-400 placeholder-cyan-600' : 'text-gray-900 placeholder-gray-500'} focus:placeholder-gray-400`} />
+            </div>
+            <div className={`border rounded-xl w-1/3 flex flex-col justify-end shadow-lg ${isDarkMode ? 'bg-red-900/20 border-red-400/30 shadow-red-400/20' : 'bg-red-50/80 border-red-200 shadow-gray-200/50'} backdrop-blur-sm`} style={{ minHeight: '3rem' }}>
+              <div className="p-3 flex flex-col">
+                <div className={`font-semibold text-xs mb-2 ${isDarkMode ? 'text-red-400' : 'text-red-700'}`}>ALLERGENS</div>
+                {selectedAllergens.length ? (
+                  <div className={`grid grid-cols-5 gap-1 text-xs ${isDarkMode ? 'text-red-300' : 'text-red-700'}`}>{selectedAllergens.map(a=> <div key={a}>{a}</div>)}</div>
+                ) : (
+                  <div className={`text-xs italic ${isDarkMode ? 'text-red-500' : 'text-red-400'}`}>No allergens selected</div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-4 mt-1">
+            <div className="w-2/3 flex flex-col space-y-6" style={{ minHeight: '18rem' }}>
+              <div className="flex flex-col space-y-4">
+                <div className="flex items-center gap-4 text-sm">
+                  <div className="flex items-center gap-2"><span className={`font-bold ${isDarkMode ? 'text-cyan-300' : 'text-black'}`}>COOK TIME:</span><input value={cookTime} onChange={(e)=>setCookTime(e.target.value)} placeholder="2:30" className={`w-24 p-3 ${inputClass}`} /></div>
+                  <div className="flex items-center gap-2"><span className={`font-bold ${isDarkMode ? 'text-cyan-300' : 'text-black'}`}>COOK TEMP:</span><input value={cookTemp} onChange={(e)=>setCookTemp(e.target.value)} placeholder="350F" className={`w-24 p-3 ${inputClass}`} /></div>
+                </div>
+                <div className={`text-sm space-y-2 ${isDarkMode ? 'text-cyan-300' : 'text-gray-700'}`}>
+                  <div className="flex items-center gap-4">
+                    <span><span className="font-bold">FULL RECIPE:</span> {getCurrencySymbol(currentCurrency)}{calculateTotalCost().toFixed(2)}</span>
+                    <span className="flex items-center gap-1"><span className="font-bold">YIELD:</span><input type="number" value={yieldQty} onChange={(e)=>setYieldQty(Math.max(0, Number(e.target.value)))} className={`w-16 px-2 py-1 border rounded text-sm ${isDarkMode ? 'bg-black/50 border-cyan-400/50 text-cyan-300' : 'bg-white border-gray-300'}`} /><input value={yieldUnit} onChange={(e)=>setYieldUnit(e.target.value.toUpperCase())} className={`w-14 px-2 py-1 border rounded text-sm uppercase ${isDarkMode ? 'bg-black/50 border-cyan-400/50 text-cyan-300' : 'bg-white border-gray-300'}`} /></span>
+                    <span><span className="font-bold">RECIPE ACCESS:</span> {selectedRecipeAccess.length ? selectedRecipeAccess.join(', ').toUpperCase() : 'NONE'}</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="flex items-center gap-1"><span className="font-bold">PORTION:</span><input type="number" value={portionCount} onChange={(e)=>setPortionCount(Math.max(1, Number(e.target.value)))} className={`w-16 px-2 py-1 border rounded text-sm ${isDarkMode ? 'bg-black/50 border-cyan-400/50 text-cyan-300' : 'bg-white border-gray-300'}`} /></span>
+                    <span className="flex items-center gap-1"><span className="font-bold">UNIT:</span><input value={portionUnit} onChange={(e)=>setPortionUnit(e.target.value.toUpperCase())} className={`w-14 px-2 py-1 border rounded text-sm uppercase ${isDarkMode ? 'bg-black/50 border-cyan-400/50 text-cyan-300' : 'bg-white border-gray-300'}`} /></span>
+                    <span><span className="font-bold">PORTION COST:</span> {getCurrencySymbol(currentCurrency)}{calculatePortionCost().toFixed(2)}</span>
+                    <span title="Theoretical Yield"><span className="font-bold">Ψ:</span> {yieldQty} {yieldUnit}</span>
+                  </div>
+                </div>
+              </div>
+              <div className={`border rounded-xl p-4 h-full shadow-lg ${isDarkMode ? 'bg-blue-900/20 border-blue-400/30 shadow-blue-400/20' : 'bg-blue-50/80 border-blue-200 shadow-gray-200/50'} backdrop-blur-sm`}>
+                <div className={`font-semibold text-sm mb-3 ${isDarkMode ? 'text-blue-400' : 'text-blue-700'}`}>MODIFIERS</div>
+                {(selectedNationality.length || selectedCourses.length || selectedRecipeType.length || selectedPrepMethod.length || selectedCookingEquipment.length) ? (
+                  <div className={`grid grid-cols-7 gap-1 text-xs ${isDarkMode ? 'text-blue-300' : 'text-blue-700'}`}>
+                    {selectedNationality.map((x)=><div key={x}>{x}</div>)}
+                    {selectedCourses.map((x)=><div key={x}>{x}</div>)}
+                    {selectedRecipeType.map((x)=><div key={x}>{x}</div>)}
+                    {selectedPrepMethod.map((x)=><div key={x}>{x}</div>)}
+                    {selectedCookingEquipment.map((x)=><div key={x}>{x}</div>)}
+                  </div>
+                ) : (
+                  <div className={`text-xs italic ${isDarkMode ? 'text-blue-500' : 'text-blue-400'}`}>No modifiers selected</div>
+                )}
+              </div>
+            </div>
+
+            <div className="w-1/3">
+              <div className="flex-shrink-0" style={{ width: '17rem', height: '17rem' }}>
+                {image ? (
+                  <img src={image} alt="Recipe" className="w-full h-full object-contain rounded-md bg-white" style={{ border: '0.5px solid #000', boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2)' }} />
+                ) : (
+                  <div className="w-full h-full bg-gray-100 border rounded-md flex items-center justify-center"><span className="text-xs text-gray-400">Recipe Image</span></div>
+                )}
+              </div>
+            </div>
+          </div>
           <div className={`ingredients-card backdrop-blur-sm rounded-2xl p-6 border ${isDarkMode ? 'bg-gray-800/80 border-gray-700' : 'bg-white/80 border-gray-100'}`}>
             <h3 className={`font-bold text-xl mb-6 ${isDarkMode ? 'text-cyan-400' : 'text-gray-900'}`}>INGREDIENTS</h3>
             <div className="ingredients-grid mt-2 mb-1">
