@@ -18,19 +18,12 @@ export default function TopTabs() {
     <header className="border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-14 items-center justify-between gap-4">
         <a href="/?tab=search" className="flex items-center gap-2" aria-label="Home">
-          {/* Light mode logo */}
           <img
-            src="https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2F7767116085cd4da782ee26179c7b4250?format=webp&width=240"
-            alt="LUCCCA"
-            className="h-8 md:h-9 dark:hidden"
+            src="https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2F3daeec161e9e466b9f19d163a3c58f71?format=webp&width=360"
+            alt="Echo Recipe Pro"
+            className="h-8 md:h-9"
           />
-          {/* Dark mode logo */}
-          <img
-            src="https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2Fb35d1dd3c914450b8529e8dc0ce9ecc1?format=webp&width=240"
-            alt="LUCCCA"
-            className="h-8 md:h-9 hidden dark:block"
-          />
-          <span className="sr-only">LUCCCA</span>
+          <span className="sr-only">Echo Recipe Pro</span>
         </a>
         <nav className="flex items-center gap-2 rounded-xl bg-muted p-1">
           <TabLink to="/?tab=search" label="Recipe Search" />
