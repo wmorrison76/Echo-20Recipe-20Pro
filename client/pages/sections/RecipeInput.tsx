@@ -182,7 +182,7 @@ export default function RecipeInputSection() {
       )}
 
       <div className="text-xs text-muted-foreground">
-        Tip: JSON arrays or single objects supported. DOCX supported via headings: use H1/H2 for recipe titles, then “Ingredients” and “Instructions/Directions/Steps” sections.
+        Tip: DOCX/PDF/Excel parsing looks for headings like “Ingredients” and “Instructions/Directions/Steps”. CSV should include columns: title, ingredients, instructions.
       </div>
     </div>
   );
