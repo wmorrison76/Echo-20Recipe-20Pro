@@ -216,6 +216,34 @@ export default function GallerySection() {
 
       {status && <div className="rounded-md border p-3 text-sm">{status}</div>}
 
+      <div className="rounded-2xl border p-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <input value={newLookBookName} onChange={(e)=>setNewLookBookName(e.target.value)} placeholder="New Look Book name" className="rounded-md border bg-background px-3 py-2 text-sm" />
+          <Button onClick={()=>{ const name = newLookBookName.trim(); if(!name) return; const id = addLookBook(name, []); setNewLookBookName(''); setActiveLookBookId(id); }}>Create</Button>
+          {selected.length>0 && (
+            <select className="rounded-md border bg-background px-2 py-1 text-sm" value={activeLookBookId||''} onChange={(e)=>setActiveLookBookId(e.target.value||null)}>
+              <option value="">Select Look Book</option>
+              {lookbooks.map(b=> <option key={b.id} value={b.id}>{b.name} ({b.imageIds.length})</option>)}
+            </select>
+          )}
+          {selected.length>0 && activeLookBookId && (
+            <Button variant="secondary" onClick={()=>{ addImagesToLookBook(activeLookBookId, selected); setSelected([]); }}>Add selected to Look Book</Button>
+          )}
+        </div>
+        {lookbooks.length>0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {lookbooks.map(b=> (
+              <div key={b.id} className="rounded border px-3 py-2 text-sm flex items-center gap-2">
+                <button className="font-medium underline-offset-2 hover:underline" onClick={()=>{ setActiveLookBookId(b.id); setOpenLookBook(true); }}>{b.name}</button>
+                <span className="text-muted-foreground">{b.imageIds.length} photos</span>
+                <Button size="sm" variant="ghost" onClick={()=>{ const name = prompt('Rename Look Book', b.name) || b.name; updateLookBook(b.id, { name }); }}>Rename</Button>
+                <Button size="sm" variant="ghost" onClick={()=> deleteLookBook(b.id)}>Delete</Button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {filtered.length > 0 ? (
         <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7 gap-4 sm:gap-5 lg:gap-6">
           {filtered.map((img) => (
