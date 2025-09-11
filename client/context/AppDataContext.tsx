@@ -39,6 +39,7 @@ export type LookBook = {
 type AppData = {
   recipes: Recipe[];
   images: GalleryImage[];
+  lookbooks: LookBook[];
   addImages: (files: File[], opts?: { tags?: string[] }) => Promise<number>;
   addRecipesFromJsonFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
   addRecipesFromDocxFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
