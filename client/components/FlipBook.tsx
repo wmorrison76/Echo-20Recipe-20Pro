@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
@@ -34,10 +34,9 @@ export function FlipBook({ open, onClose, images }: { open: boolean; onClose: ()
   return (
     <Dialog open={open} onOpenChange={(v)=>{ if(!v) onClose(); }}>
       <DialogContent className="max-w-6xl w-full bg-neutral-900 text-white p-4">
-        <div className="flex items-center justify-between mb-2">
-          <div className="text-sm opacity-80">Look Book</div>
-          <button className="p-1 rounded hover:bg-white/10" onClick={onClose} aria-label="Close"><X className="w-5 h-5"/></button>
-        </div>
+        <DialogHeader>
+          <DialogTitle className="text-sm opacity-80">Look Book</DialogTitle>
+        </DialogHeader>
         <div className="relative w-full aspect-video bg-neutral-800 rounded-lg overflow-hidden shadow-inner ring-1 ring-white/10">
           {/* Controls */}
           <button className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 hover:bg-black/60 disabled:opacity-40" onClick={()=> setPage((p)=> Math.max(0, p-1))} disabled={!canPrev} aria-label="Previous spread">
