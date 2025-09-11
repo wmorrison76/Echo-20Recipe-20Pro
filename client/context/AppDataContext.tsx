@@ -312,6 +312,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           const norm = normalizeRecipe(item);
           if (norm) {
             collected.push({ id: uid(), createdAt: Date.now(), sourceFile: f.name, ...norm });
+            if (norm.title) titles.push(norm.title);
           }
         }
       } catch (e: any) {
