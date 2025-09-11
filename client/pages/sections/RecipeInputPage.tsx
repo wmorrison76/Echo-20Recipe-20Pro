@@ -169,14 +169,17 @@ const RecipeInputPage = () => {
   // Unit + currency conversions (with mixed fraction support)
   const convertUnits = () => {
     const alias = (u:string) => {
-      const k = u.toUpperCase().trim();
+      const k = (u||'').toUpperCase().trim();
       if (k.startsWith('TABLESPO')) return 'TBSP';
       if (k.startsWith('TEASPO')) return 'TSP';
       if (k==='TSP' || k==='TEASPOON' || k==='TEASPOONS') return 'TSP';
       if (k==='TBSP' || k==='TABLESPOON' || k==='TABLESPOONS') return 'TBSP';
       if (k==='QT' || k==='QTS' || k==='QUART' || k==='QUARTS') return 'QTS';
+      if (k==='PT') return 'PINT';
       if (k==='LB' || k==='POUND' || k==='POUNDS') return 'LBS';
       if (k==='FLOZ' || k==='FL OZ') return 'FL OZ';
+      if (k==='GAL') return 'GALLON';
+      if (k==='CUPS') return 'CUP';
       return k;
     };
 
