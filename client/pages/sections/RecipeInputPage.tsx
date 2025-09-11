@@ -175,7 +175,7 @@ const RecipeInputPage = () => {
       </div>
 
       <div className="pt-24 h-full overflow-y-auto">
-        <div className="container mx-auto px-6 space-y-6 pb-8">
+        <div className="w-full px-6 space-y-6 pb-8">
           <div className="flex items-end gap-4">
             <div className={`w-2/3 border p-4 rounded-xl shadow-lg ${isDarkMode ? 'border-cyan-400/30 bg-black/50 shadow-cyan-400/20' : 'border-gray-200 bg-white shadow-gray-200/50'} backdrop-blur-sm`}>
               <input type="text" maxLength={50} value={recipeName} onChange={(e)=>setRecipeName(e.target.value)} placeholder="RECIPE NAME" className={`w-full text-lg font-semibold uppercase bg-transparent focus:outline-none transition-colors ${isDarkMode ? 'text-cyan-400 placeholder-cyan-600' : 'text-gray-900 placeholder-gray-500'} focus:placeholder-gray-400`} />
