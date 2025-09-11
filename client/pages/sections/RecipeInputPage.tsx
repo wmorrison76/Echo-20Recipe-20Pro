@@ -59,6 +59,8 @@ const RecipeInputPage = () => {
 
   const inputClass = `border p-3 rounded-lg text-sm transition-all focus:shadow-md focus:ring-2 ${isDarkMode ? 'bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30 shadow-none' : 'bg-white border-gray-200 text-gray-900 focus:ring-blue-400/30 focus:border-blue-400 shadow-md'}`;
 
+  React.useEffect(()=>{ const el = dirRef.current; if (!el) return; if (document.activeElement !== el && el.textContent !== directions) el.textContent = directions; }, [directions]);
+
   const analyzeNutrition = async () => {
     try {
       setNutritionLoading(true); setNutritionError(null);
