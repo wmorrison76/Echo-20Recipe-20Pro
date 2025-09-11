@@ -94,7 +94,30 @@ export default function RecipeInputSection() {
             </Button>
             <Button variant="destructive" onClick={() => clearRecipes()}>Clear recipes</Button>
           </div>
-          <div className="mt-4 space-y-2">
+
+          <div className="mt-6">
+            {total > 0 && (
+              <div className="space-y-2">
+                <div className="text-xs text-muted-foreground">{processed} / {total} files processed</div>
+                {/* Progress bar */}
+                <div className="h-2 w-full rounded bg-muted">
+                  <div className="h-2 rounded bg-primary transition-all" style={{ width: `${Math.round((processed / Math.max(total,1)) * 100)}%` }} />
+                </div>
+                {importedTitles.length > 0 && (
+                  <div className="max-h-40 overflow-auto rounded border p-2 text-xs">
+                    <div className="font-medium mb-1">Imported:</div>
+                    <ul className="space-y-1 list-disc pl-4">
+                      {importedTitles.map((t, i) => (
+                        <li key={i} className="truncate" title={t}>{t}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="mt-6 space-y-2">
             <div className="text-sm font-medium">Import ZIP from URL</div>
             <div className="flex gap-2">
               <input
