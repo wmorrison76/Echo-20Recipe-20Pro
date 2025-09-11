@@ -181,6 +181,30 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const addLookBook = useCallback((name: string, imageIds: string[] = []) => {
+    const id = uid();
+    const lb: LookBook = { id, name: name.trim() || "Untitled", imageIds: Array.from(new Set(imageIds)), createdAt: Date.now() };
+    setLookbooks((prev) => [lb, ...prev]);
+    return id;
+  }, []);
+
+  const updateLookBook = useCallback((id: string, patch: Partial<LookBook>) => {
+    setLookbooks((prev) => prev.map((b) => (b.id === id ? { ...b, ...patch, imageIds: patch.imageIds ? Array.from(new Set(patch.imageIds)) : b.imageIds } : b)));
+  }, []);
+
+  const deleteLookBook = useCallback((id: string) => {
+    setLookbooks((prev) => prev.filter((b) => b.id !== id));
+  }, []);
+
+  const addImagesToLookBook = useCallback((id: string, imageIds: string[]) => {
+    setLookbooks((prev) => prev.map((b) => (b.id === id ? { ...b, imageIds: Array.from(new Set([...(b.imageIds || []), ...imageIds])) } : b)));
+  }, []);
+
+  const removeImagesFromLookBook = useCallback((id: string, imageIds: string[]) => {
+    const rm = new Set(imageIds);
+    setLookbooks((prev) => prev.map((b) => (b.id === id ? { ...b, imageIds: (b.imageIds || []).filter((x) => !rm.has(x)) } : b)));
+  }, []);
+
   const normalizeRecipe = (raw: any): Omit<Recipe, "id" | "createdAt"> | null => {
     if (!raw || typeof raw !== "object") return null;
 
