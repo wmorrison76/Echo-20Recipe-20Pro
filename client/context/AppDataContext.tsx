@@ -8,8 +8,14 @@ import * as mammoth from "mammoth/mammoth.browser";
 export type GalleryImage = {
   id: string;
   name: string;
-  dataUrl: string; // base64 Data URL
+  dataUrl?: string; // base64 Data URL
+  blobUrl?: string; // for unsupported formats
   createdAt: number;
+  tags: string[];
+  favorite?: boolean;
+  order: number;
+  type?: string;
+  unsupported?: boolean;
 };
 
 export type Recipe = {
@@ -29,7 +35,7 @@ export type Recipe = {
 type AppData = {
   recipes: Recipe[];
   images: GalleryImage[];
-  addImages: (files: File[]) => Promise<number>;
+  addImages: (files: File[], opts?: { tags?: string[] }) => Promise<number>;
   addRecipesFromJsonFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
   addRecipesFromDocxFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
   addFromZipArchive: (file: File) => Promise<{ addedRecipes: number; addedImages: number; errors: { entry: string; error: string }[]; titles: string[] }>;
@@ -102,20 +108,28 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       reader.readAsDataURL(blob);
     });
 
-  const addImages = useCallback(async (files: File[]) => {
+  const addImages = useCallback(async (files: File[], opts?: { tags?: string[] }) => {
     let added = 0;
     const existing = new Set(images.map((i) => i.name));
+    const baseOrder = images.length ? Math.max(...images.map((i) => i.order)) + 1 : 0;
+    let order = baseOrder;
     const next: GalleryImage[] = [];
     for (const f of files) {
-      if (!f.type.startsWith("image/")) continue;
-      // Avoid duplicates by filename
       if (existing.has(f.name)) continue;
       try {
-        const dataUrl = await dataUrlFromFile(f);
-        next.push({ id: uid(), name: f.name, dataUrl, createdAt: Date.now() });
-        added++;
+        const isDisplayable = f.type.startsWith("image/") || /\.(heic|heif)$/i.test(f.name);
+        if (isDisplayable) {
+          const dataUrl = await dataUrlFromFile(f);
+          next.push({ id: uid(), name: f.name, dataUrl, createdAt: Date.now(), tags: opts?.tags ?? [], favorite: false, order: order++, type: f.type });
+          added++;
+        } else {
+          const blob = new Blob([await f.arrayBuffer()], { type: f.type || "application/octet-stream" });
+          const blobUrl = URL.createObjectURL(blob);
+          next.push({ id: uid(), name: f.name, blobUrl, createdAt: Date.now(), tags: opts?.tags ?? [], order: order++, type: f.type, unsupported: true });
+          added++;
+        }
       } catch (e) {
-        console.warn("Failed to read image", f.name, e);
+        console.warn("Failed to read file", f.name, e);
       }
     }
     if (next.length) setImages((prev) => [...next, ...prev]);
