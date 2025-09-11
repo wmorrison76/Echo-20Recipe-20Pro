@@ -302,6 +302,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     const errors: { entry: string; error: string }[] = [];
     const nextRecipes: Recipe[] = [];
     const nextImages: GalleryImage[] = [];
+    const titles: string[] = [];
 
     try {
       const zip = await JSZip.loadAsync(file);
