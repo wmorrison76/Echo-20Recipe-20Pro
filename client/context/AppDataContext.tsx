@@ -44,6 +44,7 @@ type AppData = {
   images: GalleryImage[];
   lookbooks: LookBook[];
   addImages: (files: File[], opts?: { tags?: string[] }) => Promise<number>;
+  addRecipe: (recipe: Omit<Recipe, "id" | "createdAt">) => string;
   addRecipesFromJsonFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
   addRecipesFromDocxFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
   addRecipesFromHtmlFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
