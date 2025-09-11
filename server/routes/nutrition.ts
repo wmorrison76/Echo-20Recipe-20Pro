@@ -89,19 +89,26 @@ export async function handleNutritionAnalyze(req: Request, res: Response) {
 
     let totalG = 0;
     let kcal = 0, fat = 0, carbs = 0, protein = 0;
+    const breakdown: any[] = [];
+
+    // Approximate yield factor by prep method keywords
+    const prepText = (req.body.prepMethod || '').toString().toLowerCase();
+    const yieldFactor = /fried|grill|roast|bake/.test(prepText) ? 0.88 : /poach|boil|simmer|stew/.test(prepText) ? 0.95 : 0.92;
 
     for (const line of ingr) {
       const { qty, unit } = parseQtyUnit(line);
-      const grams = qty * (UNIT_TO_G[unit as keyof typeof UNIT_TO_G] || 0);
+      const gramsRaw = qty * (UNIT_TO_G[unit as keyof typeof UNIT_TO_G] || 0);
+      const grams = gramsRaw * yieldFactor;
       totalG += grams;
       const itemName = normalizeItemName(line);
       const nut = itemName ? NUTRITION_DB[itemName] : undefined;
       if (nut && grams > 0) {
         const f = grams / 100;
-        kcal += nut.kcal * f;
-        fat += nut.fat * f;
-        carbs += nut.carbs * f;
-        protein += nut.protein * f;
+        const add = { item: itemName, grams, kcal: nut.kcal * f, fat: nut.fat * f, carbs: nut.carbs * f, protein: nut.protein * f };
+        breakdown.push(add);
+        kcal += add.kcal; fat += add.fat; carbs += add.carbs; protein += add.protein;
+      } else {
+        breakdown.push({ item: itemName || 'unknown', grams, kcal: 0, fat: 0, carbs: 0, protein: 0 });
       }
     }
 
