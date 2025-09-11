@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import JSZip from "jszip";
 
 export type GalleryImage = {
   id: string;
@@ -24,8 +25,9 @@ export type Recipe = {
 type AppData = {
   recipes: Recipe[];
   images: GalleryImage[];
-  addImages: (files: File[]) => Promise<number>; // returns count added
-  addRecipesFromJsonFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[] }>; 
+  addImages: (files: File[]) => Promise<number>;
+  addRecipesFromJsonFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[] }>;
+  addFromZipArchive: (file: File) => Promise<{ addedRecipes: number; addedImages: number; errors: { entry: string; error: string }[] }>;
   clearRecipes: () => void;
   clearImages: () => void;
   searchRecipes: (q: string) => Recipe[];
@@ -82,6 +84,14 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       reader.onload = () => resolve(String(reader.result));
       reader.onerror = () => reject(reader.error);
       reader.readAsDataURL(file);
+    });
+
+  const dataUrlFromBlob = (blob: Blob): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(blob);
     });
 
   const addImages = useCallback(async (files: File[]) => {
@@ -179,6 +189,57 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     return { added: collected.length, errors };
   }, [linkImagesToRecipesByFilename]);
 
+  const addFromZipArchive = useCallback(async (file: File) => {
+    const errors: { entry: string; error: string }[] = [];
+    const nextRecipes: Recipe[] = [];
+    const nextImages: GalleryImage[] = [];
+
+    try {
+      const zip = await JSZip.loadAsync(file);
+      const existingImageNames = new Set(images.map((i) => i.name));
+
+      const entries = Object.values(zip.files);
+      for (const entry of entries) {
+        if (entry.dir) continue;
+        const base = entry.name.split("/").pop() || entry.name;
+        const lower = base.toLowerCase();
+
+        try {
+          if (lower.endsWith(".json")) {
+            const str = await entry.async("string");
+            const json = JSON.parse(str);
+            const arr: any[] = Array.isArray(json) ? json : [json];
+            for (const item of arr) {
+              const norm = normalizeRecipe(item);
+              if (norm) nextRecipes.push({ id: uid(), createdAt: Date.now(), sourceFile: base, ...norm });
+            }
+          } else if (/(\.png|\.jpg|\.jpeg|\.webp|\.gif)$/i.test(lower)) {
+            if (existingImageNames.has(base)) continue;
+            const blob = await entry.async("blob");
+            // try to preserve mime if possible
+            const mime =
+              lower.endsWith(".png") ? "image/png" :
+              lower.endsWith(".webp") ? "image/webp" :
+              lower.endsWith(".gif") ? "image/gif" : "image/jpeg";
+            const typedBlob = blob.type ? blob : new Blob([blob], { type: mime });
+            const dataUrl = await dataUrlFromBlob(typedBlob);
+            nextImages.push({ id: uid(), name: base, dataUrl, createdAt: Date.now() });
+          }
+        } catch (e: any) {
+          errors.push({ entry: entry.name, error: e?.message ?? "Failed to read entry" });
+        }
+      }
+    } catch (e: any) {
+      errors.push({ entry: file.name, error: e?.message ?? "Invalid ZIP" });
+    }
+
+    if (nextImages.length) setImages((prev) => [...nextImages, ...prev]);
+    if (nextRecipes.length) setRecipes((prev) => [...nextRecipes, ...prev]);
+    setTimeout(linkImagesToRecipesByFilename, 0);
+
+    return { addedRecipes: nextRecipes.length, addedImages: nextImages.length, errors };
+  }, [images, linkImagesToRecipesByFilename]);
+
   const clearRecipes = useCallback(() => setRecipes([]), []);
   const clearImages = useCallback(() => setImages([]), []);
 
@@ -202,11 +263,12 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     images,
     addImages,
     addRecipesFromJsonFiles,
+    addFromZipArchive,
     clearRecipes,
     clearImages,
     searchRecipes,
     linkImagesToRecipesByFilename,
-  }), [recipes, images, addImages, addRecipesFromJsonFiles, searchRecipes, linkImagesToRecipesByFilename]);
+  }), [recipes, images, addImages, addRecipesFromJsonFiles, addFromZipArchive, searchRecipes, linkImagesToRecipesByFilename]);
 
   return <CTX.Provider value={value}>{children}</CTX.Provider>;
 }
