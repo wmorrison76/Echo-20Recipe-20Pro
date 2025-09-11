@@ -63,12 +63,11 @@ export default function RepoImportSection() {
 
   const importRepoZip = async () => {
     setStatus(null);
-    const zipUrl = makeZipUrl(repoUrl, branch);
-    if (!zipUrl) { setStatus("Invalid GitHub repository URL."); return; }
     try {
       setLoading(true);
-      setStatus("Downloading repository ZIP...");
-      const resp = await fetch(zipUrl);
+      setStatus("Downloading repository ZIP via proxy...");
+      const q = new URLSearchParams({ repo: repoUrl, branch });
+      const resp = await fetch(`/api/github/zip?${q.toString()}`);
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const blob = await resp.blob();
       const name = `${repoUrl.split("/").slice(-1)[0]}-${branch}.zip`;
