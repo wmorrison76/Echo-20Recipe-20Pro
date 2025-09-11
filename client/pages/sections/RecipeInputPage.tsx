@@ -378,7 +378,7 @@ const RecipeInputPage = () => {
             ingredients: ingLines,
             instructions: insLines,
             tags: [],
-            extra: { source: "manual" },
+            extra: { source: "manual", taxonomy },
           });
         } else {
           updateRecipe(recipeIdRef.current, {
