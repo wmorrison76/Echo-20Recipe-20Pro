@@ -284,7 +284,7 @@ const RecipeInputPage = () => {
 
       </div>
 
-      <div className="pt-16 h-full overflow-y-auto">
+      <div className="pt-8 h-full overflow-y-auto">
         <div className="w-full px-6 space-y-6 pb-8">
           {/* Removed old hamburger toggle button */}
           <div className="flex items-end gap-4">
