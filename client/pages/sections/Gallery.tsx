@@ -218,7 +218,7 @@ export default function GallerySection() {
                 {img.unsupported ? (
                   <div className="h-40 w-full bg-gradient-to-b from-muted to-muted/60 flex items-center justify-center text-xs text-muted-foreground">Unsupported preview</div>
                 ) : (
-                  <img src={img.dataUrl || img.blobUrl} alt={img.name} className="w-full h-auto object-cover transition-all duration-200 z-0" />
+                  <img src={img.dataUrl || img.blobUrl} alt={img.name} className="w-full h-auto object-cover transition-all duration-200 z-0" onError={(e)=>{ const el=e.currentTarget; el.onerror=null; el.src='/placeholder.svg'; el.classList.add('opacity-70'); }} />
                 )}
               </button>
               <div className="p-3 flex flex-col gap-2 text-[11px] relative z-10">
