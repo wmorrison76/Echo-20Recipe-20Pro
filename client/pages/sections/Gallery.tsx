@@ -207,7 +207,7 @@ export default function GallerySection() {
         <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7 gap-4 sm:gap-5 lg:gap-6">
           {filtered.map((img) => (
             <div key={img.id}
-              className="mb-6 break-inside-avoid rounded-2xl overflow-hidden relative group shadow-lg ring-1 ring-black/5 bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 dark:ring-sky-500/25 dark:shadow-[0_0_30px_rgba(56,189,248,0.18)]"
+              className="mb-6 break-inside-avoid rounded-2xl overflow-hidden relative group shadow-lg ring-1 ring-black/5 bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 dark:ring-sky-500/25 dark:shadow-[0_0_30px_rgba(56,189,248,0.18)] transition-shadow hover:shadow-2xl hover:ring-2 hover:ring-sky-300/40 dark:hover:ring-sky-400/30"
               draggable onDragStart={()=>onDragStart(img.id)} onDragOver={(e)=>e.preventDefault()} onDrop={()=>onDropOver(img.id)} onContextMenu={(e)=>e.preventDefault()}
             >
               <button className="absolute top-2 right-2 z-10 rounded-full bg-black/40 p-1.5 text-white opacity-0 group-hover:opacity-100" onClick={()=>toggleFavorite(img.id)} aria-label="Favorite">
@@ -218,7 +218,7 @@ export default function GallerySection() {
                 {img.unsupported ? (
                   <div className="h-40 w-full bg-gradient-to-b from-muted to-muted/60 flex items-center justify-center text-xs text-muted-foreground">Unsupported preview</div>
                 ) : (
-                  <img src={img.dataUrl || img.blobUrl} alt={img.name} className="w-full h-auto object-cover transition-all duration-300 drop-shadow-sm group-hover:drop-shadow-2xl z-0" />
+                  <img src={img.dataUrl || img.blobUrl} alt={img.name} className="w-full h-auto object-cover transition-all duration-200 z-0" />
                 )}
               </button>
               <div className="p-3 flex flex-col gap-2 text-[11px] relative z-10">
