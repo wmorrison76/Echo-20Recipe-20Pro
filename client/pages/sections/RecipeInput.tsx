@@ -63,10 +63,10 @@ export default function RecipeInputSection() {
   return (
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2">
-        <Dropzone accept="application/json,.json,application/zip,.zip" multiple onFiles={onFiles}>
+        <Dropzone accept="application/json,.json,application/zip,.zip,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx" multiple onFiles={onFiles}>
           <div className="flex flex-col items-center justify-center gap-2 text-sm">
-            <div className="text-foreground font-medium">Drag & drop 50+ JSON files or a Vibe Garden ZIP</div>
-            <div className="text-muted-foreground">or click to select (.json / .zip)</div>
+            <div className="text-foreground font-medium">Drag & drop 50+ JSON, DOCX, or a Vibe Garden ZIP</div>
+            <div className="text-muted-foreground">or click to select (.json / .docx / .zip)</div>
           </div>
         </Dropzone>
 
