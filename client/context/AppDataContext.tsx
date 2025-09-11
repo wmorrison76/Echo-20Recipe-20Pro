@@ -112,6 +112,10 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     writeLS(LS_IMAGES, images);
   }, [images]);
 
+  useEffect(() => {
+    writeLS(LS_LOOKBOOKS, lookbooks);
+  }, [lookbooks]);
+
   const dataUrlFromFile = (file: File): Promise<string> =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
