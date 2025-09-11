@@ -146,7 +146,7 @@ const RecipeInputPage = () => {
     try {
       setNutritionLoading(true); setNutritionError(null);
       const ingr = ingredients.filter(r=>r.qty || r.item).map(r=>[r.qty,r.unit,r.item,r.prep].filter(Boolean).join(' '));
-      const res = await fetch('/api/nutrition/analyze',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title: recipeName||'Recipe', ingr, yieldQty, yieldUnit })});
+      const res = await fetch('/api/nutrition/analyze',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title: recipeName||'Recipe', ingr, yieldQty, yieldUnit, prepMethod: selectedPrepMethod.join(', ') })});
       if (!res.ok) throw new Error((await res.json().catch(()=>({})))?.error || `Request failed: ${res.status}`);
       const data = await res.json(); setNutrition(data);
     } catch(e:any){ setNutritionError(e.message || 'Unable to analyze nutrition'); } finally { setNutritionLoading(false); }
