@@ -144,8 +144,8 @@ export default function RecipeSearchSection() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Dropzone accept=".json,application/json,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.html,.htm,text/html,.pdf,application/pdf,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.xls,application/vnd.ms-excel,.csv,text/csv,application/zip,application/x-zip-compressed,.zip,image/*" multiple onFiles={onFiles}>
-          <div className="flex flex-col items-center justify-center gap-2 text-sm">
+        <Dropzone className="p-3" accept=".json,application/json,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.html,.htm,text/html,.pdf,application/pdf,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.xls,application/vnd.ms-excel,.csv,text/csv,application/zip,application/x-zip-compressed,.zip,image/*" multiple onFiles={onFiles}>
+          <div className="flex flex-col items-center justify-center gap-1 text-xs">
             <div className="text-foreground font-medium">Drag & drop recipes (Word/PDF/Excel/HTML/JSON/ZIP) or images</div>
             <div className="text-muted-foreground">Auto-detects titles, ingredients, and instructions</div>
           </div>
