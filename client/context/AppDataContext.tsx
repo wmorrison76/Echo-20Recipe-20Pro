@@ -96,6 +96,7 @@ function writeLS<T>(key: string, value: T) {
 export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [images, setImages] = useState<GalleryImage[]>([]);
+  const [lookbooks, setLookbooks] = useState<LookBook[]>([]);
 
   useEffect(() => {
     setRecipes(readLS<Recipe[]>(LS_RECIPES, []));
