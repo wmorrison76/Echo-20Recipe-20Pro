@@ -17,12 +17,13 @@ export default function RecipeInputSection() {
     const list = files.slice(0, 100);
     const jsonFiles = list.filter((f) => f.type.includes("json") || f.name.toLowerCase().endsWith(".json"));
     const docxFiles = list.filter((f) => f.name.toLowerCase().endsWith(".docx"));
+    const htmlFiles = list.filter((f) => /\.(html?|htm)$/i.test(f.name));
     const pdfFiles = list.filter((f) => f.name.toLowerCase().endsWith(".pdf"));
     const xlsFiles = list.filter((f) => /\.(xlsx|xls|csv)$/i.test(f.name));
     const imageFiles = list.filter((f)=> f.type.startsWith('image/') || /\.(png|jpe?g|webp|heic|heif)$/i.test(f.name));
     const zipFiles = list.filter((f) => f.type.includes("zip") || f.name.toLowerCase().endsWith(".zip"));
 
-    const steps = jsonFiles.length + docxFiles.length + pdfFiles.length + xlsFiles.length + imageFiles.length + zipFiles.length;
+    const steps = jsonFiles.length + docxFiles.length + htmlFiles.length + pdfFiles.length + xlsFiles.length + imageFiles.length + zipFiles.length;
     setProcessed(0);
     setTotal(steps);
     setImportedTitles([]);
