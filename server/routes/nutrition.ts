@@ -84,23 +84,31 @@ function normalizeItemName(s: string) {
 
 export async function handleNutritionAnalyze(req: Request, res: Response) {
   try {
-    const { ingr, yieldQty = 1, yieldUnit = 'SERVING' } = req.body as { ingr: string[]; yieldQty?: number; yieldUnit?: string };
+    const { ingr, yields = [], yieldQty = 1, yieldUnit = 'SERVING' } = req.body as { ingr: string[]; yields?: (number|null)[]; yieldQty?: number; yieldUnit?: string };
     if (!Array.isArray(ingr) || !ingr.length) return res.status(400).json({ error: 'No ingredients provided' });
 
     let totalG = 0;
     let kcal = 0, fat = 0, carbs = 0, protein = 0;
     const breakdown: any[] = [];
 
-    // Approximate yield factor by prep method keywords
+    // Approximate fallback yield by prep method keywords
     const prepText = (req.body.prepMethod || '').toString().toLowerCase();
-    const yieldFactor = /fried|grill|roast|bake/.test(prepText) ? 0.88 : /poach|boil|simmer|stew/.test(prepText) ? 0.95 : 0.92;
+    const fallbackYield = /fried|grill|roast|bake/.test(prepText) ? 0.88 : /poach|boil|simmer|stew/.test(prepText) ? 0.95 : 0.92;
 
-    for (const line of ingr) {
+    for (let i=0;i<ingr.length;i++) {
+      const line = ingr[i];
       const { qty, unit } = parseQtyUnit(line);
       const gramsRaw = qty * (UNIT_TO_G[unit as keyof typeof UNIT_TO_G] || 0);
-      const grams = gramsRaw * yieldFactor;
-      totalG += grams;
       const itemName = normalizeItemName(line);
+      let y = yields[i];
+      if (typeof y !== 'number' || !(y>=0)) y = undefined as any;
+      // Salt/spices no loss
+      let factor = 1;
+      if (itemName && /salt/.test(itemName)) factor = 1;
+      else factor = typeof y === 'number' ? Math.max(0, Math.min(1, y/100)) : fallbackYield;
+      const grams = gramsRaw * factor;
+
+      totalG += grams;
       const nut = itemName ? NUTRITION_DB[itemName] : undefined;
       if (nut && grams > 0) {
         const f = grams / 100;
