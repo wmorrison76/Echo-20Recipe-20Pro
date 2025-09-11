@@ -3,7 +3,7 @@ import { useAppData } from "@/context/AppDataContext";
 import { Dropzone } from "@/components/Dropzone";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Star } from "lucide-react";
+import { Star, LayoutGrid, Rows, List } from "lucide-react";
 
 export function RecipeCard({ r, onPreview, onFav, onRate, onTrash }: { r: ReturnType<typeof useAppData>["recipes"][number]; onPreview:()=>void; onFav:()=>void; onRate:(n:number)=>void; onTrash:()=>void; }) {
   const cover = r.imageDataUrls?.[0];
@@ -64,7 +64,7 @@ export default function RecipeSearchSection() {
   }, [q, searchRecipes, cat]);
 
   const [status, setStatus] = useState<string | null>(null);
-  const [mode, setMode] = useState<'cards'|'list'>('cards');
+  const [mode, setMode] = useState<'cards'|'grid4'|'rows'>('cards');
   const [query, setQuery] = useState('');
   const [errors, setErrors] = useState<{ file: string; error: string }[]>([]);
   const [url, setUrl] = useState("");
@@ -127,12 +127,7 @@ export default function RecipeSearchSection() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        <div className="rounded-md border bg-background px-2 py-1 text-sm flex items-center gap-1">
-          <span>View:</span>
-          <button onClick={()=>setMode('cards')} className={`px-2 py-0.5 rounded ${mode==='cards'?'bg-muted':''}`}>Cards</button>
-          <button onClick={()=>setMode('list')} className={`px-2 py-0.5 rounded ${mode==='list'?'bg-muted':''}`}>List</button>
-        </div>
-        <div className="flex items-center gap-1 rounded-lg bg-muted p-1">
+                <div className="flex items-center gap-1 rounded-lg bg-muted p-1">
           {(['all','recent','top','favorites','uncategorized','trash'] as Cat[]).map(c=> (
             <button key={c} onClick={()=>setCat(c)} className={`px-3 py-1 rounded-md text-sm ${cat===c? 'bg-background shadow':'text-foreground/80'}`}>{c.replace(/^[a-z]/,s=>s.toUpperCase())}</button>
           ))}
@@ -227,6 +222,11 @@ export default function RecipeSearchSection() {
           placeholder="Search by title, ingredients, tags..."
           className="w-full rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring"
         />
+        <div className="flex items-center gap-1">
+          <button onClick={()=>setMode('cards')} title="Cards" className={`p-2 rounded-md border ${mode==='cards'? 'bg-muted': ''}`} aria-label="Cards view"><LayoutGrid className="h-4 w-4"/></button>
+          <button onClick={()=>setMode('grid4')} title="Grid 4" className={`p-2 rounded-md border ${mode==='grid4'? 'bg-muted': ''}`} aria-label="4-across grid"><Rows className="h-4 w-4"/></button>
+          <button onClick={()=>setMode('rows')} title="List" className={`p-2 rounded-md border ${mode==='rows'? 'bg-muted': ''}`} aria-label="List view"><List className="h-4 w-4"/></button>
+        </div>
         <div className="text-sm text-muted-foreground whitespace-nowrap">
           {results.length} / {recipes.length} recipes
         </div>
@@ -240,6 +240,24 @@ export default function RecipeSearchSection() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
           {results.map((r) => (
             <RecipeCard key={r.id} r={r} onPreview={()=>setPreview(r)} onFav={()=>toggleFavorite(r.id)} onRate={(n)=>rateRecipe(r.id,n)} onTrash={()=> r.deletedAt? restoreRecipe(r.id) : deleteRecipe(r.id)} />
+          ))}
+        </div>
+      ) : mode==='grid4' ? (
+        <div className="grid gap-3 grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+          {results.map(r=> (
+            <div key={r.id} className="rounded border p-3 flex items-start gap-2">
+              <div className="w-16 h-12 rounded bg-muted overflow-hidden shrink-0">
+                {r.imageDataUrls?.[0] ? <img src={r.imageDataUrls[0]} alt="" className="w-full h-full object-cover"/> : null}
+              </div>
+              <div className="min-w-0">
+                <div className="font-medium text-sm line-clamp-2" title={r.title}>{r.title}</div>
+                <div className="text-xs text-muted-foreground line-clamp-1">{r.tags?.join(' · ')}</div>
+                <div className="mt-1 flex gap-2">
+                  <Button size="sm" variant="secondary" onClick={()=>setPreview(r)}>Preview</Button>
+                  <a href={`/recipe/${r.id}`} className="text-xs underline self-center">Open</a>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       ) : (
