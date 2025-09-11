@@ -46,15 +46,23 @@ export default function GallerySection() {
 
   useEffect(() => {
     if (images.length > 0) return;
-    const flag = localStorage.getItem("gallery.demo.loaded");
+    const flag = localStorage.getItem("gallery.demo.loaded.v2");
     if (flag === "1") return;
     (async () => {
       try {
         const urls = [
-          "https://picsum.photos/id/1080/1200/900","https://picsum.photos/id/1084/900/1200",
-          "https://picsum.photos/id/1081/1200/900","https://picsum.photos/id/1067/900/1200",
-          "https://picsum.photos/id/1035/1200/900","https://picsum.photos/id/1041/900/1200",
-          "https://picsum.photos/id/106/1200/900","https://picsum.photos/id/1082/900/1200"
+          "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1478145046317-39f10e56b5e9?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1473093226795-af9932fe5856?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1543353071-873f17a7a088?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1498579809087-ef1e558fd1da?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1546554137-f86b9593a222?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=1400&q=80"
         ];
         const files: File[] = [];
         for (const [i,u] of urls.entries()) {
@@ -63,7 +71,7 @@ export default function GallerySection() {
           files.push(new File([b], `demo-${i}.jpg`, { type: b.type || "image/jpeg" }));
         }
         await doImport(files, ["demo"]);
-        localStorage.setItem("gallery.demo.loaded", "1");
+        localStorage.setItem("gallery.demo.loaded.v2", "1");
       } catch {}
     })();
   }, [images.length]);
@@ -118,11 +126,19 @@ export default function GallerySection() {
             <Button variant="secondary" onClick={() => linkImagesToRecipesByFilename()}>Link to recipes</Button>
             <Button variant="outline" onClick={async()=>{
               const urls = [
-                "https://picsum.photos/id/1080/1200/900","https://picsum.photos/id/1084/900/1200",
-                "https://picsum.photos/id/1081/1200/900","https://picsum.photos/id/1067/900/1200",
-                "https://picsum.photos/id/1035/1200/900","https://picsum.photos/id/1041/900/1200",
-                "https://picsum.photos/id/106/1200/900","https://picsum.photos/id/1082/900/1200"
-              ];
+          "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1478145046317-39f10e56b5e9?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1473093226795-af9932fe5856?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1543353071-873f17a7a088?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1498579809087-ef1e558fd1da?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1546554137-f86b9593a222?auto=format&fit=crop&w=1400&q=80",
+          "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=1400&q=80"
+        ];
               const files: File[] = [];
               for (const [i,u] of urls.entries()) {
                 try { const res = await fetch(u); const b = await res.blob(); files.push(new File([b], `demo-${i}.jpg`, { type: b.type||'image/jpeg' })); } catch {}
@@ -144,7 +160,7 @@ export default function GallerySection() {
       {status && <div className="rounded-md border p-3 text-sm">{status}</div>}
 
       {filtered.length > 0 ? (
-        <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6">
+        <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7 gap-4 sm:gap-5 lg:gap-6">
           {filtered.map((img) => (
             <div key={img.id}
               className="mb-6 break-inside-avoid rounded-2xl overflow-hidden relative group shadow-lg bg-white dark:bg-slate-900"
@@ -156,7 +172,7 @@ export default function GallerySection() {
               <input type="checkbox" className="absolute top-2 left-2 z-10 h-4 w-4" checked={selected.includes(img.id)} onChange={()=>toggleSelect(img.id)} />
               <button onClick={()=>openLightboxAt(img.id)} className="block w-full">
                 {img.unsupported ? (
-                  <div className="h-56 w-full bg-muted flex items-center justify-center text-xs text-muted-foreground">Unsupported preview</div>
+                  <div className="h-40 w-full bg-muted flex items-center justify-center text-xs text-muted-foreground">Unsupported preview</div>
                 ) : (
                   <img src={img.dataUrl || img.blobUrl} alt={img.name} className="w-full h-auto object-cover transition-transform duration-300 will-change-transform group-hover:scale-[1.02]" />
                 )}
