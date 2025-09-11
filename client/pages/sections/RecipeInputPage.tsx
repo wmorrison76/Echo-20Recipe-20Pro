@@ -1215,7 +1215,7 @@ const RecipeInputPage = () => {
                       row.item || "",
                       row.prep || "",
                     );
-                    if (y != null) row.yield = String(y);
+                    row.yield = String(y ?? 100);
                   }
                   // Normalize on-the-fly for imperial units
                   const n = parseQuantity(row.qty);
