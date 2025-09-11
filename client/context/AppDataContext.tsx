@@ -234,6 +234,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   }, [linkImagesToRecipesByFilename]);
 
   const convertDocxArrayBufferToHtml = async (arrayBuffer: ArrayBuffer): Promise<string> => {
+    const mammoth = await import("mammoth/mammoth.browser");
     const { value } = await mammoth.convertToHtml({ arrayBuffer });
     return value as string;
   };
