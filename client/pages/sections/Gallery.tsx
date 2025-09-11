@@ -26,20 +26,47 @@ export default function GallerySection() {
   const onFiles = async (files: File[]) => {
     setImportTags("");
     setShowTagDialog(true);
-    // Temporarily store files in ref for after dialog confirm
     (window as any).__pending_files = files;
+  };
+
+  const doImport = async (files: File[], tags: string[]) => {
+    setStatus("Processing images...");
+    const added = await addImages(files, { tags });
+    setStatus(`Added ${added} file(s).`);
+    linkImagesToRecipesByFilename();
   };
 
   const confirmImport = async () => {
     const files: File[] = (window as any).__pending_files || [];
     setShowTagDialog(false);
-    setStatus("Processing images...");
     const tags = importTags.split(",").map((t) => t.trim()).filter(Boolean);
-    const added = await addImages(files, { tags });
-    setStatus(`Added ${added} file(s).`);
-    linkImagesToRecipesByFilename();
+    await doImport(files, tags);
     (window as any).__pending_files = undefined;
   };
+
+  useEffect(() => {
+    if (images.length > 0) return;
+    const flag = localStorage.getItem("gallery.demo.loaded");
+    if (flag === "1") return;
+    (async () => {
+      try {
+        const urls = [
+          "https://picsum.photos/id/1080/1200/900","https://picsum.photos/id/1084/900/1200",
+          "https://picsum.photos/id/1081/1200/900","https://picsum.photos/id/1067/900/1200",
+          "https://picsum.photos/id/1035/1200/900","https://picsum.photos/id/1041/900/1200",
+          "https://picsum.photos/id/106/1200/900","https://picsum.photos/id/1082/900/1200"
+        ];
+        const files: File[] = [];
+        for (const [i,u] of urls.entries()) {
+          const res = await fetch(u);
+          const b = await res.blob();
+          files.push(new File([b], `demo-${i}.jpg`, { type: b.type || "image/jpeg" }));
+        }
+        await doImport(files, ["demo"]);
+        localStorage.setItem("gallery.demo.loaded", "1");
+      } catch {}
+    })();
+  }, [images.length]);
 
   const toggleSelect = (id: string) => {
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
