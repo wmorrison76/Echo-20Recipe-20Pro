@@ -33,6 +33,7 @@ const RecipeInputPage = () => {
   const [nutritionLoading, setNutritionLoading] = useState(false);
   const [nutritionError, setNutritionError] = useState<string | null>(null);
   const [nutritionPerServing, setNutritionPerServing] = useState(true);
+  const dirRef = React.useRef<HTMLDivElement | null>(null);
   const [cookTime, setCookTime] = useState<string>('');
   const [cookTemp, setCookTemp] = useState<string>('');
 
