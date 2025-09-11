@@ -3,26 +3,17 @@ import RecipeSearchSection from "./sections/RecipeSearch";
 import RecipeInputSection from "./sections/RecipeInput";
 import GallerySection from "./sections/Gallery";
 import AddRecipeSection from "./sections/AddRecipe";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import TopTabs from "@/components/TopTabs";
+import { useSearchParams } from "react-router-dom";
 
 export default function Index() {
+  const [params, setParams] = useSearchParams();
+  const active = params.get('tab') || 'search';
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b">
-        <div className="container mx-auto flex h-14 items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded bg-primary" />
-            <span className="font-semibold tracking-tight">Recipe Studio</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded bg-blue-500" />
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
-
+      <TopTabs />
       <main className="container mx-auto py-6">
-        <Tabs defaultValue="search" className="w-full">
+        <Tabs value={active} onValueChange={(v)=>{ params.set('tab', v); setParams(params, { replace: true }); }} className="w-full">
           <TabsList>
             <TabsTrigger value="search">Recipe Search</TabsTrigger>
             <TabsTrigger value="input">Recipe Input</TabsTrigger>
