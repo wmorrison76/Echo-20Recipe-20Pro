@@ -203,7 +203,7 @@ export default function GallerySection() {
         <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7 gap-4 sm:gap-5 lg:gap-6">
           {filtered.map((img) => (
             <div key={img.id}
-              className="mb-6 break-inside-avoid rounded-2xl overflow-hidden relative group shadow-md ring-1 ring-black/5 dark:ring-white/10 bg-white dark:bg-slate-900 transition-all duration-300 hover:shadow-2xl hover:ring-2 hover:ring-sky-300/50 focus-within:shadow-2xl focus-within:ring-2 active:shadow-xl"
+              className="mb-6 break-inside-avoid rounded-2xl overflow-hidden relative group shadow-md ring-1 ring-black/5 dark:ring-white/10 bg-white dark:bg-slate-900"
               draggable onDragStart={()=>onDragStart(img.id)} onDragOver={(e)=>e.preventDefault()} onDrop={()=>onDropOver(img.id)} onContextMenu={(e)=>e.preventDefault()}
             >
               <button className="absolute top-2 right-2 z-10 rounded-full bg-black/40 p-1.5 text-white opacity-0 group-hover:opacity-100" onClick={()=>toggleFavorite(img.id)} aria-label="Favorite">
@@ -214,10 +214,10 @@ export default function GallerySection() {
                 {img.unsupported ? (
                   <div className="h-40 w-full bg-muted flex items-center justify-center text-xs text-muted-foreground">Unsupported preview</div>
                 ) : (
-                  <img src={img.dataUrl || img.blobUrl} alt={img.name} className="w-full h-auto object-cover transition-all duration-300 will-change-transform group-hover:scale-[1.01] drop-shadow-sm group-hover:drop-shadow-2xl" />
+                  <img src={img.dataUrl || img.blobUrl} alt={img.name} className="w-full h-auto object-cover transition-all duration-300 drop-shadow-sm group-hover:drop-shadow-2xl z-0" />
                 )}
               </button>
-              <div className="p-3 flex flex-col gap-2 text-[11px]">
+              <div className="p-3 flex flex-col gap-2 text-[11px] relative z-10">
                 {editingId === img.id ? (
                   <div className="flex flex-col gap-2">
                     <input
