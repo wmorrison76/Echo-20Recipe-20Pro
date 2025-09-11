@@ -10,12 +10,19 @@ import { useSearchParams } from "react-router-dom";
 
 export default function Index() {
   const [params, setParams] = useSearchParams();
-  const active = params.get('tab') || 'search';
+  const active = params.get("tab") || "search";
   return (
     <div className="min-h-screen bg-background text-foreground">
       <TopTabs />
       <main className="w-full py-4">
-        <Tabs value={active} onValueChange={(v)=>{ params.set('tab', v); setParams(params, { replace: true }); }} className="w-full">
+        <Tabs
+          value={active}
+          onValueChange={(v) => {
+            params.set("tab", v);
+            setParams(params, { replace: true });
+          }}
+          className="w-full"
+        >
           <TabsContent value="search">
             <RecipeSearchSection />
           </TabsContent>

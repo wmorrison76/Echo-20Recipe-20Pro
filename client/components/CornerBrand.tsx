@@ -4,8 +4,10 @@ import React, { useEffect, useState } from "react";
 // Fades in on first load; when switching to dark, the light image fades out slowly
 export default function CornerBrand() {
   type Theme = "light" | "dark";
-  const lightSrc = "https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2F7767116085cd4da782ee26179c7b4250?format=webp&width=240";
-  const darkSrc = "https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2Fb35d1dd3c914450b8529e8dc0ce9ecc1?format=webp&width=240";
+  const lightSrc =
+    "https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2F7767116085cd4da782ee26179c7b4250?format=webp&width=240";
+  const darkSrc =
+    "https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2Fb35d1dd3c914450b8529e8dc0ce9ecc1?format=webp&width=240";
 
   const getTheme = (): Theme =>
     document.documentElement.classList.contains("dark") ? "dark" : "light";
@@ -28,7 +30,8 @@ export default function CornerBrand() {
 
   useEffect(() => {
     const onTheme = (e: any) => {
-      const next: Theme = String(e?.detail?.theme || "light") === "dark" ? "dark" : "light";
+      const next: Theme =
+        String(e?.detail?.theme || "light") === "dark" ? "dark" : "light";
       setTheme(next);
       if (next === "dark") {
         setLightOpacity(0); // slow fade-out handled via CSS duration
@@ -56,8 +59,18 @@ export default function CornerBrand() {
 
   return (
     <>
-      <img src={lightSrc} alt="brand" style={{ ...baseStyle, opacity: lightOpacity }} aria-hidden />
-      <img src={darkSrc} alt="brand" style={{ ...baseStyle, opacity: darkOpacity }} aria-hidden />
+      <img
+        src={lightSrc}
+        alt="brand"
+        style={{ ...baseStyle, opacity: lightOpacity }}
+        aria-hidden
+      />
+      <img
+        src={darkSrc}
+        alt="brand"
+        style={{ ...baseStyle, opacity: darkOpacity }}
+        aria-hidden
+      />
     </>
   );
 }

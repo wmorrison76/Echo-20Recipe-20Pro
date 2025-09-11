@@ -30,7 +30,9 @@ export function Dropzone({
     <div
       className={cn(
         "relative rounded-xl border border-dashed p-1 text-center transition-all bg-gradient-to-br from-background to-muted/40 hover:shadow-md min-h-8",
-        dragOver ? "border-ring ring-2 ring-ring/40" : "border-muted-foreground/30",
+        dragOver
+          ? "border-ring ring-2 ring-ring/40"
+          : "border-muted-foreground/30",
         className,
       )}
       onClick={() => inputRef.current?.click()}

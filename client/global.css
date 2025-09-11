@@ -116,13 +116,21 @@
 @layer utilities {
   /* Light mode: thin black-ish borders and subtle shadows on bordered elements */
   html:not(.dark) .border {
-    border-color: rgba(0,0,0,0.35) !important;
+    border-color: rgba(0, 0, 0, 0.35) !important;
   }
-  html:not(.dark) input, html:not(.dark) select, html:not(.dark) textarea {
-    border-color: rgba(0,0,0,0.35) !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  html:not(.dark) input,
+  html:not(.dark) select,
+  html:not(.dark) textarea {
+    border-color: rgba(0, 0, 0, 0.35) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   }
-  html:not(.dark) .shadow, html:not(.dark) .shadow-sm, html:not(.dark) .shadow-md, html:not(.dark) .shadow-lg, html:not(.dark) .shadow-xl {
-    box-shadow: 0 6px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.06) !important;
+  html:not(.dark) .shadow,
+  html:not(.dark) .shadow-sm,
+  html:not(.dark) .shadow-md,
+  html:not(.dark) .shadow-lg,
+  html:not(.dark) .shadow-xl {
+    box-shadow:
+      0 6px 12px rgba(0, 0, 0, 0.08),
+      0 2px 4px rgba(0, 0, 0, 0.06) !important;
   }
 }

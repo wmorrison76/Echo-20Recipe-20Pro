@@ -4,29 +4,42 @@ import { useAppData } from "@/context/AppDataContext";
 import { Button } from "@/components/ui/button";
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <div className="tracking-widest text-sm font-semibold text-gray-700">{children}</div>;
+  return (
+    <div className="tracking-widest text-sm font-semibold text-gray-700">
+      {children}
+    </div>
+  );
 }
 
 export default function RecipeTemplate() {
   const { id } = useParams();
   const nav = useNavigate();
   const { getRecipeById } = useAppData();
-  const recipe = useMemo(()=> (id? getRecipeById(id) : undefined), [id, getRecipeById]);
+  const recipe = useMemo(
+    () => (id ? getRecipeById(id) : undefined),
+    [id, getRecipeById],
+  );
 
   const [nutrition, setNutrition] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(()=>{
+  useEffect(() => {
     const run = async () => {
       if (!recipe?.ingredients?.length) return;
       try {
         setLoading(true);
-        const res = await fetch('/api/nutrition/analyze', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: recipe.title, ingr: recipe.ingredients })
+        const res = await fetch("/api/nutrition/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: recipe.title,
+            ingr: recipe.ingredients,
+          }),
         });
         if (res.ok) setNutrition(await res.json());
-      } finally { setLoading(false); }
+      } finally {
+        setLoading(false);
+      }
     };
     run();
   }, [recipe?.id]);
@@ -34,8 +47,10 @@ export default function RecipeTemplate() {
   if (!recipe) {
     return (
       <div className="p-6">
-        <div className="mb-3 text-sm text-muted-foreground">Recipe not found.</div>
-        <Button onClick={()=>nav('/')}>Back</Button>
+        <div className="mb-3 text-sm text-muted-foreground">
+          Recipe not found.
+        </div>
+        <Button onClick={() => nav("/")}>Back</Button>
       </div>
     );
   }
@@ -43,35 +58,54 @@ export default function RecipeTemplate() {
   const cover = recipe.imageDataUrls?.[0];
   const instructions: string[] = Array.isArray(recipe.instructions)
     ? (recipe.instructions as any).map(String)
-    : String((recipe as any).instructions || '').split(/\r?\n|\u2028|\u2029/).map(s=>s.trim()).filter(Boolean);
-  const ingredients: string[] = Array.isArray(recipe.ingredients) ? recipe.ingredients.map(String) : [];
+    : String((recipe as any).instructions || "")
+        .split(/\r?\n|\u2028|\u2029/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+  const ingredients: string[] = Array.isArray(recipe.ingredients)
+    ? recipe.ingredients.map(String)
+    : [];
 
   const Nut = nutrition;
-  const cal = Nut?.calories ?? (recipe as any)?.extra?.nutrition?.calories ?? '';
-  const fat = Nut?.totalNutrients?.FAT?.quantity ?? '';
-  const carbs = Nut?.totalNutrients?.CHOCDF?.quantity ?? '';
-  const protein = Nut?.totalNutrients?.PROCNT?.quantity ?? '';
+  const cal =
+    Nut?.calories ?? (recipe as any)?.extra?.nutrition?.calories ?? "";
+  const fat = Nut?.totalNutrients?.FAT?.quantity ?? "";
+  const carbs = Nut?.totalNutrients?.CHOCDF?.quantity ?? "";
+  const protein = Nut?.totalNutrients?.PROCNT?.quantity ?? "";
 
   return (
     <div className="min-h-screen bg-white">
       <div className="mx-auto max-w-4xl px-6 py-6 print:px-0">
         <div className="flex items-center justify-between mb-6 print:hidden">
-          <Button variant="secondary" onClick={()=>nav(-1)}>Back</Button>
+          <Button variant="secondary" onClick={() => nav(-1)}>
+            Back
+          </Button>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={()=>nav(`/recipe/${recipe.id}`)}>Edit</Button>
-            <Button onClick={()=>window.print()}>Print</Button>
+            <Button
+              variant="outline"
+              onClick={() => nav(`/recipe/${recipe.id}`)}
+            >
+              Edit
+            </Button>
+            <Button onClick={() => window.print()}>Print</Button>
           </div>
         </div>
 
         <div className="bg-white rounded-xl border shadow-md p-8">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-serif tracking-widest">{recipe.title}</h1>
+            <h1 className="text-4xl md:text-5xl font-serif tracking-widest">
+              {recipe.title}
+            </h1>
             <div className="mt-3 h-px bg-black/60" />
           </div>
 
           {cover && (
             <div className="mt-6 flex items-center justify-center">
-              <img src={cover} alt={recipe.title} className="w-full max-w-xl rounded-xl shadow object-cover" />
+              <img
+                src={cover}
+                alt={recipe.title}
+                className="w-full max-w-xl rounded-xl shadow object-cover"
+              />
             </div>
           )}
 
@@ -79,13 +113,20 @@ export default function RecipeTemplate() {
             <div>
               <SectionTitle>INGREDIENTS</SectionTitle>
               <ul className="mt-2 space-y-1 leading-7">
-                {ingredients.map((x,i)=> (<li key={i} className="flex gap-2"><span>•</span><span className="flex-1">{x}</span></li>))}
+                {ingredients.map((x, i) => (
+                  <li key={i} className="flex gap-2">
+                    <span>•</span>
+                    <span className="flex-1">{x}</span>
+                  </li>
+                ))}
               </ul>
             </div>
             <div>
               <SectionTitle>DIRECTIONS</SectionTitle>
               <ol className="mt-2 space-y-2 list-decimal pl-6 leading-7">
-                {instructions.map((x,i)=> (<li key={i}>{x}</li>))}
+                {instructions.map((x, i) => (
+                  <li key={i}>{x}</li>
+                ))}
               </ol>
             </div>
           </div>
@@ -94,17 +135,61 @@ export default function RecipeTemplate() {
             <div className="md:col-span-2">
               <SectionTitle>NUTRITION</SectionTitle>
               <div className="mt-2 rounded-lg border p-4 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                <div><div className="text-muted-foreground">Calories</div><div className="text-lg font-semibold">{cal? Math.round(cal): '—'}</div></div>
-                <div><div className="text-muted-foreground">Carbs</div><div className="text-lg font-semibold">{carbs? carbs.toFixed? carbs.toFixed(1): carbs: '—'} g</div></div>
-                <div><div className="text-muted-foreground">Fat</div><div className="text-lg font-semibold">{fat? fat.toFixed? fat.toFixed(1): fat: '—'} g</div></div>
-                <div><div className="text-muted-foreground">Protein</div><div className="text-lg font-semibold">{protein? protein.toFixed? protein.toFixed(1): protein: '—'} g</div></div>
+                <div>
+                  <div className="text-muted-foreground">Calories</div>
+                  <div className="text-lg font-semibold">
+                    {cal ? Math.round(cal) : "—"}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground">Carbs</div>
+                  <div className="text-lg font-semibold">
+                    {carbs ? (carbs.toFixed ? carbs.toFixed(1) : carbs) : "—"} g
+                  </div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground">Fat</div>
+                  <div className="text-lg font-semibold">
+                    {fat ? (fat.toFixed ? fat.toFixed(1) : fat) : "—"} g
+                  </div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground">Protein</div>
+                  <div className="text-lg font-semibold">
+                    {protein
+                      ? protein.toFixed
+                        ? protein.toFixed(1)
+                        : protein
+                      : "—"}{" "}
+                    g
+                  </div>
+                </div>
               </div>
-              {loading && <div className="text-xs text-muted-foreground mt-1">Calculating nutrition…</div>}
+              {loading && (
+                <div className="text-xs text-muted-foreground mt-1">
+                  Calculating nutrition…
+                </div>
+              )}
             </div>
             <div className="space-y-2">
-              {(recipe as any)?.extra?.cookTime && <div><span className="font-semibold">Cook:</span> {(recipe as any).extra.cookTime}</div>}
-              {(recipe as any)?.extra?.prepTime && <div><span className="font-semibold">Prep:</span> {(recipe as any).extra.prepTime}</div>}
-              {(recipe as any)?.extra?.allergens && <div><span className="font-semibold">Allergens:</span> {(recipe as any).extra.allergens}</div>}
+              {(recipe as any)?.extra?.cookTime && (
+                <div>
+                  <span className="font-semibold">Cook:</span>{" "}
+                  {(recipe as any).extra.cookTime}
+                </div>
+              )}
+              {(recipe as any)?.extra?.prepTime && (
+                <div>
+                  <span className="font-semibold">Prep:</span>{" "}
+                  {(recipe as any).extra.prepTime}
+                </div>
+              )}
+              {(recipe as any)?.extra?.allergens && (
+                <div>
+                  <span className="font-semibold">Allergens:</span>{" "}
+                  {(recipe as any).extra.allergens}
+                </div>
+              )}
             </div>
           </div>
         </div>
