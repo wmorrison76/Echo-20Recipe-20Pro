@@ -147,7 +147,7 @@ const RecipeInputPage = () => {
   return (
     <div className={`relative w-full h-screen transition-all duration-300 ${isDarkMode ? 'bg-black text-cyan-400' : 'bg-gray-50 text-gray-900'}`}>
       <div className={`fixed top-0 left-0 right-0 z-50 pl-8 pr-8 py-6 space-y-4 ${isDarkMode ? 'bg-gradient-to-br from-gray-900 via-black to-blue-900' : 'bg-gradient-to-br from-gray-50 to-white'}`}>
-        <div className="flex justify-between items-start">
+        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <div className="p-0.5">
             <div className="h-12 w-auto flex items-center">
               <img src="https://cdn.builder.io/api/v1/image/assets%2Fc1bbdbb47a354d9ebc60f96efcabf821%2F544726159ed9468bb33ed78346c7b51b?format=webp&width=400" alt="Echo Recipe Pro" className="h-10 md:h-12 lg:h-14 w-auto select-none" draggable={false} />
