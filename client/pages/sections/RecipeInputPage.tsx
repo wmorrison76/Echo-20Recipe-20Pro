@@ -40,6 +40,7 @@ const RecipeInputPage = () => {
   const [currentUnits, setCurrentUnits] = useState<'Imperial'|'Metric'>('Imperial');
   const [yieldQty, setYieldQty] = useState<number>(6);
   const [yieldUnit, setYieldUnit] = useState<string>('QTS');
+  const yieldManualRef = useRef(false);
   const [portionCount, setPortionCount] = useState<number>(6);
   const [portionUnit, setPortionUnit] = useState<string>('OZ');
   const [nutrition, setNutrition] = useState<any | null>(null);
