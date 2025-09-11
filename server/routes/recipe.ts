@@ -17,12 +17,12 @@ function parseJsonLdRecipe(html: string) {
           const type = Array.isArray(cand['@type']) ? cand['@type'] : [cand['@type']];
           if (type.includes('Recipe')) {
             return {
-              title: String(cand.name || ''),
-              ingredients: (cand.recipeIngredient || []).map((x: any) => String(x)),
-              instructions: (Array.isArray(cand.recipeInstructions)
+              title: decodeHtml(String(cand.name || '')),
+              ingredients: (cand.recipeIngredient || []).map((x: any) => decodeHtml(String(x))),
+              instructions: decodeHtml((Array.isArray(cand.recipeInstructions)
                 ? cand.recipeInstructions.map((ri: any) => typeof ri === 'string' ? ri : ri.text).join('\n')
-                : String(cand.recipeInstructions || '')).trim(),
-              yield: String(cand.recipeYield || ''),
+                : String(cand.recipeInstructions || '')).trim()),
+              yield: decodeHtml(String(cand.recipeYield || '')),
               image: Array.isArray(cand.image) ? cand.image[0] : cand.image,
             };
           }
