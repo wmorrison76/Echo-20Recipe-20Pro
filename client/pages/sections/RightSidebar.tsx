@@ -136,7 +136,7 @@ export default function RightSidebar(props: RightSidebarProps) {
 
             <fieldset className="mt-3 rounded-lg border p-3 bg-red-50/80">
               <legend className="px-1 text-sm font-semibold text-red-700">Allergens ({selectedAllergens.length})</legend>
-              <div className="max-h-32 overflow-y-auto pr-2 grid grid-cols-3 gap-1">
+              <div className="pr-1 grid grid-cols-2 gap-2">
                 {allergenList.map((a)=> (
                   <label key={a} className="flex items-center gap-1 text-xs cursor-pointer hover:bg-red-100/50 p-1 rounded">
                     <input type="checkbox" className="scale-75 text-red-600" checked={selectedAllergens.includes(a)} onChange={()=>toggle(selectedAllergens,onAllergensChange,a)} />
@@ -148,7 +148,7 @@ export default function RightSidebar(props: RightSidebarProps) {
 
             <fieldset className="mt-3 rounded-lg border p-3 bg-blue-50/80">
               <legend className="px-1 text-sm font-semibold text-blue-700">Nationality ({selectedNationality.length})</legend>
-              <div className="grid grid-cols-3 gap-1">
+              <div className="grid grid-cols-2 gap-2">
                 {nationalityList.map((n)=> (
                   <label key={n} className="flex items-center gap-1 text-xs cursor-pointer hover:bg-blue-100/50 p-1 rounded">
                     <input type="checkbox" className="scale-75 text-blue-600" checked={selectedNationality.includes(n)} onChange={()=>toggle(selectedNationality,onNationalityChange,n)} />
@@ -160,7 +160,7 @@ export default function RightSidebar(props: RightSidebarProps) {
 
             <fieldset className="mt-3 rounded-lg border p-3 bg-blue-50/80">
               <legend className="px-1 text-sm font-semibold text-blue-700">Courses ({selectedCourses.length})</legend>
-              <div className="grid grid-cols-3 gap-1">
+              <div className="grid grid-cols-2 gap-2">
                 {coursesList.map((c)=> (
                   <label key={c} className="flex items-center gap-1 text-xs cursor-pointer hover:bg-blue-100/50 p-1 rounded">
                     <input type="checkbox" className="scale-75 text-blue-600" checked={selectedCourses.includes(c)} onChange={()=>toggle(selectedCourses,onCoursesChange,c)} />
@@ -184,7 +184,7 @@ export default function RightSidebar(props: RightSidebarProps) {
 
             <fieldset className="mt-3 rounded-lg border p-3 bg-blue-50/80">
               <legend className="px-1 text-sm font-semibold text-blue-700">Preparation Method ({selectedPrepMethod.length})</legend>
-              <div className="grid grid-cols-3 gap-1">
+              <div className="grid grid-cols-2 gap-2">
                 {prepMethodList.map((m)=> (
                   <label key={m} className="flex items-center gap-1 text-xs cursor-pointer hover:bg-blue-100/50 p-1 rounded">
                     <input type="checkbox" className="scale-75 text-blue-600" checked={selectedPrepMethod.includes(m)} onChange={()=>toggle(selectedPrepMethod,onPrepMethodChange,m)} />
@@ -196,7 +196,7 @@ export default function RightSidebar(props: RightSidebarProps) {
 
             <fieldset className="mt-3 rounded-lg border p-3 bg-blue-50/80">
               <legend className="px-1 text-sm font-semibold text-blue-700">Cooking Equipment ({selectedCookingEquipment.length})</legend>
-              <div className="grid grid-cols-3 gap-1">
+              <div className="grid grid-cols-2 gap-2">
                 {cookingEquipmentList.map((m)=> (
                   <label key={m} className="flex items-center gap-1 text-xs cursor-pointer hover:bg-blue-100/50 p-1 rounded">
                     <input type="checkbox" className="scale-75 text-blue-600" checked={selectedCookingEquipment.includes(m)} onChange={()=>toggle(selectedCookingEquipment,onCookingEquipmentChange,m)} />
@@ -208,7 +208,7 @@ export default function RightSidebar(props: RightSidebarProps) {
 
             <fieldset className="mt-3 rounded-lg border p-3 bg-blue-50/80">
               <legend className="px-1 text-sm font-semibold text-blue-700">Recipe Access ({selectedRecipeAccess.length})</legend>
-              <div className="grid grid-cols-3 gap-1">
+              <div className="grid grid-cols-2 gap-2">
                 {recipeAccessList.map((m)=> (
                   <label key={m} className="flex items-center gap-1 text-xs cursor-pointer hover:bg-blue-100/50 p-1 rounded">
                     <input type="checkbox" className="scale-75 text-blue-600" checked={selectedRecipeAccess.includes(m)} onChange={()=>toggle(selectedRecipeAccess,onRecipeAccessChange,m)} />
