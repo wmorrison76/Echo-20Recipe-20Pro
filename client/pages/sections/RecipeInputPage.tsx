@@ -385,6 +385,7 @@ const RecipeInputPage = () => {
             title,
             ingredients: ingLines,
             instructions: insLines,
+            extra: { taxonomy },
           });
         }
       }
