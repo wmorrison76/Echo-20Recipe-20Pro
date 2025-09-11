@@ -258,6 +258,29 @@ const RecipeInputPage = () => {
   };
   const shareLink = () => { const data = serialize(); const url = `${location.origin}${location.pathname}#r=${encodeURIComponent(btoa(JSON.stringify(data)))}`; navigator.clipboard.writeText(url); alert('Share link copied to clipboard'); };
 
+  // Auto-calc batch yield from volume units if not set manually
+  useEffect(()=>{
+    if (yieldManualRef.current) return;
+    const tspPer: Record<string, number> = { TSP:1, TEASPOON:1, TEASPOONS:1, TBSP:3, TABLESPOON:3, TABLESPOONS:3, FLOZ:6, 'FL OZ':6, OZFL:6, CUP:48, CUPS:48, PINT:96, PT:96, QUART:192, QT:192, QTS:192, QUARTS:192, GALLON:768, GAL:768, GALLONS:768 };
+    const toKey = (u:string)=> (u||'').replace(/\./g,'').replace(/\s+/g,'').toUpperCase();
+    let totalTsp = 0;
+    for (const r of ingredients) {
+      const n = parseQuantity(String(r.qty||''));
+      const per = tspPer[toKey(r.unit||'')];
+      if (Number.isFinite(n) && per) {
+        const y = Number(String(r.yield||'').replace(/[^0-9.\-]/g,''));
+        const factor = Number.isFinite(y) && y>0 ? Math.max(0, Math.min(1, y/100)) : 1;
+        totalTsp += n * per * factor;
+      }
+    }
+    if (totalTsp>0) {
+      const order: [string, number][] = [["GALLON",768],["QUART",192],["PINT",96],["CUP",48],["FLOZ",6],["TBSP",3],["TSP",1]];
+      for (const [name, mul] of order) {
+        if (totalTsp >= mul) { const q = totalTsp / mul; setYieldQty(Number(q.toFixed(2))); setYieldUnit(name==='FLOZ'?'FL OZ':name==='QUART'?'QTS':name); break; }
+      }
+    }
+  }, [ingredients]);
+
   const analyzeNutrition = async () => {
     try {
       setNutritionLoading(true); setNutritionError(null);
