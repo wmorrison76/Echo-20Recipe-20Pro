@@ -1,5 +1,7 @@
 import type { Request, Response } from 'express';
 
+function decodeHtml(s: string) { return s.replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>'); }
+
 function parseJsonLdRecipe(html: string) {
   const scripts = Array.from(html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi));
   for (const m of scripts) {
