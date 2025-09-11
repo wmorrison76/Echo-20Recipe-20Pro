@@ -27,6 +27,9 @@ export type Recipe = {
   createdAt: number;
   sourceFile?: string;
   extra?: Record<string, unknown>;
+  favorite?: boolean;
+  rating?: number; // 0-5
+  deletedAt?: number | null; // soft delete
 };
 
 export type LookBook = {
@@ -49,6 +52,11 @@ type AppData = {
   addRecipesFromImageOcr: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
   addFromZipArchive: (file: File) => Promise<{ addedRecipes: number; addedImages: number; errors: { entry: string; error: string }[]; titles: string[] }>;
   updateRecipe: (id: string, patch: Partial<Recipe>) => void;
+  toggleFavorite: (id: string) => void;
+  rateRecipe: (id: string, rating: number) => void;
+  deleteRecipe: (id: string) => void;
+  restoreRecipe: (id: string) => void;
+  purgeDeleted: () => void;
   getRecipeById: (id: string) => Recipe | undefined;
   attachImageToRecipeFromGallery: (recipeId: string, imageName: string) => void;
   clearRecipes: () => void;
@@ -606,6 +614,23 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     setRecipes((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch, extra: { ...(r.extra ?? {}), ...(patch as any).extra } } : r)));
   }, []);
 
+  const toggleFavorite = useCallback((id: string) => {
+    setRecipes((prev)=> prev.map(r=> r.id===id ? { ...r, favorite: !r.favorite } : r));
+  }, []);
+  const rateRecipe = useCallback((id: string, rating: number) => {
+    const v = Math.max(0, Math.min(5, Math.round(rating)));
+    setRecipes((prev)=> prev.map(r=> r.id===id ? { ...r, rating: v } : r));
+  }, []);
+  const deleteRecipe = useCallback((id: string) => {
+    setRecipes((prev)=> prev.map(r=> r.id===id ? { ...r, deletedAt: Date.now() } : r));
+  }, []);
+  const restoreRecipe = useCallback((id: string) => {
+    setRecipes((prev)=> prev.map(r=> r.id===id ? { ...r, deletedAt: null } : r));
+  }, []);
+  const purgeDeleted = useCallback(() => {
+    setRecipes((prev)=> prev.filter(r=> !r.deletedAt));
+  }, []);
+
   const getRecipeById = useCallback((id: string) => recipes.find((r) => r.id === id), [recipes]);
 
   const attachImageToRecipeFromGallery = useCallback((recipeId: string, imageName: string) => {
@@ -660,6 +685,11 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     addImagesToLookBook,
     removeImagesFromLookBook,
     exportAllZip,
+    toggleFavorite,
+    rateRecipe,
+    deleteRecipe,
+    restoreRecipe,
+    purgeDeleted,
   }), [recipes, images, lookbooks, addImages, addRecipesFromJsonFiles, addRecipesFromDocxFiles, addFromZipArchive, updateRecipe, getRecipeById, attachImageToRecipeFromGallery, searchRecipes, linkImagesToRecipesByFilename, updateImage, addTagsToImages, reorderImages, addLookBook, updateLookBook, deleteLookBook, addImagesToLookBook, removeImagesFromLookBook, exportAllZip]);
 
   return <CTX.Provider value={value}>{children}</CTX.Provider>;
