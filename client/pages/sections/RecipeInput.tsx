@@ -133,7 +133,7 @@ export default function RecipeInputSection() {
       <div className="grid gap-4 md:grid-cols-2">
         <Dropzone accept=".json,application/json,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.html,.htm,text/html,.pdf,application/pdf,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.xls,application/vnd.ms-excel,.csv,text/csv,image/*" multiple onFiles={onFiles}>
           <div className="flex flex-col items-center justify-center gap-2 text-sm">
-            <div className="text-foreground font-medium">Drag & drop up to 100 files: Word (.docx), PDF, Excel (.xlsx/.xls/.csv), or JSON</div>
+            <div className="text-foreground font-medium">Drag & drop up to 100 files: Word (.docx), PDF, Excel (.xlsx/.xls/.csv), HTML (.html/.htm), or JSON</div>
             <div className="text-muted-foreground">We’ll auto-detect titles, ingredients, and instructions</div>
           </div>
         </Dropzone>
