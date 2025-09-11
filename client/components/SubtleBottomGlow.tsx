@@ -72,7 +72,7 @@ export default function SubtleBottomGlow() {
         // Stack above content but below modals/tooltips typically
         "z-20",
         // GPU hint for smoother fades
-        "will-change-opacity",
+        "",
       ].join(" "),
     []
   );
