@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useAppData } from "@/context/AppDataContext";
 
 export default function RecipeInputSection() {
-  const { addRecipesFromJsonFiles, addFromZipArchive, clearRecipes, recipes, linkImagesToRecipesByFilename } = useAppData();
+  const { addRecipesFromJsonFiles, addRecipesFromDocxFiles, addFromZipArchive, clearRecipes, recipes, linkImagesToRecipesByFilename } = useAppData();
   const [status, setStatus] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ file: string; error: string }[]>([]);
   const [zipUrl, setZipUrl] = useState("");
