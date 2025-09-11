@@ -33,6 +33,9 @@ type AppData = {
   addRecipesFromJsonFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
   addRecipesFromDocxFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
   addFromZipArchive: (file: File) => Promise<{ addedRecipes: number; addedImages: number; errors: { entry: string; error: string }[]; titles: string[] }>;
+  updateRecipe: (id: string, patch: Partial<Recipe>) => void;
+  getRecipeById: (id: string) => Recipe | undefined;
+  attachImageToRecipeFromGallery: (recipeId: string, imageName: string) => void;
   clearRecipes: () => void;
   clearImages: () => void;
   searchRecipes: (q: string) => Recipe[];
@@ -356,6 +359,18 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     return { addedRecipes: nextRecipes.length, addedImages: nextImages.length, errors, titles };
   }, [images, linkImagesToRecipesByFilename]);
 
+  const updateRecipe = useCallback((id: string, patch: Partial<Recipe>) => {
+    setRecipes((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch, extra: { ...(r.extra ?? {}), ...(patch as any).extra } } : r)));
+  }, []);
+
+  const getRecipeById = useCallback((id: string) => recipes.find((r) => r.id === id), [recipes]);
+
+  const attachImageToRecipeFromGallery = useCallback((recipeId: string, imageName: string) => {
+    const img = images.find((i) => i.name === imageName);
+    if (!img) return;
+    setRecipes((prev) => prev.map((r) => (r.id === recipeId ? { ...r, imageNames: Array.from(new Set([...(r.imageNames ?? []), imageName])), imageDataUrls: Array.from(new Set([...(r.imageDataUrls ?? []), img.dataUrl])) } : r)));
+  }, [images]);
+
   const clearRecipes = useCallback(() => setRecipes([]), []);
   const clearImages = useCallback(() => setImages([]), []);
 
@@ -381,11 +396,14 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     addRecipesFromJsonFiles,
     addRecipesFromDocxFiles,
     addFromZipArchive,
+    updateRecipe,
+    getRecipeById,
+    attachImageToRecipeFromGallery,
     clearRecipes,
     clearImages,
     searchRecipes,
     linkImagesToRecipesByFilename,
-  }), [recipes, images, addImages, addRecipesFromJsonFiles, addRecipesFromDocxFiles, addFromZipArchive, searchRecipes, linkImagesToRecipesByFilename]);
+  }), [recipes, images, addImages, addRecipesFromJsonFiles, addRecipesFromDocxFiles, addFromZipArchive, updateRecipe, getRecipeById, attachImageToRecipeFromGallery, searchRecipes, linkImagesToRecipesByFilename]);
 
   return <CTX.Provider value={value}>{children}</CTX.Provider>;
 }
