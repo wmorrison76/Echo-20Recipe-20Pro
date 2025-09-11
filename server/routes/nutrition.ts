@@ -40,12 +40,14 @@ const UNIT_TO_G: Record<string, number> = {
 };
 
 function parseQtyUnit(line: string) {
-  // Extract leading quantity and unit, e.g., "1 1/2 cup sugar" or "2oz butter"
+  // Extract leading quantity and unit (supports unicode fractions like ½)
   let qty = 0; let unit = '';
-  const m = line.trim().match(/^([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?)\s*([a-zA-Z]+)?/);
+  const map: Record<string,string> = { '¼':'1/4','½':'1/2','¾':'3/4','⅐':'1/7','⅑':'1/9','⅒':'1/10','⅓':'1/3','⅔':'2/3','⅕':'1/5','⅖':'2/5','⅗':'3/5','⅘':'4/5','⅙':'1/6','⅚':'5/6','⅛':'1/8','⅜':'3/8','⅝':'5/8','⅞':'7/8' };
+  let t = line.trim().replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g,(c)=> map[c]||c);
+  t = t.replace(/(\d)(\s*)(\d\/\d)/, '$1 $3');
+  const m = t.match(/^([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?)\s*([a-zA-Z\.]+)?/);
   if (m) {
     const raw = m[1];
-    // Handle mixed fraction like "1 1/2"
     const parts = raw.split(' ');
     if (parts.length === 2 && /\d+\/\d+/.test(parts[1])) {
       const [n, d] = parts[1].split('/').map(Number);
