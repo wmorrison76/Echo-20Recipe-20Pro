@@ -17,6 +17,10 @@ export default function GallerySection() {
   const [filter, setFilter] = useState("");
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [viewMode, setViewMode] = useState<'masonry'|'grid'>('masonry');
+  const [newLookBookName, setNewLookBookName] = useState('');
+  const [activeLookBookId, setActiveLookBookId] = useState<string | null>(null);
+  const [openLookBook, setOpenLookBook] = useState(false);
   const dragId = useRef<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
