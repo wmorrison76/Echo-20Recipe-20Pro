@@ -22,13 +22,13 @@ export default function TopTabs() {
           <img
             src="https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2F7767116085cd4da782ee26179c7b4250?format=webp&width=240"
             alt="LUCCCA"
-            className="h-8 hidden dark:!hidden md:h-9"
+            className="h-8 md:h-9 dark:hidden"
           />
           {/* Dark mode logo */}
           <img
             src="https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2Fb35d1dd3c914450b8529e8dc0ce9ecc1?format=webp&width=240"
             alt="LUCCCA"
-            className="h-8 hidden dark:block md:h-9"
+            className="h-8 md:h-9 hidden dark:block"
           />
           <span className="sr-only">LUCCCA</span>
         </a>
