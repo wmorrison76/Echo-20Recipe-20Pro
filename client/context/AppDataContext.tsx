@@ -30,9 +30,9 @@ type AppData = {
   recipes: Recipe[];
   images: GalleryImage[];
   addImages: (files: File[]) => Promise<number>;
-  addRecipesFromJsonFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[] }>;
-  addRecipesFromDocxFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[] }>;
-  addFromZipArchive: (file: File) => Promise<{ addedRecipes: number; addedImages: number; errors: { entry: string; error: string }[] }>;
+  addRecipesFromJsonFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
+  addRecipesFromDocxFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
+  addFromZipArchive: (file: File) => Promise<{ addedRecipes: number; addedImages: number; errors: { entry: string; error: string }[]; titles: string[] }>;
   clearRecipes: () => void;
   clearImages: () => void;
   searchRecipes: (q: string) => Recipe[];
