@@ -49,6 +49,14 @@ export default function RecipeInputSection() {
       setProcessed((p) => p + 1);
     }
 
+    for (const f of htmlFiles) {
+      const { added, errors, titles } = await addRecipesFromHtmlFiles([f]);
+      importedCount += added;
+      allErrors.push(...errors);
+      if (titles?.length) setImportedTitles((t) => [...t, ...titles]);
+      setProcessed((p) => p + 1);
+    }
+
     for (const f of pdfFiles) {
       const { added, errors, titles } = await addRecipesFromPdfFiles([f]);
       importedCount += added;
