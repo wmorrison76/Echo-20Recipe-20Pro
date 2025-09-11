@@ -156,25 +156,25 @@ export default function GallerySection() {
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-3 md:grid-cols-2 items-start" >
         <Dropzone multiple onFiles={onFiles}>
-          <div className="flex flex-col items-center justify-center gap-3 text-sm py-6">
-            <UploadCloud className="h-6 w-6 text-muted-foreground" />
+          <div className="flex flex-col items-center justify-center gap-2 text-sm py-3">
+            <UploadCloud className="h-5 w-5 text-muted-foreground" />
             <div className="text-foreground font-medium">Drag & drop images (any format)</div>
             <div className="text-muted-foreground">or click to select • You can categorize on import</div>
           </div>
         </Dropzone>
 
-        <div className="rounded-2xl border p-4 space-y-3 bg-gradient-to-br from-background to-muted/40 shadow-sm dark:shadow-[0_0_24px_rgba(56,189,248,0.12)] dark:ring-1 dark:ring-sky-500/15">
+        <div className="rounded-xl border p-3 space-y-2 bg-gradient-to-br from-background to-muted/40 shadow-sm dark:shadow-[0_0_18px_rgba(56,189,248,0.12)] dark:ring-1 dark:ring-sky-500/15">
           <div className="text-sm text-muted-foreground">Images in gallery</div>
-          <div className="mt-1 text-2xl font-semibold">{images.length}</div>
-          <div className="flex flex-wrap gap-2 items-center">
+          <div className="mt-0.5 text-lg font-semibold">{images.length}</div>
+          <div className="flex flex-wrap gap-1.5 items-center">
             <div className="relative flex-1 min-w-[220px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input value={filter} onChange={(e)=>setFilter(e.target.value)} placeholder="Search or filter by tag" className="w-full rounded-md border bg-background pl-9 pr-3 py-2" />
+              <input value={filter} onChange={(e)=>setFilter(e.target.value)} placeholder="Search or filter by tag" className="w-full rounded-md border bg-background pl-8 pr-2 py-1.5 text-sm" />
             </div>
             <Button variant="secondary" onClick={() => linkImagesToRecipesByFilename()}>Link to recipes</Button>
-            <select className="rounded-md border bg-background px-2 py-1 text-sm" value={viewMode} onChange={(e)=>setViewMode(e.target.value as any)}>
+            <select className="rounded-md border bg-background px-2 py-1 text-xs" value={viewMode} onChange={(e)=>setViewMode(e.target.value as any)}>
               <option value="masonry">Masonry</option>
               <option value="grid">Grid</option>
             </select>
@@ -203,13 +203,13 @@ export default function GallerySection() {
                 await doImport(files, ["demo","food"]);
               } catch {}
             }}>Load sample images</Button>
-            <Button variant="outline" onClick={exportAllZip}><Download className="w-4 h-4 mr-1"/>Export all (ZIP)</Button>
-            <Button variant="destructive" onClick={() => clearImages()}>Clear</Button>
+            <Button variant="outline" size="sm" onClick={exportAllZip}><Download className="w-4 h-4 mr-1"/>Export all (ZIP)</Button>
+            <Button variant="destructive" size="sm" onClick={() => clearImages()}>Clear</Button>
           </div>
           {selected.length > 0 && (
             <div className="text-xs flex items-center gap-2">
-              <span>{selected.length} selected</span>
-              <input id="bulk-tags" placeholder="add tags (comma)" className="rounded-md border bg-background px-2 py-1" onKeyDown={(e)=>{ if(e.key==='Enter'){ addTagsToSelected((e.target as HTMLInputElement).value); (e.target as HTMLInputElement).value=''; }}} />
+              <span className="text-muted-foreground">{selected.length} selected</span>
+              <input id="bulk-tags" placeholder="add tags (comma)" className="rounded-md border bg-background px-2 py-1 text-xs" onKeyDown={(e)=>{ if(e.key==='Enter'){ addTagsToSelected((e.target as HTMLInputElement).value); (e.target as HTMLInputElement).value=''; }}} />
               <Button size="sm" onClick={()=>setSelected([])}>Clear selection</Button>
             </div>
           )}
