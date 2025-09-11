@@ -6,6 +6,7 @@ export default function ImageEditorModal({ isOpen, image, onClose, onApply, isDa
   const [brightness, setBrightness] = useState(100);
   const [contrast, setContrast] = useState(100);
   const [saturation, setSaturation] = useState(100);
+  const [aspect, setAspect] = useState<'free'|'1:1'|'4:3'|'16:9'>('free');
 
   useEffect(() => {
     if (!isOpen || !image) return;
@@ -18,12 +19,24 @@ export default function ImageEditorModal({ isOpen, image, onClose, onApply, isDa
   useEffect(() => {
     const c = canvasRef.current; if (!c || !img) return;
     const ctx = c.getContext('2d'); if (!ctx) return;
-    const w = Math.min(880, img.naturalWidth || img.width);
-    const h = Math.min(500, img.naturalHeight || img.height);
+    let w = Math.min(880, img.naturalWidth || img.width);
+    let h = Math.min(500, img.naturalHeight || img.height);
+    if (aspect !== 'free') {
+      const [aw, ah] = aspect.split(':').map(Number);
+      // Fit within bounds while enforcing aspect ratio
+      const maxW = 880, maxH = 500; const targetRatio = aw/ah;
+      if (maxW/maxH > targetRatio) { h = maxH; w = Math.round(h*targetRatio); } else { w = maxW; h = Math.round(w/targetRatio); }
+    }
     c.width = w; c.height = h;
+    ctx.clearRect(0,0,w,h);
     ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`;
-    ctx.drawImage(img, 0, 0, w, h);
-  }, [img, brightness, contrast, saturation]);
+    // Contain image centered
+    const scale = Math.min(w/(img.naturalWidth||img.width), h/(img.naturalHeight||img.height));
+    const dw = Math.round((img.naturalWidth||img.width)*scale);
+    const dh = Math.round((img.naturalHeight||img.height)*scale);
+    const dx = Math.floor((w-dw)/2); const dy = Math.floor((h-dh)/2);
+    ctx.drawImage(img, dx, dy, dw, dh);
+  }, [img, brightness, contrast, saturation, aspect]);
 
   if (!isOpen) return null;
 
@@ -45,6 +58,15 @@ export default function ImageEditorModal({ isOpen, image, onClose, onApply, isDa
             <canvas ref={canvasRef} className="w-full max-w-full bg-[#0b1220] rounded" />
           </div>
           <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-semibold mb-1">Aspect</label>
+              <select className="w-full border rounded px-2 py-1 bg-transparent" value={aspect} onChange={(e)=>setAspect(e.target.value as any)}>
+                <option value="free">Free</option>
+                <option value="1:1">1:1</option>
+                <option value="4:3">4:3</option>
+                <option value="16:9">16:9</option>
+              </select>
+            </div>
             <div>
               <label className="block text-sm font-semibold mb-1">Brightness ({brightness}%)</label>
               <input type="range" min={0} max={200} value={brightness} onChange={(e)=>setBrightness(Number(e.target.value))} className="w-full" />
