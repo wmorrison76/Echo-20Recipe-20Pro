@@ -1,9 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import JSZip from "jszip";
-// Mammoth browser build for DOCX parsing
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import * as mammoth from "mammoth/mammoth.browser";
+// Mammoth is loaded on-demand to keep bundle small and avoid init errors in some environments
 
 export type GalleryImage = {
   id: string;
