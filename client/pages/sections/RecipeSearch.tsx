@@ -56,18 +56,31 @@ export default function RecipeSearchSection() {
   const [q, setQ] = useState("");
   type Cat = 'all'|'recent'|'top'|'favorites'|'uncategorized'|'trash';
   const [cat, setCat] = useState<Cat>('all');
+  // Taxonomy filters
+  const [fcuisine, setFCuisine] = useState<string>("");
+  const [ftech, setFTech] = useState<string>("");
+  const [fcourse, setFCourse] = useState<string>("");
+  const [fdiet, setFDiet] = useState<string>("");
   const results = useMemo(() => {
     const base = searchRecipes(q);
-    const notDeleted = base.filter(r=>!r.deletedAt);
+    const filterByTax = (arr: typeof base) => arr.filter(r=>{
+      const t: any = (r as any).extra?.taxonomy || {};
+      if (fcuisine && t.cuisine !== fcuisine) return false;
+      if (ftech && !(Array.isArray(t.technique) && t.technique.includes(ftech))) return false;
+      if (fcourse && !(Array.isArray(t.course) && t.course.includes(fcourse))) return false;
+      if (fdiet && !(Array.isArray(t.diets) && t.diets.includes(fdiet))) return false;
+      return true;
+    });
+    const notDeleted = filterByTax(base.filter(r=>!r.deletedAt));
     switch(cat){
       case 'recent': return notDeleted.slice().sort((a,b)=> b.createdAt - a.createdAt);
       case 'top': return notDeleted.slice().sort((a,b)=> (b.rating||0)-(a.rating||0));
       case 'favorites': return notDeleted.filter(r=> r.favorite);
       case 'uncategorized': return notDeleted.filter(r=> !r.tags || r.tags.length===0);
-      case 'trash': return base.filter(r=> !!r.deletedAt);
+      case 'trash': return filterByTax(base.filter(r=> !!r.deletedAt));
       default: return notDeleted;
     }
-  }, [q, searchRecipes, cat]);
+  }, [q, searchRecipes, cat, fcuisine, ftech, fcourse, fdiet]);
 
   const [status, setStatus] = useState<string | null>(null);
   const [mode, setMode] = useState<'cards'|'grid4'|'rows'>('cards');
