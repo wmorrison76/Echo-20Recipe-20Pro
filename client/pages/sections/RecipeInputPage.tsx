@@ -3,6 +3,8 @@ import RightSidebar from "./RightSidebar";
 import { useAppData } from "@/context/AppDataContext";
 import ImageEditorModal from "./ImageEditorModal";
 import NutritionLabel from "./NutritionLabel";
+import TaxonomyPicker from "@/components/TaxonomyPicker";
+import { defaultSelection, TaxonomySelection } from "@/lib/taxonomy";
 import {
   Save,
   Image as ImageIcon,
@@ -1200,7 +1202,7 @@ const RecipeInputPage = () => {
                   !!line.yield &&
                   isNaN(Number(String(line.yield).replace(/[^0-9.\-]/g, "")));
                 const costNum = Number(
-                  String(line.cost).replace(/[$€£¥,\s]/g, ""),
+                  String(line.cost).replace(/[$���£¥,\s]/g, ""),
                 );
                 const updateAndNormalize = (row: any) => {
                   // Auto-fill yield if empty
