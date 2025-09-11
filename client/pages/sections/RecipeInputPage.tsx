@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import RightSidebar from './RightSidebar';
 import ImageEditorModal from './ImageEditorModal';
 import NutritionLabel from './NutritionLabel';
-import { Save, Image as ImageIcon, Settings, PlusCircle, MinusCircle, Menu, Plus, Minus, Bold, Italic, Underline, Sun, Moon, Scale, NotebookPen, ArrowLeftRight, CircleDollarSign, Share2, FileDown, Printer } from 'lucide-react';
+import { Save, Image as ImageIcon, Settings, PlusCircle, MinusCircle, Menu, Plus, Minus, Bold, Italic, Underline, Scale, NotebookPen, ArrowLeftRight, CircleDollarSign, Share2, FileDown, Printer } from 'lucide-react';
 
 const RecipeInputPage = () => {
   const [recipeName, setRecipeName] = useState('');
@@ -12,6 +12,14 @@ const RecipeInputPage = () => {
   const [directions, setDirections] = useState('1. ');
   const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  // Sync with global theme from ThemeToggle
+  useEffect(()=>{
+    const apply = ()=> setIsDarkMode(document.documentElement.classList.contains('dark'));
+    apply();
+    const onTheme = (e: any)=> setIsDarkMode(String(e?.detail?.theme||'')==='dark');
+    window.addEventListener('theme:change', onTheme as any);
+    return ()=> window.removeEventListener('theme:change', onTheme as any);
+  },[]);
   const [selectedFont, setSelectedFont] = useState('Arial');
   const [selectedFontSize, setSelectedFontSize] = useState('14px');
   const [selectedAllergens, setSelectedAllergens] = useState<string[]>([]);
@@ -61,6 +69,61 @@ const RecipeInputPage = () => {
 
   const inputClass = `border p-3 rounded-lg text-sm transition-all focus:shadow-md focus:ring-2 ${isDarkMode ? 'bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30 shadow-none' : 'bg-white border-gray-200 text-gray-900 focus:ring-blue-400/30 focus:border-blue-400 shadow-md'}`;
 
+  // Parse numbers supporting mixed fractions like "1 1/2" or "3/4"
+  const parseQuantity = (s: string): number => {
+    if (!s) return NaN as any;
+    const t = String(s).trim();
+    // handle mixed fraction
+    const m = t.match(/^(-?\d+)(?:\s+(\d+\/\d+))?$/);
+    if (m) {
+      const base = Number(m[1]);
+      if (m[2]) { const [n,d] = m[2].split('/').map(Number); return base + (d? n/d : 0); }
+      return base;
+    }
+    if (/^\d+\/\d+$/.test(t)) { const [n,d] = t.split('/').map(Number); return d? n/d : NaN; }
+    const num = Number(t.replace(/[^0-9.\-]/g,''));
+    return Number.isFinite(num) ? num : NaN as any;
+  };
+
+  // Normalize US volumes to best unit (e.g., 3072 1/4 tsp -> 4 gal)
+  const normalizeImperialVolume = (qty: number, unit: string): { qty: number; unit: string } => {
+    const U = unit.toUpperCase();
+    const tspPer: Record<string, number> = { TSP:1, TEASPOON:1, TEASPOONS:1, TBSP:3, TABLESPOON:3, TABLESPOONS:3, FLOZ:6, 'FL OZ':6, OZFL:6, CUP:48, CUPS:48, PINT:96, PT:96, QUART:192, QT:192, QTS:192, QUARTS:192, GALLON:768, GAL:768, GALLONS:768 };
+    const toKey = (u:string)=> u.replace(/\./g,'').replace(/\s+/g,'').toUpperCase();
+    const k = toKey(U);
+    const per = tspPer[k];
+    if (!per || !Number.isFinite(qty)) return { qty, unit: U };
+    let totalTsp = qty * per;
+    const order: [string, number][] = [["GALLON",768],["QUART",192],["PINT",96],["CUP",48],["FLOZ",6],["TBSP",3],["TSP",1]];
+    for (const [name, mul] of order) {
+      if (totalTsp >= mul) {
+        const q = totalTsp / mul;
+        return { qty: Number(q.toFixed(2)), unit: name === 'FLOZ' ? 'FL OZ' : name };
+      }
+    }
+    return { qty, unit: U };
+  };
+
+  // Normalize imperial weights OZ -> LBS when appropriate
+  const normalizeImperialWeight = (qty: number, unit: string): { qty: number; unit: string } => {
+    const U = unit.toUpperCase();
+    if (U === 'OZ' || U === 'OUNCE' || U === 'OUNCES') {
+      if (qty >= 16) return { qty: Number((qty/16).toFixed(2)), unit: 'LBS' };
+      return { qty, unit: 'OZ' };
+    }
+    return { qty, unit: U };
+  };
+
+  const estimateYieldPercent = (item: string, prep: string): number | null => {
+    const txt = `${item} ${prep}`.toLowerCase();
+    if (/salt|spice|pepper|baking soda|baking powder/.test(txt)) return 100;
+    if (/peeled|shell|husk|hull|seeded|cored/.test(txt)) return 85;
+    if (/trimmed|butchered|deboned|cleaned/.test(txt)) return 90;
+    if (/fried|roast|grill|bake/.test(txt)) return 88;
+    if (/boil|poach|simmer|stew|steam/.test(txt)) return 95;
+    return null;
+  };
+
   React.useEffect(()=>{ const el = dirRef.current; if (!el) return; if (document.activeElement !== el && el.textContent !== directions) el.textContent = directions; }, [directions]);
 
   // Autosave + simple versions
@@ -102,25 +165,46 @@ const RecipeInputPage = () => {
     if (e.key==='ArrowUp') { e.preventDefault(); move(row-1, col); }
   };
 
-  // Unit + currency conversions
+  // Unit + currency conversions (with mixed fraction support)
   const convertUnits = () => {
     const alias = (u:string) => {
-      const k = u.toUpperCase();
+      const k = u.toUpperCase().trim();
       if (k.startsWith('TABLESPO')) return 'TBSP';
       if (k.startsWith('TEASPO')) return 'TSP';
       if (k==='TSP' || k==='TEASPOON' || k==='TEASPOONS') return 'TSP';
       if (k==='TBSP' || k==='TABLESPOON' || k==='TABLESPOONS') return 'TBSP';
+      if (k==='QT' || k==='QTS' || k==='QUART' || k==='QUARTS') return 'QTS';
+      if (k==='LB' || k==='POUND' || k==='POUNDS') return 'LBS';
+      if (k==='FLOZ' || k==='FL OZ') return 'FL OZ';
       return k;
     };
+
+    // Normalize within Imperial before toggling systems for better readability
+    const normalizedImperial = ingredients.map(r=>{
+      const n = parseQuantity(r.qty);
+      const u = alias(r.unit||'');
+      if (!Number.isFinite(n)) return r;
+      // Volume normalize
+      const volUnits = ['TSP','TBSP','FL OZ','CUP','PINT','QTS','QUART','QUARTS','GAL','GALLON'];
+      if (volUnits.includes(u)) {
+        const norm = normalizeImperialVolume(n, u);
+        return { ...r, qty: String(norm.qty), unit: norm.unit };
+      }
+      // Weight normalize
+      if (u==='OZ' || u==='OUNCE' || u==='OUNCES') { const norm = normalizeImperialWeight(n, u); return { ...r, qty:String(norm.qty), unit:norm.unit }; }
+      return r;
+    });
+
     const map: Record<string, {unit:string, f:(n:number)=>number}> = {
-      OZ: { unit: 'G', f:(n)=>n*28.3495 }, LBS:{ unit:'KG', f:(n)=>n*0.453592 }, QTS:{ unit:'L', f:(n)=>n*0.946353 }, TSP:{ unit:'ML', f:(n)=>n*4.92892 }, TBSP:{ unit:'ML', f:(n)=>n*14.7868 }
+      OZ: { unit: 'G', f:(n)=>n*28.3495 }, LBS:{ unit:'KG', f:(n)=>n*0.453592 }, QTS:{ unit:'L', f:(n)=>n*0.946353 }, TSP:{ unit:'ML', f:(n)=>n*4.92892 }, TBSP:{ unit:'ML', f:(n)=>n*14.7868 }, 'FL OZ':{ unit:'ML', f:(n)=>n*29.5735 }, CUP:{ unit:'ML', f:(n)=>n*236.588 }, PINT:{ unit:'ML', f:(n)=>n*473.176 }, GALLON:{ unit:'L', f:(n)=>n*3.78541 }
     };
+    const back: Record<string,{unit:string,f:(n:number)=>number}> = { G:{unit:'OZ',f:(n)=>n/28.3495}, KG:{unit:'LBS',f:(n)=>n/0.453592}, L:{unit:'QTS',f:(n)=>n/0.946353}, ML:{unit:'TSP',f:(n)=>n/4.92892} };
+
     if (currentUnits==='Imperial') {
-      setIngredients(ingredients.map(r=>{ const n=parseFloat(r.qty); const key=alias(r.unit); const cv=map[key]; if (!isNaN(n)&&cv){ return { ...r, qty:String(Number((cv.f(n))).toFixed(2)), unit:cv.unit }; } return r; }));
+      setIngredients(normalizedImperial.map(r=>{ const n=parseQuantity(r.qty); const key=alias(r.unit); const cv=map[key]; if (Number.isFinite(n)&&cv){ return { ...r, qty:String(Number((cv.f(n))).toFixed(2)), unit:cv.unit }; } return r; }));
       setCurrentUnits('Metric');
     } else {
-      const back: Record<string,{unit:string,f:(n:number)=>number}> = { G:{unit:'OZ',f:(n)=>n/28.3495}, KG:{unit:'LBS',f:(n)=>n/0.453592}, L:{unit:'QTS',f:(n)=>n/0.946353}, ML:{unit:'TSP',f:(n)=>n/4.92892} };
-      setIngredients(ingredients.map(r=>{ const n=parseFloat(r.qty); const key=alias(r.unit); const cv=back[key]; if (!isNaN(n)&&cv){ return { ...r, qty:String(Number((cv.f(n))).toFixed(2)), unit:cv.unit }; } return r; }));
+      setIngredients(ingredients.map(r=>{ const n=parseQuantity(r.qty); const key=alias(r.unit); const cv=back[key]; if (Number.isFinite(n)&&cv){ return { ...r, qty:String(Number((cv.f(n))).toFixed(2)), unit:cv.unit }; } return r; }));
       setCurrentUnits('Imperial');
     }
   };
@@ -133,7 +217,8 @@ const RecipeInputPage = () => {
   };
   const scaleRecipe = () => {
     const target = Number(prompt('Scale to how many portions?', String(portionCount))||portionCount); if (!target || target<=0) return;
-    const factor = target/(portionCount||1); setIngredients(ingredients.map(r=>{ const n=parseFloat(r.qty); return isNaN(n)? r : { ...r, qty: (n*factor).toFixed(2) }; })); setPortionCount(target);
+    const factor = target/(portionCount||1);
+    setIngredients(ingredients.map(r=>{ const n=parseQuantity(r.qty); return !Number.isFinite(n)? r : { ...r, qty: (n*factor).toFixed(2) }; })); setPortionCount(target);
   };
 
   const exportCSV = () => {
@@ -146,8 +231,10 @@ const RecipeInputPage = () => {
   const analyzeNutrition = async () => {
     try {
       setNutritionLoading(true); setNutritionError(null);
-      const ingr = ingredients.filter(r=>r.qty || r.item).map(r=>[r.qty,r.unit,r.item,r.prep].filter(Boolean).join(' '));
-      const res = await fetch('/api/nutrition/analyze',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title: recipeName||'Recipe', ingr, yieldQty, yieldUnit, prepMethod: selectedPrepMethod.join(', ') })});
+      const rows = ingredients.filter(r=>r.qty || r.item);
+      const ingr = rows.map(r=>[r.qty,r.unit,r.item,r.prep].filter(Boolean).join(' '));
+      const yields = rows.map(r=>{ const y = Number(String(r.yield).replace(/[^0-9.\-]/g,'')); return Number.isFinite(y) ? y : null; });
+      const res = await fetch('/api/nutrition/analyze',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title: recipeName||'Recipe', ingr, yields, yieldQty, yieldUnit, prepMethod: selectedPrepMethod.join(', ') })});
       if (!res.ok) throw new Error((await res.json().catch(()=>({})))?.error || `Request failed: ${res.status}`);
       const data = await res.json(); setNutrition(data);
     } catch(e:any){ setNutritionError(e.message || 'Unable to analyze nutrition'); } finally { setNutritionLoading(false); }
@@ -183,7 +270,7 @@ const RecipeInputPage = () => {
 
       </div>
 
-      <div className="pt-24 h-full overflow-y-auto">
+      <div className="pt-16 h-full overflow-y-auto">
         <div className="w-full px-6 space-y-6 pb-8">
           <div className="flex justify-end items-center gap-3">
             <button onClick={()=>setIsRightSidebarCollapsed(v=>!v)} title="Toggle Tools" className="p-1 rounded hover:bg-black/10"><Menu className="w-5 h-5"/></button>
@@ -258,15 +345,32 @@ const RecipeInputPage = () => {
             </div>
             <div className="space-y-2 ingredient-grid">
               {ingredients.map((line, index) => {
-                const qtyErr = !!line.qty && isNaN(Number(String(line.qty).replace(/[^0-9.\-]/g,'')));
+                const qtyNum = parseQuantity(String(line.qty||''));
+                const qtyErr = !!line.qty && !Number.isFinite(qtyNum);
                 const yieldErr = !!line.yield && isNaN(Number(String(line.yield).replace(/[^0-9.\-]/g,'')));
                 const costNum = Number(String(line.cost).replace(/[$€£¥,\s]/g,''));
+                const updateAndNormalize = (row: any) => {
+                  // Auto-fill yield if empty
+                  if (!row.yield) {
+                    const y = estimateYieldPercent(row.item||'', row.prep||'');
+                    if (y!=null) row.yield = String(y);
+                  }
+                  // Normalize on-the-fly for imperial units
+                  const n = parseQuantity(row.qty);
+                  const u = (row.unit||'').toUpperCase();
+                  if (Number.isFinite(n)) {
+                    const volSet = ['TSP','TEASPOON','TEASPOONS','TBSP','TABLESPOON','TABLESPOONS','FL OZ','FLOZ','CUP','CUPS','PINT','PT','QUART','QUARTS','QT','QTS','GAL','GALLON','GALLONS'];
+                    if (volSet.includes(u)) { const norm = normalizeImperialVolume(n, u); row.qty = String(norm.qty); row.unit = norm.unit; }
+                    if (u==='OZ' || u==='OUNCE' || u==='OUNCES') { const norm = normalizeImperialWeight(n, u); row.qty = String(norm.qty); row.unit = norm.unit; }
+                  }
+                  return row;
+                };
                 return (
                 <div key={index} className="ingredients-grid ingredient-row">
-                  <input data-row={index} data-col={0} onKeyDown={onGridKeyDown} aria-invalid={qtyErr} title={qtyErr? 'Enter a number':''} className={`${inputClass} ${qtyErr? 'ring-2 ring-red-500 border-red-400':''}`} value={line.qty} onChange={(e)=>{ const v=[...ingredients]; v[index].qty=e.target.value; setIngredients(v); }} />
-                  <input data-row={index} data-col={1} onKeyDown={onGridKeyDown} className={inputClass} value={line.unit} onChange={(e)=>{ const v=[...ingredients]; v[index].unit=e.target.value.toUpperCase(); setIngredients(v); }} />
-                  <input data-row={index} data-col={2} onKeyDown={onGridKeyDown} className={inputClass} value={line.item} onChange={(e)=>{ const v=[...ingredients]; v[index].item=e.target.value; setIngredients(v); }} />
-                  <input data-row={index} data-col={3} onKeyDown={onGridKeyDown} className={inputClass} value={line.prep} onChange={(e)=>{ const v=[...ingredients]; v[index].prep=e.target.value; setIngredients(v); }} />
+                  <input data-row={index} data-col={0} onKeyDown={onGridKeyDown} aria-invalid={qtyErr} title={qtyErr? 'Enter a number':''} className={`${inputClass} ${qtyErr? 'ring-2 ring-red-500 border-red-400':''}`} value={line.qty} onChange={(e)=>{ const v=[...ingredients]; v[index].qty=e.target.value; setIngredients(v.map((r,i)=> i===index? updateAndNormalize({...r}) : r)); }} />
+                  <input data-row={index} data-col={1} onKeyDown={onGridKeyDown} className={inputClass} value={line.unit} onChange={(e)=>{ const v=[...ingredients]; v[index].unit=e.target.value.toUpperCase(); setIngredients(v.map((r,i)=> i===index? updateAndNormalize({...r}) : r)); }} />
+                  <input data-row={index} data-col={2} onKeyDown={onGridKeyDown} className={inputClass} value={line.item} onChange={(e)=>{ const v=[...ingredients]; v[index].item=e.target.value; setIngredients(v.map((r,i)=> i===index? updateAndNormalize({...r}) : r)); }} />
+                  <input data-row={index} data-col={3} onKeyDown={onGridKeyDown} className={inputClass} value={line.prep} onChange={(e)=>{ const v=[...ingredients]; v[index].prep=e.target.value; setIngredients(v.map((r,i)=> i===index? updateAndNormalize({...r}) : r)); }} />
                   <input data-row={index} data-col={4} onKeyDown={onGridKeyDown} aria-invalid={yieldErr} title={yieldErr? 'Enter a number':''} className={`${inputClass} ${yieldErr? 'ring-2 ring-red-500 border-red-400':''}`} value={line.yield} onChange={(e)=>{ const v=[...ingredients]; v[index].yield=e.target.value; setIngredients(v); }} />
                   <input data-row={index} data-col={5} onKeyDown={onGridKeyDown} className={`border p-3 rounded-lg text-sm text-right ${isDarkMode ? 'bg-black/50 border-cyan-400/50 text-cyan-300' : 'bg-white border-gray-200 text-black'}`} value={line.cost} title={isNaN(costNum)? 'Enter a number':''} aria-invalid={isNaN(costNum)} onChange={(e)=>{ const v=[...ingredients]; v[index].cost=e.target.value; setIngredients(v); }} />
                 </div>);
