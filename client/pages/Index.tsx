@@ -2,6 +2,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RecipeSearchSection from "./sections/RecipeSearch";
 import RecipeInputSection from "./sections/RecipeInput";
 import GallerySection from "./sections/Gallery";
+import RepoImportSection from "./sections/RepoImport";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Index() {
