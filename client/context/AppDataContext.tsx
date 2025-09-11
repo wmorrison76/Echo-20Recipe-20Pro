@@ -287,6 +287,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         const html = await convertDocxArrayBufferToHtml(ab);
         const recs = htmlToRecipes(html, f.name);
         collected.push(...recs);
+        titles.push(...recs.map((r) => r.title));
       } catch (e: any) {
         errors.push({ file: f.name, error: e?.message ?? "Failed to read .docx" });
       }
