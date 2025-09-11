@@ -186,17 +186,6 @@ const RecipeInputPage = () => {
         <div className="w-full px-6 space-y-6 pb-8">
           <div className="flex justify-end items-center gap-3">
             <button onClick={()=>setIsRightSidebarCollapsed(v=>!v)} title="Toggle Tools" className="p-1 rounded hover:bg-black/10"><Menu className="w-5 h-5"/></button>
-            <button onClick={scaleRecipe} title="Scale Recipe" className="p-1 rounded hover:bg-black/10"><Scale className="w-5 h-5"/></button>
-            <button onClick={()=>{ pushHistory({ ...serialize(), ts: Date.now() }); alert('Snapshot saved'); }} title="Save Version" className="p-1 rounded hover:bg-black/10"><NotebookPen className="w-5 h-5"/></button>
-            <button onClick={convertUnits} title="Convert Units" className="p-1 rounded hover:bg-black/10"><ArrowLeftRight className="w-5 h-5"/></button>
-            <button onClick={cycleCurrency} title="Change Currency" className="p-1 rounded hover:bg-black/10"><CircleDollarSign className="w-5 h-5"/></button>
-            <div className="flex items-center gap-1 ml-2">
-              <Sun className="w-4 h-4" />
-              <button onClick={()=>setIsDarkMode(!isDarkMode)} className={`w-8 h-4 rounded-full transition-colors ${isDarkMode ? 'bg-blue-600' : 'bg-gray-300'}`}>
-                <div className={`w-3 h-3 bg-white rounded-full transition-transform ${isDarkMode ? 'translate-x-4' : 'translate-x-0.5'}`} />
-              </button>
-              <Moon className="w-4 h-4" />
-            </div>
           </div>
           <div className="flex items-end gap-4">
             <div className={`w-2/3 border p-4 rounded-xl shadow-lg ${isDarkMode ? 'border-cyan-400/30 bg-black/50 shadow-cyan-400/20' : 'border-gray-200 bg-white shadow-gray-200/50'} backdrop-blur-sm`}>
