@@ -2,6 +2,7 @@ import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import TopTabs from "@/components/TopTabs";
 import SubtleBottomGlow from "@/components/SubtleBottomGlow";
+import CornerBrand from "@/components/CornerBrand";
 
 const NotFound = () => {
   const location = useLocation();
@@ -24,6 +25,7 @@ const NotFound = () => {
         </div>
       </div>
       <SubtleBottomGlow />
+      <CornerBrand />
     </>
   );
 };
