@@ -41,6 +41,39 @@ function parseJsonLdRecipe(html: string) {
   return null;
 }
 
+function scrapeRecipeFallback(html: string) {
+  const pick = (re: RegExp) => (html.match(re)?.[1] || '').trim();
+  const title = decodeHtml(pick(/<title[^>]*>([\s\S]*?)<\/title>/i))
+    || decodeHtml(pick(/<h1[^>]*>([\s\S]*?)<\/h1>/i));
+  const ogImage = pick(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["'][^>]*>/i) || pick(/<meta[^>]+name=["']image["'][^>]+content=["']([^"']+)["'][^>]*>/i);
+
+  const section = (label: RegExp) => {
+    const h = html.match(new RegExp(`<h[1-6][^>]*>\\s*${label.source}[\\s\\S]*?<\\/h[1-6]>`, 'i'));
+    if (!h) return '';
+    const idx = h.index! + h[0].length;
+    const tail = html.slice(idx);
+    const next = tail.search(/<h[1-6][^>]*>/i);
+    return next >= 0 ? tail.slice(0, next) : tail;
+  };
+
+  const extractList = (frag: string) => {
+    const lis = Array.from(frag.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)).map((m)=>decodeHtml(m[1].replace(/<[^>]+>/g,'').trim())).filter(Boolean);
+    if (lis.length) return lis;
+    const ps = Array.from(frag.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)).map((m)=>decodeHtml(m[1].replace(/<[^>]+>/g,'').trim())).filter(Boolean);
+    return ps;
+  };
+
+  const ingFrag = section(/ingredients?/i);
+  const insFrag = section(/(instructions|directions|method|steps)/i);
+  const ingredients = extractList(ingFrag);
+  const instructions = extractList(insFrag);
+
+  const yieldText = pick(/<[^>]*>(?:yield|servings?)\s*:?\s*([^<]{1,40})<\//i);
+
+  if (!title && ingredients.length===0 && instructions.length===0) return null;
+  return { title, ingredients, instructions: instructions.join('\n'), yield: yieldText, image: ogImage };
+}
+
 export async function handleRecipeImport(req: Request, res: Response) {
   try {
     const { url } = req.body as { url: string };
@@ -50,8 +83,8 @@ export async function handleRecipeImport(req: Request, res: Response) {
     if (!r.ok) return res.status(400).json({ error: `Fetch failed (${r.status})` });
     const html = await r.text();
 
-    const rec = parseJsonLdRecipe(html);
-    if (!rec) return res.status(404).json({ error: 'No recipe schema found' });
+    const rec = parseJsonLdRecipe(html) || scrapeRecipeFallback(html);
+    if (!rec) return res.status(404).json({ error: 'No recipe found on page' });
 
     res.json(rec);
   } catch (e: any) {
