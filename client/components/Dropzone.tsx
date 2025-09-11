@@ -27,8 +27,8 @@ export function Dropzone({
   return (
     <div
       className={cn(
-        "relative rounded-lg border border-dashed p-6 text-center transition-colors",
-        dragOver ? "border-ring bg-accent/40" : "border-muted-foreground/30",
+        "relative rounded-2xl border-2 border-dashed p-8 text-center transition-all bg-gradient-to-br from-background to-muted/40 hover:shadow-md",
+        dragOver ? "border-ring ring-2 ring-ring/40" : "border-muted-foreground/30",
       )}
       onClick={() => inputRef.current?.click()}
       onDragOver={(e) => {
