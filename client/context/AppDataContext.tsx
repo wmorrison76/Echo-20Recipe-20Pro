@@ -259,7 +259,6 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     const doc = parser.parseFromString(html, "text/html");
     const nodes = Array.from(doc.body.children);
 
-    // find top-level headings serving as recipe delimiters
     const titleTags = new Set(["H1", "H2"]);
     const sections: { title: string; elements: Element[] }[] = [];
     let current: { title: string; elements: Element[] } | null = null;
@@ -277,13 +276,10 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     }
     if (current) sections.push(current);
 
-    // Fallback to single section if none
     if (!sections.length) {
       const title = (doc.querySelector("h1,h2,h3")?.textContent || "Untitled").trim() || "Untitled";
       sections.push({ title, elements: Array.from(doc.body.children) });
     }
-
-    const getText = (els: Element[]) => els.map((e) => (e.textContent || "").trim()).filter(Boolean);
 
     const extractListAfter = (startIdx: number, arr: Element[]) => {
       const out: string[] = [];
@@ -306,25 +302,31 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       const els = sec.elements;
       const lowerTexts = els.map((e) => (e.textContent || "").toLowerCase());
       const findIdx = (label: string[]) => lowerTexts.findIndex((t) => label.some((l) => t.startsWith(l)));
-
       const ingIdx = findIdx(["ingredients", "ingredient", "what you need"]);
       const instIdx = findIdx(["instructions", "directions", "method", "steps"]);
-
       const ingredients = ingIdx >= 0 ? extractListAfter(ingIdx, els) : [];
       const instructions = instIdx >= 0 ? extractListAfter(instIdx, els) : [];
-
-      const rec: Recipe = {
-        id: uid(),
-        createdAt: Date.now(),
-        title: sec.title,
-        ingredients: ingredients.length ? ingredients : undefined,
-        instructions: instructions.length ? instructions : undefined,
-        sourceFile: source,
-      };
-      results.push(rec);
+      results.push({ id: uid(), createdAt: Date.now(), title: sec.title, ingredients: ingredients.length?ingredients:undefined, instructions: instructions.length?instructions:undefined, sourceFile: source });
     }
     return results;
   };
+
+  const addRecipesFromHtmlFiles = useCallback(async (files: File[]) => {
+    const errors: { file: string; error: string }[] = [];
+    const collected: Recipe[] = [];
+    const titles: string[] = [];
+    for (const f of files) {
+      if (!/\.(html?|htm)$/i.test(f.name)) { errors.push({ file: f.name, error: 'Unsupported HTML type' }); continue; }
+      try {
+        const html = await f.text();
+        const recs = htmlToRecipes(html, f.name);
+        collected.push(...recs);
+        titles.push(...recs.map((r)=>r.title));
+      } catch (e:any) { errors.push({ file: f.name, error: e?.message ?? 'Failed to read HTML' }); }
+    }
+    if (collected.length) setRecipes((prev)=>[...collected, ...prev]);
+    return { added: collected.length, errors, titles };
+  }, []);
 
   const addRecipesFromDocxFiles = useCallback(async (files: File[]) => {
     const errors: { file: string; error: string }[] = [];
