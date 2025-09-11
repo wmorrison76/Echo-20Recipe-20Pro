@@ -3,6 +3,8 @@ import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { githubRaw, githubZip } from "./routes/github";
+import { handleNutritionAnalyze } from "./routes/nutrition";
+import { handleRecipeImport } from "./routes/recipe";
 
 export function createServer() {
   const app = express();
@@ -23,6 +25,10 @@ export function createServer() {
   // GitHub proxy endpoints to import recipes from repos (CORS-safe)
   app.get("/api/github/raw", githubRaw);
   app.get("/api/github/zip", githubZip);
+
+  // Nutrition + Import
+  app.post("/api/nutrition/analyze", handleNutritionAnalyze);
+  app.post("/api/recipe/import", handleRecipeImport);
 
   return app;
 }
