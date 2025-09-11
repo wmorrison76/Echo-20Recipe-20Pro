@@ -33,6 +33,7 @@ export function ThemeToggle() {
     setTheme(next);
     localStorage.setItem(LS_THEME, next);
     applyTheme(next);
+    window.dispatchEvent(new CustomEvent("theme:change", { detail: { theme: next } }));
   };
 
   return (
