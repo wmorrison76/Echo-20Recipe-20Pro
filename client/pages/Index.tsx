@@ -5,6 +5,7 @@ import GallerySection from "./sections/Gallery";
 import AddRecipeSection from "./sections/AddRecipe";
 import TopTabs from "@/components/TopTabs";
 import { useSearchParams } from "react-router-dom";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 
 export default function Index() {
   const [params, setParams] = useSearchParams();
