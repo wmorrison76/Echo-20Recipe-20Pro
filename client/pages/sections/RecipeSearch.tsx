@@ -225,6 +225,22 @@ export default function RecipeSearchSection() {
           placeholder="Search by title, ingredients, tags..."
           className="w-full rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring"
         />
+        <select value={fcuisine} onChange={(e)=>setFCuisine(e.target.value)} className="rounded-md border bg-background px-2 py-2 text-sm">
+          <option value="">Cuisine</option>
+          {axisOptions('cuisines').map(o=> <option key={o.slug} value={o.slug}>{o.label}</option>)}
+        </select>
+        <select value={ftech} onChange={(e)=>setFTech(e.target.value)} className="rounded-md border bg-background px-2 py-2 text-sm">
+          <option value="">Technique</option>
+          {axisOptions('technique').map(o=> <option key={o.slug} value={o.slug}>{o.label}</option>)}
+        </select>
+        <select value={fcourse} onChange={(e)=>setFCourse(e.target.value)} className="rounded-md border bg-background px-2 py-2 text-sm">
+          <option value="">Course</option>
+          {axisOptions('course').map(o=> <option key={o.slug} value={o.slug}>{o.label}</option>)}
+        </select>
+        <select value={fdiet} onChange={(e)=>setFDiet(e.target.value)} className="rounded-md border bg-background px-2 py-2 text-sm">
+          <option value="">Diet</option>
+          {axisOptions('diets').map(o=> <option key={o.slug} value={o.slug}>{o.label}</option>)}
+        </select>
         <div className="flex items-center gap-1">
           <button onClick={()=>setMode('cards')} title="Cards" className={`p-2 rounded-md border ${mode==='cards'? 'bg-muted': ''}`} aria-label="Cards view"><LayoutGrid className="h-4 w-4"/></button>
           <button onClick={()=>setMode('grid4')} title="Grid 4" className={`p-2 rounded-md border ${mode==='grid4'? 'bg-muted': ''}`} aria-label="4-across grid"><Rows className="h-4 w-4"/></button>
