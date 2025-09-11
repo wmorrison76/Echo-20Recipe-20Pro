@@ -58,6 +58,11 @@ type AppData = {
   updateImage: (id: string, patch: Partial<GalleryImage>) => void;
   addTagsToImages: (ids: string[], tags: string[]) => void;
   reorderImages: (dragId: string, overId: string) => void;
+  addLookBook: (name: string, imageIds?: string[]) => string;
+  updateLookBook: (id: string, patch: Partial<LookBook>) => void;
+  deleteLookBook: (id: string) => void;
+  addImagesToLookBook: (id: string, imageIds: string[]) => void;
+  removeImagesFromLookBook: (id: string, imageIds: string[]) => void;
 };
 
 const CTX = createContext<AppData | null>(null);
