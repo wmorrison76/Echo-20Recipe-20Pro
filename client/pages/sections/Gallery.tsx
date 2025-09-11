@@ -6,10 +6,11 @@ import { useAppData } from "@/context/AppDataContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { GalleryLightbox } from "@/components/GalleryLightbox";
 import { FlipBook } from "@/components/FlipBook";
+import { Download } from "lucide-react";
 import { Star, Search, UploadCloud } from "lucide-react";
 
 export default function GallerySection() {
-  const { images, lookbooks, addLookBook, addImagesToLookBook, deleteLookBook, updateLookBook, addImages, clearImages, linkImagesToRecipesByFilename, addTagsToImages, reorderImages, updateImage } = useAppData();
+  const { images, lookbooks, addLookBook, addImagesToLookBook, deleteLookBook, updateLookBook, addImages, clearImages, linkImagesToRecipesByFilename, addTagsToImages, reorderImages, updateImage, exportAllZip } = useAppData();
   const [status, setStatus] = useState<string | null>(null);
   const [showTagDialog, setShowTagDialog] = useState(false);
   const [importTags, setImportTags] = useState("");
@@ -202,6 +203,7 @@ export default function GallerySection() {
                 await doImport(files, ["demo","food"]);
               } catch {}
             }}>Load sample images</Button>
+            <Button variant="outline" onClick={exportAllZip}><Download className="w-4 h-4 mr-1"/>Export all (ZIP)</Button>
             <Button variant="destructive" onClick={() => clearImages()}>Clear</Button>
           </div>
           {selected.length > 0 && (

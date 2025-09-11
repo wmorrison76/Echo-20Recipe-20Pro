@@ -130,7 +130,7 @@ export default function RecipeInputSection() {
   return (
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2">
-        <Dropzone accept=".json,application/json,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.html,.htm,text/html,.pdf,application/pdf,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.xls,application/vnd.ms-excel,.csv,text/csv,image/*" multiple onFiles={onFiles}>
+        <Dropzone accept=".json,application/json,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.html,.htm,text/html,.pdf,application/pdf,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.xls,application/vnd.ms-excel,.csv,text/csv,application/zip,application/x-zip-compressed,.zip,image/*" multiple onFiles={onFiles}>
           <div className="flex flex-col items-center justify-center gap-2 text-sm">
             <div className="text-foreground font-medium">Drag & drop up to 100 files: Word (.docx), PDF, Excel (.xlsx/.xls/.csv), HTML (.html/.htm), or JSON</div>
             <div className="text-muted-foreground">We’ll auto-detect titles, ingredients, and instructions</div>
@@ -180,12 +180,12 @@ export default function RecipeInputSection() {
           </div>
 
           <div className="mt-6 space-y-2">
-            <div className="text-sm font-medium">Import recipes from URL (JSON)</div>
+            <div className="text-sm font-medium">Import Recipes from URL</div>
             <div className="flex gap-2">
               <input
                 value={zipUrl}
                 onChange={(e) => setZipUrl(e.target.value)}
-                placeholder="https://example.com/export.json"
+                placeholder="https://example.com"
                 className="flex-1 rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring"
               />
               <Button onClick={importFromUrl} disabled={loadingUrl || !zipUrl}>
