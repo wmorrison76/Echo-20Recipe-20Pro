@@ -46,6 +46,7 @@ const RecipeInputPage = () => {
   const dirRef = React.useRef<HTMLDivElement | null>(null);
   const [cookTime, setCookTime] = useState<string>('');
   const [cookTemp, setCookTemp] = useState<string>('');
+  const [prepTime, setPrepTime] = useState<string>('');
 
   const getCurrencySymbol = (c: string) => (c==='EUR')?'€':(c==='GBP')?'£':(c==='JPY')?'¥':'$';
   const calculateTotalCost = () => ingredients.reduce((s, r) => s + (parseFloat(String(r.cost).replace(/[$€£¥,\s]/g,''))||0), 0);
@@ -127,10 +128,10 @@ const RecipeInputPage = () => {
   React.useEffect(()=>{ const el = dirRef.current; if (!el) return; if (document.activeElement !== el && el.textContent !== directions) el.textContent = directions; }, [directions]);
 
   // Autosave + simple versions
-  const serialize = () => ({ recipeName, ingredients, directions, isDarkMode, yieldQty, yieldUnit, portionCount, portionUnit, cookTime, cookTemp, selectedAllergens, selectedNationality, selectedCourses, selectedRecipeType, selectedPrepMethod, selectedCookingEquipment, selectedRecipeAccess, image });
+  const serialize = () => ({ recipeName, ingredients, directions, isDarkMode, yieldQty, yieldUnit, portionCount, portionUnit, cookTime, cookTemp, prepTime, selectedAllergens, selectedNationality, selectedCourses, selectedRecipeType, selectedPrepMethod, selectedCookingEquipment, selectedRecipeAccess, image });
   const restore = (s: any) => {
     if (!s) return; setRecipeName(s.recipeName||''); setIngredients(s.ingredients||[{qty:'',unit:'',item:'',prep:'',yield:'',cost:''}]); setDirections(s.directions||'1. ');
-    setIsDarkMode(!!s.isDarkMode); setYieldQty(s.yieldQty||0); setYieldUnit(s.yieldUnit||'QTS'); setPortionCount(s.portionCount||1); setPortionUnit(s.portionUnit||'OZ'); setCookTime(s.cookTime||''); setCookTemp(s.cookTemp||''); setSelectedAllergens(s.selectedAllergens||[]); setSelectedNationality(s.selectedNationality||[]); setSelectedCourses(s.selectedCourses||[]); setSelectedRecipeType(s.selectedRecipeType||[]); setSelectedPrepMethod(s.selectedPrepMethod||[]); setSelectedCookingEquipment(s.selectedCookingEquipment||[]); setSelectedRecipeAccess(s.selectedRecipeAccess||[]); setImage(s.image||null);
+    setIsDarkMode(!!s.isDarkMode); setYieldQty(s.yieldQty||0); setYieldUnit(s.yieldUnit||'QTS'); setPortionCount(s.portionCount||1); setPortionUnit(s.portionUnit||'OZ'); setCookTime(s.cookTime||''); setCookTemp(s.cookTemp||''); setPrepTime(s.prepTime||''); setSelectedAllergens(s.selectedAllergens||[]); setSelectedNationality(s.selectedNationality||[]); setSelectedCourses(s.selectedCourses||[]); setSelectedRecipeType(s.selectedRecipeType||[]); setSelectedPrepMethod(s.selectedPrepMethod||[]); setSelectedCookingEquipment(s.selectedCookingEquipment||[]); setSelectedRecipeAccess(s.selectedRecipeAccess||[]); setImage(s.image||null);
   };
   const pushHistory = (snap: any) => { historyRef.current.push(snap); if (historyRef.current.length>50) historyRef.current.shift(); localStorage.setItem('recipe:versions', JSON.stringify(historyRef.current)); };
   useEffect(()=>{
@@ -141,7 +142,7 @@ const RecipeInputPage = () => {
   },[]);
   useEffect(()=>{ const handler = (e: any) => { if (e?.detail?.image) setImage(e.detail.image); setShowImagePopup(true); }; window.addEventListener('openImageEditor', handler as any); return ()=>window.removeEventListener('openImageEditor', handler as any); },[]);
   useEffect(()=>{ const onAction = (ev: any)=>{ const t=ev?.detail?.type; if(!t) return; if(t==='convertUnits') convertUnits(); if(t==='cycleCurrency') cycleCurrency(); if(t==='scale') scaleRecipe(); if(t==='saveVersion') pushHistory({ ...serialize(), ts: Date.now() }); }; window.addEventListener('recipe:action', onAction as any); return ()=>window.removeEventListener('recipe:action', onAction as any); }, [ingredients, portionCount, currentUnits, currentCurrency]);
-  useEffect(()=>{ const id = setTimeout(()=>{ const s = serialize(); localStorage.setItem('recipe:draft', JSON.stringify(s)); }, 600); return ()=>clearTimeout(id); }, [recipeName, ingredients, directions, isDarkMode, yieldQty, yieldUnit, portionCount, portionUnit, cookTime, cookTemp, selectedAllergens, selectedNationality, selectedCourses, selectedRecipeType, selectedPrepMethod, selectedCookingEquipment, selectedRecipeAccess, image]);
+  useEffect(()=>{ const id = setTimeout(()=>{ const s = serialize(); localStorage.setItem('recipe:draft', JSON.stringify(s)); }, 600); return ()=>clearTimeout(id); }, [recipeName, ingredients, directions, isDarkMode, yieldQty, yieldUnit, portionCount, portionUnit, cookTime, cookTemp, prepTime, selectedAllergens, selectedNationality, selectedCourses, selectedRecipeType, selectedPrepMethod, selectedCookingEquipment, selectedRecipeAccess, image]);
   useEffect(()=>{ const t = setTimeout(()=> setIsRightSidebarCollapsed(true), 450); return ()=> clearTimeout(t); }, []);
 
   useEffect(()=>{
@@ -202,9 +203,14 @@ const RecipeInputPage = () => {
 
     if (currentUnits==='Imperial') {
       setIngredients(normalizedImperial.map(r=>{ const n=parseQuantity(r.qty); const key=alias(r.unit); const cv=map[key]; if (Number.isFinite(n)&&cv){ return { ...r, qty:String(Number((cv.f(n))).toFixed(2)), unit:cv.unit }; } return r; }));
+      // convert header units
+      if (['QTS','QT','QUART','QUARTS','GALLON','GAL','CUP','PINT','FL OZ','FLOZ','TSP','TBSP'].includes(yieldUnit.toUpperCase())) { const cv = map[alias(yieldUnit)]; if (cv) { setYieldQty(Number((cv.f(yieldQty)).toFixed(2))); setYieldUnit(cv.unit); } }
+      if (['QTS','QT','QUART','QUARTS','GALLON','GAL','CUP','PINT','FL OZ','FLOZ','TSP','TBSP'].includes(portionUnit.toUpperCase())) { const cv = map[alias(portionUnit)]; if (cv) { setPortionUnit(cv.unit); }}
       setCurrentUnits('Metric');
     } else {
       setIngredients(ingredients.map(r=>{ const n=parseQuantity(r.qty); const key=alias(r.unit); const cv=back[key]; if (Number.isFinite(n)&&cv){ return { ...r, qty:String(Number((cv.f(n))).toFixed(2)), unit:cv.unit }; } return r; }));
+      if (['L','ML','G','KG'].includes(yieldUnit.toUpperCase())) { const cv = back[alias(yieldUnit)]; if (cv) { setYieldQty(Number((cv.f(yieldQty)).toFixed(2))); setYieldUnit(cv.unit); } }
+      if (['L','ML','G','KG'].includes(portionUnit.toUpperCase())) { const cv = back[alias(portionUnit)]; if (cv) { setPortionUnit(cv.unit); }}
       setCurrentUnits('Imperial');
     }
   };
@@ -232,7 +238,12 @@ const RecipeInputPage = () => {
     try {
       setNutritionLoading(true); setNutritionError(null);
       const rows = ingredients.filter(r=>r.qty || r.item);
-      const ingr = rows.map(r=>[r.qty,r.unit,r.item,r.prep].filter(Boolean).join(' '));
+      const isConvertible = (u:string)=>['TSP','TEASPOON','TEASPOONS','TBSP','TABLESPOON','TABLESPOONS','FLOZ','FL OZ','CUP','CUPS','PINT','PT','QUART','QUARTS','QT','QTS','GAL','GALLON','GALLONS','OZ','OUNCE','OUNCES','LB','LBS','POUND','POUNDS','G','GRAM','GRAMS','KG','ML','L','LITER','LITERS','LITRES'].includes((u||'').toUpperCase());
+      const ingr = rows.map(r=>{
+        const u = (r.unit||'').toUpperCase();
+        if (isConvertible(u)) return [r.qty,r.unit,r.item,r.prep].filter(Boolean).join(' ');
+        return [r.item, r.prep].filter(Boolean).join(', ');
+      });
       const yields = rows.map(r=>{ const y = Number(String(r.yield).replace(/[^0-9.\-]/g,'')); return Number.isFinite(y) ? y : null; });
       const res = await fetch('/api/nutrition/analyze',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title: recipeName||'Recipe', ingr, yields, yieldQty, yieldUnit, prepMethod: selectedPrepMethod.join(', ') })});
       if (!res.ok) throw new Error((await res.json().catch(()=>({})))?.error || `Request failed: ${res.status}`);
@@ -297,6 +308,7 @@ const RecipeInputPage = () => {
                 <div className="flex items-center gap-4 text-sm">
                   <div className="flex items-center gap-2"><span className={`font-bold ${isDarkMode ? 'text-cyan-300' : 'text-black'}`}>COOK TIME:</span><input value={cookTime} onChange={(e)=>setCookTime(e.target.value)} placeholder="2:30" className={`w-24 p-3 ${inputClass}`} /></div>
                   <div className="flex items-center gap-2"><span className={`font-bold ${isDarkMode ? 'text-cyan-300' : 'text-black'}`}>COOK TEMP:</span><input value={cookTemp} onChange={(e)=>setCookTemp(e.target.value)} placeholder="350F" className={`w-24 p-3 ${inputClass}`} /></div>
+                  <div className="flex items-center gap-2"><span className={`font-bold ${isDarkMode ? 'text-cyan-300' : 'text-black'}`}>PREP TIME:</span><input value={prepTime} onChange={(e)=>setPrepTime(e.target.value)} placeholder="0:20" className={`w-24 p-3 ${inputClass}`} /></div>
                 </div>
                 <div className={`text-sm space-y-2 ${isDarkMode ? 'text-cyan-300' : 'text-gray-700'}`}>
                   <div className="flex items-center gap-4">
@@ -328,7 +340,7 @@ const RecipeInputPage = () => {
               </div>
             </div>
 
-            <div className="w-1/3">
+            <div className="w-1/3 flex justify-center">
               <div className="flex-shrink-0" style={{ width: '17rem', height: '17rem' }}>
                 {image ? (
                   <img src={image} alt="Recipe" className="w-full h-full object-contain rounded-md bg-white" style={{ border: '0.5px solid #000', boxShadow: '0 6px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2)' }} />
@@ -471,6 +483,14 @@ const RecipeInputPage = () => {
             setIngredients(rows.length? rows : [{ qty:'', unit:'', item:'', prep:'', yield:'', cost:'' }]);
           }
           if (data?.instructions) setDirections(decode(String(data.instructions)));
+          // Top info
+          if (data?.yield){
+            const y = String(data.yield);
+            const ym = y.match(/([0-9]+(?:\.[0-9]+)?)/); const um = y.match(/(cups?|quarts?|pints?|gallons?|oz|ounces?|lb|lbs|servings?|qt|qts|gal)/i);
+            if (ym && um){ setYieldQty(Number(ym[1])); setYieldUnit(um[1].toUpperCase().replace('QUARTS','QTS').replace('QUART','QTS').replace('QT','QTS').replace('GAL','GALLON').replace('OUNCES','OZ').replace('OUNCE','OZ').replace('LBS','LBS').replace('LB','LBS').replace('CUPS','CUP')); }
+          }
+          if (data?.cookTime) setCookTime(String(data.cookTime));
+          if (data?.prepTime) setPrepTime(String(data.prepTime));
         }}
       />
 

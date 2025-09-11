@@ -93,9 +93,22 @@ export default function RightSidebar(props: RightSidebarProps) {
   };
 
   return (
-    <div className={`fixed top-16 right-0 z-[70] ${isCollapsed ? 'w-0' : 'w-72'} h-[80vh] bg-gradient-to-b from-gray-100/60 via-gray-200/50 to-gray-300/60 backdrop-blur-sm border-l border-t border-gray-400/50 rounded-tl-2xl rounded-bl-2xl shadow-inner transition-all duration-700 ease-in-out overflow-hidden`}> 
-      {!isCollapsed && (
-        <div className="flex flex-col h-full">
+    <>
+      <button
+        aria-label="Toggle sidebar"
+        onClick={props.onToggle}
+        className="fixed right-0 top-1/2 -translate-y-1/2 z-[71] bg-background border border-gray-300 rounded-l-full shadow px-2 py-3 hover:bg-muted"
+        style={{ transform: 'translateY(-50%)' }}
+      >
+        <div className="flex flex-col items-center gap-1">
+          <span className="block w-0.5 h-4 bg-gray-400"></span>
+          <span className="block w-0.5 h-4 bg-gray-400"></span>
+          <span className="block w-0.5 h-4 bg-gray-400"></span>
+        </div>
+      </button>
+      <div className={`fixed top-16 right-0 z-[70] ${isCollapsed ? 'translate-x-full' : 'translate-x-0'} w-72 h-[80vh] bg-gradient-to-b from-gray-100/60 via-gray-200/50 to-gray-300/60 backdrop-blur-sm border-l border-t border-gray-400/50 rounded-tl-2xl rounded-bl-2xl shadow-inner transition-transform duration-500 ease-in-out overflow-hidden`}>
+        {!isCollapsed && (
+          <div className="flex flex-col h-full">
           <div className="p-4 pt-4 border-b border-gray-300/50">
             <div>
               <label className="block text-sm font-medium mb-1">Recipe URL</label>
@@ -220,7 +233,8 @@ export default function RightSidebar(props: RightSidebarProps) {
             </select>
           </div>
         </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }

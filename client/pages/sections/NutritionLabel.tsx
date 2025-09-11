@@ -13,6 +13,7 @@ export default function NutritionLabel({ data, servings, perServing }: { data: a
   // FDA reference values for 2,000 calorie diet
   const DV = { kcal: 2000, fat: 78, carbs: 275, protein: 50 };
   const pct = (val:number, ref:number)=> Math.round((Math.max(0,val)/ref)*100);
+  const allZero = Number(calories) === 0 && Number(fat) === 0 && Number(carbs) === 0 && Number(protein) === 0;
   return (
     <div className="flex gap-4 items-start">
       <div className="border p-3 rounded-lg w-72 bg-white text-black">

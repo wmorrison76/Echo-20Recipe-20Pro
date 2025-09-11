@@ -16,6 +16,12 @@ function parseJsonLdRecipe(html: string) {
         for (const cand of candidates) {
           const type = Array.isArray(cand['@type']) ? cand['@type'] : [cand['@type']];
           if (type.includes('Recipe')) {
+            const isoToHuman = (iso: string) => {
+              if (!iso || typeof iso !== 'string') return '';
+              const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?/i); if (!m) return String(iso);
+              const h = Number(m[1]||0), min = Number(m[2]||0);
+              return h ? `${h}:${String(min).padStart(2,'0')}` : `${min}m`;
+            };
             return {
               title: decodeHtml(String(cand.name || '')),
               ingredients: (cand.recipeIngredient || []).map((x: any) => decodeHtml(String(x))),
@@ -23,6 +29,8 @@ function parseJsonLdRecipe(html: string) {
                 ? cand.recipeInstructions.map((ri: any) => typeof ri === 'string' ? ri : ri.text).join('\n')
                 : String(cand.recipeInstructions || '')).trim()),
               yield: decodeHtml(String(cand.recipeYield || '')),
+              cookTime: isoToHuman(String(cand.cookTime || cand.totalTime || '')),
+              prepTime: isoToHuman(String(cand.prepTime || '')),
               image: Array.isArray(cand.image) ? cand.image[0] : cand.image,
             };
           }
