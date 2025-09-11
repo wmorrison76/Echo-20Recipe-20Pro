@@ -46,10 +46,10 @@ export default function RecipeSearchSection() {
 
       {recipes.length === 0 ? (
         <div className="rounded-md border p-6 text-center text-sm text-muted-foreground">
-          No recipes yet. Use the "Recipe Input" tab to import 50+ JSON recipes.
+          No recipes yet. Add recipes on the Input tab.
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
           {results.map((r) => (
             <RecipeCard key={r.id} r={r} />
           ))}
