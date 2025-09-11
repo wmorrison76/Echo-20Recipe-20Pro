@@ -27,7 +27,6 @@ export default function TopTabs() {
         </a>
         <nav className="flex items-center gap-2 rounded-xl bg-muted p-1">
           <TabLink to="/?tab=search" label="Recipe Search" />
-          <TabLink to="/?tab=input" label="Recipe Input" />
           <TabLink to="/?tab=gallery" label="Gallery" />
           <TabLink to="/?tab=add-recipe" label="Add Recipe" />
         </nav>
