@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import React, { useEffect, useState } from "react";
 import { Plus, Minus, Send, Palette } from "lucide-react";
 
 interface RightSidebarProps {
