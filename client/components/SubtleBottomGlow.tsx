@@ -88,7 +88,7 @@ export default function SubtleBottomGlow() {
           "bg-gradient-to-t from-white/60 via-white/30 to-transparent",
           "dark:opacity-0",
         ].join(" ")}
-        style={{ opacity: lightOpacity, transitionDuration: `${lightDuration}ms` }}
+        style={{ opacity: lightOpacity, transitionDuration: `${lightDuration}ms`, willChange: "opacity" }}
       />
 
       {/* Dark mode subtle black glow */}
@@ -99,7 +99,7 @@ export default function SubtleBottomGlow() {
           // gentle bottom-to-top black gradient
           "bg-gradient-to-t from-black/50 via-black/25 to-transparent",
         ].join(" ")}
-        style={{ opacity: darkOpacity, transitionDuration: `${darkDuration}ms` }}
+        style={{ opacity: darkOpacity, transitionDuration: `${darkDuration}ms`, willChange: "opacity" }}
       />
     </>
   );
