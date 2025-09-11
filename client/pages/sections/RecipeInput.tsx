@@ -9,32 +9,47 @@ export default function RecipeInputSection() {
   const [errors, setErrors] = useState<{ file: string; error: string }[]>([]);
   const [zipUrl, setZipUrl] = useState("");
   const [loadingUrl, setLoadingUrl] = useState(false);
+  const [processed, setProcessed] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [importedTitles, setImportedTitles] = useState<string[]>([]);
 
   const onFiles = async (files: File[]) => {
-    setStatus("Processing...");
     const jsonFiles = files.filter((f) => f.type.includes("json") || f.name.toLowerCase().endsWith(".json"));
     const docxFiles = files.filter((f) => f.name.toLowerCase().endsWith(".docx"));
     const zipFiles = files.filter((f) => f.type.includes("zip") || f.name.toLowerCase().endsWith(".zip"));
 
+    const steps = jsonFiles.length + docxFiles.length + zipFiles.length;
+    setProcessed(0);
+    setTotal(steps);
+    setImportedTitles([]);
+    setErrors([]);
+    setStatus("Processing...");
+
     let importedCount = 0;
     const allErrors: { file: string; error: string }[] = [];
 
-    if (jsonFiles.length) {
-      const { added, errors } = await addRecipesFromJsonFiles(jsonFiles);
+    for (const f of jsonFiles) {
+      const { added, errors, titles } = await addRecipesFromJsonFiles([f]);
       importedCount += added;
       allErrors.push(...errors);
+      if (titles?.length) setImportedTitles((t) => [...t, ...titles]);
+      setProcessed((p) => p + 1);
     }
 
-    if (docxFiles.length) {
-      const { added, errors } = await addRecipesFromDocxFiles(docxFiles);
+    for (const f of docxFiles) {
+      const { added, errors, titles } = await addRecipesFromDocxFiles([f]);
       importedCount += added;
       allErrors.push(...errors);
+      if (titles?.length) setImportedTitles((t) => [...t, ...titles]);
+      setProcessed((p) => p + 1);
     }
 
     for (const z of zipFiles) {
       const res = await addFromZipArchive(z);
       importedCount += res.addedRecipes;
       for (const e of res.errors) allErrors.push({ file: e.entry, error: e.error });
+      if (res.titles?.length) setImportedTitles((t) => [...t, ...res.titles]);
+      setProcessed((p) => p + 1);
     }
 
     setErrors(allErrors);
