@@ -1,13 +1,18 @@
+# Netlify deploy config
+# If using Builder.io MCP, click "Open MCP popover" and connect Netlify.
+# Once connected, deploy from this repo; functions route to netlify/functions/api.ts
+# Your external server will auto-connect via the API proxy below.
+
 [build]
   command = "npm run build:client"
   functions = "netlify/functions"
   publish = "dist/spa"
 
-
 [functions]
   external_node_modules = ["express"]
   node_bundler = "esbuild"
-  
+
+# Proxy all /api/* requests to the Netlify Function handler
 [[redirects]]
   force = true
   from = "/api/*"
