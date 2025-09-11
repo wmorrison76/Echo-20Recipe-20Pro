@@ -282,6 +282,7 @@ const RecipeInputPage = () => {
     selectedPrepMethod,
     selectedCookingEquipment,
     selectedRecipeAccess,
+    taxonomy,
     image,
   });
   const restore = (s: any) => {
