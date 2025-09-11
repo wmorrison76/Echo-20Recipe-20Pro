@@ -173,7 +173,35 @@ export default function GallerySection() {
               <input value={filter} onChange={(e)=>setFilter(e.target.value)} placeholder="Search or filter by tag" className="w-full rounded-md border bg-background pl-9 pr-3 py-2" />
             </div>
             <Button variant="secondary" onClick={() => linkImagesToRecipesByFilename()}>Link to recipes</Button>
-            {/* Demo images now autoload on first visit; manual button removed */}
+            <select className="rounded-md border bg-background px-2 py-1 text-sm" value={viewMode} onChange={(e)=>setViewMode(e.target.value as any)}>
+              <option value="masonry">Masonry</option>
+              <option value="grid">Grid</option>
+            </select>
+            <Button variant="outline" onClick={async()=>{
+              try {
+                const urls = [
+                  "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=80",
+                  "https://images.unsplash.com/photo-1478145046317-39f10e56b5e9?auto=format&fit=crop&w=1400&q=80",
+                  "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=80",
+                  "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1400&q=80",
+                  "https://images.unsplash.com/photo-1473093226795-af9932fe5856?auto=format&fit=crop&w=1400&q=80",
+                  "https://images.unsplash.com/photo-1543353071-873f17a7a088?auto=format&fit=crop&w=1400&q=80",
+                  "https://images.unsplash.com/photo-1498579809087-ef1e558fd1da?auto=format&fit=crop&w=1400&q=80",
+                  "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1400&q=80",
+                  "https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?auto=format&fit=crop&w=1400&q=80",
+                  "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=1400&q=80",
+                  "https://images.unsplash.com/photo-1546554137-f86b9593a222?auto=format&fit=crop&w=1400&q=80",
+                  "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=1400&q=80"
+                ];
+                const files: File[] = [];
+                for (const [i,u] of urls.entries()) {
+                  const res = await fetch(u);
+                  const b = await res.blob();
+                  files.push(new File([b], `demo-${i}.jpg`, { type: b.type || "image/jpeg" }));
+                }
+                await doImport(files, ["demo","food"]);
+              } catch {}
+            }}>Load sample images</Button>
             <Button variant="destructive" onClick={() => clearImages()}>Clear</Button>
           </div>
           {selected.length > 0 && (
