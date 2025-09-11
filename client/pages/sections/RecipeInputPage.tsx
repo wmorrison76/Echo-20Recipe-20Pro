@@ -80,6 +80,7 @@ const RecipeInputPage = () => {
   const [portionCount, setPortionCount] = useState<number>(6);
   const [portionUnit, setPortionUnit] = useState<string>("OZ");
   const [nutrition, setNutrition] = useState<any | null>(null);
+  const [taxonomy, setTaxonomy] = useState<TaxonomySelection>({ ...defaultSelection });
   const [nutritionLoading, setNutritionLoading] = useState(false);
   const [nutritionError, setNutritionError] = useState<string | null>(null);
   const [nutritionPerServing, setNutritionPerServing] = useState(true);
@@ -1202,7 +1203,7 @@ const RecipeInputPage = () => {
                   !!line.yield &&
                   isNaN(Number(String(line.yield).replace(/[^0-9.\-]/g, "")));
                 const costNum = Number(
-                  String(line.cost).replace(/[$���£¥,\s]/g, ""),
+                  String(line.cost).replace(/[$€£¥,\s]/g, ""),
                 );
                 const updateAndNormalize = (row: any) => {
                   // Auto-fill yield if empty
