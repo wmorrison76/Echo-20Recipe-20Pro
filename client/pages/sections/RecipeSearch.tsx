@@ -151,6 +151,24 @@ export default function RecipeSearchSection() {
           </div>
         </Dropzone>
         <div className="rounded-lg border p-4">
+          <div className="text-sm font-medium mb-2">Library (Book PDF) Import</div>
+          <input type="file" accept="application/pdf" onChange={async(e)=>{ const f=e.target.files?.[0]; if(!f) return; try{ setStatus('Reading book PDF...'); const ab = await f.arrayBuffer(); const pdfjs: any = await import('https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs'); const workerSrc='https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs'; if(pdfjs.GlobalWorkerOptions) pdfjs.GlobalWorkerOptions.workerSrc=workerSrc; const doc = await pdfjs.getDocument({ data: ab }).promise; let lines:string[]=[]; for(let p=1;p<=doc.numPages;p++){ const page=await doc.getPage(p); const tc=await page.getTextContent(); lines.push(...tc.items.map((i:any)=> String(i.str)).filter(Boolean)); lines.push(''); }
+            const norm = lines.map(s=> s.replace(/\s+/g,' ').trim());
+            const items:any[]=[]; let i=0; const book=f.name.replace(/\.[^.]+$/,'');
+            const isTitle=(s:string)=> s && s.length<70 && /[A-Za-z]/.test(s) && (s===s.toUpperCase() || /^[A-Z][^.!?]{2,}$/.test(s));
+            while(i<norm.length){
+              while(i<norm.length && !/ingredients?/i.test(norm[i])) i++;
+              if(i>=norm.length) break; let start=i; // ingredients line
+              // find title above within previous 5 lines
+              let tIdx=Math.max(0,i-5); let title=''; for(let k=i-1;k>=tIdx;k--){ if(isTitle(norm[k])){ title=norm[k]; break; } }
+              // collect instructions after ingredients until next ingredients or blank title
+              const ings:string[]=[]; i++; while(i<norm.length && !/ingredients?/i.test(norm[i])){ const s=norm[i]; if(/^(instructions|directions|method)/i.test(s)) break; if(s) ings.push(s); i++; }
+              // instructions
+              let ins:string[]=[]; while(i<norm.length && !/ingredients?/i.test(norm[i])){ const s=norm[i]; if(s) ins.push(s); i++; }
+              if(title && (ings.length||ins.length)) items.push({ title, ingredients: ings, instructions: ins, tags:[book] });
+            }
+            if(items.length){ const blob=new Blob([JSON.stringify(items)],{type:'application/json'}); const file=new File([blob], `${book}.json`, { type:'application/json' }); const { added } = await addRecipesFromJsonFiles([file]); setStatus(`Imported ${added} recipes from book.`); } else { setStatus('Could not detect recipes in PDF'); }
+          } catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`);} finally { (e.target as HTMLInputElement).value=''; } }} />
           <div className="text-sm text-muted-foreground">Imported recipes</div>
           <div className="mt-1 text-2xl font-semibold">{recipes.length}</div>
           <div className="mt-3 flex flex-wrap gap-2">
