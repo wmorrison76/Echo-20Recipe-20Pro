@@ -103,15 +103,23 @@ const RecipeInputPage = () => {
 
   // Unit + currency conversions
   const convertUnits = () => {
+    const alias = (u:string) => {
+      const k = u.toUpperCase();
+      if (k.startsWith('TABLESPO')) return 'TBSP';
+      if (k.startsWith('TEASPO')) return 'TSP';
+      if (k==='TSP' || k==='TEASPOON' || k==='TEASPOONS') return 'TSP';
+      if (k==='TBSP' || k==='TABLESPOON' || k==='TABLESPOONS') return 'TBSP';
+      return k;
+    };
     const map: Record<string, {unit:string, f:(n:number)=>number}> = {
       OZ: { unit: 'G', f:(n)=>n*28.3495 }, LBS:{ unit:'KG', f:(n)=>n*0.453592 }, QTS:{ unit:'L', f:(n)=>n*0.946353 }, TSP:{ unit:'ML', f:(n)=>n*4.92892 }, TBSP:{ unit:'ML', f:(n)=>n*14.7868 }
     };
     if (currentUnits==='Imperial') {
-      setIngredients(ingredients.map(r=>{ const n=parseFloat(r.qty); const key=r.unit.toUpperCase(); const cv=map[key]; if (!isNaN(n)&&cv){ return { ...r, qty:String(Number((cv.f(n))).toFixed(2)), unit:cv.unit }; } return r; }));
+      setIngredients(ingredients.map(r=>{ const n=parseFloat(r.qty); const key=alias(r.unit); const cv=map[key]; if (!isNaN(n)&&cv){ return { ...r, qty:String(Number((cv.f(n))).toFixed(2)), unit:cv.unit }; } return r; }));
       setCurrentUnits('Metric');
     } else {
       const back: Record<string,{unit:string,f:(n:number)=>number}> = { G:{unit:'OZ',f:(n)=>n/28.3495}, KG:{unit:'LBS',f:(n)=>n/0.453592}, L:{unit:'QTS',f:(n)=>n/0.946353}, ML:{unit:'TSP',f:(n)=>n/4.92892} };
-      setIngredients(ingredients.map(r=>{ const n=parseFloat(r.qty); const key=r.unit.toUpperCase(); const cv=back[key]; if (!isNaN(n)&&cv){ return { ...r, qty:String(Number((cv.f(n))).toFixed(2)), unit:cv.unit }; } return r; }));
+      setIngredients(ingredients.map(r=>{ const n=parseFloat(r.qty); const key=alias(r.unit); const cv=back[key]; if (!isNaN(n)&&cv){ return { ...r, qty:String(Number((cv.f(n))).toFixed(2)), unit:cv.unit }; } return r; }));
       setCurrentUnits('Imperial');
     }
   };
