@@ -560,6 +560,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     addImages,
     addRecipesFromJsonFiles,
     addRecipesFromDocxFiles,
+    addRecipesFromHtmlFiles,
     addRecipesFromPdfFiles,
     addRecipesFromExcelFiles,
     addRecipesFromImageOcr,
