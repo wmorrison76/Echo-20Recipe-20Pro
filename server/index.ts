@@ -20,5 +20,9 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
 
+  // GitHub proxy endpoints to import recipes from repos (CORS-safe)
+  app.get("/api/github/raw", githubRaw);
+  app.get("/api/github/zip", githubZip);
+
   return app;
 }
