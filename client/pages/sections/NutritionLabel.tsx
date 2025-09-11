@@ -23,6 +23,7 @@ export default function NutritionLabel({ data, servings, perServing }: { data: a
         <div className="mt-1 text-sm">Carbs <span className="float-right">{carbs} g • {pct(baseN(Number(data?.totalNutrients?.CHOCDF?.quantity||0)), DV.carbs)}%</span></div>
         <div className="mt-1 text-sm">Protein <span className="float-right">{protein} g • {pct(baseN(Number(data?.totalNutrients?.PROCNT?.quantity||0)), DV.protein)}%</span></div>
         <div className="mt-3 text-[10px] text-gray-600">% Daily Value based on a 2,000 calorie diet. Totals scaled {perServing? 'per serving' : 'for whole recipe'}.</div>
+        {allZero && (<div className="mt-2 text-[10px] text-red-600">No measurable quantities detected. Add units (e.g., oz, cup) or include amounts in the ingredient text.</div>)}
       </div>
       {breakdown.length>0 && (
         <div className="text-xs bg-white text-black rounded-lg border p-3 max-h-64 overflow-auto w-72">
