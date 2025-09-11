@@ -60,10 +60,25 @@ export default function RecipeInputSection() {
     if (!zipUrl) return;
     try {
       setLoadingUrl(true);
-      setStatus("Downloading ZIP...");
+      setStatus("Downloading...");
       const resp = await fetch(zipUrl);
+      const contentType = resp.headers.get('content-type') || '';
+      // Try JSON first (works for luccca_variant_* exports)
+      if (/json|javascript/.test(contentType) || zipUrl.toLowerCase().endsWith('.json')) {
+        try {
+          const data = await resp.json();
+          const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+          const name = (zipUrl.split('/').pop() || 'import.json').replace(/\?.*$/,'');
+          const file = new File([blob], name, { type: 'application/json' });
+          const { added, errors: errs, titles } = await addRecipesFromJsonFiles([file]);
+          setErrors(errs);
+          setStatus(`Imported ${added} recipe(s) from JSON${titles.length?`: ${titles.slice(0,5).join(', ')}${titles.length>5?' …':''}`:''}.`);
+          return;
+        } catch { /* fallthrough to ZIP */ }
+      }
+      // Fallback to ZIP or other blobs
       const blob = await resp.blob();
-      const name = zipUrl.split("/").pop() || "import.zip";
+      const name = (zipUrl.split("/").pop() || "import.zip").replace(/\?.*$/,'');
       const file = new File([blob], name, { type: blob.type || "application/zip" });
       const res = await addFromZipArchive(file);
       setErrors(res.errors.map((e) => ({ file: e.entry, error: e.error })));
