@@ -205,7 +205,7 @@ const RecipeInputPage = () => {
                 </select>
               </div>
             </div>
-            <div id="directions-textarea" contentEditable className={`w-full border p-4 rounded-xl shadow-sm transition-all focus:shadow-md focus:ring-2 resize-none min-h-[200px] overflow-y-auto ${isDarkMode ? 'bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30' : 'bg-white border-gray-200 text-gray-900 focus:ring-blue-400/30 focus:border-blue-400'}`} style={{ lineHeight:'1.5', whiteSpace:'pre-wrap', fontFamily:selectedFont, fontSize:selectedFontSize }} onInput={(e)=> setDirections((e.target as HTMLDivElement).textContent || '')}>{directions}</div>
+            <div id="directions-textarea" contentEditable suppressContentEditableWarning ref={(el)=>{ if (el && el.textContent === '') el.textContent = directions; }} className={`w-full border p-4 rounded-xl shadow-sm transition-all focus:shadow-md focus:ring-2 resize-none min-h-[200px] overflow-y-auto ${isDarkMode ? 'bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30' : 'bg-white border-gray-200 text-gray-900 focus:ring-blue-400/30 focus:border-blue-400'}`} style={{ lineHeight:'1.5', whiteSpace:'pre-wrap', fontFamily:selectedFont, fontSize:selectedFontSize }} onInput={(e)=> setDirections((e.target as HTMLDivElement).textContent || '')}></div>
           </div>
 
           <div className="flex items-center justify-between mt-2">
