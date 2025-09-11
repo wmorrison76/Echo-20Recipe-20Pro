@@ -111,7 +111,12 @@ export default function RecipeSearchSection() {
 
   useEffect(()=>{
     if (recipes.length>0) return; const flag = localStorage.getItem('recipes.demo.loaded.v1'); if (flag==='1') return;
-    (async()=>{ try{ const sample=[ { title: 'Seared Tuna', ingredients:['tuna','salt'], instructions:['Sear both sides.'] }, { title: 'Green Risotto', ingredients:['rice','spinach'], instructions:['Cook rice.','Blend spinach.'] } ]; const file = new File([new Blob([JSON.stringify(sample)],{type:'application/json'})], 'demo.json', { type:'application/json' }); setStatus('Importing demo recipes...'); const { added } = await addRecipesFromJsonFiles([file]); setStatus(`Imported ${added} demo recipes.`); localStorage.setItem('recipes.demo.loaded.v1','1'); }catch{}})();
+    (async()=>{ try{ const sample=[
+      { title: 'Classic Lasagna', tags:['italian','pasta'], ingredients:['1 lb ground beef','1 onion, chopped','24 oz marinara','12 lasagna noodles','16 oz ricotta','2 cups mozzarella','1/2 cup parmesan'], instructions:['Brown beef with onion.','Boil noodles to al dente.','Layer sauce, noodles, ricotta, beef, mozzarella. Repeat.','Top with parmesan and bake 45 min at 375°F.','Rest 15 min before slicing.'] },
+      { title: 'Chicken Curry', tags:['indian','curry'], ingredients:['2 tbsp oil','1 onion, sliced','2 cloves garlic','1 tbsp ginger','2 tbsp curry powder','1 lb chicken thighs','14 oz coconut milk','salt'], instructions:['Sauté onion in oil.','Add garlic and ginger.','Stir in curry powder.','Add chicken and brown.','Pour coconut milk; simmer 20 minutes.','Season to taste.'] },
+      { title: 'Seared Tuna', ingredients:['tuna','salt'], instructions:['Sear both sides.'] },
+      { title: 'Green Risotto', ingredients:['rice','spinach'], instructions:['Cook rice.','Blend spinach.'] }
+    ]; const file = new File([new Blob([JSON.stringify(sample)],{type:'application/json'})], 'demo.json', { type:'application/json' }); setStatus('Importing demo recipes...'); const { added } = await addRecipesFromJsonFiles([file]); setStatus(`Imported ${added} demo recipes.`); localStorage.setItem('recipes.demo.loaded.v1','1'); }catch{}})();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
