@@ -202,7 +202,7 @@ export default function GallerySection() {
         <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7 gap-4 sm:gap-5 lg:gap-6">
           {filtered.map((img) => (
             <div key={img.id}
-              className="mb-6 break-inside-avoid rounded-2xl overflow-hidden relative group shadow-md ring-1 ring-black/5 dark:ring-white/10 bg-white dark:bg-slate-900"
+              className="mb-6 break-inside-avoid rounded-2xl overflow-hidden relative group shadow-md ring-1 ring-black/5 dark:ring-white/10 bg-white dark:bg-slate-900 transition-all duration-300 hover:shadow-2xl hover:ring-2 hover:ring-sky-300/50 focus-within:shadow-2xl focus-within:ring-2 active:shadow-xl"
               draggable onDragStart={()=>onDragStart(img.id)} onDragOver={(e)=>e.preventDefault()} onDrop={()=>onDropOver(img.id)} onContextMenu={(e)=>e.preventDefault()}
             >
               <button className="absolute top-2 right-2 z-10 rounded-full bg-black/40 p-1.5 text-white opacity-0 group-hover:opacity-100" onClick={()=>toggleFavorite(img.id)} aria-label="Favorite">
