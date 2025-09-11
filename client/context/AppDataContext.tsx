@@ -351,6 +351,88 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     return { added: collected.length, errors, titles };
   }, [linkImagesToRecipesByFilename]);
 
+  const addRecipesFromPdfFiles = useCallback(async (files: File[]) => {
+    const errors: { file: string; error: string }[] = [];
+    const collected: Recipe[] = [];
+    const titles: string[] = [];
+    for (const f of files) {
+      if (!f.name.toLowerCase().endsWith('.pdf')) { errors.push({ file: f.name, error: 'Unsupported PDF type' }); continue; }
+      try {
+        const ab = await f.arrayBuffer();
+        let text = '';
+        try {
+          const pdfjs: any = await import('https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs');
+          const workerSrc = 'https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs';
+          if (pdfjs.GlobalWorkerOptions) pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
+          const doc = await pdfjs.getDocument({ data: ab }).promise;
+          for (let p=1; p<=doc.numPages; p++) {
+            const page = await doc.getPage(p);
+            const tc = await page.getTextContent();
+            text += tc.items.map((i:any)=> i.str).join('\n') + '\n';
+          }
+        } catch (e:any) {
+          try { text = new TextDecoder().decode(ab); } catch {}
+        }
+        const lines = text.split(/\r?\n/).map((s)=>s.trim()).filter(Boolean);
+        const lower = lines.map((l)=>l.toLowerCase());
+        const find = (labels:string[])=> lower.findIndex((l)=> labels.includes(l));
+        const ingIdx = find(['ingredients','ingredient']);
+        const instIdx = find(['instructions','directions','method','steps']);
+        const title = lines[0] || f.name.replace(/\.pdf$/i,'');
+        const getRange = (start:number, end:number)=> lines.slice(start+1, end>start? end: undefined).filter(Boolean);
+        const ingredients = ingIdx>=0 ? getRange(ingIdx, instIdx>=0? instIdx: lines.length) : undefined;
+        const instructions = instIdx>=0 ? getRange(instIdx, lines.length) : undefined;
+        collected.push({ id: uid(), createdAt: Date.now(), title, ingredients, instructions, sourceFile: f.name });
+        titles.push(title);
+      } catch (e:any) {
+        errors.push({ file: f.name, error: e?.message ?? 'Failed to read PDF' });
+      }
+    }
+    if (collected.length) setRecipes((prev)=>[...collected, ...prev]);
+    return { added: collected.length, errors, titles };
+  }, []);
+
+  const addRecipesFromExcelFiles = useCallback(async (files: File[]) => {
+    const errors: { file: string; error: string }[] = [];
+    const collected: Recipe[] = [];
+    const titles: string[] = [];
+    for (const f of files) {
+      if (!/\.(xlsx|xls|csv)$/i.test(f.name)) { errors.push({ file: f.name, error: 'Unsupported spreadsheet type' }); continue; }
+      try {
+        if (/\.csv$/i.test(f.name)) {
+          const text = await f.text();
+          const rows = text.split(/\r?\n/).map((l)=> l.split(/,|\t/));
+          const header = rows.shift()||[]; const idx = (k:string)=> header.findIndex(h=> h.trim().toLowerCase()===k);
+          const it = idx('title'); const ii = idx('ingredients'); const io = idx('instructions');
+          for (const r of rows) {
+            const title = (r[it]||'').trim(); if (!title) continue;
+            const ingredients = (r[ii]||'').split(/\n|;|\|/).map((s)=>s.trim()).filter(Boolean);
+            const instructions = (r[io]||'').split(/\n|\.|;\s/).map((s)=>s.trim()).filter(Boolean);
+            collected.push({ id: uid(), createdAt: Date.now(), title, ingredients: ingredients.length?ingredients:undefined, instructions: instructions.length?instructions:undefined, sourceFile: f.name });
+            titles.push(title);
+          }
+        } else {
+          const ab = await f.arrayBuffer();
+          const XLSX: any = await import('https://esm.sh/xlsx@0.18.5');
+          const wb = XLSX.read(ab, { type: 'array' });
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          const json = XLSX.utils.sheet_to_json<any>(ws, { defval: '' });
+          for (const row of json) {
+            const title = String(row.title ?? row.Name ?? row.Recipe ?? '').trim(); if (!title) continue;
+            const ing = String(row.ingredients ?? row.Ingredients ?? '').split(/\n|;|\|/).map((s)=>s.trim()).filter(Boolean);
+            const ins = String(row.instructions ?? row.Directions ?? row.Method ?? '').split(/\n|\.|;\s/).map((s)=>s.trim()).filter(Boolean);
+            collected.push({ id: uid(), createdAt: Date.now(), title, ingredients: ing.length?ing:undefined, instructions: ins.length?ins:undefined, sourceFile: f.name });
+            titles.push(title);
+          }
+        }
+      } catch (e:any) {
+        errors.push({ file: f.name, error: e?.message ?? 'Failed to read spreadsheet' });
+      }
+    }
+    if (collected.length) setRecipes((prev)=>[...collected, ...prev]);
+    return { added: collected.length, errors, titles };
+  }, []);
+
   const addFromZipArchive = useCallback(async (file: File) => {
     const errors: { entry: string; error: string }[] = [];
     const nextRecipes: Recipe[] = [];
@@ -445,6 +527,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     addImages,
     addRecipesFromJsonFiles,
     addRecipesFromDocxFiles,
+    addRecipesFromPdfFiles,
+    addRecipesFromExcelFiles,
     addFromZipArchive,
     updateRecipe,
     getRecipeById,
