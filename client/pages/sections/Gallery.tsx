@@ -328,6 +328,15 @@ export default function GallerySection() {
         onNext={()=>setLightboxIndex((i)=> (i+1)%filtered.length)}
         onToggleFavorite={toggleFavorite}
       />
+
+      <FlipBook
+        open={openLookBook}
+        onClose={()=> setOpenLookBook(false)}
+        images={(lookbooks.find(b=> b.id===activeLookBookId)?.imageIds || []).map(id=>{
+          const img = images.find(i=> i.id===id);
+          return { id, src: img?.dataUrl || img?.blobUrl, name: img?.name };
+        })}
+      />
     </div>
   );
 }
