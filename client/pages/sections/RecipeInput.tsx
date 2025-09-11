@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useAppData } from "@/context/AppDataContext";
 
 export default function RecipeInputSection() {
-  const { addRecipesFromJsonFiles, addRecipesFromDocxFiles, addFromZipArchive, addRecipesFromPdfFiles, addRecipesFromExcelFiles, clearRecipes, recipes, linkImagesToRecipesByFilename } = useAppData();
+  const { addRecipesFromJsonFiles, addRecipesFromDocxFiles, addFromZipArchive, addRecipesFromPdfFiles, addRecipesFromExcelFiles, addRecipesFromImageOcr, clearRecipes, recipes, linkImagesToRecipesByFilename } = useAppData();
   const [status, setStatus] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ file: string; error: string }[]>([]);
   const [zipUrl, setZipUrl] = useState("");
@@ -19,9 +19,10 @@ export default function RecipeInputSection() {
     const docxFiles = list.filter((f) => f.name.toLowerCase().endsWith(".docx"));
     const pdfFiles = list.filter((f) => f.name.toLowerCase().endsWith(".pdf"));
     const xlsFiles = list.filter((f) => /\.(xlsx|xls|csv)$/i.test(f.name));
+    const imageFiles = list.filter((f)=> f.type.startsWith('image/') || /\.(png|jpe?g|webp|heic|heif)$/i.test(f.name));
     const zipFiles = list.filter((f) => f.type.includes("zip") || f.name.toLowerCase().endsWith(".zip"));
 
-    const steps = jsonFiles.length + docxFiles.length + pdfFiles.length + xlsFiles.length + zipFiles.length;
+    const steps = jsonFiles.length + docxFiles.length + pdfFiles.length + xlsFiles.length + imageFiles.length + zipFiles.length;
     setProcessed(0);
     setTotal(steps);
     setImportedTitles([]);
@@ -57,6 +58,14 @@ export default function RecipeInputSection() {
 
     for (const f of xlsFiles) {
       const { added, errors, titles } = await addRecipesFromExcelFiles([f]);
+      importedCount += added;
+      allErrors.push(...errors);
+      if (titles?.length) setImportedTitles((t) => [...t, ...titles]);
+      setProcessed((p) => p + 1);
+    }
+
+    for (const f of imageFiles) {
+      const { added, errors, titles } = await addRecipesFromImageOcr([f]);
       importedCount += added;
       allErrors.push(...errors);
       if (titles?.length) setImportedTitles((t) => [...t, ...titles]);
@@ -112,7 +121,7 @@ export default function RecipeInputSection() {
   return (
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2">
-        <Dropzone accept=".json,application/json,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,application/pdf,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.xls,application/vnd.ms-excel,.csv,text/csv" multiple onFiles={onFiles}>
+        <Dropzone accept=".json,application/json,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,application/pdf,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.xls,application/vnd.ms-excel,.csv,text/csv,image/*" multiple onFiles={onFiles}>
           <div className="flex flex-col items-center justify-center gap-2 text-sm">
             <div className="text-foreground font-medium">Drag & drop up to 100 files: Word (.docx), PDF, Excel (.xlsx/.xls/.csv), or JSON</div>
             <div className="text-muted-foreground">We’ll auto-detect titles, ingredients, and instructions</div>
@@ -161,7 +170,20 @@ export default function RecipeInputSection() {
             )}
           </div>
 
-          {/* Import from URL removed per request */}
+          <div className="mt-6 space-y-2">
+            <div className="text-sm font-medium">Import recipes from URL (JSON)</div>
+            <div className="flex gap-2">
+              <input
+                value={zipUrl}
+                onChange={(e) => setZipUrl(e.target.value)}
+                placeholder="https://example.com/export.json"
+                className="flex-1 rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring"
+              />
+              <Button onClick={importFromUrl} disabled={loadingUrl || !zipUrl}>
+                {loadingUrl ? "Importing..." : "Import"}
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -181,9 +203,7 @@ export default function RecipeInputSection() {
         </div>
       )}
 
-      <div className="text-xs text-muted-foreground">
-        Tip: DOCX/PDF/Excel parsing looks for headings like “Ingredients” and “Instructions/Directions/Steps”. CSV should include columns: title, ingredients, instructions.
-      </div>
+      {/* Tip removed per request */}
     </div>
   );
 }
