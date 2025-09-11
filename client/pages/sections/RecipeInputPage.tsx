@@ -364,9 +364,11 @@ const RecipeInputPage = () => {
         image={image}
         onImageChange={setImage}
         onRecipeImport={(data)=>{
-          if (data?.title) setRecipeName(String(data.title).toUpperCase());
+          const decode = (s:string)=> s.replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+          if (data?.title) setRecipeName(decode(String(data.title)).toUpperCase());
           if (data?.ingredients?.length){
             const rows = (data.ingredients as string[]).map((s:string)=>{
+              s = decode(s);
               const m = s.match(/^\s*([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?)?\s*([a-zA-Z]+)?\s*(.*)$/);
               const qty = m?.[1] ? m[1] : ''; const unit = m?.[2] ? m[2].toUpperCase() : ''; const rest = (m?.[3]||'').trim();
               const [item, ...prep] = rest.split(',');
@@ -374,7 +376,7 @@ const RecipeInputPage = () => {
             });
             setIngredients(rows.length? rows : [{ qty:'', unit:'', item:'', prep:'', yield:'', cost:'' }]);
           }
-          if (data?.instructions) setDirections(String(data.instructions));
+          if (data?.instructions) setDirections(decode(String(data.instructions)));
         }}
       />
 
