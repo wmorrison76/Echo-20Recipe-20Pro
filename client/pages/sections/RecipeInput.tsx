@@ -113,7 +113,7 @@ export default function RecipeInputSection() {
       )}
 
       <div className="text-xs text-muted-foreground">
-        Tip: We accept arrays or single objects. Recognized fields include title/name, ingredients/ingredientLines, instructions/directions/steps, tags, images/image.
+        Tip: JSON arrays or single objects supported. DOCX supported via headings: use H1/H2 for recipe titles, then “Ingredients” and “Instructions/Directions/Steps” sections.
       </div>
     </div>
   );
