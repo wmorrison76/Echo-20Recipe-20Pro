@@ -275,6 +275,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const addRecipesFromDocxFiles = useCallback(async (files: File[]) => {
     const errors: { file: string; error: string }[] = [];
     const collected: Recipe[] = [];
+    const titles: string[] = [];
 
     for (const f of files) {
       if (!f.name.toLowerCase().endsWith(".docx")) {
