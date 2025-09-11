@@ -93,7 +93,7 @@ export default function RightSidebar(props: RightSidebarProps) {
   };
 
   return (
-    <div className={`fixed top-32 right-0 z-40 ${isCollapsed ? 'w-0' : 'w-64'} h-[700px] bg-gradient-to-b from-gray-100/60 via-gray-200/50 to-gray-300/60 backdrop-blur-sm border-l border-t border-gray-400/50 rounded-tl-2xl rounded-bl-2xl shadow-inner transition-all duration-700 ease-in-out overflow-hidden`}> 
+    <div className={`fixed top-16 right-0 z-[70] ${isCollapsed ? 'w-0' : 'w-72'} h-[80vh] bg-gradient-to-b from-gray-100/60 via-gray-200/50 to-gray-300/60 backdrop-blur-sm border-l border-t border-gray-400/50 rounded-tl-2xl rounded-bl-2xl shadow-inner transition-all duration-700 ease-in-out overflow-hidden`}> 
       {!isCollapsed && (
         <div className="flex flex-col h-full">
           <div className="p-4 pt-4 border-b border-gray-300/50">
