@@ -42,7 +42,7 @@ export function RecipeCard({ r, onPreview, onFav, onRate, onTrash, inTrash }: { 
               <Button size="sm" variant="ghost" onClick={onTrash}>Trash</Button>
             )}
             <Button size="sm" variant="outline" asChild><a href={`/recipe/${r.id}/view`}>View</a></Button>
-            <Button size="sm" variant="outline" onClick={()=>{ try{ const draft={ recipeName:r.title, ingredients:(r.ingredients||[]).map((s:string)=>({ qty:'', unit:'', item:String(s), prep:'', yield:'', cost:'' })), directions:Array.isArray(r.instructions)? (r.instructions as any[]).map(String).map((x,i)=>`${i+1}. ${x}`).join('\n') : String((r as any).instructions||'') }; localStorage.setItem('recipe:draft', JSON.stringify(draft)); }catch{} location.href='/?tab=add-recipe'; }}>Edit</Button>
+            <Button size="sm" variant="outline" onClick={()=>{ try{ const draft={ recipeName:r.title, ingredients:(r.ingredients||[]).map((s:string)=>({ qty:'', unit:'', item:String(s), prep:'', yield:'', cost:'' })), directions:Array.isArray(r.instructions)? (r.instructions as any[]).map(String).map((x,i)=>`${i+1}. ${x}`).join('\n') : String((r as any).instructions||''), taxonomy: (r.extra as any)?.taxonomy || undefined }; localStorage.setItem('recipe:draft', JSON.stringify(draft)); }catch{} location.href='/?tab=add-recipe'; }}>Edit</Button>
           </div>
         </div>
       </div>
