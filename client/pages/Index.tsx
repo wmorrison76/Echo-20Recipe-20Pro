@@ -12,7 +12,7 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <TopTabs />
-      <main className="w-full py-6">
+      <main className="w-full py-4">
         <Tabs value={active} onValueChange={(v)=>{ params.set('tab', v); setParams(params, { replace: true }); }} className="w-full">
           <TabsContent value="search">
             <RecipeSearchSection />
@@ -31,7 +31,7 @@ export default function Index() {
 
       <footer className="border-t">
         <div className="container mx-auto py-6 text-xs text-muted-foreground">
-          Built with love • Light & Dark mode • Drag-and-drop 50+ recipes
+          Built with love • Light & Dark mode �� Drag-and-drop 50+ recipes
         </div>
       </footer>
     </div>
