@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useAppData } from "@/context/AppDataContext";
+import ZipAppRunner from "@/components/ZipAppRunner";
 
 function parseGithubRepo(url: string): { owner: string; repo: string } | null {
   try {
