@@ -2,35 +2,66 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useAppData } from "@/context/AppDataContext";
 import { Dropzone } from "@/components/Dropzone";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Star } from "lucide-react";
 
-export function RecipeCard({ r }: { r: ReturnType<typeof useAppData>["recipes"][number] }) {
+export function RecipeCard({ r, onPreview, onFav, onRate, onTrash }: { r: ReturnType<typeof useAppData>["recipes"][number]; onPreview:()=>void; onFav:()=>void; onRate:(n:number)=>void; onTrash:()=>void; }) {
   const cover = r.imageDataUrls?.[0];
+  const stars = Array.from({length:5},(_,i)=>i< (r.rating||0));
   return (
-    <a href={`/recipe/${r.id}`} className="block rounded-xl border bg-white dark:bg-zinc-900 shadow-sm hover:shadow-md overflow-hidden">
-      <div className="grid grid-cols-[120px_1fr] gap-4 p-4 items-start">
+    <div className="rounded-xl border bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
+      <div className="grid grid-cols-[120px_1fr] gap-3 p-3 items-start">
         {cover ? (
-          <img src={cover} alt={r.title} className="h-[120px] w-[120px] object-cover rounded" />
+          <img src={cover} alt={r.title} className="h-[110px] w-[110px] object-cover rounded" />
         ) : (
-          <div className="h-[120px] w-[120px] bg-muted rounded flex items-center justify-center text-muted-foreground">No Image</div>
+          <div className="h-[110px] w-[110px] bg-muted rounded flex items-center justify-center text-muted-foreground">No Image</div>
         )}
         <div className="prose prose-sm dark:prose-invert max-w-none">
-          <h2 className="m-0">{r.title}</h2>
+          <div className="flex items-start justify-between gap-2">
+            <h2 className="m-0 text-base font-semibold line-clamp-1">{r.title}</h2>
+            <button className={`shrink-0 p-1 rounded ${r.favorite? 'text-yellow-500':'text-muted-foreground'} hover:bg-black/5`} onClick={onFav} aria-label="Favorite">
+              <Star className={r.favorite? 'fill-current':''} />
+            </button>
+          </div>
+          <div className="flex items-center gap-1">
+            {stars.map((on,i)=> (
+              <button key={i} className={`p-0.5 ${on? 'text-yellow-500':'text-muted-foreground'}`} onClick={()=>onRate(i+1)} aria-label={`rate ${i+1}`}>★</button>
+            ))}
+          </div>
           {r.tags?.length ? (
             <p className="m-0 text-xs text-muted-foreground">{r.tags.slice(0,5).join(' · ')}</p>
           ) : null}
           {r.ingredients?.length ? (
-            <p className="mt-2 mb-0 text-xs text-muted-foreground line-clamp-3">{r.ingredients.join(', ')}</p>
+            <p className="mt-2 mb-0 text-xs text-muted-foreground line-clamp-2">{r.ingredients.join(', ')}</p>
           ) : null}
+          <div className="mt-2 flex gap-2">
+            <Button size="sm" variant="secondary" onClick={onPreview}>Preview</Button>
+            <Button size="sm" variant="ghost" onClick={onTrash}>Trash</Button>
+            <a href={`/recipe/${r.id}`} className="text-xs underline self-center">Open</a>
+          </div>
         </div>
       </div>
-    </a>
+    </div>
   );
 }
 
 export default function RecipeSearchSection() {
-  const { recipes, searchRecipes, linkImagesToRecipesByFilename, clearRecipes, addRecipesFromJsonFiles, addRecipesFromDocxFiles, addRecipesFromHtmlFiles, addRecipesFromPdfFiles, addRecipesFromExcelFiles, addRecipesFromImageOcr, addFromZipArchive } = useAppData();
+  const { recipes, searchRecipes, linkImagesToRecipesByFilename, clearRecipes, addRecipesFromJsonFiles, addRecipesFromDocxFiles, addRecipesFromHtmlFiles, addRecipesFromPdfFiles, addRecipesFromExcelFiles, addRecipesFromImageOcr, addFromZipArchive, toggleFavorite, rateRecipe, deleteRecipe, restoreRecipe, exportAllZip } = useAppData();
   const [q, setQ] = useState("");
-  const results = useMemo(() => searchRecipes(q), [q, searchRecipes]);
+  type Cat = 'all'|'recent'|'top'|'favorites'|'uncategorized'|'trash';
+  const [cat, setCat] = useState<Cat>('all');
+  const results = useMemo(() => {
+    const base = searchRecipes(q);
+    const notDeleted = base.filter(r=>!r.deletedAt);
+    switch(cat){
+      case 'recent': return notDeleted.slice().sort((a,b)=> b.createdAt - a.createdAt);
+      case 'top': return notDeleted.slice().sort((a,b)=> (b.rating||0)-(a.rating||0));
+      case 'favorites': return notDeleted.filter(r=> r.favorite);
+      case 'uncategorized': return notDeleted.filter(r=> !r.tags || r.tags.length===0);
+      case 'trash': return base.filter(r=> !!r.deletedAt);
+      default: return notDeleted;
+    }
+  }, [q, searchRecipes, cat]);
 
   const [status, setStatus] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ file: string; error: string }[]>([]);
@@ -84,8 +115,22 @@ export default function RecipeSearchSection() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const [preview, setPreview] = useState<ReturnType<typeof useAppData>["recipes"][number] | null>(null);
+
   return (
     <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-1 rounded-lg bg-muted p-1">
+          {(['all','recent','top','favorites','uncategorized','trash'] as Cat[]).map(c=> (
+            <button key={c} onClick={()=>setCat(c)} className={`px-3 py-1 rounded-md text-sm ${cat===c? 'bg-background shadow':'text-foreground/80'}`}>{c.replace(/^[a-z]/,s=>s.toUpperCase())}</button>
+          ))}
+        </div>
+        <div className="ml-auto flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={exportAllZip}>Export all (ZIP)</Button>
+          <Button variant="destructive" size="sm" onClick={()=>clearRecipes()}>Clear</Button>
+        </div>
+      </div>
+
       <div className="grid gap-4 md:grid-cols-2">
         <Dropzone accept=".json,application/json,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.html,.htm,text/html,.pdf,application/pdf,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.xls,application/vnd.ms-excel,.csv,text/csv,application/zip,application/x-zip-compressed,.zip,image/*" multiple onFiles={onFiles}>
           <div className="flex flex-col items-center justify-center gap-2 text-sm">
@@ -137,17 +182,58 @@ export default function RecipeSearchSection() {
 
       {recipes.length === 0 ? (
         <div className="rounded-md border p-6 text-center text-sm text-muted-foreground">
-          No recipes yet. Add recipes on the Input tab.
+          No recipes yet. Drop files above or import from URL.
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
           {results.map((r) => (
-            <RecipeCard key={r.id} r={r} />
+            <RecipeCard key={r.id} r={r} onPreview={()=>setPreview(r)} onFav={()=>toggleFavorite(r.id)} onRate={(n)=>rateRecipe(r.id,n)} onTrash={()=> r.deletedAt? restoreRecipe(r.id) : deleteRecipe(r.id)} />
           ))}
         </div>
       )}
 
       <div className="mt-6 text-xs text-muted-foreground text-center">Total recipes in system: {recipes.length}</div>
+
+      <Dialog open={!!preview} onOpenChange={(o)=>!o && setPreview(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{preview?.title}</DialogTitle>
+          </DialogHeader>
+          {preview && (
+            <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-4 items-start">
+              <div className="rounded border overflow-hidden bg-muted/20">
+                {preview.imageDataUrls?.[0] ? (
+                  <img src={preview.imageDataUrls[0]} alt={preview.title} className="w-full h-auto" />
+                ) : (
+                  <div className="h-40 flex items-center justify-center text-xs text-muted-foreground">No image</div>
+                )}
+              </div>
+              <div className="text-sm space-y-2">
+                {preview.tags?.length ? <div className="text-muted-foreground">{preview.tags.join(' · ')}</div> : null}
+                {preview.ingredients?.length ? (
+                  <div>
+                    <div className="font-medium">Ingredients</div>
+                    <ul className="list-disc pl-5 max-h-32 overflow-auto">
+                      {preview.ingredients.slice(0,20).map((x,i)=>(<li key={i}>{x}</li>))}
+                    </ul>
+                  </div>
+                ) : null}
+                {preview.instructions?.length ? (
+                  <div>
+                    <div className="font-medium">Instructions</div>
+                    <div className="max-h-32 overflow-auto whitespace-pre-wrap">{preview.instructions.join('\n')}</div>
+                  </div>
+                ) : null}
+                <div className="flex flex-wrap gap-2 pt-2">
+                  <a className="button border px-3 py-1 rounded" href={`/recipe/${preview.id}`}>Open</a>
+                  <button className="border px-3 py-1 rounded" onClick={()=>{ const body=encodeURIComponent(`${preview.title}`); location.href=`sms:?&body=${body}`; }}>SMS</button>
+                  <button className="border px-3 py-1 rounded" onClick={()=>window.print()}>Print</button>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
