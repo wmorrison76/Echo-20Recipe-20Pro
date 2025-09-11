@@ -2,7 +2,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RecipeSearchSection from "./sections/RecipeSearch";
 import RecipeInputSection from "./sections/RecipeInput";
 import GallerySection from "./sections/Gallery";
-import RepoImportSection from "./sections/RepoImport";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Index() {
@@ -27,7 +26,6 @@ export default function Index() {
             <TabsTrigger value="search">Recipe Search</TabsTrigger>
             <TabsTrigger value="input">Recipe Input</TabsTrigger>
             <TabsTrigger value="gallery">Gallery</TabsTrigger>
-            <TabsTrigger value="repo">Add Recipe</TabsTrigger>
           </TabsList>
           <TabsContent value="search">
             <RecipeSearchSection />
@@ -37,9 +35,6 @@ export default function Index() {
           </TabsContent>
           <TabsContent value="gallery">
             <GallerySection />
-          </TabsContent>
-          <TabsContent value="repo">
-            <RepoImportSection />
           </TabsContent>
         </Tabs>
       </main>
