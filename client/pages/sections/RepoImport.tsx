@@ -110,6 +110,10 @@ export default function RepoImportSection() {
 
         {status && <div className="mt-4 rounded-md border p-3 text-sm">{status}</div>}
 
+        <div className="mt-6">
+          <ZipAppRunner />
+        </div>
+
         <div className="mt-4 text-xs text-muted-foreground">
           Works with public GitHub repos (no token). JSON must match our recipe format; ZIPs can include JSON, DOCX, and images.
         </div>
