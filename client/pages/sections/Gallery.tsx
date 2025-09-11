@@ -216,11 +216,40 @@ export default function GallerySection() {
                   <img src={img.dataUrl || img.blobUrl} alt={img.name} className="w-full h-auto object-cover transition-transform duration-300 will-change-transform group-hover:scale-[1.01]" />
                 )}
               </button>
-              <div className="p-3 flex flex-wrap items-center gap-1 text-[11px]">
-                <button className="truncate text-left underline-offset-2 hover:underline" onClick={()=>beginEdit(img.id)} title="Click to rename & categorize">{img.name}</button>
-                {(img.tags||[]).map((t)=> (
-                  <span key={t} className="px-1.5 py-0.5 rounded-full bg-secondary text-secondary-foreground">{t}</span>
-                ))}
+              <div className="p-3 flex flex-col gap-2 text-[11px]">
+                {editingId === img.id ? (
+                  <div className="flex flex-col gap-2">
+                    <input
+                      autoFocus
+                      value={editName}
+                      onChange={(e)=>setEditName(e.target.value)}
+                      onKeyDown={onEditKeyDown}
+                      placeholder="Image name"
+                      className="w-full rounded-md border bg-background px-2 py-1 text-sm"
+                    />
+                    <input
+                      value={editTags}
+                      onChange={(e)=>setEditTags(e.target.value)}
+                      onKeyDown={onEditKeyDown}
+                      placeholder="categories (comma separated)"
+                      className="w-full rounded-md border bg-background px-2 py-1 text-sm"
+                    />
+                    <div className="flex gap-2">
+                      <Button size="sm" onClick={saveEdit}>Save</Button>
+                      <Button size="sm" variant="secondary" onClick={cancelEdit}>Cancel</Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap items-center gap-1">
+                    <button className="truncate text-left underline-offset-2 hover:underline" onClick={()=>beginEdit(img.id)} title="Click to rename & categorize">{img.name}</button>
+                    {(img.tags||[]).map((t)=> (
+                      <button key={t} className="px-1.5 py-0.5 rounded-full bg-secondary text-secondary-foreground hover:ring-2 hover:ring-sky-300/50" onClick={()=>beginEdit(img.id)} title="Click to edit categories">{t}</button>
+                    ))}
+                    {(!img.tags || img.tags.length===0) && (
+                      <button className="px-1.5 py-0.5 rounded-full bg-muted text-foreground/80 hover:bg-muted/70" onClick={()=>beginEdit(img.id)} title="Add categories">+ categorize</button>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           ))}
