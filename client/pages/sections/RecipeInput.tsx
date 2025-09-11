@@ -47,6 +47,22 @@ export default function RecipeInputSection() {
       setProcessed((p) => p + 1);
     }
 
+    for (const f of pdfFiles) {
+      const { added, errors, titles } = await addRecipesFromPdfFiles([f]);
+      importedCount += added;
+      allErrors.push(...errors);
+      if (titles?.length) setImportedTitles((t) => [...t, ...titles]);
+      setProcessed((p) => p + 1);
+    }
+
+    for (const f of xlsFiles) {
+      const { added, errors, titles } = await addRecipesFromExcelFiles([f]);
+      importedCount += added;
+      allErrors.push(...errors);
+      if (titles?.length) setImportedTitles((t) => [...t, ...titles]);
+      setProcessed((p) => p + 1);
+    }
+
     for (const z of zipFiles) {
       const res = await addFromZipArchive(z);
       importedCount += res.addedRecipes;
