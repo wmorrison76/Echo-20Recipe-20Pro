@@ -17,10 +17,21 @@ export default function TopTabs() {
   return (
     <header className="border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-14 items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <div className="h-7 w-7 rounded bg-primary" />
-          <span className="font-semibold tracking-tight">Recipe Studio</span>
-        </div>
+        <a href="/?tab=search" className="flex items-center gap-2" aria-label="Home">
+          {/* Light mode logo */}
+          <img
+            src="https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2F7767116085cd4da782ee26179c7b4250?format=webp&width=240"
+            alt="LUCCCA"
+            className="h-8 hidden dark:!hidden md:h-9"
+          />
+          {/* Dark mode logo */}
+          <img
+            src="https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2Fb35d1dd3c914450b8529e8dc0ce9ecc1?format=webp&width=240"
+            alt="LUCCCA"
+            className="h-8 hidden dark:block md:h-9"
+          />
+          <span className="sr-only">LUCCCA</span>
+        </a>
         <nav className="flex items-center gap-2 rounded-xl bg-muted p-1">
           <TabLink to="/?tab=search" label="Recipe Search" />
           <TabLink to="/?tab=input" label="Recipe Input" />
