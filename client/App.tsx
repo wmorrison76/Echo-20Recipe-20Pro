@@ -10,6 +10,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import RecipeEditor from "./pages/RecipeEditor";
+import RecipeTemplate from "./pages/RecipeTemplate";
 import { AppDataProvider } from "@/context/AppDataContext";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/recipe/:id" element={<RecipeEditor />} />
+            <Route path="/recipe/:id/view" element={<RecipeTemplate />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
