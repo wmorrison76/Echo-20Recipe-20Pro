@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Star, LayoutGrid, Rows, List } from "lucide-react";
 
-export function RecipeCard({ r, onPreview, onFav, onRate, onTrash }: { r: ReturnType<typeof useAppData>["recipes"][number]; onPreview:()=>void; onFav:()=>void; onRate:(n:number)=>void; onTrash:()=>void; }) {
+export function RecipeCard({ r, onPreview, onFav, onRate, onTrash, inTrash }: { r: ReturnType<typeof useAppData>["recipes"][number]; onPreview:()=>void; onFav:()=>void; onRate:(n:number)=>void; onTrash:()=>void; inTrash?: boolean; }) {
   const cover = r.imageDataUrls?.[0];
   const stars = Array.from({length:5},(_,i)=>i< (r.rating||0));
   return (
@@ -36,8 +36,13 @@ export function RecipeCard({ r, onPreview, onFav, onRate, onTrash }: { r: Return
           ) : null}
           <div className="mt-2 flex gap-2">
             <Button size="sm" variant="secondary" onClick={onPreview}>Preview</Button>
-            <Button size="sm" variant="ghost" onClick={onTrash}>Trash</Button>
-            <a href={`/recipe/${r.id}/view`} className="text-xs underline self-center">Open</a>
+            {inTrash ? (
+              <Button size="sm" variant="outline" onClick={onTrash}>Restore</Button>
+            ) : (
+              <Button size="sm" variant="ghost" onClick={onTrash}>Trash</Button>
+            )}
+            <Button size="sm" variant="outline" asChild><a href={`/recipe/${r.id}/view`}>View</a></Button>
+            <Button size="sm" variant="outline" onClick={()=>{ try{ const draft={ recipeName:r.title, ingredients:(r.ingredients||[]).map((s:string)=>({ qty:'', unit:'', item:String(s), prep:'', yield:'', cost:'' })), directions:Array.isArray(r.instructions)? (r.instructions as any[]).map(String).map((x,i)=>`${i+1}. ${x}`).join('\n') : String((r as any).instructions||'') }; localStorage.setItem('recipe:draft', JSON.stringify(draft)); }catch{} location.href='/?tab=add-recipe'; }}>Edit</Button>
           </div>
         </div>
       </div>
@@ -123,6 +128,7 @@ export default function RecipeSearchSection() {
   }, []);
 
   const [preview, setPreview] = useState<ReturnType<typeof useAppData>["recipes"][number] | null>(null);
+  const inTrashView = cat==='trash';
 
   return (
     <div className="space-y-4">
@@ -146,8 +152,8 @@ export default function RecipeSearchSection() {
           </div>
         </Dropzone>
         <div className="rounded-lg border p-2 self-start">
-          <div className="text-xs font-medium mb-1">Library (Book PDF) Import</div>
-          <input type="file" accept="application/pdf" onChange={async(e)=>{ const f=e.target.files?.[0]; if(!f) return; try{ setStatus('Reading book PDF...'); const ab = await f.arrayBuffer(); const pdfjs: any = await import('https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs'); const workerSrc='https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs'; if(pdfjs.GlobalWorkerOptions) pdfjs.GlobalWorkerOptions.workerSrc=workerSrc; const doc = await pdfjs.getDocument({ data: ab }).promise; let lines:string[]=[]; for(let p=1;p<=doc.numPages;p++){ const page=await doc.getPage(p); const tc=await page.getTextContent(); lines.push(...tc.items.map((i:any)=> String(i.str)).filter(Boolean)); lines.push(''); }
+          <div className="flex items-center justify-between mb-1"><div className="text-xs font-medium">Library (Book PDF) Import</div><div className="text-xs text-muted-foreground">Imported: {recipes.length}</div></div>
+          <input type="file" accept="application/pdf" onChange={async(e)=>{ const f=e.target.files?.[0]; if(!f) return; if(!confirm('Confirm you own/purchased this cookbook PDF for personal import?')){ (e.target as HTMLInputElement).value=''; return;} try{ setStatus('Reading book PDF...'); const ab = await f.arrayBuffer(); const pdfjs: any = await import('https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs'); const workerSrc='https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs'; if(pdfjs.GlobalWorkerOptions) pdfjs.GlobalWorkerOptions.workerSrc=workerSrc; const doc = await pdfjs.getDocument({ data: ab }).promise; let lines:string[]=[]; for(let p=1;p<=doc.numPages;p++){ const page=await doc.getPage(p); const tc=await page.getTextContent(); lines.push(...tc.items.map((i:any)=> String(i.str)).filter(Boolean)); lines.push(''); }
             const norm = lines.map(s=> s.replace(/\s+/g,' ').trim());
             const items:any[]=[]; let i=0; const book=f.name.replace(/\.[^.]+$/,'');
             const isTitle=(s:string)=> s && s.length<70 && /[A-Za-z]/.test(s) && (s===s.toUpperCase() || /^[A-Z][^.!?]{2,}$/.test(s));
@@ -182,12 +188,8 @@ export default function RecipeSearchSection() {
             }
             if(items.length){ const blob=new Blob([JSON.stringify(items)],{type:'application/json'}); const file=new File([blob], `${book}.json`, { type:'application/json' }); const { added } = await addRecipesFromJsonFiles([file]); setStatus(`Imported ${added} recipes from book.`); } else { setStatus('Could not detect recipes in PDF'); }
           } catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`);} finally { (e.target as HTMLInputElement).value=''; } }} />
-          <div className="text-xs text-muted-foreground">Imported recipes</div>
-          <div className="mt-1 text-lg font-semibold">{recipes.length}</div>
           <div className="mt-2 flex flex-wrap gap-1">
-            <Button size="sm" variant="secondary" onClick={() => linkImagesToRecipesByFilename()}>Link images from Gallery by filename</Button>
             <Button size="sm" variant="outline" onClick={async()=>{ const sample=[ { title: 'Seared Tuna', ingredients:['tuna','salt'], instructions:['Sear both sides.'] }, { title: 'Green Risotto', ingredients:['rice','spinach'], instructions:['Cook rice.','Blend spinach.'] } ]; const file = new File([new Blob([JSON.stringify(sample)],{type:'application/json'})], 'demo.json', { type:'application/json' }); setStatus('Importing demo recipes...'); const { added } = await addRecipesFromJsonFiles([file]); setStatus(`Imported ${added} demo recipes.`); }}>Load demo recipes</Button>
-            <Button size="sm" variant="destructive" onClick={() => clearRecipes()}>Clear recipes</Button>
           </div>
           {total>0 && (
             <div className="mt-2 space-y-1">
@@ -206,7 +208,7 @@ export default function RecipeSearchSection() {
             </div>
             <div className="flex gap-2">
               <input value={url} onChange={(e)=>setUrl(e.target.value)} placeholder="Paste a recipe page URL (https://...)" className="flex-1 rounded-md border bg-background px-2 py-1 outline-none focus:ring-2 focus:ring-ring text-sm" />
-              <Button size="sm" onClick={async()=>{ try{ setLoadingUrl(true); setStatus('Fetching recipe...'); const r = await fetch('/api/recipe/import',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ url })}); if(!r.ok) throw new Error((await r.json().catch(()=>({})))?.error||'Failed'); const data = await r.json(); const sample = [{ title:data.title, ingredients:data.ingredients, instructions: Array.isArray(data.instructions)? data.instructions: String(data.instructions||'').split(/\r?\n/).filter(Boolean), tags: [] }]; const file = new File([new Blob([JSON.stringify(sample)],{type:'application/json'})], 'web.json', { type:'application/json' }); const { added } = await addRecipesFromJsonFiles([file]); setStatus(`Imported ${added} recipe(s) from web.`);} catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`);} finally{ setLoadingUrl(false); } }} disabled={loadingUrl || !url}>{loadingUrl? 'Importing...' : 'Import'}</Button>
+              <Button size="sm" onClick={async()=>{ try{ setLoadingUrl(true); setStatus('Fetching recipe...'); const r = await fetch('/api/recipe/import',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ url })}); if(!r.ok) throw new Error((await r.json().catch(()=>({})))?.error||'Failed'); const data = await r.json(); let imageName: string | undefined; if (data.image) { try { const imgRes = await fetch(data.image); const blob = await imgRes.blob(); imageName = (String(data.image).split('?')[0].split('/').pop() || `${Date.now()}.jpg`).replace(/[^A-Za-z0-9_.-]/g,'_'); await addImages([new File([blob], imageName, { type: blob.type||'image/jpeg' })], { tags: ['web'] }); } catch {} } const sample = [{ title:data.title, image: imageName || undefined, ingredients:data.ingredients, instructions: Array.isArray(data.instructions)? data.instructions: String(data.instructions||'').split(/\r?\n/).filter(Boolean), tags: [] }]; const file = new File([new Blob([JSON.stringify(sample)],{type:'application/json'})], 'web.json', { type:'application/json' }); const { added } = await addRecipesFromJsonFiles([file]); setStatus(`Imported ${added} recipe(s) from web.`);} catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`);} finally{ setLoadingUrl(false); } }} disabled={loadingUrl || !url}>{loadingUrl? 'Importing...' : 'Import'}</Button>
             </div>
           </div>
         </div>
@@ -239,7 +241,7 @@ export default function RecipeSearchSection() {
       ) : mode==='cards' ? (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
           {results.map((r) => (
-            <RecipeCard key={r.id} r={r} onPreview={()=>setPreview(r)} onFav={()=>toggleFavorite(r.id)} onRate={(n)=>rateRecipe(r.id,n)} onTrash={()=> r.deletedAt? restoreRecipe(r.id) : deleteRecipe(r.id)} />
+            <RecipeCard key={r.id} r={r} inTrash={inTrashView} onPreview={()=>setPreview(r)} onFav={()=>toggleFavorite(r.id)} onRate={(n)=>rateRecipe(r.id,n)} onTrash={()=> r.deletedAt? restoreRecipe(r.id) : deleteRecipe(r.id)} />
           ))}
         </div>
       ) : mode==='grid4' ? (
