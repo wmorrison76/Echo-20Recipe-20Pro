@@ -2,11 +2,13 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import RightSidebar from './RightSidebar';
 import ImageEditorModal from './ImageEditorModal';
 import NutritionLabel from './NutritionLabel';
-import { Save, Image as ImageIcon, Settings, PlusCircle, MinusCircle, Menu, Plus, Minus, Bold, Italic, Underline, Sun, Moon, Scale, NotebookPen, ArrowLeftRight, CircleDollarSign } from 'lucide-react';
+import { Save, Image as ImageIcon, Settings, PlusCircle, MinusCircle, Menu, Plus, Minus, Bold, Italic, Underline, Sun, Moon, Scale, NotebookPen, ArrowLeftRight, CircleDollarSign, Share2, FileDown, Printer } from 'lucide-react';
 
 const RecipeInputPage = () => {
   const [recipeName, setRecipeName] = useState('');
   const [ingredients, setIngredients] = useState([{ qty: '', unit: '', item: '', prep: '', yield: '', cost: '' }]);
+  const historyRef = useRef<any[]>([]);
+  const futureRef = useRef<any[]>([]);
   const [directions, setDirections] = useState('1. ');
   const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -61,6 +63,75 @@ const RecipeInputPage = () => {
 
   React.useEffect(()=>{ const el = dirRef.current; if (!el) return; if (document.activeElement !== el && el.textContent !== directions) el.textContent = directions; }, [directions]);
 
+  // Autosave + simple versions
+  const serialize = () => ({ recipeName, ingredients, directions, isDarkMode, yieldQty, yieldUnit, portionCount, portionUnit, cookTime, cookTemp, selectedAllergens, selectedNationality, selectedCourses, selectedRecipeType, selectedPrepMethod, selectedCookingEquipment, selectedRecipeAccess, image });
+  const restore = (s: any) => {
+    if (!s) return; setRecipeName(s.recipeName||''); setIngredients(s.ingredients||[{qty:'',unit:'',item:'',prep:'',yield:'',cost:''}]); setDirections(s.directions||'1. ');
+    setIsDarkMode(!!s.isDarkMode); setYieldQty(s.yieldQty||0); setYieldUnit(s.yieldUnit||'QTS'); setPortionCount(s.portionCount||1); setPortionUnit(s.portionUnit||'OZ'); setCookTime(s.cookTime||''); setCookTemp(s.cookTemp||''); setSelectedAllergens(s.selectedAllergens||[]); setSelectedNationality(s.selectedNationality||[]); setSelectedCourses(s.selectedCourses||[]); setSelectedRecipeType(s.selectedRecipeType||[]); setSelectedPrepMethod(s.selectedPrepMethod||[]); setSelectedCookingEquipment(s.selectedCookingEquipment||[]); setSelectedRecipeAccess(s.selectedRecipeAccess||[]); setImage(s.image||null);
+  };
+  const pushHistory = (snap: any) => { historyRef.current.push(snap); if (historyRef.current.length>50) historyRef.current.shift(); localStorage.setItem('recipe:versions', JSON.stringify(historyRef.current)); };
+  useEffect(()=>{
+    const saved = localStorage.getItem('recipe:draft'); if (saved) try { restore(JSON.parse(saved)); } catch {}
+    const versions = localStorage.getItem('recipe:versions'); if (versions) try { historyRef.current = JSON.parse(versions)||[]; } catch {}
+    // URL share restore
+    if (location.hash.startsWith('#r=')) try { const data = JSON.parse(atob(decodeURIComponent(location.hash.slice(3)))); restore(data); } catch {}
+  },[]);
+  useEffect(()=>{ const id = setTimeout(()=>{ const s = serialize(); localStorage.setItem('recipe:draft', JSON.stringify(s)); }, 600); return ()=>clearTimeout(id); }, [recipeName, ingredients, directions, isDarkMode, yieldQty, yieldUnit, portionCount, portionUnit, cookTime, cookTemp, selectedAllergens, selectedNationality, selectedCourses, selectedRecipeType, selectedPrepMethod, selectedCookingEquipment, selectedRecipeAccess, image]);
+
+  useEffect(()=>{
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='s'){ e.preventDefault(); const s=serialize(); pushHistory({ ...s, ts: Date.now() }); }
+      if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='z'){ e.preventDefault(); const prev = historyRef.current.pop(); if (prev){ futureRef.current.push(serialize()); restore(prev); } }
+      if ((e.ctrlKey||e.metaKey) && e.shiftKey && e.key.toLowerCase()==='z'){ e.preventDefault(); const next = futureRef.current.pop(); if (next){ historyRef.current.push(serialize()); restore(next); } }
+    };
+    window.addEventListener('keydown', onKey); return ()=>window.removeEventListener('keydown', onKey);
+  },[]);
+
+  // Keyboard nav in grid
+  const onGridKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const target = e.target as HTMLInputElement; const row = Number(target.dataset.row); const col = Number(target.dataset.col); if (Number.isNaN(row)||Number.isNaN(col)) return;
+    const move = (r:number,c:number)=>{
+      const next = document.querySelector<HTMLInputElement>(`input[data-row="${r}"][data-col="${c}"]`); next?.focus(); next?.select();
+    };
+    if (e.key==='ArrowRight') { e.preventDefault(); move(row, col+1); }
+    if (e.key==='ArrowLeft') { e.preventDefault(); move(row, col-1); }
+    if (e.key==='ArrowDown' || e.key==='Enter') { e.preventDefault(); move(row+1, col); }
+    if (e.key==='ArrowUp') { e.preventDefault(); move(row-1, col); }
+  };
+
+  // Unit + currency conversions
+  const convertUnits = () => {
+    const map: Record<string, {unit:string, f:(n:number)=>number}> = {
+      OZ: { unit: 'G', f:(n)=>n*28.3495 }, LBS:{ unit:'KG', f:(n)=>n*0.453592 }, QTS:{ unit:'L', f:(n)=>n*0.946353 }, TSP:{ unit:'ML', f:(n)=>n*4.92892 }, TBSP:{ unit:'ML', f:(n)=>n*14.7868 }
+    };
+    if (currentUnits==='Imperial') {
+      setIngredients(ingredients.map(r=>{ const n=parseFloat(r.qty); const key=r.unit.toUpperCase(); const cv=map[key]; if (!isNaN(n)&&cv){ return { ...r, qty:String(Number((cv.f(n))).toFixed(2)), unit:cv.unit }; } return r; }));
+      setCurrentUnits('Metric');
+    } else {
+      const back: Record<string,{unit:string,f:(n:number)=>number}> = { G:{unit:'OZ',f:(n)=>n/28.3495}, KG:{unit:'LBS',f:(n)=>n/0.453592}, L:{unit:'QTS',f:(n)=>n/0.946353}, ML:{unit:'TSP',f:(n)=>n/4.92892} };
+      setIngredients(ingredients.map(r=>{ const n=parseFloat(r.qty); const key=r.unit.toUpperCase(); const cv=back[key]; if (!isNaN(n)&&cv){ return { ...r, qty:String(Number((cv.f(n))).toFixed(2)), unit:cv.unit }; } return r; }));
+      setCurrentUnits('Imperial');
+    }
+  };
+  const cycleCurrency = () => {
+    const order = ['USD','EUR','GBP','JPY']; const rates: Record<string,number> = { USD:1, EUR:0.93, GBP:0.82, JPY:155 };
+    const i = order.indexOf(currentCurrency); const next = order[(i+1)%order.length];
+    const from = rates[currentCurrency]; const to = rates[next]; const fx = to/from;
+    setIngredients(ingredients.map(r=>{ const n=parseFloat(String(r.cost).replace(/[$€£¥,\s]/g,'')); if (isNaN(n)) return r; return { ...r, cost: (n*fx).toFixed(2) }; }));
+    setCurrentCurrency(next);
+  };
+  const scaleRecipe = () => {
+    const target = Number(prompt('Scale to how many portions?', String(portionCount))||portionCount); if (!target || target<=0) return;
+    const factor = target/(portionCount||1); setIngredients(ingredients.map(r=>{ const n=parseFloat(r.qty); return isNaN(n)? r : { ...r, qty: (n*factor).toFixed(2) }; })); setPortionCount(target);
+  };
+
+  const exportCSV = () => {
+    const rows = [['qty','unit','item','prep','yield','cost'], ...ingredients.map(r=>[r.qty,r.unit,r.item,r.prep,r.yield,r.cost])];
+    const csv = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`${recipeName||'recipe'}.csv`; a.click(); URL.revokeObjectURL(a.href);
+  };
+  const shareLink = () => { const data = serialize(); const url = `${location.origin}${location.pathname}#r=${encodeURIComponent(btoa(JSON.stringify(data)))}`; navigator.clipboard.writeText(url); alert('Share link copied to clipboard'); };
+
   const analyzeNutrition = async () => {
     try {
       setNutritionLoading(true); setNutritionError(null);
@@ -81,12 +152,12 @@ const RecipeInputPage = () => {
             </div>
           </div>
           <div className="flex flex-col items-end gap-2">
-            <div className="flex gap-2 items-center">
-              <Scale title="Baker's Yield" className="w-5 h-5 cursor-pointer" />
-              <NotebookPen title="R&D Mode" className="w-5 h-5 cursor-pointer" />
-              <ArrowLeftRight title="Convert Units" className="w-5 h-5 cursor-pointer" />
-              <CircleDollarSign title="Currency" className="w-5 h-5 cursor-pointer" />
-              <Settings title="Settings" className="w-5 h-5 cursor-pointer" />
+            <div className="flex gap-3 items-center">
+              <button onClick={scaleRecipe} title="Scale Recipe" className="p-1 rounded hover:bg-black/10"><Scale className="w-5 h-5"/></button>
+              <button onClick={()=>{ pushHistory({ ...serialize(), ts: Date.now() }); alert('Snapshot saved'); }} title="Save Version" className="p-1 rounded hover:bg-black/10"><NotebookPen className="w-5 h-5"/></button>
+              <button onClick={convertUnits} title="Convert Units" className="p-1 rounded hover:bg-black/10"><ArrowLeftRight className="w-5 h-5"/></button>
+              <button onClick={cycleCurrency} title="Change Currency" className="p-1 rounded hover:bg-black/10"><CircleDollarSign className="w-5 h-5"/></button>
+              <button onClick={()=>setIsRightSidebarCollapsed(!isRightSidebarCollapsed)} title="Recipe Tools" className="p-1 rounded hover:bg-black/10"><Settings className="w-5 h-5"/></button>
               <div className="flex items-center gap-1 ml-2">
                 <Sun className="w-4 h-4" />
                 <button onClick={()=>setIsDarkMode(!isDarkMode)} className={`w-8 h-4 rounded-full transition-colors ${isDarkMode ? 'bg-blue-600' : 'bg-gray-300'}`}>
@@ -95,9 +166,6 @@ const RecipeInputPage = () => {
                 <Moon className="w-4 h-4" />
               </div>
             </div>
-            <button onClick={()=>setIsRightSidebarCollapsed(!isRightSidebarCollapsed)} className="flex flex-col gap-1 p-2 hover:bg-gray-100 rounded transition-colors self-end" title={isRightSidebarCollapsed? 'Open Recipe Tools':'Close Recipe Tools'}>
-              <div className="w-4 h-0.5 bg-gray-600"/><div className="w-4 h-0.5 bg-gray-600"/><div className="w-4 h-0.5 bg-gray-600"/>
-            </button>
           </div>
         </div>
 
@@ -168,22 +236,26 @@ const RecipeInputPage = () => {
 
       <div className="pt-[26rem] h-full overflow-y-auto">
         <div className="pl-8 pr-8 space-y-6 pb-8">
-          <div className={`backdrop-blur-sm rounded-2xl p-6 border ${isDarkMode ? 'bg-gray-800/80 border-gray-700' : 'bg-white/80 border-gray-100'}`}>
+          <div className={`ingredients-card backdrop-blur-sm rounded-2xl p-6 border ${isDarkMode ? 'bg-gray-800/80 border-gray-700' : 'bg-white/80 border-gray-100'}`}>
             <h3 className={`font-bold text-xl mb-6 ${isDarkMode ? 'text-cyan-400' : 'text-gray-900'}`}>INGREDIENTS</h3>
-            <div className="grid gap-2 mt-2 mb-1" style={{gridTemplateColumns: '8rem 6rem 1fr 1fr 7rem 8rem'}}>
+            <div className="ingredients-grid mt-2 mb-1">
               {['QTY','UNIT','ITEM','PREP','YIELD %','COST'].map((h,i)=> <div key={i} className={`text-xs font-medium ${isDarkMode? 'text-cyan-400':'text-black'} ${h==='COST'?'text-right':''}`}>{h}</div>)}
             </div>
             <div className="space-y-2 ingredient-grid">
-              {ingredients.map((line, index) => (
-                <div key={index} className="grid gap-2 ingredient-row" style={{gridTemplateColumns: '8rem 6rem 1fr 1fr 7rem 8rem'}}>
-                  <input data-row={index} className={inputClass} value={line.qty} onChange={(e)=>{ const v=[...ingredients]; v[index].qty=e.target.value; setIngredients(v); }} />
-                  <input data-row={index} className={inputClass} value={line.unit} onChange={(e)=>{ const v=[...ingredients]; v[index].unit=e.target.value.toUpperCase(); setIngredients(v); }} />
-                  <input data-row={index} className={inputClass} value={line.item} onChange={(e)=>{ const v=[...ingredients]; v[index].item=e.target.value; setIngredients(v); }} />
-                  <input data-row={index} className={inputClass} value={line.prep} onChange={(e)=>{ const v=[...ingredients]; v[index].prep=e.target.value; setIngredients(v); }} />
-                  <input data-row={index} className={inputClass} value={line.yield} onChange={(e)=>{ const v=[...ingredients]; v[index].yield=e.target.value; setIngredients(v); }} />
-                  <input className={`border p-1 rounded text-sm shadow-md text-right ${isDarkMode ? 'bg-black/50 border-cyan-400/50 text-cyan-300' : 'bg-white border-gray-300 text-black'}`} value={line.cost} onChange={(e)=>{ const v=[...ingredients]; v[index].cost=e.target.value; setIngredients(v); }} />
-                </div>
-              ))}
+              {ingredients.map((line, index) => {
+                const qtyErr = !!line.qty && isNaN(Number(String(line.qty).replace(/[^0-9.\-]/g,'')));
+                const yieldErr = !!line.yield && isNaN(Number(String(line.yield).replace(/[^0-9.\-]/g,'')));
+                const costNum = Number(String(line.cost).replace(/[$€£¥,\s]/g,''));
+                return (
+                <div key={index} className="ingredients-grid ingredient-row">
+                  <input data-row={index} data-col={0} onKeyDown={onGridKeyDown} aria-invalid={qtyErr} title={qtyErr? 'Enter a number':''} className={`${inputClass} ${qtyErr? 'ring-2 ring-red-500 border-red-400':''}`} value={line.qty} onChange={(e)=>{ const v=[...ingredients]; v[index].qty=e.target.value; setIngredients(v); }} />
+                  <input data-row={index} data-col={1} onKeyDown={onGridKeyDown} className={inputClass} value={line.unit} onChange={(e)=>{ const v=[...ingredients]; v[index].unit=e.target.value.toUpperCase(); setIngredients(v); }} />
+                  <input data-row={index} data-col={2} onKeyDown={onGridKeyDown} className={inputClass} value={line.item} onChange={(e)=>{ const v=[...ingredients]; v[index].item=e.target.value; setIngredients(v); }} />
+                  <input data-row={index} data-col={3} onKeyDown={onGridKeyDown} className={inputClass} value={line.prep} onChange={(e)=>{ const v=[...ingredients]; v[index].prep=e.target.value; setIngredients(v); }} />
+                  <input data-row={index} data-col={4} onKeyDown={onGridKeyDown} aria-invalid={yieldErr} title={yieldErr? 'Enter a number':''} className={`${inputClass} ${yieldErr? 'ring-2 ring-red-500 border-red-400':''}`} value={line.yield} onChange={(e)=>{ const v=[...ingredients]; v[index].yield=e.target.value; setIngredients(v); }} />
+                  <input data-row={index} data-col={5} onKeyDown={onGridKeyDown} className={`border p-3 rounded-lg text-sm text-right ${isDarkMode ? 'bg-black/50 border-cyan-400/50 text-cyan-300' : 'bg-white border-gray-200 text-black'}`} value={line.cost} title={isNaN(costNum)? 'Enter a number':''} aria-invalid={isNaN(costNum)} onChange={(e)=>{ const v=[...ingredients]; v[index].cost=e.target.value; setIngredients(v); }} />
+                </div>);
+              })}
               <div className="flex items-center justify-start gap-2 mt-3">
                 <button onClick={()=>setIngredients([...ingredients, { qty:'', unit:'', item:'', prep:'', yield:'', cost:'' }])} className="flex items-center gap-1 text-sm text-green-600 hover:text-green-800"><PlusCircle className="w-4 h-4"/></button>
                 <span className={`text-sm font-medium ${isDarkMode ? 'text-cyan-400' : 'text-black'}`}>INGREDIENT</span>
@@ -212,7 +284,12 @@ const RecipeInputPage = () => {
           </div>
 
           <div className="flex items-center justify-between mt-2">
-            <button className="flex items-center gap-2 text-sm text-gray-700 hover:text-black"><Save className="w-5 h-5"/>Submit</button>
+            <div className="flex items-center gap-2 text-sm">
+              <button onClick={()=>{ pushHistory({ ...serialize(), ts: Date.now() }); }} className="flex items-center gap-2 text-gray-700 hover:text-black"><Save className="w-5 h-5"/>Save Snapshot</button>
+              <button onClick={exportCSV} className="flex items-center gap-1 text-gray-700 hover:text-black"><FileDown className="w-4 h-4"/>CSV</button>
+              <button onClick={()=>window.print()} className="flex items-center gap-1 text-gray-700 hover:text-black"><Printer className="w-4 h-4"/>Print</button>
+              <button onClick={shareLink} className="flex items-center gap-1 text-gray-700 hover:text-black"><Share2 className="w-4 h-4"/>Share</button>
+            </div>
             <button onClick={analyzeNutrition} disabled={nutritionLoading} className={`text-xs px-3 py-2 rounded ${isDarkMode ? 'border border-cyan-400/50 hover:bg-cyan-900/20 text-cyan-300' : 'border border-gray-400 hover:bg-gray-100 text-gray-800'}`}>{nutritionLoading? 'Analyzing…':'Generate Nutrition Label'}</button>
           </div>
 
@@ -261,7 +338,19 @@ const RecipeInputPage = () => {
         onRecipeAccessChange={setSelectedRecipeAccess}
         image={image}
         onImageChange={setImage}
-        onRecipeImport={(data)=>{ if (data?.title) setRecipeName(String(data.title).toUpperCase()); }}
+        onRecipeImport={(data)=>{
+          if (data?.title) setRecipeName(String(data.title).toUpperCase());
+          if (data?.ingredients?.length){
+            const rows = (data.ingredients as string[]).map((s:string)=>{
+              const m = s.match(/^\s*([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?)?\s*([a-zA-Z]+)?\s*(.*)$/);
+              const qty = m?.[1] ? m[1] : ''; const unit = m?.[2] ? m[2].toUpperCase() : ''; const rest = (m?.[3]||'').trim();
+              const [item, ...prep] = rest.split(',');
+              return { qty, unit, item: item.trim(), prep: prep.join(',').trim(), yield: '', cost: '' };
+            });
+            setIngredients(rows.length? rows : [{ qty:'', unit:'', item:'', prep:'', yield:'', cost:'' }]);
+          }
+          if (data?.instructions) setDirections(String(data.instructions));
+        }}
       />
 
       <ImageEditorModal isOpen={showImagePopup} image={image} onClose={()=>setShowImagePopup(false)} onApply={(d)=>setImage(d)} isDarkMode={isDarkMode} />
