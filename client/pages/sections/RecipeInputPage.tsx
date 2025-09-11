@@ -78,6 +78,7 @@ const RecipeInputPage = () => {
   },[]);
   useEffect(()=>{ const handler = (e: any) => { if (e?.detail?.image) setImage(e.detail.image); setShowImagePopup(true); }; window.addEventListener('openImageEditor', handler as any); return ()=>window.removeEventListener('openImageEditor', handler as any); },[]);
   useEffect(()=>{ const id = setTimeout(()=>{ const s = serialize(); localStorage.setItem('recipe:draft', JSON.stringify(s)); }, 600); return ()=>clearTimeout(id); }, [recipeName, ingredients, directions, isDarkMode, yieldQty, yieldUnit, portionCount, portionUnit, cookTime, cookTemp, selectedAllergens, selectedNationality, selectedCourses, selectedRecipeType, selectedPrepMethod, selectedCookingEquipment, selectedRecipeAccess, image]);
+  useEffect(()=>{ const t = setTimeout(()=> setIsRightSidebarCollapsed(true), 450); return ()=> clearTimeout(t); }, []);
 
   useEffect(()=>{
     const onKey = (e: KeyboardEvent) => {
@@ -145,7 +146,7 @@ const RecipeInputPage = () => {
 
   return (
     <div className={`relative w-full h-screen transition-all duration-300 ${isDarkMode ? 'bg-black text-cyan-400' : 'bg-gray-50 text-gray-900'}`}>
-      <div className={`fixed top-0 left-0 right-0 z-10 pl-8 pr-8 py-6 space-y-4 ${isDarkMode ? 'bg-gradient-to-br from-gray-900 via-black to-blue-900' : 'bg-gradient-to-br from-gray-50 to-white'}`}>
+      <div className={`fixed top-0 left-0 right-0 z-50 pl-8 pr-8 py-6 space-y-4 ${isDarkMode ? 'bg-gradient-to-br from-gray-900 via-black to-blue-900' : 'bg-gradient-to-br from-gray-50 to-white'}`}>
         <div className="flex justify-between items-start">
           <div className="p-0.5">
             <div className="h-12 w-auto flex items-center">
@@ -154,6 +155,7 @@ const RecipeInputPage = () => {
           </div>
           <div className="flex flex-col items-end gap-2">
             <div className="flex gap-3 items-center">
+              <button onClick={()=>setIsRightSidebarCollapsed(v=>!v)} title="Toggle Tools" className="p-1 rounded hover:bg-black/10"><Menu className="w-5 h-5"/></button>
               <button onClick={scaleRecipe} title="Scale Recipe" className="p-1 rounded hover:bg-black/10"><Scale className="w-5 h-5"/></button>
               <button onClick={()=>{ pushHistory({ ...serialize(), ts: Date.now() }); alert('Snapshot saved'); }} title="Save Version" className="p-1 rounded hover:bg-black/10"><NotebookPen className="w-5 h-5"/></button>
               <button onClick={convertUnits} title="Convert Units" className="p-1 rounded hover:bg-black/10"><ArrowLeftRight className="w-5 h-5"/></button>
