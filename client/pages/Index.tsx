@@ -19,9 +19,6 @@ export default function Index() {
           <TabsContent value="search">
             <RecipeSearchSection />
           </TabsContent>
-          <TabsContent value="input">
-            <RecipeInputSection />
-          </TabsContent>
           <TabsContent value="gallery">
             <GallerySection />
           </TabsContent>
