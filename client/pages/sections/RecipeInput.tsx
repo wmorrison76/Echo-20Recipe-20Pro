@@ -161,20 +161,7 @@ export default function RecipeInputSection() {
             )}
           </div>
 
-          <div className="mt-6 space-y-2">
-            <div className="text-sm font-medium">Import ZIP from URL</div>
-            <div className="flex gap-2">
-              <input
-                value={zipUrl}
-                onChange={(e) => setZipUrl(e.target.value)}
-                placeholder="https://example.com/vibe-garden.zip"
-                className="flex-1 rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring"
-              />
-              <Button onClick={importFromUrl} disabled={loadingUrl || !zipUrl}>
-                {loadingUrl ? "Importing..." : "Import ZIP"}
-              </Button>
-            </div>
-          </div>
+          {/* Import from URL removed per request */}
         </div>
       </div>
 
