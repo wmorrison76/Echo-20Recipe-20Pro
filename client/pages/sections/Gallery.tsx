@@ -9,7 +9,7 @@ import { FlipBook } from "@/components/FlipBook";
 import { Star, Search, UploadCloud } from "lucide-react";
 
 export default function GallerySection() {
-  const { images, addImages, clearImages, linkImagesToRecipesByFilename, addTagsToImages, reorderImages, updateImage } = useAppData();
+  const { images, lookbooks, addLookBook, addImagesToLookBook, deleteLookBook, updateLookBook, addImages, clearImages, linkImagesToRecipesByFilename, addTagsToImages, reorderImages, updateImage } = useAppData();
   const [status, setStatus] = useState<string | null>(null);
   const [showTagDialog, setShowTagDialog] = useState(false);
   const [importTags, setImportTags] = useState("");
