@@ -191,7 +191,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     // try auto-link after import
     setTimeout(linkImagesToRecipesByFilename, 0);
 
-    return { added: collected.length, errors };
+    return { added: collected.length, errors, titles };
   }, [linkImagesToRecipesByFilename]);
 
   const convertDocxArrayBufferToHtml = async (arrayBuffer: ArrayBuffer): Promise<string> => {
