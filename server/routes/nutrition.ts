@@ -31,8 +31,8 @@ const UNIT_TO_G: Record<string, number> = {
   lb: 453.592, lbs: 453.592, pound: 453.592, pounds: 453.592,
   ml: 1, milliliter: 1, milliliters: 1, // density=water fallback
   l: 1000, liter: 1000, litres: 1000, liters: 1000,
-  tsp: 4.2, teaspoon: 4.2, teaspoons: 4.2,
-  tbsp: 14.3, tablespoon: 14.3, tablespoons: 14.3,
+  tsp: 4.2, teaspoon: 4.2, teaspoons: 4.2, teas: 4.2, teaspoonn: 4.2, teaspoonns: 4.2,
+  tbsp: 14.3, tablespoon: 14.3, tablespoons: 14.3, tbl: 14.3, tbls: 14.3,
   cup: 240, cups: 240,
 };
 
