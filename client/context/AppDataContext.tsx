@@ -205,6 +205,38 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     setLookbooks((prev) => prev.map((b) => (b.id === id ? { ...b, imageIds: (b.imageIds || []).filter((x) => !rm.has(x)) } : b)));
   }, []);
 
+  const dataUrlToUint8 = (dataUrl: string): Uint8Array => {
+    const [, base64] = dataUrl.split(",");
+    const bin = atob(base64 || "");
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  };
+
+  const exportAllZip = useCallback(async () => {
+    const zip = new JSZip();
+    zip.file("data/recipes.json", JSON.stringify(recipes, null, 2));
+    zip.file("data/lookbooks.json", JSON.stringify(lookbooks, null, 2));
+    zip.file("data/images.json", JSON.stringify(images.map(i=>({ id:i.id, name:i.name, tags:i.tags, order:i.order, favorite:i.favorite, type:i.type })), null, 2));
+    const folder = zip.folder("images");
+    if (folder) {
+      for (const img of images) {
+        if (img.dataUrl) {
+          folder.file(img.name, dataUrlToUint8(img.dataUrl));
+        } else if (img.blobUrl) {
+          try { const res = await fetch(img.blobUrl); const ab = await res.arrayBuffer(); folder.file(img.name, ab); } catch {}
+        }
+      }
+    }
+    const blob = await zip.generateAsync({ type: "blob" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `recipe-studio-export-${new Date().toISOString().slice(0,10)}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 0);
+  }, [images, recipes, lookbooks]);
+
   const normalizeRecipe = (raw: any): Omit<Recipe, "id" | "createdAt"> | null => {
     if (!raw || typeof raw !== "object") return null;
 
