@@ -698,7 +698,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     deleteRecipe,
     restoreRecipe,
     purgeDeleted,
-  }), [recipes, images, lookbooks, addImages, addRecipesFromJsonFiles, addRecipesFromDocxFiles, addFromZipArchive, updateRecipe, getRecipeById, attachImageToRecipeFromGallery, searchRecipes, linkImagesToRecipesByFilename, updateImage, addTagsToImages, reorderImages, addLookBook, updateLookBook, deleteLookBook, addImagesToLookBook, removeImagesFromLookBook, exportAllZip]);
+  }), [recipes, images, lookbooks, addImages, addRecipe, addRecipesFromJsonFiles, addRecipesFromDocxFiles, addFromZipArchive, updateRecipe, getRecipeById, attachImageToRecipeFromGallery, searchRecipes, linkImagesToRecipesByFilename, updateImage, addTagsToImages, reorderImages, addLookBook, updateLookBook, deleteLookBook, addImagesToLookBook, removeImagesFromLookBook, exportAllZip, toggleFavorite, rateRecipe, deleteRecipe, restoreRecipe, purgeDeleted]);
 
   return <CTX.Provider value={value}>{children}</CTX.Provider>;
 }
