@@ -12,6 +12,8 @@ const RecipeInputPage = () => {
   const futureRef = useRef<any[]>([]);
   const [directions, setDirections] = useState('1. ');
   const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
+  const { addRecipe, updateRecipe } = useAppData();
+  const recipeIdRef = useRef<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
   // Sync with global theme from ThemeToggle
   useEffect(()=>{
@@ -363,7 +365,7 @@ const RecipeInputPage = () => {
                 const qtyNum = parseQuantity(String(line.qty||''));
                 const qtyErr = !!line.qty && !Number.isFinite(qtyNum);
                 const yieldErr = !!line.yield && isNaN(Number(String(line.yield).replace(/[^0-9.\-]/g,'')));
-                const costNum = Number(String(line.cost).replace(/[$€£��,\s]/g,''));
+                const costNum = Number(String(line.cost).replace(/[$€£¥,\s]/g,''));
                 const updateAndNormalize = (row: any) => {
                   // Auto-fill yield if empty
                   if (!row.yield) {
