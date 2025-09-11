@@ -4,28 +4,22 @@ import { useAppData } from "@/context/AppDataContext";
 export function RecipeCard({ r }: { r: ReturnType<typeof useAppData>["recipes"][number] }) {
   const cover = r.imageDataUrls?.[0];
   return (
-    <a href={`/recipe/${r.id}`} className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden block hover:shadow">
-      {cover ? (
-        <img src={cover} alt={r.title} className="h-40 w-full object-cover" />
-      ) : (
-        <div className="h-40 w-full bg-muted flex items-center justify-center text-muted-foreground">No Image</div>
-      )}
-      <div className="p-3">
-        <h3 className="font-semibold leading-tight line-clamp-2">{r.title}</h3>
-        {r.tags?.length ? (
-          <div className="mt-2 flex flex-wrap gap-1">
-            {r.tags.slice(0, 5).map((t) => (
-              <span key={t} className="text-xs rounded bg-secondary px-2 py-0.5 text-secondary-foreground">
-                {t}
-              </span>
-            ))}
-          </div>
-        ) : null}
-        {r.ingredients?.length ? (
-          <p className="mt-2 text-xs text-muted-foreground line-clamp-3">
-            {r.ingredients.join(", ")}
-          </p>
-        ) : null}
+    <a href={`/recipe/${r.id}`} className="block rounded-xl border bg-white dark:bg-zinc-900 shadow-sm hover:shadow-md overflow-hidden">
+      <div className="grid grid-cols-[120px_1fr] gap-4 p-4 items-start">
+        {cover ? (
+          <img src={cover} alt={r.title} className="h-[120px] w-[120px] object-cover rounded" />
+        ) : (
+          <div className="h-[120px] w-[120px] bg-muted rounded flex items-center justify-center text-muted-foreground">No Image</div>
+        )}
+        <div className="prose prose-sm dark:prose-invert max-w-none">
+          <h2 className="m-0">{r.title}</h2>
+          {r.tags?.length ? (
+            <p className="m-0 text-xs text-muted-foreground">{r.tags.slice(0,5).join(' · ')}</p>
+          ) : null}
+          {r.ingredients?.length ? (
+            <p className="mt-2 mb-0 text-xs text-muted-foreground line-clamp-3">{r.ingredients.join(', ')}</p>
+          ) : null}
+        </div>
       </div>
     </a>
   );
