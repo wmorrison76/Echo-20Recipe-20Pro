@@ -321,7 +321,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             const arr: any[] = Array.isArray(json) ? json : [json];
             for (const item of arr) {
               const norm = normalizeRecipe(item);
-              if (norm) nextRecipes.push({ id: uid(), createdAt: Date.now(), sourceFile: base, ...norm });
+              if (norm) { nextRecipes.push({ id: uid(), createdAt: Date.now(), sourceFile: base, ...norm }); titles.push(norm.title); }
             }
           } else if (lower.endsWith(".docx")) {
             const ab = await entry.async("arraybuffer");
