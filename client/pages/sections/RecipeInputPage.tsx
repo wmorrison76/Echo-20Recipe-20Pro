@@ -1116,41 +1116,11 @@ const RecipeInputPage = () => {
                 className={`border rounded-xl p-4 h-full shadow-lg ${isDarkMode ? "bg-blue-900/20 border-blue-400/30 shadow-blue-400/20" : "bg-blue-50/80 border-blue-200 shadow-gray-200/50"} backdrop-blur-sm`}
               >
                 <div
-                  className={`font-semibold text-sm mb-3 ${isDarkMode ? "text-blue-400" : "text-blue-700"}`}
-                >
-                  MODIFIERS
-                </div>
-                {selectedNationality.length ||
-                selectedCourses.length ||
-                selectedRecipeType.length ||
-                selectedPrepMethod.length ||
-                selectedCookingEquipment.length ? (
-                  <div
-                    className={`grid grid-cols-7 gap-1 text-xs ${isDarkMode ? "text-blue-300" : "text-blue-700"}`}
-                  >
-                    {selectedNationality.map((x) => (
-                      <div key={x}>{x}</div>
-                    ))}
-                    {selectedCourses.map((x) => (
-                      <div key={x}>{x}</div>
-                    ))}
-                    {selectedRecipeType.map((x) => (
-                      <div key={x}>{x}</div>
-                    ))}
-                    {selectedPrepMethod.map((x) => (
-                      <div key={x}>{x}</div>
-                    ))}
-                    {selectedCookingEquipment.map((x) => (
-                      <div key={x}>{x}</div>
-                    ))}
-                  </div>
-                ) : (
-                  <div
-                    className={`text-xs italic ${isDarkMode ? "text-blue-500" : "text-blue-400"}`}
-                  >
-                    No modifiers selected
-                  </div>
-                )}
+                className={`font-semibold text-sm mb-3 ${isDarkMode ? "text-blue-400" : "text-blue-700"}`}
+              >
+                Categorization (LUCCCA)
+              </div>
+              <TaxonomyPicker value={taxonomy} onChange={setTaxonomy} />
               </div>
             </div>
 
