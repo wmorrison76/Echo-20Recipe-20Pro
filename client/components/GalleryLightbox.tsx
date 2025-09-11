@@ -53,7 +53,7 @@ export function GalleryLightbox({
         {img?.unsupported ? (
           <div className="text-sm text-white/80">Unsupported format for preview: {img?.name}</div>
         ) : (
-          src ? <img src={src} alt={img?.name} className="max-h-full max-w-full object-contain select-none" /> : null
+          src ? <img src={src} alt={img?.name} className="max-h-full max-w-full object-contain select-none" onError={(e)=>{ const el=e.currentTarget; el.onerror=null; el.src='/placeholder.svg'; }} /> : null
         )}
       </div>
     </div>
