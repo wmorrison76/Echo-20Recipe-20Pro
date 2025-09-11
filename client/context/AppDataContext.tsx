@@ -1,5 +1,9 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import JSZip from "jszip";
+// Mammoth browser build for DOCX parsing
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import * as mammoth from "mammoth/mammoth.browser";
 
 export type GalleryImage = {
   id: string;
@@ -27,6 +31,7 @@ type AppData = {
   images: GalleryImage[];
   addImages: (files: File[]) => Promise<number>;
   addRecipesFromJsonFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[] }>;
+  addRecipesFromDocxFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[] }>;
   addFromZipArchive: (file: File) => Promise<{ addedRecipes: number; addedImages: number; errors: { entry: string; error: string }[] }>;
   clearRecipes: () => void;
   clearImages: () => void;
@@ -189,6 +194,107 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     return { added: collected.length, errors };
   }, [linkImagesToRecipesByFilename]);
 
+  const convertDocxArrayBufferToHtml = async (arrayBuffer: ArrayBuffer): Promise<string> => {
+    const { value } = await mammoth.convertToHtml({ arrayBuffer });
+    return value as string;
+  };
+
+  const htmlToRecipes = (html: string, source: string): Recipe[] => {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+    const nodes = Array.from(doc.body.children);
+
+    // find top-level headings serving as recipe delimiters
+    const titleTags = new Set(["H1", "H2"]);
+    const sections: { title: string; elements: Element[] }[] = [];
+    let current: { title: string; elements: Element[] } | null = null;
+
+    for (const el of nodes) {
+      if (titleTags.has(el.tagName)) {
+        const title = (el.textContent || "").trim();
+        if (title) {
+          if (current) sections.push(current);
+          current = { title, elements: [] };
+          continue;
+        }
+      }
+      if (current) current.elements.push(el);
+    }
+    if (current) sections.push(current);
+
+    // Fallback to single section if none
+    if (!sections.length) {
+      const title = (doc.querySelector("h1,h2,h3")?.textContent || "Untitled").trim() || "Untitled";
+      sections.push({ title, elements: Array.from(doc.body.children) });
+    }
+
+    const getText = (els: Element[]) => els.map((e) => (e.textContent || "").trim()).filter(Boolean);
+
+    const extractListAfter = (startIdx: number, arr: Element[]) => {
+      const out: string[] = [];
+      for (let i = startIdx + 1; i < arr.length; i++) {
+        const el = arr[i];
+        const tag = el.tagName;
+        if (["H1", "H2", "H3"].includes(tag)) break;
+        if (tag === "UL" || tag === "OL") {
+          out.push(...Array.from(el.querySelectorAll("li")).map((li) => (li.textContent || "").trim()).filter(Boolean));
+        } else if (tag === "P") {
+          const t = (el.textContent || "").trim();
+          if (t) out.push(t);
+        }
+      }
+      return out;
+    };
+
+    const results: Recipe[] = [];
+    for (const sec of sections) {
+      const els = sec.elements;
+      const lowerTexts = els.map((e) => (e.textContent || "").toLowerCase());
+      const findIdx = (label: string[]) => lowerTexts.findIndex((t) => label.some((l) => t.startsWith(l)));
+
+      const ingIdx = findIdx(["ingredients", "ingredient", "what you need"]);
+      const instIdx = findIdx(["instructions", "directions", "method", "steps"]);
+
+      const ingredients = ingIdx >= 0 ? extractListAfter(ingIdx, els) : [];
+      const instructions = instIdx >= 0 ? extractListAfter(instIdx, els) : [];
+
+      const rec: Recipe = {
+        id: uid(),
+        createdAt: Date.now(),
+        title: sec.title,
+        ingredients: ingredients.length ? ingredients : undefined,
+        instructions: instructions.length ? instructions : undefined,
+        sourceFile: source,
+      };
+      results.push(rec);
+    }
+    return results;
+  };
+
+  const addRecipesFromDocxFiles = useCallback(async (files: File[]) => {
+    const errors: { file: string; error: string }[] = [];
+    const collected: Recipe[] = [];
+
+    for (const f of files) {
+      if (!f.name.toLowerCase().endsWith(".docx")) {
+        errors.push({ file: f.name, error: "Unsupported Word format (use .docx)" });
+        continue;
+      }
+      try {
+        const ab = await f.arrayBuffer();
+        const html = await convertDocxArrayBufferToHtml(ab);
+        const recs = htmlToRecipes(html, f.name);
+        collected.push(...recs);
+      } catch (e: any) {
+        errors.push({ file: f.name, error: e?.message ?? "Failed to read .docx" });
+      }
+    }
+
+    if (collected.length) setRecipes((prev) => [...collected, ...prev]);
+    setTimeout(linkImagesToRecipesByFilename, 0);
+    return { added: collected.length, errors };
+  }, [linkImagesToRecipesByFilename]);
+
   const addFromZipArchive = useCallback(async (file: File) => {
     const errors: { entry: string; error: string }[] = [];
     const nextRecipes: Recipe[] = [];
@@ -213,6 +319,11 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
               const norm = normalizeRecipe(item);
               if (norm) nextRecipes.push({ id: uid(), createdAt: Date.now(), sourceFile: base, ...norm });
             }
+          } else if (lower.endsWith(".docx")) {
+            const ab = await entry.async("arraybuffer");
+            const html = await convertDocxArrayBufferToHtml(ab);
+            const recs = htmlToRecipes(html, base);
+            nextRecipes.push(...recs);
           } else if (/(\.png|\.jpg|\.jpeg|\.webp|\.gif)$/i.test(lower)) {
             if (existingImageNames.has(base)) continue;
             const blob = await entry.async("blob");
@@ -263,12 +374,13 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     images,
     addImages,
     addRecipesFromJsonFiles,
+    addRecipesFromDocxFiles,
     addFromZipArchive,
     clearRecipes,
     clearImages,
     searchRecipes,
     linkImagesToRecipesByFilename,
-  }), [recipes, images, addImages, addRecipesFromJsonFiles, addFromZipArchive, searchRecipes, linkImagesToRecipesByFilename]);
+  }), [recipes, images, addImages, addRecipesFromJsonFiles, addRecipesFromDocxFiles, addFromZipArchive, searchRecipes, linkImagesToRecipesByFilename]);
 
   return <CTX.Provider value={value}>{children}</CTX.Provider>;
 }
