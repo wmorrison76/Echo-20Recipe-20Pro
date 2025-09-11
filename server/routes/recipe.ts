@@ -22,6 +22,13 @@ function parseJsonLdRecipe(html: string) {
               const h = Number(m[1]||0), min = Number(m[2]||0);
               return h ? `${h}:${String(min).padStart(2,'0')}` : `${min}m`;
             };
+            const nutrition = cand.nutrition ? {
+              calories: String(cand.nutrition.calories || ''),
+              fat: String(cand.nutrition.fatContent || ''),
+              carbs: String(cand.nutrition.carbohydrateContent || ''),
+              protein: String(cand.nutrition.proteinContent || ''),
+              servingSize: String(cand.nutrition.servingSize || '')
+            } : undefined;
             return {
               title: decodeHtml(String(cand.name || '')),
               ingredients: (cand.recipeIngredient || []).map((x: any) => decodeHtml(String(x))),
@@ -32,6 +39,7 @@ function parseJsonLdRecipe(html: string) {
               cookTime: isoToHuman(String(cand.cookTime || cand.totalTime || '')),
               prepTime: isoToHuman(String(cand.prepTime || '')),
               image: Array.isArray(cand.image) ? cand.image[0] : cand.image,
+              nutrition,
             };
           }
         }
