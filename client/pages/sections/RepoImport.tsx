@@ -44,17 +44,16 @@ export default function RepoImportSection() {
 
   const importJson = async () => {
     setStatus(null);
-    const raw = makeRawUrl(repoUrl, branch, jsonPath);
-    if (!raw) { setStatus("Invalid repo or path."); return; }
     try {
       setLoading(true);
-      setStatus("Fetching JSON...");
-      const resp = await fetch(raw, { headers: { Accept: "application/vnd.github.raw" } });
+      setStatus("Fetching JSON from repo...");
+      const q = new URLSearchParams({ repo: repoUrl, branch, path: jsonPath });
+      const resp = await fetch(`/api/github/raw?${q.toString()}`);
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       const text = await resp.text();
       const file = new File([new Blob([text], { type: "application/json" })], jsonPath.split("/").pop() || "recipes.json", { type: "application/json" });
       const { added } = await addRecipesFromJsonFiles([file]);
-      setStatus(`Imported ${added} recipe(s) from ${raw}.`);
+      setStatus(`Imported ${added} recipe(s) from repo.`);
     } catch (e: any) {
       setStatus(`Failed to import JSON: ${e?.message ?? "error"}`);
     } finally {
