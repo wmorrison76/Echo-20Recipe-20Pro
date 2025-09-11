@@ -114,8 +114,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const addImages = useCallback(async (files: File[], opts?: { tags?: string[] }) => {
     let added = 0;
     const existing = new Set(images.map((i) => i.name));
-    const baseOrder = images.length ? Math.max(...images.map((i) => i.order)) + 1 : 0;
-    let order = baseOrder;
+    const maxOrder = images.length ? Math.max(...images.map((i) => (typeof (i as any).order === "number" ? (i as any).order : -1))) : -1;
+    let order = maxOrder + 1;
     const next: GalleryImage[] = [];
     for (const f of files) {
       if (existing.has(f.name)) continue;
@@ -128,7 +128,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         } else {
           const blob = new Blob([await f.arrayBuffer()], { type: f.type || "application/octet-stream" });
           const blobUrl = URL.createObjectURL(blob);
-          next.push({ id: uid(), name: f.name, blobUrl, createdAt: Date.now(), tags: opts?.tags ?? [], order: order++, type: f.type, unsupported: true });
+          next.push({ id: uid(), name: f.name, blobUrl, createdAt: Date.now(), tags: opts?.tags ?? [], favorite: false, order: order++, type: f.type, unsupported: true });
           added++;
         }
       } catch (e) {
@@ -138,6 +138,27 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     if (next.length) setImages((prev) => [...next, ...prev]);
     return added;
   }, [images]);
+
+  const updateImage = useCallback((id: string, patch: Partial<GalleryImage>) => {
+    setImages((prev) => prev.map((img) => (img.id === id ? { ...img, ...patch, tags: patch.tags ?? img.tags } : img)));
+  }, []);
+
+  const addTagsToImages = useCallback((ids: string[], tags: string[]) => {
+    const set = new Set(tags.map((t) => t.trim()).filter(Boolean));
+    setImages((prev) => prev.map((img) => (ids.includes(img.id) ? { ...img, tags: Array.from(new Set([...(img.tags ?? []), ...set])) } : img)));
+  }, []);
+
+  const reorderImages = useCallback((dragId: string, overId: string) => {
+    setImages((prev) => {
+      const idxA = prev.findIndex((i) => i.id === dragId);
+      const idxB = prev.findIndex((i) => i.id === overId);
+      if (idxA === -1 || idxB === -1) return prev;
+      const copy = prev.slice();
+      const [moved] = copy.splice(idxA, 1);
+      copy.splice(idxB, 0, moved);
+      return copy.map((i, idx) => ({ ...i, order: idx }));
+    });
+  }, []);
 
   const normalizeRecipe = (raw: any): Omit<Recipe, "id" | "createdAt"> | null => {
     if (!raw || typeof raw !== "object") return null;
