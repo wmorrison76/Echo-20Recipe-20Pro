@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAppData } from "@/context/AppDataContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { GalleryLightbox } from "@/components/GalleryLightbox";
+import { FlipBook } from "@/components/FlipBook";
 import { Star, Search, UploadCloud } from "lucide-react";
 
 export default function GallerySection() {
