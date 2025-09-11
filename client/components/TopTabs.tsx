@@ -13,6 +13,7 @@ function TabLink({ to, label }: { to: string; label: string }) {
 }
 
 export default function TopTabs() {
+  const isAdd = new URLSearchParams(useLocation().search).get('tab') === 'add-recipe';
   return (
     <header className="border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-14 items-center justify-between gap-4">
@@ -25,16 +26,16 @@ export default function TopTabs() {
           <TabLink to="/?tab=input" label="Recipe Input" />
           <TabLink to="/?tab=gallery" label="Gallery" />
           <TabLink to="/?tab=add-recipe" label="Add Recipe" />
-          {new URLSearchParams(useLocation().search).get('tab') === 'add-recipe' && (
-            <div className="ml-2 flex items-center gap-2">
+        </nav>
+        <div className="flex items-center gap-1">
+          {isAdd && (
+            <div className="flex items-center gap-1 pr-1">
               <button title="Scale" onClick={()=>window.dispatchEvent(new CustomEvent('recipe:action',{detail:{type:'scale'}}))} className="p-1 rounded hover:bg-black/10"><Scale className="w-4 h-4"/></button>
               <button title="Save Snapshot" onClick={()=>window.dispatchEvent(new CustomEvent('recipe:action',{detail:{type:'saveVersion'}}))} className="p-1 rounded hover:bg-black/10"><NotebookPen className="w-4 h-4"/></button>
               <button title="Convert Units" onClick={()=>window.dispatchEvent(new CustomEvent('recipe:action',{detail:{type:'convertUnits'}}))} className="p-1 rounded hover:bg-black/10"><ArrowLeftRight className="w-4 h-4"/></button>
               <button title="Currency" onClick={()=>window.dispatchEvent(new CustomEvent('recipe:action',{detail:{type:'cycleCurrency'}}))} className="p-1 rounded hover:bg-black/10"><CircleDollarSign className="w-4 h-4"/></button>
             </div>
           )}
-        </nav>
-        <div className="flex items-center gap-2">
           <ThemeToggle />
         </div>
       </div>
