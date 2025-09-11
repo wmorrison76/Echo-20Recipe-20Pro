@@ -1,9 +1,4 @@
-import { useMemo, useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import RecipeInputPage from "./RecipeInputPage";
 
 type Row = { qty: string; unit: string; item: string; prep: string; yieldPct: string; cost: string };
 
@@ -14,41 +9,7 @@ import { SidebarProvider, Sidebar, SidebarContent, SidebarHeader, SidebarMenu, S
 import { Home, BookOpen, ChefHat, Settings, HelpCircle, Bell, Github, Link } from "lucide-react";
 
 export default function AddRecipeSection() {
-  const [name, setName] = useState("");
-  const [cookTime, setCookTime] = useState("");
-  const [cookTemp, setCookTemp] = useState("");
-  const [yieldQty, setYieldQty] = useState("6");
-  const [unit, setUnit] = useState("QTS");
-  const [portion, setPortion] = useState("6");
-  const [portionUnit, setPortionUnit] = useState("OZ");
-  const [rows, setRows] = useState<Row[]>(Array.from({ length: 18 }, () => ({ qty: "", unit: "", item: "", prep: "", yieldPct: "", cost: "" })));
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [allergens, setAllergens] = useState<string[]>([]);
-  const [nationality, setNationality] = useState<string[]>([]);
-  const [status, setStatus] = useState("Active");
-
-  const costTotal = useMemo(() => rows.reduce((s, r) => s + (parseFloat(r.cost) || 0), 0), [rows]);
-
-  const toggle = (list: string[], setList: (v: string[]) => void, v: string) => {
-    setList(list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
-  };
-
-  return (
-    <SidebarProvider>
-      <div className="space-y-4">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <SidebarTrigger />
-            <span className="text-sm text-muted-foreground">Menu</span>
-          </div>
-          <div className="flex items-center gap-3 text-muted-foreground">
-            <a href="https://github.com" target="_blank" rel="noreferrer" title="GitHub" className="hover:text-foreground"><Github className="h-4 w-4"/></a>
-            <a href="#notifications" title="Notifications" className="hover:text-foreground"><Bell className="h-4 w-4"/></a>
-            <a href="#help" title="Help" className="hover:text-foreground"><HelpCircle className="h-4 w-4"/></a>
-            <a href="#settings" title="Settings" className="hover:text-foreground"><Settings className="h-4 w-4"/></a>
-          </div>
-        </div>
-        <div className="grid lg:grid-cols-[1fr_360px] gap-6">
+  return <RecipeInputPage />;
         {/* Main */}
         <div className="space-y-4">
           <Card className="p-4">
@@ -153,44 +114,4 @@ export default function AddRecipeSection() {
             </div>
           </Card>
         </div>
-        </div>
-      </div>
-      <Sidebar side="left" collapsible="offcanvas">
-        <SidebarHeader>
-          <div className="text-sm font-semibold px-2">Add Recipe</div>
-        </SidebarHeader>
-        <SidebarSeparator />
-        <SidebarContent>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <a href="#"><Home /> <span>Dashboard</span></a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <a href="#"><BookOpen /> <span>Recipes</span></a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <a href="#"><ChefHat /> <span>Ingredients</span></a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild>
-                <a href="#"><Link /> <span>Vendors</span></a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarContent>
-      </Sidebar>
-    </SidebarProvider>
-  );
-}
-
-function updateRow(setter: (v: Row[]) => void, rows: Row[], idx: number, patch: Partial<Row>) {
-  const next = rows.slice();
-  next[idx] = { ...next[idx], ...patch };
-  setter(next);
 }
