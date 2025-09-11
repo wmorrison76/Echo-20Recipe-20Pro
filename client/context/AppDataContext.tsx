@@ -46,6 +46,9 @@ type AppData = {
   clearImages: () => void;
   searchRecipes: (q: string) => Recipe[];
   linkImagesToRecipesByFilename: () => void;
+  updateImage: (id: string, patch: Partial<GalleryImage>) => void;
+  addTagsToImages: (ids: string[], tags: string[]) => void;
+  reorderImages: (dragId: string, overId: string) => void;
 };
 
 const CTX = createContext<AppData | null>(null);
