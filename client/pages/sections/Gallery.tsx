@@ -16,6 +16,9 @@ export default function GallerySection() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const dragId = useRef<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editTags, setEditTags] = useState("");
 
   const filtered = useMemo(() => {
     const q = filter.trim().toLowerCase();
