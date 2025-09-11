@@ -217,7 +217,7 @@ export default function GallerySection() {
                 )}
               </button>
               <div className="p-3 flex flex-wrap items-center gap-1 text-[11px]">
-                <span className="truncate" title={img.name}>{img.name}</span>
+                <button className="truncate text-left underline-offset-2 hover:underline" onClick={()=>beginEdit(img.id)} title="Click to rename & categorize">{img.name}</button>
                 {(img.tags||[]).map((t)=> (
                   <span key={t} className="px-1.5 py-0.5 rounded-full bg-secondary text-secondary-foreground">{t}</span>
                 ))}
