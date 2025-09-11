@@ -86,9 +86,22 @@ export default function GallerySection() {
         <div className="rounded-lg border p-4 space-y-3">
           <div className="text-sm text-muted-foreground">Images in gallery</div>
           <div className="mt-1 text-2xl font-semibold">{images.length}</div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <input value={filter} onChange={(e)=>setFilter(e.target.value)} placeholder="Search or filter by tag" className="flex-1 rounded-md border bg-background px-3 py-2" />
             <Button variant="secondary" onClick={() => linkImagesToRecipesByFilename()}>Link to recipes</Button>
+            <Button variant="outline" onClick={async()=>{
+              const urls = [
+                "https://picsum.photos/id/1080/1200/900","https://picsum.photos/id/1084/900/1200",
+                "https://picsum.photos/id/1081/1200/900","https://picsum.photos/id/1067/900/1200",
+                "https://picsum.photos/id/1035/1200/900","https://picsum.photos/id/1041/900/1200",
+                "https://picsum.photos/id/106/1200/900","https://picsum.photos/id/1082/900/1200"
+              ];
+              const files: File[] = [];
+              for (const [i,u] of urls.entries()) {
+                try { const res = await fetch(u); const b = await res.blob(); files.push(new File([b], `demo-${i}.jpg`, { type: b.type||'image/jpeg' })); } catch {}
+              }
+              if (files.length) { setStatus('Importing demo images...'); await addImages(files, { tags: ['demo'] }); setStatus('Demo images loaded.'); }
+            }}>Load demo images</Button>
             <Button variant="destructive" onClick={() => clearImages()}>Clear</Button>
           </div>
           {selected.length > 0 && (
