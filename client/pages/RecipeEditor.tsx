@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import TopTabs from "@/components/TopTabs";
 import { useAppData } from "@/context/AppDataContext";
 
 function Labeled({ label, children }: { label: string; children: React.ReactNode }) {
