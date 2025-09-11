@@ -13,6 +13,7 @@ export default function RecipeInputSection() {
   const onFiles = async (files: File[]) => {
     setStatus("Processing...");
     const jsonFiles = files.filter((f) => f.type.includes("json") || f.name.toLowerCase().endsWith(".json"));
+    const docxFiles = files.filter((f) => f.name.toLowerCase().endsWith(".docx"));
     const zipFiles = files.filter((f) => f.type.includes("zip") || f.name.toLowerCase().endsWith(".zip"));
 
     let importedCount = 0;
@@ -20,6 +21,12 @@ export default function RecipeInputSection() {
 
     if (jsonFiles.length) {
       const { added, errors } = await addRecipesFromJsonFiles(jsonFiles);
+      importedCount += added;
+      allErrors.push(...errors);
+    }
+
+    if (docxFiles.length) {
+      const { added, errors } = await addRecipesFromDocxFiles(docxFiles);
       importedCount += added;
       allErrors.push(...errors);
     }
