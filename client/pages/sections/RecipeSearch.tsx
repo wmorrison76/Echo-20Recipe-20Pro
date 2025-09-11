@@ -158,7 +158,7 @@ export default function RecipeSearchSection() {
             const isTitle=(s:string)=> s && s.length<70 && /[A-Za-z]/.test(s) && (s===s.toUpperCase() || /^[A-Z][^.!?]{2,}$/.test(s));
             while(i<norm.length){
               while(i<norm.length && !/ingredients?/i.test(norm[i])) i++;
-              if(i>=norm.length) break; let start=i; // ingredients line
+              if(i>=norm.length) break; // ingredients line
               // find title above within previous 5 lines
               let tIdx=Math.max(0,i-5); let title=''; for(let k=i-1;k>=tIdx;k--){ if(isTitle(norm[k])){ title=norm[k]; break; } }
               // collect instructions after ingredients until next ingredients or blank title
@@ -166,6 +166,24 @@ export default function RecipeSearchSection() {
               // instructions
               let ins:string[]=[]; while(i<norm.length && !/ingredients?/i.test(norm[i])){ const s=norm[i]; if(s) ins.push(s); i++; }
               if(title && (ings.length||ins.length)) items.push({ title, ingredients: ings, instructions: ins, tags:[book] });
+            }
+            // Try to detect ISBN in the whole text
+            const joined = norm.join(' ');
+            const m = joined.match(/(?:ISBN(?:-1[03])?:?\s*)?((?:97[89][- ]?)?\d{1,5}[- ]?\d{1,7}[- ]?\d{1,7}[- ]?[\dX])/i);
+            if (m) {
+              const rawIsbn = m[1].replace(/[-\s]/g,'');
+              const isbn = rawIsbn.length>=10 ? rawIsbn : undefined;
+              if (isbn) {
+                try {
+                  const coverUrl = `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg?default=false`;
+                  const res = await fetch(coverUrl, { method:'GET' });
+                  if (res.ok) {
+                    const blob = await res.blob();
+                    const file = new File([blob], `book-${isbn}.jpg`, { type: blob.type || 'image/jpeg' });
+                    await addImages([file], { tags: [book, 'book'] });
+                  }
+                } catch {}
+              }
             }
             if(items.length){ const blob=new Blob([JSON.stringify(items)],{type:'application/json'}); const file=new File([blob], `${book}.json`, { type:'application/json' }); const { added } = await addRecipesFromJsonFiles([file]); setStatus(`Imported ${added} recipes from book.`); } else { setStatus('Could not detect recipes in PDF'); }
           } catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`);} finally { (e.target as HTMLInputElement).value=''; } }} />
