@@ -174,7 +174,7 @@ export default function GallerySection() {
                 {img.unsupported ? (
                   <div className="h-40 w-full bg-muted flex items-center justify-center text-xs text-muted-foreground">Unsupported preview</div>
                 ) : (
-                  <img src={img.dataUrl || img.blobUrl} alt={img.name} className="w-full h-auto object-cover transition-transform duration-300 will-change-transform group-hover:scale-[1.02]" />
+                  <img src={img.dataUrl || img.blobUrl} alt={img.name} className="w-full h-auto object-cover transition-transform duration-300 will-change-transform group-hover:scale-[1.01]" />
                 )}
               </button>
               <div className="p-3 flex flex-wrap items-center gap-1 text-[11px]">
