@@ -145,8 +145,8 @@ export default function RecipeSearchSection() {
             <div className="text-muted-foreground">Auto-detects titles, ingredients, and instructions</div>
           </div>
         </Dropzone>
-        <div className="rounded-lg border p-3 self-start">
-          <div className="text-sm font-medium mb-2">Library (Book PDF) Import</div>
+        <div className="rounded-lg border p-2 self-start">
+          <div className="text-xs font-medium mb-1">Library (Book PDF) Import</div>
           <input type="file" accept="application/pdf" onChange={async(e)=>{ const f=e.target.files?.[0]; if(!f) return; try{ setStatus('Reading book PDF...'); const ab = await f.arrayBuffer(); const pdfjs: any = await import('https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs'); const workerSrc='https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs'; if(pdfjs.GlobalWorkerOptions) pdfjs.GlobalWorkerOptions.workerSrc=workerSrc; const doc = await pdfjs.getDocument({ data: ab }).promise; let lines:string[]=[]; for(let p=1;p<=doc.numPages;p++){ const page=await doc.getPage(p); const tc=await page.getTextContent(); lines.push(...tc.items.map((i:any)=> String(i.str)).filter(Boolean)); lines.push(''); }
             const norm = lines.map(s=> s.replace(/\s+/g,' ').trim());
             const items:any[]=[]; let i=0; const book=f.name.replace(/\.[^.]+$/,'');
@@ -182,15 +182,15 @@ export default function RecipeSearchSection() {
             }
             if(items.length){ const blob=new Blob([JSON.stringify(items)],{type:'application/json'}); const file=new File([blob], `${book}.json`, { type:'application/json' }); const { added } = await addRecipesFromJsonFiles([file]); setStatus(`Imported ${added} recipes from book.`); } else { setStatus('Could not detect recipes in PDF'); }
           } catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`);} finally { (e.target as HTMLInputElement).value=''; } }} />
-          <div className="text-sm text-muted-foreground">Imported recipes</div>
-          <div className="mt-1 text-2xl font-semibold">{recipes.length}</div>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <Button variant="secondary" onClick={() => linkImagesToRecipesByFilename()}>Link images from Gallery by filename</Button>
-            <Button variant="outline" onClick={async()=>{ const sample=[ { title: 'Seared Tuna', ingredients:['tuna','salt'], instructions:['Sear both sides.'] }, { title: 'Green Risotto', ingredients:['rice','spinach'], instructions:['Cook rice.','Blend spinach.'] } ]; const file = new File([new Blob([JSON.stringify(sample)],{type:'application/json'})], 'demo.json', { type:'application/json' }); setStatus('Importing demo recipes...'); const { added } = await addRecipesFromJsonFiles([file]); setStatus(`Imported ${added} demo recipes.`); }}>Load demo recipes</Button>
-            <Button variant="destructive" onClick={() => clearRecipes()}>Clear recipes</Button>
+          <div className="text-xs text-muted-foreground">Imported recipes</div>
+          <div className="mt-1 text-lg font-semibold">{recipes.length}</div>
+          <div className="mt-2 flex flex-wrap gap-1">
+            <Button size="sm" variant="secondary" onClick={() => linkImagesToRecipesByFilename()}>Link images from Gallery by filename</Button>
+            <Button size="sm" variant="outline" onClick={async()=>{ const sample=[ { title: 'Seared Tuna', ingredients:['tuna','salt'], instructions:['Sear both sides.'] }, { title: 'Green Risotto', ingredients:['rice','spinach'], instructions:['Cook rice.','Blend spinach.'] } ]; const file = new File([new Blob([JSON.stringify(sample)],{type:'application/json'})], 'demo.json', { type:'application/json' }); setStatus('Importing demo recipes...'); const { added } = await addRecipesFromJsonFiles([file]); setStatus(`Imported ${added} demo recipes.`); }}>Load demo recipes</Button>
+            <Button size="sm" variant="destructive" onClick={() => clearRecipes()}>Clear recipes</Button>
           </div>
           {total>0 && (
-            <div className="mt-3 space-y-2">
+            <div className="mt-2 space-y-1">
               <div className="text-xs text-muted-foreground">{processed} / {total} files processed</div>
               <div className="h-2 w-full rounded bg-muted"><div className="h-2 rounded bg-primary transition-all" style={{ width: `${Math.round((processed / Math.max(total,1)) * 100)}%` }} /></div>
               {importedTitles.length>0 && (
@@ -198,15 +198,15 @@ export default function RecipeSearchSection() {
               )}
             </div>
           )}
-          <div className="mt-4 space-y-2">
-            <div className="text-sm font-medium">Import from the web</div>
+          <div className="mt-3 space-y-1">
+            <div className="text-xs font-medium">Import from the web</div>
             <div className="flex gap-2">
-              <input value={query} onChange={(e)=>setQuery(e.target.value)} placeholder="Search the web (e.g. 'chocolate cake recipe')" className="flex-1 rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring" />
-              <Button variant="outline" onClick={()=>{ const q=encodeURIComponent(query); window.open(`https://www.google.com/search?q=${q}+recipe`, '_blank'); }}>Search</Button>
+              <input value={query} onChange={(e)=>setQuery(e.target.value)} placeholder="Search the web (e.g. 'chocolate cake recipe')" className="flex-1 rounded-md border bg-background px-2 py-1 outline-none focus:ring-2 focus:ring-ring text-sm" />
+              <Button size="sm" variant="outline" onClick={()=>{ const q=encodeURIComponent(query); window.open(`https://www.google.com/search?q=${q}+recipe`, '_blank'); }}>Search</Button>
             </div>
             <div className="flex gap-2">
-              <input value={url} onChange={(e)=>setUrl(e.target.value)} placeholder="Paste a recipe page URL (https://...)" className="flex-1 rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring" />
-              <Button onClick={async()=>{ try{ setLoadingUrl(true); setStatus('Fetching recipe...'); const r = await fetch('/api/recipe/import',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ url })}); if(!r.ok) throw new Error((await r.json().catch(()=>({})))?.error||'Failed'); const data = await r.json(); const sample = [{ title:data.title, ingredients:data.ingredients, instructions: Array.isArray(data.instructions)? data.instructions: String(data.instructions||'').split(/\r?\n/).filter(Boolean), tags: [] }]; const file = new File([new Blob([JSON.stringify(sample)],{type:'application/json'})], 'web.json', { type:'application/json' }); const { added } = await addRecipesFromJsonFiles([file]); setStatus(`Imported ${added} recipe(s) from web.`);} catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`);} finally{ setLoadingUrl(false); } }} disabled={loadingUrl || !url}>{loadingUrl? 'Importing...' : 'Import'}</Button>
+              <input value={url} onChange={(e)=>setUrl(e.target.value)} placeholder="Paste a recipe page URL (https://...)" className="flex-1 rounded-md border bg-background px-2 py-1 outline-none focus:ring-2 focus:ring-ring text-sm" />
+              <Button size="sm" onClick={async()=>{ try{ setLoadingUrl(true); setStatus('Fetching recipe...'); const r = await fetch('/api/recipe/import',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ url })}); if(!r.ok) throw new Error((await r.json().catch(()=>({})))?.error||'Failed'); const data = await r.json(); const sample = [{ title:data.title, ingredients:data.ingredients, instructions: Array.isArray(data.instructions)? data.instructions: String(data.instructions||'').split(/\r?\n/).filter(Boolean), tags: [] }]; const file = new File([new Blob([JSON.stringify(sample)],{type:'application/json'})], 'web.json', { type:'application/json' }); const { added } = await addRecipesFromJsonFiles([file]); setStatus(`Imported ${added} recipe(s) from web.`);} catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`);} finally{ setLoadingUrl(false); } }} disabled={loadingUrl || !url}>{loadingUrl? 'Importing...' : 'Import'}</Button>
             </div>
           </div>
         </div>
