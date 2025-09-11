@@ -486,6 +486,7 @@ const RecipeInputPage = () => {
             setIngredients(rows.length? rows : [{ qty:'', unit:'', item:'', prep:'', yield:'', cost:'' }]);
           }
           if (data?.instructions) setDirections(decode(String(data.instructions)));
+          if (data?.image) setImage(String(data.image));
           // Top info
           if (data?.yield){
             const y = String(data.yield);
