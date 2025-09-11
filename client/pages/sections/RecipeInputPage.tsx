@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import RightSidebar from './RightSidebar';
+import { useAppData } from '@/context/AppDataContext';
 import ImageEditorModal from './ImageEditorModal';
 import NutritionLabel from './NutritionLabel';
 import { Save, Image as ImageIcon, Settings, PlusCircle, MinusCircle, Menu, Plus, Minus, Bold, Italic, Underline, Sun, Moon, Scale, NotebookPen, ArrowLeftRight, CircleDollarSign, Share2, FileDown, Printer } from 'lucide-react';
@@ -362,7 +363,7 @@ const RecipeInputPage = () => {
                 const qtyNum = parseQuantity(String(line.qty||''));
                 const qtyErr = !!line.qty && !Number.isFinite(qtyNum);
                 const yieldErr = !!line.yield && isNaN(Number(String(line.yield).replace(/[^0-9.\-]/g,'')));
-                const costNum = Number(String(line.cost).replace(/[$€£¥,\s]/g,''));
+                const costNum = Number(String(line.cost).replace(/[$€£��,\s]/g,''));
                 const updateAndNormalize = (row: any) => {
                   // Auto-fill yield if empty
                   if (!row.yield) {
