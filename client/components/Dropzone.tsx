@@ -6,11 +6,13 @@ export function Dropzone({
   multiple = true,
   onFiles,
   children,
+  className,
 }: {
   accept?: string;
   multiple?: boolean;
   onFiles: (files: File[]) => void;
   children?: React.ReactNode;
+  className?: string;
 }) {
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -27,8 +29,9 @@ export function Dropzone({
   return (
     <div
       className={cn(
-        "relative rounded-2xl border-2 border-dashed p-8 text-center transition-all bg-gradient-to-br from-background to-muted/40 hover:shadow-md",
+        "relative rounded-xl border-2 border-dashed p-4 text-center transition-all bg-gradient-to-br from-background to-muted/40 hover:shadow-md min-h-28",
         dragOver ? "border-ring ring-2 ring-ring/40" : "border-muted-foreground/30",
+        className,
       )}
       onClick={() => inputRef.current?.click()}
       onDragOver={(e) => {
@@ -53,7 +56,7 @@ export function Dropzone({
         onChange={(e) => handle(e.target.files)}
       />
       {children ?? (
-        <div className="text-sm text-muted-foreground">
+        <div className="text-xs text-muted-foreground py-2">
           <p className="font-medium text-foreground">Click to select files</p>
           <p>or drag and drop here</p>
         </div>
