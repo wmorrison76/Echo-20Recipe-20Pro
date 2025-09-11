@@ -70,7 +70,7 @@ export default function GallerySection() {
           const b = await res.blob();
           files.push(new File([b], `demo-${i}.jpg`, { type: b.type || "image/jpeg" }));
         }
-        await doImport(files, ["demo"]);
+        await doImport(files, ["demo","food"]);
         localStorage.setItem("gallery.demo.loaded.v2", "1");
       } catch {}
     })();
@@ -143,7 +143,7 @@ export default function GallerySection() {
               for (const [i,u] of urls.entries()) {
                 try { const res = await fetch(u); const b = await res.blob(); files.push(new File([b], `demo-${i}.jpg`, { type: b.type||'image/jpeg' })); } catch {}
               }
-              if (files.length) { setStatus('Importing demo images...'); await addImages(files, { tags: ['demo'] }); setStatus('Demo images loaded.'); }
+              if (files.length) { setStatus('Importing demo images...'); await addImages(files, { tags: ['demo','food'] }); setStatus('Demo images loaded.'); }
             }}>Load demo images</Button>
             <Button variant="destructive" onClick={() => clearImages()}>Clear</Button>
           </div>
