@@ -170,6 +170,12 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     return added;
   }, [images]);
 
+  const addRecipe = useCallback((recipe: Omit<Recipe, "id" | "createdAt">) => {
+    const item: Recipe = { id: uid(), createdAt: Date.now(), ...recipe } as Recipe;
+    setRecipes((prev)=> [item, ...prev]);
+    return item.id;
+  }, []);
+
   const updateImage = useCallback((id: string, patch: Partial<GalleryImage>) => {
     setImages((prev) => prev.map((img) => (img.id === id ? { ...img, ...patch, tags: patch.tags ?? img.tags } : img)));
   }, []);
