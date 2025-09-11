@@ -46,7 +46,7 @@ export function RecipeCard({ r, onPreview, onFav, onRate, onTrash }: { r: Return
 }
 
 export default function RecipeSearchSection() {
-  const { recipes, searchRecipes, linkImagesToRecipesByFilename, clearRecipes, addRecipesFromJsonFiles, addRecipesFromDocxFiles, addRecipesFromHtmlFiles, addRecipesFromPdfFiles, addRecipesFromExcelFiles, addRecipesFromImageOcr, addFromZipArchive, toggleFavorite, rateRecipe, deleteRecipe, restoreRecipe, exportAllZip } = useAppData();
+  const { recipes, searchRecipes, linkImagesToRecipesByFilename, clearRecipes, addRecipesFromJsonFiles, addRecipesFromDocxFiles, addRecipesFromHtmlFiles, addRecipesFromPdfFiles, addRecipesFromExcelFiles, addRecipesFromImageOcr, addFromZipArchive, toggleFavorite, rateRecipe, deleteRecipe, restoreRecipe, exportAllZip, addImages } = useAppData();
   const [q, setQ] = useState("");
   type Cat = 'all'|'recent'|'top'|'favorites'|'uncategorized'|'trash';
   const [cat, setCat] = useState<Cat>('all');
