@@ -105,10 +105,46 @@ export default function GallerySection() {
     updateImage(id, { favorite: !item.favorite });
   };
 
+  const beginEdit = (id: string) => {
+    const item = images.find((i) => i.id === id);
+    if (!item) return;
+    setEditingId(id);
+    setEditName(item.name);
+    setEditTags((item.tags || []).join(", "));
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditName("");
+    setEditTags("");
+  };
+
+  const saveEdit = () => {
+    if (!editingId) return;
+    const name = editName.trim();
+    const tags = editTags.split(",").map((t)=>t.trim()).filter(Boolean);
+    if (!name) { setStatus("Name cannot be empty."); return; }
+    const clash = images.find((i)=> i.name === name && i.id !== editingId);
+    if (clash) { setStatus("Another image already has that name."); return; }
+    updateImage(editingId, { name, tags });
+    setStatus(null);
+    cancelEdit();
+  };
+
   const onDragStart = (id: string) => (dragId.current = id);
   const onDropOver = (overId: string) => {
     const d = dragId.current; dragId.current = null;
     if (d && d !== overId) reorderImages(d, overId);
+  };
+
+  const onEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      saveEdit();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      cancelEdit();
+    }
   };
 
   return (
