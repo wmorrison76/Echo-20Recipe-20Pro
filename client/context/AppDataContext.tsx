@@ -37,6 +37,7 @@ type AppData = {
   addRecipesFromDocxFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
   addRecipesFromPdfFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
   addRecipesFromExcelFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
+  addRecipesFromImageOcr: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
   addFromZipArchive: (file: File) => Promise<{ addedRecipes: number; addedImages: number; errors: { entry: string; error: string }[]; titles: string[] }>;
   updateRecipe: (id: string, patch: Partial<Recipe>) => void;
   getRecipeById: (id: string) => Recipe | undefined;
@@ -433,6 +434,35 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     return { added: collected.length, errors, titles };
   }, []);
 
+  const addRecipesFromImageOcr = useCallback(async (files: File[]) => {
+    const errors: { file: string; error: string }[] = [];
+    const collected: Recipe[] = [];
+    const titles: string[] = [];
+    for (const f of files) {
+      try {
+        const Tesseract: any = await import('https://esm.sh/tesseract.js@5.1.1');
+        const { data } = await Tesseract.recognize(await f.arrayBuffer(), 'eng');
+        const raw = String(data?.text || '').trim();
+        if (!raw) { errors.push({ file: f.name, error: 'No text detected' }); continue; }
+        const lines = raw.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+        const title = lines[0] || f.name.replace(/\.(png|jpe?g|webp|heic)$/i,'');
+        const lower = lines.map(l=>l.toLowerCase());
+        const find = (labels:string[])=> lower.findIndex((l)=> labels.includes(l));
+        const ingIdx = find(['ingredients','ingredient']);
+        const instIdx = find(['instructions','directions','method','steps']);
+        const getRange = (start:number, end:number)=> lines.slice(start+1, end>start? end: undefined).filter(Boolean);
+        const ingredients = ingIdx>=0 ? getRange(ingIdx, instIdx>=0? instIdx: lines.length) : undefined;
+        const instructions = instIdx>=0 ? getRange(instIdx, lines.length) : undefined;
+        collected.push({ id: uid(), createdAt: Date.now(), title, ingredients, instructions, sourceFile: f.name });
+        titles.push(title);
+      } catch (e:any) {
+        errors.push({ file: f.name, error: e?.message ?? 'OCR failed' });
+      }
+    }
+    if (collected.length) setRecipes((prev)=>[...collected, ...prev]);
+    return { added: collected.length, errors, titles };
+  }, []);
+
   const addFromZipArchive = useCallback(async (file: File) => {
     const errors: { entry: string; error: string }[] = [];
     const nextRecipes: Recipe[] = [];
@@ -529,6 +559,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     addRecipesFromDocxFiles,
     addRecipesFromPdfFiles,
     addRecipesFromExcelFiles,
+    addRecipesFromImageOcr,
     addFromZipArchive,
     updateRecipe,
     getRecipeById,
