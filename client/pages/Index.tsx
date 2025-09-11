@@ -12,7 +12,7 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <TopTabs />
-      <main className="container mx-auto py-6">
+      <main className="w-full py-6">
         <Tabs value={active} onValueChange={(v)=>{ params.set('tab', v); setParams(params, { replace: true }); }} className="w-full">
           <TabsContent value="search">
             <RecipeSearchSection />
