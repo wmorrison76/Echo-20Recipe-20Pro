@@ -61,6 +61,8 @@ export default function RecipeSearchSection() {
           ))}
         </div>
       )}
+
+      <div className="mt-6 text-xs text-muted-foreground text-center">Total recipes in system: {recipes.length}</div>
     </div>
   );
 }
