@@ -29,6 +29,13 @@ export type Recipe = {
   extra?: Record<string, unknown>;
 };
 
+export type LookBook = {
+  id: string;
+  name: string;
+  imageIds: string[];
+  createdAt: number;
+};
+
 type AppData = {
   recipes: Recipe[];
   images: GalleryImage[];
