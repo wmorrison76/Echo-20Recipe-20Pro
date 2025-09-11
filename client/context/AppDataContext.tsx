@@ -420,7 +420,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           const XLSX: any = await import('https://esm.sh/xlsx@0.18.5');
           const wb = XLSX.read(ab, { type: 'array' });
           const ws = wb.Sheets[wb.SheetNames[0]];
-          const json = XLSX.utils.sheet_to_json<any>(ws, { defval: '' });
+          const json = XLSX.utils.sheet_to_json(ws, { defval: '' });
           for (const row of json) {
             const title = String(row.title ?? row.Name ?? row.Recipe ?? '').trim(); if (!title) continue;
             const ing = String(row.ingredients ?? row.Ingredients ?? '').split(/\n|;|\|/).map((s)=>s.trim()).filter(Boolean);
