@@ -34,8 +34,21 @@ export default function AddRecipeSection() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="grid lg:grid-cols-[1fr_360px] gap-6">
+    <SidebarProvider>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <SidebarTrigger />
+            <span className="text-sm text-muted-foreground">Menu</span>
+          </div>
+          <div className="flex items-center gap-3 text-muted-foreground">
+            <a href="https://github.com" target="_blank" rel="noreferrer" title="GitHub" className="hover:text-foreground"><Github className="h-4 w-4"/></a>
+            <a href="#notifications" title="Notifications" className="hover:text-foreground"><Bell className="h-4 w-4"/></a>
+            <a href="#help" title="Help" className="hover:text-foreground"><HelpCircle className="h-4 w-4"/></a>
+            <a href="#settings" title="Settings" className="hover:text-foreground"><Settings className="h-4 w-4"/></a>
+          </div>
+        </div>
+        <div className="grid lg:grid-cols-[1fr_360px] gap-6">
         {/* Main */}
         <div className="space-y-4">
           <Card className="p-4">
@@ -140,8 +153,39 @@ export default function AddRecipeSection() {
             </div>
           </Card>
         </div>
+        </div>
       </div>
-    </div>
+      <Sidebar side="left" collapsible="offcanvas">
+        <SidebarHeader>
+          <div className="text-sm font-semibold px-2">Add Recipe</div>
+        </SidebarHeader>
+        <SidebarSeparator />
+        <SidebarContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <a href="#"><Home /> <span>Dashboard</span></a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <a href="#"><BookOpen /> <span>Recipes</span></a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <a href="#"><ChefHat /> <span>Ingredients</span></a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <a href="#"><Link /> <span>Vendors</span></a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarContent>
+      </Sidebar>
+    </SidebarProvider>
   );
 }
 
