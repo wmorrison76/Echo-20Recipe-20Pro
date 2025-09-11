@@ -27,6 +27,7 @@ export default function Index() {
             <TabsTrigger value="search">Recipe Search</TabsTrigger>
             <TabsTrigger value="input">Recipe Input</TabsTrigger>
             <TabsTrigger value="gallery">Gallery</TabsTrigger>
+            <TabsTrigger value="repo">Add Recipe</TabsTrigger>
           </TabsList>
           <TabsContent value="search">
             <RecipeSearchSection />
@@ -36,6 +37,9 @@ export default function Index() {
           </TabsContent>
           <TabsContent value="gallery">
             <GallerySection />
+          </TabsContent>
+          <TabsContent value="repo">
+            <RepoImportSection />
           </TabsContent>
         </Tabs>
       </main>
