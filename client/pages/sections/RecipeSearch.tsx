@@ -4,7 +4,7 @@ import { useAppData } from "@/context/AppDataContext";
 export function RecipeCard({ r }: { r: ReturnType<typeof useAppData>["recipes"][number] }) {
   const cover = r.imageDataUrls?.[0];
   return (
-    <div className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden">
+    <a href={`/recipe/${r.id}`} className="rounded-lg border bg-card text-card-foreground shadow-sm overflow-hidden block hover:shadow">
       {cover ? (
         <img src={cover} alt={r.title} className="h-40 w-full object-cover" />
       ) : (
@@ -27,7 +27,7 @@ export function RecipeCard({ r }: { r: ReturnType<typeof useAppData>["recipes"][
           </p>
         ) : null}
       </div>
-    </div>
+    </a>
   );
 }
 
