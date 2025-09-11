@@ -145,7 +145,18 @@ const RecipeInputPage = () => {
   },[]);
   useEffect(()=>{ const handler = (e: any) => { if (e?.detail?.image) setImage(e.detail.image); setShowImagePopup(true); }; window.addEventListener('openImageEditor', handler as any); return ()=>window.removeEventListener('openImageEditor', handler as any); },[]);
   useEffect(()=>{ const onAction = (ev: any)=>{ const t=ev?.detail?.type; if(!t) return; if(t==='convertUnits') convertUnits(); if(t==='cycleCurrency') cycleCurrency(); if(t==='scale') scaleRecipe(); if(t==='saveVersion') pushHistory({ ...serialize(), ts: Date.now() }); }; window.addEventListener('recipe:action', onAction as any); return ()=>window.removeEventListener('recipe:action', onAction as any); }, [ingredients, portionCount, currentUnits, currentCurrency]);
-  useEffect(()=>{ const id = setTimeout(()=>{ const s = serialize(); localStorage.setItem('recipe:draft', JSON.stringify(s)); }, 600); return ()=>clearTimeout(id); }, [recipeName, ingredients, directions, isDarkMode, yieldQty, yieldUnit, portionCount, portionUnit, cookTime, cookTemp, prepTime, selectedAllergens, selectedNationality, selectedCourses, selectedRecipeType, selectedPrepMethod, selectedCookingEquipment, selectedRecipeAccess, image]);
+  useEffect(()=>{ const id = setTimeout(()=>{ const s = serialize(); localStorage.setItem('recipe:draft', JSON.stringify(s));
+    const title = (recipeName||'').trim();
+    const ingLines = ingredients.map(r=> [r.qty,r.unit,r.item,r.prep].filter(Boolean).join(' ').trim()).filter(Boolean);
+    const insLines = (directions||'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+    if (title) {
+      if (!recipeIdRef.current) {
+        recipeIdRef.current = addRecipe({ title, ingredients: ingLines, instructions: insLines, tags: [], extra: { source: 'manual' } });
+      } else {
+        updateRecipe(recipeIdRef.current, { title, ingredients: ingLines, instructions: insLines });
+      }
+    }
+  }, 600); return ()=>clearTimeout(id); }, [recipeName, ingredients, directions, isDarkMode, yieldQty, yieldUnit, portionCount, portionUnit, cookTime, cookTemp, prepTime, selectedAllergens, selectedNationality, selectedCourses, selectedRecipeType, selectedPrepMethod, selectedCookingEquipment, selectedRecipeAccess, image]);
   useEffect(()=>{ const t = setTimeout(()=> setIsRightSidebarCollapsed(true), 450); return ()=> clearTimeout(t); }, []);
 
   useEffect(()=>{
