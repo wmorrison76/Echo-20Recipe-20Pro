@@ -29,7 +29,7 @@ export function Dropzone({
   return (
     <div
       className={cn(
-        "relative rounded-xl border border-dashed p-2 text-center transition-all bg-gradient-to-br from-background to-muted/40 hover:shadow-md min-h-12",
+        "relative rounded-xl border border-dashed p-1 text-center transition-all bg-gradient-to-br from-background to-muted/40 hover:shadow-md min-h-8",
         dragOver ? "border-ring ring-2 ring-ring/40" : "border-muted-foreground/30",
         className,
       )}
@@ -56,7 +56,7 @@ export function Dropzone({
         onChange={(e) => handle(e.target.files)}
       />
       {children ?? (
-        <div className="text-[11px] text-muted-foreground py-1">
+        <div className="text-[10px] text-muted-foreground py-0.5">
           <p className="font-medium text-foreground">Click to select files</p>
           <p>or drag and drop here</p>
         </div>
