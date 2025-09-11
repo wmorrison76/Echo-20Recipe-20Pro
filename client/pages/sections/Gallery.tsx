@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAppData } from "@/context/AppDataContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { GalleryLightbox } from "@/components/GalleryLightbox";
-import { Star } from "lucide-react";
+import { Star, Search, UploadCloud } from "lucide-react";
 
 export default function GallerySection() {
   const { images, addImages, clearImages, linkImagesToRecipesByFilename, addTagsToImages, reorderImages, updateImage } = useAppData();
@@ -152,17 +152,21 @@ export default function GallerySection() {
     <div className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2">
         <Dropzone multiple onFiles={onFiles}>
-          <div className="flex flex-col items-center justify-center gap-2 text-sm">
+          <div className="flex flex-col items-center justify-center gap-3 text-sm py-6">
+            <UploadCloud className="h-6 w-6 text-muted-foreground" />
             <div className="text-foreground font-medium">Drag & drop images (any format)</div>
             <div className="text-muted-foreground">or click to select • You can categorize on import</div>
           </div>
         </Dropzone>
 
-        <div className="rounded-lg border p-4 space-y-3">
+        <div className="rounded-2xl border p-4 space-y-3 bg-gradient-to-br from-background to-muted/40 shadow-sm dark:shadow-[0_0_24px_rgba(56,189,248,0.12)] dark:ring-1 dark:ring-sky-500/15">
           <div className="text-sm text-muted-foreground">Images in gallery</div>
           <div className="mt-1 text-2xl font-semibold">{images.length}</div>
-          <div className="flex flex-wrap gap-2">
-            <input value={filter} onChange={(e)=>setFilter(e.target.value)} placeholder="Search or filter by tag" className="flex-1 rounded-md border bg-background px-3 py-2" />
+          <div className="flex flex-wrap gap-2 items-center">
+            <div className="relative flex-1 min-w-[220px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input value={filter} onChange={(e)=>setFilter(e.target.value)} placeholder="Search or filter by tag" className="w-full rounded-md border bg-background pl-9 pr-3 py-2" />
+            </div>
             <Button variant="secondary" onClick={() => linkImagesToRecipesByFilename()}>Link to recipes</Button>
             <Button variant="outline" onClick={async()=>{
               const urls = [
@@ -203,7 +207,7 @@ export default function GallerySection() {
         <div className="columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7 gap-4 sm:gap-5 lg:gap-6">
           {filtered.map((img) => (
             <div key={img.id}
-              className="mb-6 break-inside-avoid rounded-2xl overflow-hidden relative group shadow-md ring-1 ring-black/5 dark:ring-white/10 bg-white dark:bg-slate-900"
+              className="mb-6 break-inside-avoid rounded-2xl overflow-hidden relative group shadow-lg ring-1 ring-black/5 bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 dark:ring-sky-500/25 dark:shadow-[0_0_30px_rgba(56,189,248,0.18)]"
               draggable onDragStart={()=>onDragStart(img.id)} onDragOver={(e)=>e.preventDefault()} onDrop={()=>onDropOver(img.id)} onContextMenu={(e)=>e.preventDefault()}
             >
               <button className="absolute top-2 right-2 z-10 rounded-full bg-black/40 p-1.5 text-white opacity-0 group-hover:opacity-100" onClick={()=>toggleFavorite(img.id)} aria-label="Favorite">
@@ -212,7 +216,7 @@ export default function GallerySection() {
               <input type="checkbox" className="absolute top-2 left-2 z-10 h-4 w-4" checked={selected.includes(img.id)} onChange={()=>toggleSelect(img.id)} />
               <button onClick={()=>openLightboxAt(img.id)} className="block w-full">
                 {img.unsupported ? (
-                  <div className="h-40 w-full bg-muted flex items-center justify-center text-xs text-muted-foreground">Unsupported preview</div>
+                  <div className="h-40 w-full bg-gradient-to-b from-muted to-muted/60 flex items-center justify-center text-xs text-muted-foreground">Unsupported preview</div>
                 ) : (
                   <img src={img.dataUrl || img.blobUrl} alt={img.name} className="w-full h-auto object-cover transition-all duration-300 drop-shadow-sm group-hover:drop-shadow-2xl z-0" />
                 )}
