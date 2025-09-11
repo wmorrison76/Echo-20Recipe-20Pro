@@ -73,11 +73,16 @@ const RecipeInputPage = () => {
 
   const inputClass = `border p-3 rounded-lg text-sm transition-all focus:shadow-md focus:ring-2 ${isDarkMode ? 'bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30 shadow-none' : 'bg-white border-gray-200 text-gray-900 focus:ring-blue-400/30 focus:border-blue-400 shadow-md'}`;
 
-  // Parse numbers supporting mixed fractions like "1 1/2" or "3/4"
+  // Parse numbers supporting mixed fractions and unicode fractions like "1 1/2", "3/4", "½", "1½"
   const parseQuantity = (s: string): number => {
     if (!s) return NaN as any;
-    const t = String(s).trim();
-    // handle mixed fraction
+    const map: Record<string,string> = { '¼':'1/4','½':'1/2','¾':'3/4','⅐':'1/7','⅑':'1/9','⅒':'1/10','⅓':'1/3','⅔':'2/3','⅕':'1/5','⅖':'2/5','⅗':'3/5','⅘':'4/5','⅙':'1/6','⅚':'5/6','⅛':'1/8','⅜':'3/8','⅝':'5/8','⅞':'7/8' };
+    let t = String(s).trim();
+    // Expand unicode vulgar fractions
+    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch)=> map[ch] || ch);
+    // Allow forms like "1½" -> "1 1/2"
+    t = t.replace(/(\d)\s*(\d\/\d)/, '$1 $2');
+    // Mixed fraction
     const m = t.match(/^(-?\d+)(?:\s+(\d+\/\d+))?$/);
     if (m) {
       const base = Number(m[1]);
