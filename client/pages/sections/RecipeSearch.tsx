@@ -168,10 +168,14 @@ export default function RecipeSearchSection() {
             </div>
           )}
           <div className="mt-4 space-y-2">
-            <div className="text-sm font-medium">Import Recipes from URL</div>
+            <div className="text-sm font-medium">Import from the web</div>
             <div className="flex gap-2">
-              <input value={url} onChange={(e)=>setUrl(e.target.value)} placeholder="https://example.com" className="flex-1 rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring" />
-              <Button onClick={importFromUrl} disabled={loadingUrl || !url}>{loadingUrl? 'Importing...' : 'Import'}</Button>
+              <input value={query} onChange={(e)=>setQuery(e.target.value)} placeholder="Search the web (e.g. 'chocolate cake recipe')" className="flex-1 rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring" />
+              <Button variant="outline" onClick={()=>{ const q=encodeURIComponent(query); window.open(`https://www.google.com/search?q=${q}+recipe`, '_blank'); }}>Search</Button>
+            </div>
+            <div className="flex gap-2">
+              <input value={url} onChange={(e)=>setUrl(e.target.value)} placeholder="Paste a recipe page URL (https://...)" className="flex-1 rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring" />
+              <Button onClick={async()=>{ try{ setLoadingUrl(true); setStatus('Fetching recipe...'); const r = await fetch('/api/recipe/import',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ url })}); if(!r.ok) throw new Error((await r.json().catch(()=>({})))?.error||'Failed'); const data = await r.json(); const sample = [{ title:data.title, ingredients:data.ingredients, instructions: Array.isArray(data.instructions)? data.instructions: String(data.instructions||'').split(/\r?\n/).filter(Boolean), tags: [] }]; const file = new File([new Blob([JSON.stringify(sample)],{type:'application/json'})], 'web.json', { type:'application/json' }); const { added } = await addRecipesFromJsonFiles([file]); setStatus(`Imported ${added} recipe(s) from web.`);} catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`);} finally{ setLoadingUrl(false); } }} disabled={loadingUrl || !url}>{loadingUrl? 'Importing...' : 'Import'}</Button>
             </div>
           </div>
         </div>
