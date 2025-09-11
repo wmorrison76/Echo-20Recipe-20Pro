@@ -64,6 +64,8 @@ export default function RecipeSearchSection() {
   }, [q, searchRecipes, cat]);
 
   const [status, setStatus] = useState<string | null>(null);
+  const [mode, setMode] = useState<'cards'|'list'>('cards');
+  const [query, setQuery] = useState('');
   const [errors, setErrors] = useState<{ file: string; error: string }[]>([]);
   const [url, setUrl] = useState("");
   const [loadingUrl, setLoadingUrl] = useState(false);
@@ -125,6 +127,11 @@ export default function RecipeSearchSection() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
+        <div className="rounded-md border bg-background px-2 py-1 text-sm flex items-center gap-1">
+          <span>View:</span>
+          <button onClick={()=>setMode('cards')} className={`px-2 py-0.5 rounded ${mode==='cards'?'bg-muted':''}`}>Cards</button>
+          <button onClick={()=>setMode('list')} className={`px-2 py-0.5 rounded ${mode==='list'?'bg-muted':''}`}>List</button>
+        </div>
         <div className="flex items-center gap-1 rounded-lg bg-muted p-1">
           {(['all','recent','top','favorites','uncategorized','trash'] as Cat[]).map(c=> (
             <button key={c} onClick={()=>setCat(c)} className={`px-3 py-1 rounded-md text-sm ${cat===c? 'bg-background shadow':'text-foreground/80'}`}>{c.replace(/^[a-z]/,s=>s.toUpperCase())}</button>
@@ -189,10 +196,31 @@ export default function RecipeSearchSection() {
         <div className="rounded-md border p-6 text-center text-sm text-muted-foreground">
           No recipes yet. Drop files above or import from URL.
         </div>
-      ) : (
+      ) : mode==='cards' ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
           {results.map((r) => (
             <RecipeCard key={r.id} r={r} onPreview={()=>setPreview(r)} onFav={()=>toggleFavorite(r.id)} onRate={(n)=>rateRecipe(r.id,n)} onTrash={()=> r.deletedAt? restoreRecipe(r.id) : deleteRecipe(r.id)} />
+          ))}
+        </div>
+      ) : (
+        <div className="divide-y rounded-lg border">
+          {results.map(r=> (
+            <div key={r.id} className="p-3 flex items-start gap-3">
+              <div className="w-20 h-16 rounded bg-muted overflow-hidden">
+                {r.imageDataUrls?.[0] ? <img src={r.imageDataUrls[0]} alt="" className="w-full h-full object-cover"/> : null}
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <div className="font-medium line-clamp-1">{r.title}</div>
+                  <div className="text-xs text-muted-foreground">{new Date(r.createdAt).toLocaleDateString()}</div>
+                </div>
+                <div className="text-xs text-muted-foreground line-clamp-1">{r.tags?.join(' · ')}</div>
+                <div className="mt-1 flex gap-2">
+                  <Button size="sm" variant="secondary" onClick={()=>setPreview(r)}>Preview</Button>
+                  <a href={`/recipe/${r.id}`} className="text-xs underline self-center">Open</a>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       )}
