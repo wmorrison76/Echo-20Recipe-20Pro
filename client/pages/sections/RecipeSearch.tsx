@@ -37,7 +37,7 @@ export function RecipeCard({ r, onPreview, onFav, onRate, onTrash }: { r: Return
           <div className="mt-2 flex gap-2">
             <Button size="sm" variant="secondary" onClick={onPreview}>Preview</Button>
             <Button size="sm" variant="ghost" onClick={onTrash}>Trash</Button>
-            <a href={`/recipe/${r.id}`} className="text-xs underline self-center">Open</a>
+            <a href={`/recipe/${r.id}/view`} className="text-xs underline self-center">Open</a>
           </div>
         </div>
       </div>
@@ -254,7 +254,7 @@ export default function RecipeSearchSection() {
                 <div className="text-xs text-muted-foreground line-clamp-1">{r.tags?.join(' · ')}</div>
                 <div className="mt-1 flex gap-2">
                   <Button size="sm" variant="secondary" onClick={()=>setPreview(r)}>Preview</Button>
-                  <a href={`/recipe/${r.id}`} className="text-xs underline self-center">Open</a>
+                  <a href={`/recipe/${r.id}/view`} className="text-xs underline self-center">Open</a>
                 </div>
               </div>
             </div>
@@ -275,7 +275,7 @@ export default function RecipeSearchSection() {
                 <div className="text-xs text-muted-foreground line-clamp-1">{r.tags?.join(' · ')}</div>
                 <div className="mt-1 flex gap-2">
                   <Button size="sm" variant="secondary" onClick={()=>setPreview(r)}>Preview</Button>
-                  <a href={`/recipe/${r.id}`} className="text-xs underline self-center">Open</a>
+                  <a href={`/recipe/${r.id}/view`} className="text-xs underline self-center">Open</a>
                 </div>
               </div>
             </div>
