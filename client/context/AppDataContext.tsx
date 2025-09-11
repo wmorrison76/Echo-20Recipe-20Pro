@@ -35,6 +35,7 @@ type AppData = {
   addImages: (files: File[], opts?: { tags?: string[] }) => Promise<number>;
   addRecipesFromJsonFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
   addRecipesFromDocxFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
+  addRecipesFromHtmlFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
   addRecipesFromPdfFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
   addRecipesFromExcelFiles: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
   addRecipesFromImageOcr: (files: File[]) => Promise<{ added: number; errors: { file: string; error: string }[]; titles: string[] }>;
