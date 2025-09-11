@@ -63,6 +63,7 @@ type AppData = {
   deleteLookBook: (id: string) => void;
   addImagesToLookBook: (id: string, imageIds: string[]) => void;
   removeImagesFromLookBook: (id: string, imageIds: string[]) => void;
+  exportAllZip: () => Promise<void>;
 };
 
 const CTX = createContext<AppData | null>(null);
