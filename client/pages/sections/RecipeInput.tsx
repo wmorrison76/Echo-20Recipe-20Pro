@@ -144,16 +144,6 @@ export default function RecipeInputSection() {
             <Button variant="secondary" onClick={() => linkImagesToRecipesByFilename()}>
               Link images from Gallery by filename
             </Button>
-            <Button variant="outline" onClick={async()=>{
-              const sample = [
-                { title: 'Seared Tuna', ingredients:['tuna','salt'], instructions:['Sear both sides.'] },
-                { title: 'Green Risotto', ingredients:['rice','spinach'], instructions:['Cook rice.','Blend spinach.'] },
-              ];
-              const file = new File([new Blob([JSON.stringify(sample)],{type:'application/json'})], 'demo.json', { type:'application/json' });
-              setStatus('Importing demo recipes...');
-              const { added } = await addRecipesFromJsonFiles([file]);
-              setStatus(`Imported ${added} demo recipes.`);
-            }}>Load demo recipes</Button>
             <Button variant="destructive" onClick={() => clearRecipes()}>Clear recipes</Button>
           </div>
 
