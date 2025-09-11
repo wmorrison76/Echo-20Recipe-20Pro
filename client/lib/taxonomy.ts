@@ -568,20 +568,40 @@ export const defaultSelection: TaxonomySelection = {
   difficulty: undefined,
 };
 
-export function flatten(axisSlug: string): { slug: string; label: string }[] {
-  const axis = LUCCCA_TAXONOMY.axes.find((a) => a.slug === axisSlug);
-  if (!axis) return [];
+export function flattenFromNode(node: TaxonomyNode | undefined): { slug: string; label: string }[] {
+  if (!node) return [];
   const out: { slug: string; label: string }[] = [];
   const walk = (n: TaxonomyNode) => {
     out.push({ slug: n.slug, label: `${n.name.en} / ${n.name.fr}` });
     (n.children || []).forEach(walk);
   };
-  (axis.children || []).forEach(walk);
+  (node.children || []).forEach(walk);
   return out;
 }
 
+export function flatten(axisSlug: string): { slug: string; label: string }[] {
+  const axis = LUCCCA_TAXONOMY.axes.find((a) => a.slug === axisSlug);
+  if (!axis) return [];
+  return flattenFromNode({ slug: axis.slug, name: axis.name, children: axis.children });
+}
+
+function findNodeBySlug(slug: string): TaxonomyNode | undefined {
+  for (const axis of LUCCCA_TAXONOMY.axes) {
+    const stack: TaxonomyNode[] = [...(axis.children || [])];
+    while (stack.length) {
+      const n = stack.pop()!;
+      if (n.slug === slug) return n;
+      if (n.children) stack.push(...n.children);
+    }
+  }
+  return undefined;
+}
+
 export function axisOptions(slug: string): { slug: string; label: string }[] {
-  return flatten(slug);
+  const axis = LUCCCA_TAXONOMY.axes.find((a) => a.slug === slug);
+  if (axis) return flatten(slug);
+  const node = findNodeBySlug(slug);
+  return flattenFromNode(node);
 }
 
 export function labelFor(slug: string): string {
