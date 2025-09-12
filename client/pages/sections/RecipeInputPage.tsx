@@ -1885,7 +1885,7 @@ const RecipeInputPage = () => {
               disabled={nutritionLoading}
               className={`text-xs px-3 py-2 rounded ${isDarkMode ? "border border-cyan-400/50 hover:bg-cyan-900/20 text-cyan-300" : "border border-gray-400 hover:bg-gray-100 text-gray-800"}`}
             >
-              {nutritionLoading ? "Analyzing����" : "Generate Nutrition Label"}
+              {nutritionLoading ? "Analyzing��" : "Generate Nutrition Label"}
             </button>
           </div>
 
@@ -1978,7 +1978,7 @@ const RecipeInputPage = () => {
         onImageChange={setImage}
         taxonomy={taxonomy}
         onTaxonomyChange={setTaxonomy}
-        onRecipeImport={(data) => {
+        onRecipeImport={async (data) => {
           const decode = (s: string) =>
             s
               .replace(/&quot;/g, '"')
