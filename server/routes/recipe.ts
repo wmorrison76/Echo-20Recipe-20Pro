@@ -113,8 +113,13 @@ function scrapeRecipeFallback(html: string) {
     decodeHtml(pick(/<h1[^>]*>([\s\S]*?)<\/h1>/i));
   const ogImage =
     pick(
+      /<meta[^>]+property=["']og:image:secure_url["'][^>]+content=["']([^"']+)["'][^>]*>/i,
+    ) ||
+    pick(
       /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["'][^>]*>/i,
     ) ||
+    pick(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["'][^>]*>/i) ||
+    pick(/<link[^>]+rel=["']image_src["'][^>]+href=["']([^"']+)["'][^>]*>/i) ||
     pick(/<meta[^>]+name=["']image["'][^>]+content=["']([^"']+)["'][^>]*>/i);
 
   const section = (label: RegExp) => {
