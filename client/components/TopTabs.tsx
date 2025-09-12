@@ -62,11 +62,11 @@ export default function TopTabs() {
           {isAdd && (
             <div className="flex items-center gap-1 pr-1">
               <button
-                title="Scale"
+                title="Convert Units"
                 onClick={() =>
                   window.dispatchEvent(
                     new CustomEvent("recipe:action", {
-                      detail: { type: "scale" },
+                      detail: { type: "convertUnits" },
                     }),
                   )
                 }
