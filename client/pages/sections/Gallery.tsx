@@ -87,39 +87,8 @@ export default function GallerySection() {
     (window as any).__pending_files = undefined;
   };
 
-  useEffect(() => {
-    if (images.length > 0) return;
-    const flag = localStorage.getItem("gallery.demo.loaded.v2");
-    if (flag === "1") return;
-    (async () => {
-      try {
-        const urls = [
-          "https://images.unsplash.com/photo-1541976076758-347942db1970?auto=format&fit=crop&w=1400&q=80",
-          "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=1400&q=80",
-          "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1400&q=80",
-          "https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?auto=format&fit=crop&w=1400&q=80",
-          "https://images.unsplash.com/photo-1546549039-3746f9b9ca2a?auto=format&fit=crop&w=1400&q=80",
-          "https://images.unsplash.com/photo-1543353071-873f17a7a088?auto=format&fit=crop&w=1400&q=80",
-          "https://images.unsplash.com/photo-1541773838162-287d1b72a8f9?auto=format&fit=crop&w=1400&q=80",
-          "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=1400&q=80",
-          "https://images.unsplash.com/photo-1542826438-2e552220a788?auto=format&fit=crop&w=1400&q=80",
-          "https://images.unsplash.com/photo-1519626176961-1dc0d4b2a556?auto=format&fit=crop&w=1400&q=80",
-          "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=1400&q=80",
-          "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=1400&q=80",
-        ];
-        const files: File[] = [];
-        for (const [i, u] of urls.entries()) {
-          const res = await fetch(u);
-          const b = await res.blob();
-          files.push(
-            new File([b], `demo-${i}.jpg`, { type: b.type || "image/jpeg" }),
-          );
-        }
-        await doImport(files, ["demo", "food"]);
-        localStorage.setItem("gallery.demo.loaded.v2", "1");
-      } catch {}
-    })();
-  }, [images.length]);
+  // Removed remote Unsplash seeding to avoid network dependency and ensure predictable demo content.
+  // The AppDataProvider now seeds lightweight demo images that persist better.
 
   const toggleSelect = (id: string) => {
     setSelected((prev) =>
