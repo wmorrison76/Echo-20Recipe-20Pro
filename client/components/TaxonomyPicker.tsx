@@ -38,14 +38,14 @@ export default function TaxonomyPicker({ value, onChange }: { value?: Partial<Ta
       </div>
       <div>
         <div className="text-xs font-semibold mb-1">Pastry</div>
-        <select multiple value={v.pastry} onChange={(e)=> set({ pastry: Array.from(e.target.selectedOptions).map(o=>o.value).slice(0,6) })} className="w-full border rounded p-2 text-sm min-h-[3rem]">
+        <select multiple value={v.pastry} onChange={(e)=> set({ pastry: Array.from(e.target.selectedOptions).map(o=>o.value).slice(0,6) })} className="w-full border rounded p-2 text-sm min-h-[3rem] max-h-40 overflow-auto">
           {Opts.pastry.map(o=> <option key={o.slug} value={o.slug}>{o.label}</option>)}
         </select>
         {v.pastry.length? <TagList items={v.pastry} />: null}
       </div>
       <div>
         <div className="text-xs font-semibold mb-1">Technique (up to 3)</div>
-        <select multiple value={v.technique} onChange={(e)=> set({ technique: Array.from(e.target.selectedOptions).map(o=>o.value).slice(0,3) })} className="w-full border rounded p-2 text-sm min-h-[3rem]">
+        <select multiple value={v.technique} onChange={(e)=> set({ technique: Array.from(e.target.selectedOptions).map(o=>o.value).slice(0,3) })} className="w-full border rounded p-2 text-sm min-h-[3rem] max-h-40 overflow-auto">
           {Opts.technique.map(o=> <option key={o.slug} value={o.slug}>{o.label}</option>)}
         </select>
         {v.technique.length? <TagList items={v.technique} />: null}
@@ -84,28 +84,28 @@ export default function TaxonomyPicker({ value, onChange }: { value?: Partial<Ta
       </div>
       <div>
         <div className="text-xs font-semibold mb-1">Diets</div>
-        <select multiple value={v.diets} onChange={(e)=> set({ diets: Array.from(e.target.selectedOptions).map(o=>o.value) })} className="w-full border rounded p-2 text-sm min-h-[3rem]">
+        <select multiple value={v.diets} onChange={(e)=> set({ diets: Array.from(e.target.selectedOptions).map(o=>o.value) })} className="w-full border rounded p-2 text-sm min-h-[3rem] max-h-40 overflow-auto">
           {Opts.diets.map(o=> <option key={o.slug} value={o.slug}>{o.label}</option>)}
         </select>
         {v.diets.length? <TagList items={v.diets} />: null}
       </div>
       <div>
         <div className="text-xs font-semibold mb-1">Allergens</div>
-        <select multiple value={v.allergens} onChange={(e)=> set({ allergens: Array.from(e.target.selectedOptions).map(o=>o.value) })} className="w-full border rounded p-2 text-sm min-h-[3rem]">
+        <select multiple value={v.allergens} onChange={(e)=> set({ allergens: Array.from(e.target.selectedOptions).map(o=>o.value) })} className="w-full border rounded p-2 text-sm min-h-[3rem] max-h-40 overflow-auto">
           {Opts.allergens.map(o=> <option key={o.slug} value={o.slug}>{o.label}</option>)}
         </select>
         {v.allergens.length? <TagList items={v.allergens} />: null}
       </div>
       <div>
         <div className="text-xs font-semibold mb-1">Components</div>
-        <select multiple value={v.components} onChange={(e)=> set({ components: Array.from(e.target.selectedOptions).map(o=>o.value) })} className="w-full border rounded p-2 text-sm min-h-[3rem]">
+        <select multiple value={v.components} onChange={(e)=> set({ components: Array.from(e.target.selectedOptions).map(o=>o.value) })} className="w-full border rounded p-2 text-sm min-h-[3rem] max-h-40 overflow-auto">
           {Opts.components.map(o=> <option key={o.slug} value={o.slug}>{o.label}</option>)}
         </select>
         {v.components.length? <TagList items={v.components} />: null}
       </div>
       <div>
         <div className="text-xs font-semibold mb-1">Equipment</div>
-        <select multiple value={v.equipment} onChange={(e)=> set({ equipment: Array.from(e.target.selectedOptions).map(o=>o.value) })} className="w-full border rounded p-2 text-sm min-h-[3rem]">
+        <select multiple value={v.equipment} onChange={(e)=> set({ equipment: Array.from(e.target.selectedOptions).map(o=>o.value) })} className="w-full border rounded p-2 text-sm min-h-[3rem] max-h-40 overflow-auto">
           {Opts.equipment.map(o=> <option key={o.slug} value={o.slug}>{o.label}</option>)}
         </select>
         {v.equipment.length? <TagList items={v.equipment} />: null}
