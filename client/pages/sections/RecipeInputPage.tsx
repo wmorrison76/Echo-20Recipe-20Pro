@@ -1322,6 +1322,14 @@ const RecipeInputPage = () => {
                         }}
                         className={`w-24 px-2 py-1 border rounded text-sm uppercase ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
                       />
+                      <button
+                        type="button"
+                        title="Yield Lab"
+                        className={`ml-2 px-2 py-1 text-xs rounded border ${isDarkMode ? 'border-cyan-400/50 text-cyan-300' : 'border-gray-400 text-gray-800'}`}
+                        onClick={() => setYieldOpen(true)}
+                      >
+                        Yield Lab
+                      </button>
                     </span>
                     <span>
                       <span className="font-bold">RECIPE ACCESS:</span>{" "}
