@@ -30,6 +30,7 @@ export default function GallerySection() {
     updateImage,
     exportAllZip,
     restoreDemo,
+    addDemoImages,
   } = useAppData();
   const [status, setStatus] = useState<string | null>(null);
   const [showTagDialog, setShowTagDialog] = useState(false);
