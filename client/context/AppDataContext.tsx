@@ -53,6 +53,7 @@ type AppData = {
   lookbooks: LookBook[];
   addImages: (files: File[], opts?: { tags?: string[] }) => Promise<number>;
   restoreDemo: () => void;
+  addDemoImages: () => Promise<number>;
   addRecipe: (recipe: Omit<Recipe, "id" | "createdAt">) => string;
   addRecipesFromJsonFiles: (
     files: File[],
@@ -1251,6 +1252,48 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     try { localStorage.removeItem(LS_IMAGES); localStorage.removeItem(LS_LOOKBOOKS);} catch {}
   }, []);
 
+  const addDemoImages = useCallback(async (): Promise<number> => {
+    const now = Date.now();
+    const makeDataUrl = (label: string, hue: number) => {
+      try {
+        const c = document.createElement("canvas");
+        c.width = 960; c.height = 720; const ctx = c.getContext("2d");
+        if (!ctx) return "";
+        const g = ctx.createLinearGradient(0,0,960,720);
+        g.addColorStop(0, `hsl(${hue},65%,92%)`);
+        g.addColorStop(1, `hsl(${(hue+30)%360},70%,82%)`);
+        ctx.fillStyle = g; ctx.fillRect(0,0,960,720);
+        ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.font = "bold 72px Inter, system-ui, sans-serif"; ctx.textAlign = "center"; ctx.fillText(label, 480, 380);
+        return c.toDataURL("image/jpeg", 0.78);
+      } catch { return ""; }
+    };
+    const pastryNames = [
+      "Croissant","Eclair","Macaron","Tart","Mille-feuille","Profiterole","Strudel","Cannoli","Baklava","Choux","Danish","Brioche"
+    ];
+    const otherNames = ["Cake","Pie","Bread","Plated","Savory"];
+    const existingNames = new Set(images.map(i=>i.name));
+    let order = images.length ? Math.max(...images.map(i=> (i as any).order ?? 0)) + 1 : 0;
+    const next: GalleryImage[] = [];
+    const makeUnique = (base: string) => {
+      let name = base; let i = 2;
+      while(existingNames.has(name) || next.some(n=>n.name===name)){
+        const dot = base.lastIndexOf('.');
+        if (dot>0) name = `${base.slice(0,dot)}-${i}${base.slice(dot)}`; else name = `${base}-${i}`;
+        i++;
+      }
+      return name;
+    };
+    const pushImg = (label: string, hue: number, fileBase: string) => {
+      const name = makeUnique(fileBase);
+      const dataUrl = makeDataUrl(label, hue);
+      next.push({ id: uid(), name, dataUrl, createdAt: now, tags: ["demo", label.toLowerCase()], favorite: false, order: order++, type: "image/jpeg" });
+    };
+    pastryNames.forEach((lab, i)=> pushImg(lab, (i*25)%360, `${lab.toLowerCase()}-demo.jpg`));
+    otherNames.forEach((lab, i)=> pushImg(lab, (i*60+180)%360, `${lab.toLowerCase()}-demo.jpg`));
+    if (next.length) setImages(prev=>[...next, ...prev]);
+    return next.length;
+  }, [images]);
+
   const value = useMemo<AppData>(
     () => ({
       recipes,
@@ -1288,6 +1331,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       restoreRecipe,
       purgeDeleted,
       destroyRecipe,
+      addDemoImages,
     }),
     [
       recipes,
@@ -1319,6 +1363,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       restoreRecipe,
       purgeDeleted,
       destroyRecipe,
+      addDemoImages,
     ],
   );
 
