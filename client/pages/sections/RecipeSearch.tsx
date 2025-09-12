@@ -261,7 +261,10 @@ export default function RecipeSearchSection() {
             ))}
           </div>
           <div className="flex justify-between gap-2">
-            <Button variant="ghost" onClick={()=>{ const all:Record<string,boolean>={}; (toc||[]).forEach(t=> all[t.title]=true); setTocChecked(all); }}>Select all</Button>
+            <div className="flex gap-2">
+              <Button variant="ghost" onClick={()=>{ const all:Record<string,boolean>={}; (toc||[]).forEach(t=> all[t.title]=true); setTocChecked(all); }}>Select all</Button>
+              <Button variant="ghost" onClick={()=>{ const none:Record<string,boolean>={}; (toc||[]).forEach(t=> none[t.title]=false); setTocChecked(none); }}>Unselect all</Button>
+            </div>
             <div className="flex gap-2">
               <Button variant="secondary" onClick={()=>{ setTocOpen(false); setToc(null); }}>Cancel</Button>
               <Button onClick={async()=>{ try{ setTocOpen(false); setBookPhase('importing'); const selected = Object.keys(tocChecked).filter(k=> tocChecked[k]); localStorage.setItem('pdf:index:allow', JSON.stringify(selected)); if(pdfPendingRef.current){ const { added } = await addRecipesFromPdfFiles([pdfPendingRef.current]); setStatus(`Imported ${added} recipe(s) from book.`); setBookPhase('done'); } } catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`); setBookPhase(null);} finally { setToc(null); setTocChecked({}); pdfPendingRef.current=null; } }}>Accept</Button>
