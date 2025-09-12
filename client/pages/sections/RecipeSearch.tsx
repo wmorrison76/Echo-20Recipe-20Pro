@@ -91,6 +91,12 @@ export default function RecipeSearchSection() {
   const [processed, setProcessed] = useState(0);
   const [total, setTotal] = useState(0);
   const [importedTitles, setImportedTitles] = useState<string[]>([]);
+  // Book PDF import progress state
+  const [bookPhase, setBookPhase] = useState<null|"reading"|"selecting"|"categorizing"|"importing"|"done">(null);
+  const [bookFile, setBookFile] = useState<string | null>(null);
+  const [bookPage, setBookPage] = useState(0);
+  const [bookTotal, setBookTotal] = useState(0);
+  const [bookImported, setBookImported] = useState<number | null>(null);
 
   const onFiles = async (files: File[]) => {
     const list = files.slice(0, 100);
