@@ -76,13 +76,14 @@ export default function RecipeSearchSection() {
       if (fdiet && !(Array.isArray(t.diets) && t.diets.includes(fdiet))) return false;
       return true;
     });
-    const notDeleted = filterByTax(base.filter(r=>!r.deletedAt));
+    const byTitle = (arr: typeof base) => arr.slice().sort((a,b)=> a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }));
+    const notDeleted = byTitle(filterByTax(base.filter(r=>!r.deletedAt)));
     switch(cat){
-      case 'recent': return notDeleted.slice().sort((a,b)=> b.createdAt - a.createdAt);
-      case 'top': return notDeleted.slice().sort((a,b)=> (b.rating||0)-(a.rating||0));
-      case 'favorites': return notDeleted.filter(r=> r.favorite);
-      case 'uncategorized': return notDeleted.filter(r=> !r.tags || r.tags.length===0);
-      case 'trash': return filterByTax(base.filter(r=> !!r.deletedAt));
+      case 'recent': return notDeleted; // still alphabetized per request
+      case 'top': return notDeleted; // keep alpha
+      case 'favorites': return byTitle(notDeleted.filter(r=> r.favorite));
+      case 'uncategorized': return byTitle(notDeleted.filter(r=> !r.tags || r.tags.length===0));
+      case 'trash': return byTitle(filterByTax(base.filter(r=> !!r.deletedAt)));
       default: return notDeleted;
     }
   }, [q, searchRecipes, cat, fcuisine, ftech, fcourse, fdiet]);
