@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export type FlipBookImage = { id: string; src?: string; name?: string };
 
-export function FlipBook({ open, onClose, images }: { open: boolean; onClose: () => void; images: FlipBookImage[] }) {
+export function FlipBook({ open, onClose, images, title }: { open: boolean; onClose: () => void; images: FlipBookImage[]; title?: string }) {
   const [page, setPage] = useState(0); // spread index
   const [flipping, setFlipping] = useState<null | "next" | "prev">(null);
 
@@ -45,7 +45,7 @@ export function FlipBook({ open, onClose, images }: { open: boolean; onClose: ()
     <Dialog open={open} onOpenChange={(v)=>{ if(!v) onClose(); }}>
       <DialogContent className="max-w-6xl w-full bg-neutral-900 text-white p-4">
         <DialogHeader>
-          <DialogTitle className="text-sm opacity-80">Look Book</DialogTitle>
+          <DialogTitle className="text-sm opacity-80">Look Book{title?` — ${title}`:''}</DialogTitle>
         </DialogHeader>
         <div className="relative w-full aspect-video bg-neutral-800 rounded-lg overflow-hidden shadow-inner ring-1 ring-white/10">
           <style>{`
@@ -71,7 +71,7 @@ export function FlipBook({ open, onClose, images }: { open: boolean; onClose: ()
               {(['left','right'] as const).map((side, idx)=>{
                 const item = spreads[page]?.[idx as 0|1];
                 return (
-                  <div key={side} className={`${side} relative border-white/10 ${side==='left'?'border-r':''}`}>
+                  <div key={side} className={`${side} relative border-white/10 ${side==='left'?'border-r':''}`} onClick={side==='left'?goPrev:goNext} role="button" aria-label={side==='left'?'Previous page':'Next page'}>
                     <div className="leaf">
                       {item?.src ? <img src={item.src} alt={item?.name||''}/> : <div className="absolute inset-0 flex items-center justify-center text-sm opacity-60">Empty</div>}
                       {item?.name && <div className="label">{item.name}</div>}
