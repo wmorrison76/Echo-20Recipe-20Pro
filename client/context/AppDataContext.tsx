@@ -172,9 +172,6 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (images.length > 0) return;
-    try {
-      if (localStorage.getItem("demo:seeded:v2")) return;
-    } catch {}
     const now = Date.now();
     const makeDataUrl = (label: string, hue: number) => {
       try {
