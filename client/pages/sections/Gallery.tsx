@@ -205,7 +205,7 @@ export default function GallerySection() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 dark:bg-[radial-gradient(900px_500px_at_10%_-10%,rgba(56,189,248,0.14),transparent_65%),radial-gradient(900px_500px_at_90%_-20%,rgba(99,102,241,0.12),transparent_65%),linear-gradient(180deg,#0b1020_0%,#05070d_100%)] rounded-xl p-2 md:p-3">
       <div className="grid gap-3 md:grid-cols-2 items-start">
         <Dropzone multiple onFiles={onFiles}>
           <div className="flex flex-col items-center justify-center gap-2 text-sm py-3">
