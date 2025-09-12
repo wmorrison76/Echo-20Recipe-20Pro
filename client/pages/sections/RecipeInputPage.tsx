@@ -92,6 +92,7 @@ const RecipeInputPage = () => {
   const [portionCount, setPortionCount] = useState<number>(6);
   const [portionUnit, setPortionUnit] = useState<string>("OZ");
   const [nutrition, setNutrition] = useState<any | null>(null);
+  const [yieldOpen, setYieldOpen] = useState(false);
   const [taxonomy, setTaxonomy] = useState<TaxonomySelection>({ ...defaultSelection });
   const [nutritionLoading, setNutritionLoading] = useState(false);
   const [nutritionError, setNutritionError] = useState<string | null>(null);
