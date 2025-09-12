@@ -74,6 +74,7 @@ const RecipeInputPage = () => {
   const [selectedRecipeAccess, setSelectedRecipeAccess] = useState<string[]>(
     [],
   );
+  const [chefNotes, setChefNotes] = useState<string>(() => { try { return localStorage.getItem('recipe:chef-notes') || ''; } catch { return ''; } });
   const [image, setImage] = useState<string | null>(null);
   const [showImagePopup, setShowImagePopup] = useState(false);
   const [currentCurrency, setCurrentCurrency] = useState("USD");
