@@ -463,7 +463,7 @@ export default function GallerySection() {
           {filtered.map((img) => (
             <div
               key={img.id}
-              className="mb-6 break-inside-avoid rounded-2xl overflow-hidden relative group shadow-lg ring-1 ring-black/5 bg-white dark:bg-slate-900 dark:ring-sky-500/25 dark:shadow-[0_0_30px_rgba(56,189,248,0.18)] transition-all hover:shadow-[0_10px_40px_rgba(56,189,248,0.25)] hover:ring-2 hover:ring-sky-300/50 dark:hover:ring-sky-400/40"
+              className={`mb-6 break-inside-avoid rounded-2xl overflow-hidden relative group shadow-lg ring-1 ring-black/5 bg-white dark:bg-slate-900 dark:ring-sky-500/25 dark:shadow-[0_0_30px_rgba(56,189,248,0.18)] transition-all hover:shadow-[0_10px_40px_rgba(56,189,248,0.25)] hover:ring-2 hover:ring-sky-300/50 dark:hover:ring-sky-400/40 ${viewMode==='masonry' ? 'card' : ''}`}
               draggable
               onDragStart={() => onDragStart(img.id)}
               onDragOver={(e) => e.preventDefault()}
