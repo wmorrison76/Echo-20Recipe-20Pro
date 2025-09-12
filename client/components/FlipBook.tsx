@@ -66,7 +66,7 @@ export function FlipBook({ open, onClose, images, title }: { open: boolean; onCl
             <ChevronRight className="w-6 h-6"/>
           </button>
 
-          <div className="book w-full h-full">
+          <div className="book w-full h-full" onTouchStart={(e)=>{ (e.currentTarget as any)._sx = e.touches[0].clientX; }} onTouchEnd={(e)=>{ const sx=(e.currentTarget as any)._sx; const dx = (e.changedTouches[0]?.clientX||0) - (sx||0); if (Math.abs(dx)>40){ if (dx<0) goNext(); else goPrev(); } }}>
             <div className={`page grid grid-cols-2 w-full h-full ${flipping==='next'?'flip-next':''} ${flipping==='prev'?'flip-prev':''}`}>
               {(['left','right'] as const).map((side, idx)=>{
                 const item = spreads[page]?.[idx as 0|1];
