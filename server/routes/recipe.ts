@@ -34,6 +34,7 @@ function parseJsonLdRecipe(html: string) {
       /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi,
     ),
   );
+  const safeArray = (v: any) => (Array.isArray(v) ? v : v ? [v] : []);
   for (const m of scripts) {
     try {
       const raw = m[1].trim();
