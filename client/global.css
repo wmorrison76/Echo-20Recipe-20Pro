@@ -136,6 +136,15 @@
 
   .no-callout { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
 
+  /* Hide scrollbars but keep scroll */
+  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .hide-scrollbar::-webkit-scrollbar { display: none; width: 0; height: 0; }
+  html, body { -ms-overflow-style: none; scrollbar-width: none; }
+  html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+  /* Dark mode glow shadow for cards/cells */
+  .dark .glow { box-shadow: 0 0 0 1px rgba(0, 255, 255, 0.15), 0 0 24px rgba(0, 255, 255, 0.06) !important; border-color: rgba(0, 255, 255, 0.2) !important; }
+
   /* Light surfaces gradient for balance */
   html:not(.dark) .surface-gradient { background-image: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(247,249,255,1) 100%); }
 }
