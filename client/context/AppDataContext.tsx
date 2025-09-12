@@ -838,7 +838,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           const t = tc.items.map((i: any) => i.str).join('\n');
           pageTexts.push(t);
         }
-        const allLines = pageTexts.join('\n').split(/\r?\n/).map(s=>s.replace(/\s+/g,' ').trim()).filter(Boolean);
+        const normLine = (s: string) => { let t = s.replace(/\s+/g,' ').trim(); if (/^([A-Z]\s+){2,}[A-Z][\s:]*$/.test(t) && t.length <= 60) t = t.replace(/\s+/g,''); return t; };
+        const allLines = pageTexts.join('\n').split(/\r?\n/).map(normLine).filter(Boolean);
         // Learn from entire book regardless of what gets imported
         learnFromPages(f.name.replace(/\.pdf$/i,''), pageTexts);
 
@@ -870,13 +871,14 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             const next=indexEntries[i+1];
             const start=Math.min(Math.max(cur.page,1), doc.numPages);
             const end=Math.min((next? next.page-1 : doc.numPages), doc.numPages);
-            const text = pageTexts.slice(start-1,end).join('\n');
+            const textRaw = pageTexts.slice(start-1,end).join('\n');
+            const text = textRaw.split(/\n/).map(normLine).join('\n');
             // Only import if it looks like a recipe
             const hasRecipeMarkers = /\bingredients?\b/i.test(text) && /\b(instructions|directions|method|steps)\b/i.test(text);
             if(!hasRecipeMarkers) continue;
             const meta = parseMeta(text);
             // Extract ingredients/instructions with fallbacks
-            const lines = text.split(/\n/).map(s=>s.trim()).filter(Boolean);
+            const lines = text.split(/\n/).map(normLine).filter(Boolean);
             const lower = lines.map(l=>l.toLowerCase());
             const find = (labels:string[])=> lower.findIndex(l=> labels.some(x=> l.startsWith(x)));
             let ingIdx = find(['ingredients','ingredient']);
@@ -935,10 +937,10 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         }
 
         // Fallback: only import if the whole document clearly looks like a single recipe
-        const text = pageTexts.join('\n');
+        const text = pageTexts.join('\n').split(/\n/).map(normLine).join('\n');
         const hasRecipeMarkers = /\bingredients?\b/i.test(text) && /\b(instructions|directions|method|steps)\b/i.test(text);
         if (hasRecipeMarkers) {
-          const lines = text.split(/\n/).map(s=>s.trim()).filter(Boolean);
+          const lines = text.split(/\n/).map(normLine).filter(Boolean);
           const lower = lines.map(l=>l.toLowerCase());
           const find = (labels:string[])=> lower.findIndex(l=> labels.includes(l));
           const ingIdx = find(['ingredients','ingredient']);
