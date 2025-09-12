@@ -158,6 +158,10 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [lookbooks, setLookbooks] = useState<LookBook[]>([]);
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    return () => { mountedRef.current = false; };
+  }, []);
 
   useEffect(() => {
     setRecipes(readLS<Recipe[]>(LS_RECIPES, []));
