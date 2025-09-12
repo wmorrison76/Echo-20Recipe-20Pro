@@ -212,7 +212,7 @@ export default function RecipeSearchSection() {
               let m: RegExpMatchArray | null = null;
               for (const re of tests){ m = s.match(re); if(m) break; }
               if(!m) return null; const title=m[1].trim(); const page=parseInt(m[2],10);
-              const bad=/^(?:contents|index|appendix|recipes?|chapter|table of contents|fig(?:\.|ures?)?(?:\s*\d+)?|plates?(?:\s*\d+)?|illustrations?(?:\s*\d+)?|photos?(?:\s*\d+)?|tables?(?:\s*\d+)?|maps?(?:\s*\d+)?|yield\b|to convert\b)/i; if(!title||bad.test(title)) return null; return { title, page };
+              const bad=/^(?:contents|index|appendix|recipes?|chapter|table of contents|fig(?:\.|ures?)?(?:\s*\d+)?|plates?(?:\s*\d+)?|illustrations?(?:\s*\d+)?|photos?(?:\s*\d+)?|tables?(?:\s*\d+)?|maps?(?:\s*\d+)?|yield\b|to convert\b|see\b)/i; if(!title||bad.test(title)) return null; if (/(flexipan|inch|inches|cm|diameter)\b/i.test(title)) return null; return { title, page };
             }).filter(Boolean) as {title:string;page:number}[];
             // de-duplicate by page number
             const seen: Record<number, boolean> = {};
