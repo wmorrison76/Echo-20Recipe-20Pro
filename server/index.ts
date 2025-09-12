@@ -30,6 +30,7 @@ export function createServer() {
   // Nutrition + Import
   app.post("/api/nutrition/analyze", handleNutritionAnalyze);
   app.post("/api/recipe/import", handleRecipeImport);
+  app.get("/api/recipe/image", proxyRecipeImage);
 
   return app;
 }
