@@ -83,7 +83,7 @@ function parseJsonLdRecipe(html: string) {
                 String(cand.cookTime || cand.totalTime || ""),
               ),
               prepTime: isoToHuman(String(cand.prepTime || "")),
-              image: Array.isArray(cand.image) ? cand.image[0] : cand.image,
+              image: normalizeImageField(cand.image),
               nutrition,
             };
           }
