@@ -647,6 +647,7 @@ export default function GallerySection() {
           const img = images.find((i) => i.id === id);
           return { id, src: img?.dataUrl || img?.blobUrl, name: img?.name };
         })}
+        className={lucccaMode ? 'luccca-theme' : ''}
       />
     </div>
   );
