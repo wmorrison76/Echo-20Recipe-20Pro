@@ -1481,11 +1481,39 @@ const RecipeInputPage = () => {
                       onKeyDown={onGridKeyDown}
                       className={inputClass}
                       value={line.item}
+                      onPaste={(e) => {
+                        const text = e.clipboardData?.getData('text') || '';
+                        if (!text) return;
+                        if (/\n|\r/.test(text)) {
+                          e.preventDefault();
+                          const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+                          if (lines.length === 0) return;
+                          const v = [...ingredients];
+                          let i = index;
+                          for (const lineText of lines) {
+                            if (!v[i]) v[i] = { qty: "", unit: "", item: "", prep: "", yield: "", cost: "" };
+                            const p = parseIngredientInline(lineText) || { item: lineText } as any;
+                            v[i] = updateAndNormalize({
+                              ...v[i],
+                              qty: (p as any).qty ?? v[i].qty,
+                              unit: (((p as any).unit ?? v[i].unit) || "").toUpperCase(),
+                              item: (p as any).item ?? v[i].item,
+                              prep: (p as any).prep ?? v[i].prep,
+                            });
+                            i++;
+                          }
+                          if (!v[i]) v.push({ qty: "", unit: "", item: "", prep: "", yield: "", cost: "" });
+                          setIngredients(v);
+                          setTimeout(() => {
+                            const next = document.querySelector<HTMLInputElement>(`input[data-row='${index + lines.length}'][data-col='2']`);
+                            next?.focus();
+                          }, 0);
+                        }
+                      }}
                       onChange={(e) => {
                         const text = e.target.value;
                         const v = [...ingredients];
                         v[index].item = text;
-                        // Live-parse when text contains qty/unit cues or prep, even if qty/unit already set to EACH
                         const hasCues = /(cups?|tsp|tbsp|oz|ounces?|lb|lbs|g|kg|ml|l|quarts?|qt|qts|pints?|pt|gal|gallons?|teaspoons?|tablespoons?|^\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|,)/i.test(text);
                         if (hasCues) {
                           const p = parseIngredientInline(text);
