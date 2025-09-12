@@ -1162,6 +1162,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
               sourceFile: f.name,
             });
             titles.push(title);
+            try { const chunk = [title, ...ingredients, ...instructions].join('\n'); learnFromTextChunks(f.name.replace(/\.[^.]+$/,''), [chunk]); } catch {}
           }
         } else {
           const ab = await f.arrayBuffer();
