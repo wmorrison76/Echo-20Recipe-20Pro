@@ -301,8 +301,8 @@ export default function RecipeSearchSection() {
         </div>
       ) : mode==='grid4' ? (
         <div className="grid gap-3 grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-          {results.map(r=> (
-            <div key={r.id} className="rounded border p-3 flex items-start gap-2 glow">
+          {results.filter(Boolean).map(r=> (
+            <div key={r.id || Math.random().toString(36).slice(2)} className="rounded border p-3 flex items-start gap-2 glow">
               <div className="w-16 h-12 rounded bg-muted overflow-hidden shrink-0">
                 {r.imageDataUrls?.[0] ? <img src={r.imageDataUrls[0]} alt="" className="w-full h-full object-cover"/> : null}
               </div>
@@ -327,15 +327,15 @@ export default function RecipeSearchSection() {
         </div>
       ) : (
         <div className="divide-y rounded-lg border glow">
-          {results.map(r=> (
-            <div key={r.id} className="p-3 flex items-start gap-3">
+          {results.filter(Boolean).map(r=> (
+            <div key={r.id || Math.random().toString(36).slice(2)} className="p-3 flex items-start gap-3">
               <div className="w-20 h-16 rounded bg-muted overflow-hidden">
                 {r.imageDataUrls?.[0] ? <img src={r.imageDataUrls[0]} alt="" className="w-full h-full object-cover"/> : null}
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
                   <div className="font-medium line-clamp-1">{r.title}</div>
-                  <div className="text-xs text-muted-foreground">{new Date(r.createdAt).toLocaleDateString()}</div>
+                  <div className="text-xs text-muted-foreground">{r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '-'}</div>
                 </div>
                 <div className="text-xs text-muted-foreground line-clamp-1">{r.tags?.join(' · ')}</div>
                 <div className="mt-1 flex gap-2">
