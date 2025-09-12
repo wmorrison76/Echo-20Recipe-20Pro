@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useMemo,
   useState,
+  useRef,
 } from "react";
 import JSZip from "jszip";
 // Mammoth is loaded on-demand to keep bundle small and avoid init errors in some environments
