@@ -1185,6 +1185,7 @@ const RecipeInputPage = () => {
                       onChange={(e) => setCookTime(e.target.value)}
                       placeholder="2:30"
                       className={`w-24 p-3 ${inputClass}`}
+                      data-echo-key="field:add:time"
                     />
                   </div>
                   <div className="flex items-center gap-2">
