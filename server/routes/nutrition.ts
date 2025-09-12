@@ -31,6 +31,10 @@ const NUTRITION_DB: Record<
   fish: { kcal: 206, fat: 12, carbs: 0, protein: 22 },
   shrimp: { kcal: 99, fat: 0.3, carbs: 0.2, protein: 24 },
   almond: { kcal: 579, fat: 50, carbs: 22, protein: 21 },
+  water: { kcal: 0, fat: 0, carbs: 0, protein: 0 },
+  baking_powder: { kcal: 0, fat: 0, carbs: 0, protein: 0 },
+  baking_soda: { kcal: 0, fat: 0, carbs: 0, protein: 0 },
+  espresso_powder: { kcal: 0, fat: 0, carbs: 0, protein: 0 },
 };
 
 const UNIT_TO_G: Record<string, number> = {
