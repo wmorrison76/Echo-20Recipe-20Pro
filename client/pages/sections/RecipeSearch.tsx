@@ -60,7 +60,7 @@ export function RecipeCard({ r, onPreview, onFav, onRate, onTrash, inTrash, onDe
 }
 
 export default function RecipeSearchSection() {
-  const { recipes, searchRecipes, linkImagesToRecipesByFilename, clearRecipes, addRecipesFromJsonFiles, addRecipesFromDocxFiles, addRecipesFromHtmlFiles, addRecipesFromPdfFiles, addRecipesFromExcelFiles, addRecipesFromImageOcr, addFromZipArchive, toggleFavorite, rateRecipe, deleteRecipe, restoreRecipe, exportAllZip, addImages, destroyRecipe } = useAppData();
+  const { recipes, searchRecipes, linkImagesToRecipesByFilename, clearRecipes, addRecipesFromJsonFiles, addRecipesFromDocxFiles, addRecipesFromHtmlFiles, addRecipesFromPdfFiles, addRecipesFromExcelFiles, addRecipesFromImageOcr, addFromZipArchive, toggleFavorite, rateRecipe, deleteRecipe, restoreRecipe, exportAllZip, addImages, destroyRecipe, purgeDeleted } = useAppData();
   const [q, setQ] = useState("");
   type Cat = 'all'|'recent'|'top'|'favorites'|'uncategorized'|'trash';
   const [cat, setCat] = useState<Cat>('all');
@@ -159,6 +159,9 @@ export default function RecipeSearchSection() {
         </div>
         <div className="ml-auto flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={exportAllZip}>Export all (ZIP)</Button>
+          {inTrashView && (
+            <Button variant="destructive" size="sm" onClick={()=>{ if(confirm('Delete all items in Trash permanently? This cannot be undone.')) purgeDeleted(); }}>Delete all</Button>
+          )}
           <Button variant="destructive" size="sm" onClick={()=>clearRecipes()}>Clear</Button>
         </div>
       </div>
