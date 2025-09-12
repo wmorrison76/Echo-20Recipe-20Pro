@@ -10,7 +10,7 @@ export function RecipeCard({ r, onPreview, onFav, onRate, onTrash, inTrash, onDe
   const cover = r.imageDataUrls?.[0];
   const stars = Array.from({length:5},(_,i)=>i< (r.rating||0));
   return (
-    <div className="rounded-xl border bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
+    <div className="rounded-xl border bg-white dark:bg-zinc-900 shadow-sm overflow-hidden glow">
       <div className="grid grid-cols-[120px_1fr] gap-3 p-3 items-start">
         {cover ? (
           <img src={cover} alt={r.title} className="h-[110px] w-[110px] object-cover rounded" />
