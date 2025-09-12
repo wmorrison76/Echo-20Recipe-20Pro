@@ -124,6 +124,7 @@ export default function RecipeTemplate() {
               {(recipe as any)?.extra?.allergens && <div><span className="font-semibold">Allergens:</span> {(recipe as any).extra.allergens}</div>}
             </div>
           </div>
+          <div className="absolute bottom-3 right-4 text-[10px] tracking-widest text-black/60 select-none print:text-black/60">LUCCCA</div>
         </div>
       </div>
     </div>
