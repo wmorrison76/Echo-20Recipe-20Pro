@@ -381,6 +381,40 @@ const RecipeInputPage = () => {
       if (t === "cycleCurrency") cycleCurrency();
       if (t === "scale") scaleRecipe();
       if (t === "saveVersion") pushHistory({ ...serialize(), ts: Date.now() });
+      if (t === "finalizeImport") {
+        try {
+          const title = (recipeName || '').trim() || 'Untitled Recipe';
+          const ingLines = ingredients.map((r) => [r.qty, r.unit, r.item, r.prep].filter(Boolean).join(' ').trim()).filter(Boolean);
+          const insLines = String(directions||'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+          const cover = image && image.startsWith('data:') ? [image] : undefined;
+          if (!recipeIdRef.current) {
+            recipeIdRef.current = addRecipe({ title, ingredients: ingLines, instructions: insLines, imageDataUrls: cover, tags: [], extra: { source: 'manual', taxonomy, published: true } });
+          } else {
+            updateRecipe(recipeIdRef.current, { title, ingredients: ingLines, instructions: insLines, imageDataUrls: cover, extra: { taxonomy, published: true } });
+          }
+        } finally {
+          try { localStorage.removeItem('recipe:draft'); } catch {}
+          try { localStorage.removeItem('recipe:add:description'); } catch {}
+          try { localStorage.removeItem('recipe:chef-notes'); } catch {}
+          recipeIdRef.current = null;
+          setRecipeName('');
+          setIngredients([{ qty:'', unit:'', item:'', prep:'', yield:'', cost:'' }]);
+          setDirections('1. ');
+          setImage(null);
+          setSelectedAllergens([]);
+          setSelectedNationality([]);
+          setSelectedCourses([]);
+          setSelectedRecipeType([]);
+          setSelectedPrepMethod([]);
+          setSelectedCookingEquipment([]);
+          setSelectedRecipeAccess([]);
+          setTaxonomy({ ...defaultSelection });
+          setYieldQty(6); setYieldUnit('QTS');
+          setPortionCount(6); setPortionUnit('OZ');
+          setCookTime(''); setCookTemp(''); setPrepTime('');
+          setNutrition(null); setNutritionError(null);
+        }
+      }
     };
     window.addEventListener("recipe:action", onAction as any);
     return () => window.removeEventListener("recipe:action", onAction as any);
@@ -884,7 +918,7 @@ const RecipeInputPage = () => {
     let changed = false;
     const next = ingredients.map((r) => {
       if ((r.qty && r.unit) || !r.item) return r;
-      if (!/^(\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|\s*\/\d+|.*,)\b/i.test(String(r.item))) return r;
+      if (!/^(\s*[0-9¼½¾⅓⅔���⅜⅝⅞]|\s*\/\d+|.*,)\b/i.test(String(r.item))) return r;
       const p = parseIngredientInline(String(r.item));
       if (!p) return r;
       const updated = {
