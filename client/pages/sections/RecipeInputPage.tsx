@@ -107,8 +107,7 @@ const RecipeInputPage = () => {
       .join(" ")
       .toLowerCase();
     const s = new Set<string>();
-    if (/milk|cream|butter|cheese|half-?and-?half|yogurt|whey/.test(text))
-      s.add("Dairy");
+    if (/(milk|cream|butter|cheese|half-?and-?half|yogurt|whey|ricotta|mozzarella|parmesan|parmigiano|pecorino|cheddar|gouda|feta)/.test(text)) s.add("Dairy");
     if (/flour|wheat|barley|rye|bread|pasta|cracker/.test(text))
       s.add("Gluten");
     if (/egg\b|eggs\b|egg yolk|egg white/.test(text)) s.add("Eggs");
@@ -126,6 +125,8 @@ const RecipeInputPage = () => {
   useEffect(() => {
     if (!allergenManualRef.current)
       setSelectedAllergens(detectAllergensFromIngredients(ingredients as any));
+    // ensure default yield percentage when missing
+    setIngredients((prev)=> prev.map((r)=> ({...r, yield: r.yield || String(100)})));
   }, [ingredients]);
 
   const inputClass = `border p-3 rounded-lg text-sm transition-all focus:shadow-md focus:ring-2 ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30 shadow-none" : "bg-white border-gray-200 text-gray-900 focus:ring-blue-400/30 focus:border-blue-400 shadow-md"}`;
@@ -1076,6 +1077,10 @@ const RecipeInputPage = () => {
                         ? selectedRecipeAccess.join(", ").toUpperCase()
                         : "NONE"}
                     </span>
+                    <span>
+                      <span className="font-bold">RECIPE:</span>{" "}
+                      {selectedRecipeType.includes("Full Recipe") ? "FULL" : selectedRecipeType.includes("Sub Recipe") ? "SUB" : "UNSPECIFIED"}
+                    </span>
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="flex items-center gap-1">
@@ -1496,7 +1501,7 @@ const RecipeInputPage = () => {
               suppressContentEditableWarning
               ref={dirRef}
               spellCheck
-              className={`prose prose-sm max-w-none w-full border p-5 rounded-xl shadow-sm transition-all focus:shadow-md focus:ring-2 resize-none min-h-[260px] overflow-y-auto ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30" : "bg-white border-gray-200 text-gray-900 focus:ring-blue-400/30 focus:border-blue-400"}`}
+              className={`prose prose-sm max-w-none w-full border p-3 rounded-xl shadow-sm transition-all focus:shadow-md focus:ring-2 resize-none min-h-[160px] overflow-y-auto ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30" : "bg-white border-gray-200 text-gray-900 focus:ring-blue-400/30 focus:border-blue-400"}`}
               style={{
                 lineHeight: "1.7",
                 whiteSpace: "pre-wrap",
