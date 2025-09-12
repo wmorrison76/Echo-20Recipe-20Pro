@@ -301,11 +301,26 @@ const RecipeInputPage = () => {
   const restore = (s: any) => {
     if (!s) return;
     setRecipeName(s.recipeName || "");
-    setIngredients(
-      s.ingredients || [
-        { qty: "", unit: "", item: "", prep: "", yield: "", cost: "" },
-      ],
-    );
+    const baseRows = s.ingredients || [
+      { qty: "", unit: "", item: "", prep: "", yield: "", cost: "" },
+    ];
+    // Auto-parse any row whose item starts with qty/unit (e.g., "24 oz marinara")
+    const fixedRows = baseRows.map((r: any) => {
+      if (r.qty && r.unit) return r;
+      const txt = String(r.item || "");
+      if (!txt) return r;
+      if (!/^(\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|\s*\/\d+|.*,)/i.test(txt)) return r;
+      const p = parseIngredientInline(txt.replace(/^\s*\/(\d+)/, "1/$1"));
+      if (!p) return r;
+      return {
+        ...r,
+        qty: p.qty ?? r.qty,
+        unit: ((p.unit ?? r.unit) || "").toUpperCase(),
+        item: p.item ?? r.item,
+        prep: p.prep ?? r.prep,
+      };
+    });
+    setIngredients(fixedRows);
     setDirections(s.directions || "1. ");
     setIsDarkMode(!!s.isDarkMode);
     setYieldQty(s.yieldQty || 0);
@@ -1979,7 +1994,7 @@ const RecipeInputPage = () => {
                 "⅓": "1/3",
                 "⅔": "2/3",
                 "⅕": "1/5",
-                "⅖": "2/5",
+                "���": "2/5",
                 "⅗": "3/5",
                 "⅘": "4/5",
                 "⅙": "1/6",
