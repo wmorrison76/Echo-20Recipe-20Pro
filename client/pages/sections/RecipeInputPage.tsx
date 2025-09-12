@@ -1391,6 +1391,7 @@ const RecipeInputPage = () => {
           </div>
           <div
             className={`ingredients-card rounded-2xl p-6 border ${isDarkMode ? "bg-gray-800 border-gray-700" : "bg-gradient-to-b from-white to-slate-50 border-gray-200"}`}
+            data-echo-key="section:add:ingredients"
           >
             <h3
               className={`font-bold text-xl mb-6 ${isDarkMode ? "text-cyan-400" : "text-gray-900"}`}
