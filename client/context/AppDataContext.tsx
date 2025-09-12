@@ -166,36 +166,44 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (images.length === 0) {
-      const now = Date.now();
-      const makeDataUrl = (label: string, hue: number) => {
+    if (images.length > 0) return;
+    try {
+      if (localStorage.getItem("demo:seeded:v2")) return;
+    } catch {}
+    const now = Date.now();
+    const makeDataUrl = (label: string, hue: number) => {
+      try {
         const c = document.createElement("canvas");
-        c.width = 1200; c.height = 900; const ctx = c.getContext("2d")!;
+        c.width = 1200; c.height = 900; const ctx = c.getContext("2d");
+        if (!ctx) return "";
         const g = ctx.createLinearGradient(0,0,1200,900);
         g.addColorStop(0, `hsl(${hue},65%,92%)`);
         g.addColorStop(1, `hsl(${(hue+30)%360},70%,82%)`);
         ctx.fillStyle = g; ctx.fillRect(0,0,1200,900);
         ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.font = "bold 84px Inter, system-ui, sans-serif"; ctx.textAlign = "center"; ctx.fillText(label, 600, 480);
         return c.toDataURL("image/png");
-      };
-      const pastryNames = [
-        "Croissant","Eclair","Macaron","Tart","Mille-feuille","Profiterole","Strudel","Cannoli","Baklava","Choux","Danish","Brioche"
-      ];
-      const otherNames = ["Cake","Pie","Bread","Plated","Savory"];
-      const demo: GalleryImage[] = [
-        ...pastryNames.map((lab, i) => ({ id: uid(), name: `${lab.toLowerCase()}-${i+1}.png`, dataUrl: makeDataUrl(lab, (i*25)%360), createdAt: now - i*800 - 1, tags: ["pastry", lab.toLowerCase(), "demo"], favorite: false, order: i, type: "image/png" })),
-        ...otherNames.map((lab, i) => ({ id: uid(), name: `${lab.toLowerCase()}-${i+1}.png`, dataUrl: makeDataUrl(lab, (i*60+180)%360), createdAt: now - i*800 - 1 - 10000, tags: [lab.toLowerCase(), "demo"], favorite: false, order: pastryNames.length + i, type: "image/png" })),
-      ];
-      setImages(demo);
-      if (lookbooks.length === 0) {
-        const lbPastryId = uid();
-        const lbs: LookBook[] = [
-          { id: lbPastryId, name: "Pastries", imageIds: demo.filter(i=> i.tags.includes("pastry")).slice(0,8).map(i=>i.id), createdAt: now },
-          { id: uid(), name: "Cakes", imageIds: demo.filter(i=> i.tags.includes("cake")).map(i=>i.id), createdAt: now-1000 },
-        ];
-        setLookbooks(lbs);
+      } catch {
+        return "";
       }
+    };
+    const pastryNames = [
+      "Croissant","Eclair","Macaron","Tart","Mille-feuille","Profiterole","Strudel","Cannoli","Baklava","Choux","Danish","Brioche"
+    ];
+    const otherNames = ["Cake","Pie","Bread","Plated","Savory"];
+    const demo: GalleryImage[] = [
+      ...pastryNames.map((lab, i) => ({ id: uid(), name: `${lab.toLowerCase()}-${i+1}.png`, dataUrl: makeDataUrl(lab, (i*25)%360), createdAt: now - i*800 - 1, tags: ["pastry", lab.toLowerCase(), "demo"], favorite: false, order: i, type: "image/png" })),
+      ...otherNames.map((lab, i) => ({ id: uid(), name: `${lab.toLowerCase()}-${i+1}.png`, dataUrl: makeDataUrl(lab, (i*60+180)%360), createdAt: now - i*800 - 1 - 10000, tags: [lab.toLowerCase(), "demo"], favorite: false, order: pastryNames.length + i, type: "image/png" })),
+    ];
+    setImages(demo);
+    if (lookbooks.length === 0) {
+      const lbPastryId = uid();
+      const lbs: LookBook[] = [
+        { id: lbPastryId, name: "Pastries", imageIds: demo.filter(i=> i.tags.includes("pastry")).slice(0,8).map(i=>i.id), createdAt: now },
+        { id: uid(), name: "Cakes", imageIds: demo.filter(i=> i.tags.includes("cake")).map(i=>i.id), createdAt: now-1000 },
+      ];
+      setLookbooks(lbs);
     }
+    try { localStorage.setItem("demo:seeded:v2","1"); } catch {}
   }, [images.length, lookbooks.length]);
 
   useEffect(() => {
