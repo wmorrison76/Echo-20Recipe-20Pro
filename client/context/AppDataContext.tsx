@@ -1230,6 +1230,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           .split(/\r?\n/)
           .map((s) => s.trim())
           .filter(Boolean);
+        try { learnFromTextChunks(f.name.replace(/\.[^.]+$/,''), [raw]); } catch {}
         const title =
           lines[0] || f.name.replace(/\.(png|jpe?g|webp|heic)$/i, "");
         const lower = lines.map((l) => l.toLowerCase());
