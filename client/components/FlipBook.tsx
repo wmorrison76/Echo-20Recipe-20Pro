@@ -43,26 +43,26 @@ export function FlipBook({ open, onClose, images, title }: { open: boolean; onCl
 
   return (
     <Dialog open={open} onOpenChange={(v)=>{ if(!v) onClose(); }}>
-      <DialogContent className="max-w-6xl w-full bg-neutral-900 text-white p-4">
+      <DialogContent className="max-w-6xl w-full text-white p-4 bg-neutral-900 dark:bg-[radial-gradient(900px_500px_at_10%_-10%,rgba(56,189,248,0.14),transparent_65%),radial-gradient(900px_500px_at_90%_-20%,rgba(99,102,241,0.12),transparent_65%),linear-gradient(180deg,#0b1020_0%,#05070d_100%)]">
         <DialogHeader>
           <DialogTitle className="text-sm opacity-80">Look Book{title?` — ${title}`:''}</DialogTitle>
         </DialogHeader>
-        <div className="relative w-full aspect-video bg-neutral-800 rounded-lg overflow-hidden shadow-inner ring-1 ring-white/10">
+        <div className="relative w-full aspect-video bg-neutral-800/60 rounded-lg overflow-hidden shadow-inner ring-1 ring-white/10 group">
           <style>{`
             .book { perspective: 1600px; }
             .page { position: relative; transform-style: preserve-3d; }
             .leaf { position:absolute; inset:0; background:linear-gradient(to bottom,#0a0a0a,#1a1a1a); backface-visibility:hidden; }
             .leaf::after{ content:''; position:absolute; inset:0; box-shadow: inset 0 0 40px rgba(0,0,0,.35); pointer-events:none; }
-            .flip-next .right { transform-origin: left center; transform: rotateY(-180deg); transition: transform .55s ease; }
-            .flip-prev .left { transform-origin: right center; transform: rotateY(180deg); transition: transform .55s ease; }
+            .flip-next .right { transform-origin: left center; transform: rotateY(-180deg); transition: transform .7s cubic-bezier(.22,.61,.36,1); }
+            .flip-prev .left { transform-origin: right center; transform: rotateY(180deg); transition: transform .7s cubic-bezier(.22,.61,.36,1); }
             .leaf img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; backface-visibility:hidden; }
             .leaf .label{ position:absolute; bottom:.5rem; left:50%; transform:translateX(-50%); font-size:11px; opacity:.7; background:rgba(0,0,0,.3); padding:.125rem .375rem; border-radius:.25rem; }
           `}</style>
 
-          <button className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 hover:bg-black/60 disabled:opacity-40" onClick={goPrev} disabled={!canPrev} aria-label="Previous spread">
+          <button className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 hover:bg-black/60 disabled:opacity-40 opacity-0 group-hover:opacity-100 transition-opacity" onClick={goPrev} disabled={!canPrev} aria-label="Previous spread">
             <ChevronLeft className="w-6 h-6"/>
           </button>
-          <button className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 hover:bg-black/60 disabled:opacity-40" onClick={goNext} disabled={!canNext} aria-label="Next spread">
+          <button className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 hover:bg-black/60 disabled:opacity-40 opacity-0 group-hover:opacity-100 transition-opacity" onClick={goNext} disabled={!canNext} aria-label="Next spread">
             <ChevronRight className="w-6 h-6"/>
           </button>
 
