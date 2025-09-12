@@ -74,6 +74,7 @@ function parseQtyUnit(line: string) {
   // Extract leading quantity and unit (supports unicode fractions like ½)
   let qty = 0;
   let unit = "";
+  let prep = "";
   const map: Record<string, string> = {
     "¼": "1/4",
     "½": "1/2",
@@ -96,22 +97,63 @@ function parseQtyUnit(line: string) {
   };
   let t = line.trim().replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (c) => map[c] || c);
   t = t.replace(/(\d)(\s*)(\d\/\d)/, "$1 $3");
+  // Match quantity, unit, and the rest of the string (prep/item)
   const m = t.match(
-    /^([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?)\s*([a-zA-Z\.]+)?/,
+    /^\s*([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?)\s*([a-zA-Z\.]+)?\s*(.*)$/,
   );
   if (m) {
-    const raw = m[1];
-    const parts = raw.split(" ");
-    if (parts.length === 2 && /\d+\/\d+/.test(parts[1])) {
-      const [n, d] = parts[1].split("/").map(Number);
-      qty = Number(parts[0]) + (d ? n / d : 0);
-    } else if (/\d+\/\d+/.test(raw)) {
-      const [n, d] = raw.split("/").map(Number);
-      qty = d ? n / d : Number(n);
-    } else qty = Number(raw);
-    unit = (m[2] || "").toLowerCase();
+    const rawQty = m[1];
+    const rawUnit = m[2] || "";
+    let remaining = m[3].trim();
+
+    // Try to extract prep method from the beginning of the remaining string
+    const prepMatch = remaining.match(/^([\w\s]+?)(?:,|$)/);
+    if (prepMatch && prepMatch[1]) {
+      const potentialPrep = prepMatch[1].trim().toLowerCase();
+      // Simple check for common prep methods to avoid misinterpreting item names
+      if (
+        [
+          "chopped",
+          "diced",
+          "minced",
+          "sliced",
+          "grated",
+          "crushed",
+          "pureed",
+          "melted",
+          "softened",
+          "cubed",
+          "julienned",
+          "finely",
+          "roughly",
+          "thinly",
+          "thickly",
+        ].includes(potentialPrep)
+      ) {
+        prep = potentialPrep;
+        remaining = remaining.substring(prepMatch[0].length).trim();
+      }
+    }
+
+    // Parse quantity
+    const qtyParts = rawQty.split(" ");
+    if (qtyParts.length === 2 && /\d+\/\d+/.test(qtyParts[1])) {
+      const [n, d] = qtyParts[1].split("/").map(Number);
+      qty = Number(qtyParts[0]) + (d ? n / d : 0);
+    } else if (/\d+\/\d+/.test(rawQty)) {
+      const [n, d] = rawQty.split("/").map(Number);
+      qty = d ? n / d : Number(rawQty);
+    } else qty = Number(rawQty);
+
+    unit = rawUnit.toLowerCase();
+
+    // If unit is empty, assume 'each'
+    if (!unit && qty > 0) unit = "each";
+
+    return { qty, unit, prep, item: remaining };
   }
-  return { qty, unit };
+  // If no quantity/unit found, treat the whole line as item, assume 1 each
+  return { qty: 1, unit: "each", prep: "", item: line.trim() };
 }
 
 function normalizeItemName(s: string) {
