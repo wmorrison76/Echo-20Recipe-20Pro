@@ -116,6 +116,9 @@ export default function RecipeSearchSection() {
   const [scanTotal, setScanTotal] = useState(0);
   const [detectedOpen, setDetectedOpen] = useState(false);
   const [detected, setDetected] = useState<{ page: number; title: string }[]>([]);
+  const [scanPageTexts, setScanPageTexts] = useState<string[] | null>(null);
+  const [scanCandidates, setScanCandidates] = useState<number[] | null>(null);
+  const [scanBookName, setScanBookName] = useState<string | null>(null);
 
   const onFiles = async (files: File[]) => {
     const list = files.slice(0, 100);
