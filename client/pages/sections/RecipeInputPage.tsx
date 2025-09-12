@@ -1447,8 +1447,9 @@ const RecipeInputPage = () => {
                         const text = e.target.value;
                         const v = [...ingredients];
                         v[index].item = text;
-                        // Live-parse when qty/unit are empty and item looks like it contains qty/unit or prep
-                        if ((!v[index].qty || !v[index].unit) && /^(\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|.*,)\b/i.test(text)) {
+                        // Live-parse when text contains qty/unit cues or prep, even if qty/unit already set to EACH
+                        const hasCues = /(cups?|tsp|tbsp|oz|ounces?|lb|lbs|g|kg|ml|l|quarts?|qt|qts|pints?|pt|gal|gallons?|teaspoons?|tablespoons?|^\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|,)/i.test(text);
+                        if (hasCues) {
                           const p = parseIngredientInline(text);
                           if (p) {
                             v[index].qty = p.qty ?? v[index].qty;
