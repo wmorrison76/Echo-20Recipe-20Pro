@@ -271,6 +271,7 @@ export default function GallerySection() {
               <option value="m">Medium</option>
               <option value="l">Large</option>
             </select>
+            <label className="text-xs ml-1 mr-2 flex items-center gap-1"><input type="checkbox" checked={lucccaMode} onChange={(e)=>setLucccaMode(e.target.checked)} /> LUCCCA</label>
             <select
               className="rounded-md border bg-background px-2 py-1 text-xs"
               value={category}
