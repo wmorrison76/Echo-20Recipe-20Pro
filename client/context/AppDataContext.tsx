@@ -900,10 +900,28 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         if (pdfjs.GlobalWorkerOptions) pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
         const doc = await pdfjs.getDocument({ data: ab }).promise;
         const pageTexts: string[] = [];
+        const ocrEnabled = (()=>{ try { return localStorage.getItem('pdf:ocr')==='1'; } catch { return false; } })();
+        let ocrBudget = 24; // cap OCR pages for performance
         for (let p = 1; p <= doc.numPages; p++) {
           const page = await doc.getPage(p);
           const tc = await page.getTextContent();
-          const t = tc.items.map((i: any) => i.str).join('\n');
+          let t = tc.items.map((i: any) => i.str).join('\n');
+          if (ocrEnabled && ocrBudget>0 && t.replace(/\s+/g,'').length < 20) {
+            try {
+              const viewport = page.getViewport({ scale: 1.6 });
+              const canvas = document.createElement('canvas');
+              const ctx = canvas.getContext('2d');
+              if (ctx) {
+                canvas.width = viewport.width; canvas.height = viewport.height;
+                await page.render({ canvasContext: ctx, viewport }).promise;
+                const dataUrl = canvas.toDataURL('image/png');
+                const Tesseract: any = await import('https://esm.sh/tesseract.js@5.1.1');
+                const { data } = await Tesseract.recognize(await (await fetch(dataUrl)).arrayBuffer(), 'eng');
+                const txt = String(data?.text || '').trim();
+                if (txt) { t = txt; ocrBudget--; }
+              }
+            } catch {}
+          }
           pageTexts.push(t);
         }
         const normLine = (s: string) => { let t = s.replace(/\s+/g,' ').trim(); if (/^([A-Z]\s+){2,}[A-Z][\s:]*$/.test(t) && t.length <= 60) t = t.replace(/\s+/g,''); return t; };
