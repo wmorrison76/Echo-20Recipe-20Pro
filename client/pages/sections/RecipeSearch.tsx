@@ -10,10 +10,10 @@ export function RecipeCard({ r, onPreview, onFav, onRate, onTrash, inTrash, onDe
   const cover = r.imageDataUrls?.[0];
   const stars = Array.from({length:5},(_,i)=>i< (r.rating||0));
   return (
-    <div className="rounded-xl border bg-white dark:bg-zinc-900 shadow-sm overflow-hidden glow">
+    <div className="rounded-xl border bg-white dark:bg-zinc-900 shadow-sm overflow-hidden glow" data-echo-key="card:recipes:result">
       <div className="grid grid-cols-[120px_1fr] gap-3 p-3 items-start">
         {cover ? (
-          <img src={cover} alt={r.title} className="h-[110px] w-[110px] object-cover rounded" />
+          <img src={cover} alt={r.title} className="h-[110px] w-[110px] object-cover rounded" loading="lazy" />
         ) : (
           <div className="h-[110px] w-[110px] bg-muted rounded flex items-center justify-center text-muted-foreground">No Image</div>
         )}
@@ -50,7 +50,7 @@ export function RecipeCard({ r, onPreview, onFav, onRate, onTrash, inTrash, onDe
             ) : (
               <Button size="sm" variant="ghost" onClick={onTrash} title="Move to trash"><Trash2/></Button>
             )}
-            <Button size="sm" variant="outline" asChild><a href={`/recipe/${r.id}/view`}><ExternalLink className="mr-1"/>Open</a></Button>
+            <Button size="sm" variant="outline" asChild data-echo-key="cta:recipes:open"><a href={`/recipe/${r.id}/view`}><ExternalLink className="mr-1"/>Open</a></Button>
             <Button size="sm" variant="outline" onClick={()=>{ try{ const draft={ recipeName:r.title, ingredients:(r.ingredients||[]).map((s:string)=>({ qty:'', unit:'', item:String(s), prep:'', yield:'', cost:'' })), directions:Array.isArray(r.instructions)? (r.instructions as any[]).map(String).map((x,i)=>`${i+1}. ${x}`).join('\n') : String((r as any).instructions||''), taxonomy: (r.extra as any)?.taxonomy || undefined }; localStorage.setItem('recipe:draft', JSON.stringify(draft)); }catch{} location.href='/?tab=add-recipe'; }}>Edit</Button>
           </div>
         </div>
@@ -154,9 +154,21 @@ export default function RecipeSearchSection() {
   const inTrashView = cat==='trash';
 
   return (
-    <div className="space-y-4">
+    <div className="mx-auto max-w-[1200px] px-4 md:px-6 py-4 space-y-4" data-echo-key="page:recipes:search">
+      <section className="rounded-lg border p-3 bg-white/95 dark:bg-zinc-900 shadow-sm">
+        <h1 className="text-lg font-semibold">Developer Notes: Echo keys</h1>
+        <ul className="list-disc pl-5 text-xs text-muted-foreground grid sm:grid-cols-2 gap-1">
+          <li>page:recipes:search (root)</li>
+          <li>field:recipes:query (search input)</li>
+          <li>section:recipes:filters + filter:recipes:cuisine|course|dietary|time|cost</li>
+          <li>section:recipes:results (results grid)</li>
+          <li>card:recipes:result (each card)</li>
+          <li>cta:recipes:open (open recipe)</li>
+        </ul>
+      </section>
+
       <div className="flex flex-wrap items-center gap-2">
-                <div className="flex items-center gap-1 rounded-lg bg-muted p-1">
+        <div className="flex items-center gap-1 rounded-lg bg-muted p-1">
           {(['all','recent','top','favorites','uncategorized','trash'] as Cat[]).map(c=> (
             <button key={c} onClick={()=>setCat(c)} className={`px-3 py-1 rounded-md text-sm ${cat===c? 'bg-background shadow':'text-foreground/80'}`}>{c.replace(/^[a-z]/,s=>s.toUpperCase())}</button>
           ))}
@@ -182,10 +194,8 @@ export default function RecipeSearchSection() {
           <input type="file" accept="application/pdf" onChange={async(e)=>{ const f=e.target.files?.[0]; if(!f) return; if(!confirm('Confirm you own/purchased this cookbook PDF for personal import?')){ (e.target as HTMLInputElement).value=''; return;} try{ setBookFile(f.name); setBookPhase('reading'); setStatus('Reading book PDF...'); const ab = await f.arrayBuffer(); pdfPendingRef.current = f; const pdfjs: any = await import('https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs'); const workerSrc='https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs'; if(pdfjs.GlobalWorkerOptions) pdfjs.GlobalWorkerOptions.workerSrc=workerSrc; const doc = await pdfjs.getDocument({ data: ab }).promise; setBookTotal(doc.numPages); let lines:string[]=[]; for(let p=1;p<=doc.numPages;p++){ const page=await doc.getPage(p); const tc=await page.getTextContent(); lines.push(...tc.items.map((i:any)=> String(i.str)).filter(Boolean)); lines.push(''); setBookPage(p); }
             setBookPhase('selecting');
             const norm = lines.map(s=> s.replace(/\s+/g,' ').trim());
-            // Build appendix/TOC entries like "Title .... 123"
             const tocEntries = norm.map(s=>{ const m = s.match(/^(.{3,120}?)(?:\.{2,}|\s{2,})(\d{1,4})$/); if(!m) return null; const title=m[1].trim(); const page=parseInt(m[2],10); const bad=/^(contents|index|appendix|recipes?|chapter|table of contents)$/i; if(!title||bad.test(title)) return null; return { title, page }; }).filter(Boolean) as {title:string;page:number}[];
             if(tocEntries.length>=20){ setToc(tocEntries); const checked:Record<string,boolean>={}; tocEntries.forEach(x=> checked[x.title]=true); setTocChecked(checked); setTocOpen(true); setStatus('Select recipes to import'); return; }
-            // Fallback to heuristic section extraction
             const items:any[]=[]; let i=0; const book=f.name.replace(/\.[^.]+$/,'');
             const isTitle=(s:string)=> s && s.length<70 && /[A-Za-z]/.test(s) && (s===s.toUpperCase() || /^[A-Z][^.!?]{2,}$/.test(s));
             while(i<norm.length){
@@ -256,34 +266,39 @@ export default function RecipeSearchSection() {
       {errors.length>0 && (
         <div className="rounded-md border p-3 text-sm"><div className="font-medium mb-2">Errors</div><ul className="space-y-1 list-disc pl-5">{errors.map((e,i)=>(<li key={i}><span className="font-mono">{e.file}</span>: {e.error}</li>))}</ul></div>
       )}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-        <input
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Search by title, ingredients, tags..."
-          className="w-full rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring"
-        />
-        <select value={fcuisine} onChange={(e)=>setFCuisine(e.target.value)} className="rounded-md border bg-background px-2 py-2 text-sm max-w-[220px]">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3" data-echo-key="section:recipes:filters">
+        <div className="flex-1" data-echo-key="field:recipes:query">
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search by name, ingredient, tag…"
+            className="w-full rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring"
+          />
+        </div>
+        <select value={fcuisine} onChange={(e)=>setFCuisine(e.target.value)} className="rounded-md border bg-background px-2 py-2 text-sm max-w-[220px]" data-echo-key="filter:recipes:cuisine">
           <option value="">Cuisine</option>
           {axisOptions('cuisines').map(o=> <option key={o.slug} value={o.slug}>{o.label}</option>)}
         </select>
-        <select value={ftech} onChange={(e)=>setFTech(e.target.value)} className="rounded-md border bg-background px-2 py-2 text-sm max-w-[220px]">
-          <option value="">Technique</option>
-          {axisOptions('technique').map(o=> <option key={o.slug} value={o.slug}>{o.label}</option>)}
-        </select>
-        <select value={fcourse} onChange={(e)=>setFCourse(e.target.value)} className="rounded-md border bg-background px-2 py-2 text-sm max-w-[220px]">
+        <select value={fcourse} onChange={(e)=>setFCourse(e.target.value)} className="rounded-md border bg-background px-2 py-2 text-sm max-w-[220px]" data-echo-key="filter:recipes:course">
           <option value="">Course</option>
           {axisOptions('course').map(o=> <option key={o.slug} value={o.slug}>{o.label}</option>)}
         </select>
-        <select value={fdiet} onChange={(e)=>setFDiet(e.target.value)} className="rounded-md border bg-background px-2 py-2 text-sm max-w-[220px]">
-          <option value="">Diet</option>
+        <select value={fdiet} onChange={(e)=>setFDiet(e.target.value)} className="rounded-md border bg-background px-2 py-2 text-sm max-w-[220px]" data-echo-key="filter:recipes:dietary">
+          <option value="">Dietary</option>
           {axisOptions('diets').map(o=> <option key={o.slug} value={o.slug}>{o.label}</option>)}
         </select>
-        <div className="flex items-center gap-1">
-          <button onClick={()=>setMode('cards')} title="Cards" className={`p-2 rounded-md border ${mode==='cards'? 'bg-muted': ''}`} aria-label="Cards view"><LayoutGrid className="h-4 w-4"/></button>
-          <button onClick={()=>setMode('grid4')} title="Grid 4" className={`p-2 rounded-md border ${mode==='grid4'? 'bg-muted': ''}`} aria-label="4-across grid"><Rows className="h-4 w-4"/></button>
-          <button onClick={()=>setMode('rows')} title="List" className={`p-2 rounded-md border ${mode==='rows'? 'bg-muted': ''}`} aria-label="List view"><List className="h-4 w-4"/></button>
-        </div>
+        <select className="rounded-md border bg-background px-2 py-2 text-sm max-w-[160px]" data-echo-key="filter:recipes:time">
+          <option>Any Time</option>
+          <option>&lt; 15 min</option>
+          <option>&lt; 30 min</option>
+          <option>&lt; 60 min</option>
+        </select>
+        <select className="rounded-md border bg-background px-2 py-2 text-sm max-w-[160px]" data-echo-key="filter:recipes:cost">
+          <option>Any Cost</option>
+          <option>$</option>
+          <option>$$</option>
+          <option>$$$</option>
+        </select>
         <div className="text-sm text-muted-foreground whitespace-nowrap">
           {results.length} / {recipes.length} recipes
         </div>
@@ -294,24 +309,24 @@ export default function RecipeSearchSection() {
           No recipes yet. Drop files above or import from URL.
         </div>
       ) : mode==='cards' ? (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3" data-echo-key="section:recipes:results">
           {results.map((r) => (
             <RecipeCard key={r.id} r={r} inTrash={inTrashView} onPreview={()=>setPreview(r)} onFav={()=>toggleFavorite(r.id)} onRate={(n)=>rateRecipe(r.id,n)} onTrash={()=> r.deletedAt? restoreRecipe(r.id) : deleteRecipe(r.id)} onDestroy={()=>{ if(confirm('Delete this recipe forever?')) destroyRecipe(r.id); }} />
           ))}
         </div>
       ) : mode==='grid4' ? (
-        <div className="grid gap-3 grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-3 grid-cols-2 md:grid-cols-3 xl:grid-cols-4" data-echo-key="section:recipes:results">
           {results.filter(Boolean).map(r=> (
-            <div key={r.id || Math.random().toString(36).slice(2)} className="rounded border p-3 flex items-start gap-2 glow">
+            <div key={r.id || Math.random().toString(36).slice(2)} className="rounded border p-3 flex items-start gap-2 glow" data-echo-key="card:recipes:result">
               <div className="w-16 h-12 rounded bg-muted overflow-hidden shrink-0">
-                {r.imageDataUrls?.[0] ? <img src={r.imageDataUrls[0]} alt="" className="w-full h-full object-cover"/> : null}
+                {r.imageDataUrls?.[0] ? <img src={r.imageDataUrls[0]} alt="" className="w-full h-full object-cover" loading="lazy"/> : null}
               </div>
               <div className="min-w-0">
                 <div className="font-medium text-sm line-clamp-2" title={r.title}>{r.title}</div>
                 <div className="text-xs text-muted-foreground line-clamp-1">{r.tags?.join(' · ')}</div>
                 <div className="mt-1 flex gap-2">
                   <Button size="sm" variant="secondary" onClick={()=>setPreview(r)}>Preview</Button>
-                  <Button size="sm" variant="outline" asChild><a href={`/recipe/${r.id}/view`}><ExternalLink className="mr-1"/>Open</a></Button>
+                  <Button size="sm" variant="outline" asChild data-echo-key="cta:recipes:open"><a href={`/recipe/${r.id}/view`}><ExternalLink className="mr-1"/>Open</a></Button>
                   {inTrashView ? (
                     <>
                       <Button size="sm" variant="outline" onClick={()=>restoreRecipe(r.id)} title="Restore"><RotateCcw/></Button>
@@ -326,11 +341,11 @@ export default function RecipeSearchSection() {
           ))}
         </div>
       ) : (
-        <div className="divide-y rounded-lg border glow">
+        <div className="divide-y rounded-lg border glow" data-echo-key="section:recipes:results">
           {results.filter(Boolean).map(r=> (
-            <div key={r.id || Math.random().toString(36).slice(2)} className="p-3 flex items-start gap-3">
+            <div key={r.id || Math.random().toString(36).slice(2)} className="p-3 flex items-start gap-3" data-echo-key="card:recipes:result">
               <div className="w-20 h-16 rounded bg-muted overflow-hidden">
-                {r.imageDataUrls?.[0] ? <img src={r.imageDataUrls[0]} alt="" className="w-full h-full object-cover"/> : null}
+                {r.imageDataUrls?.[0] ? <img src={r.imageDataUrls[0]} alt="" className="w-full h-full object-cover" loading="lazy"/> : null}
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
@@ -340,7 +355,7 @@ export default function RecipeSearchSection() {
                 <div className="text-xs text-muted-foreground line-clamp-1">{r.tags?.join(' · ')}</div>
                 <div className="mt-1 flex gap-2">
                   <Button size="sm" variant="secondary" onClick={()=>setPreview(r)}>Preview</Button>
-                  <Button size="sm" variant="outline" asChild><a href={`/recipe/${r.id}/view`}><ExternalLink className="mr-1"/>Open</a></Button>
+                  <Button size="sm" variant="outline" asChild data-echo-key="cta:recipes:open"><a href={`/recipe/${r.id}/view`}><ExternalLink className="mr-1"/>Open</a></Button>
                   {inTrashView ? (
                     <>
                       <Button size="sm" variant="outline" onClick={()=>restoreRecipe(r.id)} title="Restore"><RotateCcw/></Button>
