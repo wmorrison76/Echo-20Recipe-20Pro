@@ -885,6 +885,45 @@ const RecipeInputPage = () => {
     if (changed) setIngredients(next);
   }, [ingredients]);
 
+  // Compute theoretical volume (ml) from ingredient rows
+  const theoreticalVolumeMl = React.useMemo(() => {
+    const U: Record<string, number> = {
+      ML: 1,
+      L: 1000,
+      TSP: 4.92892,
+      TBSP: 14.7868,
+      'FL OZ': 29.5735,
+      CUP: 240,
+      PT: 473.176,
+      PINT: 473.176,
+      QTS: 946.353,
+      QT: 946.353,
+      GAL: 3785.41,
+      GALLON: 3785.41,
+    };
+    let ml = 0;
+    for (const r of ingredients) {
+      const q = Number((r.qty||'').toString().replace(/[^0-9.]/g,''));
+      const u = (r.unit||'').toUpperCase();
+      if (!Number.isFinite(q) || q<=0) continue;
+      if (U[u]) ml += q * U[u];
+      else if (u==='OZ' || u==='LBS' || u==='LB' || u==='G' || u==='GRAM' || u==='GRAMS' || u==='KG') {
+        const massG = u==='OZ'? q*28.3495 : u==='LBS'||u==='LB'? q*453.592 : u==='KG'? q*1000 : q;
+        ml += massG; // ~1g per ml
+      }
+    }
+    return ml;
+  }, [ingredients]);
+  const formatMl = (ml: number) => {
+    if (!ml || ml<=0) return '—';
+    if (ml >= 3785.41) return `${(ml/3785.41).toFixed(2)} GALLON`;
+    if (ml >= 946.353) return `${(ml/946.353).toFixed(2)} QTS`;
+    if (ml >= 473.176) return `${(ml/473.176).toFixed(2)} PINT`;
+    if (ml >= 240) return `${(ml/240).toFixed(2)} CUP`;
+    if (ml >= 29.5735) return `${(ml/29.5735).toFixed(1)} FL OZ`;
+    return `${Math.round(ml)} ML`;
+  };
+
   const analyzeNutrition = async () => {
     try {
       setNutritionLoading(true);
