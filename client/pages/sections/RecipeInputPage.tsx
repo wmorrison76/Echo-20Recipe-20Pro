@@ -631,6 +631,41 @@ const RecipeInputPage = () => {
       ML: { unit: "TSP", f: (n) => n / 4.92892 },
     };
 
+    const convertTempsInText = (text: string, toMetric: boolean) => {
+      if (!text) return text;
+      let out = text;
+      if (toMetric) {
+        out = out.replace(/(\d{2,3})\s*(?:°\s*)?(?:f|fahrenheit|degf|degrees\s*f)\b/gi, (_m, a) => {
+          const f = parseInt(a, 10);
+          const c = Math.round((f - 32) * 5 / 9);
+          return `${c}°C`;
+        });
+      } else {
+        out = out.replace(/(\d{2,3})\s*(?:°\s*)?(?:c|celsius|degc|degrees\s*c)\b/gi, (_m, a) => {
+          const c = parseInt(a, 10);
+          const f = Math.round(c * 9 / 5 + 32);
+          return `${f}°F`;
+        });
+      }
+      return out;
+    };
+    const convertCookTemp = (s: string, toMetric: boolean) => {
+      const t = String(s || '').trim();
+      if (!t) return t;
+      if (toMetric) {
+        if (/(?:°?\s*F\b|fahrenheit)/i.test(t)) {
+          const n = parseInt(t.match(/(\d{2,3})/)?.[1] || '', 10);
+          if (Number.isFinite(n)) return `${Math.round((n - 32) * 5 / 9)}°C`;
+        }
+      } else {
+        if (/(?:°?\s*C\b|celsius)/i.test(t)) {
+          const n = parseInt(t.match(/(\d{2,3})/)?.[1] || '', 10);
+          if (Number.isFinite(n)) return `${Math.round(n * 9 / 5 + 32)}°F`;
+        }
+      }
+      return t;
+    };
+
     if (currentUnits === "Imperial") {
       setIngredients(
         normalizedImperial.map((r) => {
