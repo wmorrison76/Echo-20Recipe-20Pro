@@ -1213,6 +1213,12 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     [recipes],
   );
 
+  const restoreDemo = useCallback(() => {
+    setImages([]);
+    setLookbooks([]);
+    try { localStorage.removeItem(LS_IMAGES); localStorage.removeItem(LS_LOOKBOOKS);} catch {}
+  }, []);
+
   const value = useMemo<AppData>(
     () => ({
       recipes,
