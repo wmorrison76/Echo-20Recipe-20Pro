@@ -871,7 +871,7 @@ const RecipeInputPage = () => {
       const updated = {
         ...r,
         qty: p.qty ?? r.qty,
-        unit: (p.unit ?? r.unit || "").toUpperCase(),
+        unit: ((p.unit ?? r.unit) || "").toUpperCase(),
         item: p.item ?? r.item,
         prep: p.prep ?? r.prep,
       };
@@ -1448,7 +1448,7 @@ const RecipeInputPage = () => {
                           const p = parseIngredientInline(text);
                           if (p) {
                             v[index].qty = p.qty ?? v[index].qty;
-                            v[index].unit = (p.unit ?? v[index].unit || "").toUpperCase();
+                            v[index].unit = ((p.unit ?? v[index].unit) || "").toUpperCase();
                             v[index].item = p.item ?? v[index].item;
                             v[index].prep = p.prep ?? v[index].prep;
                           }
