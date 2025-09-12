@@ -198,6 +198,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       ...pastryNames.map((lab, i) => ({ id: uid(), name: `${lab.toLowerCase()}-${i+1}.png`, dataUrl: makeDataUrl(lab, (i*25)%360), createdAt: now - i*800 - 1, tags: ["pastry", lab.toLowerCase(), "demo"], favorite: false, order: i, type: "image/png" })),
       ...otherNames.map((lab, i) => ({ id: uid(), name: `${lab.toLowerCase()}-${i+1}.png`, dataUrl: makeDataUrl(lab, (i*60+180)%360), createdAt: now - i*800 - 1 - 10000, tags: [lab.toLowerCase(), "demo"], favorite: false, order: pastryNames.length + i, type: "image/png" })),
     ];
+    if (!mountedRef.current) return;
     setImages(demo);
     if (lookbooks.length === 0) {
       const lbPastryId = uid();
@@ -205,7 +206,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         { id: lbPastryId, name: "Pastries", imageIds: demo.filter(i=> i.tags.includes("pastry")).slice(0,8).map(i=>i.id), createdAt: now },
         { id: uid(), name: "Cakes", imageIds: demo.filter(i=> i.tags.includes("cake")).map(i=>i.id), createdAt: now-1000 },
       ];
-      setLookbooks(lbs);
+      if (mountedRef.current) setLookbooks(lbs);
     }
     try { localStorage.setItem("demo:seeded:v2","1"); } catch {}
   }, [images.length, lookbooks.length]);
