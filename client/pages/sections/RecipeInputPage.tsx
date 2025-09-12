@@ -1468,7 +1468,7 @@ const RecipeInputPage = () => {
                   return row;
                 };
                 return (
-                  <div key={index} className="ingredients-grid ingredient-row">
+                  <div key={index} className="ingredients-grid ingredient-row" data-echo-key="row:add:ingredient">
                     <input
                       data-row={index}
                       data-col={0}
