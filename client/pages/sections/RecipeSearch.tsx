@@ -201,6 +201,7 @@ export default function RecipeSearchSection() {
             try { const keepTop=(obj:Record<string,number>,n:number)=> Object.fromEntries(Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,n)); const words:Record<string,number>={}, bigrams:Record<string,number>={}; const textAll=pageTexts.join('\n').toLowerCase().replace(/[^a-z\s]/g,' '); const arr=textAll.split(/\s+/).filter(w=>w.length>=3 && w.length<=24); for(let i=0;i<arr.length;i++){ const w=arr[i]; words[w]=(words[w]||0)+1; if(i<arr.length-1){ const g=`${arr[i]} ${arr[i+1]}`; if(g.length>=5 && g.length<=40) bigrams[g]=(bigrams[g]||0)+1; } } const raw=localStorage.getItem('kb:cook')||'{}'; const kb=JSON.parse(raw||'{}'); kb.terms=keepTop({...kb.terms, ...words},400); kb.bigrams=keepTop({...kb.bigrams, ...bigrams},600); kb.books=Array.from(new Set([...(kb.books||[]), f.name.replace(/\.[^.]+$/,'')])); localStorage.setItem('kb:cook', JSON.stringify(kb)); } catch {}
             setScanOpen(false);
             setBookPhase('selecting');
+            setScanPageTexts(pageTexts); setScanCandidates(candidates); setScanBookName(f.name.replace(/\.[^.]+$/,''));
             const normLine = (s:string)=>{ let t=s.replace(/\s+/g,' ').trim(); if (/^([A-Z]\s+){2,}[A-Z](?:\s+\d+)?[\s:]*$/.test(t) && t.length<=60){ t=t.replace(/\s+/g,''); } return t; };
             const norm = lines.map(normLine);
             let tocEntries = norm.map(s=>{
