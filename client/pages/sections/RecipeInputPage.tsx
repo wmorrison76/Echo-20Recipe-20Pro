@@ -51,8 +51,11 @@ const RecipeInputPage = () => {
       setIsDarkMode(document.documentElement.classList.contains("dark"));
     });
     obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    const onChef = (e: any) => setChefNotes(String(e?.detail || ''));
+    window.addEventListener('recipe:chef-notes', onChef as any);
     return () => {
       window.removeEventListener("theme:change", onTheme as any);
+      window.removeEventListener('recipe:chef-notes', onChef as any);
       obs.disconnect();
     };
   }, []);
