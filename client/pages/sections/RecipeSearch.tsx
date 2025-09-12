@@ -231,7 +231,7 @@ export default function RecipeSearchSection() {
               let tIdx=Math.max(0,i-5); let title=''; for(let k=i-1;k>=tIdx;k--){ if(isTitle(norm[k])){ title=norm[k]; break; } }
               const ings:string[]=[]; i++; while(i<norm.length && !/ingredients?/i.test(norm[i])){ const s=norm[i]; if(/^(instructions|directions|method)/i.test(s)) break; if(s) ings.push(s); i++; }
               let ins:string[]=[]; while(i<norm.length && !/ingredients?/i.test(norm[i])){ const s=norm[i]; if(s) ins.push(s); i++; }
-              if(title && (ings.length||ins.length)) items.push({ title, ingredients: ings, instructions: ins, tags:[book] });
+              if(title && (ings.length||ins.length)) items.push({ title, ingredients: ings, instructions: ins, tags:[book], extra: { book, source: 'pdf-auto' } });
             }
             setBookPhase('importing');
             if(items.length){ const blob=new Blob([JSON.stringify(items)],{type:'application/json'}); const file=new File([blob], `${book}.json`, { type:'application/json' }); const { added } = await addRecipesFromJsonFiles([file]); setBookImported(added); setStatus(`Imported ${added} recipes from book.`); setBookPhase('done'); } else { setStatus('Could not detect recipes in PDF'); setBookPhase(null); }
@@ -338,8 +338,17 @@ export default function RecipeSearchSection() {
                 const items:any[]=[]; const book=scanBookName||'Book';
                 for(let i=0;i<starts.length;i++){ const s=starts[i]; const e=(i+1<starts.length? starts[i+1]-1 : pageTexts.length); const textRaw=pageTexts.slice(s-1,e).join('\n'); const text=textRaw.split(/\n/).map(normLine).join('\n'); const lines=text.split(/\n/).map(normLine).filter(Boolean); const lower=lines.map(l=>l.toLowerCase()); const find=(labels:string[])=> lower.findIndex(l=> labels.some(x=> l.startsWith(x))); let ingIdx=find(['ingredients','ingredient']); let instIdx=find(['instructions','directions','method','steps','preparation','procedure']); if(ingIdx<0){ const qty=/^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/; for(let j=0;j<Math.min(lines.length,80);j++){ if(qty.test(lines[j])||/^[•\-*]\s+/.test(lines[j])){ ingIdx=j-1; break; } } } if(instIdx<0&&ingIdx>=0){ for(let j=ingIdx+1;j<Math.min(lines.length,200);j++){ if(/^(instructions|directions|method|steps|preparation|procedure)\b/i.test(lines[j])||/^\d+\.|^Step\s*\d+/i.test(lines[j])){ instIdx=j; break; } } } const getRange=(a:number,b:number)=> lines.slice(a+1,b>a?b:undefined).filter(Boolean); const ings=ingIdx>=0? getRange(ingIdx,instIdx>=0?instIdx:lines.length):[]; const ins=instIdx>=0? getRange(instIdx,lines.length):[]; if((ings.length>=2)||(ins.length>=3)){ let title=''; for(let k=Math.max(0,ingIdx-6); k<Math.min(lines.length, Math.max(ingIdx,8)); k++){ const L=lines[k]||''; if(/^[A-Z][A-Za-z0-9\-\'\s]{2,80}$/.test(L)||/^([A-Z]\s+){2,}[A-Z][\s:]*$/.test(L)){ title=L.replace(/\s+/g,' ').trim(); break; } } if(!title) title=lines[0]||`${book} p.${s}`; items.push({ title, ingredients: ings, instructions: ins, tags:[book] }); }
                 }
-                if(items.length){ const blob=new Blob([JSON.stringify(items)],{type:'application/json'}); const jf=new File([blob], `${(scanBookName||'book')}.json`, { type:'application/json' }); const { added } = await addRecipesFromJsonFiles([jf]); setStatus(`Imported ${added} recipes from detected list.`); }
-              }catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`);} finally{}
+                if(items.length){
+                  // add book metadata and de-duplicate by title within this batch
+                  const bookName = (scanBookName||'book');
+                  const seen: Record<string,boolean> = {};
+                  const withMeta = items.filter(it=>{ const k=(it.title||'').toLowerCase(); if(seen[k]) return false; seen[k]=true; return true; }).map(it=> ({ ...it, extra: { ...(it.extra||{}), book: bookName, source: 'pdf-detected' } }));
+                  const blob=new Blob([JSON.stringify(withMeta)],{type:'application/json'});
+                  const jf=new File([blob], `${bookName}.json`, { type:'application/json' });
+                  const { added } = await addRecipesFromJsonFiles([jf]);
+                  setStatus(`Imported ${added} recipes from detected list.`);
+                }
+              }catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`);} finally{ setDetectedOpen(false); setDetected([]); setScanPageTexts(null); }
             }}>Import detected</Button>
           </div>
         </DialogContent>
