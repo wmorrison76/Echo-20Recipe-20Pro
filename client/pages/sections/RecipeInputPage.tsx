@@ -25,6 +25,7 @@ import {
   Share2,
   FileDown,
   Printer,
+  FlaskConical,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
@@ -1506,7 +1507,14 @@ const RecipeInputPage = () => {
                     key={i}
                     className={`text-xs font-medium ${isDarkMode ? "text-cyan-400" : "text-black"} ${h === "COST" ? "text-right" : ""}`}
                   >
-                    {h}
+                    {h === "YIELD %" ? (
+                      <span className="inline-flex items-center gap-1" title="R&D Labs">
+                        YIELD %
+                        <button type="button" onClick={()=>setYieldOpen(true)} className="p-0.5 rounded hover:bg-black/10">
+                          <FlaskConical className="w-3.5 h-3.5" />
+                        </button>
+                      </span>
+                    ) : h}
                   </div>
                 ),
               )}
@@ -1579,8 +1587,10 @@ const RecipeInputPage = () => {
                       className={`${inputClass} ${qtyErr ? "ring-2 ring-red-500 border-red-400" : ""}`}
                       value={line.qty}
                       onChange={(e) => {
+                        const raw = e.target.value;
+                        const allowed = raw.replace(/[^0-9.\s/%¼½¾⅓⅔⅛⅜⅝⅞-]/g, "");
                         const v = [...ingredients];
-                        v[index].qty = e.target.value;
+                        v[index].qty = allowed;
                         setIngredients(
                           v.map((r, i) =>
                             i === index ? updateAndNormalize({ ...r }) : r,
@@ -1596,7 +1606,7 @@ const RecipeInputPage = () => {
                       value={line.unit}
                       onChange={(e) => {
                         const v = [...ingredients];
-                        v[index].unit = e.target.value.toUpperCase();
+                        v[index].unit = e.target.value.replace(/[^a-z]/gi,'').toUpperCase();
                         setIngredients(
                           v.map((r, i) =>
                             i === index ? updateAndNormalize({ ...r }) : r,
