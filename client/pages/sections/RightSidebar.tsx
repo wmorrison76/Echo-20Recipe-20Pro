@@ -23,7 +23,7 @@ interface RightSidebarProps {
   onRecipeAccessChange: (recipeAccess: string[]) => void;
   image: string | null;
   onImageChange: (image: string | null) => void;
-  onRecipeImport?: (recipeData: any) => void;
+  onRecipeImport?: (recipeData: any) => void | Promise<void>;
   // taxonomy
   taxonomy: TaxonomySelection;
   onTaxonomyChange: (t: TaxonomySelection) => void;
