@@ -268,6 +268,7 @@ export default function RecipeSearchSection() {
             </div>
             <div className="flex gap-2">
               <Button variant="secondary" onClick={()=>{ setTocOpen(false); setToc(null); }}>Cancel</Button>
+              <Button variant="outline" onClick={async()=>{ try{ setTocOpen(false); setBookPhase('importing'); try{ localStorage.setItem('pdf:index:autoAll','1'); }catch{} if(pdfPendingRef.current){ const { added } = await addRecipesFromPdfFiles([pdfPendingRef.current]); setStatus(`Imported ${added} recipe(s) from book (auto-detected).`); setBookPhase('done'); } } catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`); setBookPhase(null);} finally { try{ localStorage.removeItem('pdf:index:autoAll'); }catch{} setToc(null); setTocChecked({}); pdfPendingRef.current=null; } }}>Import all (auto)</Button>
               <Button onClick={async()=>{ try{ setTocOpen(false); setBookPhase('importing'); const selected = Object.keys(tocChecked).filter(k=> tocChecked[k]); localStorage.setItem('pdf:index:allow', JSON.stringify(selected)); if(pdfPendingRef.current){ const { added } = await addRecipesFromPdfFiles([pdfPendingRef.current]); setStatus(`Imported ${added} recipe(s) from book.`); setBookPhase('done'); } } catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`); setBookPhase(null);} finally { setToc(null); setTocChecked({}); pdfPendingRef.current=null; } }}>Accept</Button>
             </div>
           </div>
