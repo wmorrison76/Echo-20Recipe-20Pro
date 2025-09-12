@@ -236,6 +236,7 @@ export default function RecipeSearchSection() {
             setBookPhase('importing');
             if(items.length){ const blob=new Blob([JSON.stringify(items)],{type:'application/json'}); const file=new File([blob], `${book}.json`, { type:'application/json' }); const { added } = await addRecipesFromJsonFiles([file]); setBookImported(added); setStatus(`Imported ${added} recipes from book.`); setBookPhase('done'); } else { setStatus('Could not detect recipes in PDF'); setBookPhase(null); }
           } catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`); setBookPhase(null);} finally { (e.target as HTMLInputElement).value=''; } }} />
+          <div className="mt-1"><label className="text-xs flex items-center gap-1"><input type="checkbox" className="scale-75" defaultChecked={typeof localStorage!=='undefined' && localStorage.getItem('pdf:ocr')==='1'} onChange={(e)=>{ try{ localStorage.setItem('pdf:ocr', e.target.checked? '1':'0'); }catch{} }} /> OCR fallback for scanned PDFs</label></div>
           {(bookPhase || total>0) && (
             <div className="mt-2 space-y-1">
               {bookPhase && (
