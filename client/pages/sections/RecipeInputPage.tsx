@@ -2053,14 +2053,17 @@ const RecipeInputPage = () => {
           if (data?.image) {
             try {
               const urlStr = String(data.image);
-              const res = await fetch(urlStr);
-              const blob = await res.blob();
-              const ext = blob.type.includes('png')? 'png' : 'jpg';
-              const fname = `${(data.title||'cover').toString().toLowerCase().replace(/[^a-z0-9]+/g,'-')}.${ext}`;
-              await addImages([new File([blob], fname, { type: blob.type || 'image/jpeg' })], { tags: ['import','web'] });
-              const reader = new FileReader();
-              reader.onload = () => setImage(String(reader.result || urlStr));
-              reader.readAsDataURL(blob);
+              fetch(urlStr)
+                .then((res) => res.blob())
+                .then(async (blob) => {
+                  const ext = blob.type.includes('png')? 'png' : 'jpg';
+                  const fname = `${(data.title||'cover').toString().toLowerCase().replace(/[^a-z0-9]+/g,'-')}.${ext}`;
+                  await addImages([new File([blob], fname, { type: blob.type || 'image/jpeg' })], { tags: ['import','web'] });
+                  const reader = new FileReader();
+                  reader.onload = () => setImage(String(reader.result || urlStr));
+                  reader.readAsDataURL(blob);
+                })
+                .catch(() => setImage(String(data.image)));
             } catch { setImage(String(data.image)); }
           }
           // Top info
