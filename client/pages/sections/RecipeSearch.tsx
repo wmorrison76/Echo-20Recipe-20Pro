@@ -190,7 +190,7 @@ export default function RecipeSearchSection() {
             // live scan popups
             setScanOpen(true); setDetectedOpen(true); setDetected([]); setScanPageNo(0); setScanTotal(doc.numPages);
             let lines:string[]=[]; const isLikelyIngredientList=(txt:string)=>{ const ls=txt.split(/\n/).map(s=>s.trim()).filter(Boolean).slice(0,80); const qty=/^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/; let c=0; for(const L of ls){ if(qty.test(L)||/^[•\-*]\s+/.test(L)) c++; } return c>=3; }; const normalizeLineA=(s:string)=>{ let t=s.replace(/\s+/g,' ').trim(); if (/^([A-Z]\s+){2,}[A-Z](?:\s+\d+)?[\s:]*$/.test(t) && t.length<=60){ t=t.replace(/\s+/g,''); } return t; };
-            const pageTexts:string[]=[];
+            const pageTexts:string[]=[]; const candidates:number[]=[];
             for(let p=1;p<=doc.numPages;p++){
               const page=await doc.getPage(p); const tc=await page.getTextContent(); const pageLines=(tc.items as any[]).map((i:any)=> String(i.str)).filter(Boolean); lines.push(...pageLines); lines.push('');
               const t=pageLines.join('\n'); pageTexts.push(t); setBookPage(p); setScanPageNo(p);
