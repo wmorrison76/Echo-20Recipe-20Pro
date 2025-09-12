@@ -638,6 +638,28 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     [linkImagesToRecipesByFilename],
   );
 
+  const learnFromTextChunks = (book: string, chunks: string[]) => {
+    try {
+      const keepTop = (obj: Record<string, number>, n: number) => Object.fromEntries(Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,n));
+      const textAll = chunks.join('\n').toLowerCase();
+      const wordsArr = textAll.replace(/[^a-z\s]/g,' ').split(/\s+/).filter(Boolean);
+      const words: Record<string, number> = {};
+      const bigrams: Record<string, number> = {};
+      for(let i=0;i<wordsArr.length;i++){
+        const w = wordsArr[i]; if(w.length<2||w.length>24) continue; words[w]=(words[w]||0)+1;
+        if (i<wordsArr.length-1){ const g=`${wordsArr[i]} ${wordsArr[i+1]}`; if(g.length>=5 && g.length<=40) bigrams[g]=(bigrams[g]||0)+1; }
+      }
+      const kbRaw = localStorage.getItem('kb:cook') || '{}';
+      const kb = JSON.parse(kbRaw||'{}');
+      kb.terms = keepTop({ ...(kb.terms||{}), ...Object.fromEntries(Object.entries(words).map(([k,v])=>[k,(v + (kb.terms?.[k]||0))])) }, 400);
+      const mergedBi: Record<string, number> = { ...(kb.bigrams||{}) };
+      for(const [k,v] of Object.entries(bigrams)){ mergedBi[k]=(mergedBi[k]||0)+v; }
+      kb.bigrams = keepTop(mergedBi, 600);
+      kb.books = Array.from(new Set([...(kb.books||[]), book]));
+      localStorage.setItem('kb:cook', JSON.stringify(kb));
+    } catch {}
+  };
+
   const convertDocxArrayBufferToHtml = async (
     arrayBuffer: ArrayBuffer,
   ): Promise<string> => {
