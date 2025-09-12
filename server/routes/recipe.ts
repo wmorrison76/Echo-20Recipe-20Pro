@@ -163,6 +163,10 @@ export async function handleRecipeImport(req: Request, res: Response) {
     const rec = parseJsonLdRecipe(html) || scrapeRecipeFallback(html);
     if (!rec) return res.status(404).json({ error: "No recipe found on page" });
 
+    if ((rec as any).image) {
+      (rec as any).image = toAbsoluteUrl(String((rec as any).image), url);
+    }
+
     res.json(rec);
   } catch (e: any) {
     res.status(500).json({ error: e?.message || "Import failed" });
