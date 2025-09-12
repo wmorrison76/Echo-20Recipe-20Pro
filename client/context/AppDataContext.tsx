@@ -833,6 +833,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           const recs = htmlToRecipes(html, f.name);
           collected.push(...recs);
           titles.push(...recs.map((r) => r.title));
+          try { const chunks = recs.map(r=> [r.title, ...(r.ingredients||[]), ...(r.instructions||[])].join('\n')); learnFromTextChunks(f.name.replace(/\.[^.]+$/,''), chunks); } catch {}
         } catch (e: any) {
           errors.push({
             file: f.name,
