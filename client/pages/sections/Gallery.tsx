@@ -184,7 +184,7 @@ export default function GallerySection() {
   };
 
   return (
-    <div className="mx-auto max-w-[1200px] px-4 md:px-6 py-4 space-y-4" data-echo-key="page:recipes:gallery">
+    <div className={`mx-auto max-w-[1200px] px-4 md:px-6 py-4 space-y-4 ${lucccaMode ? 'luccca-theme' : ''}`} data-echo-key="page:recipes:gallery">
 
       <div className="grid gap-3 md:grid-cols-2 items-start">
         <Dropzone multiple onFiles={onFiles}>
