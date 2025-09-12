@@ -726,24 +726,19 @@ const RecipeInputPage = () => {
   };
 
   const exportCSV = () => {
+    const header = ["qty", "unit", "item", "prep", "yield", "cost"];
     const rows = [
-      ["qty", "unit", "item", "prep", "yield", "cost"],
-      ...ingredients.map((r) => [
-        r.qty,
-        r.unit,
-        r.item,
-        r.prep,
-        r.yield,
-        r.cost,
-      ]),
+      header,
+      ...ingredients.map((r) => [r.qty, r.unit, r.item, r.prep, r.yield, r.cost]),
+      [""],
+      ["Directions"],
+      ...String(directions || "").split(/\r?\n/).filter(Boolean).map((line, i) => [`${i + 1}. ${line}`]),
     ];
-    const csv = rows
-      .map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
-      .join("\n");
+    const csv = rows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `${recipeName || "recipe"}.csv`;
+    a.download = `${(recipeName || "recipe").replace(/[^a-z0-9-_]+/gi, "_")}.csv`;
     a.click();
     URL.revokeObjectURL(a.href);
   };
@@ -751,7 +746,7 @@ const RecipeInputPage = () => {
     const data = serialize();
     const url = `${location.origin}${location.pathname}#r=${encodeURIComponent(btoa(JSON.stringify(data)))}`;
     navigator.clipboard.writeText(url);
-    alert("Share link copied to clipboard");
+    alert(`${recipeName || "Recipe"} link copied to clipboard`);
   };
 
   // Auto-calc batch yield from volume units if not set manually
@@ -1023,9 +1018,7 @@ const RecipeInputPage = () => {
   };
 
   return (
-    <div
-      className={`relative w-full h-screen transition-all duration-300 ${isDarkMode ? "bg-black text-cyan-400" : "bg-white text-gray-900"}`}
-    >
+    <div className={`relative w-full min-h-screen transition-all duration-300 text-foreground`}>
       <div
         className={`hidden ${isDarkMode ? "bg-gradient-to-br from-gray-900 via-black to-blue-900" : "bg-gradient-to-br from-gray-50 to-white"}`}
       >
@@ -1815,12 +1808,21 @@ const RecipeInputPage = () => {
             <div className="flex items-center gap-2 text-sm">
               <button
                 onClick={() => {
+                  const title = (recipeName || '').trim() || 'Untitled Recipe';
+                  const ingLines = ingredients.map((r) => [r.qty, r.unit, r.item, r.prep].filter(Boolean).join(' ').trim()).filter(Boolean);
+                  const insLines = String(directions||'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+                  if (!recipeIdRef.current) {
+                    recipeIdRef.current = addRecipe({ title, ingredients: ingLines, instructions: insLines, tags: [], extra: { source: 'manual', taxonomy } });
+                  } else {
+                    updateRecipe(recipeIdRef.current, { title, ingredients: ingLines, instructions: insLines, extra: { taxonomy } });
+                  }
                   pushHistory({ ...serialize(), ts: Date.now() });
+                  alert(`Saved ${title}`);
                 }}
                 className="flex items-center gap-2 text-gray-700 hover:text-black"
               >
                 <Save className="w-5 h-5" />
-                Save Snapshot
+                Save
               </button>
               <button
                 onClick={exportCSV}
@@ -1845,11 +1847,11 @@ const RecipeInputPage = () => {
               </button>
               <button
                 onClick={() => {
-                  const data = serialize();
-                  const url = `${location.origin}${location.pathname}#r=${encodeURIComponent(btoa(JSON.stringify(data)))}`;
-                  const body = encodeURIComponent(
-                    `${recipeName || "Recipe"}\n${url}`,
-                  );
+                  const title = recipeName || 'Recipe';
+                  const ing = ingredients.map((r)=>[r.qty,r.unit,r.item,r.prep].filter(Boolean).join(' ')).filter(Boolean).join('\n');
+                  const ins = String(directions||'').split(/\r?\n/).filter(Boolean).map((s,i)=>`${i+1}. ${s}`).join('\n');
+                  const bodyText = `${title}\n\nIngredients:\n${ing || '-'}\n\nDirections:\n${ins || '-'}`;
+                  const body = encodeURIComponent(bodyText);
                   location.href = `sms:?&body=${body}`;
                 }}
                 className="flex items-center gap-1 text-gray-700 hover:text-black"
