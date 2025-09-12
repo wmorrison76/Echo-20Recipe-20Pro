@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Star, LayoutGrid, Rows, List, Trash2, RotateCcw, ExternalLink } from "lucide-react";
 import { axisOptions } from "@/lib/taxonomy";
 
-export function RecipeCard({ r, onPreview, onFav, onRate, onTrash, inTrash }: { r: ReturnType<typeof useAppData>["recipes"][number]; onPreview:()=>void; onFav:()=>void; onRate:(n:number)=>void; onTrash:()=>void; inTrash?: boolean; }) {
+export function RecipeCard({ r, onPreview, onFav, onRate, onTrash, inTrash, onDestroy }: { r: ReturnType<typeof useAppData>["recipes"][number]; onPreview:()=>void; onFav:()=>void; onRate:(n:number)=>void; onTrash:()=>void; inTrash?: boolean; onDestroy?: ()=>void; }) {
   const cover = r.imageDataUrls?.[0];
   const stars = Array.from({length:5},(_,i)=>i< (r.rating||0));
   return (
