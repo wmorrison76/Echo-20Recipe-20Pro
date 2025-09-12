@@ -233,12 +233,6 @@ export default function GallerySection() {
               Upload images
             </Button>
             <Button
-              variant="outline"
-              onClick={async()=>{ const n = await addDemoImages(); setStatus(`Added ${n} demo image(s).`);} }
-            >
-              Add demo images
-            </Button>
-            <Button
               variant="secondary"
               onClick={() => linkImagesToRecipesByFilename()}
             >
