@@ -3,7 +3,6 @@ import RightSidebar from "./RightSidebar";
 import { useAppData } from "@/context/AppDataContext";
 import ImageEditorModal from "./ImageEditorModal";
 import NutritionLabel from "./NutritionLabel";
-import TaxonomyPicker from "@/components/TaxonomyPicker";
 import { defaultSelection, TaxonomySelection } from "@/lib/taxonomy";
 import {
   Save,
@@ -1115,12 +1114,10 @@ const RecipeInputPage = () => {
               <div
                 className={`border rounded-xl p-4 h-full shadow-lg ${isDarkMode ? "bg-blue-900/20 border-blue-400/30 shadow-blue-400/20" : "bg-blue-50/80 border-blue-200 shadow-gray-200/50"} backdrop-blur-sm`}
               >
-                <div
-                className={`font-semibold text-sm mb-3 ${isDarkMode ? "text-blue-400" : "text-blue-700"}`}
-              >
+                <div className={`font-semibold text-sm mb-3 ${isDarkMode ? "text-blue-400" : "text-blue-700"}`}>
                 Categorization (LUCCCA)
               </div>
-              <TaxonomyPicker value={taxonomy} onChange={setTaxonomy} />
+              <div className="text-xs text-muted-foreground">Open the right sidebar to set taxonomy.</div>
               </div>
             </div>
 
@@ -1677,6 +1674,8 @@ const RecipeInputPage = () => {
         onRecipeAccessChange={setSelectedRecipeAccess}
         image={image}
         onImageChange={setImage}
+        taxonomy={taxonomy}
+        onTaxonomyChange={setTaxonomy}
         onRecipeImport={(data) => {
           const decode = (s: string) =>
             s
@@ -1710,7 +1709,7 @@ const RecipeInputPage = () => {
                 "⅝": "5/8",
                 "⅞": "7/8",
               };
-              s = s.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => fracMap[ch] || ch);
+              s = s.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜���⅞]/g, (ch) => fracMap[ch] || ch);
               const m = s.match(
                 /^\s*([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?)?\s*([a-zA-Z\.]+)?\s*(.*)$/,
               );
