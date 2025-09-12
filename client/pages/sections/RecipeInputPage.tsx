@@ -1826,6 +1826,7 @@ const RecipeInputPage = () => {
           <div className="flex items-center justify-between mt-2">
             <div className="flex items-center gap-2 text-sm">
               <button
+                data-echo-key="cta:add:save"
                 onClick={() => {
                   const title = (recipeName || '').trim() || 'Untitled Recipe';
                   const ingLines = ingredients.map((r) => [r.qty, r.unit, r.item, r.prep].filter(Boolean).join(' ').trim()).filter(Boolean);
