@@ -1358,6 +1358,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       updateImage,
       addTagsToImages,
       reorderImages,
+      deleteImage,
       addLookBook,
       updateLookBook,
       deleteLookBook,
