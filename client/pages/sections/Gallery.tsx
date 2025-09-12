@@ -376,7 +376,7 @@ export default function GallerySection() {
           className={
             viewMode === "masonry"
               ? "columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7 gap-4 sm:gap-5 lg:gap-6"
-              : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:columns-6 gap-4 sm:gap-5 lg:gap-6"
+              : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-5 lg:gap-6"
           }
         >
           {filtered.map((img) => (
