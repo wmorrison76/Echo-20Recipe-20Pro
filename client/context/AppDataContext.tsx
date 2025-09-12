@@ -697,6 +697,10 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         } else if (tag === "P") {
           const t = (el.textContent || "").trim();
           if (t) out.push(t);
+        } else if (tag === "TABLE") {
+          const cells = Array.from(el.querySelectorAll('td,th')) as HTMLElement[];
+          const cellText = cells.map(c=> (c.textContent||'').trim()).filter(Boolean);
+          out.push(...cellText);
         }
       }
       return out;
