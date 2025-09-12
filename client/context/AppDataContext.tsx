@@ -176,14 +176,14 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     const makeDataUrl = (label: string, hue: number) => {
       try {
         const c = document.createElement("canvas");
-        c.width = 1200; c.height = 900; const ctx = c.getContext("2d");
+        c.width = 960; c.height = 720; const ctx = c.getContext("2d");
         if (!ctx) return "";
-        const g = ctx.createLinearGradient(0,0,1200,900);
+        const g = ctx.createLinearGradient(0,0,960,720);
         g.addColorStop(0, `hsl(${hue},65%,92%)`);
         g.addColorStop(1, `hsl(${(hue+30)%360},70%,82%)`);
-        ctx.fillStyle = g; ctx.fillRect(0,0,1200,900);
-        ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.font = "bold 84px Inter, system-ui, sans-serif"; ctx.textAlign = "center"; ctx.fillText(label, 600, 480);
-        return c.toDataURL("image/png");
+        ctx.fillStyle = g; ctx.fillRect(0,0,960,720);
+        ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.font = "bold 72px Inter, system-ui, sans-serif"; ctx.textAlign = "center"; ctx.fillText(label, 480, 380);
+        return c.toDataURL("image/jpeg", 0.78);
       } catch {
         return "";
       }
@@ -193,8 +193,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     ];
     const otherNames = ["Cake","Pie","Bread","Plated","Savory"];
     const demo: GalleryImage[] = [
-      ...pastryNames.map((lab, i) => ({ id: uid(), name: `${lab.toLowerCase()}-${i+1}.png`, dataUrl: makeDataUrl(lab, (i*25)%360), createdAt: now - i*800 - 1, tags: ["pastry", lab.toLowerCase(), "demo"], favorite: false, order: i, type: "image/png" })),
-      ...otherNames.map((lab, i) => ({ id: uid(), name: `${lab.toLowerCase()}-${i+1}.png`, dataUrl: makeDataUrl(lab, (i*60+180)%360), createdAt: now - i*800 - 1 - 10000, tags: [lab.toLowerCase(), "demo"], favorite: false, order: pastryNames.length + i, type: "image/png" })),
+      ...pastryNames.map((lab, i) => ({ id: uid(), name: `${lab.toLowerCase()}-${i+1}.jpg`, dataUrl: makeDataUrl(lab, (i*25)%360), createdAt: now - i*800 - 1, tags: ["pastry", lab.toLowerCase(), "demo"], favorite: false, order: i, type: "image/jpeg" })),
+      ...otherNames.map((lab, i) => ({ id: uid(), name: `${lab.toLowerCase()}-${i+1}.jpg`, dataUrl: makeDataUrl(lab, (i*60+180)%360), createdAt: now - i*800 - 1 - 10000, tags: [lab.toLowerCase(), "demo"], favorite: false, order: pastryNames.length + i, type: "image/jpeg" })),
     ];
     if (!mountedRef.current) return;
     setImages(demo);
@@ -206,7 +206,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       ];
       if (mountedRef.current) setLookbooks(lbs);
     }
-    try { localStorage.setItem("demo:seeded:v2","1"); } catch {}
+    try { localStorage.setItem("demo:seeded:v3","1"); } catch {}
   }, [images.length, lookbooks.length]);
 
   useEffect(() => {
