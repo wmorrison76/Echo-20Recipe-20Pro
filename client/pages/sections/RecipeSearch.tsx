@@ -287,7 +287,7 @@ export default function RecipeSearchSection() {
       ) : mode==='grid4' ? (
         <div className="grid gap-3 grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
           {results.map(r=> (
-            <div key={r.id} className="rounded border p-3 flex items-start gap-2">
+            <div key={r.id} className="rounded border p-3 flex items-start gap-2 glow">
               <div className="w-16 h-12 rounded bg-muted overflow-hidden shrink-0">
                 {r.imageDataUrls?.[0] ? <img src={r.imageDataUrls[0]} alt="" className="w-full h-full object-cover"/> : null}
               </div>
@@ -296,7 +296,15 @@ export default function RecipeSearchSection() {
                 <div className="text-xs text-muted-foreground line-clamp-1">{r.tags?.join(' · ')}</div>
                 <div className="mt-1 flex gap-2">
                   <Button size="sm" variant="secondary" onClick={()=>setPreview(r)}>Preview</Button>
-                  <a href={`/recipe/${r.id}/view`} className="text-xs underline self-center">Open</a>
+                  <Button size="sm" variant="outline" asChild><a href={`/recipe/${r.id}/view`}><ExternalLink className="mr-1"/>Open</a></Button>
+                  {inTrashView ? (
+                    <>
+                      <Button size="sm" variant="outline" onClick={()=>restoreRecipe(r.id)} title="Restore"><RotateCcw/></Button>
+                      <Button size="sm" variant="destructive" onClick={()=>{ if(confirm('Delete forever?')) destroyRecipe(r.id); }} title="Delete forever"><Trash2/></Button>
+                    </>
+                  ) : (
+                    <Button size="sm" variant="ghost" onClick={()=>deleteRecipe(r.id)} title="Move to trash"><Trash2/></Button>
+                  )}
                 </div>
               </div>
             </div>
