@@ -376,7 +376,7 @@ export default function GallerySection() {
           className={
             viewMode === "masonry"
               ? "columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7 gap-4 sm:gap-5 lg:gap-6"
-              : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-5 lg:gap-6"
+              : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:columns-6 gap-4 sm:gap-5 lg:gap-6"
           }
         >
           {filtered.map((img) => (
@@ -495,7 +495,8 @@ export default function GallerySection() {
         </div>
       ) : (
         <div className="rounded-md border p-6 text-center text-sm text-muted-foreground">
-          No images yet.
+          <div className="mb-2">No images yet.</div>
+          <Button onClick={() => clearImages()}>Restore demo images</Button>
         </div>
       )}
 
