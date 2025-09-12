@@ -9,6 +9,25 @@ function decodeHtml(s: string) {
     .replace(/&gt;/g, ">");
 }
 
+function toAbsoluteUrl(possiblyRelative: string, base: string) {
+  try {
+    return new URL(possiblyRelative, base).toString();
+  } catch {
+    return possiblyRelative;
+  }
+}
+
+function normalizeImageField(img: any): string | null {
+  if (!img) return null;
+  if (typeof img === "string") return img;
+  if (Array.isArray(img)) return normalizeImageField(img[0]);
+  if (typeof img === "object") {
+    if (typeof img.url === "string") return img.url;
+    if (typeof img.contentUrl === "string") return img.contentUrl;
+  }
+  return null;
+}
+
 function parseJsonLdRecipe(html: string) {
   const scripts = Array.from(
     html.matchAll(
