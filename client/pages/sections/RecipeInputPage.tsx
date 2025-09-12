@@ -789,6 +789,65 @@ const RecipeInputPage = () => {
     }
   }, [ingredients]);
 
+  function parseIngredientInline(s: string): { qty?: string; unit?: string; item?: string; prep?: string } | null {
+    if (!s) return null;
+    const map: Record<string, string> = { "¼": "1/4", "½": "1/2", "¾": "3/4", "⅓": "1/3", "⅔": "2/3", "⅛": "1/8", "⅜": "3/8", "⅝": "5/8", "⅞": "7/8" };
+    let t = s.trim().replace(/[¼½¾⅓⅔⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
+    t = t.replace(/(\d)(\s*)(\d\/\d)/, "$1 $3");
+    const m = t.match(/^\s*([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?|[0-9]+\/[0-9]+)\s*([a-zA-Z\.]+)?\s*(.*)$/);
+    const normalizeUnit = (u: string) => {
+      const k = (u || "").replace(/\./g, "").toUpperCase();
+      if (!k) return "EACH";
+      if (k === "POUND" || k === "POUNDS" || k === "LB") return "LBS";
+      if (k === "OUNCE" || k === "OUNCES") return "OZ";
+      if (k === "TEASPOON" || k === "TEASPOONS") return "TSP";
+      if (k === "TABLESPOON" || k === "TABLESPOONS") return "TBSP";
+      if (k === "QUART" || k === "QUARTS" || k === "QT") return "QTS";
+      if (k === "FLOZ") return "FL OZ";
+      if (k === "CUPS") return "CUP";
+      return k;
+    };
+    const finalize = (rest: string) => {
+      let item = rest.trim();
+      let prep = "";
+      const ci = item.indexOf(",");
+      if (ci >= 0) {
+        prep = item.slice(ci + 1).trim().toLowerCase();
+        item = item.slice(0, ci).trim();
+      }
+      const lead = item.match(/^(chopped|diced|minced|sliced|grated|crushed|pureed|melted|softened|cubed|julienned|shredded)\s+(.*)$/i);
+      if (lead) {
+        prep = prep || lead[1].toLowerCase();
+        item = lead[2].trim();
+      }
+      return { item, prep };
+    };
+    if (m) {
+      const rawQty = m[1];
+      const rawUnit = m[2] || "";
+      const rest = m[3] || "";
+      let qty = rawQty;
+      const parts = rawQty.split(" ");
+      if (parts.length === 2 && /\d+\/\d+/.test(parts[1])) {
+        const [n, d] = parts[1].split("/").map(Number);
+        qty = String(Number(parts[0]) + (d ? n / d : 0));
+      } else if (/^\d+\/\d+$/.test(rawQty)) {
+        const [n, d] = rawQty.split("/").map(Number);
+        qty = String(d ? n / d : Number(rawQty));
+      }
+      const unit = normalizeUnit(rawUnit);
+      const { item, prep } = finalize(rest);
+      return { qty, unit: unit || "EACH", item, prep };
+    }
+    if (/,/.test(t)) {
+      const ci = t.indexOf(",");
+      const item = t.slice(0, ci).trim();
+      const prep = t.slice(ci + 1).trim().toLowerCase();
+      return { item, prep };
+    }
+    return null;
+  }
+
   const analyzeNutrition = async () => {
     try {
       setNutritionLoading(true);
@@ -938,7 +997,17 @@ const RecipeInputPage = () => {
               <div className="flex items-center gap-1 ml-2">
                 <Sun className="w-4 h-4" />
                 <button
-                  onClick={() => setIsDarkMode(!isDarkMode)}
+                  onClick={() => {
+                    setIsDarkMode((v) => {
+                      const next = !v;
+                      const root = document.documentElement;
+                      if (next) root.classList.add("dark");
+                      else root.classList.remove("dark");
+                      const ev = new CustomEvent("theme:change", { detail: { theme: next ? "dark" : "light" } });
+                      window.dispatchEvent(ev);
+                      return next;
+                    });
+                  }}
                   className={`w-8 h-4 rounded-full transition-colors ${isDarkMode ? "bg-blue-600" : "bg-gray-300"}`}
                 >
                   <div
@@ -1119,12 +1188,12 @@ const RecipeInputPage = () => {
                 </div>
               </div>
               <div
-                className={`border rounded-xl p-4 h-full shadow-lg ${isDarkMode ? "bg-blue-900/20 border-blue-400/30 shadow-blue-400/20" : "bg-blue-50/80 border-blue-200 shadow-gray-200/50"} backdrop-blur-sm`}
+                className={`border rounded-xl p-4 h-full shadow-lg ${isDarkMode ? "bg-blue-900/20 border-blue-400/30 shadow-blue-400/20" : "bg-blue-50 border-blue-200 shadow-gray-300/60"}`}
               >
                 <div className={`font-semibold text-sm mb-3 ${isDarkMode ? "text-blue-400" : "text-blue-700"}`}>
                   Modifiers
                 </div>
-                <div className={`${isDarkMode ? "bg-blue-900/10 border-blue-400/30" : "bg-blue-50/80 border-blue-200"} border rounded-lg p-2 text-xs`}>
+                <div className={`${isDarkMode ? "bg-blue-900/20 border-blue-400/30" : "bg-blue-50 border-blue-200"} border rounded-lg p-2 text-xs`}>
                   {(() => { const diet = new Set(taxonomy.diets); const txt=(ingredients.map(r=>`${r.qty} ${r.unit} ${r.item}`).join(' ').toLowerCase()); const meatRe=/(beef|pork|chicken|lamb|fish|shrimp|gelatin)/; if ((diet.has('vegetarian')||diet.has('vegan')) && meatRe.test(txt)) return (<div className="mb-2 text-red-600">Warning: selected diet conflicts with ingredients.</div>); return null; })()}
                   <div className="grid grid-cols-8 gap-1">
                     {taxonomy.cuisine && (
@@ -1217,7 +1286,7 @@ const RecipeInputPage = () => {
             </div>
           </div>
           <div
-            className={`ingredients-card backdrop-blur-sm rounded-2xl p-6 border ${isDarkMode ? "bg-gray-800/80 border-gray-700" : "bg-white/80 border-gray-100"}`}
+            className={`ingredients-card rounded-2xl p-6 border ${isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}
           >
             <h3
               className={`font-bold text-xl mb-6 ${isDarkMode ? "text-cyan-400" : "text-gray-900"}`}
@@ -1344,6 +1413,21 @@ const RecipeInputPage = () => {
                           ),
                         );
                       }}
+                      onBlur={(e) => {
+                        const text = e.target.value.trim();
+                        const parsed = parseIngredientInline(text);
+                        if (parsed) {
+                          const v = [...ingredients];
+                          v[index] = updateAndNormalize({
+                            ...v[index],
+                            qty: parsed.qty ?? v[index].qty,
+                            unit: parsed.unit ?? v[index].unit,
+                            item: parsed.item ?? v[index].item,
+                            prep: parsed.prep ?? v[index].prep,
+                          });
+                          setIngredients(v);
+                        }
+                      }}
                     />
                     <input
                       data-row={index}
@@ -1430,7 +1514,7 @@ const RecipeInputPage = () => {
           </div>
 
           <div
-            className={`bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-100 ${isDarkMode ? "bg-gray-800/80 border-gray-700" : ""}`}
+            className={`rounded-2xl p-6 border ${isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}
           >
             <div className="flex items-center justify-between mb-4">
               <h3
