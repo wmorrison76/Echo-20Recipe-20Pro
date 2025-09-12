@@ -49,6 +49,8 @@ export default function GallerySection() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [editTags, setEditTags] = useState("");
+  const [urlText, setUrlText] = useState("");
+  const [urlLoading, setUrlLoading] = useState(false);
 
   const filtered = useMemo(() => {
     const q = filter.trim().toLowerCase();
