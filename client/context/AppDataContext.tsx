@@ -729,6 +729,25 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         instructions = texts.slice(start, start + 20).filter(Boolean);
       }
 
+      // Repair: move quantity-like lines from instructions back to ingredients
+      if (instructions.length) {
+        const rest: string[] = [];
+        for (const line of instructions) {
+          const s = String(line).trim();
+          if (qtyRe.test(s) && !/^yield\b/i.test(s)) {
+            if (!ingredients.includes(line)) ingredients.push(line);
+          } else {
+            rest.push(line);
+          }
+        }
+        instructions = rest;
+      }
+
+      // Deduplicate and tidy
+      const uniq = (arr: string[]) => Array.from(new Set(arr.map(s=> s.replace(/\s+/g,' ').trim())));
+      ingredients = uniq(ingredients).filter(Boolean);
+      instructions = uniq(instructions).filter(Boolean);
+
       const title = (sec.title || baseName || "Untitled").trim() || "Untitled";
       results.push({
         id: uid(),
