@@ -345,6 +345,11 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const deleteImage = useCallback((id: string) => {
+    setImages((prev) => prev.filter((i) => i.id !== id));
+    setLookbooks((prev) => prev.map((b) => ({ ...b, imageIds: b.imageIds.filter((x) => x !== id) })));
+  }, []);
+
   const addLookBook = useCallback((name: string, imageIds: string[] = []) => {
     const id = uid();
     const lb: LookBook = {
