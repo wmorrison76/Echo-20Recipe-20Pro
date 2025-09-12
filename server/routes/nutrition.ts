@@ -97,45 +97,16 @@ function parseQtyUnit(line: string) {
   };
   let t = line.trim().replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (c) => map[c] || c);
   t = t.replace(/(\d)(\s*)(\d\/\d)/, "$1 $3");
-  // Match quantity, unit, and the rest of the string (prep/item)
+  // Match quantity, unit, and the rest of the string (item[, prep])
   const m = t.match(
-    /^\s*([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?)\s*([a-zA-Z\.]+)?\s*(.*)$/,
+    /^\s*([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?|[0-9]+\/[0-9]+)\s*([a-zA-Z\.]+)?\s*(.*)$/,
   );
   if (m) {
     const rawQty = m[1];
     const rawUnit = m[2] || "";
     let remaining = m[3].trim();
 
-    // Try to extract prep method from the beginning of the remaining string
-    const prepMatch = remaining.match(/^([\w\s]+?)(?:,|$)/);
-    if (prepMatch && prepMatch[1]) {
-      const potentialPrep = prepMatch[1].trim().toLowerCase();
-      // Simple check for common prep methods to avoid misinterpreting item names
-      if (
-        [
-          "chopped",
-          "diced",
-          "minced",
-          "sliced",
-          "grated",
-          "crushed",
-          "pureed",
-          "melted",
-          "softened",
-          "cubed",
-          "julienned",
-          "finely",
-          "roughly",
-          "thinly",
-          "thickly",
-        ].includes(potentialPrep)
-      ) {
-        prep = potentialPrep;
-        remaining = remaining.substring(prepMatch[0].length).trim();
-      }
-    }
-
-    // Parse quantity
+    // Parse quantity (supports mixed and simple fractions)
     const qtyParts = rawQty.split(" ");
     if (qtyParts.length === 2 && /\d+\/\d+/.test(qtyParts[1])) {
       const [n, d] = qtyParts[1].split("/").map(Number);
@@ -145,14 +116,36 @@ function parseQtyUnit(line: string) {
       qty = d ? n / d : Number(rawQty);
     } else qty = Number(rawQty);
 
-    unit = rawUnit.toLowerCase();
+    unit = (rawUnit || "").toLowerCase();
 
     // If unit is empty, assume 'each'
     if (!unit && qty > 0) unit = "each";
 
-    return { qty, unit, prep, item: remaining };
+    // Split item and prep by first comma
+    let item = remaining;
+    const commaIdx = remaining.indexOf(",");
+    if (commaIdx >= 0) {
+      item = remaining.slice(0, commaIdx).trim();
+      const after = remaining.slice(commaIdx + 1).trim();
+      if (after) prep = after.toLowerCase();
+    }
+
+    // Handle leading prep like "chopped onion"
+    const leadPrep = /^(chopped|diced|minced|sliced|grated|crushed|pureed|melted|softened|cubed|julienned|shredded)\s+(.*)$/i;
+    const lp = item.match(leadPrep);
+    if (lp) {
+      prep = prep || lp[1].toLowerCase();
+      item = lp[2].trim();
+    }
+
+    return { qty, unit, prep, item };
   }
-  // If no quantity/unit found, treat the whole line as item, assume 1 each
+  // If no quantity/unit found, try to split by comma for prep
+  const parts = line.split(",");
+  if (parts.length > 1) {
+    return { qty: 1, unit: "each", prep: parts.slice(1).join(",").trim().toLowerCase(), item: parts[0].trim() };
+  }
+  // Treat the whole line as item, assume 1 each
   return { qty: 1, unit: "each", prep: "", item: line.trim() };
 }
 
@@ -224,6 +217,7 @@ export async function handleNutritionAnalyze(req: Request, res: Response) {
       // Salt/spices no loss
       let factor = 1;
       if (itemName && /salt/.test(itemName)) factor = 1;
+      else if (itemName === "onion") factor = typeof y === "number" ? Math.max(0, Math.min(1, y / 100)) : 0.89;
       else
         factor =
           typeof y === "number"
