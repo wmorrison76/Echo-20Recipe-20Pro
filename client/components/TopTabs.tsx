@@ -8,6 +8,7 @@ import {
   ArrowLeftRight,
   CircleDollarSign,
   HelpCircle,
+  Save,
 } from "lucide-react";
 
 function TabLink({ to, label }: { to: string; label: string }) {
@@ -50,6 +51,11 @@ export default function TopTabs() {
           <TabLink to="/?tab=add-recipe" label="Add Recipe" />
         </nav>
         <div className="flex items-center gap-1">
+          <button title="Finalize & Clear" onClick={()=>{
+            window.dispatchEvent(new CustomEvent('recipe:action', { detail: { type: 'finalizeImport' } }));
+          }} className="p-1 rounded hover:bg-black/10">
+            <Save className="w-4 h-4" />
+          </button>
           <button title="Help" onClick={()=>setShowHelp(true)} className="p-1 rounded hover:bg-black/10">
             <HelpCircle className="w-4 h-4" />
           </button>
