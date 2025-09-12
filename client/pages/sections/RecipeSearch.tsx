@@ -183,7 +183,7 @@ export default function RecipeSearchSection() {
           <input type="file" accept="application/pdf" onChange={async(e)=>{ const f=e.target.files?.[0]; if(!f) return; if(!confirm('Confirm you own/purchased this cookbook PDF for personal import?')){ (e.target as HTMLInputElement).value=''; return;} try{ setBookFile(f.name); setBookPhase('reading'); setStatus('Reading book PDF...'); const ab = await f.arrayBuffer(); pdfPendingRef.current = f; const pdfjs: any = await import('https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs'); const workerSrc='https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs'; if(pdfjs.GlobalWorkerOptions) pdfjs.GlobalWorkerOptions.workerSrc=workerSrc; const doc = await pdfjs.getDocument({ data: ab }).promise; setBookTotal(doc.numPages); let lines:string[]=[]; for(let p=1;p<=doc.numPages;p++){ const page=await doc.getPage(p); const tc=await page.getTextContent(); lines.push(...tc.items.map((i:any)=> String(i.str)).filter(Boolean)); lines.push(''); setBookPage(p); }
             setBookPhase('selecting');
             const norm = lines.map(s=> s.replace(/\s+/g,' ').trim());
-            const tocEntries = norm.map(s=>{
+            let tocEntries = norm.map(s=>{
               const tests = [
                 /^(.{3,120}?)(?:[\.·•\s]{2,})(\d{1,4})$/, // dot leaders or many spaces then page
                 /^(.{3,120}?)\s{3,}(\d{1,4})$/,            // right-aligned page with spaces
@@ -192,8 +192,11 @@ export default function RecipeSearchSection() {
               let m: RegExpMatchArray | null = null;
               for (const re of tests){ m = s.match(re); if(m) break; }
               if(!m) return null; const title=m[1].trim(); const page=parseInt(m[2],10);
-              const bad=/^(contents|index|appendix|recipes?|chapter|table of contents)$/i; if(!title||bad.test(title)) return null; return { title, page };
+              const bad=/^(contents|index|appendix|recipes?|chapter|table of contents|fig(?:\.|ures?)?|plates?|illustrations?|photos?|tables?|maps?)\b/i; if(!title||bad.test(title)) return null; return { title, page };
             }).filter(Boolean) as {title:string;page:number}[];
+            // de-duplicate by page number
+            const seen: Record<number, boolean> = {};
+            tocEntries = tocEntries.filter(e=> !seen[e.page] && (seen[e.page]=true));
             if(tocEntries.length>=5){ setToc(tocEntries); const checked:Record<string,boolean>={}; tocEntries.forEach(x=> checked[x.title]=true); setTocChecked(checked); setTocOpen(true); setStatus('Select recipes to import'); return; }
             const items:any[]=[]; let i=0; const book=f.name.replace(/\.[^.]+$/,'');
             const isTitle=(s:string)=> s && s.length<70 && /[A-Za-z]/.test(s) && (s===s.toUpperCase() || /^[A-Z][^.!?]{2,}$/.test(s));
@@ -250,7 +253,7 @@ export default function RecipeSearchSection() {
           </DialogHeader>
           <div className="max-h-[50vh] overflow-auto hide-scrollbar border rounded p-2 text-sm space-y-1">
             {(toc||[]).map((t)=> (
-              <label key={t.title} className="grid grid-cols-[16px_1fr_42px] items-center gap-2 text-xs">
+              <label key={`${t.page}-${t.title}`} className="grid grid-cols-[16px_1fr_42px] items-center gap-2 text-xs">
                 <input type="checkbox" className="scale-75" checked={!!tocChecked[t.title]} onChange={()=> setTocChecked((m)=> ({...m, [t.title]: !m[t.title]}))} />
                 <span className="truncate" title={`${t.title} — p.${t.page}`}>{t.title}</span>
                 <span className="text-muted-foreground text-right">p.{t.page}</span>
