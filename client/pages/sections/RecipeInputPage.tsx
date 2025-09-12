@@ -1246,6 +1246,7 @@ const RecipeInputPage = () => {
                           setYieldQty(Math.max(0, Number(e.target.value)));
                         }}
                         className={`w-16 px-2 py-1 border rounded text-sm ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
+                        data-echo-key="field:add:yield"
                       />
                       <input
                         value={yieldUnit}
