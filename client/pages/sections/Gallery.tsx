@@ -564,6 +564,7 @@ export default function GallerySection() {
       <FlipBook
         open={openLookBook}
         onClose={() => setOpenLookBook(false)}
+        title={lookbooks.find((b) => b.id === activeLookBookId)?.name}
         images={(
           lookbooks.find((b) => b.id === activeLookBookId)?.imageIds || []
         ).map((id) => {
