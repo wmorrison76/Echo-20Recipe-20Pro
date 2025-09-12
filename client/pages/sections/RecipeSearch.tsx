@@ -110,6 +110,12 @@ export default function RecipeSearchSection() {
   const [toc, setToc] = useState<{ title: string; page: number }[] | null>(null);
   const [tocChecked, setTocChecked] = useState<Record<string, boolean>>({});
   const pdfPendingRef = useRef<File | null>(null);
+  // Live scan state
+  const [scanOpen, setScanOpen] = useState(false);
+  const [scanPageNo, setScanPageNo] = useState(0);
+  const [scanTotal, setScanTotal] = useState(0);
+  const [detectedOpen, setDetectedOpen] = useState(false);
+  const [detected, setDetected] = useState<{ page: number; title: string }[]>([]);
 
   const onFiles = async (files: File[]) => {
     const list = files.slice(0, 100);
