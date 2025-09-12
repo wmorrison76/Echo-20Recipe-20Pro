@@ -38,11 +38,16 @@ export function RecipeCard({ r, onPreview, onFav, onRate, onTrash, inTrash, onDe
           <div className="mt-2 flex gap-2">
             <Button size="sm" variant="secondary" onClick={onPreview}>Preview</Button>
             {inTrash ? (
-              <Button size="sm" variant="outline" onClick={onTrash}>Restore</Button>
+              <>
+                <Button size="sm" variant="outline" onClick={onTrash} title="Restore"><RotateCcw/></Button>
+                {onDestroy && (
+                  <Button size="sm" variant="destructive" onClick={onDestroy} title="Delete forever"><Trash2/></Button>
+                )}
+              </>
             ) : (
-              <Button size="sm" variant="ghost" onClick={onTrash}>Trash</Button>
+              <Button size="sm" variant="ghost" onClick={onTrash} title="Move to trash"><Trash2/></Button>
             )}
-            <Button size="sm" variant="outline" asChild><a href={`/recipe/${r.id}/view`}>View</a></Button>
+            <Button size="sm" variant="outline" asChild><a href={`/recipe/${r.id}/view`}><ExternalLink className="mr-1"/>Open</a></Button>
             <Button size="sm" variant="outline" onClick={()=>{ try{ const draft={ recipeName:r.title, ingredients:(r.ingredients||[]).map((s:string)=>({ qty:'', unit:'', item:String(s), prep:'', yield:'', cost:'' })), directions:Array.isArray(r.instructions)? (r.instructions as any[]).map(String).map((x,i)=>`${i+1}. ${x}`).join('\n') : String((r as any).instructions||''), taxonomy: (r.extra as any)?.taxonomy || undefined }; localStorage.setItem('recipe:draft', JSON.stringify(draft)); }catch{} location.href='/?tab=add-recipe'; }}>Edit</Button>
           </div>
         </div>
