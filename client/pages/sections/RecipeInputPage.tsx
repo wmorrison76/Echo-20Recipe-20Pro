@@ -1824,6 +1824,26 @@ const RecipeInputPage = () => {
           </div>
 
           <div className="flex items-center justify-between mt-2">
+            <div className="ml-auto">
+              <button
+                data-echo-key="cta:add:publish"
+                onClick={() => {
+                  const title = (recipeName || '').trim() || 'Untitled Recipe';
+                  const ingLines = ingredients.map((r) => [r.qty, r.unit, r.item, r.prep].filter(Boolean).join(' ').trim()).filter(Boolean);
+                  const insLines = String(directions||'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+                  const cover = image && image.startsWith('data:') ? [image] : undefined;
+                  if (!recipeIdRef.current) {
+                    recipeIdRef.current = addRecipe({ title, ingredients: ingLines, instructions: insLines, imageDataUrls: cover, tags: [], extra: { source: 'manual', taxonomy, published: true } });
+                  } else {
+                    updateRecipe(recipeIdRef.current, { title, ingredients: ingLines, instructions: insLines, imageDataUrls: cover, extra: { taxonomy, published: true } });
+                  }
+                  alert(`Published ${title}`);
+                }}
+                className={`px-3 py-2 text-sm rounded border ${isDarkMode? 'border-cyan-400/50 text-cyan-300' : 'border-gray-400 text-gray-800'}`}
+              >
+                Publish
+              </button>
+            </div>
             <div className="flex items-center gap-2 text-sm">
               <button
                 data-echo-key="cta:add:save"
