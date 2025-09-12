@@ -1885,7 +1885,7 @@ const RecipeInputPage = () => {
               disabled={nutritionLoading}
               className={`text-xs px-3 py-2 rounded ${isDarkMode ? "border border-cyan-400/50 hover:bg-cyan-900/20 text-cyan-300" : "border border-gray-400 hover:bg-gray-100 text-gray-800"}`}
             >
-              {nutritionLoading ? "Analyzing��" : "Generate Nutrition Label"}
+              {nutritionLoading ? "Analyzing����" : "Generate Nutrition Label"}
             </button>
           </div>
 
@@ -2043,8 +2043,13 @@ const RecipeInputPage = () => {
                   ],
             );
           }
-          if (data?.instructions)
-            setDirections(decode(String(data.instructions)));
+          if (data?.instructions){
+            const txt = decode(String(data.instructions));
+            setDirections(txt);
+            if (/recipe\s+follows|see\s+.+?\s+recipe/i.test(txt)) {
+              setChefNotes((prev)=> (prev? prev+"\n" : "") + "Note: This recipe references a sub‑recipe (e.g., buttercream). Import or add the sub‑recipe and link it here.");
+            }
+          }
           if (data?.image) {
             try {
               const urlStr = String(data.image);
