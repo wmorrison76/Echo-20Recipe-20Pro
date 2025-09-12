@@ -988,16 +988,39 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         }
 
         // Fallback: try marker-based multi-recipe detection across pages
+        const isLikelyIngredientList = (txt:string)=>{
+          const lines = txt.split(/\n/).map(s=>s.trim()).filter(Boolean).slice(0,80);
+          const qtyRe = /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
+          let cnt = 0; for(const L of lines){ if (qtyRe.test(L) || /^[•\-*]\s+/.test(L)) cnt++; }
+          return cnt >= 3;
+        };
+        const instWord = /(instructions|directions|method|steps|preparation|procedure)\b/i;
         const markerStarts: number[] = [];
+        // Forward scan
         for (let p=1; p<=doc.numPages; p++) {
           const here = pageTexts[p-1] || '';
           const next1 = pageTexts[p] || '';
           const next2 = pageTexts[p+1] || '';
-          const hasIng = /\bingredients?\b/i.test(here);
-          const hasInstNearby = /\b(instructions|directions|method|steps)\b/i.test([here,next1,next2].join('\n'));
+          const hasIng = /\bingredients?\b/i.test(here) || isLikelyIngredientList(here);
+          const hasInstNearby = instWord.test([here,next1,next2].join('\n')) || /^(?:\d+\.|Step\s*\d+)/mi.test([here,next1].join('\n'));
           if (hasIng && hasInstNearby) {
             if (markerStarts.length===0 || p - markerStarts[markerStarts.length-1] > 1) markerStarts.push(p);
           }
+        }
+        // If none, try reverse scan from back of book
+        if (markerStarts.length === 0) {
+          const rev: number[] = [];
+          for (let p=doc.numPages; p>=1; p--) {
+            const here = pageTexts[p-1] || '';
+            const prev1 = pageTexts[p-2] || '';
+            const hasIng = /\bingredients?\b/i.test(here) || isLikelyIngredientList(here);
+            const hasInstNearby = instWord.test([here,prev1].join('\n')) || /^(?:\d+\.|Step\s*\d+)/mi.test([here,prev1].join('\n'));
+            if (hasIng && hasInstNearby) {
+              if (rev.length===0 || rev[rev.length-1] - p > 1) rev.push(p);
+            }
+          }
+          rev.reverse();
+          markerStarts.push(...rev);
         }
         if (markerStarts.length >= 1) {
           for (let i=0;i<markerStarts.length;i++){
@@ -1009,16 +1032,16 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             const lower = lines.map(l=>l.toLowerCase());
             const find = (labels:string[])=> lower.findIndex(l=> labels.some(x=> l.startsWith(x)));
             let ingIdx = find(['ingredients','ingredient']);
-            let instIdx = find(['instructions','directions','method','steps']);
+            let instIdx = find(['instructions','directions','method','steps','preparation','procedure']);
             if (ingIdx < 0) {
-              const qtyRe = /^(?:\d+\s+\d\/\d|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])\b/;
+              const qtyRe = /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
               for (let j=0;j<Math.min(lines.length,80);j++){
-                if (qtyRe.test(lines[j])) { ingIdx = j-1; break; }
+                if (qtyRe.test(lines[j]) || /^[•\-*]\s+/.test(lines[j])) { ingIdx = j-1; break; }
               }
             }
             if (instIdx < 0 && ingIdx >= 0) {
               for (let j=ingIdx+1;j<Math.min(lines.length,200);j++){
-                if (/^(instructions|directions|method|steps)\b/i.test(lines[j]) || /^\d+\.|^Step\s*\d+/i.test(lines[j])) { instIdx = j; break; }
+                if (/^(instructions|directions|method|steps|preparation|procedure)\b/i.test(lines[j]) || /^\d+\.|^Step\s*\d+/i.test(lines[j])) { instIdx = j; break; }
               }
             }
             const getRange=(s:number,e:number)=> lines.slice(s+1, e> s ? e : undefined).filter(Boolean);
