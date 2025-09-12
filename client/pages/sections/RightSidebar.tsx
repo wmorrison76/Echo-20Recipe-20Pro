@@ -51,7 +51,9 @@ export default function RightSidebar(props: RightSidebarProps) {
 
   const [status, setStatus] = useState("active");
   const [recipeUrl, setRecipeUrl] = useState("");
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState(() => {
+    try { return localStorage.getItem('recipe:chef-notes') || ""; } catch { return ""; }
+  });
   const [clipboardUrl, setClipboardUrl] = useState("");
   const [isImporting, setIsImporting] = useState(false);
   const [open, setOpen] = useState<string[]>([]);
@@ -112,7 +114,7 @@ export default function RightSidebar(props: RightSidebarProps) {
       <button
         aria-label="Toggle sidebar"
         onClick={props.onToggle}
-        className="fixed right-0 top-1/2 -translate-y-1/2 z-[71] bg-background border border-gray-300 rounded-l-full shadow px-2 py-3 hover:bg-muted"
+        className="fixed right-0 top-1/2 -translate-y-1/2 z-[71] bg-background border border-gray-300 rounded-l-full shadow px-2 py-3 hover:bg-muted no-callout select-none"
         style={{ transform: "translateY(-50%)" }}
       >
         <div className="flex flex-col items-center gap-1">
@@ -122,7 +124,7 @@ export default function RightSidebar(props: RightSidebarProps) {
         </div>
       </button>
       <div
-        className={`fixed top-16 right-0 z-[70] ${isCollapsed ? "translate-x-full" : "translate-x-0"} w-72 h-[80vh] bg-gradient-to-b from-gray-100/60 via-gray-200/50 to-gray-300/60 backdrop-blur-sm border-l border-t border-gray-400/50 rounded-tl-2xl rounded-bl-2xl shadow-inner transition-transform duration-500 ease-in-out overflow-hidden`}
+        className={`fixed top-16 right-0 z-[70] ${isCollapsed ? "translate-x-full" : "translate-x-0"} w-72 h-[80vh] bg-gradient-to-b from-gray-100/60 via-gray-200/50 to-gray-300/60 backdrop-blur-sm border-l border-t border-gray-400/50 rounded-tl-2xl rounded-bl-2xl shadow-inner transition-transform duration-500 ease-in-out overflow-hidden no-callout text-black`}
       >
         {!isCollapsed && (
           <div className="flex flex-col h-full">
@@ -182,6 +184,15 @@ export default function RightSidebar(props: RightSidebarProps) {
               </div>
 
               <Accordion type="multiple" value={open} onValueChange={(v)=> setOpen(Array.isArray(v)? v : [v])}>
+                <AccordionItem value="recipe" data-accordion-section="recipe">
+                  <AccordionTrigger>Recipe</AccordionTrigger>
+                  <AccordionContent>
+                    <div className="text-xs space-y-1">
+                      <label className="flex items-center gap-2"><input type="checkbox" className="scale-75" checked={selectedRecipeType.includes('Full Recipe')} onChange={()=> toggle(selectedRecipeType, onRecipeTypeChange, 'Full Recipe')} /> Full Recipe</label>
+                      <label className="flex items-center gap-2"><input type="checkbox" className="scale-75" checked={selectedRecipeType.includes('Sub Recipe')} onChange={()=> toggle(selectedRecipeType, onRecipeTypeChange, 'Sub Recipe')} /> Sub Recipe</label>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
                 <AccordionItem value="status" data-accordion-section="status">
                   <AccordionTrigger>Status</AccordionTrigger>
                   <AccordionContent>
@@ -212,11 +223,6 @@ export default function RightSidebar(props: RightSidebarProps) {
                           {m}
                         </label>
                       ))}
-                    </div>
-                    <div className="mt-2 border-t pt-2 text-xs">
-                      <div className="font-semibold mb-1">Recipe</div>
-                      <label className="flex items-center gap-2"><input type="checkbox" className="scale-75" checked={selectedRecipeType.includes('Full Recipe')} onChange={()=> toggle(selectedRecipeType, onRecipeTypeChange, 'Full Recipe')} /> Full Recipe</label>
-                      <label className="flex items-center gap-2"><input type="checkbox" className="scale-75" checked={selectedRecipeType.includes('Sub Recipe')} onChange={()=> toggle(selectedRecipeType, onRecipeTypeChange, 'Sub Recipe')} /> RECIPE: Sub Recipe</label>
                     </div>
                   </AccordionContent>
                 </AccordionItem>
@@ -461,11 +467,17 @@ export default function RightSidebar(props: RightSidebarProps) {
                 </AccordionItem>
 
                 <AccordionItem value="notes" data-accordion-section="notes">
-                  <AccordionTrigger>Internal Notes</AccordionTrigger>
+                  <AccordionTrigger>Chef Notes</AccordionTrigger>
                   <AccordionContent>
                     <textarea
                       value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        setNotes(v);
+                        try { localStorage.setItem('recipe:chef-notes', v); } catch {}
+                        try { window.dispatchEvent(new CustomEvent('recipe:chef-notes', { detail: v })); } catch {}
+                      }}
+                      placeholder="Notes only you see. Printed under Nutrition."
                       className="w-full border border-gray-400/50 p-2 rounded bg-gray-100/50 backdrop-blur-sm focus:bg-white/80 transition-colors h-20 text-sm placeholder-gray-400"
                     />
                   </AccordionContent>
