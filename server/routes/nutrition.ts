@@ -207,11 +207,26 @@ export async function handleNutritionAnalyze(req: Request, res: Response) {
         ? 0.95
         : 0.92;
 
+    const EACH_WEIGHT_G: Record<string, number> = {
+      egg: 50,
+      onion: 110,
+      garlic: 3,
+      tomato: 120,
+      carrot: 60,
+      potato: 210,
+      shrimp: 12,
+    };
     for (let i = 0; i < ingr.length; i++) {
       const line = ingr[i];
       const { qty, unit } = parseQtyUnit(line);
-      const gramsRaw = qty * (UNIT_TO_G[unit as keyof typeof UNIT_TO_G] || 0);
       const itemName = normalizeItemName(line);
+      let gramsRaw = 0;
+      const u = (unit || "").toLowerCase();
+      if (UNIT_TO_G[u as keyof typeof UNIT_TO_G]) {
+        gramsRaw = qty * UNIT_TO_G[u as keyof typeof UNIT_TO_G];
+      } else if ((u === "each" || u === "ea") && itemName && EACH_WEIGHT_G[itemName]) {
+        gramsRaw = qty * EACH_WEIGHT_G[itemName];
+      }
       let y = yields[i];
       if (typeof y !== "number" || !(y >= 0)) y = undefined as any;
       // Salt/spices no loss
