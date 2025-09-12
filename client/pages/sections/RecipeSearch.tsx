@@ -370,13 +370,13 @@ export default function RecipeSearchSection() {
                 {preview.instructions?.length ? (
                   <div>
                     <div className="font-medium">Instructions</div>
-                    <div className="max-h-32 overflow-auto whitespace-pre-wrap">{preview.instructions.join('\n')}</div>
+                    <div className="max-h-32 overflow-auto whitespace-pre-wrap hide-scrollbar">{preview.instructions.join('\n')}</div>
                   </div>
                 ) : null}
                 <div className="flex flex-wrap gap-2 pt-2">
-                  <a className="button border px-3 py-1 rounded" href={`/recipe/${preview.id}/view`}>Open</a>
-                  <button className="border px-3 py-1 rounded" onClick={()=>{ const body=encodeURIComponent(`${preview.title}`); location.href=`sms:?&body=${body}`; }}>SMS</button>
-                  <button className="border px-3 py-1 rounded" onClick={()=>window.print()}>Print</button>
+                  <Button size="sm" variant="outline" asChild><a href={`/recipe/${preview.id}/view`}><ExternalLink className="mr-1"/>Open</a></Button>
+                  <Button size="sm" variant="outline" onClick={()=>{ const body=encodeURIComponent(`${preview.title}`); location.href=`sms:?&body=${body}`; }}>SMS</Button>
+                  <Button size="sm" variant="outline" onClick={()=>window.print()}>Print</Button>
                 </div>
               </div>
             </div>
