@@ -281,7 +281,7 @@ export default function RecipeSearchSection() {
       ) : mode==='cards' ? (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
           {results.map((r) => (
-            <RecipeCard key={r.id} r={r} inTrash={inTrashView} onPreview={()=>setPreview(r)} onFav={()=>toggleFavorite(r.id)} onRate={(n)=>rateRecipe(r.id,n)} onTrash={()=> r.deletedAt? restoreRecipe(r.id) : deleteRecipe(r.id)} />
+            <RecipeCard key={r.id} r={r} inTrash={inTrashView} onPreview={()=>setPreview(r)} onFav={()=>toggleFavorite(r.id)} onRate={(n)=>rateRecipe(r.id,n)} onTrash={()=> r.deletedAt? restoreRecipe(r.id) : deleteRecipe(r.id)} onDestroy={()=>{ if(confirm('Delete this recipe forever?')) destroyRecipe(r.id); }} />
           ))}
         </div>
       ) : mode==='grid4' ? (
