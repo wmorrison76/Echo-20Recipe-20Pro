@@ -311,7 +311,7 @@ export default function RecipeSearchSection() {
           ))}
         </div>
       ) : (
-        <div className="divide-y rounded-lg border">
+        <div className="divide-y rounded-lg border glow">
           {results.map(r=> (
             <div key={r.id} className="p-3 flex items-start gap-3">
               <div className="w-20 h-16 rounded bg-muted overflow-hidden">
@@ -325,7 +325,15 @@ export default function RecipeSearchSection() {
                 <div className="text-xs text-muted-foreground line-clamp-1">{r.tags?.join(' · ')}</div>
                 <div className="mt-1 flex gap-2">
                   <Button size="sm" variant="secondary" onClick={()=>setPreview(r)}>Preview</Button>
-                  <a href={`/recipe/${r.id}/view`} className="text-xs underline self-center">Open</a>
+                  <Button size="sm" variant="outline" asChild><a href={`/recipe/${r.id}/view`}><ExternalLink className="mr-1"/>Open</a></Button>
+                  {inTrashView ? (
+                    <>
+                      <Button size="sm" variant="outline" onClick={()=>restoreRecipe(r.id)} title="Restore"><RotateCcw/></Button>
+                      <Button size="sm" variant="destructive" onClick={()=>{ if(confirm('Delete forever?')) destroyRecipe(r.id); }} title="Delete forever"><Trash2/></Button>
+                    </>
+                  ) : (
+                    <Button size="sm" variant="ghost" onClick={()=>deleteRecipe(r.id)} title="Move to trash"><Trash2/></Button>
+                  )}
                 </div>
               </div>
             </div>
