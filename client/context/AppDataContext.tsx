@@ -872,7 +872,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           ];
           let m: RegExpMatchArray | null = null; let photo: number | undefined;
           for(const re of tests){ const mm = s.match(re); if(mm){ m=mm; photo = mm[3]? parseInt(mm[3],10): undefined; break; } }
-          if(!m) return null; const title=m[1].trim(); const page=parseInt(m[2],10); const bad=/^(contents|index|appendix|recipes?|chapter|table of contents|fig(?:\.|ures?)?|plates?|illustrations?|photos?|tables?|maps?)\b/i; if(!title||bad.test(title)) return null; return { title, page, photoPage: photo };
+          if(!m) return null; const title=m[1].trim(); const page=parseInt(m[2],10); const bad=/^(?:contents|index|appendix|recipes?|chapter|table of contents|fig(?:\.|ures?)?(?:\s*\d+)?|plates?(?:\s*\d+)?|illustrations?(?:\s*\d+)?|photos?(?:\s*\d+)?|tables?(?:\s*\d+)?|maps?(?:\s*\d+)?|yield\b|to convert\b)/i; if(!title||bad.test(title)) return null; return { title, page, photoPage: photo };
         }).filter(Boolean) as {title:string; page:number; photoPage?:number}[];
         // de-duplicate by page number
         const seenPages: Record<number, boolean> = {};
