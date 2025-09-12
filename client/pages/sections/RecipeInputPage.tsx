@@ -1022,7 +1022,7 @@ const RecipeInputPage = () => {
   };
 
   return (
-    <div className={`relative w-full min-h-screen transition-all duration-300 text-foreground`}>
+    <div className={`relative w-full min-h-screen transition-all duration-300 text-foreground`} data-echo-key="page:recipes:add">
       <div
         className={`hidden ${isDarkMode ? "bg-gradient-to-br from-gray-900 via-black to-blue-900" : "bg-gradient-to-br from-gray-50 to-white"}`}
       >
