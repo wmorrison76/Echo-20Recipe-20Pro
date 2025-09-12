@@ -36,7 +36,7 @@ const RecipeInputPage = () => {
   const futureRef = useRef<any[]>([]);
   const [directions, setDirections] = useState("1. ");
   const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
-  const { addRecipe, updateRecipe } = useAppData();
+  const { addRecipe, updateRecipe, addImages } = useAppData();
   const recipeIdRef = useRef<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(false);
   // Sync with global theme from ThemeToggle
@@ -1815,10 +1815,11 @@ const RecipeInputPage = () => {
                   const title = (recipeName || '').trim() || 'Untitled Recipe';
                   const ingLines = ingredients.map((r) => [r.qty, r.unit, r.item, r.prep].filter(Boolean).join(' ').trim()).filter(Boolean);
                   const insLines = String(directions||'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+                  const cover = image && image.startsWith('data:') ? [image] : undefined;
                   if (!recipeIdRef.current) {
-                    recipeIdRef.current = addRecipe({ title, ingredients: ingLines, instructions: insLines, tags: [], extra: { source: 'manual', taxonomy } });
+                    recipeIdRef.current = addRecipe({ title, ingredients: ingLines, instructions: insLines, imageDataUrls: cover, tags: [], extra: { source: 'manual', taxonomy } });
                   } else {
-                    updateRecipe(recipeIdRef.current, { title, ingredients: ingLines, instructions: insLines, extra: { taxonomy } });
+                    updateRecipe(recipeIdRef.current, { title, ingredients: ingLines, instructions: insLines, imageDataUrls: cover, extra: { taxonomy } });
                   }
                   pushHistory({ ...serialize(), ts: Date.now() });
                   alert(`Saved ${title}`);
@@ -2044,7 +2045,19 @@ const RecipeInputPage = () => {
           }
           if (data?.instructions)
             setDirections(decode(String(data.instructions)));
-          if (data?.image) setImage(String(data.image));
+          if (data?.image) {
+            try {
+              const urlStr = String(data.image);
+              const res = await fetch(urlStr);
+              const blob = await res.blob();
+              const ext = blob.type.includes('png')? 'png' : 'jpg';
+              const fname = `${(data.title||'cover').toString().toLowerCase().replace(/[^a-z0-9]+/g,'-')}.${ext}`;
+              await addImages([new File([blob], fname, { type: blob.type || 'image/jpeg' })], { tags: ['import','web'] });
+              const reader = new FileReader();
+              reader.onload = () => setImage(String(reader.result || urlStr));
+              reader.readAsDataURL(blob);
+            } catch { setImage(String(data.image)); }
+          }
           // Top info
           if (data?.yield) {
             const y = String(data.yield);
