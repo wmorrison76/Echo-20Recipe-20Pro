@@ -47,7 +47,14 @@ const RecipeInputPage = () => {
     const onTheme = (e: any) =>
       setIsDarkMode(String(e?.detail?.theme || "") === "dark");
     window.addEventListener("theme:change", onTheme as any);
-    return () => window.removeEventListener("theme:change", onTheme as any);
+    const obs = new MutationObserver(() => {
+      setIsDarkMode(document.documentElement.classList.contains("dark"));
+    });
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    return () => {
+      window.removeEventListener("theme:change", onTheme as any);
+      obs.disconnect();
+    };
   }, []);
   const [selectedFont, setSelectedFont] = useState("Arial");
   const [selectedFontSize, setSelectedFontSize] = useState("14px");
@@ -853,6 +860,27 @@ const RecipeInputPage = () => {
     return null;
   }
 
+  // Auto-parse any rows that have inline qty/unit in the item field on initial load or paste
+  useEffect(() => {
+    let changed = false;
+    const next = ingredients.map((r) => {
+      if ((r.qty && r.unit) || !r.item) return r;
+      if (!/^(\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|.*,)\b/i.test(String(r.item))) return r;
+      const p = parseIngredientInline(String(r.item));
+      if (!p) return r;
+      const updated = {
+        ...r,
+        qty: p.qty ?? r.qty,
+        unit: (p.unit ?? r.unit || "").toUpperCase(),
+        item: p.item ?? r.item,
+        prep: p.prep ?? r.prep,
+      };
+      if (JSON.stringify(updated) !== JSON.stringify(r)) changed = true;
+      return updated;
+    });
+    if (changed) setIngredients(next);
+  }, [ingredients]);
+
   const analyzeNutrition = async () => {
     try {
       setNutritionLoading(true);
@@ -895,6 +923,8 @@ const RecipeInputPage = () => {
           "LITER",
           "LITERS",
           "LITRES",
+          "EACH",
+          "EA",
         ].includes((u || "").toUpperCase());
       const ingr = rows.map((r) => {
         const u = (r.unit || "").toUpperCase();
@@ -1410,8 +1440,19 @@ const RecipeInputPage = () => {
                       className={inputClass}
                       value={line.item}
                       onChange={(e) => {
+                        const text = e.target.value;
                         const v = [...ingredients];
-                        v[index].item = e.target.value;
+                        v[index].item = text;
+                        // Live-parse when qty/unit are empty and item looks like it contains qty/unit or prep
+                        if ((!v[index].qty || !v[index].unit) && /^(\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|.*,)\b/i.test(text)) {
+                          const p = parseIngredientInline(text);
+                          if (p) {
+                            v[index].qty = p.qty ?? v[index].qty;
+                            v[index].unit = (p.unit ?? v[index].unit || "").toUpperCase();
+                            v[index].item = p.item ?? v[index].item;
+                            v[index].prep = p.prep ?? v[index].prep;
+                          }
+                        }
                         setIngredients(
                           v.map((r, i) =>
                             i === index ? updateAndNormalize({ ...r }) : r,
