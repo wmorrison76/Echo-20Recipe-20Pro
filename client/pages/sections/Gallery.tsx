@@ -12,7 +12,7 @@ import {
 import { GalleryLightbox } from "@/components/GalleryLightbox";
 import { FlipBook } from "@/components/FlipBook";
 import { Download } from "lucide-react";
-import { Star, Search, UploadCloud } from "lucide-react";
+import { Star, Search, UploadCloud, Pencil, Trash } from "lucide-react";
 
 export default function GallerySection() {
   const {
@@ -344,37 +344,46 @@ export default function GallerySection() {
             {lookbooks.map((b) => (
               <div
                 key={b.id}
-                className="rounded border px-3 py-2 text-sm flex items-center gap-2"
+                className="rounded border px-3 py-2 text-sm flex items-center justify-between gap-2 min-w-[260px] flex-auto no-callout"
               >
-                <button
-                  className="font-medium underline-offset-2 hover:underline"
-                  onClick={() => {
-                    setActiveLookBookId(b.id);
-                    setOpenLookBook(true);
-                  }}
-                >
-                  {b.name}
-                </button>
-                <span className="text-muted-foreground">
-                  {b.imageIds.length} photos
-                </span>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => {
-                    const name = prompt("Rename Look Book", b.name) || b.name;
-                    updateLookBook(b.id, { name });
-                  }}
-                >
-                  Rename
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => deleteLookBook(b.id)}
-                >
-                  Delete
-                </Button>
+                <div className="flex items-center gap-2">
+                  <button
+                    className="font-medium underline-offset-2 hover:underline"
+                    onClick={() => {
+                      setActiveLookBookId(b.id);
+                      setOpenLookBook(true);
+                    }}
+                    title="Open Look Book"
+                  >
+                    {b.name}
+                  </button>
+                  <span className="text-muted-foreground whitespace-nowrap">
+                    {b.imageIds.length} photos
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => {
+                      const name = prompt("Rename Look Book", b.name) || b.name;
+                      updateLookBook(b.id, { name });
+                    }}
+                    aria-label="Rename"
+                    title="Rename"
+                  >
+                    <Pencil />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => deleteLookBook(b.id)}
+                    aria-label="Delete"
+                    title="Delete"
+                  >
+                    <Trash />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
