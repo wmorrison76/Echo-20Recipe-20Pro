@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export type FlipBookImage = { id: string; src?: string; name?: string };
 
-export function FlipBook({ open, onClose, images, title }: { open: boolean; onClose: () => void; images: FlipBookImage[]; title?: string }) {
+export function FlipBook({ open, onClose, images, title, className }: { open: boolean; onClose: () => void; images: FlipBookImage[]; title?: string; className?: string }) {
   const [page, setPage] = useState(0); // spread index
   const [flipping, setFlipping] = useState<null | "next" | "prev">(null);
 
@@ -43,7 +43,7 @@ export function FlipBook({ open, onClose, images, title }: { open: boolean; onCl
 
   return (
     <Dialog open={open} onOpenChange={(v)=>{ if(!v) onClose(); }}>
-      <DialogContent className="max-w-6xl w-full text-white p-4 bg-[radial-gradient(900px_500px_at_10%_-10%,rgba(56,189,248,0.14),transparent_65%),radial-gradient(900px_500px_at_90%_-20%,rgba(99,102,241,0.12),transparent_65%),linear-gradient(180deg,#0b1020_0%,#05070d_100%)]">
+      <DialogContent className={`max-w-6xl w-full text-white p-4 bg-[radial-gradient(900px_500px_at_10%_-10%,rgba(56,189,248,0.14),transparent_65%),radial-gradient(900px_500px_at_90%_-20%,rgba(99,102,241,0.12),transparent_65%),linear-gradient(180deg,#0b1020_0%,#05070d_100%)] ${className||''}`}>
         <DialogHeader>
           <DialogTitle className="text-sm opacity-80">Look Book{title?` — ${title}`:''}</DialogTitle>
         </DialogHeader>
