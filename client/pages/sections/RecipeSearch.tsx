@@ -182,7 +182,8 @@ export default function RecipeSearchSection() {
           <div className="flex items-center justify-between mb-1"><div className="text-xs font-medium">Library (Book PDF) Import</div><div className="text-xs text-muted-foreground">{bookPhase ? (<div className="flex items-center gap-2"><span>{bookPhase === 'reading' ? 'Reading file' : bookPhase === 'selecting' ? 'Selecting recipes' : bookPhase === 'categorizing' ? 'Categorizing recipes' : bookPhase === 'importing' ? 'Importing' : 'Done'}</span>{bookPhase==='reading' && (<span>{bookPage}/{bookTotal}</span>)}</div>) : (<>Imported: {recipes.length}</>)}</div></div>
           <input type="file" accept="application/pdf" onChange={async(e)=>{ const f=e.target.files?.[0]; if(!f) return; if(!confirm('Confirm you own/purchased this cookbook PDF for personal import?')){ (e.target as HTMLInputElement).value=''; return;} try{ setBookFile(f.name); setBookPhase('reading'); setStatus('Reading book PDF...'); const ab = await f.arrayBuffer(); pdfPendingRef.current = f; const pdfjs: any = await import('https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs'); const workerSrc='https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs'; if(pdfjs.GlobalWorkerOptions) pdfjs.GlobalWorkerOptions.workerSrc=workerSrc; const doc = await pdfjs.getDocument({ data: ab }).promise; setBookTotal(doc.numPages); let lines:string[]=[]; for(let p=1;p<=doc.numPages;p++){ const page=await doc.getPage(p); const tc=await page.getTextContent(); lines.push(...tc.items.map((i:any)=> String(i.str)).filter(Boolean)); lines.push(''); setBookPage(p); }
             setBookPhase('selecting');
-            const norm = lines.map(s=> s.replace(/\s+/g,' ').trim());
+            const normLine = (s:string)=>{ let t=s.replace(/\s+/g,' ').trim(); if (/^([A-Z]\s+){2,}[A-Z](?:\s+\d+)?[\s:]*$/.test(t) && t.length<=60){ t=t.replace(/\s+/g,''); } return t; };
+            const norm = lines.map(normLine);
             let tocEntries = norm.map(s=>{
               const tests = [
                 /^(.{3,120}?)(?:[\.·•\s]{2,})(\d{1,4})$/, // dot leaders or many spaces then page
@@ -192,7 +193,7 @@ export default function RecipeSearchSection() {
               let m: RegExpMatchArray | null = null;
               for (const re of tests){ m = s.match(re); if(m) break; }
               if(!m) return null; const title=m[1].trim(); const page=parseInt(m[2],10);
-              const bad=/^(contents|index|appendix|recipes?|chapter|table of contents|fig(?:\.|ures?)?|plates?|illustrations?|photos?|tables?|maps?)\b/i; if(!title||bad.test(title)) return null; return { title, page };
+              const bad=/^(?:contents|index|appendix|recipes?|chapter|table of contents|fig(?:\.|ures?)?(?:\s*\d+)?|plates?(?:\s*\d+)?|illustrations?(?:\s*\d+)?|photos?(?:\s*\d+)?|tables?(?:\s*\d+)?|maps?(?:\s*\d+)?|yield\b|to convert\b)/i; if(!title||bad.test(title)) return null; return { title, page };
             }).filter(Boolean) as {title:string;page:number}[];
             // de-duplicate by page number
             const seen: Record<number, boolean> = {};
