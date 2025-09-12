@@ -386,6 +386,7 @@ const RecipeInputPage = () => {
       if (t === "cycleCurrency") cycleCurrency();
       if (t === "scale") scaleRecipe();
       if (t === "saveVersion") pushHistory({ ...serialize(), ts: Date.now() });
+      if (t === "openYieldLab") setYieldOpen(true);
       if (t === "finalizeImport") {
         try {
           const title = (recipeName || '').trim() || 'Untitled Recipe';
