@@ -179,18 +179,6 @@ export default function GallerySection() {
 
   return (
     <div className="mx-auto max-w-[1200px] px-4 md:px-6 py-4 space-y-4" data-echo-key="page:recipes:gallery">
-      <section className="rounded-lg border p-3 bg-white/95 dark:bg-zinc-900 shadow-sm">
-        <h1 className="text-lg font-semibold">Developer Notes: Echo keys</h1>
-        <ul className="list-disc pl-5 text-xs text-muted-foreground grid sm:grid-cols-2 gap-1">
-          <li>page:recipes:gallery (root)</li>
-          <li>filter:gallery:sort</li>
-          <li>filter:gallery:tags</li>
-          <li>section:gallery:grid</li>
-          <li>card:gallery:item</li>
-          <li>cta:gallery:open</li>
-          <li>cta:gallery:fav</li>
-        </ul>
-      </section>
 
       <div className="grid gap-3 md:grid-cols-2 items-start">
         <Dropzone multiple onFiles={onFiles}>

@@ -155,17 +155,6 @@ export default function RecipeSearchSection() {
 
   return (
     <div className="mx-auto max-w-[1200px] px-4 md:px-6 py-4 space-y-4" data-echo-key="page:recipes:search">
-      <section className="rounded-lg border p-3 bg-white/95 dark:bg-zinc-900 shadow-sm">
-        <h1 className="text-lg font-semibold">Developer Notes: Echo keys</h1>
-        <ul className="list-disc pl-5 text-xs text-muted-foreground grid sm:grid-cols-2 gap-1">
-          <li>page:recipes:search (root)</li>
-          <li>field:recipes:query (search input)</li>
-          <li>section:recipes:filters + filter:recipes:cuisine|course|dietary|time|cost</li>
-          <li>section:recipes:results (results grid)</li>
-          <li>card:recipes:result (each card)</li>
-          <li>cta:recipes:open (open recipe)</li>
-        </ul>
-      </section>
 
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex items-center gap-1 rounded-lg bg-muted p-1">
@@ -286,18 +275,6 @@ export default function RecipeSearchSection() {
         <select value={fdiet} onChange={(e)=>setFDiet(e.target.value)} className="rounded-md border bg-background px-2 py-2 text-sm max-w-[220px]" data-echo-key="filter:recipes:dietary">
           <option value="">Dietary</option>
           {axisOptions('diets').map(o=> <option key={o.slug} value={o.slug}>{o.label}</option>)}
-        </select>
-        <select className="rounded-md border bg-background px-2 py-2 text-sm max-w-[160px]" data-echo-key="filter:recipes:time">
-          <option>Any Time</option>
-          <option>&lt; 15 min</option>
-          <option>&lt; 30 min</option>
-          <option>&lt; 60 min</option>
-        </select>
-        <select className="rounded-md border bg-background px-2 py-2 text-sm max-w-[160px]" data-echo-key="filter:recipes:cost">
-          <option>Any Cost</option>
-          <option>$</option>
-          <option>$$</option>
-          <option>$$$</option>
         </select>
         <div className="text-sm text-muted-foreground whitespace-nowrap">
           {results.length} / {recipes.length} recipes

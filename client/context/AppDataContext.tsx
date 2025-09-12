@@ -791,6 +791,31 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       return meta;
     };
 
+    const learnFromPages = (book: string, pages: string[]) => {
+      try {
+        const text = pages.join('\n').toLowerCase();
+        const knownTerms = [
+          'mise en place','bain marie','roux','ganache','emulsion','caramelize','temper chocolate','fold','simmer','whisk','sear','poach','blanch','reduce','deglaze','knead','proof','laminate','macaronage','pate a choux','sabayon','custard','meringue','pate sucree','pate brisee','ganache','frangipane','creme anglaise','streusel','simple syrup','brioche'
+        ];
+        const word = text.replace(/[^a-z\s]/g,' ').split(/\s+/).filter(Boolean);
+        const bigrams: Record<string, number> = {};
+        for(let i=0;i<word.length-1;i++){ const g=`${word[i]} ${word[i+1]}`; if(g.length<5||g.length>40) continue; bigrams[g]=(bigrams[g]||0)+1; }
+        const counts: Record<string, number> = {};
+        for(const t of knownTerms){ const re = new RegExp(`\\b${t.replace(/\s+/g,'\\s+')}\\b`,'gi'); const m = text.match(re); if(m) counts[t]=(counts[t]||0)+m.length; }
+        const keepTop = (obj: Record<string, number>, n: number) => Object.fromEntries(Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,n));
+        const kbRaw = localStorage.getItem('kb:cook') || '{}';
+        const kb = JSON.parse(kbRaw);
+        kb.terms = { ...(kb.terms||{}), ...Object.fromEntries(Object.entries(counts).map(([k,v])=>[k,(v + (kb.terms?.[k]||0))])) };
+        kb.bigrams = { ...(kb.bigrams||{}) };
+        for(const [k,v] of Object.entries(keepTop(bigrams, 400))){ kb.bigrams[k] = (kb.bigrams[k]||0)+v; }
+        kb.books = Array.from(new Set([...(kb.books||[]), book]));
+        // Trim to keep storage bounded
+        kb.terms = keepTop(kb.terms, 400);
+        kb.bigrams = keepTop(kb.bigrams, 600);
+        localStorage.setItem('kb:cook', JSON.stringify(kb));
+      } catch {}
+    };
+
     for (const f of files) {
       if (!f.name.toLowerCase().endsWith('pdf')) { errors.push({ file: f.name, error: 'Unsupported PDF type' }); continue; }
       try {
@@ -807,6 +832,9 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           pageTexts.push(t);
         }
         const allLines = pageTexts.join('\n').split(/\r?\n/).map(s=>s.replace(/\s+/g,' ').trim()).filter(Boolean);
+        // Learn from entire book regardless of what gets imported
+        learnFromPages(f.name.replace(/\.pdf$/i,''), pageTexts);
+
         // Parse appendix/TOC entries: "Title .... 123 (photo 124)"
         let indexEntries = allLines.map(s=>{
           const m = s.match(/^(.{3,120}?)(?:\.{2,}|\s{2,})(\d{1,4})(?:.*?\(\s*photo\s*(\d{1,4})\s*\))?$/i);
@@ -873,20 +901,23 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           continue;
         }
 
-        // Fallback: single recipe extraction from whole document
+        // Fallback: only import if the whole document clearly looks like a single recipe
         const text = pageTexts.join('\n');
-        const lines = text.split(/\n/).map(s=>s.trim()).filter(Boolean);
-        const lower = lines.map(l=>l.toLowerCase());
-        const find = (labels:string[])=> lower.findIndex(l=> labels.includes(l));
-        const ingIdx = find(['ingredients','ingredient']);
-        const instIdx = find(['instructions','directions','method','steps']);
-        const getRange=(s:number,e:number)=> lines.slice(s+1, e> s ? e : undefined).filter(Boolean);
-        const ingredients = ingIdx>=0 ? getRange(ingIdx, instIdx>=0?instIdx:lines.length): undefined;
-        const instructions = instIdx>=0 ? getRange(instIdx, lines.length): undefined;
-        const meta = parseMeta(text);
-        const title = lines[0] || f.name.replace(/\.pdf$/i,'');
-        collected.push({ id: uid(), createdAt: Date.now(), title, ingredients, instructions, sourceFile: f.name, extra: { ...meta, source: 'pdf-single' } });
-        titles.push(title);
+        const hasRecipeMarkers = /\bingredients?\b/i.test(text) && /\b(instructions|directions|method|steps)\b/i.test(text);
+        if (hasRecipeMarkers) {
+          const lines = text.split(/\n/).map(s=>s.trim()).filter(Boolean);
+          const lower = lines.map(l=>l.toLowerCase());
+          const find = (labels:string[])=> lower.findIndex(l=> labels.includes(l));
+          const ingIdx = find(['ingredients','ingredient']);
+          const instIdx = find(['instructions','directions','method','steps']);
+          const getRange=(s:number,e:number)=> lines.slice(s+1, e> s ? e : undefined).filter(Boolean);
+          const ingredients = ingIdx>=0 ? getRange(ingIdx, instIdx>=0?instIdx:lines.length): undefined;
+          const instructions = instIdx>=0 ? getRange(instIdx, lines.length): undefined;
+          const meta = parseMeta(text);
+          const title = lines[0] || f.name.replace(/\.pdf$/i,'');
+          collected.push({ id: uid(), createdAt: Date.now(), title, ingredients, instructions, sourceFile: f.name, extra: { ...meta, source: 'pdf-single' } });
+          titles.push(title);
+        }
       } catch (e: any) {
         errors.push({ file: f.name, error: e?.message ?? 'Failed to read PDF' });
       }
