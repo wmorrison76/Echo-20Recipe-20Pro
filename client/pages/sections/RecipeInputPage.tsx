@@ -726,6 +726,8 @@ const RecipeInputPage = () => {
           setPortionUnit(cv.unit);
         }
       }
+      setCookTemp((prev) => convertCookTemp(prev, true));
+      setDirections((prev) => convertTempsInText(prev, true));
       setCurrentUnits("Metric");
     } else {
       setIngredients(
