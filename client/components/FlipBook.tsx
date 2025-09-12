@@ -69,6 +69,10 @@ export function FlipBook({ open, onClose, images, title, className }: { open: bo
             .flip-next .right .shine, .flip-prev .left .shine { animation: shineMove 1.2s ease-in-out forwards; }
             @keyframes bend { 0%{ transform: perspective(1200px) translateZ(0) rotateY(0) skewY(0deg); } 35%{ transform: perspective(1200px) translateZ(14px) skewY(-3deg); } 65%{ transform: perspective(1200px) translateZ(10px) skewY(3deg); } 100%{ transform: perspective(1200px) translateZ(0) skewY(0deg); } }
             @keyframes shineMove { 0% { opacity:.0; transform: translateX(-40%); } 35% { opacity:.65; } 65% { opacity:.4; } 100% { opacity:0; transform: translateX(140%); } }
+            @media (prefers-reduced-motion: reduce){
+              .flip-next .right, .flip-prev .left { transition-duration: .2s; }
+              .flip-next .right .frame, .flip-prev .left .frame, .flip-next .right .shine, .flip-prev .left .shine { animation: none; }
+            }
             .gutter{ position:absolute; top:0; bottom:0; left:50%; width:2px; background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.02)); box-shadow: 0 0 0 1px rgba(0,0,0,.3); transform: translateX(-1px); }
             .label{ position:absolute; bottom:.5rem; left:50%; transform:translateX(-50%); font-size:11px; opacity:.8; background:rgba(0,0,0,.35); padding:.125rem .375rem; border-radius:.25rem; }
           `}</style>
