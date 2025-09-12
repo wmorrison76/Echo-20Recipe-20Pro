@@ -1856,6 +1856,12 @@ const RecipeInputPage = () => {
                 </div>
               </div>
             )}
+            {chefNotes && (
+              <div className={`mt-4 rounded-xl border p-3 ${isDarkMode? 'border-gray-700 text-cyan-200' : 'border-gray-200 text-gray-800 bg-gradient-to-b from-white to-slate-50'}`}>
+                <div className="font-semibold mb-1">Chef Notes</div>
+                <div className="whitespace-pre-wrap text-sm">{chefNotes}</div>
+              </div>
+            )}
           </div>
         </div>
       </div>
