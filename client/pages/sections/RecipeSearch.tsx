@@ -325,6 +325,18 @@ export default function RecipeSearchSection() {
               ))
             )}
           </div>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button size="sm" variant="default" disabled={!scanPageTexts || !detected.length} onClick={async()=>{
+              try{
+                const pageTexts = scanPageTexts!; const starts = detected.map(d=> d.page).sort((a,b)=>a-b);
+                const normLine=(s:string)=>{ let t=s.replace(/\s+/g,' ').trim(); if (/^([A-Z]\s+){2,}[A-Z](?:\s+\d+)?[\s:]*$/.test(t) && t.length<=60){ t=t.replace(/\s+/g,''); } return t; };
+                const items:any[]=[]; const book=scanBookName||'Book';
+                for(let i=0;i<starts.length;i++){ const s=starts[i]; const e=(i+1<starts.length? starts[i+1]-1 : pageTexts.length); const textRaw=pageTexts.slice(s-1,e).join('\n'); const text=textRaw.split(/\n/).map(normLine).join('\n'); const lines=text.split(/\n/).map(normLine).filter(Boolean); const lower=lines.map(l=>l.toLowerCase()); const find=(labels:string[])=> lower.findIndex(l=> labels.some(x=> l.startsWith(x))); let ingIdx=find(['ingredients','ingredient']); let instIdx=find(['instructions','directions','method','steps','preparation','procedure']); if(ingIdx<0){ const qty=/^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/; for(let j=0;j<Math.min(lines.length,80);j++){ if(qty.test(lines[j])||/^[•\-*]\s+/.test(lines[j])){ ingIdx=j-1; break; } } } if(instIdx<0&&ingIdx>=0){ for(let j=ingIdx+1;j<Math.min(lines.length,200);j++){ if(/^(instructions|directions|method|steps|preparation|procedure)\b/i.test(lines[j])||/^\d+\.|^Step\s*\d+/i.test(lines[j])){ instIdx=j; break; } } } const getRange=(a:number,b:number)=> lines.slice(a+1,b>a?b:undefined).filter(Boolean); const ings=ingIdx>=0? getRange(ingIdx,instIdx>=0?instIdx:lines.length):[]; const ins=instIdx>=0? getRange(instIdx,lines.length):[]; if((ings.length>=2)||(ins.length>=3)){ let title=''; for(let k=Math.max(0,ingIdx-6); k<Math.min(lines.length, Math.max(ingIdx,8)); k++){ const L=lines[k]||''; if(/^[A-Z][A-Za-z0-9\-\'\s]{2,80}$/.test(L)||/^([A-Z]\s+){2,}[A-Z][\s:]*$/.test(L)){ title=L.replace(/\s+/g,' ').trim(); break; } } if(!title) title=lines[0]||`${book} p.${s}`; items.push({ title, ingredients: ings, instructions: ins, tags:[book] }); }
+                }
+                if(items.length){ const blob=new Blob([JSON.stringify(items)],{type:'application/json'}); const jf=new File([blob], `${(scanBookName||'book')}.json`, { type:'application/json' }); const { added } = await addRecipesFromJsonFiles([jf]); setStatus(`Imported ${added} recipes from detected list.`); }
+              }catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`);} finally{}
+            }}>Import detected</Button>
+          </div>
         </DialogContent>
       </Dialog>
 
