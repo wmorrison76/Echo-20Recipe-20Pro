@@ -170,7 +170,7 @@ const RecipeInputPage = () => {
       "⅛": "1/8",
       "⅜": "3/8",
       "⅝": "5/8",
-      "⅞": "7/8",
+      "��": "7/8",
     };
     let t = String(s).trim();
     // Expand unicode vulgar fractions
@@ -686,15 +686,19 @@ const RecipeInputPage = () => {
     const convertCookTemp = (s: string, toMetric: boolean) => {
       const t = String(s || '').trim();
       if (!t) return t;
+      const num = parseInt(t.match(/(\d{2,3})/)?.[1] || '', 10);
+      if (!Number.isFinite(num)) return t;
       if (toMetric) {
-        if (/(?:°?\s*F\b|fahrenheit)/i.test(t)) {
-          const n = parseInt(t.match(/(\d{2,3})/)?.[1] || '', 10);
-          if (Number.isFinite(n)) return `${Math.round((n - 32) * 5 / 9)}°C`;
+        // Treat numeric/no-unit as Fahrenheit when switching to Metric
+        if (/(?:°?\s*F\b|fahrenheit)/i.test(t) || /^(?:\d{2,3})$/.test(t.replace(/[^0-9]/g,''))) {
+          const c = Math.round((num - 32) * 5 / 9);
+          return `${c}°C`;
         }
       } else {
-        if (/(?:°?\s*C\b|celsius)/i.test(t)) {
-          const n = parseInt(t.match(/(\d{2,3})/)?.[1] || '', 10);
-          if (Number.isFinite(n)) return `${Math.round(n * 9 / 5 + 32)}°F`;
+        // Treat numeric/no-unit as Celsius when switching to Imperial
+        if (/(?:°?\s*C\b|celsius)/i.test(t) || /^(?:\d{2,3})$/.test(t.replace(/[^0-9]/g,''))) {
+          const f = Math.round(num * 9 / 5 + 32);
+          return `${f}°F`;
         }
       }
       return t;
@@ -1306,8 +1310,12 @@ const RecipeInputPage = () => {
                     </span>
                     <input
                       value={cookTemp}
-                      onChange={(e) => setCookTemp(e.target.value)}
-                      placeholder="350F"
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/[^0-9]/g,'').slice(0,3);
+                        const suffix = currentUnits === 'Imperial' ? '°F' : '°C';
+                        setCookTemp(digits ? `${parseInt(digits,10)}${suffix}` : '');
+                      }}
+                      placeholder="350°F"
                       className={`w-24 p-3 ${inputClass}`}
                     />
                   </div>
@@ -1755,8 +1763,17 @@ const RecipeInputPage = () => {
                       title={isNaN(costNum) ? "Enter a number" : ""}
                       aria-invalid={isNaN(costNum)}
                       onChange={(e) => {
+                        const raw = e.target.value;
+                        const cleaned = raw.replace(/[^0-9.\-]/g, '');
                         const v = [...ingredients];
-                        v[index].cost = e.target.value;
+                        v[index].cost = cleaned;
+                        setIngredients(v);
+                      }}
+                      onBlur={(e)=>{
+                        const num = parseFloat(e.target.value.replace(/[^0-9.\-]/g,''));
+                        const sym = getCurrencySymbol(currentCurrency);
+                        const v = [...ingredients];
+                        v[index].cost = Number.isFinite(num) ? `${sym}${num.toFixed(2)}` : '';
                         setIngredients(v);
                       }}
                     />
