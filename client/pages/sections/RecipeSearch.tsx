@@ -183,8 +183,18 @@ export default function RecipeSearchSection() {
           <input type="file" accept="application/pdf" onChange={async(e)=>{ const f=e.target.files?.[0]; if(!f) return; if(!confirm('Confirm you own/purchased this cookbook PDF for personal import?')){ (e.target as HTMLInputElement).value=''; return;} try{ setBookFile(f.name); setBookPhase('reading'); setStatus('Reading book PDF...'); const ab = await f.arrayBuffer(); pdfPendingRef.current = f; const pdfjs: any = await import('https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs'); const workerSrc='https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs'; if(pdfjs.GlobalWorkerOptions) pdfjs.GlobalWorkerOptions.workerSrc=workerSrc; const doc = await pdfjs.getDocument({ data: ab }).promise; setBookTotal(doc.numPages); let lines:string[]=[]; for(let p=1;p<=doc.numPages;p++){ const page=await doc.getPage(p); const tc=await page.getTextContent(); lines.push(...tc.items.map((i:any)=> String(i.str)).filter(Boolean)); lines.push(''); setBookPage(p); }
             setBookPhase('selecting');
             const norm = lines.map(s=> s.replace(/\s+/g,' ').trim());
-            const tocEntries = norm.map(s=>{ const m = s.match(/^(.{3,120}?)(?:\.{2,}|\s{2,})(\d{1,4})$/); if(!m) return null; const title=m[1].trim(); const page=parseInt(m[2],10); const bad=/^(contents|index|appendix|recipes?|chapter|table of contents)$/i; if(!title||bad.test(title)) return null; return { title, page }; }).filter(Boolean) as {title:string;page:number}[];
-            if(tocEntries.length>=20){ setToc(tocEntries); const checked:Record<string,boolean>={}; tocEntries.forEach(x=> checked[x.title]=true); setTocChecked(checked); setTocOpen(true); setStatus('Select recipes to import'); return; }
+            const tocEntries = norm.map(s=>{
+              const tests = [
+                /^(.{3,120}?)(?:[\.·•\s]{2,})(\d{1,4})$/, // dot leaders or many spaces then page
+                /^(.{3,120}?)\s{3,}(\d{1,4})$/,            // right-aligned page with spaces
+                /^(.{3,120}?)\s+[-–—]\s*(\d{1,4})$/       // dash then page
+              ];
+              let m: RegExpMatchArray | null = null;
+              for (const re of tests){ m = s.match(re); if(m) break; }
+              if(!m) return null; const title=m[1].trim(); const page=parseInt(m[2],10);
+              const bad=/^(contents|index|appendix|recipes?|chapter|table of contents)$/i; if(!title||bad.test(title)) return null; return { title, page };
+            }).filter(Boolean) as {title:string;page:number}[];
+            if(tocEntries.length>=5){ setToc(tocEntries); const checked:Record<string,boolean>={}; tocEntries.forEach(x=> checked[x.title]=true); setTocChecked(checked); setTocOpen(true); setStatus('Select recipes to import'); return; }
             const items:any[]=[]; let i=0; const book=f.name.replace(/\.[^.]+$/,'');
             const isTitle=(s:string)=> s && s.length<70 && /[A-Za-z]/.test(s) && (s===s.toUpperCase() || /^[A-Z][^.!?]{2,}$/.test(s));
             while(i<norm.length){
@@ -240,15 +250,19 @@ export default function RecipeSearchSection() {
           </DialogHeader>
           <div className="max-h-[50vh] overflow-auto hide-scrollbar border rounded p-2 text-sm space-y-1">
             {(toc||[]).map((t)=> (
-              <label key={t.title} className="flex items-center gap-2 text-xs">
+              <label key={t.title} className="grid grid-cols-[16px_1fr_42px] items-center gap-2 text-xs">
                 <input type="checkbox" className="scale-75" checked={!!tocChecked[t.title]} onChange={()=> setTocChecked((m)=> ({...m, [t.title]: !m[t.title]}))} />
                 <span className="truncate" title={`${t.title} — p.${t.page}`}>{t.title}</span>
+                <span className="text-muted-foreground text-right">p.{t.page}</span>
               </label>
             ))}
           </div>
-          <div className="flex justify-end gap-2">
-            <Button variant="secondary" onClick={()=>{ setTocOpen(false); setToc(null); }}>Cancel</Button>
-            <Button onClick={async()=>{ try{ setTocOpen(false); setBookPhase('importing'); const selected = Object.keys(tocChecked).filter(k=> tocChecked[k]); localStorage.setItem('pdf:index:allow', JSON.stringify(selected)); if(pdfPendingRef.current){ const { added } = await addRecipesFromPdfFiles([pdfPendingRef.current]); setStatus(`Imported ${added} recipe(s) from book.`); setBookPhase('done'); } } catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`); setBookPhase(null);} finally { setToc(null); setTocChecked({}); pdfPendingRef.current=null; } }}>Accept</Button>
+          <div className="flex justify-between gap-2">
+            <Button variant="ghost" onClick={()=>{ const all:Record<string,boolean>={}; (toc||[]).forEach(t=> all[t.title]=true); setTocChecked(all); }}>Select all</Button>
+            <div className="flex gap-2">
+              <Button variant="secondary" onClick={()=>{ setTocOpen(false); setToc(null); }}>Cancel</Button>
+              <Button onClick={async()=>{ try{ setTocOpen(false); setBookPhase('importing'); const selected = Object.keys(tocChecked).filter(k=> tocChecked[k]); localStorage.setItem('pdf:index:allow', JSON.stringify(selected)); if(pdfPendingRef.current){ const { added } = await addRecipesFromPdfFiles([pdfPendingRef.current]); setStatus(`Imported ${added} recipe(s) from book.`); setBookPhase('done'); } } catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`); setBookPhase(null);} finally { setToc(null); setTocChecked({}); pdfPendingRef.current=null; } }}>Accept</Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -349,6 +363,29 @@ export default function RecipeSearchSection() {
       )}
 
       <div className="mt-6 text-xs text-muted-foreground text-center">Total recipes in system: {recipes.length}</div>
+
+      <details className="rounded-md border p-3 text-sm">
+        <summary className="cursor-pointer select-none">Knowledge learned from imports</summary>
+        <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-3">
+          {(() => { try { const raw=localStorage.getItem('kb:cook'); if(!raw) return (<div className="text-xs text-muted-foreground col-span-2">No knowledge yet.</div>); const kb=JSON.parse(raw)||{}; const top=(obj:any,n:number)=> Object.entries(obj||{}).sort((a:any,b:any)=>b[1]-a[1]).slice(0,n);
+            return (
+              <>
+                <div>
+                  <div className="font-medium mb-1">Top terms</div>
+                  <ul className="list-disc pl-5 space-y-0.5 text-xs">
+                    {top(kb.terms,20).map(([k,v]:any)=> (<li key={k}>{k} <span className="text-muted-foreground">({v})</span></li>))}
+                  </ul>
+                </div>
+                <div>
+                  <div className="font-medium mb-1">Top phrases</div>
+                  <ul className="list-disc pl-5 space-y-0.5 text-xs">
+                    {top(kb.bigrams,20).map(([k,v]:any)=> (<li key={k}>{k} <span className="text-muted-foreground">({v})</span></li>))}
+                  </ul>
+                </div>
+              </>
+            ); } catch { return (<div className="text-xs text-muted-foreground">Unable to read knowledge store.</div>);} })()}
+        </div>
+      </details>
 
       <Dialog open={!!preview} onOpenChange={(o)=>!o && setPreview(null)}>
         <DialogContent className="max-w-2xl">
