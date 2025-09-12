@@ -42,12 +42,12 @@ function parseJsonLdRecipe(html: string) {
       const list = Array.isArray(data) ? data : [data];
       for (const entry of list) {
         if (!entry) continue;
-        const graph = entry["@graph"];
-        const candidates = Array.isArray(graph) ? graph : [entry];
+        const graphArr = safeArray(entry["@graph"]);
+        const lookupById: Record<string, any> = {};
+        for (const g of graphArr) if (g && typeof g === 'object' && typeof g['@id'] === 'string') lookupById[g['@id']] = g;
+        const candidates = graphArr.length ? graphArr : [entry];
         for (const cand of candidates) {
-          const type = Array.isArray(cand["@type"])
-            ? cand["@type"]
-            : [cand["@type"]];
+          const type = safeArray(cand["@type"]);
           if (type.includes("Recipe")) {
             const isoToHuman = (iso: string) => {
               if (!iso || typeof iso !== "string") return "";
@@ -56,6 +56,21 @@ function parseJsonLdRecipe(html: string) {
               const h = Number(m[1] || 0),
                 min = Number(m[2] || 0);
               return h ? `${h}:${String(min).padStart(2, "0")}` : `${min}m`;
+            };
+            const normalizeInstructions = (ri: any): string => {
+              const arr = safeArray(ri);
+              const out: string[] = [];
+              for (const step of arr) {
+                if (typeof step === 'string') out.push(step);
+                else if (step && typeof step.text === 'string') out.push(step.text);
+                else if (step && Array.isArray(step.itemListElement)) {
+                  for (const el of step.itemListElement) {
+                    if (typeof el === 'string') out.push(el);
+                    else if (el && typeof el.text === 'string') out.push(el.text);
+                  }
+                }
+              }
+              return out.join("\n");
             };
             const nutrition = cand.nutrition
               ? {
@@ -66,25 +81,19 @@ function parseJsonLdRecipe(html: string) {
                   servingSize: String(cand.nutrition.servingSize || ""),
                 }
               : undefined;
+            let image = normalizeImageField(cand.image);
+            if (!image && cand.image && typeof cand.image === 'object' && typeof cand.image['@id'] === 'string') {
+              const ref = lookupById[cand.image['@id']];
+              image = normalizeImageField(ref);
+            }
             return {
               title: decodeHtml(String(cand.name || "")),
-              ingredients: (cand.recipeIngredient || []).map((x: any) =>
-                decodeHtml(String(x)),
-              ),
-              instructions: decodeHtml(
-                (Array.isArray(cand.recipeInstructions)
-                  ? cand.recipeInstructions
-                      .map((ri: any) => (typeof ri === "string" ? ri : ri.text))
-                      .join("\n")
-                  : String(cand.recipeInstructions || "")
-                ).trim(),
-              ),
+              ingredients: safeArray(cand.recipeIngredient || []).map((x: any) => decodeHtml(String(x))),
+              instructions: decodeHtml(normalizeInstructions(cand.recipeInstructions).trim()),
               yield: decodeHtml(String(cand.recipeYield || "")),
-              cookTime: isoToHuman(
-                String(cand.cookTime || cand.totalTime || ""),
-              ),
+              cookTime: isoToHuman(String(cand.cookTime || cand.totalTime || "")),
               prepTime: isoToHuman(String(cand.prepTime || "")),
-              image: normalizeImageField(cand.image),
+              image,
               nutrition,
             };
           }
