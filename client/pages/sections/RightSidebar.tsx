@@ -54,7 +54,6 @@ export default function RightSidebar(props: RightSidebarProps) {
   const [notes, setNotes] = useState(() => {
     try { return localStorage.getItem('recipe:chef-notes') || ""; } catch { return ""; }
   });
-  const [clipboardUrl, setClipboardUrl] = useState("");
   const [isImporting, setIsImporting] = useState(false);
   const [open, setOpen] = useState<string[]>([]);
 
@@ -66,15 +65,6 @@ export default function RightSidebar(props: RightSidebarProps) {
 
   const limitTechnique = (next: string[]) => next.slice(0, 3);
 
-  useEffect(() => {
-    const checkClipboard = async () => {
-      try {
-        const text = await navigator.clipboard.readText();
-        if (text && /https?:\/\//.test(text)) setClipboardUrl(text);
-      } catch {}
-    };
-    if (!isCollapsed) checkClipboard();
-  }, [isCollapsed]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -138,15 +128,22 @@ export default function RightSidebar(props: RightSidebarProps) {
                 <label className="block text-sm font-medium mb-1">Recipe URL</label>
                 <div className="flex gap-1">
                   <input
-                    className="flex-1 border border-gray-400/50 p-2 rounded-l bg-gray-100/50 backdrop-blur-sm focus:bg-white/80 transition-colors text-sm placeholder-gray-400"
+                    className="flex-1 border border-gray-400/50 p-2 rounded bg-gray-100/50 backdrop-blur-sm focus:bg-white/80 transition-colors text-sm placeholder-gray-400"
                     value={recipeUrl}
                     onChange={(e) => setRecipeUrl(e.target.value)}
                     placeholder="Enter Recipe Url"
                   />
                   <button
+                    onClick={async()=>{ try{ const t=await navigator.clipboard.readText(); if(t) setRecipeUrl(t);} catch{} }}
+                    className="px-3 py-2 rounded border border-gray-400/50 bg-white/70 hover:bg-white/90 text-sm"
+                    title="Paste from clipboard"
+                  >
+                    Paste
+                  </button>
+                  <button
                     onClick={handleUrlSubmit}
                     disabled={isImporting}
-                    className={`px-3 py-2 text-white rounded-r ${isImporting ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"}`}
+                    className={`px-3 py-2 text-white rounded ${isImporting ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"}`}
                   >
                     {isImporting ? (
                       <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -155,9 +152,6 @@ export default function RightSidebar(props: RightSidebarProps) {
                     )}
                   </button>
                 </div>
-                {clipboardUrl && (
-                  <div className="text-xs text-blue-600 mt-1">URL detected: {clipboardUrl.substring(0, 30)}...</div>
-                )}
               </div>
             </div>
 
