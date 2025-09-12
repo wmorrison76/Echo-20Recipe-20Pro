@@ -242,19 +242,19 @@ export default function RecipeSearchSection() {
           placeholder="Search by title, ingredients, tags..."
           className="w-full rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring"
         />
-        <select value={fcuisine} onChange={(e)=>setFCuisine(e.target.value)} className="rounded-md border bg-background px-2 py-2 text-sm">
+        <select value={fcuisine} onChange={(e)=>setFCuisine(e.target.value)} className="rounded-md border bg-background px-2 py-2 text-sm max-w-[220px]">
           <option value="">Cuisine</option>
           {axisOptions('cuisines').map(o=> <option key={o.slug} value={o.slug}>{o.label}</option>)}
         </select>
-        <select value={ftech} onChange={(e)=>setFTech(e.target.value)} className="rounded-md border bg-background px-2 py-2 text-sm">
+        <select value={ftech} onChange={(e)=>setFTech(e.target.value)} className="rounded-md border bg-background px-2 py-2 text-sm max-w-[220px]">
           <option value="">Technique</option>
           {axisOptions('technique').map(o=> <option key={o.slug} value={o.slug}>{o.label}</option>)}
         </select>
-        <select value={fcourse} onChange={(e)=>setFCourse(e.target.value)} className="rounded-md border bg-background px-2 py-2 text-sm">
+        <select value={fcourse} onChange={(e)=>setFCourse(e.target.value)} className="rounded-md border bg-background px-2 py-2 text-sm max-w-[220px]">
           <option value="">Course</option>
           {axisOptions('course').map(o=> <option key={o.slug} value={o.slug}>{o.label}</option>)}
         </select>
-        <select value={fdiet} onChange={(e)=>setFDiet(e.target.value)} className="rounded-md border bg-background px-2 py-2 text-sm">
+        <select value={fdiet} onChange={(e)=>setFDiet(e.target.value)} className="rounded-md border bg-background px-2 py-2 text-sm max-w-[220px]">
           <option value="">Diet</option>
           {axisOptions('diets').map(o=> <option key={o.slug} value={o.slug}>{o.label}</option>)}
         </select>
