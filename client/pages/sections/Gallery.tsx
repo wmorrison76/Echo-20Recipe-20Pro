@@ -218,8 +218,17 @@ export default function GallerySection() {
           </div>
         </Dropzone>
 
-        <div className="rounded-xl border p-3 space-y-2 bg-gradient-to-br from-background to-muted/40 shadow-sm dark:shadow-[0_0_18px_rgba(56,189,248,0.12)] dark:ring-1 dark:ring-sky-500/15">
-          <div className="text-sm text-muted-foreground flex items-center justify-between"><span>Images in gallery</span><span className="text-base font-semibold">{images.length}</span></div>
+        <div className="rounded-xl border p-3 space-y-2 bg-white/95 dark:bg-gradient-to-br dark:from-background dark:to-muted/40 shadow-sm ring-1 ring-black/5 dark:ring-sky-500/15">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-muted-foreground flex items-center gap-2">
+              <span>Images in gallery</span>
+              <span className="text-base font-semibold tabular-nums min-w-[5ch] text-right">{images.length}</span>
+            </div>
+            <Button variant="outline" size="sm" onClick={exportAllZip}>
+              <Download className="w-4 h-4 mr-1" />
+              Export all (ZIP)
+            </Button>
+          </div>
           <div className="flex flex-wrap gap-1.5 items-center">
             <div className="relative flex-1 min-w-[220px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -258,13 +267,6 @@ export default function GallerySection() {
               <option value="drink">Drinks</option>
               <option value="plating">Plating</option>
             </select>
-            <Button variant="outline" size="sm" className="ml-auto" onClick={exportAllZip}>
-              <Download className="w-4 h-4 mr-1" />
-              Export all (ZIP)
-            </Button>
-            <Button variant="destructive" size="sm" onClick={() => clearImages()}>
-              Clear
-            </Button>
           </div>
           {selected.length > 0 && (
             <div className="text-xs flex items-center gap-2">
