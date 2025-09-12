@@ -634,6 +634,7 @@ export default function GallerySection() {
         }
         onNext={() => setLightboxIndex((i) => (i + 1) % filtered.length)}
         onToggleFavorite={toggleFavorite}
+        className={lucccaMode ? 'luccca-theme lightbox-overlay' : ''}
       />
 
       <FlipBook
