@@ -758,6 +758,8 @@ const RecipeInputPage = () => {
           setPortionUnit(cv.unit);
         }
       }
+      setCookTemp((prev) => convertCookTemp(prev, false));
+      setDirections((prev) => convertTempsInText(prev, false));
       setCurrentUnits("Imperial");
     }
   };
