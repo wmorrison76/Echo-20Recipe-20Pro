@@ -47,6 +47,7 @@ export default function GallerySection() {
   const [category, setCategory] = useState<string>("");
   const [newLookBookName, setNewLookBookName] = useState("");
   const [activeLookBookId, setActiveLookBookId] = useState<string | null>(null);
+  const [lucccaMode, setLucccaMode] = useState(false);
   const [openLookBook, setOpenLookBook] = useState(false);
   const dragId = useRef<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
