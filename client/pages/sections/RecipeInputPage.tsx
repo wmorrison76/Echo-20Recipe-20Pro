@@ -804,6 +804,7 @@ const RecipeInputPage = () => {
     if (!s) return null;
     const map: Record<string, string> = { "¼": "1/4", "½": "1/2", "¾": "3/4", "⅓": "1/3", "⅔": "2/3", "⅛": "1/8", "⅜": "3/8", "⅝": "5/8", "⅞": "7/8" };
     let t = s.trim().replace(/[¼½¾⅓⅔⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
+    t = t.replace(/^(?:\s*)\/(\d+)/, "1/$1");
     t = t.replace(/(\d)(\s*)(\d\/\d)/, "$1 $3");
     const m = t.match(/^\s*([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?|[0-9]+\/[0-9]+)\s*([a-zA-Z\.]+)?\s*(.*)$/);
     const knownUnits = new Set(["LBS","LB","OZ","TSP","TBSP","FL OZ","FLOZ","CUP","CUPS","PINT","PT","QTS","QT","QUART","QUARTS","GAL","GALLON","GALLONS","ML","L","G","KG","GRAM","GRAMS","LITER","LITERS","LITRES","EACH","EA"]);
@@ -811,7 +812,7 @@ const RecipeInputPage = () => {
       const k = (u || "").replace(/\./g, "").toUpperCase();
       if (!k) return "EACH";
       if (k === "POUND" || k === "POUNDS" || k === "LB") return "LBS";
-      if (k === "OUNCE" || k === "OUNCES") return "OZ";
+      if (k === "OUNCE" || k === "OUNCES" || k === "OZS") return "OZ";
       if (k === "TEASPOON" || k === "TEASPOONS") return "TSP";
       if (k === "TABLESPOON" || k === "TABLESPOONS") return "TBSP";
       if (k === "QUART" || k === "QUARTS" || k === "QT") return "QTS";
@@ -892,6 +893,7 @@ const RecipeInputPage = () => {
       L: 1000,
       TSP: 4.92892,
       TBSP: 14.7868,
+      OZ: 29.5735,
       'FL OZ': 29.5735,
       CUP: 240,
       PT: 473.176,
@@ -907,8 +909,8 @@ const RecipeInputPage = () => {
       const u = (r.unit||'').toUpperCase();
       if (!Number.isFinite(q) || q<=0) continue;
       if (U[u]) ml += q * U[u];
-      else if (u==='OZ' || u==='LBS' || u==='LB' || u==='G' || u==='GRAM' || u==='GRAMS' || u==='KG') {
-        const massG = u==='OZ'? q*28.3495 : u==='LBS'||u==='LB'? q*453.592 : u==='KG'? q*1000 : q;
+      else if (u==='LBS' || u==='LB' || u==='G' || u==='GRAM' || u==='GRAMS' || u==='KG') {
+        const massG = u==='LBS'||u==='LB'? q*453.592 : u==='KG'? q*1000 : q;
         ml += massG; // ~1g per ml
       }
     }
