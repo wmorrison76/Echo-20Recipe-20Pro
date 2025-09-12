@@ -1,5 +1,6 @@
 import React from "react";
-import "../tron-gradient.css";
+import React from "react";
+import "@/tron-gradient.css";
 
 export default function TronBackdrop({ children }: { children?: React.ReactNode }) {
   return (
