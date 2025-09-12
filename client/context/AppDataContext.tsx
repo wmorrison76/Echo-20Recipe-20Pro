@@ -108,6 +108,7 @@ type AppData = {
   deleteRecipe: (id: string) => void;
   restoreRecipe: (id: string) => void;
   purgeDeleted: () => void;
+  destroyRecipe: (id: string) => void;
   getRecipeById: (id: string) => Recipe | undefined;
   attachImageToRecipeFromGallery: (recipeId: string, imageName: string) => void;
   clearRecipes: () => void;
@@ -1064,6 +1065,9 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const purgeDeleted = useCallback(() => {
     setRecipes((prev) => prev.filter((r) => !r.deletedAt));
   }, []);
+  const destroyRecipe = useCallback((id: string) => {
+    setRecipes((prev) => prev.filter((r) => r.id !== id));
+  }, []);
 
   const getRecipeById = useCallback(
     (id: string) => recipes.find((r) => r.id === id),
@@ -1148,6 +1152,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       deleteRecipe,
       restoreRecipe,
       purgeDeleted,
+      destroyRecipe,
     }),
     [
       recipes,
@@ -1177,6 +1182,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       deleteRecipe,
       restoreRecipe,
       purgeDeleted,
+      destroyRecipe,
     ],
   );
 
