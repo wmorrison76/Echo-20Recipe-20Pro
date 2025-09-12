@@ -205,6 +205,7 @@ export default function RecipeSearchSection() {
             setScanOpen(false);
             setBookPhase('selecting');
             setScanPageTexts(pageTexts); setScanCandidates(candidates); setScanBookName(f.name.replace(/\.[^.]+$/,''));
+            if (candidates.length >= 5) { setStatus(`Detected ${candidates.length} recipe candidates. Click "Import detected" to add them.`); return; }
             const normLine = (s:string)=>{ let t=s.replace(/\s+/g,' ').trim(); if (/^([A-Z]\s+){2,}[A-Z](?:\s+\d+)?[\s:]*$/.test(t) && t.length<=60){ t=t.replace(/\s+/g,''); } return t; };
             const norm = lines.map(normLine);
             let tocEntries = norm.map(s=>{
