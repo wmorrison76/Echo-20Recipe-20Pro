@@ -78,6 +78,8 @@ const RecipeInputPage = () => {
     [],
   );
   const [chefNotes, setChefNotes] = useState<string>(() => { try { return localStorage.getItem('recipe:chef-notes') || ''; } catch { return ''; } });
+  const stepImageInputRef = useRef<HTMLInputElement | null>(null);
+  const STEP_IMG_MAX_W = 720;
   const [image, setImage] = useState<string | null>(null);
   const [showImagePopup, setShowImagePopup] = useState(false);
   const [currentCurrency, setCurrentCurrency] = useState("USD");
@@ -413,6 +415,7 @@ const RecipeInputPage = () => {
           setPortionCount(6); setPortionUnit('OZ');
           setCookTime(''); setCookTemp(''); setPrepTime('');
           setNutrition(null); setNutritionError(null);
+          setChefNotes('');
         }
       }
     };
@@ -918,7 +921,7 @@ const RecipeInputPage = () => {
     let changed = false;
     const next = ingredients.map((r) => {
       if ((r.qty && r.unit) || !r.item) return r;
-      if (!/^(\s*[0-9¼½¾⅓⅔���⅜⅝⅞]|\s*\/\d+|.*,)\b/i.test(String(r.item))) return r;
+      if (!/^(\s*[0-9¼½¾⅓������⅜⅝⅞]|\s*\/\d+|.*,)\b/i.test(String(r.item))) return r;
       const p = parseIngredientInline(String(r.item));
       if (!p) return r;
       const updated = {
@@ -1703,10 +1706,18 @@ const RecipeInputPage = () => {
                 DIRECTIONS
               </h3>
               <div className="flex gap-3">
+                <input ref={stepImageInputRef} type="file" accept="image/*" multiple hidden onChange={async(e)=>{
+                  const files = Array.from(e.target.files||[]);
+                  for (const f of files){
+                    try{ const img=await new Promise<HTMLImageElement>((res,rej)=>{ const r=new FileReader(); r.onload=()=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=String(r.result); }; r.onerror=rej; r.readAsDataURL(f); }); const scale = Math.min(1, STEP_IMG_MAX_W / (img.width||STEP_IMG_MAX_W)); const w = Math.round((img.width||STEP_IMG_MAX_W)*scale); const h=Math.round((img.height||STEP_IMG_MAX_W)*scale); const c=document.createElement('canvas'); c.width=w; c.height=h; const ctx=c.getContext('2d'); if(ctx){ ctx.drawImage(img,0,0,w,h);} const data=c.toDataURL('image/jpeg',0.85); setDirections((d)=> (d?(d+"\n"):"")+`IMG:${data}`); }
+                    catch{}
+                  }
+                  (e.target as HTMLInputElement).value='';
+                }} />
                 <button
-                  title="Add Image"
+                  title="Insert Step Photo"
                   className={`p-2 rounded-lg transition-all hover:bg-gray-100 ${isDarkMode ? "hover:bg-gray-700" : ""}`}
-                  onClick={() => setShowImagePopup(true)}
+                  onClick={()=> stepImageInputRef.current?.click()}
                 >
                   <ImageIcon
                     className={`w-5 h-5 ${isDarkMode ? "text-cyan-400" : "text-gray-600"}`}
@@ -1768,6 +1779,8 @@ const RecipeInputPage = () => {
               suppressContentEditableWarning
               ref={dirRef}
               spellCheck
+              onDragOver={(e)=>{ if(e.dataTransfer?.types?.includes('Files')){ e.preventDefault(); }} }
+              onDrop={async(e)=>{ try{ e.preventDefault(); const files=Array.from(e.dataTransfer?.files||[]).filter(f=> f.type.startsWith('image/')); for(const f of files){ const img=await new Promise<HTMLImageElement>((res,rej)=>{ const r=new FileReader(); r.onload=()=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=String(r.result); }; r.onerror=rej; r.readAsDataURL(f); }); const scale=Math.min(1, STEP_IMG_MAX_W/(img.width||STEP_IMG_MAX_W)); const w=Math.round((img.width||STEP_IMG_MAX_W)*scale); const h=Math.round((img.height||STEP_IMG_MAX_W)*scale); const c=document.createElement('canvas'); c.width=w; c.height=h; const ctx=c.getContext('2d'); if(ctx){ ctx.drawImage(img,0,0,w,h);} const data=c.toDataURL('image/jpeg',0.85); setDirections((d)=> (d?(d+"\n"):"")+`IMG:${data}`); } } catch{} }}
               data-echo-key="field:add:steps"
               className={`prose prose-sm max-w-none w-full border p-3 rounded-xl shadow-sm transition-all focus:shadow-md focus:ring-2 resize-none min-h-[160px] overflow-y-auto ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30" : "bg-white border-gray-200 text-gray-900 focus:ring-blue-400/30 focus:border-blue-400"}`}
               style={{
