@@ -10,6 +10,7 @@ export function GalleryLightbox({
   onPrev,
   onNext,
   onToggleFavorite,
+  className,
 }: {
   open: boolean;
   onClose: () => void;
@@ -18,6 +19,7 @@ export function GalleryLightbox({
   onPrev: () => void;
   onNext: () => void;
   onToggleFavorite: (id: string) => void;
+  className?: string;
 }) {
   useEffect(() => {
     if (!open) return;
