@@ -218,7 +218,7 @@ export default function GallerySection() {
           </div>
         </Dropzone>
 
-        <div className="rounded-xl border p-3 space-y-2 bg-white/95 dark:bg-gradient-to-br dark:from-background dark:to-muted/40 shadow-sm ring-1 ring-black/5 dark:ring-sky-500/15">
+        <div className="rounded-xl border p-3 space-y-2 bg-white/95 dark:bg-zinc-900 shadow-sm ring-1 ring-black/5 dark:ring-sky-500/15">
           <div className="flex items-center justify-between">
             <div className="text-sm text-muted-foreground flex items-center gap-2">
               <span>Images in gallery</span>
@@ -401,7 +401,7 @@ export default function GallerySection() {
           {filtered.map((img) => (
             <div
               key={img.id}
-              className="mb-6 break-inside-avoid rounded-2xl overflow-hidden relative group shadow-lg ring-1 ring-black/5 bg-gradient-to-b from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 dark:ring-sky-500/25 dark:shadow-[0_0_30px_rgba(56,189,248,0.18)] transition-shadow hover:shadow-2xl hover:ring-2 hover:ring-sky-300/40 dark:hover:ring-sky-400/30"
+              className="mb-6 break-inside-avoid rounded-2xl overflow-hidden relative group shadow-lg ring-1 ring-black/5 bg-white dark:bg-slate-900 dark:ring-sky-500/25 dark:shadow-[0_0_30px_rgba(56,189,248,0.18)] transition-shadow hover:shadow-2xl hover:ring-2 hover:ring-sky-300/40 dark:hover:ring-sky-400/30"
               draggable
               onDragStart={() => onDragStart(img.id)}
               onDragOver={(e) => e.preventDefault()}
@@ -430,7 +430,7 @@ export default function GallerySection() {
                 className="block w-full"
               >
                 {img.unsupported ? (
-                  <div className="h-40 w-full bg-gradient-to-b from-muted to-muted/60 flex items-center justify-center text-xs text-muted-foreground">
+                  <div className="h-40 w-full bg-muted flex items-center justify-center text-xs text-muted-foreground">
                     Unsupported preview
                   </div>
                 ) : (
