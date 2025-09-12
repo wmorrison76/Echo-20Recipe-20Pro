@@ -880,6 +880,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
         // Heuristic: treat as appendix if we have many entries
         const bookTag = f.name.replace(/\.pdf$/i,'');
+        let importedFromIndex = 0;
         if (indexEntries.length >= 20) {
           // Optional selection filter from UI
           let allow: Set<string> | null = null;
@@ -951,9 +952,74 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
               extra: { page: start, endPage: end, ...meta, source: 'pdf-appendix' },
             });
             titles.push(cur.title);
+            importedFromIndex++;
           }
           try { localStorage.removeItem('pdf:index:allow'); } catch {}
-          continue;
+          if (importedFromIndex > 0) {
+            continue;
+          }
+        }
+
+        // Fallback: try marker-based multi-recipe detection across pages
+        const markerStarts: number[] = [];
+        for (let p=1; p<=doc.numPages; p++) {
+          const here = pageTexts[p-1] || '';
+          const next1 = pageTexts[p] || '';
+          const next2 = pageTexts[p+1] || '';
+          const hasIng = /\bingredients?\b/i.test(here);
+          const hasInstNearby = /\b(instructions|directions|method|steps)\b/i.test([here,next1,next2].join('\n'));
+          if (hasIng && hasInstNearby) {
+            if (markerStarts.length===0 || p - markerStarts[markerStarts.length-1] > 1) markerStarts.push(p);
+          }
+        }
+        if (markerStarts.length >= 1) {
+          for (let i=0;i<markerStarts.length;i++){
+            const start = markerStarts[i];
+            const end = (i+1<markerStarts.length? markerStarts[i+1]-1 : doc.numPages);
+            const textRaw = pageTexts.slice(start-1, end).join('\n');
+            const text = textRaw.split(/\n/).map(normLine).join('\n');
+            const lines = text.split(/\n/).map(normLine).filter(Boolean);
+            const lower = lines.map(l=>l.toLowerCase());
+            const find = (labels:string[])=> lower.findIndex(l=> labels.some(x=> l.startsWith(x)));
+            let ingIdx = find(['ingredients','ingredient']);
+            let instIdx = find(['instructions','directions','method','steps']);
+            if (ingIdx < 0) {
+              const qtyRe = /^(?:\d+\s+\d\/\d|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])\b/;
+              for (let j=0;j<Math.min(lines.length,80);j++){
+                if (qtyRe.test(lines[j])) { ingIdx = j-1; break; }
+              }
+            }
+            if (instIdx < 0 && ingIdx >= 0) {
+              for (let j=ingIdx+1;j<Math.min(lines.length,200);j++){
+                if (/^(instructions|directions|method|steps)\b/i.test(lines[j]) || /^\d+\.|^Step\s*\d+/i.test(lines[j])) { instIdx = j; break; }
+              }
+            }
+            const getRange=(s:number,e:number)=> lines.slice(s+1, e> s ? e : undefined).filter(Boolean);
+            const ingredients = ingIdx>=0 ? getRange(ingIdx, instIdx>=0?instIdx:lines.length): undefined;
+            const instructions = instIdx>=0 ? getRange(instIdx, lines.length): undefined;
+            const meta = parseMeta(text);
+            // Title: prefer heading near top or before ingredients
+            let title = '';
+            for (let k=Math.max(0, ingIdx-6); k<Math.min(lines.length, Math.max(ingIdx, 8)); k++){
+              const L = lines[k] || '';
+              if (/^[A-Z][A-Za-z0-9\-\'\s]{2,80}$/.test(L) || /^([A-Z]\s+){2,}[A-Z][\s:]*$/.test(L)) { title = L.replace(/\s+/g,' ').trim(); break; }
+            }
+            if (!title) title = lines[0] || `${bookTag} p.${start}`;
+            // Render preview image for first page of section
+            let imgData: string | undefined;
+            try {
+              const page = await doc.getPage(start);
+              const viewport = page.getViewport({ scale: 1.1 });
+              const canvas = document.createElement('canvas');
+              const ctx = canvas.getContext('2d');
+              if (ctx) { canvas.width = viewport.width; canvas.height = viewport.height; await page.render({ canvasContext: ctx, viewport }).promise; imgData = canvas.toDataURL('image/jpeg', 0.85); }
+            } catch {}
+            // Only keep if it still looks like a recipe
+            if ((ingredients && ingredients.length>=2) || (instructions && instructions.length>=3)){
+              collected.push({ id: uid(), createdAt: Date.now(), title, ingredients, instructions, tags: [bookTag], imageDataUrls: imgData ? [imgData] : undefined, sourceFile: f.name, extra: { page: start, endPage: end, ...meta, source: 'pdf-markers' } });
+              titles.push(title);
+            }
+          }
         }
 
         // Fallback: only import if the whole document clearly looks like a single recipe
