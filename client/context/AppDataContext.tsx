@@ -778,74 +778,115 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     const errors: { file: string; error: string }[] = [];
     const collected: Recipe[] = [];
     const titles: string[] = [];
+
+    const parseMeta = (text: string) => {
+      const meta: Record<string, string> = {};
+      const get = (re: RegExp) => (text.match(re)?.[1] || '').trim();
+      meta.prepTime = get(/(?:prep|preparation)\s*time\s*:?\s*([^\n]+)/i);
+      meta.cookTime = get(/cook\s*time\s*:?\s*([^\n]+)/i);
+      meta.totalTime = get(/total\s*time\s*:?\s*([^\n]+)/i);
+      meta.temperature = get(/(?:temp|temperature)\s*:?\s*([^\n]+)/i) || (text.match(/(\d{2,3})\s*°?\s*([FC])/i)?.[0] || '');
+      meta.yield = get(/(?:yield|makes|serves)\s*:?\s*([^\n]+)/i);
+      return meta;
+    };
+
     for (const f of files) {
-      if (!f.name.toLowerCase().endsWith(".pdf")) {
-        errors.push({ file: f.name, error: "Unsupported PDF type" });
-        continue;
-      }
+      if (!f.name.toLowerCase().endsWith('pdf')) { errors.push({ file: f.name, error: 'Unsupported PDF type' }); continue; }
       try {
         const ab = await f.arrayBuffer();
-        let text = "";
-        try {
-          const pdfjs: any = await import(
-            "https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs"
-          );
-          const workerSrc =
-            "https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs";
-          if (pdfjs.GlobalWorkerOptions)
-            pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
-          const doc = await pdfjs.getDocument({ data: ab }).promise;
-          for (let p = 1; p <= doc.numPages; p++) {
-            const page = await doc.getPage(p);
-            const tc = await page.getTextContent();
-            text += tc.items.map((i: any) => i.str).join("\n") + "\n";
-          }
-        } catch (e: any) {
-          try {
-            text = new TextDecoder().decode(ab);
-          } catch {}
+        const pdfjs: any = await import('https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs');
+        const workerSrc = 'https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs';
+        if (pdfjs.GlobalWorkerOptions) pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
+        const doc = await pdfjs.getDocument({ data: ab }).promise;
+        const pageTexts: string[] = [];
+        for (let p = 1; p <= doc.numPages; p++) {
+          const page = await doc.getPage(p);
+          const tc = await page.getTextContent();
+          const t = tc.items.map((i: any) => i.str).join('\n');
+          pageTexts.push(t);
         }
-        const rawLines = text.split(/\r?\n/).map((s) => s.replace(/\s+/g, " ").trim());
-        const lines = rawLines.filter(Boolean);
+        const allLines = pageTexts.join('\n').split(/\r?\n/).map(s=>s.replace(/\s+/g,' ').trim()).filter(Boolean);
+        // Parse appendix/TOC entries: "Title .... 123 (photo 124)"
+        let indexEntries = allLines.map(s=>{
+          const m = s.match(/^(.{3,120}?)(?:\.{2,}|\s{2,})(\d{1,4})(?:.*?\(\s*photo\s*(\d{1,4})\s*\))?$/i);
+          if(!m) return null; const title=m[1].trim(); const page=parseInt(m[2],10); const photo = m[3]?parseInt(m[3],10):undefined; const bad=/^(contents|index|appendix|recipes?|chapter|table of contents)$/i; if(!title||bad.test(title)) return null; return { title, page, photoPage: photo };
+        }).filter(Boolean) as {title:string; page:number; photoPage?:number}[];
 
-        // 1) Try Appendix / TOC style: "Title ........ 123"
-        const indexEntries = lines
-          .map((s) => {
-            const m = s.match(/^(.{3,100}?)(?:\.{2,}|\s{2,})(\d{1,4})$/);
-            if (!m) return null;
-            const title = m[1].trim();
-            const page = parseInt(m[2], 10);
-            const bad = /^(contents|index|appendix|recipes?|chapter|table of contents)$/i;
-            if (!title || bad.test(title)) return null;
-            return { title, page };
-          })
-          .filter(Boolean) as { title: string; page: number }[];
-
+        // Heuristic: treat as appendix if we have many entries
+        const bookTag = f.name.replace(/\.pdf$/i,'');
         if (indexEntries.length >= 20) {
-          const bookTag = f.name.replace(/\.pdf$/i, "");
-          for (const { title, page } of indexEntries) {
-            collected.push({ id: uid(), createdAt: Date.now(), title, tags: [bookTag], extra: { page, source: "pdf-index" } });
-            titles.push(title);
+          indexEntries = indexEntries.sort((a,b)=>a.page-b.page);
+          for (let i=0;i<indexEntries.length;i++){
+            const cur=indexEntries[i];
+            const next=indexEntries[i+1];
+            const start=Math.min(Math.max(cur.page,1), doc.numPages);
+            const end=Math.min((next? next.page-1 : doc.numPages), doc.numPages);
+            const text = pageTexts.slice(start-1,end).join('\n');
+            // Only import if it looks like a recipe
+            const hasRecipeMarkers = /\bingredients?\b/i.test(text) && /\b(instructions|directions|method|steps)\b/i.test(text);
+            if(!hasRecipeMarkers) continue;
+            const meta = parseMeta(text);
+            // Extract ingredients/instructions
+            const lines = text.split(/\n/).map(s=>s.trim()).filter(Boolean);
+            const lower = lines.map(l=>l.toLowerCase());
+            const find = (labels:string[])=> lower.findIndex(l=> labels.some(x=> l.startsWith(x)));
+            const ingIdx = find(['ingredients','ingredient']);
+            const instIdx = find(['instructions','directions','method','steps']);
+            const getRange = (s:number,e:number)=> lines.slice(s+1, e> s ? e : undefined).filter(Boolean);
+            const ingredients = ingIdx>=0 ? getRange(ingIdx, instIdx>=0?instIdx:lines.length): undefined;
+            const instructions = instIdx>=0 ? getRange(instIdx, lines.length): undefined;
+
+            // Try to capture photo page or first recipe page as image
+            let imgData: string | undefined;
+            const pageToRender = (cur.photoPage && cur.photoPage>=1 && cur.photoPage<=doc.numPages) ? cur.photoPage : start;
+            try {
+              const page = await doc.getPage(pageToRender);
+              const viewport = page.getViewport({ scale: 1.2 });
+              const canvas = document.createElement('canvas');
+              const ctx = canvas.getContext('2d');
+              if (ctx) {
+                canvas.width = viewport.width; canvas.height = viewport.height;
+                await page.render({ canvasContext: ctx, viewport }).promise;
+                imgData = canvas.toDataURL('image/jpeg', 0.85);
+              }
+            } catch {}
+
+            collected.push({
+              id: uid(),
+              createdAt: Date.now(),
+              title: cur.title,
+              ingredients,
+              instructions,
+              tags: [bookTag],
+              imageDataUrls: imgData ? [imgData] : undefined,
+              sourceFile: f.name,
+              extra: { page: start, endPage: end, ...meta, source: 'pdf-appendix' },
+            });
+            titles.push(cur.title);
           }
-          continue; // next file
+          continue;
         }
 
-        // 2) Fallback: single-recipe heuristic using Ingredients/Instructions markers
-        const lower = lines.map((l) => l.toLowerCase());
-        const find = (labels: string[]) => lower.findIndex((l) => labels.includes(l));
-        const ingIdx = find(["ingredients", "ingredient"]);
-        const instIdx = find(["instructions", "directions", "method", "steps"]);
-        const title = lines[0] || f.name.replace(/\.pdf$/i, "");
-        const getRange = (start: number, end: number) => lines.slice(start + 1, end > start ? end : undefined).filter(Boolean);
-        const ingredients = ingIdx >= 0 ? getRange(ingIdx, instIdx >= 0 ? instIdx : lines.length) : undefined;
-        const instructions = instIdx >= 0 ? getRange(instIdx, lines.length) : undefined;
-        collected.push({ id: uid(), createdAt: Date.now(), title, ingredients, instructions, sourceFile: f.name });
+        // Fallback: single recipe extraction from whole document
+        const text = pageTexts.join('\n');
+        const lines = text.split(/\n/).map(s=>s.trim()).filter(Boolean);
+        const lower = lines.map(l=>l.toLowerCase());
+        const find = (labels:string[])=> lower.findIndex(l=> labels.includes(l));
+        const ingIdx = find(['ingredients','ingredient']);
+        const instIdx = find(['instructions','directions','method','steps']);
+        const getRange=(s:number,e:number)=> lines.slice(s+1, e> s ? e : undefined).filter(Boolean);
+        const ingredients = ingIdx>=0 ? getRange(ingIdx, instIdx>=0?instIdx:lines.length): undefined;
+        const instructions = instIdx>=0 ? getRange(instIdx, lines.length): undefined;
+        const meta = parseMeta(text);
+        const title = lines[0] || f.name.replace(/\.pdf$/i,'');
+        collected.push({ id: uid(), createdAt: Date.now(), title, ingredients, instructions, sourceFile: f.name, extra: { ...meta, source: 'pdf-single' } });
         titles.push(title);
       } catch (e: any) {
-        errors.push({ file: f.name, error: e?.message ?? "Failed to read PDF" });
+        errors.push({ file: f.name, error: e?.message ?? 'Failed to read PDF' });
       }
     }
-    if (collected.length) setRecipes((prev) => [...collected, ...prev]);
+
+    if (collected.length) setRecipes(prev=>[...collected, ...prev]);
     return { added: collected.length, errors, titles };
   }, []);
 
