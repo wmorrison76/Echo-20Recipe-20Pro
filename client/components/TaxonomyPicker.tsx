@@ -31,7 +31,7 @@ export default function TaxonomyPicker({ value, onChange }: { value?: Partial<Ta
     <div className="space-y-4">
       <div>
         <div className="text-xs font-semibold mb-1">Course / Service</div>
-        <select multiple value={v.course} onChange={(e)=> set({ course: Array.from(e.target.selectedOptions).map(o=>o.value).slice(0,6) })} className="w-full border rounded p-2 text-sm min-h-[3rem]">
+        <select multiple value={v.course} onChange={(e)=> set({ course: Array.from(e.target.selectedOptions).map(o=>o.value).slice(0,6) })} className="w-full border rounded p-2 text-sm min-h-[3rem] max-h-40 overflow-auto">
           {Opts.course.map(o=> <option key={o.slug} value={o.slug}>{o.label}</option>)}
         </select>
         {v.course.length? <TagList items={v.course} />: null}
