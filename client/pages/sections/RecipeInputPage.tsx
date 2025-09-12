@@ -1123,6 +1123,7 @@ const RecipeInputPage = () => {
                   Modifiers
                 </div>
                 <div className={`${isDarkMode ? "bg-blue-900/10 border-blue-400/30" : "bg-blue-50/80 border-blue-200"} border rounded-lg p-2 text-xs`}>
+                  {(() => { const diet = new Set(taxonomy.diets); const txt=(ingredients.map(r=>`${r.qty} ${r.unit} ${r.item}`).join(' ').toLowerCase()); const meatRe=/(beef|pork|chicken|lamb|fish|shrimp|gelatin)/; if ((diet.has('vegetarian')||diet.has('vegan')) && meatRe.test(txt)) return (<div className="mb-2 text-red-600">Warning: selected diet conflicts with ingredients.</div>); return null; })()}
                   <div className="grid grid-cols-8 gap-1">
                     {taxonomy.cuisine && (
                       <div className="col-span-2">
