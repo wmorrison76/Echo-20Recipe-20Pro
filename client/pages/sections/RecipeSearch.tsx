@@ -274,6 +274,35 @@ export default function RecipeSearchSection() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Live scanning progress */}
+      <Dialog open={scanOpen} onOpenChange={setScanOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>Scanning book…</DialogTitle></DialogHeader>
+          <div className="text-xs text-muted-foreground">Page {Math.min(scanPageNo,scanTotal)} / {scanTotal}</div>
+          <div className="h-2 w-full rounded bg-muted"><div className="h-2 rounded bg-primary transition-all" style={{ width: `${Math.round((scanPageNo/Math.max(scanTotal,1))*100)}%` }} /></div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Detected recipes list */}
+      <Dialog open={detectedOpen} onOpenChange={setDetectedOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>Detected recipes</DialogTitle></DialogHeader>
+          <div className="max-h-[50vh] overflow-auto border rounded p-2 text-sm space-y-1">
+            {detected.length === 0 ? (
+              <div className="text-xs text-muted-foreground">Scanning…</div>
+            ) : (
+              detected.map(d=> (
+                <div key={`${d.page}-${d.title}`} className="flex items-center justify-between gap-2 text-xs">
+                  <span className="truncate" title={d.title}>{d.title || `Candidate p.${d.page}`}</span>
+                  <span className="text-muted-foreground">p.{d.page}</span>
+                </div>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {errors.length>0 && (
         <div className="rounded-md border p-3 text-sm"><div className="font-medium mb-2">Errors</div><ul className="space-y-1 list-disc pl-5">{errors.map((e,i)=>(<li key={i}><span className="font-mono">{e.file}</span>: {e.error}</li>))}</ul></div>
       )}
