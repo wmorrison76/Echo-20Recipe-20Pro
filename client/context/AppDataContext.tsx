@@ -1194,6 +1194,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
               sourceFile: f.name,
             });
             titles.push(title);
+            try { const chunk = [title, ...ing, ...ins].join('\n'); learnFromTextChunks(f.name.replace(/\.[^.]+$/,''), [chunk]); } catch {}
           }
         }
       } catch (e: any) {
