@@ -1449,6 +1449,20 @@ const RecipeInputPage = () => {
               </div>
             </div>
 
+            <Dialog open={yieldOpen} onOpenChange={setYieldOpen}>
+              <DialogContent className="max-w-xl">
+                <DialogHeader>
+                  <DialogTitle>Yield Lab</DialogTitle>
+                </DialogHeader>
+                <YieldLabForm
+                  defaultInputQty={yieldQty}
+                  defaultInputUnit={yieldUnit}
+                  recipeName={recipeName}
+                  onClose={() => setYieldOpen(false)}
+                />
+              </DialogContent>
+            </Dialog>
+
             <div className="w-1/3 flex justify-center" data-echo-key="section:add:photos">
               <div
                 className="flex-shrink-0"
