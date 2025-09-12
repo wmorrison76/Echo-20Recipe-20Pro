@@ -101,8 +101,21 @@ export default function RecipeTemplate() {
             </div>
             <div>
               <SectionTitle>DIRECTIONS</SectionTitle>
-              <ol className="mt-2 space-y-2 list-decimal pl-6 leading-7">
-                {instructions.map((x,i)=> (<li key={i}>{x}</li>))}
+              <ol className="mt-2 space-y-3 list-decimal pl-6 leading-7">
+                {instructions.map((x,i)=>{
+                  const md = x.match(/^!\[[^\]]*\]\((.*?)\)$/);
+                  const tag = x.startsWith('IMG:') ? x.slice(4) : '';
+                  const src = md? md[1] : (tag||'');
+                  return (
+                    <li key={i} className="space-y-2">
+                      {src ? (
+                        <img src={src} alt={`step ${i+1}`} className="max-w-full rounded-md border" style={{ maxWidth: 720 }} />
+                      ) : (
+                        <span>{x}</span>
+                      )}
+                    </li>
+                  );
+                })}
               </ol>
             </div>
           </div>
