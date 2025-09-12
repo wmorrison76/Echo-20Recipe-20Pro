@@ -1,10 +1,13 @@
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Scale,
   NotebookPen,
   ArrowLeftRight,
   CircleDollarSign,
+  HelpCircle,
 } from "lucide-react";
 
 function TabLink({ to, label }: { to: string; label: string }) {
@@ -25,6 +28,7 @@ function TabLink({ to, label }: { to: string; label: string }) {
 export default function TopTabs() {
   const isAdd =
     new URLSearchParams(useLocation().search).get("tab") === "add-recipe";
+  const [showHelp, setShowHelp] = React.useState(false);
   return (
     <header className="border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-14 items-center justify-between gap-4">
@@ -46,6 +50,9 @@ export default function TopTabs() {
           <TabLink to="/?tab=add-recipe" label="Add Recipe" />
         </nav>
         <div className="flex items-center gap-1">
+          <button title="Help" onClick={()=>setShowHelp(true)} className="p-1 rounded hover:bg-black/10">
+            <HelpCircle className="w-4 h-4" />
+          </button>
           {isAdd && (
             <div className="flex items-center gap-1 pr-1">
               <button
@@ -105,6 +112,18 @@ export default function TopTabs() {
           <ThemeToggle />
         </div>
       </div>
+      <Dialog open={showHelp} onOpenChange={setShowHelp}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Help & Shortcuts</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2 text-sm">
+            <p>Keyboard shortcuts (hold Control key): P=Pastry, T=Technique, C=Course, A=Allergens, D=Diets, M=Meal Period, U=Cuisine, S=Service Style, Y=Difficulty, E=Equipment.</p>
+            <p>Use the right sidebar to set Modifiers. The center “Modifiers” panel reflects your selections grouped by section.</p>
+            <p>Importing a Book PDF shows progress by page and step. Imported recipes are tagged with the book title and the cover is fetched when available.</p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </header>
   );
 }
