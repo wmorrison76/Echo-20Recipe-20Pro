@@ -1142,7 +1142,7 @@ const RecipeInputPage = () => {
               className={`border rounded-xl w-1/3 flex flex-col justify-end shadow-lg ${isDarkMode ? "bg-red-900/20 border-red-400/30 shadow-red-400/20" : "bg-red-50/80 border-red-200 shadow-gray-200/50"} backdrop-blur-sm`}
               style={{ minHeight: "3rem" }}
             >
-              <div className="p-3 flex flex-col">
+              <div className="p-3 flex flex-col" data-echo-key="section:add:allergens">
                 <div
                   className={`font-semibold text-xs mb-2 ${isDarkMode ? "text-red-400" : "text-red-700"}`}
                 >
