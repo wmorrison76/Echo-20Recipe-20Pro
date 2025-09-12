@@ -12,7 +12,7 @@ export default function Index() {
   const [params, setParams] = useSearchParams();
   const active = params.get("tab") || "search";
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen text-foreground">
       <TopTabs />
       <main className="w-full py-4">
         <Tabs
