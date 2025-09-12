@@ -379,6 +379,36 @@ const RecipeInputPage = () => {
     return () => window.removeEventListener("openImageEditor", handler as any);
   }, []);
   useEffect(() => {
+    const seeded = localStorage.getItem('kb:culinary:seeded:v1');
+    if (seeded) return;
+    (async () => {
+      try {
+        const res = await fetch('https://cdn.builder.io/o/assets%2Faccc7891edf04665961a321335d9540b%2F9770e28941e54ac1984842723ff5ddfa?alt=media&token=1331ec03-0eae-49a6-8e9d-5cfeff892419&apiKey=accc7891edf04665961a321335d9540b');
+        const data = await res.json();
+        const counts: Record<string, number> = {};
+        const add = (k: string, v: number = 1) => {
+          const key = String(k || '').toLowerCase().trim();
+          if (!key) return;
+          counts[key] = (counts[key] || 0) + v;
+        };
+        if (Array.isArray(data)) data.forEach((t: any) => add(String(t)));
+        if (data && typeof data === 'object') {
+          if (Array.isArray(data.terms)) data.terms.forEach((t: any) => add(String(t)));
+          if (data.terms && typeof data.terms === 'object' && !Array.isArray(data.terms)) {
+            for (const [k, v] of Object.entries(data.terms)) add(k, Number(v as any) || 1);
+          }
+          if (Array.isArray(data.aliases)) data.aliases.forEach((t: any) => add(String(t)));
+        }
+        const kbRaw = localStorage.getItem('kb:cook') || '{}';
+        const kb = JSON.parse(kbRaw||'{}');
+        kb.terms = { ...(kb.terms||{}) };
+        for (const [k,v] of Object.entries(counts)) kb.terms[k] = (kb.terms[k]||0) + (v as number);
+        localStorage.setItem('kb:cook', JSON.stringify(kb));
+        localStorage.setItem('kb:culinary:seeded:v1','1');
+      } catch {}
+    })();
+  }, []);
+  useEffect(() => {
     const onAction = (ev: any) => {
       const t = ev?.detail?.type;
       if (!t) return;
