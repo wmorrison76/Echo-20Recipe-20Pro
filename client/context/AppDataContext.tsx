@@ -901,6 +901,10 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         const seenPages: Record<number, boolean> = {};
         indexEntries = indexEntries.filter(e=> !seenPages[e.page] && (seenPages[e.page]=true));
 
+        // Honor 'import all' flag to skip TOC
+        let importAll = false; try { importAll = localStorage.getItem('pdf:index:autoAll') === '1'; } catch {}
+        if (importAll) { try { localStorage.removeItem('pdf:index:autoAll'); } catch {} indexEntries = []; }
+
         // Heuristic: treat as appendix if we have many entries
         const bookTag = f.name.replace(/\.pdf$/i,'');
         let importedFromIndex = 0;
