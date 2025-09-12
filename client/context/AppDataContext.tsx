@@ -805,38 +805,44 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             text = new TextDecoder().decode(ab);
           } catch {}
         }
-        const lines = text
-          .split(/\r?\n/)
-          .map((s) => s.trim())
-          .filter(Boolean);
+        const rawLines = text.split(/\r?\n/).map((s) => s.replace(/\s+/g, " ").trim());
+        const lines = rawLines.filter(Boolean);
+
+        // 1) Try Appendix / TOC style: "Title ........ 123"
+        const indexEntries = lines
+          .map((s) => {
+            const m = s.match(/^(.{3,100}?)(?:\.{2,}|\s{2,})(\d{1,4})$/);
+            if (!m) return null;
+            const title = m[1].trim();
+            const page = parseInt(m[2], 10);
+            const bad = /^(contents|index|appendix|recipes?|chapter|table of contents)$/i;
+            if (!title || bad.test(title)) return null;
+            return { title, page };
+          })
+          .filter(Boolean) as { title: string; page: number }[];
+
+        if (indexEntries.length >= 20) {
+          const bookTag = f.name.replace(/\.pdf$/i, "");
+          for (const { title, page } of indexEntries) {
+            collected.push({ id: uid(), createdAt: Date.now(), title, tags: [bookTag], extra: { page, source: "pdf-index" } });
+            titles.push(title);
+          }
+          continue; // next file
+        }
+
+        // 2) Fallback: single-recipe heuristic using Ingredients/Instructions markers
         const lower = lines.map((l) => l.toLowerCase());
-        const find = (labels: string[]) =>
-          lower.findIndex((l) => labels.includes(l));
+        const find = (labels: string[]) => lower.findIndex((l) => labels.includes(l));
         const ingIdx = find(["ingredients", "ingredient"]);
         const instIdx = find(["instructions", "directions", "method", "steps"]);
         const title = lines[0] || f.name.replace(/\.pdf$/i, "");
-        const getRange = (start: number, end: number) =>
-          lines.slice(start + 1, end > start ? end : undefined).filter(Boolean);
-        const ingredients =
-          ingIdx >= 0
-            ? getRange(ingIdx, instIdx >= 0 ? instIdx : lines.length)
-            : undefined;
-        const instructions =
-          instIdx >= 0 ? getRange(instIdx, lines.length) : undefined;
-        collected.push({
-          id: uid(),
-          createdAt: Date.now(),
-          title,
-          ingredients,
-          instructions,
-          sourceFile: f.name,
-        });
+        const getRange = (start: number, end: number) => lines.slice(start + 1, end > start ? end : undefined).filter(Boolean);
+        const ingredients = ingIdx >= 0 ? getRange(ingIdx, instIdx >= 0 ? instIdx : lines.length) : undefined;
+        const instructions = instIdx >= 0 ? getRange(instIdx, lines.length) : undefined;
+        collected.push({ id: uid(), createdAt: Date.now(), title, ingredients, instructions, sourceFile: f.name });
         titles.push(title);
       } catch (e: any) {
-        errors.push({
-          file: f.name,
-          error: e?.message ?? "Failed to read PDF",
-        });
+        errors.push({ file: f.name, error: e?.message ?? "Failed to read PDF" });
       }
     }
     if (collected.length) setRecipes((prev) => [...collected, ...prev]);
