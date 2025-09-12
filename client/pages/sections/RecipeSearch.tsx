@@ -33,7 +33,10 @@ export function RecipeCard({ r, onPreview, onFav, onRate, onTrash, inTrash, onDe
             <p className="m-0 text-xs text-muted-foreground">{r.tags.slice(0,5).join(' · ')}</p>
           ) : null}
           {r.ingredients?.length ? (
-            <p className="mt-2 mb-0 text-xs text-muted-foreground line-clamp-2">{r.ingredients.join(', ')}</p>
+            <ul className="mt-2 mb-0 text-xs text-muted-foreground max-h-10 overflow-hidden hide-scrollbar list-disc pl-4">
+              {r.ingredients.slice(0,5).map((x,i)=>(<li key={i} className="truncate" title={x}>{x}</li>))}
+              {r.ingredients.length>5 && (<li className="list-none">+{r.ingredients.length-5} more</li>)}
+            </ul>
           ) : null}
           <div className="mt-2 flex gap-2">
             <Button size="sm" variant="secondary" onClick={onPreview}>Preview</Button>
