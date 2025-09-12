@@ -703,7 +703,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     };
 
     const results: Recipe[] = [];
-    const qtyRe = /^(?:\d+\s+\d\/\d|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])\b/;
+    const qtyRe = /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
 
     for (const sec of sections) {
       const els = sec.elements;
