@@ -37,7 +37,8 @@ export default function GallerySection() {
   const [filter, setFilter] = useState("");
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  const [viewMode, setViewMode] = useState<"masonry" | "grid">("masonry");
+  const [viewMode, setViewMode] = useState<"masonry" | "grid">("grid");
+  const [thumbSize, setThumbSize] = useState<"s"|"m"|"l">("m");
   const [category, setCategory] = useState<string>("");
   const [newLookBookName, setNewLookBookName] = useState("");
   const [activeLookBookId, setActiveLookBookId] = useState<string | null>(null);
@@ -249,9 +250,20 @@ export default function GallerySection() {
               className="rounded-md border bg-background px-2 py-1 text-xs"
               value={viewMode}
               onChange={(e) => setViewMode(e.target.value as any)}
+              title="Layout"
             >
               <option value="masonry">Masonry</option>
               <option value="grid">Grid</option>
+            </select>
+            <select
+              className="rounded-md border bg-background px-2 py-1 text-xs"
+              value={thumbSize}
+              onChange={(e)=> setThumbSize(e.target.value as any)}
+              title="Thumbnail size"
+            >
+              <option value="s">Small</option>
+              <option value="m">Medium</option>
+              <option value="l">Large</option>
             </select>
             <select
               className="rounded-md border bg-background px-2 py-1 text-xs"
@@ -401,7 +413,7 @@ export default function GallerySection() {
           {filtered.map((img) => (
             <div
               key={img.id}
-              className="mb-6 break-inside-avoid rounded-2xl overflow-hidden relative group shadow-lg ring-1 ring-black/5 bg-white dark:bg-slate-900 dark:ring-sky-500/25 dark:shadow-[0_0_30px_rgba(56,189,248,0.18)] transition-shadow hover:shadow-2xl hover:ring-2 hover:ring-sky-300/40 dark:hover:ring-sky-400/30"
+              className="mb-6 break-inside-avoid rounded-2xl overflow-hidden relative group shadow-lg ring-1 ring-black/5 bg-white dark:bg-slate-900 dark:ring-sky-500/25 dark:shadow-[0_0_30px_rgba(56,189,248,0.18)] transition-all hover:shadow-[0_10px_40px_rgba(56,189,248,0.25)] hover:ring-2 hover:ring-sky-300/50 dark:hover:ring-sky-400/40"
               draggable
               onDragStart={() => onDragStart(img.id)}
               onDragOver={(e) => e.preventDefault()}
@@ -437,7 +449,7 @@ export default function GallerySection() {
                   <img
                     src={img.dataUrl || img.blobUrl}
                     alt={img.name}
-                    className="w-full h-auto object-cover transition-all duration-200 z-0"
+                    className={`w-full ${viewMode==='grid' ? (thumbSize==='s'?'h-32':thumbSize==='l'?'h-56':'h-44') : 'h-auto'} object-cover transition-all duration-200 z-0`}
                     onError={(e) => {
                       const el = e.currentTarget;
                       el.onerror = null;
