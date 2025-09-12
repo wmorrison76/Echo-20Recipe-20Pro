@@ -38,6 +38,7 @@ export default function GallerySection() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [viewMode, setViewMode] = useState<"masonry" | "grid">("masonry");
+  const [category, setCategory] = useState<string>("");
   const [newLookBookName, setNewLookBookName] = useState("");
   const [activeLookBookId, setActiveLookBookId] = useState<string | null>(null);
   const [openLookBook, setOpenLookBook] = useState(false);
@@ -48,15 +49,18 @@ export default function GallerySection() {
 
   const filtered = useMemo(() => {
     const q = filter.trim().toLowerCase();
-    if (!q) return images.slice().sort((a, b) => a.order - b.order);
-    return images
-      .filter(
-        (i) =>
-          (i.tags || []).some((t) => t.toLowerCase().includes(q)) ||
-          i.name.toLowerCase().includes(q),
-      )
-      .sort((a, b) => a.order - b.order);
-  }, [images, filter]);
+    const base = q
+      ? images.filter((i) => (i.tags || []).some((t) => t.toLowerCase().includes(q)) || i.name.toLowerCase().includes(q))
+      : images.slice();
+    const cat = category.trim().toLowerCase();
+    base.sort((a, b) => {
+      const aMatch = cat ? (a.tags || []).some((t) => t.toLowerCase().includes(cat)) : 0;
+      const bMatch = cat ? (b.tags || []).some((t) => t.toLowerCase().includes(cat)) : 0;
+      if (aMatch !== bMatch) return bMatch - aMatch; // matched first
+      return a.order - b.order;
+    });
+    return base;
+  }, [images, filter, category]);
 
   const onFiles = async (files: File[]) => {
     setImportTags("");
@@ -215,8 +219,7 @@ export default function GallerySection() {
         </Dropzone>
 
         <div className="rounded-xl border p-3 space-y-2 bg-gradient-to-br from-background to-muted/40 shadow-sm dark:shadow-[0_0_18px_rgba(56,189,248,0.12)] dark:ring-1 dark:ring-sky-500/15">
-          <div className="text-sm text-muted-foreground">Images in gallery</div>
-          <div className="mt-0.5 text-lg font-semibold">{images.length}</div>
+          <div className="text-sm text-muted-foreground flex items-center justify-between"><span>Images in gallery</span><span className="text-base font-semibold">{images.length}</span></div>
           <div className="flex flex-wrap gap-1.5 items-center">
             <div className="relative flex-1 min-w-[220px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -241,76 +244,25 @@ export default function GallerySection() {
               <option value="masonry">Masonry</option>
               <option value="grid">Grid</option>
             </select>
-            <Button
-              variant="outline"
-              onClick={async () => {
-                try {
-                  const urls = [
-                    "https://images.unsplash.com/photo-1541976076758-347942db1970?auto=format&fit=crop&w=1400&q=80",
-                    "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=1400&q=80",
-                    "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1400&q=80",
-                    "https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?auto=format&fit=crop&w=1400&q=80",
-                    "https://images.unsplash.com/photo-1546549039-3746f9b9ca2a?auto=format&fit=crop&w=1400&q=80",
-                    "https://images.unsplash.com/photo-1543353071-873f17a7a088?auto=format&fit=crop&w=1400&q=80",
-                    "https://images.unsplash.com/photo-1541773838162-287d1b72a8f9?auto=format&fit=crop&w=1400&q=80",
-                    "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=1400&q=80",
-                    "https://images.unsplash.com/photo-1542826438-2e552220a788?auto=format&fit=crop&w=1400&q=80",
-                    "https://images.unsplash.com/photo-1519626176961-1dc0d4b2a556?auto=format&fit=crop&w=1400&q=80",
-                    "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=1400&q=80",
-                    "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=1400&q=80",
-                  ];
-                  const files: File[] = [];
-                  for (const [i, u] of urls.entries()) {
-                    const res = await fetch(u);
-                    const b = await res.blob();
-                    files.push(
-                      new File([b], `demo-${i}.jpg`, {
-                        type: b.type || "image/jpeg",
-                      }),
-                    );
-                  }
-                  await doImport(files, ["demo", "food"]);
-                } catch {}
-              }}
+            <select
+              className="rounded-md border bg-background px-2 py-1 text-xs"
+              value={category}
+              onChange={(e)=> setCategory(e.target.value)}
             >
-              Load sample images
-            </Button>
-            <Button
-              variant="outline"
-              onClick={async () => {
-                try {
-                  const cakeUrls = [
-                    "https://images.unsplash.com/photo-1532634896-26909d0d4b6a?auto=format&fit=crop&w=1400&q=80",
-                    "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=1400&q=80",
-                    "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1400&q=80",
-                    "https://images.unsplash.com/photo-1488477304112-4944851de03b?auto=format&fit=crop&w=1400&q=80",
-                    "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=1400&q=80",
-                  ];
-                  const files: File[] = [];
-                  for (const [i, u] of cakeUrls.entries()) {
-                    const res = await fetch(u);
-                    const b = await res.blob();
-                    files.push(
-                      new File([b], `cake-${i}.jpg`, {
-                        type: b.type || "image/jpeg",
-                      }),
-                    );
-                  }
-                  await doImport(files, ["cake", "dessert"]);
-                } catch {}
-              }}
-            >
-              Load cake images
-            </Button>
-            <Button variant="outline" size="sm" onClick={exportAllZip}>
+              <option value="">Category: All</option>
+              <option value="pastry">Pastry</option>
+              <option value="cake">Cakes</option>
+              <option value="bread">Breads</option>
+              <option value="dessert">Desserts</option>
+              <option value="savory">Savory</option>
+              <option value="drink">Drinks</option>
+              <option value="plating">Plating</option>
+            </select>
+            <Button variant="outline" size="sm" className="ml-auto" onClick={exportAllZip}>
               <Download className="w-4 h-4 mr-1" />
               Export all (ZIP)
             </Button>
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => clearImages()}
-            >
+            <Button variant="destructive" size="sm" onClick={() => clearImages()}>
               Clear
             </Button>
           </div>
