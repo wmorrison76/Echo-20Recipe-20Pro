@@ -26,6 +26,7 @@ import {
   FileDown,
   Printer,
 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const RecipeInputPage = () => {
   const [recipeName, setRecipeName] = useState("");
