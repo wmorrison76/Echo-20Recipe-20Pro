@@ -45,6 +45,8 @@ export default function RightSidebar(props: RightSidebarProps) {
     onRecipeImport,
     taxonomy,
     onTaxonomyChange,
+    selectedRecipeType,
+    onRecipeTypeChange,
   } = props;
 
   const [status, setStatus] = useState("active");
@@ -52,6 +54,7 @@ export default function RightSidebar(props: RightSidebarProps) {
   const [notes, setNotes] = useState("");
   const [clipboardUrl, setClipboardUrl] = useState("");
   const [isImporting, setIsImporting] = useState(false);
+  const [open, setOpen] = useState<string[]>([]);
 
   const toggle = (arr: string[], set: (v: string[]) => void, item: string) =>
     set(arr.includes(item) ? arr.filter((x) => x !== item) : [...arr, item]);
@@ -70,6 +73,18 @@ export default function RightSidebar(props: RightSidebarProps) {
     };
     if (!isCollapsed) checkClipboard();
   }, [isCollapsed]);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (!e.ctrlKey) return;
+      const map: Record<string, string> = { p: 'pastry', t: 'technique', c: 'course', a: 'allergens', d: 'diets', m: 'meal', u: 'cuisine', s: 'service', y: 'difficulty', e: 'equipment' };
+      const k = e.key.toLowerCase();
+      const v = map[k];
+      if (v) { e.preventDefault(); setOpen((prev)=> prev.includes(v)? prev : [...prev, v]); setTimeout(()=> document.querySelector(`[data-accordion-section='${v}']`)?.scrollIntoView({ behavior:'smooth', block:'nearest' }), 0); }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   const handleUrlSubmit = async () => {
     if (!recipeUrl || isImporting) return;
@@ -166,8 +181,8 @@ export default function RightSidebar(props: RightSidebarProps) {
                 )}
               </div>
 
-              <Accordion type="multiple" defaultValue={[]}>
-                <AccordionItem value="status">
+              <Accordion type="multiple" value={open} onValueChange={(v)=> setOpen(Array.isArray(v)? v : [v])}>
+                <AccordionItem value="status" data-accordion-section="status">
                   <AccordionTrigger>Status</AccordionTrigger>
                   <AccordionContent>
                     <select
@@ -182,7 +197,7 @@ export default function RightSidebar(props: RightSidebarProps) {
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="access">
+                <AccordionItem value="access" data-accordion-section="access">
                   <AccordionTrigger>Recipe Access</AccordionTrigger>
                   <AccordionContent>
                     <div className="grid grid-cols-2 gap-2">
@@ -198,10 +213,15 @@ export default function RightSidebar(props: RightSidebarProps) {
                         </label>
                       ))}
                     </div>
+                    <div className="mt-2 border-t pt-2 text-xs">
+                      <div className="font-semibold mb-1">Recipe</div>
+                      <label className="flex items-center gap-2"><input type="checkbox" className="scale-75" checked={selectedRecipeType.includes('Full Recipe')} onChange={()=> toggle(selectedRecipeType, onRecipeTypeChange, 'Full Recipe')} /> Full Recipe</label>
+                      <label className="flex items-center gap-2"><input type="checkbox" className="scale-75" checked={selectedRecipeType.includes('Sub Recipe')} onChange={()=> toggle(selectedRecipeType, onRecipeTypeChange, 'Sub Recipe')} /> RECIPE: Sub Recipe</label>
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="allergens">
+                <AccordionItem value="allergens" data-accordion-section="allergens">
                   <AccordionTrigger>Allergens</AccordionTrigger>
                   <AccordionContent>
                     <div className="grid grid-cols-2 gap-2">
@@ -226,7 +246,7 @@ export default function RightSidebar(props: RightSidebarProps) {
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="diets">
+                <AccordionItem value="diets" data-accordion-section="diets">
                   <AccordionTrigger>Diets</AccordionTrigger>
                   <AccordionContent>
                     <div className="grid grid-cols-2 gap-2">
@@ -250,7 +270,7 @@ export default function RightSidebar(props: RightSidebarProps) {
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="meal">
+                <AccordionItem value="meal" data-accordion-section="meal">
                   <AccordionTrigger>Meal Period</AccordionTrigger>
                   <AccordionContent>
                     <select
@@ -266,7 +286,7 @@ export default function RightSidebar(props: RightSidebarProps) {
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="cuisine">
+                <AccordionItem value="cuisine" data-accordion-section="cuisine">
                   <AccordionTrigger>Cuisine</AccordionTrigger>
                   <AccordionContent>
                     <select
@@ -282,7 +302,7 @@ export default function RightSidebar(props: RightSidebarProps) {
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="service">
+                <AccordionItem value="service" data-accordion-section="service">
                   <AccordionTrigger>Service Style</AccordionTrigger>
                   <AccordionContent>
                     <select
@@ -298,7 +318,7 @@ export default function RightSidebar(props: RightSidebarProps) {
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="difficulty">
+                <AccordionItem value="difficulty" data-accordion-section="difficulty">
                   <AccordionTrigger>Difficulty</AccordionTrigger>
                   <AccordionContent>
                     <select
@@ -314,7 +334,7 @@ export default function RightSidebar(props: RightSidebarProps) {
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="course">
+                <AccordionItem value="course" data-accordion-section="course">
                   <AccordionTrigger>Course / Service</AccordionTrigger>
                   <AccordionContent>
                     <div className="grid grid-cols-1 gap-1 max-h-40 overflow-auto">
@@ -338,7 +358,7 @@ export default function RightSidebar(props: RightSidebarProps) {
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="technique">
+                <AccordionItem value="technique" data-accordion-section="technique">
                   <AccordionTrigger>Technique (up to 3)</AccordionTrigger>
                   <AccordionContent>
                     <div className="grid grid-cols-1 gap-1 max-h-40 overflow-auto">
@@ -363,7 +383,7 @@ export default function RightSidebar(props: RightSidebarProps) {
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="pastry">
+                <AccordionItem value="pastry" data-accordion-section="pastry">
                   <AccordionTrigger>Pastry</AccordionTrigger>
                   <AccordionContent>
                     <div className="grid grid-cols-1 gap-1 max-h-40 overflow-auto">
@@ -387,7 +407,7 @@ export default function RightSidebar(props: RightSidebarProps) {
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="components">
+                <AccordionItem value="components" data-accordion-section="components">
                   <AccordionTrigger>Components</AccordionTrigger>
                   <AccordionContent>
                     <div className="grid grid-cols-1 gap-1 max-h-40 overflow-auto">
@@ -411,7 +431,7 @@ export default function RightSidebar(props: RightSidebarProps) {
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="equipment">
+                <AccordionItem value="equipment" data-accordion-section="equipment">
                   <AccordionTrigger>Equipment</AccordionTrigger>
                   <AccordionContent>
                     <div className="grid grid-cols-1 gap-1 max-h-40 overflow-auto">
@@ -440,7 +460,7 @@ export default function RightSidebar(props: RightSidebarProps) {
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="notes">
+                <AccordionItem value="notes" data-accordion-section="notes">
                   <AccordionTrigger>Internal Notes</AccordionTrigger>
                   <AccordionContent>
                     <textarea
