@@ -815,6 +815,10 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         // Heuristic: treat as appendix if we have many entries
         const bookTag = f.name.replace(/\.pdf$/i,'');
         if (indexEntries.length >= 20) {
+          // Optional selection filter from UI
+          let allow: Set<string> | null = null;
+          try { const raw = localStorage.getItem('pdf:index:allow'); if (raw) allow = new Set(JSON.parse(raw)); } catch {}
+          if (allow) indexEntries = indexEntries.filter(e=> allow!.has(e.title));
           indexEntries = indexEntries.sort((a,b)=>a.page-b.page);
           for (let i=0;i<indexEntries.length;i++){
             const cur=indexEntries[i];
@@ -864,6 +868,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             });
             titles.push(cur.title);
           }
+          try { localStorage.removeItem('pdf:index:allow'); } catch {}
           continue;
         }
 
