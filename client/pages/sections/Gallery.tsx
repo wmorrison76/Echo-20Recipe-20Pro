@@ -306,6 +306,48 @@ export default function GallerySection() {
         </div>
       </div>
 
+      <div className="rounded-xl border p-3 space-y-2 bg-white/95 dark:bg-zinc-900 shadow-sm ring-1 ring-black/5 dark:ring-sky-500/15">
+        <div className="text-sm font-medium">Add from URL(s)</div>
+        <div className="flex flex-col md:flex-row gap-2 items-stretch md:items-center">
+          <textarea
+            value={urlText}
+            onChange={(e)=>setUrlText(e.target.value)}
+            placeholder="Paste one or more direct image URLs (one per line)"
+            className="flex-1 min-h-[60px] rounded-md border bg-background px-3 py-2 text-sm font-mono"
+          />
+          <Button
+            disabled={urlLoading || !urlText.trim()}
+            onClick={async()=>{
+              try{
+                setUrlLoading(true);
+                const urls = urlText.split(/\r?\n|,|\s+/).map(s=>s.trim()).filter(u=>/^https?:\/\//i.test(u));
+                if(!urls.length){ setStatus('Enter valid http(s) image URLs'); return; }
+                const files: File[] = [];
+                for(const u of urls){
+                  try{
+                    const res = await fetch(u);
+                    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+                    const blob = await res.blob();
+                    const name = (u.split('?')[0].split('#')[0].split('/').pop() || `image-${Date.now()}.jpg`).replace(/[^A-Za-z0-9_.-]/g,'_');
+                    files.push(new File([blob], name, { type: blob.type || 'image/jpeg' }));
+                  } catch(e:any){
+                    setStatus(`Failed to fetch ${u}: ${e?.message||'error'}`);
+                  }
+                }
+                if(files.length){
+                  const added = await addImages(files, { tags: [] });
+                  setStatus(`Added ${added} image(s) from URL.`);
+                  linkImagesToRecipesByFilename();
+                  setUrlText('');
+                }
+              } finally {
+                setUrlLoading(false);
+              }
+            }}
+          >{urlLoading? 'Adding...' : 'Add'}</Button>
+        </div>
+      </div>
+
       {status && <div className="rounded-md border p-3 text-sm">{status}</div>}
 
       <div className="rounded-2xl border p-4">
