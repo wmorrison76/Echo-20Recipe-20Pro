@@ -1719,6 +1719,7 @@ const RecipeInputPage = () => {
               suppressContentEditableWarning
               ref={dirRef}
               spellCheck
+              data-echo-key="field:add:steps"
               className={`prose prose-sm max-w-none w-full border p-3 rounded-xl shadow-sm transition-all focus:shadow-md focus:ring-2 resize-none min-h-[160px] overflow-y-auto ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30" : "bg-white border-gray-200 text-gray-900 focus:ring-blue-400/30 focus:border-blue-400"}`}
               style={{
                 lineHeight: "1.7",
