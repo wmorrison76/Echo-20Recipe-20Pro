@@ -870,7 +870,7 @@ const RecipeInputPage = () => {
     let changed = false;
     const next = ingredients.map((r) => {
       if ((r.qty && r.unit) || !r.item) return r;
-      if (!/^(\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|.*,)\b/i.test(String(r.item))) return r;
+      if (!/^(\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|\s*\/\d+|.*,)\b/i.test(String(r.item))) return r;
       const p = parseIngredientInline(String(r.item));
       if (!p) return r;
       const updated = {
@@ -1516,7 +1516,7 @@ const RecipeInputPage = () => {
                         const text = e.target.value;
                         const v = [...ingredients];
                         v[index].item = text;
-                        const hasCues = /(cups?|tsp|tbsp|oz|ounces?|lb|lbs|g|kg|ml|l|quarts?|qt|qts|pints?|pt|gal|gallons?|teaspoons?|tablespoons?|^\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|,)/i.test(text);
+                        const hasCues = /(cups?|tsp|tbsp|oz|ounces?|lb|lbs|g|kg|ml|l|quarts?|qt|qts|pints?|pt|gal|gallons?|teaspoons?|tablespoons?|^\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|^\s*\/\d+|,)/i.test(text);
                         if (hasCues) {
                           const p = parseIngredientInline(text);
                           if (p) {
@@ -1534,7 +1534,7 @@ const RecipeInputPage = () => {
                       }}
                       onBlur={(e) => {
                         const text = e.target.value.trim();
-                        const parsed = parseIngredientInline(text);
+                        const parsed = parseIngredientInline(text.replace(/^\s*\/(\d+)/, '1/$1'));
                         if (parsed) {
                           const v = [...ingredients];
                           v[index] = updateAndNormalize({
