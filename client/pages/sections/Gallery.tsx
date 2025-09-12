@@ -510,6 +510,14 @@ export default function GallerySection() {
                   />
                 )}
               </button>
+              <button
+                className="absolute bottom-2 right-2 z-10 rounded-full bg-black/40 p-1.5 text-white opacity-0 group-hover:opacity-100"
+                onClick={() => { if (confirm('Delete this image?')) deleteImage(img.id); }}
+                aria-label="Delete image"
+                title="Delete image"
+              >
+                <Trash />
+              </button>
               <div className="p-3 flex flex-col gap-2 text-[11px] relative z-10">
                 {editingId === img.id ? (
                   <div className="flex flex-col gap-2">
