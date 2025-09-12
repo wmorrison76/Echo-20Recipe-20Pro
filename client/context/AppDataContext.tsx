@@ -630,6 +630,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (collected.length) setRecipes((prev) => [...collected, ...prev]);
+      try { const chunks = collected.map(r=> [r.title, ...(r.ingredients||[]), ...(r.instructions||[])].join('\n')); if(chunks.length) learnFromTextChunks('json-import', chunks); } catch {}
       // try auto-link after import
       setTimeout(linkImagesToRecipesByFilename, 0);
 
