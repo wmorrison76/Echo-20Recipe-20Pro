@@ -1,4 +1,3 @@
-import React, { useEffect, useMemo, useState } from "react";
 import React, { useMemo, useRef, useState } from "react";
 import { useAppData } from "@/context/AppDataContext";
 import { Dropzone } from "@/components/Dropzone";
