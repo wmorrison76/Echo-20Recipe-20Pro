@@ -867,7 +867,7 @@ const RecipeInputPage = () => {
 
   return (
     <div
-      className={`relative w-full h-screen transition-all duration-300 ${isDarkMode ? "bg-black text-cyan-400" : "bg-gray-50 text-gray-900"}`}
+      className={`relative w-full h-screen transition-all duration-300 ${isDarkMode ? "bg-black text-cyan-400" : "bg-white text-gray-900"}`}
     >
       <div
         className={`hidden ${isDarkMode ? "bg-gradient-to-br from-gray-900 via-black to-blue-900" : "bg-gradient-to-br from-gray-50 to-white"}`}
