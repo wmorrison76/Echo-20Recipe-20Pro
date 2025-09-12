@@ -612,9 +612,13 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           const text = await f.text();
           const json = JSON.parse(text);
           const arr: any[] = Array.isArray(json) ? json : [json];
+          const existingKeys = new Set(recipes.map((r)=> (`${(r.title||'').toLowerCase()}|${String((r.extra as any)?.book||'')}|${String((r.extra as any)?.page||'')}`)));
           for (const item of arr) {
             const norm = normalizeRecipe(item);
             if (norm) {
+              const key = `${(norm.title||'').toLowerCase()}|${String((norm.extra as any)?.book||'')}|${String((norm.extra as any)?.page||'')}`;
+              if (existingKeys.has(key)) continue;
+              existingKeys.add(key);
               collected.push({
                 id: uid(),
                 createdAt: Date.now(),
