@@ -795,6 +795,7 @@ const RecipeInputPage = () => {
     let t = s.trim().replace(/[¼½¾⅓⅔⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
     t = t.replace(/(\d)(\s*)(\d\/\d)/, "$1 $3");
     const m = t.match(/^\s*([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?|[0-9]+\/[0-9]+)\s*([a-zA-Z\.]+)?\s*(.*)$/);
+    const knownUnits = new Set(["LBS","LB","OZ","TSP","TBSP","FL OZ","FLOZ","CUP","CUPS","PINT","PT","QTS","QT","QUART","QUARTS","GAL","GALLON","GALLONS","ML","L","G","KG","GRAM","GRAMS","LITER","LITERS","LITRES","EACH","EA"]);
     const normalizeUnit = (u: string) => {
       const k = (u || "").replace(/\./g, "").toUpperCase();
       if (!k) return "EACH";
@@ -825,7 +826,7 @@ const RecipeInputPage = () => {
     if (m) {
       const rawQty = m[1];
       const rawUnit = m[2] || "";
-      const rest = m[3] || "";
+      let rest = m[3] || "";
       let qty = rawQty;
       const parts = rawQty.split(" ");
       if (parts.length === 2 && /\d+\/\d+/.test(parts[1])) {
@@ -835,7 +836,11 @@ const RecipeInputPage = () => {
         const [n, d] = rawQty.split("/").map(Number);
         qty = String(d ? n / d : Number(rawQty));
       }
-      const unit = normalizeUnit(rawUnit);
+      let unit = normalizeUnit(rawUnit);
+      if (!knownUnits.has(unit)) {
+        rest = `${rawUnit} ${rest}`.trim();
+        unit = "EACH";
+      }
       const { item, prep } = finalize(rest);
       return { qty, unit: unit || "EACH", item, prep };
     }
