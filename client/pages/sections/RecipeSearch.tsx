@@ -156,23 +156,21 @@ export default function RecipeSearchSection() {
           </div>
         </Dropzone>
         <div className="rounded-lg border p-2 self-start">
-          <div className="flex items-center justify-between mb-1"><div className="text-xs font-medium">Library (Book PDF) Import</div><div className="text-xs text-muted-foreground">Imported: {recipes.length}</div></div>
-          <input type="file" accept="application/pdf" onChange={async(e)=>{ const f=e.target.files?.[0]; if(!f) return; if(!confirm('Confirm you own/purchased this cookbook PDF for personal import?')){ (e.target as HTMLInputElement).value=''; return;} try{ setStatus('Reading book PDF...'); const ab = await f.arrayBuffer(); const pdfjs: any = await import('https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs'); const workerSrc='https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs'; if(pdfjs.GlobalWorkerOptions) pdfjs.GlobalWorkerOptions.workerSrc=workerSrc; const doc = await pdfjs.getDocument({ data: ab }).promise; let lines:string[]=[]; for(let p=1;p<=doc.numPages;p++){ const page=await doc.getPage(p); const tc=await page.getTextContent(); lines.push(...tc.items.map((i:any)=> String(i.str)).filter(Boolean)); lines.push(''); }
+          <div className="flex items-center justify-between mb-1"><div className="text-xs font-medium">Library (Book PDF) Import</div><div className="text-xs text-muted-foreground">{bookPhase ? (<div className="flex items-center gap-2"><span>{bookPhase === 'reading' ? 'Reading file' : bookPhase === 'selecting' ? 'Selecting recipes' : bookPhase === 'categorizing' ? 'Categorizing recipes' : bookPhase === 'importing' ? 'Importing' : 'Done'}</span>{bookPhase==='reading' && (<span>{bookPage}/{bookTotal}</span>)}</div>) : (<>Imported: {recipes.length}</>)}</div></div>
+          <input type="file" accept="application/pdf" onChange={async(e)=>{ const f=e.target.files?.[0]; if(!f) return; if(!confirm('Confirm you own/purchased this cookbook PDF for personal import?')){ (e.target as HTMLInputElement).value=''; return;} try{ setBookFile(f.name); setBookPhase('reading'); setStatus('Reading book PDF...'); const ab = await f.arrayBuffer(); const pdfjs: any = await import('https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs'); const workerSrc='https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs'; if(pdfjs.GlobalWorkerOptions) pdfjs.GlobalWorkerOptions.workerSrc=workerSrc; const doc = await pdfjs.getDocument({ data: ab }).promise; setBookTotal(doc.numPages); let lines:string[]=[]; for(let p=1;p<=doc.numPages;p++){ const page=await doc.getPage(p); const tc=await page.getTextContent(); lines.push(...tc.items.map((i:any)=> String(i.str)).filter(Boolean)); lines.push(''); setBookPage(p); }
+            setBookPhase('selecting');
             const norm = lines.map(s=> s.replace(/\s+/g,' ').trim());
             const items:any[]=[]; let i=0; const book=f.name.replace(/\.[^.]+$/,'');
             const isTitle=(s:string)=> s && s.length<70 && /[A-Za-z]/.test(s) && (s===s.toUpperCase() || /^[A-Z][^.!?]{2,}$/.test(s));
             while(i<norm.length){
               while(i<norm.length && !/ingredients?/i.test(norm[i])) i++;
-              if(i>=norm.length) break; // ingredients line
-              // find title above within previous 5 lines
+              if(i>=norm.length) break;
               let tIdx=Math.max(0,i-5); let title=''; for(let k=i-1;k>=tIdx;k--){ if(isTitle(norm[k])){ title=norm[k]; break; } }
-              // collect instructions after ingredients until next ingredients or blank title
               const ings:string[]=[]; i++; while(i<norm.length && !/ingredients?/i.test(norm[i])){ const s=norm[i]; if(/^(instructions|directions|method)/i.test(s)) break; if(s) ings.push(s); i++; }
-              // instructions
               let ins:string[]=[]; while(i<norm.length && !/ingredients?/i.test(norm[i])){ const s=norm[i]; if(s) ins.push(s); i++; }
               if(title && (ings.length||ins.length)) items.push({ title, ingredients: ings, instructions: ins, tags:[book] });
             }
-            // Try to detect ISBN in the whole text
+            setBookPhase('categorizing');
             const joined = norm.join(' ');
             const m = joined.match(/(?:ISBN(?:-1[03])?:?\s*)?((?:97[89][- ]?)?\d{1,5}[- ]?\d{1,7}[- ]?\d{1,7}[- ]?[\dX])/i);
             if (m) {
@@ -190,12 +188,25 @@ export default function RecipeSearchSection() {
                 } catch {}
               }
             }
-            if(items.length){ const blob=new Blob([JSON.stringify(items)],{type:'application/json'}); const file=new File([blob], `${book}.json`, { type:'application/json' }); const { added } = await addRecipesFromJsonFiles([file]); setStatus(`Imported ${added} recipes from book.`); } else { setStatus('Could not detect recipes in PDF'); }
-          } catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`);} finally { (e.target as HTMLInputElement).value=''; } }} />
-          {total>0 && (
+            setBookPhase('importing');
+            if(items.length){ const blob=new Blob([JSON.stringify(items)],{type:'application/json'}); const file=new File([blob], `${book}.json`, { type:'application/json' }); const { added } = await addRecipesFromJsonFiles([file]); setBookImported(added); setStatus(`Imported ${added} recipes from book.`); setBookPhase('done'); } else { setStatus('Could not detect recipes in PDF'); setBookPhase(null); }
+          } catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`); setBookPhase(null);} finally { (e.target as HTMLInputElement).value=''; } }} />
+          {(bookPhase || total>0) && (
             <div className="mt-2 space-y-1">
-              <div className="text-xs text-muted-foreground">{processed} / {total} files processed</div>
-              <div className="h-2 w-full rounded bg-muted"><div className="h-2 rounded bg-primary transition-all" style={{ width: `${Math.round((processed / Math.max(total,1)) * 100)}%` }} /></div>
+              {bookPhase && (
+                <>
+                  <div className="text-xs text-muted-foreground">{bookFile || ''}</div>
+                  {bookPhase === 'reading' && (
+                    <div className="h-2 w-full rounded bg-muted"><div className="h-2 rounded bg-primary transition-all" style={{ width: `${Math.round((bookPage / Math.max(bookTotal,1)) * 100)}%` }} /></div>
+                  )}
+                </>
+              )}
+              {total>0 && (
+                <>
+                  <div className="text-xs text-muted-foreground">{processed} / {total} files processed</div>
+                  <div className="h-2 w-full rounded bg-muted"><div className="h-2 rounded bg-primary transition-all" style={{ width: `${Math.round((processed / Math.max(total,1)) * 100)}%` }} /></div>
+                </>
+              )}
               {importedTitles.length>0 && (
                 <div className="max-h-32 overflow-auto rounded border p-2 text-xs"><div className="font-medium mb-1">Imported:</div><ul className="space-y-1 list-disc pl-4">{importedTitles.map((t,i)=>(<li key={i} className="truncate" title={t}>{t}</li>))}</ul></div>
               )}
