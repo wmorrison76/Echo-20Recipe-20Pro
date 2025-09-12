@@ -1115,9 +1115,72 @@ const RecipeInputPage = () => {
                 className={`border rounded-xl p-4 h-full shadow-lg ${isDarkMode ? "bg-blue-900/20 border-blue-400/30 shadow-blue-400/20" : "bg-blue-50/80 border-blue-200 shadow-gray-200/50"} backdrop-blur-sm`}
               >
                 <div className={`font-semibold text-sm mb-3 ${isDarkMode ? "text-blue-400" : "text-blue-700"}`}>
-                Categorization (LUCCCA)
-              </div>
-              <div className="text-xs text-muted-foreground">Open the right sidebar to set taxonomy.</div>
+                  Modifiers
+                </div>
+                <div className={`${isDarkMode ? "bg-blue-900/10 border-blue-400/30" : "bg-blue-50/80 border-blue-200"} border rounded-lg p-2 text-xs`}>
+                  <div className="grid grid-cols-8 gap-1">
+                    {taxonomy.cuisine && (
+                      <div className="col-span-2">
+                        <div className="font-semibold">Cuisine</div>
+                        <div>{taxonomy.cuisine}</div>
+                      </div>
+                    )}
+                    {taxonomy.difficulty && (
+                      <div className="col-span-2">
+                        <div className="font-semibold">Difficulty</div>
+                        <div>{taxonomy.difficulty}</div>
+                      </div>
+                    )}
+                    {taxonomy.mealPeriod && (
+                      <div className="col-span-2">
+                        <div className="font-semibold">Meal</div>
+                        <div>{taxonomy.mealPeriod}</div>
+                      </div>
+                    )}
+                    {taxonomy.serviceStyle && (
+                      <div className="col-span-2">
+                        <div className="font-semibold">Service</div>
+                        <div>{taxonomy.serviceStyle}</div>
+                      </div>
+                    )}
+                    {taxonomy.course.length>0 && (
+                      <div className="col-span-4">
+                        <div className="font-semibold">Course</div>
+                        <div className="flex flex-wrap gap-1">{[...taxonomy.course].sort().map(v=> (<span key={v} className="px-1 py-0.5 rounded border">{v}</span>))}</div>
+                      </div>
+                    )}
+                    {taxonomy.pastry.length>0 && (
+                      <div className="col-span-4">
+                        <div className="font-semibold">Pastry</div>
+                        <div className="flex flex-wrap gap-1">{[...taxonomy.pastry].sort().map(v=> (<span key={v} className="px-1 py-0.5 rounded border">{v}</span>))}</div>
+                      </div>
+                    )}
+                    {taxonomy.technique.length>0 && (
+                      <div className="col-span-4">
+                        <div className="font-semibold">Technique</div>
+                        <div className="flex flex-wrap gap-1">{[...taxonomy.technique].sort().map(v=> (<span key={v} className="px-1 py-0.5 rounded border">{v}</span>))}</div>
+                      </div>
+                    )}
+                    {taxonomy.components.length>0 && (
+                      <div className="col-span-4">
+                        <div className="font-semibold">Components</div>
+                        <div className="flex flex-wrap gap-1">{[...taxonomy.components].sort().map(v=> (<span key={v} className="px-1 py-0.5 rounded border">{v}</span>))}</div>
+                      </div>
+                    )}
+                    {taxonomy.equipment.length>0 && (
+                      <div className="col-span-4">
+                        <div className="font-semibold">Equipment</div>
+                        <div className="flex flex-wrap gap-1">{[...taxonomy.equipment].sort().map(v=> (<span key={v} className="px-1 py-0.5 rounded border">{v}</span>))}</div>
+                      </div>
+                    )}
+                    {taxonomy.diets.length>0 && (
+                      <div className="col-span-4">
+                        <div className="font-semibold">Diets</div>
+                        <div className="flex flex-wrap gap-1">{[...taxonomy.diets].sort().map(v=> (<span key={v} className="px-1 py-0.5 rounded border">{v}</span>))}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
