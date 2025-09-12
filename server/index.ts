@@ -5,6 +5,7 @@ import { handleDemo } from "./routes/demo";
 import { githubRaw, githubZip } from "./routes/github";
 import { handleNutritionAnalyze } from "./routes/nutrition";
 import { handleRecipeImport } from "./routes/recipe";
+import { proxyRecipeImage } from "./routes/recipeImage";
 
 export function createServer() {
   const app = express();
