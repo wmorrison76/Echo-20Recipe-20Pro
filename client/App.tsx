@@ -45,4 +45,20 @@ const App = () => (
   </ErrorBoundary>
 );
 
-createRoot(document.getElementById("root")!).render(<App />);
+const container = document.getElementById("root")!;
+const prevRoot = (window as any).__app_root;
+if (prevRoot && typeof prevRoot.render === 'function') {
+  prevRoot.render(<App />);
+} else {
+  const root = createRoot(container);
+  (window as any).__app_root = root;
+  root.render(<App />);
+}
+// HMR safety: unmount previous root on module dispose to prevent duplicate portal containers
+if (import.meta && (import.meta as any).hot) {
+  (import.meta as any).hot.dispose(() => {
+    const r = (window as any).__app_root;
+    try { r?.unmount?.(); } catch {}
+    (window as any).__app_root = null;
+  });
+}
