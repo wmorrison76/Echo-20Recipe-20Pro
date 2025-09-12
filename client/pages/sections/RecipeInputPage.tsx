@@ -745,8 +745,12 @@ const RecipeInputPage = () => {
   const shareLink = () => {
     const data = serialize();
     const url = `${location.origin}${location.pathname}#r=${encodeURIComponent(btoa(JSON.stringify(data)))}`;
-    navigator.clipboard.writeText(url);
-    alert(`${recipeName || "Recipe"} link copied to clipboard`);
+    const title = recipeName || 'Recipe';
+    const ing = ingredients.map((r)=>[r.qty,r.unit,r.item,r.prep].filter(Boolean).join(' ')).filter(Boolean).join('\n');
+    const ins = String(directions||'').split(/\r?\n/).filter(Boolean).map((s,i)=>`${i+1}. ${s}`).join('\n');
+    const text = `${title}\n\nIngredients:\n${ing || '-'}\n\nDirections:\n${ins || '-'}\n\nLink: ${url}`;
+    navigator.clipboard.writeText(text);
+    alert(`${title} copied to clipboard`);
   };
 
   // Auto-calc batch yield from volume units if not set manually
