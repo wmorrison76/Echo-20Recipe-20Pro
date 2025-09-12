@@ -1115,6 +1115,18 @@ const RecipeInputPage = () => {
 
       <div className="pt-8 h-full overflow-y-auto">
         <div className="w-full px-6 space-y-6 pb-8">
+          <section className="rounded-lg border p-3 bg-white/95 dark:bg-zinc-900 shadow-sm">
+            <h1 className="text-lg font-semibold">Developer Notes: Echo keys</h1>
+            <ul className="list-disc pl-5 text-xs text-muted-foreground grid sm:grid-cols-2 gap-1">
+              <li>page:recipes:add (root)</li>
+              <li>section:add:basics; field:add:name; field:add:description; field:add:yield; field:add:time</li>
+              <li>section:add:ingredients; row:add:ingredient</li>
+              <li>section:add:steps; field:add:steps</li>
+              <li>section:add:allergens</li>
+              <li>section:add:photos; cta:add:upload</li>
+              <li>cta:add:save; cta:add:publish</li>
+            </ul>
+          </section>
           {/* Removed old hamburger toggle button */}
           <div className="flex items-end gap-4" data-echo-key="section:add:basics">
             <div
