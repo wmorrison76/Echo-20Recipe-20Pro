@@ -106,6 +106,10 @@ export default function RecipeSearchSection() {
   const [bookPage, setBookPage] = useState(0);
   const [bookTotal, setBookTotal] = useState(0);
   const [bookImported, setBookImported] = useState<number | null>(null);
+  const [tocOpen, setTocOpen] = useState(false);
+  const [toc, setToc] = useState<{ title: string; page: number }[] | null>(null);
+  const [tocChecked, setTocChecked] = useState<Record<string, boolean>>({});
+  const pdfPendingRef = useRef<File | null>(null);
 
   const onFiles = async (files: File[]) => {
     const list = files.slice(0, 100);
@@ -175,9 +179,13 @@ export default function RecipeSearchSection() {
         </Dropzone>
         <div className="rounded-lg border p-2 self-start">
           <div className="flex items-center justify-between mb-1"><div className="text-xs font-medium">Library (Book PDF) Import</div><div className="text-xs text-muted-foreground">{bookPhase ? (<div className="flex items-center gap-2"><span>{bookPhase === 'reading' ? 'Reading file' : bookPhase === 'selecting' ? 'Selecting recipes' : bookPhase === 'categorizing' ? 'Categorizing recipes' : bookPhase === 'importing' ? 'Importing' : 'Done'}</span>{bookPhase==='reading' && (<span>{bookPage}/{bookTotal}</span>)}</div>) : (<>Imported: {recipes.length}</>)}</div></div>
-          <input type="file" accept="application/pdf" onChange={async(e)=>{ const f=e.target.files?.[0]; if(!f) return; if(!confirm('Confirm you own/purchased this cookbook PDF for personal import?')){ (e.target as HTMLInputElement).value=''; return;} try{ setBookFile(f.name); setBookPhase('reading'); setStatus('Reading book PDF...'); const ab = await f.arrayBuffer(); const pdfjs: any = await import('https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs'); const workerSrc='https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs'; if(pdfjs.GlobalWorkerOptions) pdfjs.GlobalWorkerOptions.workerSrc=workerSrc; const doc = await pdfjs.getDocument({ data: ab }).promise; setBookTotal(doc.numPages); let lines:string[]=[]; for(let p=1;p<=doc.numPages;p++){ const page=await doc.getPage(p); const tc=await page.getTextContent(); lines.push(...tc.items.map((i:any)=> String(i.str)).filter(Boolean)); lines.push(''); setBookPage(p); }
+          <input type="file" accept="application/pdf" onChange={async(e)=>{ const f=e.target.files?.[0]; if(!f) return; if(!confirm('Confirm you own/purchased this cookbook PDF for personal import?')){ (e.target as HTMLInputElement).value=''; return;} try{ setBookFile(f.name); setBookPhase('reading'); setStatus('Reading book PDF...'); const ab = await f.arrayBuffer(); pdfPendingRef.current = f; const pdfjs: any = await import('https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs'); const workerSrc='https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs'; if(pdfjs.GlobalWorkerOptions) pdfjs.GlobalWorkerOptions.workerSrc=workerSrc; const doc = await pdfjs.getDocument({ data: ab }).promise; setBookTotal(doc.numPages); let lines:string[]=[]; for(let p=1;p<=doc.numPages;p++){ const page=await doc.getPage(p); const tc=await page.getTextContent(); lines.push(...tc.items.map((i:any)=> String(i.str)).filter(Boolean)); lines.push(''); setBookPage(p); }
             setBookPhase('selecting');
             const norm = lines.map(s=> s.replace(/\s+/g,' ').trim());
+            // Build appendix/TOC entries like "Title .... 123"
+            const tocEntries = norm.map(s=>{ const m = s.match(/^(.{3,120}?)(?:\.{2,}|\s{2,})(\d{1,4})$/); if(!m) return null; const title=m[1].trim(); const page=parseInt(m[2],10); const bad=/^(contents|index|appendix|recipes?|chapter|table of contents)$/i; if(!title||bad.test(title)) return null; return { title, page }; }).filter(Boolean) as {title:string;page:number}[];
+            if(tocEntries.length>=20){ setToc(tocEntries); const checked:Record<string,boolean>={}; tocEntries.forEach(x=> checked[x.title]=true); setTocChecked(checked); setTocOpen(true); setStatus('Select recipes to import'); return; }
+            // Fallback to heuristic section extraction
             const items:any[]=[]; let i=0; const book=f.name.replace(/\.[^.]+$/,'');
             const isTitle=(s:string)=> s && s.length<70 && /[A-Za-z]/.test(s) && (s===s.toUpperCase() || /^[A-Z][^.!?]{2,}$/.test(s));
             while(i<norm.length){
@@ -187,24 +195,6 @@ export default function RecipeSearchSection() {
               const ings:string[]=[]; i++; while(i<norm.length && !/ingredients?/i.test(norm[i])){ const s=norm[i]; if(/^(instructions|directions|method)/i.test(s)) break; if(s) ings.push(s); i++; }
               let ins:string[]=[]; while(i<norm.length && !/ingredients?/i.test(norm[i])){ const s=norm[i]; if(s) ins.push(s); i++; }
               if(title && (ings.length||ins.length)) items.push({ title, ingredients: ings, instructions: ins, tags:[book] });
-            }
-            setBookPhase('categorizing');
-            const joined = norm.join(' ');
-            const m = joined.match(/(?:ISBN(?:-1[03])?:?\s*)?((?:97[89][- ]?)?\d{1,5}[- ]?\d{1,7}[- ]?\d{1,7}[- ]?[\dX])/i);
-            if (m) {
-              const rawIsbn = m[1].replace(/[-\s]/g,'');
-              const isbn = rawIsbn.length>=10 ? rawIsbn : undefined;
-              if (isbn) {
-                try {
-                  const coverUrl = `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg?default=false`;
-                  const res = await fetch(coverUrl, { method:'GET' });
-                  if (res.ok) {
-                    const blob = await res.blob();
-                    const file = new File([blob], `book-${isbn}.jpg`, { type: blob.type || 'image/jpeg' });
-                    await addImages([file], { tags: [book, 'book'] });
-                  }
-                } catch {}
-              }
             }
             setBookPhase('importing');
             if(items.length){ const blob=new Blob([JSON.stringify(items)],{type:'application/json'}); const file=new File([blob], `${book}.json`, { type:'application/json' }); const { added } = await addRecipesFromJsonFiles([file]); setBookImported(added); setStatus(`Imported ${added} recipes from book.`); setBookPhase('done'); } else { setStatus('Could not detect recipes in PDF'); setBookPhase(null); }
@@ -244,6 +234,25 @@ export default function RecipeSearchSection() {
         </div>
       </div>
       {status && <div className="rounded-md border p-3 text-sm">{status}</div>}
+      <Dialog open={tocOpen} onOpenChange={setTocOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Select recipes to import</DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[50vh] overflow-auto hide-scrollbar border rounded p-2 text-sm space-y-1">
+            {(toc||[]).map((t)=> (
+              <label key={t.title} className="flex items-center gap-2 text-xs">
+                <input type="checkbox" className="scale-75" checked={!!tocChecked[t.title]} onChange={()=> setTocChecked((m)=> ({...m, [t.title]: !m[t.title]}))} />
+                <span className="truncate" title={`${t.title} — p.${t.page}`}>{t.title}</span>
+              </label>
+            ))}
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" onClick={()=>{ setTocOpen(false); setToc(null); }}>Cancel</Button>
+            <Button onClick={async()=>{ try{ setTocOpen(false); setBookPhase('importing'); const selected = Object.keys(tocChecked).filter(k=> tocChecked[k]); localStorage.setItem('pdf:index:allow', JSON.stringify(selected)); if(pdfPendingRef.current){ const { added } = await addRecipesFromPdfFiles([pdfPendingRef.current]); setStatus(`Imported ${added} recipe(s) from book.`); setBookPhase('done'); } } catch(e:any){ setStatus(`Failed: ${e?.message||'error'}`); setBookPhase(null);} finally { setToc(null); setTocChecked({}); pdfPendingRef.current=null; } }}>Accept</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
       {errors.length>0 && (
         <div className="rounded-md border p-3 text-sm"><div className="font-medium mb-2">Errors</div><ul className="space-y-1 list-disc pl-5">{errors.map((e,i)=>(<li key={i}><span className="font-mono">{e.file}</span>: {e.error}</li>))}</ul></div>
       )}
