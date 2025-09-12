@@ -40,6 +40,7 @@ export default function GallerySection() {
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [viewMode, setViewMode] = useState<"masonry" | "grid">("grid");
   const [thumbSize, setThumbSize] = useState<"s"|"m"|"l">("m");
+  const [sort, setSort] = useState<"newest"|"popular"|"rated">("newest");
   const [category, setCategory] = useState<string>("");
   const [newLookBookName, setNewLookBookName] = useState("");
   const [activeLookBookId, setActiveLookBookId] = useState<string | null>(null);
@@ -51,18 +52,20 @@ export default function GallerySection() {
 
   const filtered = useMemo(() => {
     const q = filter.trim().toLowerCase();
-    const base = q
+    let base = q
       ? images.filter((i) => (i.tags || []).some((t) => t.toLowerCase().includes(q)) || i.name.toLowerCase().includes(q))
       : images.slice();
     const cat = category.trim().toLowerCase();
     base.sort((a, b) => {
       const aMatch = cat ? (a.tags || []).some((t) => t.toLowerCase().includes(cat)) : 0;
       const bMatch = cat ? (b.tags || []).some((t) => t.toLowerCase().includes(cat)) : 0;
-      if (aMatch !== bMatch) return bMatch - aMatch; // matched first
+      if (aMatch !== bMatch) return bMatch - aMatch;
       return a.order - b.order;
     });
+    if (sort === "newest") base = base.slice().sort((a,b)=> b.createdAt - a.createdAt);
+    else if (sort === "rated") base = base.slice().sort((a,b)=> (b.favorite?1:0) - (a.favorite?1:0));
     return base;
-  }, [images, filter, category]);
+  }, [images, filter, category, sort]);
 
   const onFiles = async (files: File[]) => {
     setImportTags("");
@@ -175,7 +178,20 @@ export default function GallerySection() {
   };
 
   return (
-    <div className="space-y-4 bg-[radial-gradient(900px_500px_at_10%_-10%,rgba(56,189,248,0.14),transparent_65%),radial-gradient(900px_500px_at_90%_-20%,rgba(99,102,241,0.12),transparent_65%),linear-gradient(180deg,#0b1020_0%,#05070d_100%)] rounded-xl p-2 md:p-3">
+    <div className="mx-auto max-w-[1200px] px-4 md:px-6 py-4 space-y-4" data-echo-key="page:recipes:gallery">
+      <section className="rounded-lg border p-3 bg-white/95 dark:bg-zinc-900 shadow-sm">
+        <h1 className="text-lg font-semibold">Developer Notes: Echo keys</h1>
+        <ul className="list-disc pl-5 text-xs text-muted-foreground grid sm:grid-cols-2 gap-1">
+          <li>page:recipes:gallery (root)</li>
+          <li>filter:gallery:sort</li>
+          <li>filter:gallery:tags</li>
+          <li>section:gallery:grid</li>
+          <li>card:gallery:item</li>
+          <li>cta:gallery:open</li>
+          <li>cta:gallery:fav</li>
+        </ul>
+      </section>
+
       <div className="grid gap-3 md:grid-cols-2 items-start">
         <Dropzone multiple onFiles={onFiles}>
           <div className="flex flex-col items-center justify-center gap-2 text-sm py-3">
@@ -201,7 +217,7 @@ export default function GallerySection() {
             </Button>
           </div>
           <div className="flex flex-wrap gap-1.5 items-center">
-            <div className="relative flex-1 min-w-[220px]">
+            <div className="relative flex-1 min-w-[220px]" data-echo-key="filter:gallery:tags">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
                 value={filter}
@@ -216,6 +232,17 @@ export default function GallerySection() {
             >
               Link to recipes
             </Button>
+            <select
+              className="rounded-md border bg-background px-2 py-1 text-xs"
+              value={sort}
+              onChange={(e) => setSort(e.target.value as any)}
+              title="Sort"
+              data-echo-key="filter:gallery:sort"
+            >
+              <option value="newest">Newest</option>
+              <option value="popular">Popular</option>
+              <option value="rated">Rated</option>
+            </select>
             <select
               className="rounded-md border bg-background px-2 py-1 text-xs"
               value={viewMode}
@@ -379,6 +406,7 @@ export default function GallerySection() {
               ? "columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7 gap-4 sm:gap-5 lg:gap-6"
               : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-5 lg:gap-6"
           }
+          data-echo-key="section:gallery:grid"
         >
           {filtered.map((img) => (
             <div
@@ -389,11 +417,13 @@ export default function GallerySection() {
               onDragOver={(e) => e.preventDefault()}
               onDrop={() => onDropOver(img.id)}
               onContextMenu={(e) => e.preventDefault()}
+              data-echo-key="card:gallery:item"
             >
               <button
                 className="absolute top-2 right-2 z-10 rounded-full bg-black/40 p-1.5 text-white opacity-0 group-hover:opacity-100"
                 onClick={() => toggleFavorite(img.id)}
                 aria-label="Favorite"
+                data-echo-key="cta:gallery:fav"
               >
                 <Star
                   className={
@@ -410,6 +440,7 @@ export default function GallerySection() {
               <button
                 onClick={() => openLightboxAt(img.id)}
                 className="block w-full"
+                data-echo-key="cta:gallery:open"
               >
                 {img.unsupported ? (
                   <div className="h-40 w-full bg-muted flex items-center justify-center text-xs text-muted-foreground">
@@ -419,6 +450,7 @@ export default function GallerySection() {
                   <img
                     src={img.dataUrl || img.blobUrl}
                     alt={img.name}
+                    loading="lazy"
                     className={`w-full ${viewMode==='grid' ? (thumbSize==='s'?'h-32':thumbSize==='l'?'h-56':'h-44') : 'h-auto'} object-cover transition-all duration-200 z-0`}
                     onError={(e) => {
                       const el = e.currentTarget;
