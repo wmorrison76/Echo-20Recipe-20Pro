@@ -3,7 +3,7 @@ import { useAppData } from "@/context/AppDataContext";
 import { Dropzone } from "@/components/Dropzone";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Star, LayoutGrid, Rows, List } from "lucide-react";
+import { Star, LayoutGrid, Rows, List, Trash2, RotateCcw, ExternalLink } from "lucide-react";
 import { axisOptions } from "@/lib/taxonomy";
 
 export function RecipeCard({ r, onPreview, onFav, onRate, onTrash, inTrash }: { r: ReturnType<typeof useAppData>["recipes"][number]; onPreview:()=>void; onFav:()=>void; onRate:(n:number)=>void; onTrash:()=>void; inTrash?: boolean; }) {
