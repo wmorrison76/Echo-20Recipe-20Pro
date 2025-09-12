@@ -121,6 +121,7 @@ type AppData = {
   updateImage: (id: string, patch: Partial<GalleryImage>) => void;
   addTagsToImages: (ids: string[], tags: string[]) => void;
   reorderImages: (dragId: string, overId: string) => void;
+  deleteImage: (id: string) => void;
   addLookBook: (name: string, imageIds?: string[]) => string;
   updateLookBook: (id: string, patch: Partial<LookBook>) => void;
   deleteLookBook: (id: string) => void;
