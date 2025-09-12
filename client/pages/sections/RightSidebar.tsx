@@ -78,15 +78,18 @@ export default function RightSidebar(props: RightSidebarProps) {
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (!e.ctrlKey) return;
+      if (!(e.ctrlKey || e.metaKey)) return;
       const map: Record<string, string> = { p: 'pastry', t: 'technique', c: 'course', a: 'allergens', d: 'diets', m: 'meal', u: 'cuisine', s: 'service', y: 'difficulty', e: 'equipment' };
-      const k = e.key.toLowerCase();
-      const v = map[k];
-      if (v) { e.preventDefault(); setOpen((prev)=> prev.includes(v)? prev : [...prev, v]); setTimeout(()=> document.querySelector(`[data-accordion-section='${v}']`)?.scrollIntoView({ behavior:'smooth', block:'nearest' }), 0); }
+      const v = map[e.key.toLowerCase()];
+      if (!v) return;
+      e.preventDefault();
+      if (isCollapsed) props.onToggle();
+      setOpen((prev)=> prev.includes(v)? prev : [...prev, v]);
+      setTimeout(()=> document.querySelector(`[data-accordion-section='${v}']`)?.scrollIntoView({ behavior:'smooth', block:'nearest' }), 0);
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, []);
+  }, [isCollapsed, props.onToggle]);
 
   const handleUrlSubmit = async () => {
     if (!recipeUrl || isImporting) return;
@@ -114,6 +117,7 @@ export default function RightSidebar(props: RightSidebarProps) {
       <button
         aria-label="Toggle sidebar"
         onClick={props.onToggle}
+        onContextMenu={(e) => e.preventDefault()}
         className="fixed right-0 top-1/2 -translate-y-1/2 z-[71] bg-background border border-gray-300 rounded-l-full shadow px-2 py-3 hover:bg-muted no-callout select-none"
         style={{ transform: "translateY(-50%)" }}
       >
@@ -124,6 +128,7 @@ export default function RightSidebar(props: RightSidebarProps) {
         </div>
       </button>
       <div
+        onContextMenu={(e) => e.preventDefault()}
         className={`fixed top-16 right-0 z-[70] ${isCollapsed ? "translate-x-full" : "translate-x-0"} w-72 h-[80vh] bg-gradient-to-b from-gray-100/60 via-gray-200/50 to-gray-300/60 backdrop-blur-sm border-l border-t border-gray-400/50 rounded-tl-2xl rounded-bl-2xl shadow-inner transition-transform duration-500 ease-in-out overflow-hidden no-callout text-black`}
       >
         {!isCollapsed && (
