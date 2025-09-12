@@ -1325,7 +1325,7 @@ const RecipeInputPage = () => {
             </div>
           </div>
           <div
-            className={`ingredients-card rounded-2xl p-6 border ${isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}
+            className={`ingredients-card rounded-2xl p-6 border ${isDarkMode ? "bg-gray-800 border-gray-700" : "bg-gradient-to-b from-white to-slate-50 border-gray-200"}`}
           >
             <h3
               className={`font-bold text-xl mb-6 ${isDarkMode ? "text-cyan-400" : "text-gray-900"}`}
