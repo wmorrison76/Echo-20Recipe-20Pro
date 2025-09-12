@@ -668,11 +668,18 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     }
     if (current) sections.push(current);
 
+    const baseName = source.replace(/\.[^.]+$/,'');
     if (!sections.length) {
       const title =
-        (doc.querySelector("h1,h2,h3")?.textContent || "Untitled").trim() ||
+        (doc.querySelector("h1,h2,h3")?.textContent || baseName || "Untitled").trim() ||
         "Untitled";
       sections.push({ title, elements: Array.from(doc.body.children) });
+    } else {
+      // Normalize empty or generic titles
+      for (const s of sections) {
+        const t = (s.title || "").trim();
+        if (!t || /^untitled$/i.test(t)) s.title = baseName || "Untitled";
+      }
     }
 
     const extractListAfter = (startIdx: number, arr: Element[]) => {
@@ -696,24 +703,37 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     };
 
     const results: Recipe[] = [];
+    const qtyRe = /^(?:\d+\s+\d\/\d|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])\b/;
+
     for (const sec of sections) {
       const els = sec.elements;
-      const lowerTexts = els.map((e) => (e.textContent || "").toLowerCase());
+      const texts = els.map((e) => (e.textContent || ""));
+      const lowerTexts = texts.map((t) => t.toLowerCase());
       const findIdx = (label: string[]) =>
         lowerTexts.findIndex((t) => label.some((l) => t.startsWith(l)));
-      const ingIdx = findIdx(["ingredients", "ingredient", "what you need"]);
-      const instIdx = findIdx([
-        "instructions",
-        "directions",
-        "method",
-        "steps",
-      ]);
-      const ingredients = ingIdx >= 0 ? extractListAfter(ingIdx, els) : [];
-      const instructions = instIdx >= 0 ? extractListAfter(instIdx, els) : [];
+      let ingIdx = findIdx(["ingredients", "ingredient", "what you need"]);
+      let instIdx = findIdx(["instructions","directions","method","steps"]);
+      let ingredients = ingIdx >= 0 ? extractListAfter(ingIdx, els) : [];
+      let instructions = instIdx >= 0 ? extractListAfter(instIdx, els) : [];
+
+      // Fallbacks: detect ingredients by quantity patterns; detect numbered steps
+      if (!ingredients.length) {
+        ingredients = texts.filter((t) => qtyRe.test(t.trim()));
+      }
+      if (!instructions.length) {
+        const numbered = texts.filter((t) => /^(?:\d+\.|Step\s*\d+)/i.test(t.trim()));
+        if (numbered.length) instructions = numbered;
+      }
+      if (!instructions.length && ingredients.length) {
+        const start = Math.max(texts.findIndex((t) => qtyRe.test(t.trim())) + 3, 0);
+        instructions = texts.slice(start, start + 20).filter(Boolean);
+      }
+
+      const title = (sec.title || baseName || "Untitled").trim() || "Untitled";
       results.push({
         id: uid(),
         createdAt: Date.now(),
-        title: sec.title,
+        title,
         ingredients: ingredients.length ? ingredients : undefined,
         instructions: instructions.length ? instructions : undefined,
         sourceFile: source,
