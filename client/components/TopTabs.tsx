@@ -30,7 +30,7 @@ export default function TopTabs() {
     new URLSearchParams(useLocation().search).get("tab") === "add-recipe";
   const [showHelp, setShowHelp] = React.useState(false);
   return (
-    <header className="border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="border-b backdrop-blur bg-transparent supports-[backdrop-filter]:bg-transparent">
       <div className="container mx-auto flex h-14 items-center justify-between gap-4">
         <a
           href="/?tab=search"
