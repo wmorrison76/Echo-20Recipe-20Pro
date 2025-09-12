@@ -214,6 +214,21 @@ export default function GallerySection() {
                 className="w-full rounded-md border bg-background pl-8 pr-2 py-1.5 text-sm"
               />
             </div>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={(e)=>{ const files = Array.from(e.target.files||[]); if(files.length){ onFiles(files); } (e.target as HTMLInputElement).value=''; }}
+              ref={(el)=> (window as any).__gallery_upload_input = el}
+            />
+            <Button
+              onClick={()=> (window as any).__gallery_upload_input?.click()}
+              variant="default"
+              data-echo-key="cta:gallery:upload"
+            >
+              Upload images
+            </Button>
             <Button
               variant="secondary"
               onClick={() => linkImagesToRecipesByFilename()}
