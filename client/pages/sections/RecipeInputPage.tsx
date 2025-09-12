@@ -1362,7 +1362,7 @@ const RecipeInputPage = () => {
               </div>
             </div>
 
-            <div className="w-1/3 flex justify-center">
+            <div className="w-1/3 flex justify-center" data-echo-key="section:add:photos">
               <div
                 className="flex-shrink-0"
                 style={{ width: "17rem", height: "17rem" }}
@@ -1380,7 +1380,10 @@ const RecipeInputPage = () => {
                   />
                 ) : (
                   <div className="w-full h-full bg-gray-100 border rounded-md flex items-center justify-center">
-                    <span className="text-xs text-gray-400">Recipe Image</span>
+                    <label className="text-xs text-gray-600 cursor-pointer" data-echo-key="cta:add:upload">
+                      <input type="file" accept="image/*" className="hidden" onChange={async(e)=>{ const f=e.target.files?.[0]; if(!f) return; try{ const reader=new FileReader(); reader.onload=()=> setImage(String(reader.result)); reader.readAsDataURL(f);}catch{}}} />
+                      Upload Photo
+                    </label>
                   </div>
                 )}
               </div>
