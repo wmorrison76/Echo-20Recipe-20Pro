@@ -1178,7 +1178,7 @@ const RecipeInputPage = () => {
                           yieldManualRef.current = true;
                           setYieldUnit(e.target.value.toUpperCase());
                         }}
-                        className={`w-14 px-2 py-1 border rounded text-sm uppercase ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
+                        className={`w-24 px-2 py-1 border rounded text-sm uppercase ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
                       />
                     </span>
                     <span>
@@ -1211,7 +1211,7 @@ const RecipeInputPage = () => {
                         onChange={(e) =>
                           setPortionUnit(e.target.value.toUpperCase())
                         }
-                        className={`w-14 px-2 py-1 border rounded text-sm uppercase ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
+                        className={`w-24 px-2 py-1 border rounded text-sm uppercase ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
                       />
                     </span>
                     <span>
@@ -1219,9 +1219,8 @@ const RecipeInputPage = () => {
                       {getCurrencySymbol(currentCurrency)}
                       {calculatePortionCost().toFixed(2)}
                     </span>
-                    <span title="Theoretical Yield">
-                      <span className="font-bold">Ψ:</span> {yieldQty}{" "}
-                      {yieldUnit}
+                    <span title="Theoretical Volume">
+                      <span className="font-bold">Ψ:</span> {formatMl(theoreticalVolumeMl)}
                     </span>
                   </div>
                 </div>
@@ -1233,7 +1232,7 @@ const RecipeInputPage = () => {
                   Modifiers
                 </div>
                 <div className={`${isDarkMode ? "bg-blue-900/20 border-blue-400/30" : "bg-blue-50 border-blue-200"} border rounded-lg p-2 text-xs`}>
-                  {(() => { const diet = new Set(taxonomy.diets); const txt=(ingredients.map(r=>`${r.qty} ${r.unit} ${r.item}`).join(' ').toLowerCase()); const meatRe=/(beef|pork|chicken|lamb|fish|shrimp|gelatin)/; if ((diet.has('vegetarian')||diet.has('vegan')) && meatRe.test(txt)) return (<div className="mb-2 text-red-600">Warning: selected diet conflicts with ingredients.</div>); return null; })()}
+                  {(() => { const diet = new Set(taxonomy.diets); const txt=(ingredients.map(r=>`${r.qty} ${r.unit} ${r.item}`).join(' ').toLowerCase()); const meatRe=/(beef|pork|chicken|lamb|fish|shrimp|gelatin)/; const issues: string[] = []; const dir = (directions||'').toLowerCase(); const tempMatch = dir.match(/(\d{2,3})\s*(?:°\s*)?(?:f|fahrenheit|degf)/i) || dir.match(/(\d{2,3})\s*degrees?\s*f/i); const cookT = String(cookTemp||'').match(/\d{2,3}/)?.[0]; if (tempMatch && cookT && tempMatch[1]!==cookT) issues.push(`Cook temp mismatch: directions ${tempMatch[1]}F vs field ${cookT}F`); if ((diet.has('vegetarian')||diet.has('vegan')) && meatRe.test(txt)) issues.push('Selected diet conflicts with ingredients.'); return issues.length? (<div className="mb-2 text-red-600">{issues.map((s,i)=>(<div key={i}>{s}</div>))}</div>) : null; })()}
                   <div className="grid grid-cols-8 gap-1">
                     {taxonomy.cuisine && (
                       <div className="col-span-2">
