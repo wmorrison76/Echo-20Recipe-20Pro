@@ -2253,4 +2253,145 @@ const RecipeInputPage = () => {
   );
 };
 
+function YieldLabForm({ defaultInputQty, defaultInputUnit, recipeName, onClose }: { defaultInputQty: number; defaultInputUnit: string; recipeName: string; onClose: () => void }) {
+  const [code, setCode] = useState("");
+  const [inputQty, setInputQty] = useState<number>(defaultInputQty || 0);
+  const [inputUnit, setInputUnit] = useState<string>((defaultInputUnit || "").toUpperCase());
+  const [measQty, setMeasQty] = useState<number>(0);
+  const [measUnit, setMeasUnit] = useState<string>(inputUnit || "");
+  const [notes, setNotes] = useState("");
+  const [history, setHistory] = useState<any[]>(() => {
+    try { return JSON.parse(localStorage.getItem('kb:yield')||'[]') || []; } catch { return []; }
+  });
+
+  const volumeToMl = (qty: number, unit: string): number | null => {
+    const U: Record<string, number> = { ML: 1, L: 1000, TSP: 4.92892, TBSP: 14.7868, 'FL OZ': 29.5735, OZ: 29.5735, CUP: 236.588, PINT: 473.176, PT: 473.176, QTS: 946.353, QT: 946.353, GALLON: 3785.41, GAL: 3785.41 };
+    const k = (unit || '').toUpperCase();
+    if (!Number.isFinite(qty)) return null;
+    if (U[k]) return qty * U[k];
+    return null;
+  };
+  const massToG = (qty: number, unit: string): number | null => {
+    const U: Record<string, number> = { G: 1, GRAM: 1, GRAMS: 1, KG: 1000, LBS: 453.592, LB: 453.592, OZ: 28.3495 };
+    const k = (unit || '').toUpperCase();
+    if (!Number.isFinite(qty)) return null;
+    if (U[k]) return qty * U[k];
+    return null;
+  };
+
+  const sameDimension = (a: string, b: string) => {
+    const volUnits = new Set(["ML","L","TSP","TBSP","FL OZ","OZ","CUP","PINT","PT","QTS","QT","GALLON","GAL"]);
+    const massUnits = new Set(["G","GRAM","GRAMS","KG","LBS","LB","OZ"]);
+    const A = (a||'').toUpperCase();
+    const B = (b||'').toUpperCase();
+    const isVol = volUnits.has(A) && volUnits.has(B);
+    const isMass = massUnits.has(A) && massUnits.has(B);
+    return isVol || isMass;
+  };
+
+  const computeYieldPct = () => {
+    if (!Number.isFinite(inputQty) || !Number.isFinite(measQty) || inputQty<=0 || measQty<0) return null;
+    const A = (inputUnit||'').toUpperCase();
+    const B = (measUnit||'').toUpperCase();
+    if (!sameDimension(A,B)) return null;
+    let inBase: number | null = null;
+    let outBase: number | null = null;
+    inBase = volumeToMl(inputQty, A) ?? massToG(inputQty, A);
+    outBase = volumeToMl(measQty, B) ?? massToG(measQty, B);
+    if (inBase==null || outBase==null) return null;
+    return Math.max(0, Math.min(9999, (outBase / inBase) * 100));
+  };
+
+  const onSave = () => {
+    const pct = computeYieldPct();
+    const rec = {
+      id: String(Date.now()),
+      ts: Date.now(),
+      recipe: recipeName || 'Untitled',
+      code: code.trim(),
+      input: { qty: inputQty, unit: inputUnit },
+      measured: { qty: measQty, unit: measUnit },
+      yieldPercent: Number.isFinite(pct||NaN) ? Number((pct as number).toFixed(2)) : null,
+      notes: notes.trim(),
+    };
+    try {
+      const list = JSON.parse(localStorage.getItem('kb:yield')||'[]') || [];
+      list.unshift(rec);
+      localStorage.setItem('kb:yield', JSON.stringify(list.slice(0,200)));
+      setHistory(list.slice(0,200));
+      onClose();
+    } catch {
+      onClose();
+    }
+  };
+
+  const pct = computeYieldPct();
+
+  return (
+    <div className="space-y-3 text-sm">
+      <div className="grid grid-cols-2 gap-3">
+        <label className="grid gap-1">
+          <span className="text-xs text-muted-foreground">Test Code</span>
+          <input value={code} onChange={(e)=>setCode(e.target.value)} className="rounded-md border bg-background px-2 py-1" placeholder="e.g., YLD-001" />
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          <label className="grid gap-1">
+            <span className="text-xs text-muted-foreground">Input Qty</span>
+            <input type="number" value={inputQty} onChange={(e)=>setInputQty(Number(e.target.value))} className="rounded-md border bg-background px-2 py-1" />
+          </label>
+          <label className="grid gap-1">
+            <span className="text-xs text-muted-foreground">Unit</span>
+            <input value={inputUnit} onChange={(e)=>setInputUnit(e.target.value.toUpperCase())} className="rounded-md border bg-background px-2 py-1 uppercase" />
+          </label>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2">
+          <label className="grid gap-1">
+            <span className="text-xs text-muted-foreground">Measured Qty</span>
+            <input type="number" value={measQty} onChange={(e)=>setMeasQty(Number(e.target.value))} className="rounded-md border bg-background px-2 py-1" />
+          </label>
+          <label className="grid gap-1">
+            <span className="text-xs text-muted-foreground">Unit</span>
+            <input value={measUnit} onChange={(e)=>setMeasUnit(e.target.value.toUpperCase())} className="rounded-md border bg-background px-2 py-1 uppercase" />
+          </label>
+        </div>
+        <div className="grid gap-1">
+          <span className="text-xs text-muted-foreground">Yield %</span>
+          <div className="rounded-md border bg-background px-2 py-2">
+            {pct==null ? '—' : pct.toFixed(2)}
+          </div>
+        </div>
+      </div>
+      <label className="grid gap-1">
+        <span className="text-xs text-muted-foreground">Notes</span>
+        <textarea value={notes} onChange={(e)=>setNotes(e.target.value)} rows={3} className="rounded-md border bg-background px-2 py-1" placeholder="Observations, prep method, adjustments" />
+      </label>
+      <div className="flex gap-2 justify-end">
+        <button className="rounded border px-3 py-1" onClick={onClose}>Cancel</button>
+        <button className="rounded border px-3 py-1" onClick={onSave}>Save</button>
+      </div>
+      <div className="pt-2">
+        <div className="text-xs font-medium mb-1">Recent tests</div>
+        <div className="max-h-40 overflow-auto border rounded">
+          {history.length===0 ? (
+            <div className="p-2 text-xs text-muted-foreground">No tests yet.</div>
+          ) : (
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="text-muted-foreground"><th className="text-left p-1">When</th><th className="text-left p-1">Code</th><th className="text-left p-1">Input</th><th className="text-left p-1">Measured</th><th className="text-left p-1">Yield %</th></tr>
+              </thead>
+              <tbody>
+                {history.slice(0,10).map((r:any)=> (
+                  <tr key={r.id} className="border-t"><td className="p-1">{new Date(r.ts).toLocaleString()}</td><td className="p-1">{r.code}</td><td className="p-1">{r.input.qty} {r.input.unit}</td><td className="p-1">{r.measured.qty} {r.measured.unit}</td><td className="p-1">{r.yieldPercent==null? '—' : r.yieldPercent.toFixed(2)}</td></tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default RecipeInputPage;
