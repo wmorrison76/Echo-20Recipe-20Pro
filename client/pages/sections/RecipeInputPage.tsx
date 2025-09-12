@@ -977,7 +977,7 @@ const RecipeInputPage = () => {
                 </div>
                 {selectedAllergens.length ? (
                   <div
-                    className={`grid grid-cols-5 gap-1 text-xs ${isDarkMode ? "text-red-300" : "text-red-700"}`}
+                    className={`grid grid-cols-6 gap-1 text-xs ${isDarkMode ? "text-red-300" : "text-red-700"}`}
                   >
                     {selectedAllergens.map((a) => (
                       <div key={a}>{a}</div>
