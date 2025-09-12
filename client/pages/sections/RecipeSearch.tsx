@@ -181,7 +181,7 @@ export default function RecipeSearchSection() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Dropzone className="p-4 min-h-[96px] rounded-lg border border-dashed glow self-start" accept=".json,application/json,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.html,.htm,text/html,.pdf,application/pdf,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.xls,application/vnd.ms-excel,.csv,text/csv,application/zip,application/x-zip-compressed,.zip,image/*" multiple onFiles={onFiles}>
+        <Dropzone className="p-4 min-h-[96px] rounded-lg border border-dashed glow self-start" accept=".json,application/json,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.html,.htm,text/html,.pdf,application/pdf,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.xls,application/vnd.ms-excel,.csv,text/csv,application/zip,application/x-zip-compressed,.zip,image/*" multiple onFiles={onFiles} busy={(total>0 && processed<total) || (bookPhase==='reading' || bookPhase==='importing')} progress={ total>0 ? processed/Math.max(total,1) : (bookPhase==='reading'? (bookTotal? bookPage/Math.max(bookTotal,1): 0) : undefined) }>
           <div className="flex flex-col items-center justify-center gap-0.5 text-[11px]">
             <div className="text-foreground font-medium">Drag & drop recipes (Word/PDF/Excel/HTML/JSON/ZIP) or images</div>
             <div className="text-muted-foreground">Auto-detects titles, ingredients, and instructions</div>
