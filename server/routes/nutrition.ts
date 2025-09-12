@@ -109,7 +109,7 @@ function parseQtyUnit(line: string) {
   t = t.replace(/(\d)(\s*)(\d\/\d)/, "$1 $3");
   // Match quantity, unit, and the rest of the string (item[, prep])
   const m = t.match(
-    /^\s*([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?|[0-9]+\/[0-9]+)\s*([a-zA-Z\.]+)?\s*(.*)$/,
+    /^\s*([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?|[0-9]+\/[0-9]+)\s*([a-zA-Z\.\-]+)?\s*(.*)$/,
   );
   if (m) {
     const rawQty = m[1];
@@ -233,6 +233,21 @@ export async function handleNutritionAnalyze(req: Request, res: Response) {
       potato: 210,
       shrimp: 12,
     };
+    const DENSITY_CUP_G: Record<string, number> = {
+      flour: 120,
+      sugar: 200,
+      powdered_sugar: 120,
+      confectioners_sugar: 120,
+      cocoa_powder: 85,
+      butter: 227,
+      milk: 240,
+      cream: 240,
+      olive_oil: 218,
+      veg_oil: 218,
+    };
+    const tbspFromCup = 16;
+    const tspFromTbsp = 3;
+
     for (let i = 0; i < ingr.length; i++) {
       const line = ingr[i];
       const { qty, unit } = parseQtyUnit(line);
@@ -243,6 +258,18 @@ export async function handleNutritionAnalyze(req: Request, res: Response) {
         gramsRaw = qty * UNIT_TO_G[u as keyof typeof UNIT_TO_G];
       } else if ((u === "each" || u === "ea") && itemName && EACH_WEIGHT_G[itemName]) {
         gramsRaw = qty * EACH_WEIGHT_G[itemName];
+      } else if ((u === 'cup' || u === 'cups') && itemName && DENSITY_CUP_G[itemName]) {
+        gramsRaw = qty * DENSITY_CUP_G[itemName];
+      } else if ((u === 'tbsp' || u === 'tablespoon' || u === 'tablespoons' || u === 'tbsp.') && itemName && DENSITY_CUP_G[itemName]) {
+        gramsRaw = qty * (DENSITY_CUP_G[itemName] / tbspFromCup);
+      } else if ((u === 'tsp' || u === 'teaspoon' || u === 'teaspoons' || u === 'tsp.') && itemName && DENSITY_CUP_G[itemName]) {
+        gramsRaw = qty * (DENSITY_CUP_G[itemName] / (tbspFromCup * tspFromTbsp));
+      } else if ((u === 'stick' || u === 'sticks') && itemName === 'butter') {
+        gramsRaw = qty * 113;
+      } else if ((u === 'clove' || u === 'cloves') && itemName === 'garlic') {
+        gramsRaw = qty * 3;
+      } else if (u === 'pinch' || u === 'dash') {
+        gramsRaw = qty * 0.5;
       }
       let y = yields[i];
       if (typeof y !== "number" || !(y >= 0)) y = undefined as any;
