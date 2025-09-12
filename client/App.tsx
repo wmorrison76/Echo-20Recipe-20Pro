@@ -1,4 +1,5 @@
 import "./global.css";
+import React from "react";
 import "./add-recipe.styles.css";
 
 import { Toaster } from "@/components/ui/toaster";
