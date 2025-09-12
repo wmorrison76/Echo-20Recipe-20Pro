@@ -117,10 +117,10 @@ const RecipeInputPage = () => {
       s.add("Nuts");
     if (/sesame/.test(text)) s.add("Sesame");
     if (/soy\b|soybean|soy sauce|tofu|edamame/.test(text)) s.add("Soy");
-    if (/clam|shrimp|crab|lobster|scallop|oyster/.test(text))
-      s.add("Shellfish");
-    if (/cod|salmon|tuna|anchov|trout|halibut|haddock|sardine/.test(text))
-      s.add("Fish");
+    if (/clam|shrimp|crab|lobster|scallop|oyster/.test(text)) s.add("Shellfish");
+    if (/cod|salmon|tuna|anchov|trout|halibut|haddock|sardine/.test(text)) s.add("Fish");
+    if (/onion|shallot|leek|scallion|chive/.test(text)) s.add("Onion/Allium");
+    if (/garlic/.test(text)) s.add("Garlic");
     return Array.from(s);
   };
   useEffect(() => {
