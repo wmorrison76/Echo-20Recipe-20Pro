@@ -37,7 +37,7 @@ export function GalleryLightbox({
   const src = img?.src;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/90 text-white" onContextMenu={(e) => e.preventDefault()}>
+    <div className={cn("fixed inset-0 z-50 bg-black/90 text-white", className)} onContextMenu={(e) => e.preventDefault()}>
       <button className="absolute top-4 right-4 p-2 rounded bg-white/10 hover:bg-white/20" onClick={onClose} aria-label="Close">
         <X />
       </button>
