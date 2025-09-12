@@ -52,6 +52,8 @@ export function FlipBook({ open, onClose, images, title }: { open: boolean; onCl
             .book { perspective: 2200px; }
             .page { position: relative; transform-style: preserve-3d; }
             .page > .side { position: relative; overflow:hidden; }
+            .page > .side.left::after{ content:''; position:absolute; top:0; bottom:0; left:0; width:14px; background: linear-gradient(90deg, rgba(0,0,0,.35), rgba(0,0,0,.0)); pointer-events:none; mix-blend:multiply; }
+            .page > .side.right::after{ content:''; position:absolute; top:0; bottom:0; right:0; width:14px; background: linear-gradient(270deg, rgba(0,0,0,.35), rgba(0,0,0,.0)); pointer-events:none; mix-blend:multiply; }
             .leaf { position:absolute; inset:0; backface-visibility:hidden; }
             .leaf::before{ content:''; position:absolute; inset:-20% -15%; background: radial-gradient(140% 100% at 0% 50%, rgba(255,255,255,0.16), transparent 62%); mix-blend: screen; pointer-events:none; opacity:.6; }
             .leaf::after{ content:''; position:absolute; inset:0; box-shadow: inset 0 0 80px rgba(0,0,0,.46), inset 0 0 0 1px rgba(255,255,255,.06); pointer-events:none; }

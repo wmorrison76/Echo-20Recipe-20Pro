@@ -29,6 +29,7 @@ export default function GallerySection() {
     reorderImages,
     updateImage,
     exportAllZip,
+    restoreDemo,
   } = useAppData();
   const [status, setStatus] = useState<string | null>(null);
   const [showTagDialog, setShowTagDialog] = useState(false);
@@ -496,7 +497,7 @@ export default function GallerySection() {
       ) : (
         <div className="rounded-md border p-6 text-center text-sm text-muted-foreground">
           <div className="mb-2">No images yet.</div>
-          <Button onClick={() => clearImages()}>Restore demo images</Button>
+          <Button onClick={() => restoreDemo()}>Restore demo images</Button>
         </div>
       )}
 
