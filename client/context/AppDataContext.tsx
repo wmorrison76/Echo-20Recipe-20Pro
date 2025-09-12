@@ -842,10 +842,16 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         // Learn from entire book regardless of what gets imported
         learnFromPages(f.name.replace(/\.pdf$/i,''), pageTexts);
 
-        // Parse appendix/TOC entries: "Title .... 123 (photo 124)"
+        // Parse appendix/TOC entries with flexible patterns
         let indexEntries = allLines.map(s=>{
-          const m = s.match(/^(.{3,120}?)(?:\.{2,}|\s{2,})(\d{1,4})(?:.*?\(\s*photo\s*(\d{1,4})\s*\))?$/i);
-          if(!m) return null; const title=m[1].trim(); const page=parseInt(m[2],10); const photo = m[3]?parseInt(m[3],10):undefined; const bad=/^(contents|index|appendix|recipes?|chapter|table of contents)$/i; if(!title||bad.test(title)) return null; return { title, page, photoPage: photo };
+          const tests = [
+            /^(.{3,120}?)(?:[\.·•\s]{2,})(\d{1,4})(?:.*?\(\s*photo\s*(\d{1,4})\s*\))?$/i,
+            /^(.{3,120}?)\s{3,}(\d{1,4})(?:.*?\(\s*photo\s*(\d{1,4})\s*\))?$/i,
+            /^(.{3,120}?)\s+[-–—]\s*(\d{1,4})(?:.*?\(\s*photo\s*(\d{1,4})\s*\))?$/i,
+          ];
+          let m: RegExpMatchArray | null = null; let photo: number | undefined;
+          for(const re of tests){ const mm = s.match(re); if(mm){ m=mm; photo = mm[3]? parseInt(mm[3],10): undefined; break; } }
+          if(!m) return null; const title=m[1].trim(); const page=parseInt(m[2],10); const bad=/^(contents|index|appendix|recipes?|chapter|table of contents)$/i; if(!title||bad.test(title)) return null; return { title, page, photoPage: photo };
         }).filter(Boolean) as {title:string; page:number; photoPage?:number}[];
 
         // Heuristic: treat as appendix if we have many entries
