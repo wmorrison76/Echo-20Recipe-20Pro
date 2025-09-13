@@ -44,7 +44,9 @@ function parseJsonLdRecipe(html: string) {
         if (!entry) continue;
         const graphArr = safeArray(entry["@graph"]);
         const lookupById: Record<string, any> = {};
-        for (const g of graphArr) if (g && typeof g === 'object' && typeof g['@id'] === 'string') lookupById[g['@id']] = g;
+        for (const g of graphArr)
+          if (g && typeof g === "object" && typeof g["@id"] === "string")
+            lookupById[g["@id"]] = g;
         const candidates = graphArr.length ? graphArr : [entry];
         for (const cand of candidates) {
           const type = safeArray(cand["@type"]);
@@ -61,12 +63,14 @@ function parseJsonLdRecipe(html: string) {
               const arr = safeArray(ri);
               const out: string[] = [];
               for (const step of arr) {
-                if (typeof step === 'string') out.push(step);
-                else if (step && typeof step.text === 'string') out.push(step.text);
+                if (typeof step === "string") out.push(step);
+                else if (step && typeof step.text === "string")
+                  out.push(step.text);
                 else if (step && Array.isArray(step.itemListElement)) {
                   for (const el of step.itemListElement) {
-                    if (typeof el === 'string') out.push(el);
-                    else if (el && typeof el.text === 'string') out.push(el.text);
+                    if (typeof el === "string") out.push(el);
+                    else if (el && typeof el.text === "string")
+                      out.push(el.text);
                   }
                 }
               }
@@ -82,16 +86,27 @@ function parseJsonLdRecipe(html: string) {
                 }
               : undefined;
             let image = normalizeImageField(cand.image);
-            if (!image && cand.image && typeof cand.image === 'object' && typeof cand.image['@id'] === 'string') {
-              const ref = lookupById[cand.image['@id']];
+            if (
+              !image &&
+              cand.image &&
+              typeof cand.image === "object" &&
+              typeof cand.image["@id"] === "string"
+            ) {
+              const ref = lookupById[cand.image["@id"]];
               image = normalizeImageField(ref);
             }
             return {
               title: decodeHtml(String(cand.name || "")),
-              ingredients: safeArray(cand.recipeIngredient || []).map((x: any) => decodeHtml(String(x))),
-              instructions: decodeHtml(normalizeInstructions(cand.recipeInstructions).trim()),
+              ingredients: safeArray(cand.recipeIngredient || []).map(
+                (x: any) => decodeHtml(String(x)),
+              ),
+              instructions: decodeHtml(
+                normalizeInstructions(cand.recipeInstructions).trim(),
+              ),
               yield: decodeHtml(String(cand.recipeYield || "")),
-              cookTime: isoToHuman(String(cand.cookTime || cand.totalTime || "")),
+              cookTime: isoToHuman(
+                String(cand.cookTime || cand.totalTime || ""),
+              ),
               prepTime: isoToHuman(String(cand.prepTime || "")),
               image,
               nutrition,
@@ -118,7 +133,9 @@ function scrapeRecipeFallback(html: string) {
     pick(
       /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["'][^>]*>/i,
     ) ||
-    pick(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["'][^>]*>/i) ||
+    pick(
+      /<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["'][^>]*>/i,
+    ) ||
     pick(/<link[^>]+rel=["']image_src["'][^>]+href=["']([^"']+)["'][^>]*>/i) ||
     pick(/<meta[^>]+name=["']image["'][^>]+content=["']([^"']+)["'][^>]*>/i);
 

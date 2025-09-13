@@ -42,8 +42,8 @@ export default function GallerySection() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [viewMode, setViewMode] = useState<"masonry" | "grid">("grid");
-  const [thumbSize, setThumbSize] = useState<"s"|"m"|"l">("m");
-  const [sort, setSort] = useState<"newest"|"popular"|"rated">("newest");
+  const [thumbSize, setThumbSize] = useState<"s" | "m" | "l">("m");
+  const [sort, setSort] = useState<"newest" | "popular" | "rated">("newest");
   const [category, setCategory] = useState<string>("");
   const [newLookBookName, setNewLookBookName] = useState("");
   const [activeLookBookId, setActiveLookBookId] = useState<string | null>(null);
@@ -59,17 +59,29 @@ export default function GallerySection() {
   const filtered = useMemo(() => {
     const q = filter.trim().toLowerCase();
     let base = q
-      ? images.filter((i) => (i.tags || []).some((t) => t.toLowerCase().includes(q)) || i.name.toLowerCase().includes(q))
+      ? images.filter(
+          (i) =>
+            (i.tags || []).some((t) => t.toLowerCase().includes(q)) ||
+            i.name.toLowerCase().includes(q),
+        )
       : images.slice();
     const cat = category.trim().toLowerCase();
     base.sort((a, b) => {
-      const aMatch = cat ? (a.tags || []).some((t) => t.toLowerCase().includes(cat)) : 0;
-      const bMatch = cat ? (b.tags || []).some((t) => t.toLowerCase().includes(cat)) : 0;
+      const aMatch = cat
+        ? (a.tags || []).some((t) => t.toLowerCase().includes(cat))
+        : 0;
+      const bMatch = cat
+        ? (b.tags || []).some((t) => t.toLowerCase().includes(cat))
+        : 0;
       if (aMatch !== bMatch) return bMatch - aMatch;
       return a.order - b.order;
     });
-    if (sort === "newest") base = base.slice().sort((a,b)=> b.createdAt - a.createdAt);
-    else if (sort === "rated") base = base.slice().sort((a,b)=> (b.favorite?1:0) - (a.favorite?1:0));
+    if (sort === "newest")
+      base = base.slice().sort((a, b) => b.createdAt - a.createdAt);
+    else if (sort === "rated")
+      base = base
+        .slice()
+        .sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0));
     return base;
   }, [images, filter, category, sort]);
 
@@ -184,8 +196,10 @@ export default function GallerySection() {
   };
 
   return (
-    <div className={`mx-auto max-w-[1200px] px-4 md:px-6 py-4 space-y-4 ${lucccaMode ? 'luccca-theme' : ''}`} data-echo-key="page:recipes:gallery">
-
+    <div
+      className={`mx-auto max-w-[1200px] px-4 md:px-6 py-4 space-y-4 ${lucccaMode ? "luccca-theme" : ""}`}
+      data-echo-key="page:recipes:gallery"
+    >
       <div className="grid gap-3 md:grid-cols-2 items-start">
         <Dropzone multiple onFiles={onFiles}>
           <div className="flex flex-col items-center justify-center gap-2 text-sm py-3">
@@ -203,7 +217,9 @@ export default function GallerySection() {
           <div className="flex items-center justify-between">
             <div className="text-sm text-muted-foreground flex items-center gap-2">
               <span>Images in gallery</span>
-              <span className="text-base font-semibold tabular-nums min-w-[5ch] text-right">{images.length}</span>
+              <span className="text-base font-semibold tabular-nums min-w-[5ch] text-right">
+                {images.length}
+              </span>
             </div>
             <Button variant="outline" size="sm" onClick={exportAllZip}>
               <Download className="w-4 h-4 mr-1" />
@@ -211,7 +227,10 @@ export default function GallerySection() {
             </Button>
           </div>
           <div className="flex flex-wrap gap-1.5 items-center">
-            <div className="relative flex-1 min-w-[220px]" data-echo-key="filter:gallery:tags">
+            <div
+              className="relative flex-1 min-w-[220px]"
+              data-echo-key="filter:gallery:tags"
+            >
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
                 value={filter}
@@ -225,11 +244,17 @@ export default function GallerySection() {
               accept="image/*"
               multiple
               className="hidden"
-              onChange={(e)=>{ const files = Array.from(e.target.files||[]); if(files.length){ onFiles(files); } (e.target as HTMLInputElement).value=''; }}
-              ref={(el)=> (window as any).__gallery_upload_input = el}
+              onChange={(e) => {
+                const files = Array.from(e.target.files || []);
+                if (files.length) {
+                  onFiles(files);
+                }
+                (e.target as HTMLInputElement).value = "";
+              }}
+              ref={(el) => ((window as any).__gallery_upload_input = el)}
             />
             <Button
-              onClick={()=> (window as any).__gallery_upload_input?.click()}
+              onClick={() => (window as any).__gallery_upload_input?.click()}
               variant="default"
               data-echo-key="cta:gallery:upload"
             >
@@ -264,18 +289,25 @@ export default function GallerySection() {
             <select
               className="rounded-md border bg-background px-2 py-1 text-xs"
               value={thumbSize}
-              onChange={(e)=> setThumbSize(e.target.value as any)}
+              onChange={(e) => setThumbSize(e.target.value as any)}
               title="Thumbnail size"
             >
               <option value="s">Small</option>
               <option value="m">Medium</option>
               <option value="l">Large</option>
             </select>
-            <label className="text-xs ml-1 mr-2 flex items-center gap-1"><input type="checkbox" checked={lucccaMode} onChange={(e)=>setLucccaMode(e.target.checked)} /> LUCCCA</label>
+            <label className="text-xs ml-1 mr-2 flex items-center gap-1">
+              <input
+                type="checkbox"
+                checked={lucccaMode}
+                onChange={(e) => setLucccaMode(e.target.checked)}
+              />{" "}
+              LUCCCA
+            </label>
             <select
               className="rounded-md border bg-background px-2 py-1 text-xs"
               value={category}
-              onChange={(e)=> setCategory(e.target.value)}
+              onChange={(e) => setCategory(e.target.value)}
             >
               <option value="">Category: All</option>
               <option value="pastry">Pastry</option>
@@ -316,40 +348,55 @@ export default function GallerySection() {
         <div className="flex flex-col md:flex-row gap-2 items-stretch md:items-center">
           <textarea
             value={urlText}
-            onChange={(e)=>setUrlText(e.target.value)}
+            onChange={(e) => setUrlText(e.target.value)}
             placeholder="Paste one or more direct image URLs (one per line)"
             className="flex-1 min-h-[60px] rounded-md border bg-background px-3 py-2 text-sm font-mono"
           />
           <Button
             disabled={urlLoading || !urlText.trim()}
-            onClick={async()=>{
-              try{
+            onClick={async () => {
+              try {
                 setUrlLoading(true);
-                const urls = urlText.split(/\r?\n|,|\s+/).map(s=>s.trim()).filter(u=>/^https?:\/\//i.test(u));
-                if(!urls.length){ setStatus('Enter valid http(s) image URLs'); return; }
+                const urls = urlText
+                  .split(/\r?\n|,|\s+/)
+                  .map((s) => s.trim())
+                  .filter((u) => /^https?:\/\//i.test(u));
+                if (!urls.length) {
+                  setStatus("Enter valid http(s) image URLs");
+                  return;
+                }
                 const files: File[] = [];
-                for(const u of urls){
-                  try{
+                for (const u of urls) {
+                  try {
                     const res = await fetch(u);
-                    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
                     const blob = await res.blob();
-                    const name = (u.split('?')[0].split('#')[0].split('/').pop() || `image-${Date.now()}.jpg`).replace(/[^A-Za-z0-9_.-]/g,'_');
-                    files.push(new File([blob], name, { type: blob.type || 'image/jpeg' }));
-                  } catch(e:any){
-                    setStatus(`Failed to fetch ${u}: ${e?.message||'error'}`);
+                    const name = (
+                      u.split("?")[0].split("#")[0].split("/").pop() ||
+                      `image-${Date.now()}.jpg`
+                    ).replace(/[^A-Za-z0-9_.-]/g, "_");
+                    files.push(
+                      new File([blob], name, {
+                        type: blob.type || "image/jpeg",
+                      }),
+                    );
+                  } catch (e: any) {
+                    setStatus(`Failed to fetch ${u}: ${e?.message || "error"}`);
                   }
                 }
-                if(files.length){
+                if (files.length) {
                   const added = await addImages(files, { tags: [] });
                   setStatus(`Added ${added} image(s) from URL.`);
                   linkImagesToRecipesByFilename();
-                  setUrlText('');
+                  setUrlText("");
                 }
               } finally {
                 setUrlLoading(false);
               }
             }}
-          >{urlLoading? 'Adding...' : 'Add'}</Button>
+          >
+            {urlLoading ? "Adding..." : "Add"}
+          </Button>
         </div>
       </div>
 
@@ -465,7 +512,7 @@ export default function GallerySection() {
           {filtered.map((img) => (
             <div
               key={img.id}
-              className={`mb-6 break-inside-avoid rounded-2xl overflow-hidden relative group shadow-lg ring-1 ring-black/5 bg-white dark:bg-slate-900 dark:ring-sky-500/25 dark:shadow-[0_0_30px_rgba(56,189,248,0.18)] transition-all hover:shadow-[0_10px_40px_rgba(56,189,248,0.25)] hover:ring-2 hover:ring-sky-300/50 dark:hover:ring-sky-400/40 ${viewMode==='masonry' ? 'card' : ''}`}
+              className={`mb-6 break-inside-avoid rounded-2xl overflow-hidden relative group shadow-lg ring-1 ring-black/5 bg-white dark:bg-slate-900 dark:ring-sky-500/25 dark:shadow-[0_0_30px_rgba(56,189,248,0.18)] transition-all hover:shadow-[0_10px_40px_rgba(56,189,248,0.25)] hover:ring-2 hover:ring-sky-300/50 dark:hover:ring-sky-400/40 ${viewMode === "masonry" ? "card" : ""}`}
               draggable
               onDragStart={() => onDragStart(img.id)}
               onDragOver={(e) => e.preventDefault()}
@@ -505,7 +552,7 @@ export default function GallerySection() {
                     src={img.dataUrl || img.blobUrl}
                     alt={img.name}
                     loading="lazy"
-                    className={`w-full ${viewMode==='grid' ? (thumbSize==='s'?'h-32':thumbSize==='l'?'h-56':'h-44') : 'h-auto'} object-cover transition-all duration-200 z-0`}
+                    className={`w-full ${viewMode === "grid" ? (thumbSize === "s" ? "h-32" : thumbSize === "l" ? "h-56" : "h-44") : "h-auto"} object-cover transition-all duration-200 z-0`}
                     onError={(e) => {
                       const el = e.currentTarget;
                       el.onerror = null;
@@ -517,7 +564,10 @@ export default function GallerySection() {
               </button>
               <button
                 className="absolute bottom-2 right-2 z-20 rounded-full bg-black/60 p-1.5 text-white opacity-0 group-hover:opacity-100 hover:bg-black/70"
-                onClick={(e) => { e.stopPropagation(); if (confirm('Delete this image?')) deleteImage(img.id); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (confirm("Delete this image?")) deleteImage(img.id);
+                }}
                 aria-label="Delete image"
                 title="Delete image"
               >
@@ -636,7 +686,7 @@ export default function GallerySection() {
         }
         onNext={() => setLightboxIndex((i) => (i + 1) % filtered.length)}
         onToggleFavorite={toggleFavorite}
-        className={lucccaMode ? 'luccca-theme lightbox-overlay' : ''}
+        className={lucccaMode ? "luccca-theme lightbox-overlay" : ""}
       />
 
       <FlipBook
@@ -649,7 +699,7 @@ export default function GallerySection() {
           const img = images.find((i) => i.id === id);
           return { id, src: img?.dataUrl || img?.blobUrl, name: img?.name };
         })}
-        className={lucccaMode ? 'luccca-theme' : ''}
+        className={lucccaMode ? "luccca-theme" : ""}
       />
     </div>
   );

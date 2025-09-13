@@ -34,7 +34,9 @@ export function Dropzone({
     <div
       className={cn(
         "relative rounded-xl border border-dashed p-1 text-center transition-all bg-background hover:shadow-md min-h-8 overflow-hidden",
-        (dragOver || busy) ? "border-ring ring-2 ring-ring/40 marching-ants" : "border-muted-foreground/30",
+        dragOver || busy
+          ? "border-ring ring-2 ring-ring/40 marching-ants"
+          : "border-muted-foreground/30",
         className,
       )}
       onClick={() => inputRef.current?.click()}
@@ -69,7 +71,10 @@ export function Dropzone({
         <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
           <div className="absolute inset-0 matrix-overlay" />
           <div className="relative z-10 text-xs bg-background/80 px-2 py-1 rounded border">
-            Importing… {typeof progress==="number"? `${Math.round(progress*100)}%` : ""}
+            Importing…{" "}
+            {typeof progress === "number"
+              ? `${Math.round(progress * 100)}%`
+              : ""}
           </div>
         </div>
       )}

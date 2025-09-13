@@ -1,31 +1,87 @@
 /* LUCCCA Lookbook — TRON + Apple Hybrid */
-:root{
-  --bg:#0a0f14;
-  --surface:rgba(12,18,24,0.6);
-  --glass:rgba(15,20,28,0.35);
-  --text:#e6eef5;
-  --muted:#9fb2c0;
-  --accent:#00d1ff;
-  --accent-2:#c0a060;
-  --stroke:rgba(0, 209, 255, 0.65);
-  --shadow:0 10px 30px rgba(0,0,0,.45);
-  --radius:18px;
-  --gap:28px; --gap-sm:22px; --gap-xs:14px;
+:root {
+  --bg: #0a0f14;
+  --surface: rgba(12, 18, 24, 0.6);
+  --glass: rgba(15, 20, 28, 0.35);
+  --text: #e6eef5;
+  --muted: #9fb2c0;
+  --accent: #00d1ff;
+  --accent-2: #c0a060;
+  --stroke: rgba(0, 209, 255, 0.65);
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --radius: 18px;
+  --gap: 28px;
+  --gap-sm: 22px;
+  --gap-xs: 14px;
 }
 
-.luccca-theme{ background:var(--bg); color:var(--text); }
-.luccca-theme .glass{ background:var(--glass); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius); box-shadow:var(--shadow); backdrop-filter: blur(12px) saturate(1.2); }
-.luccca-theme .neon-border{ position:relative; }
-.luccca-theme .neon-border::after{ content:""; position:absolute; inset:0; border-radius: calc(var(--radius) + 2px); box-shadow: 0 0 1px var(--accent), 0 0 8px var(--accent), inset 0 0 12px rgba(0,209,255,.2); opacity:.35; pointer-events:none; }
+.luccca-theme {
+  background: var(--bg);
+  color: var(--text);
+}
+.luccca-theme .glass {
+  background: var(--glass);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px) saturate(1.2);
+}
+.luccca-theme .neon-border {
+  position: relative;
+}
+.luccca-theme .neon-border::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: calc(var(--radius) + 2px);
+  box-shadow:
+    0 0 1px var(--accent),
+    0 0 8px var(--accent),
+    inset 0 0 12px rgba(0, 209, 255, 0.2);
+  opacity: 0.35;
+  pointer-events: none;
+}
 
 /* Masonry helpers for LUCCCA variant */
-.luccca-theme .masonry{ columns: 4 280px; column-gap: var(--gap); }
-@media (max-width: 1200px){ .luccca-theme .masonry{ columns: 3 240px; } }
-@media (max-width: 900px){ .luccca-theme .masonry{ columns: 2 220px; } }
-@media (max-width: 600px){ .luccca-theme .masonry{ columns: 1 100%; } }
-.luccca-theme .masonry .card{ break-inside: avoid; margin: 0 0 var(--gap); overflow:hidden; }
-.luccca-theme .masonry img{ display:block; width:100%; height:auto; transition: transform .35s ease, filter .35s ease; }
-.luccca-theme .masonry .card:hover img{ transform: scale(1.03); filter: saturate(1.05); }
+.luccca-theme .masonry {
+  columns: 4 280px;
+  column-gap: var(--gap);
+}
+@media (max-width: 1200px) {
+  .luccca-theme .masonry {
+    columns: 3 240px;
+  }
+}
+@media (max-width: 900px) {
+  .luccca-theme .masonry {
+    columns: 2 220px;
+  }
+}
+@media (max-width: 600px) {
+  .luccca-theme .masonry {
+    columns: 1 100%;
+  }
+}
+.luccca-theme .masonry .card {
+  break-inside: avoid;
+  margin: 0 0 var(--gap);
+  overflow: hidden;
+}
+.luccca-theme .masonry img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition:
+    transform 0.35s ease,
+    filter 0.35s ease;
+}
+.luccca-theme .masonry .card:hover img {
+  transform: scale(1.03);
+  filter: saturate(1.05);
+}
 
 /* Lightbox polish */
-.luccca-theme .lightbox-overlay{ background:rgba(6,10,14,.7); backdrop-filter: blur(8px); }
+.luccca-theme .lightbox-overlay {
+  background: rgba(6, 10, 14, 0.7);
+  backdrop-filter: blur(8px);
+}

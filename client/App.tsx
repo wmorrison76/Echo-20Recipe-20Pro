@@ -16,11 +16,29 @@ import { AppDataProvider } from "@/context/AppDataContext";
 
 const queryClient = new QueryClient();
 
-class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { error: any }> {
-  constructor(props: any){ super(props); this.state = { error: null }; }
-  static getDerivedStateFromError(error: any){ return { error }; }
-  componentDidCatch(error: any, info: any){ console.error('App error:', error, info); }
-  render(){ if (this.state.error) return <div role="alert" style={{ padding: 16 }}>Something went wrong. Please refresh.</div>; return this.props.children as any; }
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { error: any }
+> {
+  constructor(props: any) {
+    super(props);
+    this.state = { error: null };
+  }
+  static getDerivedStateFromError(error: any) {
+    return { error };
+  }
+  componentDidCatch(error: any, info: any) {
+    console.error("App error:", error, info);
+  }
+  render() {
+    if (this.state.error)
+      return (
+        <div role="alert" style={{ padding: 16 }}>
+          Something went wrong. Please refresh.
+        </div>
+      );
+    return this.props.children as any;
+  }
 }
 
 const App = () => (
@@ -47,7 +65,7 @@ const App = () => (
 
 const container = document.getElementById("root")!;
 const prevRoot = (window as any).__app_root;
-if (prevRoot && typeof prevRoot.render === 'function') {
+if (prevRoot && typeof prevRoot.render === "function") {
   prevRoot.render(<App />);
 } else {
   const root = createRoot(container);
@@ -58,7 +76,9 @@ if (prevRoot && typeof prevRoot.render === 'function') {
 if (import.meta && (import.meta as any).hot) {
   (import.meta as any).hot.dispose(() => {
     const r = (window as any).__app_root;
-    try { r?.unmount?.(); } catch {}
+    try {
+      r?.unmount?.();
+    } catch {}
     (window as any).__app_root = null;
   });
 }

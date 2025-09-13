@@ -6,9 +6,13 @@ export async function proxyRecipeImage(req: Request, res: Response) {
     if (!src || !/^https?:\/\//i.test(src)) {
       return res.status(400).json({ error: "Invalid image url" });
     }
-    const r = await fetch(src, { headers: { Accept: "image/*,application/octet-stream" } });
+    const r = await fetch(src, {
+      headers: { Accept: "image/*,application/octet-stream" },
+    });
     if (!r.ok) {
-      return res.status(400).json({ error: `Image fetch failed (${r.status})` });
+      return res
+        .status(400)
+        .json({ error: `Image fetch failed (${r.status})` });
     }
     const ct = r.headers.get("content-type") || "application/octet-stream";
     if (!/^image\//i.test(ct)) {

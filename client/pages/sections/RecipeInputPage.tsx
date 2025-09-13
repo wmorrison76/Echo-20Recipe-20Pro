@@ -27,7 +27,12 @@ import {
   Printer,
   FlaskConical,
 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const RecipeInputPage = () => {
   const [recipeName, setRecipeName] = useState("");
@@ -40,7 +45,13 @@ const RecipeInputPage = () => {
   const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
   const { addRecipe, updateRecipe, addImages } = useAppData();
   const recipeIdRef = useRef<string | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(()=>{ try{ return document.documentElement.classList.contains('dark'); } catch { return false; } });
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    try {
+      return document.documentElement.classList.contains("dark");
+    } catch {
+      return false;
+    }
+  });
   // Sync with global theme from ThemeToggle
   useEffect(() => {
     const apply = () =>
@@ -52,12 +63,15 @@ const RecipeInputPage = () => {
     const obs = new MutationObserver(() => {
       setIsDarkMode(document.documentElement.classList.contains("dark"));
     });
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
-    const onChef = (e: any) => setChefNotes(String(e?.detail || ''));
-    window.addEventListener('recipe:chef-notes', onChef as any);
+    obs.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    const onChef = (e: any) => setChefNotes(String(e?.detail || ""));
+    window.addEventListener("recipe:chef-notes", onChef as any);
     return () => {
       window.removeEventListener("theme:change", onTheme as any);
-      window.removeEventListener('recipe:chef-notes', onChef as any);
+      window.removeEventListener("recipe:chef-notes", onChef as any);
       obs.disconnect();
     };
   }, []);
@@ -79,7 +93,13 @@ const RecipeInputPage = () => {
   const [selectedRecipeAccess, setSelectedRecipeAccess] = useState<string[]>(
     [],
   );
-  const [chefNotes, setChefNotes] = useState<string>(() => { try { return localStorage.getItem('recipe:chef-notes') || ''; } catch { return ''; } });
+  const [chefNotes, setChefNotes] = useState<string>(() => {
+    try {
+      return localStorage.getItem("recipe:chef-notes") || "";
+    } catch {
+      return "";
+    }
+  });
   const stepImageInputRef = useRef<HTMLInputElement | null>(null);
   const STEP_IMG_MAX_W = 720;
   const [image, setImage] = useState<string | null>(null);
@@ -95,7 +115,9 @@ const RecipeInputPage = () => {
   const [portionUnit, setPortionUnit] = useState<string>("OZ");
   const [nutrition, setNutrition] = useState<any | null>(null);
   const [yieldOpen, setYieldOpen] = useState(false);
-  const [taxonomy, setTaxonomy] = useState<TaxonomySelection>({ ...defaultSelection });
+  const [taxonomy, setTaxonomy] = useState<TaxonomySelection>({
+    ...defaultSelection,
+  });
   const [nutritionLoading, setNutritionLoading] = useState(false);
   const [nutritionError, setNutritionError] = useState<string | null>(null);
   const [nutritionPerServing, setNutritionPerServing] = useState(true);
@@ -123,7 +145,12 @@ const RecipeInputPage = () => {
       .join(" ")
       .toLowerCase();
     const s = new Set<string>();
-    if (/(milk|cream|butter|cheese|half-?and-?half|yogurt|whey|ricotta|mozzarella|parmesan|parmigiano|pecorino|cheddar|gouda|feta)/.test(text)) s.add("Dairy");
+    if (
+      /(milk|cream|butter|cheese|half-?and-?half|yogurt|whey|ricotta|mozzarella|parmesan|parmigiano|pecorino|cheddar|gouda|feta)/.test(
+        text,
+      )
+    )
+      s.add("Dairy");
     if (/flour|wheat|barley|rye|bread|pasta|cracker/.test(text))
       s.add("Gluten");
     if (/egg\b|eggs\b|egg yolk|egg white/.test(text)) s.add("Eggs");
@@ -132,8 +159,10 @@ const RecipeInputPage = () => {
       s.add("Nuts");
     if (/sesame/.test(text)) s.add("Sesame");
     if (/soy\b|soybean|soy sauce|tofu|edamame/.test(text)) s.add("Soy");
-    if (/clam|shrimp|crab|lobster|scallop|oyster/.test(text)) s.add("Shellfish");
-    if (/cod|salmon|tuna|anchov|trout|halibut|haddock|sardine/.test(text)) s.add("Fish");
+    if (/clam|shrimp|crab|lobster|scallop|oyster/.test(text))
+      s.add("Shellfish");
+    if (/cod|salmon|tuna|anchov|trout|halibut|haddock|sardine/.test(text))
+      s.add("Fish");
     if (/onion|shallot|leek|scallion|chive/.test(text)) s.add("Onion/Allium");
     if (/garlic/.test(text)) s.add("Garlic");
     return Array.from(s);
@@ -143,7 +172,9 @@ const RecipeInputPage = () => {
       setSelectedAllergens(detectAllergensFromIngredients(ingredients as any));
     // ensure default yield percentage when missing; avoid update loop
     if (ingredients.some((r: any) => !r.yield)) {
-      setIngredients((prev) => prev.map((r) => (r.yield ? r : { ...r, yield: String(100) })));
+      setIngredients((prev) =>
+        prev.map((r) => (r.yield ? r : { ...r, yield: String(100) })),
+      );
     }
   }, [ingredients]);
 
@@ -379,41 +410,59 @@ const RecipeInputPage = () => {
     return () => window.removeEventListener("openImageEditor", handler as any);
   }, []);
   // Sync with global ThemeToggle (listens to html.dark)
-  useEffect(()=>{
+  useEffect(() => {
     const el = document.documentElement;
-    const apply = () => setIsDarkMode(el.classList.contains('dark'));
+    const apply = () => setIsDarkMode(el.classList.contains("dark"));
     apply();
     const obs = new MutationObserver(apply);
-    try{ obs.observe(el,{ attributes:true, attributeFilter:['class'] }); } catch {}
-    return ()=>{ try{ obs.disconnect(); } catch{} };
-  },[]);
+    try {
+      obs.observe(el, { attributes: true, attributeFilter: ["class"] });
+    } catch {}
+    return () => {
+      try {
+        obs.disconnect();
+      } catch {}
+    };
+  }, []);
   useEffect(() => {
-    const seeded = localStorage.getItem('kb:culinary:seeded:v1');
+    const seeded = localStorage.getItem("kb:culinary:seeded:v1");
     if (seeded) return;
     (async () => {
       try {
-        const res = await fetch('https://cdn.builder.io/o/assets%2Faccc7891edf04665961a321335d9540b%2F9770e28941e54ac1984842723ff5ddfa?alt=media&token=1331ec03-0eae-49a6-8e9d-5cfeff892419&apiKey=accc7891edf04665961a321335d9540b');
+        const res = await fetch(
+          "https://cdn.builder.io/o/assets%2Faccc7891edf04665961a321335d9540b%2F9770e28941e54ac1984842723ff5ddfa?alt=media&token=1331ec03-0eae-49a6-8e9d-5cfeff892419&apiKey=accc7891edf04665961a321335d9540b",
+        );
         const data = await res.json();
         const counts: Record<string, number> = {};
         const add = (k: string, v: number = 1) => {
-          const key = String(k || '').toLowerCase().trim();
+          const key = String(k || "")
+            .toLowerCase()
+            .trim();
           if (!key) return;
           counts[key] = (counts[key] || 0) + v;
         };
         if (Array.isArray(data)) data.forEach((t: any) => add(String(t)));
-        if (data && typeof data === 'object') {
-          if (Array.isArray(data.terms)) data.terms.forEach((t: any) => add(String(t)));
-          if (data.terms && typeof data.terms === 'object' && !Array.isArray(data.terms)) {
-            for (const [k, v] of Object.entries(data.terms)) add(k, Number(v as any) || 1);
+        if (data && typeof data === "object") {
+          if (Array.isArray(data.terms))
+            data.terms.forEach((t: any) => add(String(t)));
+          if (
+            data.terms &&
+            typeof data.terms === "object" &&
+            !Array.isArray(data.terms)
+          ) {
+            for (const [k, v] of Object.entries(data.terms))
+              add(k, Number(v as any) || 1);
           }
-          if (Array.isArray(data.aliases)) data.aliases.forEach((t: any) => add(String(t)));
+          if (Array.isArray(data.aliases))
+            data.aliases.forEach((t: any) => add(String(t)));
         }
-        const kbRaw = localStorage.getItem('kb:cook') || '{}';
-        const kb = JSON.parse(kbRaw||'{}');
-        kb.terms = { ...(kb.terms||{}) };
-        for (const [k,v] of Object.entries(counts)) kb.terms[k] = (kb.terms[k]||0) + (v as number);
-        localStorage.setItem('kb:cook', JSON.stringify(kb));
-        localStorage.setItem('kb:culinary:seeded:v1','1');
+        const kbRaw = localStorage.getItem("kb:cook") || "{}";
+        const kb = JSON.parse(kbRaw || "{}");
+        kb.terms = { ...(kb.terms || {}) };
+        for (const [k, v] of Object.entries(counts))
+          kb.terms[k] = (kb.terms[k] || 0) + (v as number);
+        localStorage.setItem("kb:cook", JSON.stringify(kb));
+        localStorage.setItem("kb:culinary:seeded:v1", "1");
       } catch {}
     })();
   }, []);
@@ -428,23 +477,52 @@ const RecipeInputPage = () => {
       if (t === "openYieldLab") setYieldOpen(true);
       if (t === "finalizeImport") {
         try {
-          const title = (recipeName || '').trim() || 'Untitled Recipe';
-          const ingLines = ingredients.map((r) => [r.qty, r.unit, r.item, r.prep].filter(Boolean).join(' ').trim()).filter(Boolean);
-          const insLines = String(directions||'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
-          const cover = image && image.startsWith('data:') ? [image] : undefined;
+          const title = (recipeName || "").trim() || "Untitled Recipe";
+          const ingLines = ingredients
+            .map((r) =>
+              [r.qty, r.unit, r.item, r.prep].filter(Boolean).join(" ").trim(),
+            )
+            .filter(Boolean);
+          const insLines = String(directions || "")
+            .split(/\r?\n/)
+            .map((s) => s.trim())
+            .filter(Boolean);
+          const cover =
+            image && image.startsWith("data:") ? [image] : undefined;
           if (!recipeIdRef.current) {
-            recipeIdRef.current = addRecipe({ title, ingredients: ingLines, instructions: insLines, imageDataUrls: cover, tags: [], extra: { source: 'manual', taxonomy, published: true } });
+            recipeIdRef.current = addRecipe({
+              title,
+              ingredients: ingLines,
+              instructions: insLines,
+              imageDataUrls: cover,
+              tags: [],
+              extra: { source: "manual", taxonomy, published: true },
+            });
           } else {
-            updateRecipe(recipeIdRef.current, { title, ingredients: ingLines, instructions: insLines, imageDataUrls: cover, extra: { taxonomy, published: true } });
+            updateRecipe(recipeIdRef.current, {
+              title,
+              ingredients: ingLines,
+              instructions: insLines,
+              imageDataUrls: cover,
+              extra: { taxonomy, published: true },
+            });
           }
         } finally {
-          try { localStorage.removeItem('recipe:draft'); } catch {}
-          try { localStorage.removeItem('recipe:add:description'); } catch {}
-          try { localStorage.removeItem('recipe:chef-notes'); } catch {}
+          try {
+            localStorage.removeItem("recipe:draft");
+          } catch {}
+          try {
+            localStorage.removeItem("recipe:add:description");
+          } catch {}
+          try {
+            localStorage.removeItem("recipe:chef-notes");
+          } catch {}
           recipeIdRef.current = null;
-          setRecipeName('');
-          setIngredients([{ qty:'', unit:'', item:'', prep:'', yield:'', cost:'' }]);
-          setDirections('1. ');
+          setRecipeName("");
+          setIngredients([
+            { qty: "", unit: "", item: "", prep: "", yield: "", cost: "" },
+          ]);
+          setDirections("1. ");
           setImage(null);
           setSelectedAllergens([]);
           setSelectedNationality([]);
@@ -454,11 +532,16 @@ const RecipeInputPage = () => {
           setSelectedCookingEquipment([]);
           setSelectedRecipeAccess([]);
           setTaxonomy({ ...defaultSelection });
-          setYieldQty(6); setYieldUnit('QTS');
-          setPortionCount(6); setPortionUnit('OZ');
-          setCookTime(''); setCookTemp(''); setPrepTime('');
-          setNutrition(null); setNutritionError(null);
-          setChefNotes('');
+          setYieldQty(6);
+          setYieldUnit("QTS");
+          setPortionCount(6);
+          setPortionUnit("OZ");
+          setCookTime("");
+          setCookTemp("");
+          setPrepTime("");
+          setNutrition(null);
+          setNutritionError(null);
+          setChefNotes("");
         }
       }
     };
@@ -678,35 +761,47 @@ const RecipeInputPage = () => {
       if (!text) return text;
       let out = text;
       if (toMetric) {
-        out = out.replace(/(\d{2,3})\s*(?:°\s*)?(?:f|fahrenheit|degf|degrees\s*f)\b/gi, (_m, a) => {
-          const f = parseInt(a, 10);
-          const c = Math.round((f - 32) * 5 / 9);
-          return `${c}°C`;
-        });
+        out = out.replace(
+          /(\d{2,3})\s*(?:°\s*)?(?:f|fahrenheit|degf|degrees\s*f)\b/gi,
+          (_m, a) => {
+            const f = parseInt(a, 10);
+            const c = Math.round(((f - 32) * 5) / 9);
+            return `${c}°C`;
+          },
+        );
       } else {
-        out = out.replace(/(\d{2,3})\s*(?:°\s*)?(?:c|celsius|degc|degrees\s*c)\b/gi, (_m, a) => {
-          const c = parseInt(a, 10);
-          const f = Math.round(c * 9 / 5 + 32);
-          return `${f}°F`;
-        });
+        out = out.replace(
+          /(\d{2,3})\s*(?:°\s*)?(?:c|celsius|degc|degrees\s*c)\b/gi,
+          (_m, a) => {
+            const c = parseInt(a, 10);
+            const f = Math.round((c * 9) / 5 + 32);
+            return `${f}°F`;
+          },
+        );
       }
       return out;
     };
     const convertCookTemp = (s: string, toMetric: boolean) => {
-      const t = String(s || '').trim();
+      const t = String(s || "").trim();
       if (!t) return t;
-      const num = parseInt(t.match(/(\d{2,3})/)?.[1] || '', 10);
+      const num = parseInt(t.match(/(\d{2,3})/)?.[1] || "", 10);
       if (!Number.isFinite(num)) return t;
       if (toMetric) {
         // Treat numeric/no-unit as Fahrenheit when switching to Metric
-        if (/(?:°?\s*F\b|fahrenheit)/i.test(t) || /^(?:\d{2,3})$/.test(t.replace(/[^0-9]/g,''))) {
-          const c = Math.round((num - 32) * 5 / 9);
+        if (
+          /(?:°?\s*F\b|fahrenheit)/i.test(t) ||
+          /^(?:\d{2,3})$/.test(t.replace(/[^0-9]/g, ""))
+        ) {
+          const c = Math.round(((num - 32) * 5) / 9);
           return `${c}°C`;
         }
       } else {
         // Treat numeric/no-unit as Celsius when switching to Imperial
-        if (/(?:°?\s*C\b|celsius)/i.test(t) || /^(?:\d{2,3})$/.test(t.replace(/[^0-9]/g,''))) {
-          const f = Math.round(num * 9 / 5 + 32);
+        if (
+          /(?:°?\s*C\b|celsius)/i.test(t) ||
+          /^(?:\d{2,3})$/.test(t.replace(/[^0-9]/g, ""))
+        ) {
+          const f = Math.round((num * 9) / 5 + 32);
           return `${f}°F`;
         }
       }
@@ -852,12 +947,24 @@ const RecipeInputPage = () => {
     const header = ["qty", "unit", "item", "prep", "yield", "cost"];
     const rows = [
       header,
-      ...ingredients.map((r) => [r.qty, r.unit, r.item, r.prep, r.yield, r.cost]),
+      ...ingredients.map((r) => [
+        r.qty,
+        r.unit,
+        r.item,
+        r.prep,
+        r.yield,
+        r.cost,
+      ]),
       [""],
       ["Directions"],
-      ...String(directions || "").split(/\r?\n/).filter(Boolean).map((line, i) => [`${i + 1}. ${line}`]),
+      ...String(directions || "")
+        .split(/\r?\n/)
+        .filter(Boolean)
+        .map((line, i) => [`${i + 1}. ${line}`]),
     ];
-    const csv = rows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+    const csv = rows
+      .map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -868,10 +975,17 @@ const RecipeInputPage = () => {
   const shareLink = () => {
     const data = serialize();
     const url = `${location.origin}${location.pathname}#r=${encodeURIComponent(btoa(JSON.stringify(data)))}`;
-    const title = recipeName || 'Recipe';
-    const ing = ingredients.map((r)=>[r.qty,r.unit,r.item,r.prep].filter(Boolean).join(' ')).filter(Boolean).join('\n');
-    const ins = String(directions||'').split(/\r?\n/).filter(Boolean).map((s,i)=>`${i+1}. ${s}`).join('\n');
-    const text = `${title}\n\nIngredients:\n${ing || '-'}\n\nDirections:\n${ins || '-'}\n\nLink: ${url}`;
+    const title = recipeName || "Recipe";
+    const ing = ingredients
+      .map((r) => [r.qty, r.unit, r.item, r.prep].filter(Boolean).join(" "))
+      .filter(Boolean)
+      .join("\n");
+    const ins = String(directions || "")
+      .split(/\r?\n/)
+      .filter(Boolean)
+      .map((s, i) => `${i + 1}. ${s}`)
+      .join("\n");
+    const text = `${title}\n\nIngredients:\n${ing || "-"}\n\nDirections:\n${ins || "-"}\n\nLink: ${url}`;
     navigator.clipboard.writeText(text);
     alert(`${title} copied to clipboard`);
   };
@@ -937,14 +1051,58 @@ const RecipeInputPage = () => {
     }
   }, [ingredients]);
 
-  function parseIngredientInline(s: string): { qty?: string; unit?: string; item?: string; prep?: string } | null {
+  function parseIngredientInline(
+    s: string,
+  ): { qty?: string; unit?: string; item?: string; prep?: string } | null {
     if (!s) return null;
-    const map: Record<string, string> = { "¼": "1/4", "½": "1/2", "¾": "3/4", "⅓": "1/3", "⅔": "2/3", "⅛": "1/8", "⅜": "3/8", "⅝": "5/8", "⅞": "7/8" };
+    const map: Record<string, string> = {
+      "¼": "1/4",
+      "½": "1/2",
+      "¾": "3/4",
+      "⅓": "1/3",
+      "⅔": "2/3",
+      "⅛": "1/8",
+      "⅜": "3/8",
+      "⅝": "5/8",
+      "⅞": "7/8",
+    };
     let t = s.trim().replace(/[¼½¾⅓⅔⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
     t = t.replace(/^(?:\s*)\/(\d+)/, "1/$1");
     t = t.replace(/(\d)(\s*)(\d\/\d)/, "$1 $3");
-    const m = t.match(/^\s*([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?|[0-9]+\/[0-9]+)\s*([a-zA-Z\.]+)?\s*(.*)$/);
-    const knownUnits = new Set(["LBS","LB","OZ","TSP","TBSP","FL OZ","FLOZ","CUP","CUPS","PINT","PT","QTS","QT","QUART","QUARTS","GAL","GALLON","GALLONS","ML","L","G","KG","GRAM","GRAMS","LITER","LITERS","LITRES","EACH","EA"]);
+    const m = t.match(
+      /^\s*([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?|[0-9]+\/[0-9]+)\s*([a-zA-Z\.]+)?\s*(.*)$/,
+    );
+    const knownUnits = new Set([
+      "LBS",
+      "LB",
+      "OZ",
+      "TSP",
+      "TBSP",
+      "FL OZ",
+      "FLOZ",
+      "CUP",
+      "CUPS",
+      "PINT",
+      "PT",
+      "QTS",
+      "QT",
+      "QUART",
+      "QUARTS",
+      "GAL",
+      "GALLON",
+      "GALLONS",
+      "ML",
+      "L",
+      "G",
+      "KG",
+      "GRAM",
+      "GRAMS",
+      "LITER",
+      "LITERS",
+      "LITRES",
+      "EACH",
+      "EA",
+    ]);
     const normalizeUnit = (u: string) => {
       const k = (u || "").replace(/\./g, "").toUpperCase();
       if (!k) return "EACH";
@@ -962,10 +1120,15 @@ const RecipeInputPage = () => {
       let prep = "";
       const ci = item.indexOf(",");
       if (ci >= 0) {
-        prep = item.slice(ci + 1).trim().toLowerCase();
+        prep = item
+          .slice(ci + 1)
+          .trim()
+          .toLowerCase();
         item = item.slice(0, ci).trim();
       }
-      const lead = item.match(/^(chopped|diced|minced|sliced|grated|crushed|pureed|melted|softened|cubed|julienned|shredded)\s+(.*)$/i);
+      const lead = item.match(
+        /^(chopped|diced|minced|sliced|grated|crushed|pureed|melted|softened|cubed|julienned|shredded)\s+(.*)$/i,
+      );
       if (lead) {
         prep = prep || lead[1].toLowerCase();
         item = lead[2].trim();
@@ -996,7 +1159,10 @@ const RecipeInputPage = () => {
     if (/,/.test(t)) {
       const ci = t.indexOf(",");
       const item = t.slice(0, ci).trim();
-      const prep = t.slice(ci + 1).trim().toLowerCase();
+      const prep = t
+        .slice(ci + 1)
+        .trim()
+        .toLowerCase();
       return { item, prep };
     }
     return null;
@@ -1007,7 +1173,8 @@ const RecipeInputPage = () => {
     let changed = false;
     const next = ingredients.map((r) => {
       if ((r.qty && r.unit) || !r.item) return r;
-      if (!/^(\s*[0-9¼½¾⅓������⅜⅝⅞]|\s*\/\d+|.*,)\b/i.test(String(r.item))) return r;
+      if (!/^(\s*[0-9¼½¾⅓������⅜⅝⅞]|\s*\/\d+|.*,)\b/i.test(String(r.item)))
+        return r;
       const p = parseIngredientInline(String(r.item));
       if (!p) return r;
       const updated = {
@@ -1031,7 +1198,7 @@ const RecipeInputPage = () => {
       TSP: 4.92892,
       TBSP: 14.7868,
       OZ: 29.5735,
-      'FL OZ': 29.5735,
+      "FL OZ": 29.5735,
       CUP: 240,
       PT: 473.176,
       PINT: 473.176,
@@ -1042,24 +1209,32 @@ const RecipeInputPage = () => {
     };
     let ml = 0;
     for (const r of ingredients) {
-      const q = Number((r.qty||'').toString().replace(/[^0-9.]/g,''));
-      const u = (r.unit||'').toUpperCase();
-      if (!Number.isFinite(q) || q<=0) continue;
+      const q = Number((r.qty || "").toString().replace(/[^0-9.]/g, ""));
+      const u = (r.unit || "").toUpperCase();
+      if (!Number.isFinite(q) || q <= 0) continue;
       if (U[u]) ml += q * U[u];
-      else if (u==='LBS' || u==='LB' || u==='G' || u==='GRAM' || u==='GRAMS' || u==='KG') {
-        const massG = u==='LBS'||u==='LB'? q*453.592 : u==='KG'? q*1000 : q;
+      else if (
+        u === "LBS" ||
+        u === "LB" ||
+        u === "G" ||
+        u === "GRAM" ||
+        u === "GRAMS" ||
+        u === "KG"
+      ) {
+        const massG =
+          u === "LBS" || u === "LB" ? q * 453.592 : u === "KG" ? q * 1000 : q;
         ml += massG; // ~1g per ml
       }
     }
     return ml;
   }, [ingredients]);
   const formatMl = (ml: number) => {
-    if (!ml || ml<=0) return '—';
-    if (ml >= 3785.41) return `${(ml/3785.41).toFixed(2)} GALLON`;
-    if (ml >= 946.353) return `${(ml/946.353).toFixed(2)} QTS`;
-    if (ml >= 473.176) return `${(ml/473.176).toFixed(2)} PINT`;
-    if (ml >= 240) return `${(ml/240).toFixed(2)} CUP`;
-    if (ml >= 29.5735) return `${(ml/29.5735).toFixed(1)} FL OZ`;
+    if (!ml || ml <= 0) return "—";
+    if (ml >= 3785.41) return `${(ml / 3785.41).toFixed(2)} GALLON`;
+    if (ml >= 946.353) return `${(ml / 946.353).toFixed(2)} QTS`;
+    if (ml >= 473.176) return `${(ml / 473.176).toFixed(2)} PINT`;
+    if (ml >= 240) return `${(ml / 240).toFixed(2)} CUP`;
+    if (ml >= 29.5735) return `${(ml / 29.5735).toFixed(1)} FL OZ`;
     return `${Math.round(ml)} ML`;
   };
 
@@ -1145,7 +1320,10 @@ const RecipeInputPage = () => {
   };
 
   return (
-    <div className={`relative w-full min-h-screen transition-all duration-300 text-foreground`} data-echo-key="page:recipes:add">
+    <div
+      className={`relative w-full min-h-screen transition-all duration-300 text-foreground`}
+      data-echo-key="page:recipes:add"
+    >
       <div
         className={`hidden ${isDarkMode ? "bg-gradient-to-br from-gray-900 via-black to-blue-900" : "bg-gradient-to-br from-gray-50 to-white"}`}
       >
@@ -1217,7 +1395,10 @@ const RecipeInputPage = () => {
       <div className="pt-8 h-full overflow-y-auto">
         <div className="w-full px-6 space-y-6 pb-8">
           {/* Removed old hamburger toggle button */}
-          <div className="flex items-end gap-4" data-echo-key="section:add:basics">
+          <div
+            className="flex items-end gap-4"
+            data-echo-key="section:add:basics"
+          >
             <div
               className={`w-2/3 border p-4 rounded-xl shadow-lg ${isDarkMode ? "border-cyan-400/30 bg-black/50 shadow-cyan-400/20" : "border-gray-200 bg-white shadow-gray-200/50"} backdrop-blur-sm`}
             >
@@ -1234,8 +1415,16 @@ const RecipeInputPage = () => {
                 placeholder="Description"
                 className={`mt-2 w-full border rounded-lg p-3 text-sm ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
                 rows={3}
-                onChange={(e)=> localStorage.setItem('recipe:add:description', e.target.value)}
-                defaultValue={(()=>{ try { return localStorage.getItem('recipe:add:description') || '' } catch { return '' } })()}
+                onChange={(e) =>
+                  localStorage.setItem("recipe:add:description", e.target.value)
+                }
+                defaultValue={(() => {
+                  try {
+                    return localStorage.getItem("recipe:add:description") || "";
+                  } catch {
+                    return "";
+                  }
+                })()}
                 data-echo-key="field:add:description"
               />
             </div>
@@ -1243,7 +1432,10 @@ const RecipeInputPage = () => {
               className={`border rounded-xl w-1/3 flex flex-col justify-end shadow-lg backdrop-blur-sm ${isDarkMode ? "bg-black/50 border-cyan-400/30 shadow-[0_0_24px_rgba(34,211,238,0.25)]" : "bg-white border-gray-200 shadow-gray-200/50"}`}
               style={{ minHeight: "3rem" }}
             >
-              <div className="p-3 flex flex-col" data-echo-key="section:add:allergens">
+              <div
+                className="p-3 flex flex-col"
+                data-echo-key="section:add:allergens"
+              >
                 <div
                   className={`font-semibold text-xs mb-2 ${isDarkMode ? "text-cyan-300" : "text-gray-700"}`}
                 >
@@ -1298,9 +1490,14 @@ const RecipeInputPage = () => {
                     <input
                       value={cookTemp}
                       onChange={(e) => {
-                        const digits = e.target.value.replace(/[^0-9]/g,'').slice(0,3);
-                        const suffix = currentUnits === 'Imperial' ? '°F' : '°C';
-                        setCookTemp(digits ? `${parseInt(digits,10)}${suffix}` : '');
+                        const digits = e.target.value
+                          .replace(/[^0-9]/g, "")
+                          .slice(0, 3);
+                        const suffix =
+                          currentUnits === "Imperial" ? "°F" : "°C";
+                        setCookTemp(
+                          digits ? `${parseInt(digits, 10)}${suffix}` : "",
+                        );
                       }}
                       placeholder="350°F"
                       className={`w-24 p-3 ${inputClass}`}
@@ -1352,7 +1549,7 @@ const RecipeInputPage = () => {
                       <button
                         type="button"
                         title="Yield Lab"
-                        className={`ml-2 px-2 py-1 text-xs rounded border ${isDarkMode ? 'border-cyan-400/50 text-cyan-300' : 'border-gray-400 text-gray-800'}`}
+                        className={`ml-2 px-2 py-1 text-xs rounded border ${isDarkMode ? "border-cyan-400/50 text-cyan-300" : "border-gray-400 text-gray-800"}`}
                         onClick={() => setYieldOpen(true)}
                       >
                         Yield Lab
@@ -1366,7 +1563,11 @@ const RecipeInputPage = () => {
                     </span>
                     <span>
                       <span className="font-bold">RECIPE:</span>{" "}
-                      {selectedRecipeType.includes("Full Recipe") ? "FULL" : selectedRecipeType.includes("Sub Recipe") ? "SUB" : "UNSPECIFIED"}
+                      {selectedRecipeType.includes("Full Recipe")
+                        ? "FULL"
+                        : selectedRecipeType.includes("Sub Recipe")
+                          ? "SUB"
+                          : "UNSPECIFIED"}
                     </span>
                   </div>
                   <div className="flex items-center gap-4">
@@ -1397,7 +1598,8 @@ const RecipeInputPage = () => {
                       {calculatePortionCost().toFixed(2)}
                     </span>
                     <span title="Theoretical Volume">
-                      <span className="font-bold">Ψ:</span> {formatMl(theoreticalVolumeMl)}
+                      <span className="font-bold">Ψ:</span>{" "}
+                      {formatMl(theoreticalVolumeMl)}
                     </span>
                   </div>
                 </div>
@@ -1405,11 +1607,46 @@ const RecipeInputPage = () => {
               <div
                 className={`border rounded-xl p-4 h-full shadow-lg ${isDarkMode ? "bg-blue-900/20 border-blue-400/30 shadow-blue-400/20" : "bg-blue-50 border-blue-200 shadow-gray-300/60"}`}
               >
-                <div className={`font-semibold text-sm mb-3 ${isDarkMode ? "text-blue-400" : "text-blue-700"}`}>
+                <div
+                  className={`font-semibold text-sm mb-3 ${isDarkMode ? "text-blue-400" : "text-blue-700"}`}
+                >
                   Modifiers
                 </div>
-                <div className={`${isDarkMode ? "bg-blue-900/20 border-blue-400/30" : "bg-blue-50 border-blue-200"} border rounded-lg p-2 text-xs`}>
-                  {(() => { const diet = new Set(taxonomy.diets); const txt=(ingredients.map(r=>`${r.qty} ${r.unit} ${r.item}`).join(' ').toLowerCase()); const meatRe=/(beef|pork|chicken|lamb|fish|shrimp|gelatin)/; const issues: string[] = []; const dir = (directions||'').toLowerCase(); const tempMatch = dir.match(/(\d{2,3})\s*(?:°\s*)?(?:f|fahrenheit|degf)/i) || dir.match(/(\d{2,3})\s*degrees?\s*f/i); const cookT = String(cookTemp||'').match(/\d{2,3}/)?.[0]; if (tempMatch && cookT && tempMatch[1]!==cookT) issues.push(`Cook temp mismatch: directions ${tempMatch[1]}F vs field ${cookT}F`); if ((diet.has('vegetarian')||diet.has('vegan')) && meatRe.test(txt)) issues.push('Selected diet conflicts with ingredients.'); return issues.length? (<div className="mb-2 text-red-600">{issues.map((s,i)=>(<div key={i}>{s}</div>))}</div>) : null; })()}
+                <div
+                  className={`${isDarkMode ? "bg-blue-900/20 border-blue-400/30" : "bg-blue-50 border-blue-200"} border rounded-lg p-2 text-xs`}
+                >
+                  {(() => {
+                    const diet = new Set(taxonomy.diets);
+                    const txt = ingredients
+                      .map((r) => `${r.qty} ${r.unit} ${r.item}`)
+                      .join(" ")
+                      .toLowerCase();
+                    const meatRe =
+                      /(beef|pork|chicken|lamb|fish|shrimp|gelatin)/;
+                    const issues: string[] = [];
+                    const dir = (directions || "").toLowerCase();
+                    const tempMatch =
+                      dir.match(
+                        /(\d{2,3})\s*(?:°\s*)?(?:f|fahrenheit|degf)/i,
+                      ) || dir.match(/(\d{2,3})\s*degrees?\s*f/i);
+                    const cookT = String(cookTemp || "").match(/\d{2,3}/)?.[0];
+                    if (tempMatch && cookT && tempMatch[1] !== cookT)
+                      issues.push(
+                        `Cook temp mismatch: directions ${tempMatch[1]}F vs field ${cookT}F`,
+                      );
+                    if (
+                      (diet.has("vegetarian") || diet.has("vegan")) &&
+                      meatRe.test(txt)
+                    )
+                      issues.push("Selected diet conflicts with ingredients.");
+                    return issues.length ? (
+                      <div className="mb-2 text-red-600">
+                        {issues.map((s, i) => (
+                          <div key={i}>{s}</div>
+                        ))}
+                      </div>
+                    ) : null;
+                  })()}
                   <div className="grid grid-cols-8 gap-1">
                     {taxonomy.cuisine && (
                       <div className="col-span-2">
@@ -1435,40 +1672,94 @@ const RecipeInputPage = () => {
                         <div>{taxonomy.serviceStyle}</div>
                       </div>
                     )}
-                    {taxonomy.course.length>0 && (
+                    {taxonomy.course.length > 0 && (
                       <div className="col-span-4">
                         <div className="font-semibold">Course</div>
-                        <div className="flex flex-wrap gap-1">{[...taxonomy.course].sort().map(v=> (<span key={v} className="px-1 py-0.5 rounded border">{v}</span>))}</div>
+                        <div className="flex flex-wrap gap-1">
+                          {[...taxonomy.course].sort().map((v) => (
+                            <span
+                              key={v}
+                              className="px-1 py-0.5 rounded border"
+                            >
+                              {v}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     )}
-                    {taxonomy.pastry.length>0 && (
+                    {taxonomy.pastry.length > 0 && (
                       <div className="col-span-4">
                         <div className="font-semibold">Pastry</div>
-                        <div className="flex flex-wrap gap-1">{[...taxonomy.pastry].sort().map(v=> (<span key={v} className="px-1 py-0.5 rounded border">{v}</span>))}</div>
+                        <div className="flex flex-wrap gap-1">
+                          {[...taxonomy.pastry].sort().map((v) => (
+                            <span
+                              key={v}
+                              className="px-1 py-0.5 rounded border"
+                            >
+                              {v}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     )}
-                    {taxonomy.technique.length>0 && (
+                    {taxonomy.technique.length > 0 && (
                       <div className="col-span-4">
                         <div className="font-semibold">Technique</div>
-                        <div className="flex flex-wrap gap-1">{[...taxonomy.technique].sort().map(v=> (<span key={v} className="px-1 py-0.5 rounded border">{v}</span>))}</div>
+                        <div className="flex flex-wrap gap-1">
+                          {[...taxonomy.technique].sort().map((v) => (
+                            <span
+                              key={v}
+                              className="px-1 py-0.5 rounded border"
+                            >
+                              {v}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     )}
-                    {taxonomy.components.length>0 && (
+                    {taxonomy.components.length > 0 && (
                       <div className="col-span-4">
                         <div className="font-semibold">Components</div>
-                        <div className="flex flex-wrap gap-1">{[...taxonomy.components].sort().map(v=> (<span key={v} className="px-1 py-0.5 rounded border">{v}</span>))}</div>
+                        <div className="flex flex-wrap gap-1">
+                          {[...taxonomy.components].sort().map((v) => (
+                            <span
+                              key={v}
+                              className="px-1 py-0.5 rounded border"
+                            >
+                              {v}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     )}
-                    {taxonomy.equipment.length>0 && (
+                    {taxonomy.equipment.length > 0 && (
                       <div className="col-span-4">
                         <div className="font-semibold">Equipment</div>
-                        <div className="flex flex-wrap gap-1">{[...taxonomy.equipment].sort().map(v=> (<span key={v} className="px-1 py-0.5 rounded border">{v}</span>))}</div>
+                        <div className="flex flex-wrap gap-1">
+                          {[...taxonomy.equipment].sort().map((v) => (
+                            <span
+                              key={v}
+                              className="px-1 py-0.5 rounded border"
+                            >
+                              {v}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     )}
-                    {taxonomy.diets.length>0 && (
+                    {taxonomy.diets.length > 0 && (
                       <div className="col-span-4">
                         <div className="font-semibold">Diets</div>
-                        <div className="flex flex-wrap gap-1">{[...taxonomy.diets].sort().map(v=> (<span key={v} className="px-1 py-0.5 rounded border">{v}</span>))}</div>
+                        <div className="flex flex-wrap gap-1">
+                          {[...taxonomy.diets].sort().map((v) => (
+                            <span
+                              key={v}
+                              className="px-1 py-0.5 rounded border"
+                            >
+                              {v}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -1490,7 +1781,10 @@ const RecipeInputPage = () => {
               </DialogContent>
             </Dialog>
 
-            <div className="w-1/3 flex justify-center" data-echo-key="section:add:photos">
+            <div
+              className="w-1/3 flex justify-center"
+              data-echo-key="section:add:photos"
+            >
               <div
                 className="flex-shrink-0"
                 style={{ width: "17rem", height: "17rem" }}
@@ -1508,8 +1802,25 @@ const RecipeInputPage = () => {
                   />
                 ) : (
                   <div className="w-full h-full bg-gray-100 border rounded-md flex items-center justify-center">
-                    <label className="text-xs text-gray-600 cursor-pointer" data-echo-key="cta:add:upload">
-                      <input type="file" accept="image/*" className="hidden" onChange={async(e)=>{ const f=e.target.files?.[0]; if(!f) return; try{ const reader=new FileReader(); reader.onload=()=> setImage(String(reader.result)); reader.readAsDataURL(f);}catch{}}} />
+                    <label
+                      className="text-xs text-gray-600 cursor-pointer"
+                      data-echo-key="cta:add:upload"
+                    >
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={async (e) => {
+                          const f = e.target.files?.[0];
+                          if (!f) return;
+                          try {
+                            const reader = new FileReader();
+                            reader.onload = () =>
+                              setImage(String(reader.result));
+                            reader.readAsDataURL(f);
+                          } catch {}
+                        }}
+                      />
                       Upload Photo
                     </label>
                   </div>
@@ -1534,13 +1845,22 @@ const RecipeInputPage = () => {
                     className={`text-xs font-medium ${isDarkMode ? "text-cyan-400" : "text-black"} ${h === "COST" ? "text-right" : ""}`}
                   >
                     {h === "YIELD %" ? (
-                      <span className="inline-flex items-center gap-1" title="R&D Labs">
+                      <span
+                        className="inline-flex items-center gap-1"
+                        title="R&D Labs"
+                      >
                         YIELD %
-                        <button type="button" onClick={()=>setYieldOpen(true)} className="p-0.5 rounded hover:bg-black/10">
+                        <button
+                          type="button"
+                          onClick={() => setYieldOpen(true)}
+                          className="p-0.5 rounded hover:bg-black/10"
+                        >
                           <FlaskConical className="w-3.5 h-3.5" />
                         </button>
                       </span>
-                    ) : h}
+                    ) : (
+                      h
+                    )}
                   </div>
                 ),
               )}
@@ -1603,7 +1923,11 @@ const RecipeInputPage = () => {
                   return row;
                 };
                 return (
-                  <div key={index} className="ingredients-grid ingredient-row" data-echo-key="row:add:ingredient">
+                  <div
+                    key={index}
+                    className="ingredients-grid ingredient-row"
+                    data-echo-key="row:add:ingredient"
+                  >
                     <input
                       data-row={index}
                       data-col={0}
@@ -1614,7 +1938,10 @@ const RecipeInputPage = () => {
                       value={line.qty}
                       onChange={(e) => {
                         const raw = e.target.value;
-                        const allowed = raw.replace(/[^0-9.\s/%¼½¾⅓⅔⅛⅜⅝⅞-]/g, "");
+                        const allowed = raw.replace(
+                          /[^0-9.\s/%¼½¾⅓⅔⅛⅜⅝⅞-]/g,
+                          "",
+                        );
                         const v = [...ingredients];
                         v[index].qty = allowed;
                         setIngredients(
@@ -1632,7 +1959,9 @@ const RecipeInputPage = () => {
                       value={line.unit}
                       onChange={(e) => {
                         const v = [...ingredients];
-                        v[index].unit = e.target.value.replace(/[^a-z]/gi,'').toUpperCase();
+                        v[index].unit = e.target.value
+                          .replace(/[^a-z]/gi, "")
+                          .toUpperCase();
                         setIngredients(
                           v.map((r, i) =>
                             i === index ? updateAndNormalize({ ...r }) : r,
@@ -1647,30 +1976,57 @@ const RecipeInputPage = () => {
                       className={inputClass}
                       value={line.item}
                       onPaste={(e) => {
-                        const text = e.clipboardData?.getData('text') || '';
+                        const text = e.clipboardData?.getData("text") || "";
                         if (!text) return;
                         if (/\n|\r/.test(text)) {
                           e.preventDefault();
-                          const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+                          const lines = text
+                            .split(/\r?\n/)
+                            .map((s) => s.trim())
+                            .filter(Boolean);
                           if (lines.length === 0) return;
                           const v = [...ingredients];
                           let i = index;
                           for (const lineText of lines) {
-                            if (!v[i]) v[i] = { qty: "", unit: "", item: "", prep: "", yield: "", cost: "" };
-                            const p = parseIngredientInline(lineText) || { item: lineText } as any;
+                            if (!v[i])
+                              v[i] = {
+                                qty: "",
+                                unit: "",
+                                item: "",
+                                prep: "",
+                                yield: "",
+                                cost: "",
+                              };
+                            const p =
+                              parseIngredientInline(lineText) ||
+                              ({ item: lineText } as any);
                             v[i] = updateAndNormalize({
                               ...v[i],
                               qty: (p as any).qty ?? v[i].qty,
-                              unit: (((p as any).unit ?? v[i].unit) || "").toUpperCase(),
+                              unit: (
+                                ((p as any).unit ?? v[i].unit) ||
+                                ""
+                              ).toUpperCase(),
                               item: (p as any).item ?? v[i].item,
                               prep: (p as any).prep ?? v[i].prep,
                             });
                             i++;
                           }
-                          if (!v[i]) v.push({ qty: "", unit: "", item: "", prep: "", yield: "", cost: "" });
+                          if (!v[i])
+                            v.push({
+                              qty: "",
+                              unit: "",
+                              item: "",
+                              prep: "",
+                              yield: "",
+                              cost: "",
+                            });
                           setIngredients(v);
                           setTimeout(() => {
-                            const next = document.querySelector<HTMLInputElement>(`input[data-row='${index + lines.length}'][data-col='2']`);
+                            const next =
+                              document.querySelector<HTMLInputElement>(
+                                `input[data-row='${index + lines.length}'][data-col='2']`,
+                              );
                             next?.focus();
                           }, 0);
                         }
@@ -1679,12 +2035,18 @@ const RecipeInputPage = () => {
                         const text = e.target.value;
                         const v = [...ingredients];
                         v[index].item = text;
-                        const hasCues = /(cups?|tsp|tbsp|oz|ounces?|lb|lbs|g|kg|ml|l|quarts?|qt|qts|pints?|pt|gal|gallons?|teaspoons?|tablespoons?|^\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|^\s*\/\d+|,)/i.test(text);
+                        const hasCues =
+                          /(cups?|tsp|tbsp|oz|ounces?|lb|lbs|g|kg|ml|l|quarts?|qt|qts|pints?|pt|gal|gallons?|teaspoons?|tablespoons?|^\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|^\s*\/\d+|,)/i.test(
+                            text,
+                          );
                         if (hasCues) {
                           const p = parseIngredientInline(text);
                           if (p) {
                             v[index].qty = p.qty ?? v[index].qty;
-                            v[index].unit = ((p.unit ?? v[index].unit) || "").toUpperCase();
+                            v[index].unit = (
+                              (p.unit ?? v[index].unit) ||
+                              ""
+                            ).toUpperCase();
                             v[index].item = p.item ?? v[index].item;
                             v[index].prep = p.prep ?? v[index].prep;
                           }
@@ -1697,7 +2059,9 @@ const RecipeInputPage = () => {
                       }}
                       onBlur={(e) => {
                         const text = e.target.value.trim();
-                        const parsed = parseIngredientInline(text.replace(/^\s*\/(\d+)/, '1/$1'));
+                        const parsed = parseIngredientInline(
+                          text.replace(/^\s*\/(\d+)/, "1/$1"),
+                        );
                         if (parsed) {
                           const v = [...ingredients];
                           v[index] = updateAndNormalize({
@@ -1751,16 +2115,20 @@ const RecipeInputPage = () => {
                       aria-invalid={isNaN(costNum)}
                       onChange={(e) => {
                         const raw = e.target.value;
-                        const cleaned = raw.replace(/[^0-9.\-]/g, '');
+                        const cleaned = raw.replace(/[^0-9.\-]/g, "");
                         const v = [...ingredients];
                         v[index].cost = cleaned;
                         setIngredients(v);
                       }}
-                      onBlur={(e)=>{
-                        const num = parseFloat(e.target.value.replace(/[^0-9.\-]/g,''));
+                      onBlur={(e) => {
+                        const num = parseFloat(
+                          e.target.value.replace(/[^0-9.\-]/g, ""),
+                        );
                         const sym = getCurrencySymbol(currentCurrency);
                         const v = [...ingredients];
-                        v[index].cost = Number.isFinite(num) ? `${sym}${num.toFixed(2)}` : '';
+                        v[index].cost = Number.isFinite(num)
+                          ? `${sym}${num.toFixed(2)}`
+                          : "";
                         setIngredients(v);
                       }}
                     />
@@ -1814,18 +2182,59 @@ const RecipeInputPage = () => {
                 DIRECTIONS
               </h3>
               <div className="flex gap-3">
-                <input ref={stepImageInputRef} type="file" accept="image/*" multiple hidden onChange={async(e)=>{
-                  const files = Array.from(e.target.files||[]);
-                  for (const f of files){
-                    try{ const img=await new Promise<HTMLImageElement>((res,rej)=>{ const r=new FileReader(); r.onload=()=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=String(r.result); }; r.onerror=rej; r.readAsDataURL(f); }); const scale = Math.min(1, STEP_IMG_MAX_W / (img.width||STEP_IMG_MAX_W)); const w = Math.round((img.width||STEP_IMG_MAX_W)*scale); const h=Math.round((img.height||STEP_IMG_MAX_W)*scale); const c=document.createElement('canvas'); c.width=w; c.height=h; const ctx=c.getContext('2d'); if(ctx){ ctx.drawImage(img,0,0,w,h);} const data=c.toDataURL('image/jpeg',0.85); setDirections((d)=> (d?(d+"\n"):"")+`IMG:${data}`); }
-                    catch{}
-                  }
-                  (e.target as HTMLInputElement).value='';
-                }} />
+                <input
+                  ref={stepImageInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  hidden
+                  onChange={async (e) => {
+                    const files = Array.from(e.target.files || []);
+                    for (const f of files) {
+                      try {
+                        const img = await new Promise<HTMLImageElement>(
+                          (res, rej) => {
+                            const r = new FileReader();
+                            r.onload = () => {
+                              const im = new Image();
+                              im.onload = () => res(im);
+                              im.onerror = rej;
+                              im.src = String(r.result);
+                            };
+                            r.onerror = rej;
+                            r.readAsDataURL(f);
+                          },
+                        );
+                        const scale = Math.min(
+                          1,
+                          STEP_IMG_MAX_W / (img.width || STEP_IMG_MAX_W),
+                        );
+                        const w = Math.round(
+                          (img.width || STEP_IMG_MAX_W) * scale,
+                        );
+                        const h = Math.round(
+                          (img.height || STEP_IMG_MAX_W) * scale,
+                        );
+                        const c = document.createElement("canvas");
+                        c.width = w;
+                        c.height = h;
+                        const ctx = c.getContext("2d");
+                        if (ctx) {
+                          ctx.drawImage(img, 0, 0, w, h);
+                        }
+                        const data = c.toDataURL("image/jpeg", 0.85);
+                        setDirections(
+                          (d) => (d ? d + "\n" : "") + `IMG:${data}`,
+                        );
+                      } catch {}
+                    }
+                    (e.target as HTMLInputElement).value = "";
+                  }}
+                />
                 <button
                   title="Insert Step Photo"
                   className={`p-2 rounded-lg transition-all hover:bg-gray-100 ${isDarkMode ? "hover:bg-gray-700" : ""}`}
-                  onClick={()=> stepImageInputRef.current?.click()}
+                  onClick={() => stepImageInputRef.current?.click()}
                 >
                   <ImageIcon
                     className={`w-5 h-5 ${isDarkMode ? "text-cyan-400" : "text-gray-600"}`}
@@ -1887,8 +2296,51 @@ const RecipeInputPage = () => {
               suppressContentEditableWarning
               ref={dirRef}
               spellCheck
-              onDragOver={(e)=>{ if(e.dataTransfer?.types?.includes('Files')){ e.preventDefault(); }} }
-              onDrop={async(e)=>{ try{ e.preventDefault(); const files=Array.from(e.dataTransfer?.files||[]).filter(f=> f.type.startsWith('image/')); for(const f of files){ const img=await new Promise<HTMLImageElement>((res,rej)=>{ const r=new FileReader(); r.onload=()=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=String(r.result); }; r.onerror=rej; r.readAsDataURL(f); }); const scale=Math.min(1, STEP_IMG_MAX_W/(img.width||STEP_IMG_MAX_W)); const w=Math.round((img.width||STEP_IMG_MAX_W)*scale); const h=Math.round((img.height||STEP_IMG_MAX_W)*scale); const c=document.createElement('canvas'); c.width=w; c.height=h; const ctx=c.getContext('2d'); if(ctx){ ctx.drawImage(img,0,0,w,h);} const data=c.toDataURL('image/jpeg',0.85); setDirections((d)=> (d?(d+"\n"):"")+`IMG:${data}`); } } catch{} }}
+              onDragOver={(e) => {
+                if (e.dataTransfer?.types?.includes("Files")) {
+                  e.preventDefault();
+                }
+              }}
+              onDrop={async (e) => {
+                try {
+                  e.preventDefault();
+                  const files = Array.from(e.dataTransfer?.files || []).filter(
+                    (f) => f.type.startsWith("image/"),
+                  );
+                  for (const f of files) {
+                    const img = await new Promise<HTMLImageElement>(
+                      (res, rej) => {
+                        const r = new FileReader();
+                        r.onload = () => {
+                          const im = new Image();
+                          im.onload = () => res(im);
+                          im.onerror = rej;
+                          im.src = String(r.result);
+                        };
+                        r.onerror = rej;
+                        r.readAsDataURL(f);
+                      },
+                    );
+                    const scale = Math.min(
+                      1,
+                      STEP_IMG_MAX_W / (img.width || STEP_IMG_MAX_W),
+                    );
+                    const w = Math.round((img.width || STEP_IMG_MAX_W) * scale);
+                    const h = Math.round(
+                      (img.height || STEP_IMG_MAX_W) * scale,
+                    );
+                    const c = document.createElement("canvas");
+                    c.width = w;
+                    c.height = h;
+                    const ctx = c.getContext("2d");
+                    if (ctx) {
+                      ctx.drawImage(img, 0, 0, w, h);
+                    }
+                    const data = c.toDataURL("image/jpeg", 0.85);
+                    setDirections((d) => (d ? d + "\n" : "") + `IMG:${data}`);
+                  }
+                } catch {}
+              }}
               data-echo-key="field:add:steps"
               className={`prose prose-sm max-w-none w-full border p-3 rounded-xl shadow-sm transition-all focus:shadow-md focus:ring-2 resize-none min-h-[160px] overflow-y-auto ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30" : "bg-white border-gray-200 text-gray-900 focus:ring-blue-400/30 focus:border-blue-400"}`}
               style={{
@@ -1984,18 +2436,42 @@ const RecipeInputPage = () => {
               <button
                 data-echo-key="cta:add:publish"
                 onClick={() => {
-                  const title = (recipeName || '').trim() || 'Untitled Recipe';
-                  const ingLines = ingredients.map((r) => [r.qty, r.unit, r.item, r.prep].filter(Boolean).join(' ').trim()).filter(Boolean);
-                  const insLines = String(directions||'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
-                  const cover = image && image.startsWith('data:') ? [image] : undefined;
+                  const title = (recipeName || "").trim() || "Untitled Recipe";
+                  const ingLines = ingredients
+                    .map((r) =>
+                      [r.qty, r.unit, r.item, r.prep]
+                        .filter(Boolean)
+                        .join(" ")
+                        .trim(),
+                    )
+                    .filter(Boolean);
+                  const insLines = String(directions || "")
+                    .split(/\r?\n/)
+                    .map((s) => s.trim())
+                    .filter(Boolean);
+                  const cover =
+                    image && image.startsWith("data:") ? [image] : undefined;
                   if (!recipeIdRef.current) {
-                    recipeIdRef.current = addRecipe({ title, ingredients: ingLines, instructions: insLines, imageDataUrls: cover, tags: [], extra: { source: 'manual', taxonomy, published: true } });
+                    recipeIdRef.current = addRecipe({
+                      title,
+                      ingredients: ingLines,
+                      instructions: insLines,
+                      imageDataUrls: cover,
+                      tags: [],
+                      extra: { source: "manual", taxonomy, published: true },
+                    });
                   } else {
-                    updateRecipe(recipeIdRef.current, { title, ingredients: ingLines, instructions: insLines, imageDataUrls: cover, extra: { taxonomy, published: true } });
+                    updateRecipe(recipeIdRef.current, {
+                      title,
+                      ingredients: ingLines,
+                      instructions: insLines,
+                      imageDataUrls: cover,
+                      extra: { taxonomy, published: true },
+                    });
                   }
                   alert(`Published ${title}`);
                 }}
-                className={`px-3 py-2 text-sm rounded border ${isDarkMode? 'border-cyan-400/50 text-cyan-300' : 'border-gray-400 text-gray-800'}`}
+                className={`px-3 py-2 text-sm rounded border ${isDarkMode ? "border-cyan-400/50 text-cyan-300" : "border-gray-400 text-gray-800"}`}
               >
                 Publish
               </button>
@@ -2004,14 +2480,38 @@ const RecipeInputPage = () => {
               <button
                 data-echo-key="cta:add:save"
                 onClick={() => {
-                  const title = (recipeName || '').trim() || 'Untitled Recipe';
-                  const ingLines = ingredients.map((r) => [r.qty, r.unit, r.item, r.prep].filter(Boolean).join(' ').trim()).filter(Boolean);
-                  const insLines = String(directions||'').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
-                  const cover = image && image.startsWith('data:') ? [image] : undefined;
+                  const title = (recipeName || "").trim() || "Untitled Recipe";
+                  const ingLines = ingredients
+                    .map((r) =>
+                      [r.qty, r.unit, r.item, r.prep]
+                        .filter(Boolean)
+                        .join(" ")
+                        .trim(),
+                    )
+                    .filter(Boolean);
+                  const insLines = String(directions || "")
+                    .split(/\r?\n/)
+                    .map((s) => s.trim())
+                    .filter(Boolean);
+                  const cover =
+                    image && image.startsWith("data:") ? [image] : undefined;
                   if (!recipeIdRef.current) {
-                    recipeIdRef.current = addRecipe({ title, ingredients: ingLines, instructions: insLines, imageDataUrls: cover, tags: [], extra: { source: 'manual', taxonomy } });
+                    recipeIdRef.current = addRecipe({
+                      title,
+                      ingredients: ingLines,
+                      instructions: insLines,
+                      imageDataUrls: cover,
+                      tags: [],
+                      extra: { source: "manual", taxonomy },
+                    });
                   } else {
-                    updateRecipe(recipeIdRef.current, { title, ingredients: ingLines, instructions: insLines, imageDataUrls: cover, extra: { taxonomy } });
+                    updateRecipe(recipeIdRef.current, {
+                      title,
+                      ingredients: ingLines,
+                      instructions: insLines,
+                      imageDataUrls: cover,
+                      extra: { taxonomy },
+                    });
                   }
                   pushHistory({ ...serialize(), ts: Date.now() });
                   alert(`Saved ${title}`);
@@ -2044,10 +2544,19 @@ const RecipeInputPage = () => {
               </button>
               <button
                 onClick={() => {
-                  const title = recipeName || 'Recipe';
-                  const ing = ingredients.map((r)=>[r.qty,r.unit,r.item,r.prep].filter(Boolean).join(' ')).filter(Boolean).join('\n');
-                  const ins = String(directions||'').split(/\r?\n/).filter(Boolean).map((s,i)=>`${i+1}. ${s}`).join('\n');
-                  const bodyText = `${title}\n\nIngredients:\n${ing || '-'}\n\nDirections:\n${ins || '-'}`;
+                  const title = recipeName || "Recipe";
+                  const ing = ingredients
+                    .map((r) =>
+                      [r.qty, r.unit, r.item, r.prep].filter(Boolean).join(" "),
+                    )
+                    .filter(Boolean)
+                    .join("\n");
+                  const ins = String(directions || "")
+                    .split(/\r?\n/)
+                    .filter(Boolean)
+                    .map((s, i) => `${i + 1}. ${s}`)
+                    .join("\n");
+                  const bodyText = `${title}\n\nIngredients:\n${ing || "-"}\n\nDirections:\n${ins || "-"}`;
                   const body = encodeURIComponent(bodyText);
                   location.href = `sms:?&body=${body}`;
                 }}
@@ -2140,7 +2649,9 @@ const RecipeInputPage = () => {
               </div>
             )}
             {chefNotes && (
-              <div className={`mt-4 rounded-xl border p-3 ${isDarkMode? 'border-gray-700 text-cyan-200' : 'border-gray-200 text-gray-800 bg-gradient-to-b from-white to-slate-50'}`}>
+              <div
+                className={`mt-4 rounded-xl border p-3 ${isDarkMode ? "border-gray-700 text-cyan-200" : "border-gray-200 text-gray-800 bg-gradient-to-b from-white to-slate-50"}`}
+              >
                 <div className="font-semibold mb-1">Chef Notes</div>
                 <div className="whitespace-pre-wrap text-sm">{chefNotes}</div>
               </div>
@@ -2203,7 +2714,10 @@ const RecipeInputPage = () => {
                 "⅝": "5/8",
                 "⅞": "7/8",
               };
-              s = s.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜���⅞]/g, (ch) => fracMap[ch] || ch);
+              s = s.replace(
+                /[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜���⅞]/g,
+                (ch) => fracMap[ch] || ch,
+              );
               const m = s.match(
                 /^\s*([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?)?\s*([a-zA-Z\.]+)?\s*(.*)$/,
               );
@@ -2235,11 +2749,15 @@ const RecipeInputPage = () => {
                   ],
             );
           }
-          if (data?.instructions){
+          if (data?.instructions) {
             const txt = decode(String(data.instructions));
             setDirections(txt);
             if (/recipe\s+follows|see\s+.+?\s+recipe/i.test(txt)) {
-              setChefNotes((prev)=> (prev? prev+"\n" : "") + "Note: This recipe references a sub‑recipe (e.g., buttercream). Import or add the sub‑recipe and link it here.");
+              setChefNotes(
+                (prev) =>
+                  (prev ? prev + "\n" : "") +
+                  "Note: This recipe references a sub‑recipe (e.g., buttercream). Import or add the sub‑recipe and link it here.",
+              );
             }
           }
           if (data?.image) {
@@ -2248,15 +2766,28 @@ const RecipeInputPage = () => {
               fetch(urlStr)
                 .then((res) => res.blob())
                 .then(async (blob) => {
-                  const ext = blob.type.includes('png')? 'png' : 'jpg';
-                  const fname = `${(data.title||'cover').toString().toLowerCase().replace(/[^a-z0-9]+/g,'-')}.${ext}`;
-                  await addImages([new File([blob], fname, { type: blob.type || 'image/jpeg' })], { tags: ['import','web'] });
+                  const ext = blob.type.includes("png") ? "png" : "jpg";
+                  const fname = `${(data.title || "cover")
+                    .toString()
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, "-")}.${ext}`;
+                  await addImages(
+                    [
+                      new File([blob], fname, {
+                        type: blob.type || "image/jpeg",
+                      }),
+                    ],
+                    { tags: ["import", "web"] },
+                  );
                   const reader = new FileReader();
-                  reader.onload = () => setImage(String(reader.result || urlStr));
+                  reader.onload = () =>
+                    setImage(String(reader.result || urlStr));
                   reader.readAsDataURL(blob);
                 })
                 .catch(() => setImage(String(data.image)));
-            } catch { setImage(String(data.image)); }
+            } catch {
+              setImage(String(data.image));
+            }
           }
           // Top info
           if (data?.yield) {
@@ -2298,52 +2829,110 @@ const RecipeInputPage = () => {
   );
 };
 
-function YieldLabForm({ defaultInputQty, defaultInputUnit, recipeName, onClose }: { defaultInputQty: number; defaultInputUnit: string; recipeName: string; onClose: () => void }) {
+function YieldLabForm({
+  defaultInputQty,
+  defaultInputUnit,
+  recipeName,
+  onClose,
+}: {
+  defaultInputQty: number;
+  defaultInputUnit: string;
+  recipeName: string;
+  onClose: () => void;
+}) {
   const [code, setCode] = useState("");
   const [inputQty, setInputQty] = useState<number>(defaultInputQty || 0);
-  const [inputUnit, setInputUnit] = useState<string>((defaultInputUnit || "").toUpperCase());
+  const [inputUnit, setInputUnit] = useState<string>(
+    (defaultInputUnit || "").toUpperCase(),
+  );
   const [measQty, setMeasQty] = useState<number>(0);
   const [measUnit, setMeasUnit] = useState<string>(inputUnit || "");
   const [notes, setNotes] = useState("");
   const [history, setHistory] = useState<any[]>(() => {
-    try { return JSON.parse(localStorage.getItem('kb:yield')||'[]') || []; } catch { return []; }
+    try {
+      return JSON.parse(localStorage.getItem("kb:yield") || "[]") || [];
+    } catch {
+      return [];
+    }
   });
 
   const volumeToMl = (qty: number, unit: string): number | null => {
-    const U: Record<string, number> = { ML: 1, L: 1000, TSP: 4.92892, TBSP: 14.7868, 'FL OZ': 29.5735, OZ: 29.5735, CUP: 236.588, PINT: 473.176, PT: 473.176, QTS: 946.353, QT: 946.353, GALLON: 3785.41, GAL: 3785.41 };
-    const k = (unit || '').toUpperCase();
+    const U: Record<string, number> = {
+      ML: 1,
+      L: 1000,
+      TSP: 4.92892,
+      TBSP: 14.7868,
+      "FL OZ": 29.5735,
+      OZ: 29.5735,
+      CUP: 236.588,
+      PINT: 473.176,
+      PT: 473.176,
+      QTS: 946.353,
+      QT: 946.353,
+      GALLON: 3785.41,
+      GAL: 3785.41,
+    };
+    const k = (unit || "").toUpperCase();
     if (!Number.isFinite(qty)) return null;
     if (U[k]) return qty * U[k];
     return null;
   };
   const massToG = (qty: number, unit: string): number | null => {
-    const U: Record<string, number> = { G: 1, GRAM: 1, GRAMS: 1, KG: 1000, LBS: 453.592, LB: 453.592, OZ: 28.3495 };
-    const k = (unit || '').toUpperCase();
+    const U: Record<string, number> = {
+      G: 1,
+      GRAM: 1,
+      GRAMS: 1,
+      KG: 1000,
+      LBS: 453.592,
+      LB: 453.592,
+      OZ: 28.3495,
+    };
+    const k = (unit || "").toUpperCase();
     if (!Number.isFinite(qty)) return null;
     if (U[k]) return qty * U[k];
     return null;
   };
 
   const sameDimension = (a: string, b: string) => {
-    const volUnits = new Set(["ML","L","TSP","TBSP","FL OZ","OZ","CUP","PINT","PT","QTS","QT","GALLON","GAL"]);
-    const massUnits = new Set(["G","GRAM","GRAMS","KG","LBS","LB","OZ"]);
-    const A = (a||'').toUpperCase();
-    const B = (b||'').toUpperCase();
+    const volUnits = new Set([
+      "ML",
+      "L",
+      "TSP",
+      "TBSP",
+      "FL OZ",
+      "OZ",
+      "CUP",
+      "PINT",
+      "PT",
+      "QTS",
+      "QT",
+      "GALLON",
+      "GAL",
+    ]);
+    const massUnits = new Set(["G", "GRAM", "GRAMS", "KG", "LBS", "LB", "OZ"]);
+    const A = (a || "").toUpperCase();
+    const B = (b || "").toUpperCase();
     const isVol = volUnits.has(A) && volUnits.has(B);
     const isMass = massUnits.has(A) && massUnits.has(B);
     return isVol || isMass;
   };
 
   const computeYieldPct = () => {
-    if (!Number.isFinite(inputQty) || !Number.isFinite(measQty) || inputQty<=0 || measQty<0) return null;
-    const A = (inputUnit||'').toUpperCase();
-    const B = (measUnit||'').toUpperCase();
-    if (!sameDimension(A,B)) return null;
+    if (
+      !Number.isFinite(inputQty) ||
+      !Number.isFinite(measQty) ||
+      inputQty <= 0 ||
+      measQty < 0
+    )
+      return null;
+    const A = (inputUnit || "").toUpperCase();
+    const B = (measUnit || "").toUpperCase();
+    if (!sameDimension(A, B)) return null;
     let inBase: number | null = null;
     let outBase: number | null = null;
     inBase = volumeToMl(inputQty, A) ?? massToG(inputQty, A);
     outBase = volumeToMl(measQty, B) ?? massToG(measQty, B);
-    if (inBase==null || outBase==null) return null;
+    if (inBase == null || outBase == null) return null;
     return Math.max(0, Math.min(9999, (outBase / inBase) * 100));
   };
 
@@ -2352,18 +2941,20 @@ function YieldLabForm({ defaultInputQty, defaultInputUnit, recipeName, onClose }
     const rec = {
       id: String(Date.now()),
       ts: Date.now(),
-      recipe: recipeName || 'Untitled',
+      recipe: recipeName || "Untitled",
       code: code.trim(),
       input: { qty: inputQty, unit: inputUnit },
       measured: { qty: measQty, unit: measUnit },
-      yieldPercent: Number.isFinite(pct||NaN) ? Number((pct as number).toFixed(2)) : null,
+      yieldPercent: Number.isFinite(pct || NaN)
+        ? Number((pct as number).toFixed(2))
+        : null,
       notes: notes.trim(),
     };
     try {
-      const list = JSON.parse(localStorage.getItem('kb:yield')||'[]') || [];
+      const list = JSON.parse(localStorage.getItem("kb:yield") || "[]") || [];
       list.unshift(rec);
-      localStorage.setItem('kb:yield', JSON.stringify(list.slice(0,200)));
-      setHistory(list.slice(0,200));
+      localStorage.setItem("kb:yield", JSON.stringify(list.slice(0, 200)));
+      setHistory(list.slice(0, 200));
       onClose();
     } catch {
       onClose();
@@ -2377,16 +2968,30 @@ function YieldLabForm({ defaultInputQty, defaultInputUnit, recipeName, onClose }
       <div className="grid grid-cols-2 gap-3">
         <label className="grid gap-1">
           <span className="text-xs text-muted-foreground">Test Code</span>
-          <input value={code} onChange={(e)=>setCode(e.target.value)} className="rounded-md border bg-background px-2 py-1" placeholder="e.g., YLD-001" />
+          <input
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            className="rounded-md border bg-background px-2 py-1"
+            placeholder="e.g., YLD-001"
+          />
         </label>
         <div className="grid grid-cols-2 gap-2">
           <label className="grid gap-1">
             <span className="text-xs text-muted-foreground">Input Qty</span>
-            <input type="number" value={inputQty} onChange={(e)=>setInputQty(Number(e.target.value))} className="rounded-md border bg-background px-2 py-1" />
+            <input
+              type="number"
+              value={inputQty}
+              onChange={(e) => setInputQty(Number(e.target.value))}
+              className="rounded-md border bg-background px-2 py-1"
+            />
           </label>
           <label className="grid gap-1">
             <span className="text-xs text-muted-foreground">Unit</span>
-            <input value={inputUnit} onChange={(e)=>setInputUnit(e.target.value.toUpperCase())} className="rounded-md border bg-background px-2 py-1 uppercase" />
+            <input
+              value={inputUnit}
+              onChange={(e) => setInputUnit(e.target.value.toUpperCase())}
+              className="rounded-md border bg-background px-2 py-1 uppercase"
+            />
           </label>
         </div>
       </div>
@@ -2394,41 +2999,80 @@ function YieldLabForm({ defaultInputQty, defaultInputUnit, recipeName, onClose }
         <div className="grid grid-cols-2 gap-2">
           <label className="grid gap-1">
             <span className="text-xs text-muted-foreground">Measured Qty</span>
-            <input type="number" value={measQty} onChange={(e)=>setMeasQty(Number(e.target.value))} className="rounded-md border bg-background px-2 py-1" />
+            <input
+              type="number"
+              value={measQty}
+              onChange={(e) => setMeasQty(Number(e.target.value))}
+              className="rounded-md border bg-background px-2 py-1"
+            />
           </label>
           <label className="grid gap-1">
             <span className="text-xs text-muted-foreground">Unit</span>
-            <input value={measUnit} onChange={(e)=>setMeasUnit(e.target.value.toUpperCase())} className="rounded-md border bg-background px-2 py-1 uppercase" />
+            <input
+              value={measUnit}
+              onChange={(e) => setMeasUnit(e.target.value.toUpperCase())}
+              className="rounded-md border bg-background px-2 py-1 uppercase"
+            />
           </label>
         </div>
         <div className="grid gap-1">
           <span className="text-xs text-muted-foreground">Yield %</span>
           <div className="rounded-md border bg-background px-2 py-2">
-            {pct==null ? '—' : pct.toFixed(2)}
+            {pct == null ? "—" : pct.toFixed(2)}
           </div>
         </div>
       </div>
       <label className="grid gap-1">
         <span className="text-xs text-muted-foreground">Notes</span>
-        <textarea value={notes} onChange={(e)=>setNotes(e.target.value)} rows={3} className="rounded-md border bg-background px-2 py-1" placeholder="Observations, prep method, adjustments" />
+        <textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          rows={3}
+          className="rounded-md border bg-background px-2 py-1"
+          placeholder="Observations, prep method, adjustments"
+        />
       </label>
       <div className="flex gap-2 justify-end">
-        <button className="rounded border px-3 py-1" onClick={onClose}>Cancel</button>
-        <button className="rounded border px-3 py-1" onClick={onSave}>Save</button>
+        <button className="rounded border px-3 py-1" onClick={onClose}>
+          Cancel
+        </button>
+        <button className="rounded border px-3 py-1" onClick={onSave}>
+          Save
+        </button>
       </div>
       <div className="pt-2">
         <div className="text-xs font-medium mb-1">Recent tests</div>
         <div className="max-h-40 overflow-auto border rounded">
-          {history.length===0 ? (
-            <div className="p-2 text-xs text-muted-foreground">No tests yet.</div>
+          {history.length === 0 ? (
+            <div className="p-2 text-xs text-muted-foreground">
+              No tests yet.
+            </div>
           ) : (
             <table className="w-full text-xs">
               <thead>
-                <tr className="text-muted-foreground"><th className="text-left p-1">When</th><th className="text-left p-1">Code</th><th className="text-left p-1">Input</th><th className="text-left p-1">Measured</th><th className="text-left p-1">Yield %</th></tr>
+                <tr className="text-muted-foreground">
+                  <th className="text-left p-1">When</th>
+                  <th className="text-left p-1">Code</th>
+                  <th className="text-left p-1">Input</th>
+                  <th className="text-left p-1">Measured</th>
+                  <th className="text-left p-1">Yield %</th>
+                </tr>
               </thead>
               <tbody>
-                {history.slice(0,10).map((r:any)=> (
-                  <tr key={r.id} className="border-t"><td className="p-1">{new Date(r.ts).toLocaleString()}</td><td className="p-1">{r.code}</td><td className="p-1">{r.input.qty} {r.input.unit}</td><td className="p-1">{r.measured.qty} {r.measured.unit}</td><td className="p-1">{r.yieldPercent==null? '—' : r.yieldPercent.toFixed(2)}</td></tr>
+                {history.slice(0, 10).map((r: any) => (
+                  <tr key={r.id} className="border-t">
+                    <td className="p-1">{new Date(r.ts).toLocaleString()}</td>
+                    <td className="p-1">{r.code}</td>
+                    <td className="p-1">
+                      {r.input.qty} {r.input.unit}
+                    </td>
+                    <td className="p-1">
+                      {r.measured.qty} {r.measured.unit}
+                    </td>
+                    <td className="p-1">
+                      {r.yieldPercent == null ? "—" : r.yieldPercent.toFixed(2)}
+                    </td>
+                  </tr>
                 ))}
               </tbody>
             </table>

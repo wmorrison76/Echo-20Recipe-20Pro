@@ -14,7 +14,9 @@ const sections = [
         </ul>
         <p className="font-medium">Implementation notes</p>
         <ul className="list-disc pl-5">
-          <li>Use Supabase Auth or Auth.js; RBAC tables (orgs, memberships, roles)</li>
+          <li>
+            Use Supabase Auth or Auth.js; RBAC tables (orgs, memberships, roles)
+          </li>
           <li>Row-level security by org_id on all records</li>
           <li>Sentry for security/event logging</li>
         </ul>
@@ -203,7 +205,7 @@ const sections = [
   },
 ];
 
-export default function SaasRoadmapSection(){
+export default function SaasRoadmapSection() {
   return (
     <div className="container mx-auto px-4 py-4">
       <div className="rounded-xl border p-3 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15 mb-3">
@@ -212,11 +214,13 @@ export default function SaasRoadmapSection(){
       </div>
       <Tabs defaultValue={sections[0].slug} className="w-full">
         <TabsList className="flex flex-wrap gap-1 p-1 bg-muted rounded-lg">
-          {sections.map(s=> (
-            <TabsTrigger key={s.slug} value={s.slug} className="text-xs">{s.label}</TabsTrigger>
+          {sections.map((s) => (
+            <TabsTrigger key={s.slug} value={s.slug} className="text-xs">
+              {s.label}
+            </TabsTrigger>
           ))}
         </TabsList>
-        {sections.map(s=> (
+        {sections.map((s) => (
           <TabsContent key={s.slug} value={s.slug}>
             <div className="rounded-xl border p-4 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15">
               {s.body}

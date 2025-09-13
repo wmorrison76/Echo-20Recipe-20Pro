@@ -141,7 +141,8 @@ function parseQtyUnit(line: string) {
     }
 
     // Handle leading prep like "chopped onion"
-    const leadPrep = /^(chopped|diced|minced|sliced|grated|crushed|pureed|melted|softened|cubed|julienned|shredded)\s+(.*)$/i;
+    const leadPrep =
+      /^(chopped|diced|minced|sliced|grated|crushed|pureed|melted|softened|cubed|julienned|shredded)\s+(.*)$/i;
     const lp = item.match(leadPrep);
     if (lp) {
       prep = prep || lp[1].toLowerCase();
@@ -153,7 +154,12 @@ function parseQtyUnit(line: string) {
   // If no quantity/unit found, try to split by comma for prep
   const parts = line.split(",");
   if (parts.length > 1) {
-    return { qty: 1, unit: "each", prep: parts.slice(1).join(",").trim().toLowerCase(), item: parts[0].trim() };
+    return {
+      qty: 1,
+      unit: "each",
+      prep: parts.slice(1).join(",").trim().toLowerCase(),
+      item: parts[0].trim(),
+    };
   }
   // Treat the whole line as item, assume 1 each
   return { qty: 1, unit: "each", prep: "", item: line.trim() };
@@ -163,13 +169,19 @@ function normalizeItemName(s: string) {
   const t = s.toLowerCase();
   const map: [RegExp, string][] = [
     [/\ball[-\s]?purpose flour\b|\bap flour\b|\bflour\b/, "flour"],
-    [/\bgranulated sugar\b|\bcaster sugar\b|\bpowdered sugar\b|\bconfectioners'? sugar\b|\bicing sugar\b|\bsugar\b/, "sugar"],
+    [
+      /\bgranulated sugar\b|\bcaster sugar\b|\bpowdered sugar\b|\bconfectioners'? sugar\b|\bicing sugar\b|\bsugar\b/,
+      "sugar",
+    ],
     [/\bunsalted butter\b|\bbutter\b/, "butter"],
     [/\begg(s)?\b|\bwhole egg\b/, "egg"],
     [/\bwhole milk\b|\bmilk\b/, "milk"],
     [/\bheavy cream\b|\bdouble cream\b|\bwhipping cream\b|\bcream\b/, "cream"],
     [/\bextra virgin olive oil\b|\bolive oil\b/, "olive_oil"],
-    [/\bvegetable oil\b|\bcanola oil\b|\bsunflower oil\b|\bcorn oil\b|\bneutral oil\b/, "veg_oil"],
+    [
+      /\bvegetable oil\b|\bcanola oil\b|\bsunflower oil\b|\bcorn oil\b|\bneutral oil\b/,
+      "veg_oil",
+    ],
     [/\bunsweetened cocoa powder\b|\bcocoa powder\b|\bcocoa\b/, "cocoa_powder"],
     [/\bvanilla extract\b|\bvanilla\b/, "vanilla_extract"],
     [/\bbaking soda\b|\bbicarbonate of soda\b/, "baking_soda"],
@@ -256,19 +268,42 @@ export async function handleNutritionAnalyze(req: Request, res: Response) {
       const u = (unit || "").toLowerCase();
       if (UNIT_TO_G[u as keyof typeof UNIT_TO_G]) {
         gramsRaw = qty * UNIT_TO_G[u as keyof typeof UNIT_TO_G];
-      } else if ((u === "each" || u === "ea") && itemName && EACH_WEIGHT_G[itemName]) {
+      } else if (
+        (u === "each" || u === "ea") &&
+        itemName &&
+        EACH_WEIGHT_G[itemName]
+      ) {
         gramsRaw = qty * EACH_WEIGHT_G[itemName];
-      } else if ((u === 'cup' || u === 'cups') && itemName && DENSITY_CUP_G[itemName]) {
+      } else if (
+        (u === "cup" || u === "cups") &&
+        itemName &&
+        DENSITY_CUP_G[itemName]
+      ) {
         gramsRaw = qty * DENSITY_CUP_G[itemName];
-      } else if ((u === 'tbsp' || u === 'tablespoon' || u === 'tablespoons' || u === 'tbsp.') && itemName && DENSITY_CUP_G[itemName]) {
+      } else if (
+        (u === "tbsp" ||
+          u === "tablespoon" ||
+          u === "tablespoons" ||
+          u === "tbsp.") &&
+        itemName &&
+        DENSITY_CUP_G[itemName]
+      ) {
         gramsRaw = qty * (DENSITY_CUP_G[itemName] / tbspFromCup);
-      } else if ((u === 'tsp' || u === 'teaspoon' || u === 'teaspoons' || u === 'tsp.') && itemName && DENSITY_CUP_G[itemName]) {
-        gramsRaw = qty * (DENSITY_CUP_G[itemName] / (tbspFromCup * tspFromTbsp));
-      } else if ((u === 'stick' || u === 'sticks') && itemName === 'butter') {
+      } else if (
+        (u === "tsp" ||
+          u === "teaspoon" ||
+          u === "teaspoons" ||
+          u === "tsp.") &&
+        itemName &&
+        DENSITY_CUP_G[itemName]
+      ) {
+        gramsRaw =
+          qty * (DENSITY_CUP_G[itemName] / (tbspFromCup * tspFromTbsp));
+      } else if ((u === "stick" || u === "sticks") && itemName === "butter") {
         gramsRaw = qty * 113;
-      } else if ((u === 'clove' || u === 'cloves') && itemName === 'garlic') {
+      } else if ((u === "clove" || u === "cloves") && itemName === "garlic") {
         gramsRaw = qty * 3;
-      } else if (u === 'pinch' || u === 'dash') {
+      } else if (u === "pinch" || u === "dash") {
         gramsRaw = qty * 0.5;
       }
       let y = yields[i];
@@ -276,7 +311,9 @@ export async function handleNutritionAnalyze(req: Request, res: Response) {
       // Salt/spices no loss
       let factor = 1;
       if (itemName && /salt/.test(itemName)) factor = 1;
-      else if (itemName === "onion") factor = typeof y === "number" ? Math.max(0, Math.min(1, y / 100)) : 0.89;
+      else if (itemName === "onion")
+        factor =
+          typeof y === "number" ? Math.max(0, Math.min(1, y / 100)) : 0.89;
       else
         factor =
           typeof y === "number"
