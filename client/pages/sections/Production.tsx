@@ -67,6 +67,7 @@ export default function ProductionSection(){
   const [editingId, setEditingId] = useState<string | null>(null);
   const [prepOpen, setPrepOpen] = useState(false);
   const [menu, setMenu] = useState<{ open: boolean; x: number; y: number; orderId?: string }>(()=>({ open:false, x:0, y:0 }));
+  const [guideOutlet, setGuideOutlet] = useState<Outlet | null>(null);
 
   const calRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<{ id: string; type: 'move'|'resize'; startY: number; startMin: number; endMin: number } | null>(null);
