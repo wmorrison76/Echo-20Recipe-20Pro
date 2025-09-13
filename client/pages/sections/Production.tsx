@@ -697,7 +697,7 @@ export default function ProductionSection(){
                   <Button size="sm" variant="outline" onClick={()=> setFinPage(p=> p+1)}>Next</Button>
                 </div>
               </div>
-              <table className="w-full text-sm">
+              <table className="w-full text-sm block overflow-x-auto whitespace-nowrap">
                 <thead><tr className="text-left"><th>Name</th><th>Category</th><th>On hand</th><th>Par</th><th>Unit</th><th>Area</th><th>Location</th><th></th></tr></thead>
                 <tbody>
                   {(()=>{ const q=finQuery.trim().toLowerCase(); const filtered = q? fin.filter(it=> `${it.name} ${it.category||''} ${it.location||''}`.toLowerCase().includes(q)) : fin; const pageItems = filtered.slice((finPage-1)*pageSize, finPage*pageSize); return pageItems; })().map(it=> (
