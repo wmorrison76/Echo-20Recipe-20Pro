@@ -54,6 +54,8 @@ const RecipeInputPage = () => {
       return false;
     }
   });
+  const [pickerOpen, setPickerOpen] = useState<{ index: number } | null>(null);
+  const [pickerQ, setPickerQ] = useState("");
   // Sync with global theme from ThemeToggle
   useEffect(() => {
     const apply = () =>
