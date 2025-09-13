@@ -39,7 +39,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 const RecipeInputPage = () => {
   const [recipeName, setRecipeName] = useState("");
   const [ingredients, setIngredients] = useState([
-    { qty: "", unit: "", item: "", prep: "", yield: "", cost: "" },
+    { qty: "", unit: "", item: "", prep: "", yield: "", cost: "", subId: "" },
   ]);
   const historyRef = useRef<any[]>([]);
   const futureRef = useRef<any[]>([]);
@@ -209,7 +209,7 @@ const RecipeInputPage = () => {
     };
     let t = String(s).trim();
     // Expand unicode vulgar fractions
-    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
+    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕��⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
     // Allow forms like "1½" -> "1 1/2"
     t = t.replace(/(\d)\s*(\d\/\d)/, "$1 $2");
     // Mixed fraction
