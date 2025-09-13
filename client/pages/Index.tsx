@@ -3,6 +3,7 @@ import RecipeSearchSection from "./sections/RecipeSearch";
 import RecipeInputSection from "./sections/RecipeInput";
 import GallerySection from "./sections/Gallery";
 import AddRecipeSection from "./sections/AddRecipe";
+import SaasRoadmapSection from "./sections/SaasRoadmap";
 import TopTabs from "@/components/TopTabs";
 import SubtleBottomGlow from "@/components/SubtleBottomGlow";
 import TronBackdrop from "@/components/TronBackdrop";
