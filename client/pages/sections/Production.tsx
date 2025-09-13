@@ -237,6 +237,23 @@ export default function ProductionSection(){
   const closeMenu = () => setMenu({ open:false, x:0, y:0 });
   const onOrderContext = (e: React.MouseEvent, id: string) => { e.preventDefault(); setMenu({ open:true, x:e.clientX, y:e.clientY, orderId:id }); };
 
+  function openOrderDialog(o: Order){
+    const dt = new Date(o.dueISO);
+    const local = new Date(dt.getTime() - dt.getTimezoneOffset()*60000);
+    const date = local.toISOString().slice(0,10);
+    const time = `${String(local.getHours()).padStart(2,'0')}:${String(local.getMinutes()).padStart(2,'0')}`;
+    setOrderEditingId(o.id);
+    setOrderDraft({ id:o.id, outletId:o.outletId, date, time, notes:o.notes||'', lines: o.lines.map(l=> ({...l})) });
+    setOrderDialogOpen(true);
+  }
+  function saveOrder(){
+    if(!orderDraft) return;
+    const dueISO = new Date(`${orderDraft.date}T${orderDraft.time}:00`).toISOString();
+    setOrders(prev=> prev.map(x=> x.id===orderEditingId? { ...x, outletId: orderDraft.outletId, dueISO, notes: orderDraft.notes, lines: orderDraft.lines, changedAt: Date.now() } : x));
+    setLogs(prev=> [{ id: uid(), ts: Date.now(), kind:'order', message:`Order ${orderDraft.id} changed`, actorId: currentUser?.id, actorName: currentUser?.name }, ...prev]);
+    setOrderDialogOpen(false); setOrderDraft(null); setOrderEditingId(null);
+  }
+
   // Drag/move/resize
   const pxPerMin = 0.8; // 48px per hour
   function startDrag(e: React.MouseEvent, t: Task, mode: 'move'|'resize'){
