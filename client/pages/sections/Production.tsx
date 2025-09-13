@@ -109,6 +109,16 @@ export default function ProductionSection(){
   const [deletePin, setDeletePin] = useState("");
   const [deleteError, setDeleteError] = useState("");
 
+  const [invOpen, setInvOpen] = useState(false);
+  const [invKind, setInvKind] = useState<'raw'|'fin'>('raw');
+  const [invItemId, setInvItemId] = useState<string>('');
+  const [invQty, setInvQty] = useState<number>(0);
+  const [invUnit, setInvUnit] = useState<string>('');
+  const [invLotCode, setInvLotCode] = useState<string>('');
+  const [invExpiry, setInvExpiry] = useState<string>('');
+  const [invLocation, setInvLocation] = useState<string>('');
+  const [invNote, setInvNote] = useState<string>('');
+
   const calRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<{ id: string; type: 'move'|'resize'; startY: number; startMin: number; endMin: number } | null>(null);
 
