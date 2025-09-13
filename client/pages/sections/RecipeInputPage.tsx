@@ -209,7 +209,7 @@ const RecipeInputPage = () => {
     };
     let t = String(s).trim();
     // Expand unicode vulgar fractions
-    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕��⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
+    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
     // Allow forms like "1½" -> "1 1/2"
     t = t.replace(/(\d)\s*(\d\/\d)/, "$1 $2");
     // Mixed fraction
@@ -342,7 +342,7 @@ const RecipeInputPage = () => {
     if (!s) return;
     setRecipeName(s.recipeName || "");
     const baseRows = s.ingredients || [
-      { qty: "", unit: "", item: "", prep: "", yield: "", cost: "" },
+      { qty: "", unit: "", item: "", prep: "", yield: "", cost: "", subId: "" },
     ];
     // Auto-parse any row whose item starts with qty/unit (e.g., "24 oz marinara")
     const fixedRows = baseRows.map((r: any) => {
