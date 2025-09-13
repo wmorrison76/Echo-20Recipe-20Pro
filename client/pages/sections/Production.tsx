@@ -88,6 +88,9 @@ export default function ProductionSection(){
   const [orderEditingId, setOrderEditingId] = useState<string | null>(null);
   const [orderDraft, setOrderDraft] = useState<{ id:string; outletId:string; date:string; time:string; notes:string; lines: OrderLine[] } | null>(null);
 
+  const [quickOpen, setQuickOpen] = useState(false);
+  const [quickDraft, setQuickDraft] = useState<{ outletId:string; date:string; time:string; lines: { id:string; item:string; qty:number; unit:string; finishedItemId?:string }[] } | null>(null);
+
   const [multiAssignOpen, setMultiAssignOpen] = useState(false);
   const [multiAssignOrderId, setMultiAssignOrderId] = useState<string | null>(null);
   const [multiAssign, setMultiAssign] = useState<string[]>([]);
@@ -254,6 +257,24 @@ export default function ProductionSection(){
   const closeMenu = () => setMenu({ open:false, x:0, y:0 });
   const onOrderContext = (e: React.MouseEvent, id: string) => { e.preventDefault(); setMenu({ open:true, x:e.clientX, y:e.clientY, orderId:id }); };
 
+  function openQuick(){
+    const today = date;
+    setQuickDraft({ outletId: outlets[0]?.id || '', date: today, time: '06:00', lines: [ { id: uid(), item: '', qty: 0, unit: 'pcs' } ] });
+    setQuickOpen(true);
+  }
+  function onQuickItemChange(idx:number, val:string){
+    const m = fin.find(f=> f.name.toLowerCase()===val.toLowerCase());
+    setQuickDraft(prev=> prev? { ...prev, lines: prev.lines.map((x,i)=> i===idx? { ...x, item: val, finishedItemId: m?.id, unit: x.unit || m?.unit || 'pcs' } : x) } : prev);
+  }
+  function saveQuick(){
+    if(!quickDraft) return;
+    const dueISO = new Date(`${quickDraft.date}T${quickDraft.time}:00`).toISOString();
+    const lines = quickDraft.lines.filter(l=> l.item && l.qty>0).map(l=> ({ id: uid(), item: l.item, qty: l.qty, unit: l.unit, finishedItemId: l.finishedItemId }));
+    if(!lines.length) { setQuickOpen(false); setQuickDraft(null); return; }
+    addOrderQuick({ outletId: quickDraft.outletId, dueISO, lines });
+    setQuickOpen(false); setQuickDraft(null);
+  }
+
   function openOrderDialog(o: Order){
     const dt = new Date(o.dueISO);
     const local = new Date(dt.getTime() - dt.getTimezoneOffset()*60000);
@@ -367,7 +388,7 @@ export default function ProductionSection(){
                 <DropdownMenuItem onClick={()=> openTaskDialog({})}>Custom…</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button size="sm" variant="secondary" onClick={()=> addOrderQuick({})}><ClipboardList className="w-4 h-4 mr-1"/>Quick order→plan</Button>
+            <Button size="sm" variant="secondary" onClick={openQuick}><ClipboardList className="w-4 h-4 mr-1"/>Quick order→plan</Button>
             <Button size="sm" variant="outline" onClick={prepPrint}><Printer className="w-4 h-4 mr-1"/>Prep sheet</Button>
           </div>
         </div>
@@ -702,6 +723,47 @@ export default function ProductionSection(){
               }}>Assign</Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={quickOpen} onOpenChange={(v)=>{ setQuickOpen(v); if(!v){ setQuickDraft(null); } }}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader><DialogTitle>Quick order → plan</DialogTitle></DialogHeader>
+          {quickDraft && (
+            <div className="space-y-3 text-sm">
+              <div className="grid md:grid-cols-3 gap-2">
+                <label className="block">Outlet<select className="w-full border rounded px-2 py-1" value={quickDraft.outletId} onChange={(e)=> setQuickDraft({ ...(quickDraft as any), outletId: e.target.value })}>{outlets.map(o=> <option key={o.id} value={o.id}>{o.name}</option>)}</select></label>
+                <label className="block">Date<input type="date" className="w-full border rounded px-2 py-1" value={quickDraft.date} onChange={(e)=> setQuickDraft({ ...(quickDraft as any), date: e.target.value })}/></label>
+                <label className="block">Time<input type="time" className="w-full border rounded px-2 py-1" value={quickDraft.time} onChange={(e)=> setQuickDraft({ ...(quickDraft as any), time: e.target.value })}/></label>
+              </div>
+              <div>
+                <div className="font-medium mb-1">Lines</div>
+                <table className="w-full text-sm">
+                  <thead><tr className="text-left"><th>Finished item</th><th>Qty</th><th>Unit</th><th></th></tr></thead>
+                  <tbody>
+                    {quickDraft.lines.map((l,idx)=> (
+                      <tr key={l.id} className="border-t">
+                        <td>
+                          <input list="fin-items" className="w-full border rounded px-1" value={l.item} onChange={(e)=> onQuickItemChange(idx, e.target.value)} placeholder="Type to search finished goods"/>
+                        </td>
+                        <td><input className="w-24 border rounded px-1" value={l.qty} onChange={(e)=> setQuickDraft({ ...(quickDraft as any), lines: quickDraft.lines.map((x,i)=> i===idx? { ...x, qty: Number(e.target.value||0) }: x) })}/></td>
+                        <td><input className="w-24 border rounded px-1" value={l.unit} onChange={(e)=> setQuickDraft({ ...(quickDraft as any), lines: quickDraft.lines.map((x,i)=> i===idx? { ...x, unit: e.target.value }: x) })}/></td>
+                        <td><button onClick={()=> setQuickDraft({ ...(quickDraft as any), lines: quickDraft.lines.filter((_,i)=> i!==idx) })}><Trash className="w-4 h-4"/></button></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <datalist id="fin-items">
+                  {fin.map(f=> <option key={f.id} value={f.name}></option>)}
+                </datalist>
+                <div className="mt-2"><Button size="sm" onClick={()=> setQuickDraft({ ...(quickDraft as any), lines: [ ...quickDraft.lines, { id: uid(), item: '', qty: 0, unit: 'pcs' } ] })}><Plus className="w-4 h-4 mr-1"/>Add line</Button></div>
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <Button variant="secondary" onClick={()=> setQuickOpen(false)}>Cancel</Button>
+                <Button onClick={saveQuick}>Create & plan</Button>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
