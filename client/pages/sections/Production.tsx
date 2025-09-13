@@ -260,6 +260,22 @@ export default function ProductionSection(){
     autoPlanFromOrder(next);
   };
 
+  function openReceive(kind:'raw'|'fin', id:string){
+    setInvKind(kind); setInvItemId(id);
+    if(kind==='raw'){ const it = raw.find(x=> x.id===id)!; setInvUnit(it.unit); setInvLocation(it.location||''); }
+    else { const it = fin.find(x=> x.id===id)!; setInvUnit(it.unit); setInvLocation(it.location||''); }
+    setInvQty(0); setInvLotCode(''); setInvExpiry(''); setInvNote(''); setInvOpen(true);
+  }
+  function saveReceive(){
+    if(!invItemId || invQty<=0) { setInvOpen(false); return; }
+    const lot: InvLot = { id: uid(), kind: invKind, itemId: invItemId, lotCode: invLotCode||undefined, qty: invQty, unit: invUnit||'pcs', receivedAt: Date.now(), expiryDate: invExpiry||undefined, location: invLocation||undefined, note: invNote||undefined, receiverId: currentUser?.id, receiverName: currentUser?.name };
+    setLots(prev=> [lot, ...prev]);
+    if(invKind==='raw'){ setRaw(prev=> prev.map(x=> x.id===invItemId? { ...x, onHand: (x.onHand||0) + invQty, unit: invUnit, location: invLocation||x.location }: x)); }
+    else { setFin(prev=> prev.map(x=> x.id===invItemId? { ...x, onHand: (x.onHand||0) + invQty, unit: invUnit, location: invLocation||x.location }: x)); }
+    setLogs(prev=> [{ id: uid(), ts: Date.now(), kind:'inventory', message:`Received ${invQty} ${invUnit} into ${invKind==='raw'?'raw':'finished'}: ${invKind==='raw'? (raw.find(r=> r.id===invItemId)?.name) : (fin.find(f=> f.id===invItemId)?.name)}`, actorId: currentUser?.id, actorName: currentUser?.name }, ...prev]);
+    setInvOpen(false);
+  }
+
   const prepGroups = useMemo(()=>{
     const groups: Record<string, Task[]> = {};
     for(const t of dayTasks){ const key = `${outletsById[t.outletId||'']?.name||'Outlet'} • ${rolesById[t.roleId||'']?.name||'Unassigned'}`; (groups[key] ||= []).push(t); }
