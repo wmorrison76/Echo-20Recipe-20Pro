@@ -39,6 +39,9 @@ export default function Index() {
             <TabsContent value="saas">
               <SaasRoadmapSection />
             </TabsContent>
+            <TabsContent value="production">
+              <ProductionSection />
+            </TabsContent>
           </Tabs>
         </main>
 
