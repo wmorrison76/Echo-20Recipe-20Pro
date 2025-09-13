@@ -651,7 +651,7 @@ export default function ProductionSection(){
         </DialogContent>
       </Dialog>
 
-      <Dialog open={signOpen} onOpenChange={(v)=>{ setSignOpen(v); if(!v && pendingDeleteOrderId){ setConfirmDelOpen(true); } }}>
+      <Dialog open={signOpen} onOpenChange={(v)=>{ setSignOpen(v); if(!v && pendingDeleteOrderId && currentUser){ setConfirmDelOpen(true); } }}>
         <DialogContent className="max-w-sm">
           <DialogHeader><DialogTitle>Sign in</DialogTitle></DialogHeader>
           <div className="space-y-2 text-sm">
