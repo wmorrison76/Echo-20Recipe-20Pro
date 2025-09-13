@@ -17,6 +17,7 @@ const LS_LOGS = "production.logs.v1";
 const LS_TASKS = "production.tasks.v1";
 const LS_INV_RAW = "production.inventory.raw.v1";
 const LS_INV_FIN = "production.inventory.finished.v1";
+const LS_INV_LOTS = "production.inventory.lots.v1";
 const LS_SESSION_USER = "production.session.user.v1";
 const LS_TIMEZONE = "production.timezone.v1";
 
