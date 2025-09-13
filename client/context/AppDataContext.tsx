@@ -175,43 +175,44 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (images.length > 0) return;
-    const now = Date.now();
-    const makeDataUrl = (label: string, hue: number) => {
+    let seeded = false;
+    try { seeded = localStorage.getItem("gallery:seeded:food:v1") === "1"; } catch {}
+
+    const onlyOldDemo = images.length > 0 && images.every(i => (i.tags || []).includes("demo") && !(i.tags || []).includes("food"));
+    if (images.length > 0 && !onlyOldDemo) return;
+
+    (async () => {
       try {
-        const c = document.createElement("canvas");
-        c.width = 960; c.height = 720; const ctx = c.getContext("2d");
-        if (!ctx) return "";
-        const g = ctx.createLinearGradient(0,0,960,720);
-        g.addColorStop(0, `hsl(${hue},65%,92%)`);
-        g.addColorStop(1, `hsl(${(hue+30)%360},70%,82%)`);
-        ctx.fillStyle = g; ctx.fillRect(0,0,960,720);
-        ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.font = "bold 72px Inter, system-ui, sans-serif"; ctx.textAlign = "center"; ctx.fillText(label, 480, 380);
-        return c.toDataURL("image/jpeg", 0.78);
-      } catch {
-        return "";
-      }
-    };
-    const pastryNames = [
-      "Croissant","Eclair","Macaron","Tart","Mille-feuille","Profiterole","Strudel","Cannoli","Baklava","Choux","Danish","Brioche"
-    ];
-    const otherNames = ["Cake","Pie","Bread","Plated","Savory"];
-    const demo: GalleryImage[] = [
-      ...pastryNames.map((lab, i) => ({ id: uid(), name: `${lab.toLowerCase()}-${i+1}.jpg`, dataUrl: makeDataUrl(lab, (i*25)%360), createdAt: now - i*800 - 1, tags: ["pastry", lab.toLowerCase(), "demo"], favorite: false, order: i, type: "image/jpeg" })),
-      ...otherNames.map((lab, i) => ({ id: uid(), name: `${lab.toLowerCase()}-${i+1}.jpg`, dataUrl: makeDataUrl(lab, (i*60+180)%360), createdAt: now - i*800 - 1 - 10000, tags: [lab.toLowerCase(), "demo"], favorite: false, order: pastryNames.length + i, type: "image/jpeg" })),
-    ];
-    if (!mountedRef.current) return;
-    setImages(demo);
-    if (lookbooks.length === 0) {
-      const lbPastryId = uid();
-      const lbs: LookBook[] = [
-        { id: lbPastryId, name: "Pastries", imageIds: demo.filter(i=> i.tags.includes("pastry")).slice(0,8).map(i=>i.id), createdAt: now },
-        { id: uid(), name: "Cakes", imageIds: demo.filter(i=> i.tags.includes("cake")).map(i=>i.id), createdAt: now-1000 },
-      ];
-      if (mountedRef.current) setLookbooks(lbs);
-    }
-    try { localStorage.setItem("demo:seeded:v3","1"); } catch {}
-  }, [images.length, lookbooks.length]);
+        const items = [
+          { name:'pizza.jpg', url:'https://images.unsplash.com/photo-1548365328-9f547fb09530?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','pizza','demo'] },
+          { name:'burger.jpg', url:'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','burger','demo'] },
+          { name:'salad.jpg', url:'https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','salad','demo'] },
+          { name:'pasta.jpg', url:'https://images.unsplash.com/photo-1521389508051-d7ffb5dc8bbf?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','pasta','demo'] },
+          { name:'steak.jpg', url:'https://images.unsplash.com/photo-1553163147-622ab57be1c7?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','steak','demo'] },
+          { name:'sushi.jpg', url:'https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','sushi','demo'] },
+          { name:'dessert.jpg', url:'https://images.unsplash.com/photo-1541976076758-347942db1970?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','dessert','demo'] },
+          { name:'bread.jpg', url:'https://images.unsplash.com/photo-1509440159598-8b4e0b0b1f66?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','bread','demo'] },
+        ];
+        const next: GalleryImage[] = [];
+        let order = 0;
+        for (const it of items) {
+          try {
+            const res = await fetch(it.url);
+            if (!res.ok) continue;
+            const blob = await res.blob();
+            const dataUrl = await dataUrlFromBlob(blob);
+            next.push({ id: uid(), name: it.name, dataUrl, createdAt: Date.now(), tags: it.tags, favorite: false, order: order++, type: blob.type || 'image/jpeg' });
+          } catch {}
+        }
+        if (!mountedRef.current) return;
+        if (onlyOldDemo) setImages([]);
+        if (images.length === 0 || onlyOldDemo) {
+          if (next.length) setImages(next);
+          try { localStorage.setItem("gallery:seeded:food:v1", "1"); } catch {}
+        }
+      } catch {}
+    })();
+  }, [images.length]);
 
   useEffect(() => {
     writeLS(LS_RECIPES, recipes);
