@@ -1581,6 +1581,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       purgeDeleted,
       destroyRecipe,
       addDemoImages,
+      addStockFoodPhotos,
     }),
     [
       recipes,
