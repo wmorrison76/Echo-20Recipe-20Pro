@@ -88,6 +88,10 @@ export default function ProductionSection(){
   const [orderEditingId, setOrderEditingId] = useState<string | null>(null);
   const [orderDraft, setOrderDraft] = useState<{ id:string; outletId:string; date:string; time:string; notes:string; lines: OrderLine[] } | null>(null);
 
+  const [multiAssignOpen, setMultiAssignOpen] = useState(false);
+  const [multiAssignOrderId, setMultiAssignOrderId] = useState<string | null>(null);
+  const [multiAssign, setMultiAssign] = useState<string[]>([]);
+
   const [signOpen, setSignOpen] = useState(false);
   const [signStaffId, setSignStaffId] = useState<string>("");
   const [signPin, setSignPin] = useState("");
@@ -255,6 +259,7 @@ export default function ProductionSection(){
     const local = new Date(dt.getTime() - dt.getTimezoneOffset()*60000);
     const date = local.toISOString().slice(0,10);
     const time = `${String(local.getHours()).padStart(2,'0')}:${String(local.getMinutes()).padStart(2,'0')}`;
+    setOrders(prev=> prev.map(x=> x.id===o.id? { ...x, changedAt: Date.now() }: x));
     setOrderEditingId(o.id);
     setOrderDraft({ id:o.id, outletId:o.outletId, date, time, notes:o.notes||'', lines: o.lines.map(l=> ({...l})) });
     setOrderDialogOpen(true);
@@ -476,6 +481,9 @@ export default function ProductionSection(){
                     {s.name} {s.roleId? `• ${rolesById[s.roleId]?.name}`:''}
                   </button>
                 ))}
+                <div className="border-t mt-1">
+                  <button className="block w-full text-left px-3 py-1 hover:bg-muted" onClick={()=>{ setMultiAssignOrderId(menu.orderId||null); setMultiAssignOpen(true); closeMenu(); }}>Assign to multiple…</button>
+                </div>
               </div>
             )}
           </div>
@@ -670,6 +678,30 @@ export default function ProductionSection(){
             ))}
           </div>
           <div className="no-print flex justify-end"><Button onClick={()=> window.print()}><Printer className="w-4 h-4 mr-1"/>Print</Button></div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={multiAssignOpen} onOpenChange={(v)=>{ setMultiAssignOpen(v); if(!v){ setMultiAssign([]); setMultiAssignOrderId(null); } }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle>Assign to multiple staff</DialogTitle></DialogHeader>
+          <div className="space-y-2 text-sm">
+            <div className="max-h-60 overflow-auto border rounded p-2">
+              {staff.map(s=> (
+                <label key={s.id} className="flex items-center gap-2 py-1">
+                  <input type="checkbox" checked={multiAssign.includes(s.id)} onChange={(e)=> setMultiAssign(prev=> e.target.checked? [...prev, s.id] : prev.filter(x=> x!==s.id))} />
+                  <span>{s.name}{s.roleId? ` • ${rolesById[s.roleId]?.name}`:''}</span>
+                </label>
+              ))}
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="secondary" onClick={()=> setMultiAssignOpen(false)}>Cancel</Button>
+              <Button onClick={()=>{
+                const o = orders.find(x=> x.id===multiAssignOrderId);
+                if(o){ multiAssign.forEach(id=> { const st = staffById[id]; autoPlanFromOrder(o, { staffId: id, roleId: st?.roleId }); }); }
+                setMultiAssignOpen(false); setMultiAssign([]); setMultiAssignOrderId(null);
+              }}>Assign</Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
