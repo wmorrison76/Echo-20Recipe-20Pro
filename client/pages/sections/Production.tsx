@@ -451,7 +451,7 @@ export default function ProductionSection(){
   }
   function onDrag(e: PointerEvent){ const s = dragRef.current; if(!s) return; const dy = e.clientY - s.startY; const dmin = Math.round(dy/pxPerMin/15)*15; setTasks(prev=> prev.map(x=>{ if(x.id!==s.id) return x; let start = s.startMin, end = s.endMin; if(s.type==='move'){ start+=dmin; end+=dmin; } else { end = Math.max(start+15, s.endMin + dmin); } start=Math.max(0,start); end=Math.min(24*60, end); return { ...x, start:minToHHMM(start), end:minToHHMM(end) }; })); }
   function endDrag(){ window.removeEventListener('pointermove', onDrag as any); dragRef.current=null; }
-  useEffect(()=>()=>{ window.removeEventListener('mousemove', onDrag); },[]);
+  useEffect(()=>()=>{ window.removeEventListener('pointermove', onDrag as any); },[]);
 
   // Overlap lanes
   const laneInfo = useMemo(()=>{
