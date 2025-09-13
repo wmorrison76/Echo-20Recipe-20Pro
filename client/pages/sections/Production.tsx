@@ -645,6 +645,43 @@ export default function ProductionSection(){
         </DialogContent>
       </Dialog>
 
+      <Dialog open={orderDialogOpen} onOpenChange={(v)=>{ setOrderDialogOpen(v); if(!v){ setOrderEditingId(null); setOrderDraft(null); } }}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader><DialogTitle>Edit Order</DialogTitle></DialogHeader>
+          {orderDraft && (
+            <div className="space-y-3 text-sm">
+              <div className="grid md:grid-cols-3 gap-2">
+                <label className="block">Outlet<select className="w-full border rounded px-2 py-1" value={orderDraft.outletId} onChange={(e)=> setOrderDraft({ ...(orderDraft as any), outletId: e.target.value })}>{outlets.map(o=> <option key={o.id} value={o.id}>{o.name}</option>)}</select></label>
+                <label className="block">Date<input type="date" className="w-full border rounded px-2 py-1" value={orderDraft.date} onChange={(e)=> setOrderDraft({ ...(orderDraft as any), date: e.target.value })}/></label>
+                <label className="block">Time<input type="time" className="w-full border rounded px-2 py-1" value={orderDraft.time} onChange={(e)=> setOrderDraft({ ...(orderDraft as any), time: e.target.value })}/></label>
+              </div>
+              <label className="block">Notes<textarea className="w-full border rounded px-2 py-1" value={orderDraft.notes} onChange={(e)=> setOrderDraft({ ...(orderDraft as any), notes: e.target.value })}/></label>
+              <div>
+                <div className="font-medium mb-1">Lines</div>
+                <table className="w-full text-sm">
+                  <thead><tr className="text-left"><th>Item</th><th>Qty</th><th>Unit</th><th></th></tr></thead>
+                  <tbody>
+                    {orderDraft.lines.map((l,idx)=> (
+                      <tr key={l.id} className="border-t">
+                        <td><input className="w-full border rounded px-1" value={l.item} onChange={(e)=> setOrderDraft({ ...(orderDraft as any), lines: orderDraft.lines.map((x,i)=> i===idx? { ...x, item: e.target.value }: x) })}/></td>
+                        <td><input className="w-24 border rounded px-1" value={l.qty} onChange={(e)=> setOrderDraft({ ...(orderDraft as any), lines: orderDraft.lines.map((x,i)=> i===idx? { ...x, qty: Number(e.target.value||0) }: x) })}/></td>
+                        <td><input className="w-24 border rounded px-1" value={l.unit} onChange={(e)=> setOrderDraft({ ...(orderDraft as any), lines: orderDraft.lines.map((x,i)=> i===idx? { ...x, unit: e.target.value }: x) })}/></td>
+                        <td><button onClick={()=> setOrderDraft({ ...(orderDraft as any), lines: orderDraft.lines.filter((_,i)=> i!==idx) })}><Trash className="w-4 h-4"/></button></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="mt-2"><Button size="sm" onClick={()=> setOrderDraft({ ...(orderDraft as any), lines: [ ...orderDraft.lines, { id: uid(), item: '', qty: 0, unit: 'pcs' } as any ] })}><Plus className="w-4 h-4 mr-1"/>Add line</Button></div>
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <Button variant="secondary" onClick={()=> setOrderDialogOpen(false)}>Cancel</Button>
+                <Button onClick={saveOrder}>Save changes</Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={!!guideOutlet} onOpenChange={(v)=>{ if(!v) setGuideOutlet(null); }}>
         <DialogContent className="max-w-xl">
           <DialogHeader><DialogTitle>Order Guide — {guideOutlet?.name}</DialogTitle></DialogHeader>
