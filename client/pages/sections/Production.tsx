@@ -72,7 +72,8 @@ export default function ProductionSection(){
   const [logs, setLogs] = useState<{ id:string; ts:number; kind:string; message:string; actorId?:string; actorName?:string }[]>(()=> readLS(LS_LOGS, []));
   const [tasks, setTasks] = useState<Task[]>(()=> readLS(LS_TASKS, []));
   const [raw, setRaw] = useState<RawItem[]>(()=> readLS(LS_INV_RAW, [ { id: uid(), name: "Flour", unit: "kg", onHand: 50, par: 30, location:"Row A • Shelf 1 • Bin 1" }, { id: uid(), name: "Chocolate", unit: "kg", onHand: 20, par: 10, location:"Row B • Shelf 2 • Bin 3" } ]));
-  const [fin, setFin] = useState<FinishedItem[]>(()=> readLS(LS_INV_FIN, [ { id: uid(), name: "Croissant", unit: "pcs", onHand: 80, par: 120, location:"Freezer 1 • Rack 2 • Tray A" }, { id: uid(), name: "Chocolate Bonbons", unit: "pcs", onHand: 120, par: 150, location:"Freezer 2 • Rack 1 • Tray C" } ]));
+  const [fin, setFin] = useState<FinishedItem[]>(()=> readLS(LS_INV_FIN, [ { id: uid(), name: "Croissant", unit: "pcs", onHand: 80, par: 120, location:"Freezer 1 �� Rack 2 • Tray A" }, { id: uid(), name: "Chocolate Bonbons", unit: "pcs", onHand: 120, par: 150, location:"Freezer 2 • Rack 1 • Tray C" } ]));
+  const [lots, setLots] = useState<InvLot[]>(()=> readLS(LS_INV_LOTS, []));
   const [date, setDate] = useState<string>(()=> new Date().toISOString().slice(0,10));
   const [tz, setTz] = useState<string>(()=> readLS(LS_TIMEZONE, Intl.DateTimeFormat().resolvedOptions().timeZone));
 
