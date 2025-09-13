@@ -1471,7 +1471,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const restoreDemo = useCallback(() => {
     setImages([]);
     setLookbooks([]);
-    try { localStorage.removeItem(LS_IMAGES); localStorage.removeItem(LS_LOOKBOOKS);} catch {}
+    try { localStorage.removeItem(LS_IMAGES); localStorage.removeItem(LS_LOOKBOOKS); localStorage.removeItem('gallery:seeded:food:v1'); } catch {}
   }, []);
 
   const addDemoImages = useCallback(async (): Promise<number> => {
