@@ -54,6 +54,7 @@ type AppData = {
   addImages: (files: File[], opts?: { tags?: string[] }) => Promise<number>;
   restoreDemo: () => void;
   addDemoImages: () => Promise<number>;
+  addStockFoodPhotos: () => Promise<number>;
   addRecipe: (recipe: Omit<Recipe, "id" | "createdAt">) => string;
   addRecipesFromJsonFiles: (
     files: File[],
