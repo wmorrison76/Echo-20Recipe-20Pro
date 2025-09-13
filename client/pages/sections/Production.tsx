@@ -79,6 +79,11 @@ export default function ProductionSection(){
   const [fin, setFin] = useState<FinishedItem[]>(()=> readLS(LS_INV_FIN, [ { id: uid(), name: "Croissant", unit: "pcs", onHand: 80, par: 120, location:"Freezer 1 • Rack 2 • Tray A" }, { id: uid(), name: "Chocolate Bonbons", unit: "pcs", onHand: 120, par: 150, location:"Freezer 2 • Rack 1 • Tray C" } ]));
   const [lots, setLots] = useState<InvLot[]>(()=> readLS(LS_INV_LOTS, []));
   const [storageAreas, setStorageAreas] = useState<StorageArea[]>(()=> readLS(LS_STORAGE_AREAS, [ { id: uid(), name: 'Freezer 1' }, { id: uid(), name: 'Freezer 2' }, { id: uid(), name: 'Dry Storage' } ]));
+  const [finQuery, setFinQuery] = useState("");
+  const [rawQuery, setRawQuery] = useState("");
+  const [finPage, setFinPage] = useState(1);
+  const [rawPage, setRawPage] = useState(1);
+  const pageSize = 100;
   const [date, setDate] = useState<string>(()=> new Date().toISOString().slice(0,10));
 
   const [currentUserId, setCurrentUserId] = useState<string | null>(()=> readLS(LS_SESSION_USER, null));
@@ -139,6 +144,8 @@ export default function ProductionSection(){
   useEffect(()=> writeLS(LS_INV_LOTS, lots), [lots]);
   useEffect(()=> writeLS(LS_STORAGE_AREAS, storageAreas), [storageAreas]);
   useEffect(()=> writeLS(LS_SESSION_USER, currentUserId), [currentUserId]);
+  useEffect(()=>{ setFinPage(1); }, [finQuery]);
+  useEffect(()=>{ setRawPage(1); }, [rawQuery]);
 
   useEffect(()=>{
     const now = Date.now();
@@ -640,10 +647,18 @@ export default function ProductionSection(){
           <div className="grid md:grid-cols-2 gap-3">
             <div className="rounded-xl border p-3 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15">
               <div className="font-medium mb-2 flex items-center gap-2"><Warehouse className="w-4 h-4"/>Finished Goods</div>
+              <div className="flex items-center gap-2 mb-2 text-sm">
+                <input className="border rounded px-2 py-1 w-full" placeholder="Search name/category/location" value={finQuery} onChange={(e)=> setFinQuery(e.target.value)} />
+                <span className="text-xs text-muted-foreground">Page {finPage}</span>
+                <div className="flex gap-1">
+                  <Button size="sm" variant="outline" onClick={()=> setFinPage(p=> Math.max(1,p-1))}>Prev</Button>
+                  <Button size="sm" variant="outline" onClick={()=> setFinPage(p=> p+1)}>Next</Button>
+                </div>
+              </div>
               <table className="w-full text-sm">
                 <thead><tr className="text-left"><th>Name</th><th>Category</th><th>On hand</th><th>Par</th><th>Unit</th><th>Area</th><th>Location</th><th></th></tr></thead>
                 <tbody>
-                  {fin.map(it=> (
+                  {(()=>{ const q=finQuery.trim().toLowerCase(); const filtered = q? fin.filter(it=> `${it.name} ${it.category||''} ${it.location||''}`.toLowerCase().includes(q)) : fin; const pageItems = filtered.slice((finPage-1)*pageSize, finPage*pageSize); return pageItems; })().map(it=> (
                     <tr key={it.id} className="border-t">
                       <td>{it.name}</td>
                       <td><input className="w-32 border rounded px-1" value={it.category||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, category: e.target.value }:x))}/></td>
@@ -677,10 +692,18 @@ export default function ProductionSection(){
             </div>
             <div className="rounded-xl border p-3 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15">
               <div className="font-medium mb-2 flex items-center gap-2"><Warehouse className="w-4 h-4"/>Raw Products</div>
+              <div className="flex items-center gap-2 mb-2 text-sm">
+                <input className="border rounded px-2 py-1 w-full" placeholder="Search name/category/location" value={rawQuery} onChange={(e)=> setRawQuery(e.target.value)} />
+                <span className="text-xs text-muted-foreground">Page {rawPage}</span>
+                <div className="flex gap-1">
+                  <Button size="sm" variant="outline" onClick={()=> setRawPage(p=> Math.max(1,p-1))}>Prev</Button>
+                  <Button size="sm" variant="outline" onClick={()=> setRawPage(p=> p+1)}>Next</Button>
+                </div>
+              </div>
               <table className="w-full text-sm">
                 <thead><tr className="text-left"><th>Name</th><th>Category</th><th>On hand</th><th>Par</th><th>Unit</th><th>Area</th><th>Location</th><th></th></tr></thead>
                 <tbody>
-                  {raw.map(it=> (
+                  {(()=>{ const q=rawQuery.trim().toLowerCase(); const filtered = q? raw.filter(it=> `${it.name} ${it.category||''} ${it.location||''}`.toLowerCase().includes(q)) : raw; const pageItems = filtered.slice((rawPage-1)*pageSize, rawPage*pageSize); return pageItems; })().map(it=> (
                     <tr key={it.id} className="border-t">
                       <td>{it.name}</td>
                       <td><input className="w-32 border rounded px-1" value={it.category||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, category: e.target.value }:x))}/></td>
