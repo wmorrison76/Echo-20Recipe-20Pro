@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAppData } from "@/context/AppDataContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, Trash, Users, CalendarClock, ClipboardList, Warehouse, ChefHat, Printer } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 function readLS<T>(key: string, fallback: T): T { try{ const raw = localStorage.getItem(key); return raw? JSON.parse(raw) as T : fallback; } catch { return fallback; } }
 function writeLS<T>(key: string, val: T){ try{ localStorage.setItem(key, JSON.stringify(val)); } catch {} }
@@ -45,6 +46,7 @@ export type Task = {
   qty?: number;
   unit?: string;
   color?: string;
+  category?: 'production' | 'housekeeping' | 'delivery' | 'other';
   pullFromFinished?: { finishedItemId: string; qty: number }[];
   useRaw?: { rawItemId: string; qty: number }[];
   done?: boolean;
@@ -143,10 +145,20 @@ export default function ProductionSection(){
   function minToHHMM(n: number){ const h = Math.floor(n/60), m = n%60; return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; }
 
   function roleColor(id?: string){
-    if(!id) return "#94a3b8";
+    if(!id) return "";
     const i = Math.abs(id.split("").reduce((a,c)=> a + c.charCodeAt(0), 0));
     const palette = ["#38bdf8","#a78bfa","#34d399","#f59e0b","#f472b6","#22d3ee","#fb7185"];
     return palette[i % palette.length];
+  }
+  function categoryColor(cat?: Task['category']){
+    switch(cat){
+      case 'housekeeping': return '#22d3ee';
+      case 'delivery': return '#34d399';
+      default: return '#94a3b8';
+    }
+  }
+  function taskBgColor(t: Task){
+    return t.color || roleColor(t.roleId) || categoryColor(t.category);
   }
   function formatInTZ(iso: string){
     try { return new Intl.DateTimeFormat(undefined, { dateStyle: 'short', timeStyle: 'medium', timeZone: tz }).format(new Date(iso)); }
@@ -176,6 +188,7 @@ export default function ProductionSection(){
       unit: seed?.unit,
       orderId: seed?.orderId,
       color: seed?.color,
+      category: seed?.category || 'production',
       done: seed?.done,
     };
     setEditingId(seed?.id || null);
@@ -336,7 +349,19 @@ export default function ProductionSection(){
             </div>
             <input type="date" value={date} onChange={(e)=> setDate(e.target.value)} className="rounded-md border px-2 py-1" />
             <Button size="sm" variant="outline" onClick={()=>{ const next = prompt('Time zone (IANA, e.g. America/New_York). Leave blank to keep current.', tz); if(next){ setTz(next); } }}>Time zone</Button>
-            <Button size="sm" onClick={()=> openTaskDialog()}><Plus className="w-4 h-4 mr-1"/>Add task</Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm"><Plus className="w-4 h-4 mr-1"/>Add task</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Add task</DropdownMenuLabel>
+                <DropdownMenuItem onClick={()=> openTaskDialog({ category:'production', title:'', roleId: roles[0]?.id })}>Production…</DropdownMenuItem>
+                <DropdownMenuItem onClick={()=> openTaskDialog({ category:'housekeeping', title:'Clean workstation' })}>Housekeeping…</DropdownMenuItem>
+                <DropdownMenuItem onClick={()=> openTaskDialog({ category:'delivery', title:'Delivery to outlet' })}>Delivery…</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={()=> openTaskDialog({})}>Custom…</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button size="sm" variant="secondary" onClick={()=> addOrderQuick({})}><ClipboardList className="w-4 h-4 mr-1"/>Quick order→plan</Button>
             <Button size="sm" variant="outline" onClick={prepPrint}><Printer className="w-4 h-4 mr-1"/>Prep sheet</Button>
           </div>
@@ -371,7 +396,7 @@ export default function ProductionSection(){
                   {dayTasks.map(t=>{
                     const top = hhmmToMin(t.start)*pxPerMin;
                     const h = Math.max(36, (hhmmToMin(t.end)-hhmmToMin(t.start))*pxPerMin);
-                    const bg = t.color || roleColor(t.roleId);
+                    const bg = taskBgColor(t);
                     const lane = laneInfo.get(t.id)?.lane ?? 0;
                     const total = laneInfo.get(t.id)?.lanesTotal ?? 1;
                     const width = `calc(${100/Math.max(total,1)}% - 6px)`;
@@ -620,7 +645,10 @@ export default function ProductionSection(){
                 <label className="block">Staff<select className="w-full border rounded px-2 py-1" value={taskDraft.staffId||""} onChange={(e)=> setTaskDraft({ ...(taskDraft as Task), staffId:e.target.value||undefined })}><option value="">Unassigned</option>{staff.map(s=> <option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
                 <label className="block">Qty/Unit<div className="flex gap-2"><input className="border rounded px-2 py-1 w-24" value={taskDraft.qty||''} onChange={(e)=> setTaskDraft({ ...(taskDraft as Task), qty: Number(e.target.value||0) })}/><input className="border rounded px-2 py-1 w-24" value={taskDraft.unit||''} onChange={(e)=> setTaskDraft({ ...(taskDraft as Task), unit: e.target.value })}/></div></label>
               </div>
-              <label className="block">Color<input className="w-24 border rounded px-2 py-1" type="color" value={taskDraft.color||roleColor(taskDraft.roleId)} onChange={(e)=> setTaskDraft({ ...(taskDraft as Task), color:e.target.value })}/></label>
+              <div className="grid grid-cols-2 gap-2">
+                <label className="block">Category<select className="w-full border rounded px-2 py-1" value={taskDraft.category||'production'} onChange={(e)=> setTaskDraft({ ...(taskDraft as Task), category: e.target.value as Task['category'] })}><option value="production">Production</option><option value="housekeeping">Housekeeping</option><option value="delivery">Delivery</option><option value="other">Other</option></select></label>
+                <label className="block">Color<input className="w-24 border rounded px-2 py-1" type="color" value={taskDraft.color||taskBgColor(taskDraft as Task)} onChange={(e)=> setTaskDraft({ ...(taskDraft as Task), color:e.target.value })}/></label>
+              </div>
               <div className="flex justify-end gap-2 pt-2"><Button variant="secondary" onClick={()=> setTaskDialogOpen(false)}>Cancel</Button><Button onClick={saveTask}>Save</Button></div>
             </div>
           )}
