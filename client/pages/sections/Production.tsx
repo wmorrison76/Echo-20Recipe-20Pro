@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAppData } from "@/context/AppDataContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, Trash, Users, CalendarClock, ClipboardList, Warehouse, ChefHat, Printer } from "lucide-react";
+import { GlobalCalendar } from "@/components/panels/GlobalCalendar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 function readLS<T>(key: string, fallback: T): T { try{ const raw = localStorage.getItem(key); return raw? JSON.parse(raw) as T : fallback; } catch { return fallback; } }
@@ -427,6 +428,7 @@ export default function ProductionSection(){
       <Tabs defaultValue="calendar" className="w-full">
         <TabsList className="flex flex-wrap gap-1 p-1 bg-muted rounded-lg">
           <TabsTrigger value="calendar">Calendar</TabsTrigger>
+          <TabsTrigger value="global-cal">Global Calendar</TabsTrigger>
           <TabsTrigger value="orders">Orders</TabsTrigger>
           <TabsTrigger value="inventory">Inventory</TabsTrigger>
           <TabsTrigger value="staff">Staff & Duties</TabsTrigger>
@@ -482,6 +484,12 @@ export default function ProductionSection(){
                 </div>
               </div>
             </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="global-cal">
+          <div className="rounded-xl border p-3 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15">
+            <GlobalCalendar />
           </div>
         </TabsContent>
 
