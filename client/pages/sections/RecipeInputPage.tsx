@@ -1969,112 +1969,146 @@ const RecipeInputPage = () => {
                         );
                       }}
                     />
-                    <input
-                      data-row={index}
-                      data-col={2}
-                      onKeyDown={onGridKeyDown}
-                      className={inputClass}
-                      value={line.item}
-                      onPaste={(e) => {
-                        const text = e.clipboardData?.getData("text") || "";
-                        if (!text) return;
-                        if (/\n|\r/.test(text)) {
-                          e.preventDefault();
-                          const lines = text
-                            .split(/\r?\n/)
-                            .map((s) => s.trim())
-                            .filter(Boolean);
-                          if (lines.length === 0) return;
-                          const v = [...ingredients];
-                          let i = index;
-                          for (const lineText of lines) {
+                    <div className="relative">
+                      <input
+                        data-row={index}
+                        data-col={2}
+                        onKeyDown={onGridKeyDown}
+                        className={`${inputClass} pr-8`}
+                        value={line.item}
+                        onPaste={(e) => {
+                          const text = e.clipboardData?.getData("text") || "";
+                          if (!text) return;
+                          if (/\n|\r/.test(text)) {
+                            e.preventDefault();
+                            const lines = text
+                              .split(/\r?\n/)
+                              .map((s) => s.trim())
+                              .filter(Boolean);
+                            if (lines.length === 0) return;
+                            const v = [...ingredients];
+                            let i = index;
+                            for (const lineText of lines) {
+                              if (!v[i])
+                                v[i] = {
+                                  qty: "",
+                                  unit: "",
+                                  item: "",
+                                  prep: "",
+                                  yield: "",
+                                  cost: "",
+                                  subId: "",
+                                } as any;
+                              const p =
+                                parseIngredientInline(lineText) ||
+                                ({ item: lineText } as any);
+                              v[i] = updateAndNormalize({
+                                ...v[i],
+                                qty: (p as any).qty ?? v[i].qty,
+                                unit: (
+                                  ((p as any).unit ?? v[i].unit) ||
+                                  ""
+                                ).toUpperCase(),
+                                item: (p as any).item ?? v[i].item,
+                                prep: (p as any).prep ?? v[i].prep,
+                              });
+                              i++;
+                            }
                             if (!v[i])
-                              v[i] = {
+                              v.push({
                                 qty: "",
                                 unit: "",
                                 item: "",
                                 prep: "",
                                 yield: "",
                                 cost: "",
-                              };
-                            const p =
-                              parseIngredientInline(lineText) ||
-                              ({ item: lineText } as any);
-                            v[i] = updateAndNormalize({
-                              ...v[i],
-                              qty: (p as any).qty ?? v[i].qty,
-                              unit: (
-                                ((p as any).unit ?? v[i].unit) ||
-                                ""
-                              ).toUpperCase(),
-                              item: (p as any).item ?? v[i].item,
-                              prep: (p as any).prep ?? v[i].prep,
-                            });
-                            i++;
+                                subId: "",
+                              } as any);
+                            setIngredients(v);
+                            setTimeout(() => {
+                              const next =
+                                document.querySelector<HTMLInputElement>(
+                                  `input[data-row='${index + lines.length}'][data-col='2']`,
+                                );
+                              next?.focus();
+                            }, 0);
                           }
-                          if (!v[i])
-                            v.push({
-                              qty: "",
-                              unit: "",
-                              item: "",
-                              prep: "",
-                              yield: "",
-                              cost: "",
-                            });
-                          setIngredients(v);
-                          setTimeout(() => {
-                            const next =
-                              document.querySelector<HTMLInputElement>(
-                                `input[data-row='${index + lines.length}'][data-col='2']`,
-                              );
-                            next?.focus();
-                          }, 0);
-                        }
-                      }}
-                      onChange={(e) => {
-                        const text = e.target.value;
-                        const v = [...ingredients];
-                        v[index].item = text;
-                        const hasCues =
-                          /(cups?|tsp|tbsp|oz|ounces?|lb|lbs|g|kg|ml|l|quarts?|qt|qts|pints?|pt|gal|gallons?|teaspoons?|tablespoons?|^\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|^\s*\/\d+|,)/i.test(
-                            text,
-                          );
-                        if (hasCues) {
-                          const p = parseIngredientInline(text);
-                          if (p) {
-                            v[index].qty = p.qty ?? v[index].qty;
-                            v[index].unit = (
-                              (p.unit ?? v[index].unit) ||
-                              ""
-                            ).toUpperCase();
-                            v[index].item = p.item ?? v[index].item;
-                            v[index].prep = p.prep ?? v[index].prep;
-                          }
-                        }
-                        setIngredients(
-                          v.map((r, i) =>
-                            i === index ? updateAndNormalize({ ...r }) : r,
-                          ),
-                        );
-                      }}
-                      onBlur={(e) => {
-                        const text = e.target.value.trim();
-                        const parsed = parseIngredientInline(
-                          text.replace(/^\s*\/(\d+)/, "1/$1"),
-                        );
-                        if (parsed) {
+                        }}
+                        onChange={(e) => {
+                          const text = e.target.value;
                           const v = [...ingredients];
-                          v[index] = updateAndNormalize({
-                            ...v[index],
-                            qty: parsed.qty ?? v[index].qty,
-                            unit: parsed.unit ?? v[index].unit,
-                            item: parsed.item ?? v[index].item,
-                            prep: parsed.prep ?? v[index].prep,
-                          });
-                          setIngredients(v);
-                        }
-                      }}
-                    />
+                          v[index].item = text;
+                          const hasCues =
+                            /(cups?|tsp|tbsp|oz|ounces?|lb|lbs|g|kg|ml|l|quarts?|qt|qts|pints?|pt|gal|gallons?|teaspoons?|tablespoons?|^\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|^\s*\/\d+|,)/i.test(
+                              text,
+                            );
+                          if (hasCues) {
+                            const p = parseIngredientInline(text);
+                            if (p) {
+                              v[index].qty = p.qty ?? v[index].qty;
+                              v[index].unit = (
+                                (p.unit ?? v[index].unit) ||
+                                ""
+                              ).toUpperCase();
+                              v[index].item = p.item ?? v[index].item;
+                              v[index].prep = p.prep ?? v[index].prep;
+                            }
+                          }
+                          setIngredients(
+                            v.map((r, i) =>
+                              i === index ? updateAndNormalize({ ...r }) : r,
+                            ),
+                          );
+                        }}
+                        onBlur={(e) => {
+                          const text = e.target.value.trim();
+                          const parsed = parseIngredientInline(
+                            text.replace(/^\s*\/(\d+)/, "1/$1"),
+                          );
+                          if (parsed) {
+                            const v = [...ingredients];
+                            v[index] = updateAndNormalize({
+                              ...v[index],
+                              qty: parsed.qty ?? v[index].qty,
+                              unit: parsed.unit ?? v[index].unit,
+                              item: parsed.item ?? v[index].item,
+                              prep: parsed.prep ?? v[index].prep,
+                            });
+                            setIngredients(v);
+                          }
+                        }}
+                      />
+                      <Popover open={pickerOpen?.index===index} onOpenChange={(o)=>{ if(!o) setPickerOpen(null); }}>
+                        <PopoverTrigger asChild>
+                          <button type="button" className={`absolute right-1 top-1.5 h-7 w-7 rounded-md border flex items-center justify-center ${isDarkMode? 'bg-black/40 border-cyan-400/40 text-cyan-300' : 'bg-white border-gray-200 text-gray-500'}`} onClick={()=>{ setPickerOpen({ index }); setPickerQ(line.item||''); }} title="Link sub-recipe">
+                            <Link2 className="w-4 h-4" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-96">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <Search className="w-4 h-4 text-muted-foreground"/>
+                              <input autoFocus className="flex-1 border rounded px-2 py-1 text-sm" placeholder="Search recipes" value={pickerQ} onChange={(e)=> setPickerQ(e.target.value)} />
+                            </div>
+                            <div className="max-h-64 overflow-auto divide-y">
+                              {searchRecipes(pickerQ).slice(0,20).map(r=> (
+                                <button key={r.id} className="w-full text-left p-2 hover:bg-accent rounded" onClick={()=>{ const v=[...ingredients]; (v[index] as any).subId = r.id; v[index].item = r.title; setIngredients(v); setPickerOpen(null); }}>
+                                  <div className="font-medium text-sm line-clamp-1">{r.title}</div>
+                                  {r.tags?.length? <div className="text-xs text-muted-foreground line-clamp-1">{r.tags.slice(0,5).join(' · ')}</div> : null}
+                                </button>
+                              ))}
+                              {!searchRecipes(pickerQ).length && <div className="text-sm text-muted-foreground p-2">No matches</div>}
+                            </div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                      {(line as any).subId ? (
+                        <span className="absolute right-9 top-2 text-xs opacity-80">
+                          <a className="underline" href={`/recipe/${(line as any).subId}/view`} title="Open linked recipe">linked</a>
+                          <button className="ml-2 text-muted-foreground hover:text-foreground" onClick={(e)=>{ e.preventDefault(); const v=[...ingredients]; (v[index] as any).subId=''; setIngredients(v); }}>✕</button>
+                        </span>
+                      ) : null}
+                    </div>
                     <input
                       data-row={index}
                       data-col={3}
