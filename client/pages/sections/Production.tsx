@@ -17,6 +17,7 @@ const LS_TASKS = "production.tasks.v1";
 const LS_INV_RAW = "production.inventory.raw.v1";
 const LS_INV_FIN = "production.inventory.finished.v1";
 const LS_SESSION_USER = "production.session.user.v1";
+const LS_TIMEZONE = "production.timezone.v1";
 
 function uid(){ return Math.random().toString(36).slice(2) + Date.now().toString(36); }
 
@@ -69,6 +70,7 @@ export default function ProductionSection(){
   const [raw, setRaw] = useState<RawItem[]>(()=> readLS(LS_INV_RAW, [ { id: uid(), name: "Flour", unit: "kg", onHand: 50, par: 30, location:"Row A • Shelf 1 • Bin 1" }, { id: uid(), name: "Chocolate", unit: "kg", onHand: 20, par: 10, location:"Row B • Shelf 2 • Bin 3" } ]));
   const [fin, setFin] = useState<FinishedItem[]>(()=> readLS(LS_INV_FIN, [ { id: uid(), name: "Croissant", unit: "pcs", onHand: 80, par: 120, location:"Freezer 1 • Rack 2 • Tray A" }, { id: uid(), name: "Chocolate Bonbons", unit: "pcs", onHand: 120, par: 150, location:"Freezer 2 • Rack 1 • Tray C" } ]));
   const [date, setDate] = useState<string>(()=> new Date().toISOString().slice(0,10));
+  const [tz, setTz] = useState<string>(()=> readLS(LS_TIMEZONE, Intl.DateTimeFormat().resolvedOptions().timeZone));
 
   const [currentUserId, setCurrentUserId] = useState<string | null>(()=> readLS(LS_SESSION_USER, null));
   const currentUser = useMemo(()=> staff.find(s=> s.id===currentUserId) || null, [staff, currentUserId]);
@@ -104,6 +106,7 @@ export default function ProductionSection(){
   useEffect(()=> writeLS(LS_INV_RAW, raw), [raw]);
   useEffect(()=> writeLS(LS_INV_FIN, fin), [fin]);
   useEffect(()=> writeLS(LS_SESSION_USER, currentUserId), [currentUserId]);
+  useEffect(()=> writeLS(LS_TIMEZONE, tz), [tz]);
 
   useEffect(()=>{
     const now = Date.now();
@@ -140,6 +143,10 @@ export default function ProductionSection(){
     const i = Math.abs(id.split("").reduce((a,c)=> a + c.charCodeAt(0), 0));
     const palette = ["#38bdf8","#a78bfa","#34d399","#f59e0b","#f472b6","#22d3ee","#fb7185"];
     return palette[i % palette.length];
+  }
+  function formatInTZ(iso: string){
+    try { return new Intl.DateTimeFormat(undefined, { dateStyle: 'short', timeStyle: 'medium', timeZone: tz }).format(new Date(iso)); }
+    catch { return new Date(iso).toLocaleString(); }
   }
   function orderStatus(o: Order){
     const due = new Date(o.dueISO);
@@ -307,6 +314,7 @@ export default function ProductionSection(){
               )}
             </div>
             <input type="date" value={date} onChange={(e)=> setDate(e.target.value)} className="rounded-md border px-2 py-1" />
+            <Button size="sm" variant="outline" onClick={()=>{ const next = prompt('Time zone (IANA, e.g. America/New_York). Leave blank to keep current.', tz); if(next){ setTz(next); } }}>Time zone</Button>
             <Button size="sm" onClick={()=> openTaskDialog()}><Plus className="w-4 h-4 mr-1"/>Add task</Button>
             <Button size="sm" variant="secondary" onClick={()=> addOrderQuick({})}><ClipboardList className="w-4 h-4 mr-1"/>Quick order→plan</Button>
             <Button size="sm" variant="outline" onClick={prepPrint}><Printer className="w-4 h-4 mr-1"/>Prep sheet</Button>
@@ -391,7 +399,7 @@ export default function ProductionSection(){
                 return (
                   <div key={o.id} className="rounded-lg border p-2" onContextMenu={(e)=> onOrderContext(e, o.id)} style={style}>
                     <div className="text-sm font-medium flex items-center justify-between">
-                      <span>{outletsById[o.outletId]?.name} • {new Date(o.dueISO).toLocaleString()}</span>
+                      <span>{outletsById[o.outletId]?.name} • {formatInTZ(o.dueISO)}</span>
                       <div className="flex items-center gap-2">
                         {st==='late' && <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500 text-white">Late</span>}
                         {st==='change' && <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500 text-white">Change</span>}
@@ -434,7 +442,7 @@ export default function ProductionSection(){
               {ordersTrash.map(o=> (
                 <div key={o.id} className="rounded border p-2 flex items-center justify-between">
                   <div className="text-sm">
-                    <div>{outletsById[o.outletId]?.name} • {new Date(o.dueISO).toLocaleString()}</div>
+                    <div>{outletsById[o.outletId]?.name} • {formatInTZ(o.dueISO)}</div>
                     <div className="text-xs text-muted-foreground">Deleted {Math.ceil((Date.now()-o.deletedAt)/3600000)}h ago{ o.deletedByName? ` by ${o.deletedByName}`:'' }{ o.deleteReason? ` — ${o.deleteReason}`:''}</div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -681,7 +689,7 @@ export default function ProductionSection(){
           <DialogHeader><DialogTitle>Confirm delete order</DialogTitle></DialogHeader>
           <div className="space-y-2 text-sm">
             {pendingDeleteOrderId && (()=>{ const o = orders.find(x=> x.id===pendingDeleteOrderId)!; return (
-              <div className="text-xs text-muted-foreground">{outletsById[o.outletId]?.name} • {new Date(o.dueISO).toLocaleString()}</div>
+              <div className="text-xs text-muted-foreground">{outletsById[o.outletId]?.name} • {formatInTZ(o.dueISO)}</div>
             ); })()}
             <label className="block">Reason<input className="w-full border rounded px-2 py-1" value={deleteReason} onChange={(e)=> setDeleteReason(e.target.value)} placeholder="Optional"/></label>
             <label className="block">Re-enter your PIN<input type="password" className="w-full border rounded px-2 py-1" value={deletePin} onChange={(e)=> setDeletePin(e.target.value)} placeholder="4–8 digits"/></label>
