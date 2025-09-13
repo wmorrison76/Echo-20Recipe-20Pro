@@ -35,6 +35,9 @@ export default function Index() {
             <TabsContent value="add-recipe">
               <AddRecipeSection />
             </TabsContent>
+            <TabsContent value="saas">
+              <SaasRoadmapSection />
+            </TabsContent>
           </Tabs>
         </main>
 
