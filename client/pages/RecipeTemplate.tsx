@@ -137,7 +137,12 @@ export default function RecipeTemplate() {
               {(recipe as any)?.extra?.allergens && <div><span className="font-semibold">Allergens:</span> {(recipe as any).extra.allergens}</div>}
             </div>
           </div>
-          <div className="absolute bottom-3 right-4 text-[10px] tracking-widest text-black/60 select-none print:text-black/60">LUCCCA</div>
+          <img
+            src="https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2Fc559ee72f28d41e3b77cf18c85d92bba?format=webp&width=200"
+            alt="LUCCCA"
+            className="absolute bottom-3 right-4 select-none"
+            style={{ opacity: 0.75, width: 120, height: 'auto' }}
+          />
         </div>
       </div>
     </div>
