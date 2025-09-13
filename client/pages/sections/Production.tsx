@@ -16,18 +16,19 @@ const LS_LOGS = "production.logs.v1";
 const LS_TASKS = "production.tasks.v1";
 const LS_INV_RAW = "production.inventory.raw.v1";
 const LS_INV_FIN = "production.inventory.finished.v1";
+const LS_SESSION_USER = "production.session.user.v1";
 
 function uid(){ return Math.random().toString(36).slice(2) + Date.now().toString(36); }
 
 export type Role = { id: string; name: string };
-export type Staff = { id: string; name: string; roleId?: string };
+export type Staff = { id: string; name: string; roleId?: string; pinHash?: string };
 export type Outlet = { id: string; name: string; type: "Outlet"|"Banquets"|"Custom Cakes"; orderCutoff?: string; open?: string; close?: string; guide?: { item: string; defaultQty: number; unit: string }[] };
 export type RawItem = { id: string; name: string; unit: string; onHand: number; par: number; location?: string };
 export type FinishedItem = { id: string; name: string; unit: string; onHand: number; par: number; recipeId?: string; location?: string };
 
 export type OrderLine = { id: string; item: string; qty: number; unit: string; finishedItemId?: string; recipeId?: string };
 export type Order = { id: string; outletId: string; dueISO: string; notes?: string; lines: OrderLine[]; createdAt: number; changedAt?: number };
-export type DeletedOrder = Order & { deletedAt: number };
+export type DeletedOrder = Order & { deletedAt: number; deletedById?: string; deletedByName?: string; deleteReason?: string };
 
 export type Task = {
   id: string;
@@ -48,6 +49,13 @@ export type Task = {
   done?: boolean;
 };
 
+async function sha256Hex(text: string){
+  const enc = new TextEncoder();
+  const data = enc.encode(text);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hash)).map(b=> b.toString(16).padStart(2,'0')).join('');
+}
+
 export default function ProductionSection(){
   const { recipes } = useAppData();
 
@@ -56,11 +64,14 @@ export default function ProductionSection(){
   const [outlets, setOutlets] = useState<Outlet[]>(()=> readLS(LS_OUTLETS, [ { id: uid(), name: "Banquets", type: "Banquets", orderCutoff:"14:00" }, { id: uid(), name: "Cafe", type: "Outlet", orderCutoff:"12:00" } , { id: uid(), name: "Custom Cakes", type: "Custom Cakes", orderCutoff:"10:00" } ]));
   const [orders, setOrders] = useState<Order[]>(()=> readLS(LS_ORDERS, []));
   const [ordersTrash, setOrdersTrash] = useState<DeletedOrder[]>(()=> readLS(LS_ORDERS_TRASH, []));
-  const [logs, setLogs] = useState<{ id:string; ts:number; kind:string; message:string }[]>(()=> readLS(LS_LOGS, []));
+  const [logs, setLogs] = useState<{ id:string; ts:number; kind:string; message:string; actorId?:string; actorName?:string }[]>(()=> readLS(LS_LOGS, []));
   const [tasks, setTasks] = useState<Task[]>(()=> readLS(LS_TASKS, []));
   const [raw, setRaw] = useState<RawItem[]>(()=> readLS(LS_INV_RAW, [ { id: uid(), name: "Flour", unit: "kg", onHand: 50, par: 30, location:"Row A • Shelf 1 • Bin 1" }, { id: uid(), name: "Chocolate", unit: "kg", onHand: 20, par: 10, location:"Row B • Shelf 2 • Bin 3" } ]));
   const [fin, setFin] = useState<FinishedItem[]>(()=> readLS(LS_INV_FIN, [ { id: uid(), name: "Croissant", unit: "pcs", onHand: 80, par: 120, location:"Freezer 1 • Rack 2 • Tray A" }, { id: uid(), name: "Chocolate Bonbons", unit: "pcs", onHand: 120, par: 150, location:"Freezer 2 • Rack 1 • Tray C" } ]));
   const [date, setDate] = useState<string>(()=> new Date().toISOString().slice(0,10));
+
+  const [currentUserId, setCurrentUserId] = useState<string | null>(()=> readLS(LS_SESSION_USER, null));
+  const currentUser = useMemo(()=> staff.find(s=> s.id===currentUserId) || null, [staff, currentUserId]);
 
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
   const [taskDraft, setTaskDraft] = useState<Task | null>(null);
@@ -68,6 +79,17 @@ export default function ProductionSection(){
   const [prepOpen, setPrepOpen] = useState(false);
   const [menu, setMenu] = useState<{ open: boolean; x: number; y: number; orderId?: string }>(()=>({ open:false, x:0, y:0 }));
   const [guideOutlet, setGuideOutlet] = useState<Outlet | null>(null);
+
+  const [signOpen, setSignOpen] = useState(false);
+  const [signStaffId, setSignStaffId] = useState<string>("");
+  const [signPin, setSignPin] = useState("");
+  const [signError, setSignError] = useState("");
+
+  const [confirmDelOpen, setConfirmDelOpen] = useState(false);
+  const [pendingDeleteOrderId, setPendingDeleteOrderId] = useState<string | null>(null);
+  const [deleteReason, setDeleteReason] = useState("");
+  const [deletePin, setDeletePin] = useState("");
+  const [deleteError, setDeleteError] = useState("");
 
   const calRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<{ id: string; type: 'move'|'resize'; startY: number; startMin: number; endMin: number } | null>(null);
@@ -81,6 +103,7 @@ export default function ProductionSection(){
   useEffect(()=> writeLS(LS_TASKS, tasks), [tasks]);
   useEffect(()=> writeLS(LS_INV_RAW, raw), [raw]);
   useEffect(()=> writeLS(LS_INV_FIN, fin), [fin]);
+  useEffect(()=> writeLS(LS_SESSION_USER, currentUserId), [currentUserId]);
 
   useEffect(()=>{
     const now = Date.now();
@@ -105,7 +128,7 @@ export default function ProductionSection(){
     const lines: OrderLine[] = o.lines && o.lines.length? o.lines : [ { id: uid(), item: "Croissant", qty: 50, unit: "pcs", finishedItemId: fin[0]?.id } ];
     const next: Order = { id, outletId, dueISO, lines, notes: o.notes||"", createdAt: Date.now() };
     setOrders(prev=> [next, ...prev]);
-    setLogs(prev=> [{ id: uid(), ts: Date.now(), kind:'order', message:`Order ${id} created for ${outletsById[outletId]?.name}` }, ...prev]);
+    setLogs(prev=> [{ id: uid(), ts: Date.now(), kind:'order', message:`Order ${id} created for ${outletsById[outletId]?.name}`, actorId: currentUser?.id, actorName: currentUser?.name }, ...prev]);
     autoPlanFromOrder(next);
   }
 
@@ -233,12 +256,56 @@ export default function ProductionSection(){
   const trashCount = ordersTrash.length;
   const trashColor = trashCount===0? '#94a3b8' : '#ef4444';
 
+  // Auth helpers
+  async function verifyPinForStaff(staffId: string, pin: string){
+    const s = staffById[staffId];
+    if(!s?.pinHash) return false;
+    const hash = await sha256Hex(pin);
+    return hash === s.pinHash;
+  }
+
+  function openDeleteOrderFlow(orderId: string){
+    setPendingDeleteOrderId(orderId);
+    setDeleteReason("");
+    setDeletePin("");
+    setDeleteError("");
+    if(!currentUser){
+      setSignOpen(true);
+    } else {
+      setConfirmDelOpen(true);
+    }
+  }
+
+  async function performDeleteOrder(){
+    if(!pendingDeleteOrderId) return;
+    if(!currentUser){ setDeleteError("Please sign in."); return; }
+    const ok = await verifyPinForStaff(currentUser.id, deletePin);
+    if(!ok){ setDeleteError("Invalid PIN"); return; }
+    const o = orders.find(x=> x.id===pendingDeleteOrderId);
+    if(!o){ setConfirmDelOpen(false); setPendingDeleteOrderId(null); return; }
+    setOrders(prev=> prev.filter(x=> x.id!==o.id));
+    setOrdersTrash(prev=> [{ ...o, deletedAt: Date.now(), deletedById: currentUser.id, deletedByName: currentUser.name, deleteReason: deleteReason.trim() }, ...prev]);
+    setLogs(prev=> [{ id: uid(), ts: Date.now(), kind:'order', message:`Order ${o.id} deleted${deleteReason? ` — ${deleteReason}`:''}`, actorId: currentUser.id, actorName: currentUser.name }, ...prev]);
+    setConfirmDelOpen(false);
+    setPendingDeleteOrderId(null);
+  }
+
   return (
     <div className="container mx-auto px-4 py-4 space-y-4">
       <div className="rounded-xl border p-3 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15">
         <div className="flex items-center justify-between">
           <div className="text-base font-semibold flex items-center gap-2"><CalendarClock className="w-4 h-4"/> Chef Production Calendar</div>
           <div className="flex items-center gap-2 text-sm">
+            <div className="hidden md:flex items-center gap-2 mr-2">
+              {currentUser? (
+                <>
+                  <span className="px-2 py-0.5 rounded bg-emerald-600 text-white">Signed in: {currentUser.name}</span>
+                  <Button size="sm" variant="outline" onClick={()=> setCurrentUserId(null)}>Sign out</Button>
+                </>
+              ):(
+                <Button size="sm" variant="outline" onClick={()=> setSignOpen(true)}>Sign in</Button>
+              )}
+            </div>
             <input type="date" value={date} onChange={(e)=> setDate(e.target.value)} className="rounded-md border px-2 py-1" />
             <Button size="sm" onClick={()=> openTaskDialog()}><Plus className="w-4 h-4 mr-1"/>Add task</Button>
             <Button size="sm" variant="secondary" onClick={()=> addOrderQuick({})}><ClipboardList className="w-4 h-4 mr-1"/>Quick order→plan</Button>
@@ -312,7 +379,10 @@ export default function ProductionSection(){
           <div className="rounded-xl border p-3 space-y-3 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15">
             <div className="flex items-center justify-between">
               <div className="font-medium"><ClipboardList className="inline w-4 h-4 mr-1"/>Outlet & Banquets Orders</div>
-              <Button size="sm" onClick={()=> addOrderQuick({})}><Plus className="w-4 h-4 mr-1"/>Add order</Button>
+              <div className="flex items-center gap-2">
+                {!currentUser && <Button size="sm" variant="outline" onClick={()=> setSignOpen(true)}>Sign in</Button>}
+                <Button size="sm" onClick={()=> addOrderQuick({})}><Plus className="w-4 h-4 mr-1"/>Add order</Button>
+              </div>
             </div>
             <div className="grid md:grid-cols-2 gap-3">
               {orders.map(o=> {
@@ -326,7 +396,7 @@ export default function ProductionSection(){
                         {st==='late' && <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500 text-white">Late</span>}
                         {st==='change' && <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500 text-white">Change</span>}
                         <button className="text-xs underline" onClick={()=> setOrders(prev=> prev.map(x=> x.id===o.id? {...x, changedAt: Date.now() }: x))} title="Mark change">Change</button>
-                        <button className="text-xs text-red-600" onClick={()=>{ if(confirm('Delete order? It will go to Trash for 7 days.')){ setOrders(prev=> prev.filter(x=>x.id!==o.id)); setOrdersTrash(prev=> [{ ...o, deletedAt: Date.now() }, ...prev]); setLogs(prev=> [{ id: uid(), ts: Date.now(), kind:'order', message:`Order ${o.id} deleted` }, ...prev]); } }}><Trash className="w-4 h-4"/></button>
+                        <button className="text-xs text-red-600" onClick={()=> openDeleteOrderFlow(o.id)} title="Delete order"><Trash className="w-4 h-4"/></button>
                       </div>
                     </div>
                     <ul className="text-sm list-disc pl-5">
@@ -363,9 +433,15 @@ export default function ProductionSection(){
             <div className="grid md:grid-cols-2 gap-3">
               {ordersTrash.map(o=> (
                 <div key={o.id} className="rounded border p-2 flex items-center justify-between">
-                  <div>{outletsById[o.outletId]?.name} • {new Date(o.dueISO).toLocaleString()}</div>
-                  <div className="flex items-center gap-2"><Button size="sm" variant="secondary" onClick={()=>{ setOrders(prev=> [ { id:o.id, outletId:o.outletId, dueISO:o.dueISO, notes:o.notes, lines:o.lines, createdAt:o.createdAt, changedAt:o.changedAt }, ...prev ]); setOrdersTrash(prev=> prev.filter(x=> x.id!==o.id)); }}>
-                    Restore</Button><span className="text-xs text-muted-foreground">{Math.ceil((Date.now()-o.deletedAt)/3600000)}h ago</span></div>
+                  <div className="text-sm">
+                    <div>{outletsById[o.outletId]?.name} • {new Date(o.dueISO).toLocaleString()}</div>
+                    <div className="text-xs text-muted-foreground">Deleted {Math.ceil((Date.now()-o.deletedAt)/3600000)}h ago{ o.deletedByName? ` by ${o.deletedByName}`:'' }{ o.deleteReason? ` — ${o.deleteReason}`:''}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button size="sm" variant="secondary" onClick={()=>{ setOrders(prev=> [ { id:o.id, outletId:o.outletId, dueISO:o.dueISO, notes:o.notes, lines:o.lines, createdAt:o.createdAt, changedAt:o.changedAt }, ...prev ]); setOrdersTrash(prev=> prev.filter(x=> x.id!==o.id)); setLogs(prev=> [{ id: uid(), ts: Date.now(), kind:'order', message:`Order ${o.id} restored from trash`, actorId: currentUser?.id, actorName: currentUser?.name }, ...prev]); }}>
+                      Restore
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -455,6 +531,13 @@ export default function ProductionSection(){
                       <option value="">Unassigned</option>
                       {roles.map(r=> <option value={r.id} key={r.id}>{r.name}</option>)}
                     </select>
+                    <Button size="sm" variant="outline" onClick={async()=>{
+                      const pin1 = prompt("Set 4–8 digit PIN for "+s.name, ""); if(!pin1) return;
+                      if(!/^\d{4,8}$/.test(pin1)) { alert('PIN must be 4–8 digits'); return; }
+                      const pin2 = prompt("Confirm PIN", ""); if(pin1 !== pin2){ alert('PINs do not match'); return; }
+                      const h = await sha256Hex(pin1);
+                      setStaff(prev=> prev.map(x=> x.id===s.id? { ...x, pinHash: h }: x));
+                    }}>Set PIN</Button>
                     <button onClick={()=> setStaff(prev=> prev.filter(x=> x.id!==s.id))}><Trash className="w-4 h-4"/></button>
                   </li>
                 ))}
@@ -543,7 +626,7 @@ export default function ProductionSection(){
                 <tbody>
                   {(guideOutlet.guide||[]).map((g,idx)=> (
                     <tr key={idx} className="border-t">
-                      <td><input className="w-full border rounded px-1" value={g.item} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).map((x,i)=> i===idx? { ...x, item: e.target.value }: x) } : o))} /></td>
+                      <td><input className="w/full border rounded px-1" value={g.item} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).map((x,i)=> i===idx? { ...x, item: e.target.value }: x) } : o))} /></td>
                       <td><input className="w-24 border rounded px-1" value={g.defaultQty} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).map((x,i)=> i===idx? { ...x, defaultQty: Number(e.target.value||0) }: x) } : o))} /></td>
                       <td><input className="w-24 border rounded px-1" value={g.unit} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).map((x,i)=> i===idx? { ...x, unit: e.target.value }: x) } : o))} /></td>
                       <td><button onClick={()=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).filter((_,i)=> i!==idx) } : o))}><Trash className="w-4 h-4"/></button></td>
@@ -565,6 +648,49 @@ export default function ProductionSection(){
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={signOpen} onOpenChange={(v)=>{ setSignOpen(v); if(!v && pendingDeleteOrderId){ setConfirmDelOpen(true); } }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle>Sign in</DialogTitle></DialogHeader>
+          <div className="space-y-2 text-sm">
+            <label className="block">Staff<select className="w-full border rounded px-2 py-1" value={signStaffId} onChange={(e)=> setSignStaffId(e.target.value)}><option value="">Select staff</option>{staff.map(s=> <option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
+            <label className="block">PIN<input type="password" className="w-full border rounded px-2 py-1" value={signPin} onChange={(e)=> setSignPin(e.target.value)} placeholder="4–8 digits"/></label>
+            {signError && <div className="text-xs text-red-600">{signError}</div>}
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="secondary" onClick={()=> setSignOpen(false)}>Cancel</Button>
+              <Button onClick={async()=>{
+                setSignError("");
+                if(!signStaffId){ setSignError('Select staff'); return; }
+                const s = staffById[signStaffId];
+                if(!s?.pinHash){ setSignError('PIN not set for this staff. Go to Staff tab → Set PIN.'); return; }
+                const ok = await verifyPinForStaff(signStaffId, signPin);
+                if(!ok){ setSignError('Invalid PIN'); return; }
+                setCurrentUserId(signStaffId);
+                setSignOpen(false);
+                setSignPin("");
+              }}>Sign in</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={confirmDelOpen} onOpenChange={(v)=>{ setConfirmDelOpen(v); if(!v){ setPendingDeleteOrderId(null); setDeleteReason(""); setDeletePin(""); setDeleteError(""); } }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>Confirm delete order</DialogTitle></DialogHeader>
+          <div className="space-y-2 text-sm">
+            {pendingDeleteOrderId && (()=>{ const o = orders.find(x=> x.id===pendingDeleteOrderId)!; return (
+              <div className="text-xs text-muted-foreground">{outletsById[o.outletId]?.name} • {new Date(o.dueISO).toLocaleString()}</div>
+            ); })()}
+            <label className="block">Reason<input className="w-full border rounded px-2 py-1" value={deleteReason} onChange={(e)=> setDeleteReason(e.target.value)} placeholder="Optional"/></label>
+            <label className="block">Re-enter your PIN<input type="password" className="w-full border rounded px-2 py-1" value={deletePin} onChange={(e)=> setDeletePin(e.target.value)} placeholder="4–8 digits"/></label>
+            {deleteError && <div className="text-xs text-red-600">{deleteError}</div>}
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="secondary" onClick={()=> setConfirmDelOpen(false)}>Cancel</Button>
+              <Button variant="destructive" onClick={performDeleteOrder}>Delete</Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
