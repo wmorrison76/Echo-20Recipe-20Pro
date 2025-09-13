@@ -424,7 +424,7 @@ export default function ProductionSection(){
                       <div className="flex items-center gap-2">
                         {st==='late' && <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500 text-white">Late</span>}
                         {st==='change' && <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500 text-white">Change</span>}
-                        <button className="text-xs underline" onClick={()=> setOrders(prev=> prev.map(x=> x.id===o.id? {...x, changedAt: Date.now() }: x))} title="Mark change">Change</button>
+                        <button className="text-xs underline" onClick={()=> openOrderDialog(o)} title="Edit order">Change</button>
                         <button className="text-xs text-red-600" onClick={()=> openDeleteOrderFlow(o.id)} title="Delete order"><Trash className="w-4 h-4"/></button>
                       </div>
                     </div>
