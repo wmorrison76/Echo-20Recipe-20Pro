@@ -28,6 +28,7 @@ export type Staff = { id: string; name: string; roleId?: string; pinHash?: strin
 export type Outlet = { id: string; name: string; type: "Outlet"|"Banquets"|"Custom Cakes"; orderCutoff?: string; open?: string; close?: string; guide?: { item: string; defaultQty: number; unit: string }[] };
 export type RawItem = { id: string; name: string; unit: string; onHand: number; par: number; location?: string };
 export type FinishedItem = { id: string; name: string; unit: string; onHand: number; par: number; recipeId?: string; location?: string };
+export type InvLot = { id:string; kind:'raw'|'fin'; itemId:string; lotCode?:string; qty:number; unit:string; receivedAt:number; expiryDate?:string; location?:string; note?:string; receiverId?:string; receiverName?:string };
 
 export type OrderLine = { id: string; item: string; qty: number; unit: string; finishedItemId?: string; recipeId?: string };
 export type Order = { id: string; outletId: string; dueISO: string; notes?: string; lines: OrderLine[]; createdAt: number; changedAt?: number };
