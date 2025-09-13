@@ -82,6 +82,10 @@ export default function ProductionSection(){
   const [menu, setMenu] = useState<{ open: boolean; x: number; y: number; orderId?: string }>(()=>({ open:false, x:0, y:0 }));
   const [guideOutlet, setGuideOutlet] = useState<Outlet | null>(null);
 
+  const [orderDialogOpen, setOrderDialogOpen] = useState(false);
+  const [orderEditingId, setOrderEditingId] = useState<string | null>(null);
+  const [orderDraft, setOrderDraft] = useState<{ id:string; outletId:string; date:string; time:string; notes:string; lines: OrderLine[] } | null>(null);
+
   const [signOpen, setSignOpen] = useState(false);
   const [signStaffId, setSignStaffId] = useState<string>("");
   const [signPin, setSignPin] = useState("");
