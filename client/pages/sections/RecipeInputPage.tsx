@@ -40,7 +40,7 @@ const RecipeInputPage = () => {
   const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
   const { addRecipe, updateRecipe, addImages } = useAppData();
   const recipeIdRef = useRef<string | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(()=>{ try{ return document.documentElement.classList.contains('dark'); } catch { return false; } });
   // Sync with global theme from ThemeToggle
   useEffect(() => {
     const apply = () =>
@@ -378,6 +378,15 @@ const RecipeInputPage = () => {
     window.addEventListener("openImageEditor", handler as any);
     return () => window.removeEventListener("openImageEditor", handler as any);
   }, []);
+  // Sync with global ThemeToggle (listens to html.dark)
+  useEffect(()=>{
+    const el = document.documentElement;
+    const apply = () => setIsDarkMode(el.classList.contains('dark'));
+    apply();
+    const obs = new MutationObserver(apply);
+    try{ obs.observe(el,{ attributes:true, attributeFilter:['class'] }); } catch {}
+    return ()=>{ try{ obs.disconnect(); } catch{} };
+  },[]);
   useEffect(() => {
     const seeded = localStorage.getItem('kb:culinary:seeded:v1');
     if (seeded) return;
@@ -816,7 +825,7 @@ const RecipeInputPage = () => {
     const fx = to / from;
     setIngredients(
       ingredients.map((r) => {
-        const n = parseFloat(String(r.cost).replace(/[$€£¥,\s]/g, ""));
+        const n = parseFloat(String(r.cost).replace(/[$��£¥,\s]/g, ""));
         if (isNaN(n)) return r;
         return { ...r, cost: (n * fx).toFixed(2) };
       }),
@@ -1200,28 +1209,6 @@ const RecipeInputPage = () => {
               >
                 <Settings className="w-5 h-5" />
               </button>
-              <div className="flex items-center gap-1 ml-2">
-                <Sun className="w-4 h-4" />
-                <button
-                  onClick={() => {
-                    setIsDarkMode((v) => {
-                      const next = !v;
-                      const root = document.documentElement;
-                      if (next) root.classList.add("dark");
-                      else root.classList.remove("dark");
-                      const ev = new CustomEvent("theme:change", { detail: { theme: next ? "dark" : "light" } });
-                      window.dispatchEvent(ev);
-                      return next;
-                    });
-                  }}
-                  className={`w-8 h-4 rounded-full transition-colors ${isDarkMode ? "bg-blue-600" : "bg-gray-300"}`}
-                >
-                  <div
-                    className={`w-3 h-3 bg-white rounded-full transition-transform ${isDarkMode ? "translate-x-4" : "translate-x-0.5"}`}
-                  />
-                </button>
-                <Moon className="w-4 h-4" />
-              </div>
             </div>
           </div>
         </div>
@@ -1253,18 +1240,18 @@ const RecipeInputPage = () => {
               />
             </div>
             <div
-              className={`border rounded-xl w-1/3 flex flex-col justify-end shadow-lg ${isDarkMode ? "bg-red-900/20 border-red-400/30 shadow-red-400/20" : "bg-red-50/80 border-red-200 shadow-gray-200/50"} backdrop-blur-sm`}
+              className={`border rounded-xl w-1/3 flex flex-col justify-end shadow-lg backdrop-blur-sm ${isDarkMode ? "bg-black/50 border-cyan-400/30 shadow-[0_0_24px_rgba(34,211,238,0.25)]" : "bg-white border-gray-200 shadow-gray-200/50"}`}
               style={{ minHeight: "3rem" }}
             >
               <div className="p-3 flex flex-col" data-echo-key="section:add:allergens">
                 <div
-                  className={`font-semibold text-xs mb-2 ${isDarkMode ? "text-red-400" : "text-red-700"}`}
+                  className={`font-semibold text-xs mb-2 ${isDarkMode ? "text-cyan-300" : "text-gray-700"}`}
                 >
                   ALLERGENS
                 </div>
                 {selectedAllergens.length ? (
                   <div
-                    className={`grid grid-cols-6 gap-1 text-xs ${isDarkMode ? "text-red-300" : "text-red-700"}`}
+                    className={`grid grid-cols-6 gap-1 text-xs ${isDarkMode ? "text-cyan-300" : "text-gray-700"}`}
                   >
                     {selectedAllergens.map((a) => (
                       <div key={a}>{a}</div>
@@ -1272,7 +1259,7 @@ const RecipeInputPage = () => {
                   </div>
                 ) : (
                   <div
-                    className={`text-xs italic ${isDarkMode ? "text-red-500" : "text-red-400"}`}
+                    className={`text-xs italic ${isDarkMode ? "text-cyan-500" : "text-gray-500"}`}
                   >
                     No allergens selected
                   </div>
