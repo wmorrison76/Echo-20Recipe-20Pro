@@ -367,9 +367,11 @@ export default function GallerySection() {
             onClick={() => {
               const name = newLookBookName.trim();
               if (!name) return;
-              const id = addLookBook(name, []);
+              const id = addLookBook(name, selected.length ? selected : []);
+              if (selected.length) setSelected([]);
               setNewLookBookName("");
               setActiveLookBookId(id);
+              setOpenLookBook(true);
             }}
           >
             Create
