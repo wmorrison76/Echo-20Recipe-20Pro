@@ -2185,6 +2185,7 @@ const RecipeInputPage = () => {
                         prep: "",
                         yield: "",
                         cost: "",
+                        subId: "",
                       },
                     ])
                   }
