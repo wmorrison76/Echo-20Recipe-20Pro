@@ -442,11 +442,12 @@ export default function ProductionSection(){
 
   // Drag/move/resize
   const pxPerMin = 0.8; // 48px per hour
-  function startDrag(e: React.MouseEvent, t: Task, mode: 'move'|'resize'){
+  function startDrag(e: React.PointerEvent, t: Task, mode: 'move'|'resize'){
     const startMin = hhmmToMin(t.start), endMin = hhmmToMin(t.end);
     dragRef.current = { id: t.id, type: mode, startY: e.clientY, startMin, endMin };
-    window.addEventListener('mousemove', onDrag);
-    window.addEventListener('mouseup', endDrag, { once:true });
+    (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
+    window.addEventListener('pointermove', onDrag as any, { passive:false } as any);
+    window.addEventListener('pointerup', endDrag as any, { once:true } as any);
   }
   function onDrag(e: MouseEvent){ const s = dragRef.current; if(!s) return; const dy = e.clientY - s.startY; const dmin = Math.round(dy/pxPerMin/15)*15; setTasks(prev=> prev.map(x=>{ if(x.id!==s.id) return x; let start = s.startMin, end = s.endMin; if(s.type==='move'){ start+=dmin; end+=dmin; } else { end = Math.max(start+15, s.endMin + dmin); } start=Math.max(0,start); end=Math.min(24*60, end); return { ...x, start:minToHHMM(start), end:minToHHMM(end) }; })); }
   function endDrag(){ window.removeEventListener('mousemove', onDrag); dragRef.current=null; }
