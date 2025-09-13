@@ -753,6 +753,26 @@ export default function ProductionSection(){
         </DialogContent>
       </Dialog>
 
+      <Dialog open={invOpen} onOpenChange={(v)=>{ setInvOpen(v); if(!v){ setInvItemId(''); setInvQty(0); setInvLotCode(''); setInvExpiry(''); setInvLocation(''); setInvNote(''); } }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle>Receive inventory</DialogTitle></DialogHeader>
+          <div className="space-y-2 text-sm">
+            <div className="text-xs text-muted-foreground">{invKind==='raw'? (raw.find(r=> r.id===invItemId)?.name) : (fin.find(f=> f.id===invItemId)?.name)}</div>
+            <div className="grid grid-cols-2 gap-2">
+              <label className="block">Qty<input className="w-full border rounded px-2 py-1" value={invQty} onChange={(e)=> setInvQty(Number(e.target.value||0))}/></label>
+              <label className="block">Unit<input className="w-full border rounded px-2 py-1" value={invUnit} onChange={(e)=> setInvUnit(e.target.value)}/></label>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <label className="block">Lot<input className="w-full border rounded px-2 py-1" value={invLotCode} onChange={(e)=> setInvLotCode(e.target.value)}/></label>
+              <label className="block">Expiry<input type="date" className="w-full border rounded px-2 py-1" value={invExpiry} onChange={(e)=> setInvExpiry(e.target.value)}/></label>
+            </div>
+            <label className="block">Location<input className="w-full border rounded px-2 py-1" value={invLocation} onChange={(e)=> setInvLocation(e.target.value)}/></label>
+            <label className="block">Note<input className="w-full border rounded px-2 py-1" value={invNote} onChange={(e)=> setInvNote(e.target.value)}/></label>
+            <div className="flex justify-end gap-2 pt-2"><Button variant="secondary" onClick={()=> setInvOpen(false)}>Cancel</Button><Button onClick={saveReceive}>Receive</Button></div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={multiAssignOpen} onOpenChange={(v)=>{ setMultiAssignOpen(v); if(!v){ setMultiAssign([]); setMultiAssignOrderId(null); } }}>
         <DialogContent className="max-w-sm">
           <DialogHeader><DialogTitle>Assign to multiple staff</DialogTitle></DialogHeader>
