@@ -28,8 +28,8 @@ function uid(){ return Math.random().toString(36).slice(2) + Date.now().toString
 export type Role = { id: string; name: string };
 export type Staff = { id: string; name: string; roleId?: string; pinHash?: string };
 export type Outlet = { id: string; name: string; type: "Outlet"|"Banquets"|"Custom Cakes"; orderCutoff?: string; open?: string; close?: string; guide?: { item: string; defaultQty: number; unit: string }[] };
-export type RawItem = { id: string; name: string; unit: string; onHand: number; par: number; location?: string; category?: string; storageAreaId?: string; shelf?: string; bin?: string };
-export type FinishedItem = { id: string; name: string; unit: string; onHand: number; par: number; recipeId?: string; location?: string; category?: string; storageAreaId?: string; shelf?: string; bin?: string };
+export type RawItem = { id: string; name: string; unit: string; onHand: number; par: number; unitCost?: number; location?: string; category?: string; storageAreaId?: string; shelf?: string; bin?: string };
+export type FinishedItem = { id: string; name: string; unit: string; onHand: number; par: number; unitCost?: number; recipeId?: string; location?: string; category?: string; storageAreaId?: string; shelf?: string; bin?: string };
 export type InvLot = { id:string; kind:'raw'|'fin'; itemId:string; lotCode?:string; qty:number; unit:string; receivedAt:number; expiryDate?:string; location?:string; note?:string; receiverId?:string; receiverName?:string };
 export type StorageArea = { id: string; name: string; note?: string };
 
@@ -79,6 +79,7 @@ export default function ProductionSection(){
   const [fin, setFin] = useState<FinishedItem[]>(()=> readLS(LS_INV_FIN, [ { id: uid(), name: "Croissant", unit: "pcs", onHand: 80, par: 120, location:"Freezer 1 • Rack 2 • Tray A" }, { id: uid(), name: "Chocolate Bonbons", unit: "pcs", onHand: 120, par: 150, location:"Freezer 2 • Rack 1 • Tray C" } ]));
   const [lots, setLots] = useState<InvLot[]>(()=> readLS(LS_INV_LOTS, []));
   const [storageAreas, setStorageAreas] = useState<StorageArea[]>(()=> readLS(LS_STORAGE_AREAS, [ { id: uid(), name: 'Freezer 1' }, { id: uid(), name: 'Freezer 2' }, { id: uid(), name: 'Dry Storage' } ]));
+  const [invTab, setInvTab] = useState<'finished'|'raw'>('finished');
   const [finQuery, setFinQuery] = useState("");
   const [rawQuery, setRawQuery] = useState("");
   const [finPage, setFinPage] = useState(1);
@@ -187,6 +188,8 @@ export default function ProductionSection(){
   useEffect(()=> writeLS(LS_SESSION_USER, currentUserId), [currentUserId]);
   useEffect(()=>{ setFinPage(1); }, [finQuery]);
   useEffect(()=>{ setRawPage(1); }, [rawQuery]);
+  const bookedFinishedForDate = useMemo(()=>{ const m: Record<string, number> = {}; for(const t of tasks){ if(t.dateISO!==date) continue; for(const p of (t.pullFromFinished||[])){ m[p.finishedItemId] = (m[p.finishedItemId]||0) + (Number(p.qty)||0); } } return m; }, [tasks, date]);
+  const bookedRawForDate = useMemo(()=>{ const m: Record<string, number> = {}; for(const t of tasks){ if(t.dateISO!==date) continue; for(const u of (t.useRaw||[])){ m[u.rawItemId] = (m[u.rawItemId]||0) + (Number(u.qty)||0); } } return m; }, [tasks, date]);
 
   useEffect(()=>{
     const now = Date.now();
@@ -686,97 +689,112 @@ export default function ProductionSection(){
         </TabsContent>
 
         <TabsContent value="inventory">
-          <div className="grid md:grid-cols-2 gap-3">
-            <div className="rounded-xl border p-3 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15">
-              <div className="font-medium mb-2 flex items-center gap-2"><Warehouse className="w-4 h-4"/>Finished Goods</div>
-              <div className="flex items-center gap-2 mb-2 text-sm">
-                <input className="border rounded px-2 py-1 w-full" placeholder="Search name/category/location" value={finQuery} onChange={(e)=> setFinQuery(e.target.value)} />
-                <span className="text-xs text-muted-foreground">Page {finPage}</span>
-                <div className="flex gap-1">
-                  <Button size="sm" variant="outline" onClick={()=> setFinPage(p=> Math.max(1,p-1))}>Prev</Button>
-                  <Button size="sm" variant="outline" onClick={()=> setFinPage(p=> p+1)}>Next</Button>
-                </div>
-              </div>
-              <table className="w-full text-sm block overflow-x-auto whitespace-nowrap">
-                <thead><tr className="text-left"><th>Name</th><th>Category</th><th>On hand</th><th>Par</th><th>Unit</th><th>Area</th><th>Location</th><th></th></tr></thead>
-                <tbody>
-                  {(()=>{ const q=finQuery.trim().toLowerCase(); const filtered = q? fin.filter(it=> `${it.name} ${it.category||''} ${it.location||''}`.toLowerCase().includes(q)) : fin; const pageItems = filtered.slice((finPage-1)*pageSize, finPage*pageSize); return pageItems; })().map(it=> (
-                    <tr key={it.id} className="border-t">
-                      <td>{it.name}</td>
-                      <td><input className="w-32 border rounded px-1" value={it.category||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, category: e.target.value }:x))}/></td>
-                      <td><input className="w-20 border rounded px-1" value={it.onHand} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, onHand: Number(e.target.value||0)}:x))}/></td>
-                      <td><input className="w-20 border rounded px-1" value={it.par} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, par: Number(e.target.value||0)}:x))}/></td>
-                      <td>{it.unit}</td>
-                      <td>
-                        <select className="w-40 border rounded px-1 text-xs" value={it.storageAreaId||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, storageAreaId: e.target.value||undefined }:x))}>
-                          <option value="">—</option>
-                          {storageAreas.map(a=> <option key={a.id} value={a.id}>{a.name}</option>)}
-                        </select>
-                      </td>
-                      <td><input className="w-56 border rounded px-1" value={it.location||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, location: e.target.value }:x))}/></td>
-                      <td className="flex items-center gap-2">
-                        <Button size="sm" variant="secondary" onClick={()=> openReceive('fin', it.id)}>Receive</Button>
-                        <button onClick={()=> setFin(prev=> prev.filter(x=> x.id!==it.id))}><Trash className="w-4 h-4"/></button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <div className="flex gap-2 mt-2">
-                <Button size="sm" onClick={()=>{
-                  const name = prompt("Item name","Eclair"); if(!name) return;
-                  const unit = prompt("Unit","pcs") || "pcs";
-                  const location = prompt("Location (Row • Shelf • Bin)", "Freezer 1 ��� Rack 1 • Tray A") || '';
-                  setFin(prev=> [...prev, { id: uid(), name, unit, onHand: 0, par: 0, location }]);
-                }}><Plus className="w-4 h-4 mr-1"/>Add</Button>
-                <Button size="sm" variant="outline" onClick={()=>{ const lines = fin.map(f=> `${f.name}\t${f.onHand}\t${f.par}\t${f.unit}\t${f.location||''}`).join('\n'); const blob = new Blob([`Name\tOn hand\tPar\tUnit\tLocation\n${lines}`], { type:'text/tab-separated-values' }); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='finished-goods-order-sheet.tsv'; a.click(); }}><Printer className="w-4 h-4 mr-1"/>Order sheet</Button>
+          <div className="rounded-xl border p-3 space-y-2 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15">
+            <div className="flex items-center justify-between">
+              <div className="font-medium flex items-center gap-2"><Warehouse className="w-4 h-4"/>Inventory</div>
+              <div className="inline-flex border rounded-lg overflow-hidden">
+                <button className={`px-3 py-1 text-sm ${invTab==='finished'?'bg-primary text-primary-foreground':'bg-background'}`} onClick={()=> setInvTab('finished')}>Finished</button>
+                <button className={`px-3 py-1 text-sm ${invTab==='raw'?'bg-primary text-primary-foreground':'bg-background'}`} onClick={()=> setInvTab('raw')}>Raw</button>
               </div>
             </div>
-            <div className="rounded-xl border p-3 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15">
-              <div className="font-medium mb-2 flex items-center gap-2"><Warehouse className="w-4 h-4"/>Raw Products</div>
-              <div className="flex items-center gap-2 mb-2 text-sm">
-                <input className="border rounded px-2 py-1 w-full" placeholder="Search name/category/location" value={rawQuery} onChange={(e)=> setRawQuery(e.target.value)} />
-                <span className="text-xs text-muted-foreground">Page {rawPage}</span>
-                <div className="flex gap-1">
-                  <Button size="sm" variant="outline" onClick={()=> setRawPage(p=> Math.max(1,p-1))}>Prev</Button>
-                  <Button size="sm" variant="outline" onClick={()=> setRawPage(p=> p+1)}>Next</Button>
+
+            {invTab==='finished' && (
+              <>
+                <div className="flex items-center gap-2 mb-2 text-sm">
+                  <input className="border rounded px-2 py-1 w-full" placeholder="Search name/category/location" value={finQuery} onChange={(e)=> setFinQuery(e.target.value)} />
+                  <span className="text-xs text-muted-foreground">Page {finPage}</span>
+                  <div className="flex gap-1">
+                    <Button size="sm" variant="outline" onClick={()=> setFinPage(p=> Math.max(1,p-1))}>Prev</Button>
+                    <Button size="sm" variant="outline" onClick={()=> setFinPage(p=> p+1)}>Next</Button>
+                  </div>
                 </div>
-              </div>
-              <table className="w-full text-sm block overflow-x-auto whitespace-nowrap">
-                <thead><tr className="text-left"><th>Name</th><th>Category</th><th>On hand</th><th>Par</th><th>Unit</th><th>Area</th><th>Location</th><th></th></tr></thead>
-                <tbody>
-                  {(()=>{ const q=rawQuery.trim().toLowerCase(); const filtered = q? raw.filter(it=> `${it.name} ${it.category||''} ${it.location||''}`.toLowerCase().includes(q)) : raw; const pageItems = filtered.slice((rawPage-1)*pageSize, rawPage*pageSize); return pageItems; })().map(it=> (
-                    <tr key={it.id} className="border-t">
-                      <td>{it.name}</td>
-                      <td><input className="w-32 border rounded px-1" value={it.category||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, category: e.target.value }:x))}/></td>
-                      <td><input className="w-20 border rounded px-1" value={it.onHand} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, onHand: Number(e.target.value||0)}:x))}/></td>
-                      <td><input className="w-20 border rounded px-1" value={it.par} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, par: Number(e.target.value||0)}:x))}/></td>
-                      <td>{it.unit}</td>
-                      <td>
-                        <select className="w-40 border rounded px-1 text-xs" value={it.storageAreaId||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, storageAreaId: e.target.value||undefined }:x))}>
-                          <option value="">—</option>
-                          {storageAreas.map(a=> <option key={a.id} value={a.id}>{a.name}</option>)}
-                        </select>
-                      </td>
-                      <td><input className="w-56 border rounded px-1" value={it.location||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, location: e.target.value }:x))}/></td>
-                      <td className="flex items-center gap-2">
-                        <Button size="sm" variant="secondary" onClick={()=> openReceive('raw', it.id)}>Receive</Button>
-                        <button onClick={()=> setRaw(prev=> prev.filter(x=> x.id!==it.id))}><Trash className="w-4 h-4"/></button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <div className="flex gap-2 mt-2">
-                <Button size="sm" onClick={()=>{
-                  const name = prompt("Raw name","Sugar"); if(!name) return;
-                  const unit = prompt("Unit","kg") || "kg";
-                  const location = prompt("Location (Row • Shelf • Bin)", "Row A • Shelf 1 • Bin 1") || '';
-                  setRaw(prev=> [...prev, { id: uid(), name, unit, onHand: 0, par: 0, location }]);
-                }}><Plus className="w-4 h-4 mr-1"/>Add</Button>
-                <Button size="sm" variant="outline" onClick={()=>{ const lines = raw.map(f=> `${f.name}\t${f.onHand}\t${f.par}\t${f.unit}\t${f.location||''}`).join('\n'); const blob = new Blob([`Name\tOn hand\tPar\tUnit\tLocation\n${lines}`], { type:'text/tab-separated-values' }); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='raw-products-order-sheet.tsv'; a.click(); }}><Printer className="w-4 h-4 mr-1"/>Order sheet</Button>
-              </div>
-            </div>
+                <table className="w-full text-sm block overflow-x-auto whitespace-nowrap">
+                  <thead><tr className="text-left"><th>Name</th><th>Category</th><th>In stock</th><th>Booked</th><th>Available</th><th>Reorder point</th><th>Unit</th><th>Cost</th><th>Area</th><th>Location</th><th></th></tr></thead>
+                  <tbody>
+                    {(()=>{ const q=finQuery.trim().toLowerCase(); const filtered = q? fin.filter(it=> `${it.name} ${it.category||''} ${it.location||''}`.toLowerCase().includes(q)) : fin; const pageItems = filtered.slice((finPage-1)*pageSize, finPage*pageSize); return pageItems; })().map(it=> { const booked = bookedFinishedForDate[it.id]||0; const avail = (it.onHand||0)-booked; return (
+                      <tr key={it.id} className="border-t">
+                        <td>{it.name}</td>
+                        <td><input className="w-32 border rounded px-1" value={it.category||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, category: e.target.value }:x))}/></td>
+                        <td><input className="w-20 border rounded px-1" value={it.onHand} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, onHand: Number(e.target.value||0)}:x))}/></td>
+                        <td className={booked>0? 'text-red-500':''}>{booked}</td>
+                        <td className={avail<0? 'text-red-600 font-medium':''}>{avail}</td>
+                        <td><input className="w-20 border rounded px-1" value={it.par} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, par: Number(e.target.value||0)}:x))}/></td>
+                        <td>{it.unit}</td>
+                        <td><input className="w-24 border rounded px-1" value={it.unitCost||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, unitCost: Number(e.target.value||0)}:x))}/></td>
+                        <td>
+                          <select className="w-40 border rounded px-1 text-xs" value={it.storageAreaId||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, storageAreaId: e.target.value||undefined }:x))}>
+                            <option value="">—</option>
+                            {storageAreas.map(a=> <option key={a.id} value={a.id}>{a.name}</option>)}
+                          </select>
+                        </td>
+                        <td><input className="w-56 border rounded px-1" value={it.location||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, location: e.target.value }:x))}/></td>
+                        <td className="flex items-center gap-2">
+                          <Button size="sm" variant="secondary" onClick={()=> openReceive('fin', it.id)}>Receive</Button>
+                          <button onClick={()=> setFin(prev=> prev.filter(x=> x.id!==it.id))}><Trash className="w-4 h-4"/></button>
+                        </td>
+                      </tr>
+                    );})}
+                  </tbody>
+                </table>
+                <div className="flex gap-2 mt-2">
+                  <Button size="sm" onClick={()=>{
+                    const name = prompt("Item name","Eclair"); if(!name) return;
+                    const unit = prompt("Unit","pcs") || "pcs";
+                    const location = prompt("Location (Row • Shelf • Bin)", "Freezer 1 • Rack 1 • Tray A") || '';
+                    setFin(prev=> [...prev, { id: uid(), name, unit, onHand: 0, par: 0, location }]);
+                  }}><Plus className="w-4 h-4 mr-1"/>Add</Button>
+                </div>
+              </>
+            )}
+
+            {invTab==='raw' && (
+              <>
+                <div className="flex items-center gap-2 mb-2 text-sm">
+                  <input className="border rounded px-2 py-1 w-full" placeholder="Search name/category/location" value={rawQuery} onChange={(e)=> setRawQuery(e.target.value)} />
+                  <span className="text-xs text-muted-foreground">Page {rawPage}</span>
+                  <div className="flex gap-1">
+                    <Button size="sm" variant="outline" onClick={()=> setRawPage(p=> Math.max(1,p-1))}>Prev</Button>
+                    <Button size="sm" variant="outline" onClick={()=> setRawPage(p=> p+1)}>Next</Button>
+                  </div>
+                </div>
+                <table className="w-full text-sm block overflow-x-auto whitespace-nowrap">
+                  <thead><tr className="text-left"><th>Name</th><th>Category</th><th>In stock</th><th>Booked</th><th>Available</th><th>Reorder point</th><th>Unit</th><th>Cost</th><th>Area</th><th>Location</th><th></th></tr></thead>
+                  <tbody>
+                    {(()=>{ const q=rawQuery.trim().toLowerCase(); const filtered = q? raw.filter(it=> `${it.name} ${it.category||''} ${it.location||''}`.toLowerCase().includes(q)) : raw; const pageItems = filtered.slice((rawPage-1)*pageSize, rawPage*pageSize); return pageItems; })().map(it=> { const booked = bookedRawForDate[it.id]||0; const avail = (it.onHand||0)-booked; return (
+                      <tr key={it.id} className="border-t">
+                        <td>{it.name}</td>
+                        <td><input className="w-32 border rounded px-1" value={it.category||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, category: e.target.value }:x))}/></td>
+                        <td><input className="w-20 border rounded px-1" value={it.onHand} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, onHand: Number(e.target.value||0)}:x))}/></td>
+                        <td className={booked>0? 'text-red-500':''}>{booked}</td>
+                        <td className={avail<0? 'text-red-600 font-medium':''}>{avail}</td>
+                        <td><input className="w-20 border rounded px-1" value={it.par} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, par: Number(e.target.value||0)}:x))}/></td>
+                        <td>{it.unit}</td>
+                        <td><input className="w-24 border rounded px-1" value={it.unitCost||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, unitCost: Number(e.target.value||0)}:x))}/></td>
+                        <td>
+                          <select className="w-40 border rounded px-1 text-xs" value={it.storageAreaId||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, storageAreaId: e.target.value||undefined }:x))}>
+                            <option value="">—</option>
+                            {storageAreas.map(a=> <option key={a.id} value={a.id}>{a.name}</option>)}
+                          </select>
+                        </td>
+                        <td><input className="w-56 border rounded px-1" value={it.location||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, location: e.target.value }:x))}/></td>
+                        <td className="flex items-center gap-2">
+                          <Button size="sm" variant="secondary" onClick={()=> openReceive('raw', it.id)}>Receive</Button>
+                          <button onClick={()=> setRaw(prev=> prev.filter(x=> x.id!==it.id))}><Trash className="w-4 h-4"/></button>
+                        </td>
+                      </tr>
+                    );})}
+                  </tbody>
+                </table>
+                <div className="flex gap-2 mt-2">
+                  <Button size="sm" onClick={()=>{
+                    const name = prompt("Raw name","Sugar"); if(!name) return;
+                    const unit = prompt("Unit","kg") || "kg";
+                    const location = prompt("Location (Row • Shelf • Bin)", "Row A • Shelf 1 • Bin 1") || '';
+                    setRaw(prev=> [...prev, { id: uid(), name, unit, onHand: 0, par: 0, location }]);
+                  }}><Plus className="w-4 h-4 mr-1"/>Add</Button>
+                </div>
+              </>
+            )}
           </div>
           <div className="mt-3 rounded-xl border p-3 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15">
             <div className="flex items-center justify-between">
