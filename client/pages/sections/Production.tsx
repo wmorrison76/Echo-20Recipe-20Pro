@@ -726,7 +726,7 @@ export default function ProductionSection(){
                 <Button size="sm" onClick={()=>{
                   const name = prompt("Item name","Eclair"); if(!name) return;
                   const unit = prompt("Unit","pcs") || "pcs";
-                  const location = prompt("Location (Row • Shelf • Bin)", "Freezer 1 • Rack 1 • Tray A") || '';
+                  const location = prompt("Location (Row • Shelf • Bin)", "Freezer 1 ��� Rack 1 • Tray A") || '';
                   setFin(prev=> [...prev, { id: uid(), name, unit, onHand: 0, par: 0, location }]);
                 }}><Plus className="w-4 h-4 mr-1"/>Add</Button>
                 <Button size="sm" variant="outline" onClick={()=>{ const lines = fin.map(f=> `${f.name}\t${f.onHand}\t${f.par}\t${f.unit}\t${f.location||''}`).join('\n'); const blob = new Blob([`Name\tOn hand\tPar\tUnit\tLocation\n${lines}`], { type:'text/tab-separated-values' }); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='finished-goods-order-sheet.tsv'; a.click(); }}><Printer className="w-4 h-4 mr-1"/>Order sheet</Button>
@@ -742,7 +742,7 @@ export default function ProductionSection(){
                   <Button size="sm" variant="outline" onClick={()=> setRawPage(p=> p+1)}>Next</Button>
                 </div>
               </div>
-              <table className="w-full text-sm">
+              <table className="w-full text-sm block overflow-x-auto whitespace-nowrap">
                 <thead><tr className="text-left"><th>Name</th><th>Category</th><th>On hand</th><th>Par</th><th>Unit</th><th>Area</th><th>Location</th><th></th></tr></thead>
                 <tbody>
                   {(()=>{ const q=rawQuery.trim().toLowerCase(); const filtered = q? raw.filter(it=> `${it.name} ${it.category||''} ${it.location||''}`.toLowerCase().includes(q)) : raw; const pageItems = filtered.slice((rawPage-1)*pageSize, rawPage*pageSize); return pageItems; })().map(it=> (
