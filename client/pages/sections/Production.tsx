@@ -472,13 +472,16 @@ export default function ProductionSection(){
                 <li key={o.id} className="flex items-center justify-between border-t py-1 gap-2">
                   <span className="flex-1">{o.name} • {o.type}</span>
                   <span className="text-xs text-muted-foreground">Cutoff {o.orderCutoff||'—'} | Hours {o.open||'—'}–{o.close||'—'}</span>
-                  <Button size="sm" variant="secondary" onClick={()=>{
-                    const cutoff = prompt("Order cutoff (HH:mm)", o.orderCutoff||"14:00") || o.orderCutoff;
-                    const open = prompt("Open (HH:mm)", o.open||"06:00") || o.open;
-                    const close = prompt("Close (HH:mm)", o.close||"22:00") || o.close;
-                    setOutlets(prev=> prev.map(x=> x.id===o.id? { ...x, orderCutoff: cutoff, open, close }: x));
-                  }}>Settings</Button>
-                  <button onClick={()=> setOutlets(prev=> prev.filter(x=> x.id!==o.id))}><Trash className="w-4 h-4"/></button>
+                  <div className="flex items-center gap-2">
+                    <Button size="sm" variant="secondary" onClick={()=> setGuideOutlet(o)}>Guide</Button>
+                    <Button size="sm" variant="secondary" onClick={()=>{
+                      const cutoff = prompt("Order cutoff (HH:mm)", o.orderCutoff||"14:00") || o.orderCutoff;
+                      const open = prompt("Open (HH:mm)", o.open||"06:00") || o.open;
+                      const close = prompt("Close (HH:mm)", o.close||"22:00") || o.close;
+                      setOutlets(prev=> prev.map(x=> x.id===o.id? { ...x, orderCutoff: cutoff, open, close }: x));
+                    }}>Settings</Button>
+                    <button onClick={()=> setOutlets(prev=> prev.filter(x=> x.id!==o.id))}><Trash className="w-4 h-4"/></button>
+                  </div>
                 </li>
               ))}
             </ul>
