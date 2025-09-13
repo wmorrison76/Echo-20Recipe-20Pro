@@ -605,7 +605,10 @@ export default function ProductionSection(){
                       <td><input className="w-20 border rounded px-1" value={it.par} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, par: Number(e.target.value||0)}:x))}/></td>
                       <td>{it.unit}</td>
                       <td><input className="w-56 border rounded px-1" value={it.location||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, location: e.target.value }:x))}/></td>
-                      <td><button onClick={()=> setRaw(prev=> prev.filter(x=> x.id!==it.id))}><Trash className="w-4 h-4"/></button></td>
+                      <td className="flex items-center gap-2">
+                        <Button size="sm" variant="secondary" onClick={()=> openReceive('raw', it.id)}>Receive</Button>
+                        <button onClick={()=> setRaw(prev=> prev.filter(x=> x.id!==it.id))}><Trash className="w-4 h-4"/></button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
