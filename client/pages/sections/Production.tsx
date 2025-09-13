@@ -416,7 +416,7 @@ export default function ProductionSection(){
             <div className="grid md:grid-cols-2 gap-3">
               {orders.map(o=> {
                 const st = orderStatus(o);
-                const style = st==='late'? { borderColor: '#ef4444' } : st==='change'? { borderColor: '#f59e0b' } : {};
+                const style = st==='late'? { borderColor: '#ef4444', background: 'linear-gradient(180deg, #ef444422, transparent)' } : st==='change'? { borderColor: '#f59e0b', background: 'linear-gradient(180deg, #f59e0b22, transparent)' } : {};
                 return (
                   <div key={o.id} className="rounded-lg border p-2" onContextMenu={(e)=> onOrderContext(e, o.id)} style={style}>
                     <div className="text-sm font-medium flex items-center justify-between">
