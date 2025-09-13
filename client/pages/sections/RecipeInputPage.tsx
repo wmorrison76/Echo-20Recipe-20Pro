@@ -45,7 +45,7 @@ const RecipeInputPage = () => {
   const futureRef = useRef<any[]>([]);
   const [directions, setDirections] = useState("1. ");
   const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
-  const { addRecipe, updateRecipe, addImages } = useAppData();
+  const { addRecipe, updateRecipe, addImages, searchRecipes } = useAppData();
   const recipeIdRef = useRef<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     try {
