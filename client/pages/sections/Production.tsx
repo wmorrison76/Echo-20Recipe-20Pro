@@ -624,6 +624,21 @@ export default function ProductionSection(){
               </div>
             </div>
           </div>
+          <div className="mt-3 rounded-xl border p-3 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15">
+            <div className="font-medium mb-2">Recent Receipts</div>
+            <div className="text-xs text-muted-foreground mb-2">Tracks who received, lot codes, expiry, and location.</div>
+            <div className="grid md:grid-cols-2 gap-2">
+              {lots.slice(0,10).map(l=> (
+                <div key={l.id} className="rounded border p-2 text-sm flex items-center justify-between">
+                  <div>
+                    <div>{l.kind==='raw'? (raw.find(r=> r.id===l.itemId)?.name) : (fin.find(f=> f.id===l.itemId)?.name)} • {l.qty} {l.unit}</div>
+                    <div className="text-xs text-muted-foreground">Lot {l.lotCode||'—'} • Exp {l.expiryDate||'—'} • {l.location||'—'} • by {l.receiverName||'—'}</div>
+                  </div>
+                  <div className="text-xs opacity-70">{Math.ceil((Date.now()-l.receivedAt)/3600000)}h ago</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </TabsContent>
 
         <TabsContent value="staff">
