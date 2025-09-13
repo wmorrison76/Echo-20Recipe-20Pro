@@ -192,6 +192,10 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           { name:'sushi.jpg', url:'https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','sushi','demo'] },
           { name:'dessert.jpg', url:'https://images.unsplash.com/photo-1541976076758-347942db1970?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','dessert','demo'] },
           { name:'bread.jpg', url:'https://images.unsplash.com/photo-1509440159598-8b4e0b0b1f66?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','bread','demo'] },
+          { name:'cupcake.jpg', url:'https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','dessert','cupcake','demo'] },
+          { name:'icecream.jpg', url:'https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','dessert','ice cream','demo'] },
+          { name:'tiramisu.jpg', url:'https://images.unsplash.com/photo-1604908176997-431be3fa7e4d?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','dessert','tiramisu','demo'] },
+          { name:'cheesecake.jpg', url:'https://images.unsplash.com/photo-1478145046317-39f10e56b5e9?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','dessert','cheesecake','demo'] }
         ];
         const next: GalleryImage[] = [];
         let order = 0;
@@ -1528,6 +1532,10 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       { name:'sushi.jpg', url:'https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','sushi','stock','demo'] },
       { name:'dessert.jpg', url:'https://images.unsplash.com/photo-1541976076758-347942db1970?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','dessert','stock','demo'] },
       { name:'bread.jpg', url:'https://images.unsplash.com/photo-1509440159598-8b4e0b0b1f66?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','bread','stock','demo'] },
+      { name:'cupcake.jpg', url:'https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','dessert','cupcake','stock','demo'] },
+      { name:'icecream.jpg', url:'https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','dessert','ice cream','stock','demo'] },
+      { name:'tiramisu.jpg', url:'https://images.unsplash.com/photo-1604908176997-431be3fa7e4d?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','dessert','tiramisu','stock','demo'] },
+      { name:'cheesecake.jpg', url:'https://images.unsplash.com/photo-1478145046317-39f10e56b5e9?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','dessert','cheesecake','stock','demo'] },
     ];
     const makeUnique = (base:string) => { let name=base; let i=2; while(existingNames.has(name)){ const d=base.lastIndexOf('.'); name = d>0? `${base.slice(0,d)}-${i}${base.slice(d)}`: `${base}-${i}`; i++; } return name; };
     const next: GalleryImage[] = [];
