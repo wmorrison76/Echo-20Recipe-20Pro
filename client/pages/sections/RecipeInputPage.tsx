@@ -27,12 +27,14 @@ import {
   Printer,
   FlaskConical,
 } from "lucide-react";
+import { Search, Link2, X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const RecipeInputPage = () => {
   const [recipeName, setRecipeName] = useState("");
