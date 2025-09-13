@@ -532,6 +532,41 @@ export default function ProductionSection(){
           <div className="no-print flex justify-end"><Button onClick={()=> window.print()}><Printer className="w-4 h-4 mr-1"/>Print</Button></div>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={!!guideOutlet} onOpenChange={(v)=>{ if(!v) setGuideOutlet(null); }}>
+        <DialogContent className="max-w-xl">
+          <DialogHeader><DialogTitle>Order Guide — {guideOutlet?.name}</DialogTitle></DialogHeader>
+          {guideOutlet && (
+            <div className="space-y-3 text-sm">
+              <table className="w-full text-sm">
+                <thead><tr className="text-left"><th>Item</th><th>Default Qty</th><th>Unit</th><th></th></tr></thead>
+                <tbody>
+                  {(guideOutlet.guide||[]).map((g,idx)=> (
+                    <tr key={idx} className="border-t">
+                      <td><input className="w-full border rounded px-1" value={g.item} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).map((x,i)=> i===idx? { ...x, item: e.target.value }: x) } : o))} /></td>
+                      <td><input className="w-24 border rounded px-1" value={g.defaultQty} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).map((x,i)=> i===idx? { ...x, defaultQty: Number(e.target.value||0) }: x) } : o))} /></td>
+                      <td><input className="w-24 border rounded px-1" value={g.unit} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).map((x,i)=> i===idx? { ...x, unit: e.target.value }: x) } : o))} /></td>
+                      <td><button onClick={()=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).filter((_,i)=> i!==idx) } : o))}><Trash className="w-4 h-4"/></button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <Button size="sm" onClick={()=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: [ ...(o.guide||[]), { item:'', defaultQty:0, unit:'pcs' } ] }: o))}><Plus className="w-4 h-4 mr-1"/>Add line</Button>
+              <div className="flex justify-between">
+                <Button variant="secondary" onClick={()=> setGuideOutlet(null)}>Close</Button>
+                <Button onClick={()=>{
+                  const outlet = guideOutlet;
+                  if(!outlet) return;
+                  const lines = (outlet.guide||[]).filter(g=> g.item).map(g=> ({ id: uid(), item: g.item, qty: g.defaultQty, unit: g.unit }));
+                  if(!lines.length) return;
+                  addOrderQuick({ outletId: outlet.id, lines });
+                  setGuideOutlet(null);
+                }}>Create order from guide</Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
