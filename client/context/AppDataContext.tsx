@@ -1515,6 +1515,33 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     return next.length;
   }, [images]);
 
+  const addStockFoodPhotos = useCallback(async (): Promise<number> => {
+    const existingNames = new Set(images.map(i=>i.name));
+    let order = images.length ? Math.max(...images.map(i=> (i as any).order ?? 0)) + 1 : 0;
+    const list = [
+      { name:'pizza.jpg', url:'https://images.unsplash.com/photo-1548365328-9f547fb09530?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','pizza','stock','demo'] },
+      { name:'burger.jpg', url:'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','burger','stock','demo'] },
+      { name:'salad.jpg', url:'https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','salad','stock','demo'] },
+      { name:'pasta.jpg', url:'https://images.unsplash.com/photo-1521389508051-d7ffb5dc8bbf?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','pasta','stock','demo'] },
+      { name:'steak.jpg', url:'https://images.unsplash.com/photo-1553163147-622ab57be1c7?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','steak','stock','demo'] },
+      { name:'sushi.jpg', url:'https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','sushi','stock','demo'] },
+      { name:'dessert.jpg', url:'https://images.unsplash.com/photo-1541976076758-347942db1970?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','dessert','stock','demo'] },
+      { name:'bread.jpg', url:'https://images.unsplash.com/photo-1509440159598-8b4e0b0b1f66?auto=format&fit=crop&w=960&h=720&q=70', tags:['food','bread','stock','demo'] },
+    ];
+    const makeUnique = (base:string) => { let name=base; let i=2; while(existingNames.has(name)){ const d=base.lastIndexOf('.'); name = d>0? `${base.slice(0,d)}-${i}${base.slice(d)}`: `${base}-${i}`; i++; } return name; };
+    const next: GalleryImage[] = [];
+    for (const it of list) {
+      try {
+        const res = await fetch(it.url);
+        const blob = await res.blob();
+        const dataUrl = await dataUrlFromBlob(blob);
+        next.push({ id: uid(), name: makeUnique(it.name), dataUrl, createdAt: Date.now(), tags: it.tags, favorite:false, order: order++, type: blob.type||'image/jpeg' });
+      } catch {}
+    }
+    if (next.length) setImages(prev=>[...next, ...prev]);
+    return next.length;
+  }, [images]);
+
   const value = useMemo<AppData>(
     () => ({
       recipes,
