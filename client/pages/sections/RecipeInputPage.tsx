@@ -209,7 +209,7 @@ const RecipeInputPage = () => {
     };
     let t = String(s).trim();
     // Expand unicode vulgar fractions
-    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝��]/g, (ch) => map[ch] || ch);
+    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
     // Allow forms like "1½" -> "1 1/2"
     t = t.replace(/(\d)\s*(\d\/\d)/, "$1 $2");
     // Mixed fraction
@@ -666,7 +666,7 @@ const RecipeInputPage = () => {
       e.preventDefault();
       setIngredients([
         ...ingredients,
-        { qty: "", unit: "", item: "", prep: "", yield: "", cost: "" },
+        { qty: "", unit: "", item: "", prep: "", yield: "", cost: "", subId: "" },
       ]);
       setTimeout(() => {
         const next = document.querySelector<HTMLInputElement>(
