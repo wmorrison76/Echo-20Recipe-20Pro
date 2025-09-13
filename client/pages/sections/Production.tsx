@@ -641,7 +641,7 @@ export default function ProductionSection(){
             <div className="rounded-xl border p-3 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15">
               <div className="font-medium mb-2 flex items-center gap-2"><Warehouse className="w-4 h-4"/>Finished Goods</div>
               <table className="w-full text-sm">
-                <thead><tr className="text-left"><th>Name</th><th>On hand</th><th>Par</th><th>Unit</th><th>Location</th><th></th></tr></thead>
+                <thead><tr className="text-left"><th>Name</th><th>Category</th><th>On hand</th><th>Par</th><th>Unit</th><th>Area</th><th>Location</th><th></th></tr></thead>
                 <tbody>
                   {fin.map(it=> (
                     <tr key={it.id} className="border-t">
