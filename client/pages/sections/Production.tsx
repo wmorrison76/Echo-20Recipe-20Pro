@@ -577,7 +577,7 @@ export default function ProductionSection(){
                     const leftPct = `${(100/Math.max(total,1))*lane}%`;
                     return (
                       <div key={t.id} className="absolute" style={{ top, height:h, left:leftPct, width, paddingRight:6 }}>
-                        <div className="rounded-lg border shadow p-2 text-sm select-none cursor-move" style={{ background: `linear-gradient(180deg, ${bg}22, transparent)` }} onMouseDown={(e)=> startDrag(e, t, 'move')} onDoubleClick={()=> openTaskDialog(t)}>
+                        <div className="rounded-lg border shadow p-2 text-sm select-none cursor-move" style={{ background: `linear-gradient(180deg, ${bg}22, transparent)`, touchAction:'none' as any }} onPointerDown={(e)=> startDrag(e, t, 'move')} onDoubleClick={()=> openTaskDialog(t)}>
                           <div className="flex items-center justify-between">
                             <div className="font-medium truncate">{t.title}</div>
                             <div className="flex items-center gap-2">
@@ -592,7 +592,7 @@ export default function ProductionSection(){
                             {t.staffId && <span>{staffById[t.staffId]?.name}</span>}
                             {t.qty && t.unit && <span>{t.qty} {t.unit}</span>}
                           </div>
-                          <div className="absolute bottom-0 left-0 right-0 h-2 cursor-ns-resize" onMouseDown={(e)=>{ e.stopPropagation(); startDrag(e, t, 'resize'); }} />
+                          <div className="absolute bottom-0 left-0 right-0 h-3 cursor-ns-resize" style={{ touchAction:'none' as any }} onPointerDown={(e)=>{ e.stopPropagation(); startDrag(e, t, 'resize'); }} />
                         </div>
                       </div>
                     );
