@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from '../ui/alert';
 import type { BEODocument } from '../../types/beo';
 import { useBEOStore, type CalendarEvent } from '../../stores/beoStore';
 
-export interface GlobalCalendarProps { onBEOSelect?: (beoId: string) => void; onCreateBEO?: (eventId: string) => void; viewMode?: 'calendar'|'list'|'timeline'|'chef'|'production'|'analytics'; }
+export interface GlobalCalendarProps { onBEOSelect?: (beoId: string) => void; onCreateBEO?: (eventId: string) => void; viewMode?: 'calendar'|'list'|'timeline'|'chef'|'production'|'analytics'; events?: CalendarEvent[]; }
 
 const EventStatusBadge: React.FC<{ status: CalendarEvent['status'] }> = ({ status }) => (
   <Badge variant="outline" className="capitalize">{status.replace('_',' ')}</Badge>
@@ -81,14 +81,19 @@ const CalendarGrid: React.FC<{ events: CalendarEvent[]; date: Date; onEvent:(e:C
   );
 };
 
-export const GlobalCalendar: React.FC<GlobalCalendarProps> = ({ onBEOSelect, onCreateBEO }) => {
-  const { events, isLoading, loadEvents, acknowledgeEvent, createBEO } = useBEOStore();
+export const GlobalCalendar: React.FC<GlobalCalendarProps> = ({ onBEOSelect, onCreateBEO, events: propEvents }) => {
+  const store = useBEOStore();
+  const events = propEvents ?? store.events;
+  const isLoading = propEvents ? false : store.isLoading;
+  const loadEvents = propEvents ? (()=>{}) : store.loadEvents;
+  const acknowledgeEvent = propEvents ? ((_id:string,_who?:string)=>{}) : store.acknowledgeEvent;
+  const createBEO = propEvents ? (async (_id:string)=>{}) : store.createBEO;
   const [date, setDate] = useState(new Date());
   const [view, setView] = useState<'month'|'week'|'today'>('month');
   const [selected, setSelected] = useState<CalendarEvent|null>(null);
   const [open, setOpen] = useState(false);
   const routerLocation = useLocation();
-  useEffect(()=>{ loadEvents(); }, []);
+  useEffect(()=>{ if(!propEvents){ loadEvents(); } }, [propEvents]);
   useEffect(()=>{ const p=new URLSearchParams(routerLocation.search||''); const id=p.get('event'); if(id){ const ev=events.find(e=> e.id===id); if(ev){ setSelected(ev); setOpen(true);} } }, [routerLocation.search, events]);
   if(isLoading){ return (<div className="p-6 text-center">Loading…</div>); }
   const monthEvents = events.filter(e=> new Date(e.date).getMonth()===date.getMonth() && new Date(e.date).getFullYear()===date.getFullYear());
