@@ -49,6 +49,7 @@ export default function TopTabs() {
           <TabLink to="/?tab=search" label="Recipe Search" />
           <TabLink to="/?tab=gallery" label="Gallery" />
           <TabLink to="/?tab=add-recipe" label="Add Recipe" />
+          <TabLink to="/?tab=saas" label="SaaS" />
         </nav>
         <div className="flex items-center gap-1">
           <button title="Finalize & Clear" onClick={()=>{
