@@ -21,15 +21,17 @@ const LS_INV_RAW = "production.inventory.raw.v1";
 const LS_INV_FIN = "production.inventory.finished.v1";
 const LS_INV_LOTS = "production.inventory.lots.v1";
 const LS_SESSION_USER = "production.session.user.v1";
+const LS_STORAGE_AREAS = "production.storage.areas.v1";
 
 function uid(){ return Math.random().toString(36).slice(2) + Date.now().toString(36); }
 
 export type Role = { id: string; name: string };
 export type Staff = { id: string; name: string; roleId?: string; pinHash?: string };
 export type Outlet = { id: string; name: string; type: "Outlet"|"Banquets"|"Custom Cakes"; orderCutoff?: string; open?: string; close?: string; guide?: { item: string; defaultQty: number; unit: string }[] };
-export type RawItem = { id: string; name: string; unit: string; onHand: number; par: number; location?: string };
-export type FinishedItem = { id: string; name: string; unit: string; onHand: number; par: number; recipeId?: string; location?: string };
+export type RawItem = { id: string; name: string; unit: string; onHand: number; par: number; location?: string; category?: string; storageAreaId?: string; shelf?: string; bin?: string };
+export type FinishedItem = { id: string; name: string; unit: string; onHand: number; par: number; recipeId?: string; location?: string; category?: string; storageAreaId?: string; shelf?: string; bin?: string };
 export type InvLot = { id:string; kind:'raw'|'fin'; itemId:string; lotCode?:string; qty:number; unit:string; receivedAt:number; expiryDate?:string; location?:string; note?:string; receiverId?:string; receiverName?:string };
+export type StorageArea = { id: string; name: string; note?: string };
 
 export type OrderLine = { id: string; item: string; qty: number; unit: string; finishedItemId?: string; recipeId?: string };
 export type Order = { id: string; outletId: string; dueISO: string; notes?: string; lines: OrderLine[]; createdAt: number; changedAt?: number };
@@ -53,6 +55,7 @@ export type Task = {
   pullFromFinished?: { finishedItemId: string; qty: number }[];
   useRaw?: { rawItemId: string; qty: number }[];
   done?: boolean;
+  invAccounted?: boolean;
 };
 
 async function sha256Hex(text: string){
@@ -75,6 +78,7 @@ export default function ProductionSection(){
   const [raw, setRaw] = useState<RawItem[]>(()=> readLS(LS_INV_RAW, [ { id: uid(), name: "Flour", unit: "kg", onHand: 50, par: 30, location:"Row A • Shelf 1 • Bin 1" }, { id: uid(), name: "Chocolate", unit: "kg", onHand: 20, par: 10, location:"Row B • Shelf 2 • Bin 3" } ]));
   const [fin, setFin] = useState<FinishedItem[]>(()=> readLS(LS_INV_FIN, [ { id: uid(), name: "Croissant", unit: "pcs", onHand: 80, par: 120, location:"Freezer 1 • Rack 2 • Tray A" }, { id: uid(), name: "Chocolate Bonbons", unit: "pcs", onHand: 120, par: 150, location:"Freezer 2 • Rack 1 • Tray C" } ]));
   const [lots, setLots] = useState<InvLot[]>(()=> readLS(LS_INV_LOTS, []));
+  const [storageAreas, setStorageAreas] = useState<StorageArea[]>(()=> readLS(LS_STORAGE_AREAS, [ { id: uid(), name: 'Freezer 1' }, { id: uid(), name: 'Freezer 2' }, { id: uid(), name: 'Dry Storage' } ]));
   const [date, setDate] = useState<string>(()=> new Date().toISOString().slice(0,10));
 
   const [currentUserId, setCurrentUserId] = useState<string | null>(()=> readLS(LS_SESSION_USER, null));
@@ -84,6 +88,7 @@ export default function ProductionSection(){
   const [taskDraft, setTaskDraft] = useState<Task | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [prepOpen, setPrepOpen] = useState(false);
+  const [invSheetOpen, setInvSheetOpen] = useState(false);
   const [menu, setMenu] = useState<{ open: boolean; x: number; y: number; orderId?: string }>(()=>({ open:false, x:0, y:0 }));
   const [guideOutlet, setGuideOutlet] = useState<Outlet | null>(null);
 
@@ -132,6 +137,7 @@ export default function ProductionSection(){
   useEffect(()=> writeLS(LS_INV_RAW, raw), [raw]);
   useEffect(()=> writeLS(LS_INV_FIN, fin), [fin]);
   useEffect(()=> writeLS(LS_INV_LOTS, lots), [lots]);
+  useEffect(()=> writeLS(LS_STORAGE_AREAS, storageAreas), [storageAreas]);
   useEffect(()=> writeLS(LS_SESSION_USER, currentUserId), [currentUserId]);
 
   useEffect(()=>{
@@ -297,6 +303,24 @@ export default function ProductionSection(){
   }
 
   function deleteTask(id: string){ setTasks(prev=> prev.filter(t=> t.id!==id)); }
+
+  function toggleTaskDone(id: string, checked: boolean){
+    setTasks(prev=>{
+      const t = prev.find(x=> x.id===id);
+      if(!t) return prev;
+      if(checked && !t.invAccounted){
+        if(t.pullFromFinished){ setFin(cur=> cur.map(f=>{ const used = t.pullFromFinished!.find(p=> p.finishedItemId===f.id)?.qty||0; return used? { ...f, onHand: Math.max(0, (f.onHand||0) - used) } : f; })); }
+        if(t.useRaw){ setRaw(cur=> cur.map(r=>{ const used = t.useRaw!.find(u=> u.rawItemId===r.id)?.qty||0; return used? { ...r, onHand: Math.max(0, (r.onHand||0) - used) } : r; })); }
+        if(t.recipeId && t.qty){ setFin(cur=>{ const idx = cur.findIndex(f=> f.recipeId===t.recipeId); if(idx>=0){ const c=[...cur]; c[idx]={...c[idx], onHand:(c[idx].onHand||0)+ (t.qty||0)}; return c; } return cur; }); }
+      }
+      if(!checked && t.invAccounted){
+        if(t.pullFromFinished){ setFin(cur=> cur.map(f=>{ const used = t.pullFromFinished!.find(p=> p.finishedItemId===f.id)?.qty||0; return used? { ...f, onHand: (f.onHand||0) + used } : f; })); }
+        if(t.useRaw){ setRaw(cur=> cur.map(r=>{ const used = t.useRaw!.find(u=> u.rawItemId===r.id)?.qty||0; return used? { ...r, onHand: (r.onHand||0) + used } : r; })); }
+        if(t.recipeId && t.qty){ setFin(cur=>{ const idx = cur.findIndex(f=> f.recipeId===t.recipeId); if(idx>=0){ const c=[...cur]; c[idx]={...c[idx], onHand: Math.max(0,(c[idx].onHand||0)- (t.qty||0))}; return c; } return cur; }); }
+      }
+      return prev.map(x=> x.id===id? { ...x, done: checked, invAccounted: checked? true : false } : x);
+    });
+  }
 
   type CommissaryOrderDTO = { outletId: string; dueISO: string; lines: { item: string; qty: number; unit: string; finishedItemId?: string; recipeId?: string }[]; notes?: string };
   (window as any).importCommissaryOrder = (dto: CommissaryOrderDTO) => {
@@ -508,7 +532,7 @@ export default function ProductionSection(){
                           <div className="flex items-center justify-between">
                             <div className="font-medium truncate">{t.title}</div>
                             <div className="flex items-center gap-2">
-                              <label className="text-xs flex items-center gap-1"><input type="checkbox" checked={!!t.done} onChange={(e)=> setTasks(prev=> prev.map(x=> x.id===t.id? {...x, done: e.target.checked }: x))}/> Done</label>
+                              <label className="text-xs flex items-center gap-1"><input type="checkbox" checked={!!t.done} onChange={(e)=> toggleTaskDone(t.id, e.target.checked)}/> Done</label>
                               <button className="text-xs text-red-600" onClick={()=>deleteTask(t.id)} title="Delete"><Trash className="w-4 h-4"/></button>
                             </div>
                           </div>
@@ -622,9 +646,16 @@ export default function ProductionSection(){
                   {fin.map(it=> (
                     <tr key={it.id} className="border-t">
                       <td>{it.name}</td>
+                      <td><input className="w-32 border rounded px-1" value={it.category||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, category: e.target.value }:x))}/></td>
                       <td><input className="w-20 border rounded px-1" value={it.onHand} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, onHand: Number(e.target.value||0)}:x))}/></td>
                       <td><input className="w-20 border rounded px-1" value={it.par} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, par: Number(e.target.value||0)}:x))}/></td>
                       <td>{it.unit}</td>
+                      <td>
+                        <select className="w-40 border rounded px-1 text-xs" value={it.storageAreaId||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, storageAreaId: e.target.value||undefined }:x))}>
+                          <option value="">—</option>
+                          {storageAreas.map(a=> <option key={a.id} value={a.id}>{a.name}</option>)}
+                        </select>
+                      </td>
                       <td><input className="w-56 border rounded px-1" value={it.location||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, location: e.target.value }:x))}/></td>
                       <td className="flex items-center gap-2">
                         <Button size="sm" variant="secondary" onClick={()=> openReceive('fin', it.id)}>Receive</Button>
@@ -652,9 +683,16 @@ export default function ProductionSection(){
                   {raw.map(it=> (
                     <tr key={it.id} className="border-t">
                       <td>{it.name}</td>
+                      <td><input className="w-32 border rounded px-1" value={it.category||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, category: e.target.value }:x))}/></td>
                       <td><input className="w-20 border rounded px-1" value={it.onHand} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, onHand: Number(e.target.value||0)}:x))}/></td>
                       <td><input className="w-20 border rounded px-1" value={it.par} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, par: Number(e.target.value||0)}:x))}/></td>
                       <td>{it.unit}</td>
+                      <td>
+                        <select className="w-40 border rounded px-1 text-xs" value={it.storageAreaId||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, storageAreaId: e.target.value||undefined }:x))}>
+                          <option value="">—</option>
+                          {storageAreas.map(a=> <option key={a.id} value={a.id}>{a.name}</option>)}
+                        </select>
+                      </td>
                       <td><input className="w-56 border rounded px-1" value={it.location||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, location: e.target.value }:x))}/></td>
                       <td className="flex items-center gap-2">
                         <Button size="sm" variant="secondary" onClick={()=> openReceive('raw', it.id)}>Receive</Button>
@@ -676,6 +714,21 @@ export default function ProductionSection(){
             </div>
           </div>
           <div className="mt-3 rounded-xl border p-3 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15">
+            <div className="flex items-center justify-between">
+              <div className="font-medium">Storage Areas</div>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={()=> setInvSheetOpen(true)}><Printer className="w-4 h-4 mr-1"/>Shelf sheet</Button>
+                <Button size="sm" onClick={()=>{ const name = prompt('New storage area name','Cold Room'); if(!name) return; setStorageAreas(prev=> [...prev, { id: uid(), name }]); }}>Add area</Button>
+              </div>
+            </div>
+            <ul className="text-sm mt-2">
+              {storageAreas.map(a=> (
+                <li key={a.id} className="flex items-center justify-between border-t py-1 gap-2">
+                  <input className="flex-1 border rounded px-1" value={a.name} onChange={(e)=> setStorageAreas(prev=> prev.map(x=> x.id===a.id? {...x, name:e.target.value }:x))}/>
+                  <button onClick={()=> setStorageAreas(prev=> prev.filter(x=> x.id!==a.id))}><Trash className="w-4 h-4"/></button>
+                </li>
+              ))}
+            </ul>
             <div className="font-medium mb-2">Recent Receipts</div>
             <div className="text-xs text-muted-foreground mb-2">Tracks who received, lot codes, expiry, and location.</div>
             <div className="grid md:grid-cols-2 gap-2">
@@ -783,6 +836,36 @@ export default function ProductionSection(){
               <div className="flex justify-end gap-2 pt-2"><Button variant="secondary" onClick={()=> setTaskDialogOpen(false)}>Cancel</Button><Button onClick={saveTask}>Save</Button></div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={invSheetOpen} onOpenChange={setInvSheetOpen}>
+        <DialogContent className="max-w-4xl print:max-w-none print:w-[1024px]">
+          <DialogHeader><DialogTitle>Shelf Sheet</DialogTitle></DialogHeader>
+          <style>{`@media print{ .no-print{ display:none } }`}</style>
+          <div className="space-y-4">
+            {storageAreas.map(area=> (
+              <div key={area.id} className="rounded border p-2">
+                <div className="font-medium mb-1">{area.name}</div>
+                <table className="w-full text-sm">
+                  <thead><tr className="text-left"><th>Type</th><th>Category</th><th>Name</th><th>On hand</th><th>Unit</th><th>Location</th><th>Par</th><th>Count</th></tr></thead>
+                  <tbody>
+                    {fin.filter(f=> f.storageAreaId===area.id).map(f=> (
+                      <tr key={`fin-${f.id}`} className="border-t">
+                        <td>Finished</td><td>{f.category||''}</td><td>{f.name}</td><td>{f.onHand}</td><td>{f.unit}</td><td>{f.location||''}</td><td>{f.par}</td><td></td>
+                      </tr>
+                    ))}
+                    {raw.filter(r=> r.storageAreaId===area.id).map(r=> (
+                      <tr key={`raw-${r.id}`} className="border-t">
+                        <td>Raw</td><td>{r.category||''}</td><td>{r.name}</td><td>{r.onHand}</td><td>{r.unit}</td><td>{r.location||''}</td><td>{r.par}</td><td></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ))}
+          </div>
+          <div className="no-print flex justify-end"><Button onClick={()=> window.print()}><Printer className="w-4 h-4 mr-1"/>Print</Button></div>
         </DialogContent>
       </Dialog>
 
