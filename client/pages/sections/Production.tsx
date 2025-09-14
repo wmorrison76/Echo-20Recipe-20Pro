@@ -506,10 +506,7 @@ export default function ProductionSection(){
           <div className="rounded-xl border p-3 space-y-3 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15">
             <div className="flex items-center justify-between">
               <div className="font-medium"><ClipboardList className="inline w-4 h-4 mr-1"/>Outlet & Banquets Orders</div>
-              <div className="flex items-center gap-2">
-                {!currentUser && <Button size="sm" variant="outline" onClick={()=> setSignOpen(true)}>Sign in</Button>}
-                <Button size="sm" onClick={()=> addOrderQuick({})}><Plus className="w-4 h-4 mr-1"/>Add order</Button>
-              </div>
+              <div className="flex items-center gap-2"></div>
             </div>
             <div className="grid md:grid-cols-2 gap-3">
               {orders.map(o=> {
