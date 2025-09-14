@@ -799,6 +799,13 @@ export default function ProductionSection(){
                     <Button size="sm" variant="outline" onClick={()=> setRawPage(p=> p+1)}>Next</Button>
                   </div>
                 </div>
+                {(()=>{ const q=rawQuery.trim().toLowerCase(); const filtered = q? raw.filter(it=> `${it.name} ${it.category||''} ${it.location||''} ${it.vendor||''} ${it.brand||''}`.toLowerCase().includes(q)) : raw; const pageItems = filtered.slice((rawPage-1)*pageSize, rawPage*pageSize); const total = filtered.reduce((s,it)=> s + ((it.onHand||0) * (it.unitCost||0)), 0); const pageTotal = pageItems.reduce((s,it)=> s + ((it.onHand||0) * (it.unitCost||0)), 0); return (
+                  <div className="text-xs text-muted-foreground flex flex-wrap gap-4 mb-1">
+                    <span>Total items: {filtered.length}</span>
+                    <span>Total value: {fmtCurrency(total)}</span>
+                    <span>Page value: {fmtCurrency(pageTotal)}</span>
+                  </div>
+                ); })()}
                 <table className="w-full text-sm block overflow-x-auto whitespace-nowrap">
                   <thead><tr className="text-left"><th>Item No</th><th>Item name</th><th>Category</th><th>Location</th><th>Vendor</th><th>Brand</th><th>Purchase date</th><th>Expiry date</th><th>On hand</th><th>Booked</th><th>Available</th><th>Reorder qty</th><th>Reordered?</th><th>Days before expiry</th><th>Unit</th><th>Unit cost</th><th>Ext. price</th><th>Area</th><th></th></tr></thead>
                   <tbody>
