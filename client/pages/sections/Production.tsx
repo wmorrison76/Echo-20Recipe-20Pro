@@ -83,8 +83,6 @@ export default function ProductionSection(){
   const [taskDraft, setTaskDraft] = useState<Task | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [prepOpen, setPrepOpen] = useState(false);
-  const [invSheetOpen, setInvSheetOpen] = useState(false);
-  const [areasOpen, setAreasOpen] = useState(false);
 
   function downloadCSV(filename: string, headers: string[], rows: (string|number|null|undefined)[][]){
     const esc=(v:any)=>{
