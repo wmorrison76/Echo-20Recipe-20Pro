@@ -83,6 +83,10 @@ export default function ProductionSection(){
   const [taskDraft, setTaskDraft] = useState<Task | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [prepOpen, setPrepOpen] = useState(false);
+  const [prepStart, setPrepStart] = useState<string>(()=> date);
+  const [prepEnd, setPrepEnd] = useState<string>(()=> date);
+  const [selectedOutletIds, setSelectedOutletIds] = useState<string[]>(()=> []);
+  const [enabledGroups, setEnabledGroups] = useState<Record<string, boolean>>({});
 
   const [menu, setMenu] = useState<{ open: boolean; x: number; y: number; orderId?: string }>(()=>({ open:false, x:0, y:0 }));
   const [guideOutlet, setGuideOutlet] = useState<Outlet | null>(null);
