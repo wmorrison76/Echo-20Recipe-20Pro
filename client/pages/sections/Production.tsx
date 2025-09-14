@@ -701,27 +701,6 @@ export default function ProductionSection(){
       </Dialog>
 
 
-      <Dialog open={areasOpen} onOpenChange={setAreasOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle>Manage Storage Areas</DialogTitle></DialogHeader>
-          <div className="space-y-2 text-sm">
-            <div className="flex gap-2">
-              <input className="flex-1 border rounded px-2 py-1" placeholder="New area name" id="new-area-name" />
-              <Button size="sm" onClick={()=>{ const el = document.getElementById('new-area-name') as HTMLInputElement | null; const name = el?.value?.trim(); if(!name) return; setStorageAreas(prev=> [...prev, { id: uid(), name }]); if(el){ el.value=''; el.focus(); } }}>Add</Button>
-            </div>
-            <div className="max-h-64 overflow-auto rounded border">
-              <ul>
-                {storageAreas.map(a=> (
-                  <li key={a.id} className="flex items-center gap-2 p-2 border-b last:border-b-0">
-                    <input className="flex-1 border rounded px-1" value={a.name} onChange={(e)=> setStorageAreas(prev=> prev.map(x=> x.id===a.id? {...x, name:e.target.value }:x))} />
-                    <button onClick={()=> setStorageAreas(prev=> prev.filter(x=> x.id!==a.id))}><Trash className="w-4 h-4"/></button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       <Dialog open={prepOpen} onOpenChange={setPrepOpen}>
         <DialogContent className="max-w-3xl print:max-w-none print:w-[960px]">
