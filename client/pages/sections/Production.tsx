@@ -7,6 +7,7 @@ import { Plus, Trash, Users, CalendarClock, ClipboardList, ChefHat, Printer } fr
 import { GlobalCalendar } from "@/components/panels/GlobalCalendar";
 import type { CalendarEvent } from "@/stores/beoStore";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import CornerBrand from "@/components/CornerBrand";
 
 function readLS<T>(key: string, fallback: T): T { try{ const raw = localStorage.getItem(key); return raw? JSON.parse(raw) as T : fallback; } catch { return fallback; } }
 function writeLS<T>(key: string, val: T){ try{ localStorage.setItem(key, JSON.stringify(val)); } catch {} }
