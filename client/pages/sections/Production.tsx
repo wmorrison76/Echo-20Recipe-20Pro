@@ -335,7 +335,9 @@ export default function ProductionSection(){
 
   function openQuick(){
     const today = date;
-    setQuickDraft({ outletId: outlets[0]?.id || '', date: today, time: '06:00', lines: [ { id: uid(), item: '', qty: 0, unit: 'pcs' } ] });
+    const first = outlets[0];
+    const lines = first?.guide?.length ? first.guide.filter(g=> g.item).map(g=> ({ id: uid(), item: g.item, qty: g.defaultQty||0, unit: g.unit||'pcs' })) : [ { id: uid(), item: '', qty: 0, unit: 'pcs' } ];
+    setQuickDraft({ outletId: first?.id || '', date: today, time: '06:00', lines });
     setQuickOpen(true);
   }
   function onQuickItemChange(idx:number, val:string){
@@ -746,12 +748,12 @@ export default function ProductionSection(){
       </Dialog>
 
       <Dialog open={quickOpen} onOpenChange={(v)=>{ setQuickOpen(v); if(!v){ setQuickDraft(null); } }}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader><DialogTitle>Quick order → plan</DialogTitle></DialogHeader>
+        <DialogContent className="max-w-3xl shadow-[0_0_28px_rgba(59,130,246,0.35)] dark:shadow-[0_0_32px_rgba(14,165,233,0.45)] hover:shadow-[0_0_44px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_52px_rgba(14,165,233,0.6)] transition-shadow">
+          <DialogHeader><DialogTitle>Add order</DialogTitle></DialogHeader>
           {quickDraft && (
             <div className="space-y-3 text-sm">
               <div className="grid md:grid-cols-3 gap-2">
-                <label className="block">Outlet<select className="w-full border rounded px-2 py-1" value={quickDraft.outletId} onChange={(e)=> setQuickDraft({ ...(quickDraft as any), outletId: e.target.value })}>{outlets.map(o=> <option key={o.id} value={o.id}>{o.name}</option>)}</select></label>
+                <label className="block">Outlet<select className="w-full border rounded px-2 py-1" value={quickDraft.outletId} onChange={(e)=>{ const id=e.target.value; const o = outlets.find(x=> x.id===id); const guideLines = o?.guide?.length? o!.guide!.filter(g=> g.item).map(g=> ({ id: uid(), item: g.item, qty: g.defaultQty||0, unit: g.unit||'pcs' })) : quickDraft.lines.length? quickDraft.lines : [ { id: uid(), item: '', qty: 0, unit: 'pcs' } ]; setQuickDraft({ ...(quickDraft as any), outletId: id, lines: guideLines }); }}>{outlets.map(o=> <option key={o.id} value={o.id}>{o.name}</option>)}</select></label>
                 <label className="block">Date<input type="date" className="w-full border rounded px-2 py-1" value={quickDraft.date} onChange={(e)=> setQuickDraft({ ...(quickDraft as any), date: e.target.value })}/></label>
                 <label className="block">Time<input type="time" className="w-full border rounded px-2 py-1" value={quickDraft.time} onChange={(e)=> setQuickDraft({ ...(quickDraft as any), time: e.target.value })}/></label>
               </div>
