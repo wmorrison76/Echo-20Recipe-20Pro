@@ -564,8 +564,7 @@ export default function ProductionSection(){
                     const info = laneInfo.get(t.id);
                     const lane = info?.lane ?? 0;
                     const total = info?.lanesTotal ?? 1;
-                    if((info?.lane??0) >= 3) return null;
-                    const visibleCols = Math.max(Math.min(total,3),1);
+                    const visibleCols = Math.max(total,1);
                     const maxWidth = `calc(${100/visibleCols}% - 6px)`;
                     const laneDisplay = Math.max(0, Math.min(visibleCols-1, lane + (t.laneBias||0)));
                     const leftPct = `${(100/visibleCols)*laneDisplay}%`;
