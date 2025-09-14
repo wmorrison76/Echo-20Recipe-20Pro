@@ -102,7 +102,6 @@ export default function ProductionSection(){
   const [confirmDelOpen, setConfirmDelOpen] = useState(false);
   const [pendingDeleteOrderId, setPendingDeleteOrderId] = useState<string | null>(null);
   const [deleteReason, setDeleteReason] = useState("");
-  const [deletePin, setDeletePin] = useState("");
   const [deleteError, setDeleteError] = useState("");
 
 
