@@ -680,21 +680,42 @@ export default function ProductionSection(){
 
 
 
-      <Dialog open={prepOpen} onOpenChange={setPrepOpen}>
-        <DialogContent className="max-w-3xl print:max-w-none print:w-[960px]">
-          <DialogHeader><DialogTitle>Prep Sheet — {date}</DialogTitle></DialogHeader>
+      <Dialog open={prepOpen} onOpenChange={(o)=>{ setPrepOpen(o); if(o){ if(selectedOutletIds.length===0) setSelectedOutletIds(outlets.map(x=> x.id)); setEnabledGroups(prev=>{ const all: Record<string, boolean> = {}; for(const k of Object.keys(prepGroupsModal)) all[k]= prev[k] ?? true; return all; }); } }}>
+        <DialogContent className="max-w-4xl shadow-[0_0_28px_rgba(59,130,246,0.35)] dark:shadow-[0_0_32px_rgba(14,165,233,0.45)] hover:shadow-[0_0_44px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_52px_rgba(14,165,233,0.6)] transition-shadow print:max-w-none print:w-[960px]">
+          <DialogHeader><DialogTitle>Prep Sheets</DialogTitle></DialogHeader>
           <style>{`@media print{ .no-print{ display:none } }`}</style>
-          <div className="space-y-3">
-            {Object.entries(prepGroups).map(([key, items])=> (
-              <div key={key} className="rounded border p-2">
-                <div className="font-medium mb-1">{key}</div>
+          <div className="no-print grid grid-cols-1 md:grid-cols-3 gap-2 mb-3">
+            <label className="text-sm">Start date<input type="date" className="w-full border rounded px-2 py-1" value={prepStart} onChange={(e)=> setPrepStart(e.target.value)} /></label>
+            <label className="text-sm">End date<input type="date" className="w-full border rounded px-2 py-1" value={prepEnd} onChange={(e)=> setPrepEnd(e.target.value)} /></label>
+            <div className="flex items-end justify-end gap-2"><Button onClick={()=> window.print()}><Printer className="w-4 h-4 mr-1"/>Print</Button></div>
+          </div>
+          <div className="space-y-3 relative">
+            {Object.entries(prepGroupsModal).map(([key, items])=> (enabledGroups[key]??true) && (
+              <div key={key} className="rounded border p-2 bg-background/60">
+                <div className="font-medium mb-1 flex items-center gap-3">
+                  <input type="checkbox" checked={enabledGroups[key]??true} onChange={(e)=> setEnabledGroups(prev=> ({...prev, [key]: e.target.checked}))} className="no-print" />
+                  <span>{key}</span>
+                </div>
                 <table className="w-full text-sm"><thead><tr className="text-left"><th>Time</th><th>Task</th><th>Assigned</th><th>Qty</th></tr></thead><tbody>
                   {items.map(t=> <tr key={t.id} className="border-t"><td>{t.start}–{t.end}</td><td>{t.title}</td><td>{t.staffId? staffById[t.staffId]?.name : rolesById[t.roleId||'']?.name || ''}</td><td>{t.qty? `${t.qty} ${t.unit||''}`:''}</td></tr>)}
                 </tbody></table>
               </div>
             ))}
+            <div className="absolute right-2 bottom-2 opacity-70 print:opacity-100">
+              <CornerBrand />
+            </div>
           </div>
-          <div className="no-print flex justify-end"><Button onClick={()=> window.print()}><Printer className="w-4 h-4 mr-1"/>Print</Button></div>
+          <div className="no-print mt-3 border-t pt-2">
+            <div className="text-sm font-medium mb-1">Outlets</div>
+            <div className="flex flex-wrap gap-3">
+              <label className="inline-flex items-center gap-1"><input type="checkbox" checked={selectedOutletIds.length===outlets.length} onChange={(e)=> setSelectedOutletIds(e.target.checked? outlets.map(o=>o.id): [])}/>Select all</label>
+              {outlets.map(o=> (
+                <label key={o.id} className="inline-flex items-center gap-1">
+                  <input type="checkbox" checked={selectedOutletIds.includes(o.id)} onChange={(e)=> setSelectedOutletIds(prev=> e.target.checked? [...prev, o.id]: prev.filter(x=> x!==o.id))} />{o.name}
+                </label>
+              ))}
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
