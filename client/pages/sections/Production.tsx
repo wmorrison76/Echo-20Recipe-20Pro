@@ -91,6 +91,11 @@ export default function ProductionSection(){
 
   const [menu, setMenu] = useState<{ open: boolean; x: number; y: number; orderId?: string }>(()=>({ open:false, x:0, y:0 }));
   const [guideOutlet, setGuideOutlet] = useState<Outlet | null>(null);
+  const [guideRecurring, setGuideRecurring] = useState(false);
+  const [guideDays, setGuideDays] = useState<number[]>([]); // 0=Sun..6=Sat
+  const [guideStart, setGuideStart] = useState<string>(()=> date);
+  const [guideTime, setGuideTime] = useState<string>('06:00');
+  const [guideUntil, setGuideUntil] = useState<string>(()=> date);
 
   const [orderDialogOpen, setOrderDialogOpen] = useState(false);
   const [orderEditingId, setOrderEditingId] = useState<string | null>(null);
@@ -765,7 +770,7 @@ export default function ProductionSection(){
       </Dialog>
 
       <Dialog open={quickOpen} onOpenChange={(v)=>{ setQuickOpen(v); if(!v){ setQuickDraft(null); } }}>
-        <DialogContent className="max-w-3xl shadow-[0_0_28px_rgba(59,130,246,0.35)] dark:shadow-[0_0_32px_rgba(14,165,233,0.45)] hover:shadow-[0_0_44px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_52px_rgba(14,165,233,0.6)] transition-shadow">
+        <DialogContent className="max-w-4xl shadow-[0_0_28px_rgba(59,130,246,0.35)] dark:shadow-[0_0_32px_rgba(14,165,233,0.45)] hover:shadow-[0_0_44px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_52px_rgba(14,165,233,0.6)] transition-shadow">
           <DialogHeader><DialogTitle>Add order</DialogTitle></DialogHeader>
           {quickDraft && (
             <div className="space-y-3 text-sm">
@@ -858,10 +863,25 @@ export default function ProductionSection(){
       </Dialog>
 
       <Dialog open={!!guideOutlet} onOpenChange={(v)=>{ if(!v) setGuideOutlet(null); }}>
-        <DialogContent className="max-w-xl">
+        <DialogContent className="max-w-3xl shadow-[0_0_28px_rgba(59,130,246,0.35)] dark:shadow-[0_0_32px_rgba(14,165,233,0.45)] hover:shadow-[0_0_44px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_52px_rgba(14,165,233,0.6)] transition-shadow">
           <DialogHeader><DialogTitle>Order Guide — {guideOutlet?.name}</DialogTitle></DialogHeader>
           {guideOutlet && (
             <div className="space-y-3 text-sm">
+              <div className="grid md:grid-cols-4 gap-2">
+                <label className="block">Start<input type="date" className="w-full border rounded px-2 py-1" value={guideStart} onChange={(e)=> setGuideStart(e.target.value)} /></label>
+                <label className="block">Time<input type="time" className="w-full border rounded px-2 py-1" value={guideTime} onChange={(e)=> setGuideTime(e.target.value)} /></label>
+                <label className="block">Until<input type="date" className="w-full border rounded px-2 py-1" value={guideUntil} onChange={(e)=> setGuideUntil(e.target.value)} /></label>
+                <div className="flex items-end">
+                  <label className="inline-flex items-center gap-2"><input type="checkbox" checked={guideRecurring} onChange={(e)=> setGuideRecurring(e.target.checked)} />Recurring</label>
+                </div>
+              </div>
+              {guideRecurring && (
+                <div className="-mt-2 mb-1 flex flex-wrap gap-3 items-center">
+                  {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((d,i)=> (
+                    <label key={d} className="inline-flex items-center gap-1"><input type="checkbox" checked={guideDays.includes(i)} onChange={(e)=> setGuideDays(prev=> e.target.checked? [...prev, i]: prev.filter(x=> x!==i))} />{d}</label>
+                  ))}
+                </div>
+              )}
               <table className="w-full text-sm">
                 <thead><tr className="text-left"><th>Item</th><th>Default Qty</th><th>Unit</th><th></th></tr></thead>
                 <tbody>
@@ -890,9 +910,23 @@ export default function ProductionSection(){
                 <Button onClick={()=>{
                   const outlet = guideOutlet;
                   if(!outlet) return;
-                  const lines = (outlet.guide||[]).filter(g=> g.item).map(g=> ({ id: uid(), item: g.item, qty: g.defaultQty, unit: g.unit }));
-                  if(!lines.length) return;
-                  addOrderQuick({ outletId: outlet.id, lines });
+                  const base = (outlet.guide||[]).filter(g=> g.item && (g.defaultQty||0)>0).map(g=> ({ id: uid(), item: g.item, qty: g.defaultQty||0, unit: g.unit||'pcs' }));
+                  if(!base.length) return;
+                  if(!guideRecurring){
+                    const dueISO = new Date(`${guideStart}T${guideTime||'06:00'}:00`).toISOString();
+                    addOrderQuick({ outletId: outlet.id, dueISO, lines: base });
+                  } else {
+                    const start = new Date(`${guideStart}T00:00:00`);
+                    const until = new Date(`${guideUntil}T23:59:59`);
+                    for(let d = new Date(start); d <= until; d.setDate(d.getDate()+1)){
+                      const dow = d.getDay();
+                      if(guideDays.length && !guideDays.includes(dow)) continue;
+                      const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
+                      const dateStr = `${y}-${m}-${day}`;
+                      const dueISO = new Date(`${dateStr}T${guideTime||'06:00'}:00`).toISOString();
+                      addOrderQuick({ outletId: outlet.id, dueISO, lines: base.map(x=> ({...x, id: uid()})) });
+                    }
+                  }
                   setGuideOutlet(null);
                 }}>Create order from guide</Button>
               </div>
