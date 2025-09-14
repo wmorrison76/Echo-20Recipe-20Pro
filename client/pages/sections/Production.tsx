@@ -19,7 +19,6 @@ const LS_LOGS = "production.logs.v1";
 const LS_TASKS = "production.tasks.v1";
 const LS_INV_RAW = "production.inventory.raw.v1";
 const LS_INV_FIN = "production.inventory.finished.v1";
-const LS_INV_LOTS = "production.inventory.lots.v1";
 const LS_SESSION_USER = "production.session.user.v1";
 const LS_STORAGE_AREAS = "production.storage.areas.v1";
 
@@ -753,7 +752,7 @@ export default function ProductionSection(){
               {outlets.map(o=> (
                 <li key={o.id} className="flex items-center justify-between border-t py-1 gap-2">
                   <span className="flex-1">{o.name} • {o.type}</span>
-                  <span className="text-xs text-muted-foreground">Cutoff {o.orderCutoff||'���'} | Hours {o.open||'—'}–{o.close||'—'}</span>
+                  <span className="text-xs text-muted-foreground">Cutoff {o.orderCutoff||'—'} | Hours {o.open||'—'}–{o.close||'—'}</span>
                   <div className="flex items-center gap-2">
                     <Button size="sm" variant="secondary" onClick={()=> setGuideOutlet(o)}>Guide</Button>
                     <Button size="sm" variant="secondary" onClick={()=>{
