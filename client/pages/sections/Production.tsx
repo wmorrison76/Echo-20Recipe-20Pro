@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAppData } from "@/context/AppDataContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, Trash, Users, CalendarClock, ClipboardList, ChefHat, Printer } from "lucide-react";
+import { Plus, Trash, Users, CalendarClock, ClipboardList, ChefHat, Printer, Check, RotateCcw } from "lucide-react";
 import { GlobalCalendar } from "@/components/panels/GlobalCalendar";
 import type { CalendarEvent } from "@/stores/beoStore";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -119,7 +119,7 @@ export default function ProductionSection(){
 
 
   const calRef = useRef<HTMLDivElement | null>(null);
-  const dragRef = useRef<{ id: string; type: 'move'|'resize'; startY: number; startMin: number; endMin: number } | null>(null);
+  const dragRef = useRef<{ id: string; type: 'move'|'resize'; startY: number; startX: number; startMin: number; endMin: number } | null>(null);
 
   useEffect(()=> writeLS(LS_ROLES, roles), [roles]);
   useEffect(()=> writeLS(LS_STAFF, staff), [staff]);
@@ -406,8 +406,42 @@ export default function ProductionSection(){
     window.addEventListener('pointermove', onDrag as any, { passive:false } as any);
     window.addEventListener('pointerup', endDrag as any, { once:true } as any);
   }
-  function onDrag(e: PointerEvent){ const s = dragRef.current as any; if(!s) return; const dy = e.clientY - s.startY; const dx = e.clientX - s.startX; const dminY = Math.round(dy/pxPerMin/15)*15; const dminX = Math.round(dx/pxPerMinX/15)*15; setTasks(prev=> prev.map(x=>{ if(x.id!==s.id) return x; let start = s.startMin, end = s.endMin; if(s.type==='move'){ start+=dminY + dminX; end+=dminY + dminX; } else { end = Math.max(start+15, s.endMin + dminY); } start=Math.max(0,start); end=Math.min(24*60, end); return { ...x, start:minToHHMM(start), end:minToHHMM(end) }; })); }
-  function endDrag(){ window.removeEventListener('pointermove', onDrag as any); dragRef.current=null; }
+  function onDrag(e: PointerEvent){
+    const s = dragRef.current as any; if(!s) return;
+    const dy = e.clientY - s.startY;
+    const dminY = Math.round(dy/pxPerMin/15)*15;
+    setTasks(prev=> prev.map(x=>{
+      if(x.id!==s.id) return x;
+      let start = s.startMin, end = s.endMin;
+      if(s.type==='move'){
+        start += dminY;
+        end += dminY;
+      } else {
+        end = Math.max(start+15, s.endMin + dminY);
+      }
+      start = Math.max(0,start);
+      end = Math.min(24*60, end);
+      const next = { ...x, start:minToHHMM(start), end:minToHHMM(end) } as Task;
+      if(!x.timePending){
+        next.timePending = true;
+        next.pendingOriginalDateISO = x.dateISO;
+        next.pendingOriginalStart = minToHHMM(s.startMin);
+        next.pendingOriginalEnd = minToHHMM(s.endMin);
+      }
+      return next;
+    }));
+  }
+  function endDrag(e: PointerEvent){
+    window.removeEventListener('pointermove', onDrag as any);
+    const s = dragRef.current as any;
+    if(s){
+      const dx = e.clientX - s.startX;
+      const step = Math.max(1, Math.round((timelineWidth||1)/3));
+      const dLane = Math.round(dx/step);
+      if(dLane!==0){ setTasks(prev=> prev.map(x=> x.id===s.id? { ...x, laneBias: Math.max(-9, Math.min(9, (x.laneBias||0)+dLane)) } : x)); }
+    }
+    dragRef.current=null;
+  }
   useEffect(()=>()=>{ window.removeEventListener('pointermove', onDrag as any); },[]);
 
   // Orders map and line counts
@@ -420,23 +454,20 @@ export default function ProductionSection(){
     const groups: { id:number; items: { t:Task; s:number; e:number }[] }[] = [];
     let gid = 0; let active: { s:number; e:number }[] = [];
     for(const it of arr){
-      // start new group if no active overlaps
       active = active.filter(a=> a.e > it.s);
       if(active.length===0){ groups.push({ id: gid++, items: [] }); }
       groups[groups.length-1].items.push(it);
       active.push({ s: it.s, e: it.e });
     }
-    // assign lanes per group
     const laneMap = new Map<string, { lane:number; lanesTotal:number; groupId:number }>();
     for(const g of groups){
       const laneEnds:number[] = [];
-      const items = [...g.items].sort((a,b)=> a.s - b.s || a.e - b.e);
+      const items = [...g.items].sort((a,b)=> a.s - b.s || ((a.t.laneBias||0) - (b.t.laneBias||0)) || a.e - b.e);
       for(const {t,s,e} of items){
         let lane = laneEnds.findIndex(end=> end <= s);
         if(lane===-1){ lane = laneEnds.length; laneEnds.push(e); } else { laneEnds[lane]=e; }
         laneMap.set(t.id, { lane, lanesTotal: laneEnds.length, groupId: g.id });
       }
-      // update lanesTotal to final
       for(const {t} of items){ const info = laneMap.get(t.id); if(info) info.lanesTotal = laneEnds.length; }
     }
     return { groups, laneMap } as const;
@@ -447,6 +478,13 @@ export default function ProductionSection(){
   const trashCount = ordersTrash.length;
   const trashColor = trashCount===0? '#94a3b8' : '#ef4444';
   const [overflowGroupId, setOverflowGroupId] = useState<number|null>(null);
+
+  function confirmTimeChange(id: string){
+    setTasks(prev=> prev.map(t=> t.id===id? { ...t, timePending:false, pendingOriginalDateISO: undefined, pendingOriginalStart: undefined, pendingOriginalEnd: undefined } : t));
+  }
+  function revertTimeChange(id: string){
+    setTasks(prev=> prev.map(t=> t.id===id? { ...t, dateISO: t.pendingOriginalDateISO||t.dateISO, start: t.pendingOriginalStart||t.start, end: t.pendingOriginalEnd||t.end, timePending:false, pendingOriginalDateISO: undefined, pendingOriginalStart: undefined, pendingOriginalEnd: undefined } : t));
+  }
 
   function openDeleteOrderFlow(orderId: string){
     setPendingDeleteOrderId(orderId);
@@ -524,18 +562,26 @@ export default function ProductionSection(){
                     const info = laneInfo.get(t.id);
                     const lane = info?.lane ?? 0;
                     const total = info?.lanesTotal ?? 1;
-                    if((info?.lane??0) >= 3) return null; // show only up to 3, overflow arrow will appear
-                    const maxWidth = `calc(${100/Math.max(Math.min(total,3),1)}% - 6px)`;
-                    const leftPct = `${(100/Math.max(Math.min(total,3),1))*lane}%`;
+                    if((info?.lane??0) >= 3) return null;
+                    const visibleCols = Math.max(Math.min(total,3),1);
+                    const maxWidth = `calc(${100/visibleCols}% - 6px)`;
+                    const laneDisplay = Math.max(0, Math.min(visibleCols-1, lane + (t.laneBias||0)));
+                    const leftPct = `${(100/visibleCols)*laneDisplay}%`;
                     return (
                       <div key={t.id} className="absolute" style={{ top, height:h, left:leftPct, maxWidth, paddingRight:6 }}>
-                        <div className="rounded-lg border shadow p-2 text-sm select-none cursor-move w-max max-w-full pointer-events-auto" style={{ background: `linear-gradient(180deg, ${bg}22, transparent)`, touchAction:'none' as any }} onPointerDown={(e)=> startDrag(e, t, 'move')} onDoubleClick={()=>{ if(t.orderId && ordersById[t.orderId]) openOrderDialog(ordersById[t.orderId]!); else openTaskDialog(t); }}>
+                        <div className="rounded-lg border shadow p-2 text-sm select-none cursor-move w-max max-w-full pointer-events-auto relative" style={{ background: `linear-gradient(180deg, ${bg}22, transparent)`, touchAction:'none' as any }} onPointerDown={(e)=> startDrag(e, t, 'move')} onDoubleClick={()=>{ if(t.orderId && ordersById[t.orderId]) openOrderDialog(ordersById[t.orderId]!); else openTaskDialog(t); }}>
                           <div className="flex items-center justify-between">
                             <div className="font-medium truncate flex items-center gap-1">
                               <span className="truncate">{t.title}</span>
-                              {t.orderId && (orderLinesCount[t.orderId]||0)>1 && <span className="ml-1 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white rounded-full" style={{ background:'#ef4444', boxShadow:'0 0 10px rgba(239,68,68,0.7)'}} title="Multiple items">→</span>}
+                              {t.orderId && (orderLinesCount[t.orderId]||0)>=3 && <span className="ml-1 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white rounded-full" style={{ background:'#ef4444', boxShadow:'0 0 10px rgba(239,68,68,0.7)'}} title="Multiple items">→</span>}
                             </div>
                             <div className="flex items-center gap-2">
+                              {t.timePending && (
+                                <>
+                                  <button className="text-xs text-green-600" onClick={(ev)=>{ ev.stopPropagation(); confirmTimeChange(t.id); }} title="Save new time"><Check className="w-4 h-4"/></button>
+                                  <button className="text-xs" onClick={(ev)=>{ ev.stopPropagation(); revertTimeChange(t.id); }} title="Revert to original time"><RotateCcw className="w-4 h-4"/></button>
+                                </>
+                              )}
                               <label className="text-xs flex items-center gap-1"><input type="checkbox" checked={!!t.done} onChange={(e)=> toggleTaskDone(t.id, e.target.checked)}/> Done</label>
                               <button className="text-xs text-red-600" onClick={()=>deleteTask(t.id)} title="Delete"><Trash className="w-4 h-4"/></button>
                             </div>
@@ -861,6 +907,19 @@ export default function ProductionSection(){
           <DialogHeader><DialogTitle>Edit Order</DialogTitle></DialogHeader>
           {orderDraft && (
             <div className="space-y-3 text-sm">
+              {(()=>{ const affected = tasks.filter(tt=> tt.orderId===orderDraft.id && tt.timePending); return affected.length? (
+                <div className="rounded-md border p-2 bg-amber-50 text-amber-800">
+                  <div className="font-medium text-xs mb-1">Pending time adjustments</div>
+                  <ul className="text-xs space-y-1">
+                    {affected.map(tt=> (
+                      <li key={tt.id} className="flex items-center justify-between gap-2">
+                        <span>{tt.title} — Time adjusted: {tt.pendingOriginalStart}–{tt.pendingOriginalEnd} on {tt.pendingOriginalDateISO}</span>
+                        <button className="underline" onClick={()=> revertTimeChange(tt.id)}>Revert</button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null; })()}
               <div className="grid md:grid-cols-3 gap-2">
                 <label className="block">Outlet<select className="w-full border rounded px-2 py-1" value={orderDraft.outletId} onChange={(e)=> setOrderDraft({ ...(orderDraft as any), outletId: e.target.value })}>{outlets.map(o=> <option key={o.id} value={o.id}>{o.name}</option>)}</select></label>
                 <label className="block">Date<input type="date" className="w-full border rounded px-2 py-1" value={orderDraft.date} onChange={(e)=> setOrderDraft({ ...(orderDraft as any), date: e.target.value })}/></label>
