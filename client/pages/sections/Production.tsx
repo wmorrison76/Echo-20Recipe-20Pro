@@ -20,7 +20,6 @@ const LS_TASKS = "production.tasks.v1";
 const LS_INV_RAW = "production.inventory.raw.v1";
 const LS_INV_FIN = "production.inventory.finished.v1";
 const LS_SESSION_USER = "production.session.user.v1";
-const LS_STORAGE_AREAS = "production.storage.areas.v1";
 
 function uid(){ return Math.random().toString(36).slice(2) + Date.now().toString(36); }
 
