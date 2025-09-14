@@ -391,36 +391,20 @@ export default function ProductionSection(){
   const trashCount = ordersTrash.length;
   const trashColor = trashCount===0? '#94a3b8' : '#ef4444';
 
-  // Auth helpers
-  async function verifyPinForStaff(staffId: string, pin: string){
-    const s = staffById[staffId];
-    if(!s?.pinHash) return false;
-    const hash = await sha256Hex(pin);
-    return hash === s.pinHash;
-  }
-
   function openDeleteOrderFlow(orderId: string){
     setPendingDeleteOrderId(orderId);
     setDeleteReason("");
-    setDeletePin("");
     setDeleteError("");
-    if(!currentUser){
-      setSignOpen(true);
-    } else {
-      setConfirmDelOpen(true);
-    }
+    setConfirmDelOpen(true);
   }
 
   async function performDeleteOrder(){
     if(!pendingDeleteOrderId) return;
-    if(!currentUser){ setDeleteError("Please sign in."); return; }
-    const ok = await verifyPinForStaff(currentUser.id, deletePin);
-    if(!ok){ setDeleteError("Invalid PIN"); return; }
     const o = orders.find(x=> x.id===pendingDeleteOrderId);
     if(!o){ setConfirmDelOpen(false); setPendingDeleteOrderId(null); return; }
     setOrders(prev=> prev.filter(x=> x.id!==o.id));
-    setOrdersTrash(prev=> [{ ...o, deletedAt: Date.now(), deletedById: currentUser.id, deletedByName: currentUser.name, deleteReason: deleteReason.trim() }, ...prev]);
-    setLogs(prev=> [{ id: uid(), ts: Date.now(), kind:'order', message:`Order ${o.id} deleted${deleteReason? ` — ${deleteReason}`:''}`, actorId: currentUser.id, actorName: currentUser.name }, ...prev]);
+    setOrdersTrash(prev=> [{ ...o, deletedAt: Date.now(), deleteReason: deleteReason.trim() }, ...prev]);
+    setLogs(prev=> [{ id: uid(), ts: Date.now(), kind:'order', message:`Order ${o.id} deleted${deleteReason? ` — ${deleteReason}`:''}` }, ...prev]);
     setConfirmDelOpen(false);
     setPendingDeleteOrderId(null);
   }
