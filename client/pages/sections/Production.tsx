@@ -98,6 +98,9 @@ export default function ProductionSection(){
 
   const [quickOpen, setQuickOpen] = useState(false);
   const [quickDraft, setQuickDraft] = useState<{ outletId:string; date:string; time:string; lines: { id:string; item:string; qty:number; unit:string; finishedItemId?:string }[] } | null>(null);
+  const [quickRecurring, setQuickRecurring] = useState(false);
+  const [quickDays, setQuickDays] = useState<number[]>([]); // 0=Sun..6=Sat
+  const [quickUntil, setQuickUntil] = useState<string>(()=> date);
 
   const [multiAssignOpen, setMultiAssignOpen] = useState(false);
   const [multiAssignOrderId, setMultiAssignOrderId] = useState<string | null>(null);
