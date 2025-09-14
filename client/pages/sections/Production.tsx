@@ -736,7 +736,7 @@ export default function ProductionSection(){
                   </div>
                 </div>
                 <table className="w-full text-sm block overflow-x-auto whitespace-nowrap">
-                  <thead><tr className="text-left"><th>Item No</th><th>Item name</th><th>Category</th><th>Location</th><th>Vendor</th><th>Brand</th><th>Purchase date</th><th>Expiry date</th><th>Quantity</th><th>Reorder qty</th><th>Reordered?</th><th>Days before expiry</th><th>Unit</th><th>Cost</th><th>Area</th><th></th></tr></thead>
+                  <thead><tr className="text-left"><th>Item No</th><th>Item name</th><th>Category</th><th>Location</th><th>Vendor</th><th>Brand</th><th>Purchase date</th><th>Expiry date</th><th>On hand</th><th>Booked</th><th>Available</th><th>Reorder qty</th><th>Reordered?</th><th>Days before expiry</th><th>Unit</th><th>Unit cost</th><th>Ext. price</th><th>Area</th><th></th></tr></thead>
                   <tbody>
                     {(()=>{ const q=finQuery.trim().toLowerCase(); const filtered = q? fin.filter(it=> `${it.name} ${it.category||''} ${it.location||''} ${it.vendor||''} ${it.brand||''}`.toLowerCase().includes(q)) : fin; const pageItems = filtered.slice((finPage-1)*pageSize, finPage*pageSize); return pageItems; })().map(it=> { const { latestPurchase, nextExpiry, daysLeft } = lotStats('fin', it.id); const booked = bookedFinishedForDate[it.id]||0; const avail = (it.onHand||0)-booked; return (
                       <tr key={it.id} className={`border-t ${expiryBg(daysLeft)}`}>
@@ -790,7 +790,7 @@ export default function ProductionSection(){
                   </div>
                 </div>
                 <table className="w-full text-sm block overflow-x-auto whitespace-nowrap">
-                  <thead><tr className="text-left"><th>Item No</th><th>Item name</th><th>Category</th><th>Location</th><th>Vendor</th><th>Brand</th><th>Purchase date</th><th>Expiry date</th><th>Quantity</th><th>Reorder qty</th><th>Reordered?</th><th>Days before expiry</th><th>Unit</th><th>Cost</th><th>Area</th><th></th></tr></thead>
+                  <thead><tr className="text-left"><th>Item No</th><th>Item name</th><th>Category</th><th>Location</th><th>Vendor</th><th>Brand</th><th>Purchase date</th><th>Expiry date</th><th>On hand</th><th>Booked</th><th>Available</th><th>Reorder qty</th><th>Reordered?</th><th>Days before expiry</th><th>Unit</th><th>Unit cost</th><th>Ext. price</th><th>Area</th><th></th></tr></thead>
                   <tbody>
                     {(()=>{ const q=rawQuery.trim().toLowerCase(); const filtered = q? raw.filter(it=> `${it.name} ${it.category||''} ${it.location||''} ${it.vendor||''} ${it.brand||''}`.toLowerCase().includes(q)) : raw; const pageItems = filtered.slice((rawPage-1)*pageSize, rawPage*pageSize); return pageItems; })().map(it=> { const { latestPurchase, nextExpiry, daysLeft } = lotStats('raw', it.id); const booked = bookedRawForDate[it.id]||0; const avail = (it.onHand||0)-booked; return (
                       <tr key={it.id} className={`border-t ${expiryBg(daysLeft)}`}>
