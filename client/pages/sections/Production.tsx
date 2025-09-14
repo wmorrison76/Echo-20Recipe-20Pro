@@ -84,46 +84,6 @@ export default function ProductionSection(){
   const [editingId, setEditingId] = useState<string | null>(null);
   const [prepOpen, setPrepOpen] = useState(false);
 
-  function downloadCSV(filename: string, headers: string[], rows: (string|number|null|undefined)[][]){
-    const esc=(v:any)=>{
-      if(v===null||v===undefined) return '';
-      const s=String(v);
-      return /[",\n]/.test(s)? '"'+s.replace(/"/g,'""')+'"' : s;
-    };
-    const text = [headers.join(','), ...rows.map(r=> r.map(esc).join(','))].join('\n');
-    const blob = new Blob([text], { type:'text/csv;charset=utf-8;' });
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click();
-  }
-  function exportCountsCSV(){
-    const headers = ['date','outlet_id','location_code','item_id','count_qty','count_uom','note'];
-    const areaById = Object.fromEntries(storageAreas.map(a=> [a.id, a.name]));
-    const today = date;
-    const outletId = outlets[0]?.id || '';
-    const finRows = fin.map(it=> [today, outletId, it.storageAreaId? areaById[it.storageAreaId]: (it.location||''), it.id, it.onHand||0, it.unit||'', '']);
-    const rawRows = raw.map(it=> [today, outletId, it.storageAreaId? areaById[it.storageAreaId]: (it.location||''), it.id, it.onHand||0, it.unit||'', '']);
-    downloadCSV('counts.csv', headers, [...finRows, ...rawRows]);
-  }
-  function exportSuggestedOrdersCSV(){
-    const headers = ['vendor_id','item_id','suggested_pack_qty','pack_uom','reason','deliver_by'];
-    const deliverBy = date;
-    const rows:(string|number)[][] = [];
-    for(const it of raw){
-      const short = Math.max(0, (it.par||0) - (it.onHand||0));
-      if(short>0){ rows.push(['', it.id, 1, it.unit||'', 'PAR', deliverBy]); }
-    }
-    for(const it of fin){
-      const short = Math.max(0, (it.par||0) - (it.onHand||0));
-      if(short>0){ rows.push(['', it.id, 1, it.unit||'', 'PAR', deliverBy]); }
-    }
-    downloadCSV('suggested_orders.csv', headers, rows);
-  }
-  function exportProductionReqCSV(){
-    const headers = ['date','prepped_id','required_output_qty','output_uom','reason','source_ref'];
-    const rows:(string|number)[][] = [];
-    const dTasks = tasks.filter(t=> t.dateISO===date && t.recipeId && t.qty);
-    for(const t of dTasks){ rows.push([date, t.recipeId||'', t.qty||0, t.unit||'', 'PLAN', t.id]); }
-    downloadCSV('production_requirements.csv', headers, rows);
-  }
   const [menu, setMenu] = useState<{ open: boolean; x: number; y: number; orderId?: string }>(()=>({ open:false, x:0, y:0 }));
   const [guideOutlet, setGuideOutlet] = useState<Outlet | null>(null);
 
