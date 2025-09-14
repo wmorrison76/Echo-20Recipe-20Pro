@@ -700,35 +700,6 @@ export default function ProductionSection(){
         </DialogContent>
       </Dialog>
 
-      <Dialog open={invSheetOpen} onOpenChange={setInvSheetOpen}>
-        <DialogContent className="max-w-4xl print:max-w-none print:w-[1024px]">
-          <DialogHeader><DialogTitle>Shelf Sheet</DialogTitle></DialogHeader>
-          <style>{`@media print{ .no-print{ display:none } }`}</style>
-          <div className="space-y-4">
-            {storageAreas.map(area=> (
-              <div key={area.id} className="rounded border p-2">
-                <div className="font-medium mb-1">{area.name}</div>
-                <table className="w-full text-sm">
-                  <thead><tr className="text-left"><th>Type</th><th>Category</th><th>Name</th><th>On hand</th><th>Unit</th><th>Location</th><th>Par</th><th>Count</th></tr></thead>
-                  <tbody>
-                    {fin.filter(f=> f.storageAreaId===area.id).map(f=> (
-                      <tr key={`fin-${f.id}`} className="border-t">
-                        <td>Finished</td><td>{f.category||''}</td><td>{f.name}</td><td>{f.onHand}</td><td>{f.unit}</td><td>{f.location||''}</td><td>{f.par}</td><td></td>
-                      </tr>
-                    ))}
-                    {raw.filter(r=> r.storageAreaId===area.id).map(r=> (
-                      <tr key={`raw-${r.id}`} className="border-t">
-                        <td>Raw</td><td>{r.category||''}</td><td>{r.name}</td><td>{r.onHand}</td><td>{r.unit}</td><td>{r.location||''}</td><td>{r.par}</td><td></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ))}
-          </div>
-          <div className="no-print flex justify-end"><Button onClick={()=> window.print()}><Printer className="w-4 h-4 mr-1"/>Print</Button></div>
-        </DialogContent>
-      </Dialog>
 
       <Dialog open={areasOpen} onOpenChange={setAreasOpen}>
         <DialogContent className="max-w-md">
