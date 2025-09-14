@@ -748,7 +748,9 @@ export default function ProductionSection(){
                         <td><input className="w-32 border rounded px-1" value={it.brand||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, brand: e.target.value }:x))}/></td>
                         <td>{latestPurchase? latestPurchase.toLocaleDateString(): ''}</td>
                         <td>{nextExpiry? nextExpiry.toLocaleDateString(): ''}</td>
-                        <td title={`Booked ${booked}`}>{avail}</td>
+                        <td>{it.onHand}</td>
+                        <td>{booked}</td>
+                        <td className="font-medium" title={`On hand ${it.onHand}`}>{avail}</td>
                         <td><input className="w-20 border rounded px-1" value={it.par} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, par: Number(e.target.value||0)}:x))}/></td>
                         <td><input type="checkbox" checked={!!it.reordered} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, reordered: e.target.checked }:x))}/></td>
                         <td className={daysLeft!==undefined && daysLeft<=3? 'text-red-600 font-medium':''}>{daysLeft?? ''}</td>
@@ -802,7 +804,9 @@ export default function ProductionSection(){
                         <td><input className="w-32 border rounded px-1" value={it.brand||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, brand: e.target.value }:x))}/></td>
                         <td>{latestPurchase? latestPurchase.toLocaleDateString(): ''}</td>
                         <td>{nextExpiry? nextExpiry.toLocaleDateString(): ''}</td>
-                        <td title={`Booked ${booked}`}>{avail}</td>
+                        <td>{it.onHand}</td>
+                        <td>{booked}</td>
+                        <td className="font-medium" title={`On hand ${it.onHand}`}>{avail}</td>
                         <td><input className="w-20 border rounded px-1" value={it.par} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, par: Number(e.target.value||0)}:x))}/></td>
                         <td><input type="checkbox" checked={!!it.reordered} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, reordered: e.target.checked }:x))}/></td>
                         <td className={daysLeft!==undefined && daysLeft<=3? 'text-red-600 font-medium':''}>{daysLeft?? ''}</td>
