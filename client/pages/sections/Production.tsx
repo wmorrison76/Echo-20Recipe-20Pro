@@ -341,6 +341,7 @@ export default function ProductionSection(){
     const first = outlets[0];
     const lines = first?.guide?.length ? first.guide.filter(g=> g.item).map(g=> ({ id: uid(), item: g.item, qty: g.defaultQty||0, unit: g.unit||'pcs' })) : [ { id: uid(), item: '', qty: 0, unit: 'pcs' } ];
     setQuickDraft({ outletId: first?.id || '', date: today, time: '06:00', lines });
+    setQuickRecurring(false); setQuickDays([]); setQuickUntil(today);
     setQuickOpen(true);
   }
   function onQuickItemChange(idx:number, val:string){
