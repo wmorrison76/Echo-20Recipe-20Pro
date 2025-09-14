@@ -859,7 +859,7 @@ export default function ProductionSection(){
       </Dialog>
 
 
-      <Dialog open={confirmDelOpen} onOpenChange={(v)=>{ setConfirmDelOpen(v); if(!v){ setPendingDeleteOrderId(null); setDeleteReason(""); setDeletePin(""); setDeleteError(""); } }}>
+      <Dialog open={confirmDelOpen} onOpenChange={(v)=>{ setConfirmDelOpen(v); if(!v){ setPendingDeleteOrderId(null); setDeleteReason(""); setDeleteError(""); } }}>
         <DialogContent className="max-w-md">
           <DialogHeader><DialogTitle>Confirm delete order</DialogTitle></DialogHeader>
           <div className="space-y-2 text-sm">
@@ -867,7 +867,6 @@ export default function ProductionSection(){
               <div className="text-xs text-muted-foreground">{outletsById[o.outletId]?.name} • {new Date(o.dueISO).toLocaleString()}</div>
             ); })()}
             <label className="block">Reason<input className="w-full border rounded px-2 py-1" value={deleteReason} onChange={(e)=> setDeleteReason(e.target.value)} placeholder="Optional"/></label>
-            <label className="block">Re-enter your PIN<input type="password" className="w-full border rounded px-2 py-1" value={deletePin} onChange={(e)=> setDeletePin(e.target.value)} placeholder="4–8 digits"/></label>
             {deleteError && <div className="text-xs text-red-600">{deleteError}</div>}
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="secondary" onClick={()=> setConfirmDelOpen(false)}>Cancel</Button>
