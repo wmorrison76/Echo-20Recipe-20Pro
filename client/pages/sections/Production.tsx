@@ -858,30 +858,6 @@ export default function ProductionSection(){
         </DialogContent>
       </Dialog>
 
-      <Dialog open={signOpen} onOpenChange={(v)=>{ setSignOpen(v); if(!v && pendingDeleteOrderId && currentUser){ setConfirmDelOpen(true); } }}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader><DialogTitle>Sign in</DialogTitle></DialogHeader>
-          <div className="space-y-2 text-sm">
-            <label className="block">Staff<select className="w-full border rounded px-2 py-1" value={signStaffId} onChange={(e)=> setSignStaffId(e.target.value)}><option value="">Select staff</option>{staff.map(s=> <option key={s.id} value={s.id}>{s.name}</option>)}</select></label>
-            <label className="block">PIN<input type="password" className="w-full border rounded px-2 py-1" value={signPin} onChange={(e)=> setSignPin(e.target.value)} placeholder="4–8 digits"/></label>
-            {signError && <div className="text-xs text-red-600">{signError}</div>}
-            <div className="flex justify-end gap-2 pt-2">
-              <Button variant="secondary" onClick={()=> setSignOpen(false)}>Cancel</Button>
-              <Button onClick={async()=>{
-                setSignError("");
-                if(!signStaffId){ setSignError('Select staff'); return; }
-                const s = staffById[signStaffId];
-                if(!s?.pinHash){ setSignError('PIN not set for this staff. Go to Staff tab → Set PIN.'); return; }
-                const ok = await verifyPinForStaff(signStaffId, signPin);
-                if(!ok){ setSignError('Invalid PIN'); return; }
-                setCurrentUserId(signStaffId);
-                setSignOpen(false);
-                setSignPin("");
-              }}>Sign in</Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       <Dialog open={confirmDelOpen} onOpenChange={(v)=>{ setConfirmDelOpen(v); if(!v){ setPendingDeleteOrderId(null); setDeleteReason(""); setDeletePin(""); setDeleteError(""); } }}>
         <DialogContent className="max-w-md">
