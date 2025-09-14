@@ -567,7 +567,6 @@ export default function ProductionSection(){
           <TabsTrigger value="calendar">Calendar</TabsTrigger>
           <TabsTrigger value="global-cal">Global Calendar</TabsTrigger>
           <TabsTrigger value="orders">Orders</TabsTrigger>
-          <TabsTrigger value="inventory">Inventory</TabsTrigger>
           <TabsTrigger value="staff">Staff & Duties</TabsTrigger>
           <TabsTrigger value="outlets">Outlets</TabsTrigger>
           <TabsTrigger value="trash">Trash <span style={{ marginLeft:6, background:trashColor, color:'#fff', borderRadius:12, padding:'0 6px' }}>{trashCount}</span></TabsTrigger>
