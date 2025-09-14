@@ -452,7 +452,7 @@ export default function ProductionSection(){
                 <DropdownMenuLabel>Add task</DropdownMenuLabel>
                 <DropdownMenuItem onClick={()=> openTaskDialog({ category:'production', title:'', roleId: roles[0]?.id })}>Production…</DropdownMenuItem>
                 <DropdownMenuItem onClick={()=> openTaskDialog({ category:'housekeeping', title:'Clean workstation' })}>Housekeeping…</DropdownMenuItem>
-                <DropdownMenuItem onClick={()=> openTaskDialog({ category:'delivery', title:'Delivery to outlet' })}>Delivery…</DropdownMenuItem>
+                <DropdownMenuItem onClick={()=> openTaskDialog({ category:'delivery', title:'Delivery to outlet' })}>Delivery���</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={()=> openTaskDialog({})}>Custom…</DropdownMenuItem>
               </DropdownMenuContent>
@@ -571,7 +571,7 @@ export default function ProductionSection(){
                 <div className="px-3 py-1 border-t">To staff:</div>
                 {staff.map(s=> (
                   <button key={s.id} className="block w-full text-left px-3 py-1 hover:bg-muted" onClick={()=>{ const o = orders.find(x=>x.id===menu.orderId)!; autoPlanFromOrder(o, { staffId: s.id, roleId: s.roleId }); closeMenu(); }}>
-                    {s.name} {s.roleId? `• ${rolesById[s.roleId]?.name}`:''}
+                    {s.name} {s.roleId? `��� ${rolesById[s.roleId]?.name}`:''}
                   </button>
                 ))}
                 <div className="border-t mt-1">
@@ -796,9 +796,24 @@ export default function ProductionSection(){
                 </datalist>
                 <div className="mt-2"><Button size="sm" onClick={()=> setQuickDraft({ ...(quickDraft as any), lines: [ ...quickDraft.lines, { id: uid(), item: '', qty: 0, unit: 'pcs' } ] })}><Plus className="w-4 h-4 mr-1"/>Add line</Button></div>
               </div>
-              <div className="flex justify-end gap-2 pt-2">
-                <Button variant="secondary" onClick={()=> setQuickOpen(false)}>Cancel</Button>
-                <Button onClick={saveQuick}>Create & plan</Button>
+              <div className="border-t pt-2">
+                <label className="inline-flex items-center gap-2 mr-4">
+                  <input type="checkbox" checked={quickRecurring} onChange={(e)=> setQuickRecurring(e.target.checked)} />Recurring
+                </label>
+                {quickRecurring && (
+                  <div className="mt-2 grid md:grid-cols-3 gap-2">
+                    <div className="col-span-2 flex flex-wrap gap-3 items-center">
+                      {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((d,i)=> (
+                        <label key={d} className="inline-flex items-center gap-1"><input type="checkbox" checked={quickDays.includes(i)} onChange={(e)=> setQuickDays(prev=> e.target.checked? [...prev, i] : prev.filter(x=> x!==i))}/>{d}</label>
+                      ))}
+                    </div>
+                    <label className="block">Until<input type="date" className="w-full border rounded px-2 py-1" value={quickUntil} onChange={(e)=> setQuickUntil(e.target.value)} /></label>
+                  </div>
+                )}
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button variant="secondary" onClick={()=> setQuickOpen(false)}>Cancel</Button>
+                  <Button onClick={saveQuick}>Create & plan</Button>
+                </div>
               </div>
             </div>
           )}
