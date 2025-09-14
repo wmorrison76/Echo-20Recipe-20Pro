@@ -77,7 +77,7 @@ export default function ProductionSection(){
   const [ordersTrash, setOrdersTrash] = useState<DeletedOrder[]>(()=> readLS(LS_ORDERS_TRASH, []));
   const [logs, setLogs] = useState<{ id:string; ts:number; kind:string; message:string; actorId?:string; actorName?:string }[]>(()=> readLS(LS_LOGS, []));
   const [tasks, setTasks] = useState<Task[]>(()=> readLS(LS_TASKS, []));
-  const [raw, setRaw] = useState<RawItem[]>(()=> readLS(LS_INV_RAW, [ { id: uid(), name: "Flour", unit: "kg", onHand: 50, par: 30, location:"Row A • Shelf 1 • Bin 1" }, { id: uid(), name: "Chocolate", unit: "kg", onHand: 20, par: 10, location:"Row B • Shelf 2 • Bin 3" } ]));
+  const [raw, setRaw] = useState<RawItem[]>(()=> readLS(LS_INV_RAW, [ { id: uid(), name: "Flour", unit: "kg", onHand: 50, par: 30, location:"Row A • Shelf 1 • Bin 1" }, { id: uid(), name: "Chocolate", unit: "kg", onHand: 20, par: 10, location:"Row B ��� Shelf 2 • Bin 3" } ]));
   const [fin, setFin] = useState<FinishedItem[]>(()=> readLS(LS_INV_FIN, [ { id: uid(), name: "Croissant", unit: "pcs", onHand: 80, par: 120, location:"Freezer 1 • Rack 2 • Tray A" }, { id: uid(), name: "Chocolate Bonbons", unit: "pcs", onHand: 120, par: 150, location:"Freezer 2 • Rack 1 • Tray C" } ]));
 
   const [date, setDate] = useState<string>(()=> new Date().toISOString().slice(0,10));
@@ -96,10 +96,7 @@ export default function ProductionSection(){
 
   const [menu, setMenu] = useState<{ open: boolean; x: number; y: number; orderId?: string }>(()=>({ open:false, x:0, y:0 }));
   const [guideOutlet, setGuideOutlet] = useState<Outlet | null>(null);
-  const [guideRecurring, setGuideRecurring] = useState(false);
-  const [guideDays, setGuideDays] = useState<number[]>([]); // 0=Sun..6=Sat
   const [guideStart, setGuideStart] = useState<string>(()=> date);
-  const [guideTime, setGuideTime] = useState<string>('06:00');
   const [guideUntil, setGuideUntil] = useState<string>(()=> date);
 
   const [orderDialogOpen, setOrderDialogOpen] = useState(false);
