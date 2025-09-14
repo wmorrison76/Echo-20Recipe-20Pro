@@ -410,6 +410,10 @@ export default function ProductionSection(){
   function endDrag(){ window.removeEventListener('pointermove', onDrag as any); dragRef.current=null; }
   useEffect(()=>()=>{ window.removeEventListener('pointermove', onDrag as any); },[]);
 
+  // Orders map and line counts
+  const ordersById = useMemo(()=> Object.fromEntries(orders.map(o=> [o.id, o])), [orders]);
+  const orderLinesCount = useMemo(()=> { const m: Record<string, number> = {}; for(const o of orders){ m[o.id]=o.lines.length; } return m; }, [orders]);
+
   // Overlap groups and lanes (fit-content width, show overflow indicator when >3)
   const overlapGroups = useMemo(()=>{
     const arr = dayTasks.map(t=> ({ t, s: hhmmToMin(t.start), e: hhmmToMin(t.end) })).sort((a,b)=> a.s - b.s || a.e - b.e);
