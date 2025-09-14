@@ -18,6 +18,7 @@ const DialogOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
     ref={ref}
+    style={{ pointerEvents: 'none' }}
     className={cn(
       "fixed inset-0 z-40 bg-transparent pointer-events-none",
       className,
