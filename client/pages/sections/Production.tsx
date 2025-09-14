@@ -710,9 +710,18 @@ export default function ProductionSection(){
           <div className="rounded-xl border p-3 space-y-2 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15">
             <div className="flex items-center justify-between">
               <div className="font-medium flex items-center gap-2"><Warehouse className="w-4 h-4"/>Inventory</div>
-              <div className="inline-flex border rounded-lg overflow-hidden">
-                <button className={`px-3 py-1 text-sm ${invTab==='finished'?'bg-primary text-primary-foreground':'bg-background'}`} onClick={()=> setInvTab('finished')}>Finished</button>
-                <button className={`px-3 py-1 text-sm ${invTab==='raw'?'bg-primary text-primary-foreground':'bg-background'}`} onClick={()=> setInvTab('raw')}>Raw</button>
+              <div className="flex items-center gap-2">
+                <div className="inline-flex border rounded-lg overflow-hidden">
+                  <button className={`px-3 py-1 text-sm ${invTab==='finished'?'bg-primary text-primary-foreground':'bg-background'}`} onClick={()=> setInvTab('finished')}>Finished</button>
+                  <button className={`px-3 py-1 text-sm ${invTab==='raw'?'bg-primary text-primary-foreground':'bg-background'}`} onClick={()=> setInvTab('raw')}>Raw</button>
+                </div>
+                <div className="hidden md:flex items-center gap-2">
+                  <Button size="sm" variant="outline" onClick={()=> setInvSheetOpen(true)}><Printer className="w-4 h-4 mr-1"/>Shelf sheet</Button>
+                  <Button size="sm" variant="outline" onClick={exportCountsCSV}>Export counts</Button>
+                  <Button size="sm" variant="outline" onClick={exportSuggestedOrdersCSV}>Export orders</Button>
+                  <Button size="sm" variant="outline" onClick={exportProductionReqCSV}>Export production</Button>
+                  <Button size="sm" onClick={()=> setAreasOpen(true)}>Manage areas</Button>
+                </div>
               </div>
             </div>
 
