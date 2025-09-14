@@ -712,8 +712,8 @@ export default function ProductionSection(){
               <div className="font-medium flex items-center gap-2"><Warehouse className="w-4 h-4"/>Inventory</div>
               <div className="flex items-center gap-2">
                 <div className="inline-flex border rounded-lg overflow-hidden">
-                  <button className={`px-3 py-1 text-sm ${invTab==='finished'?'bg-primary text-primary-foreground':'bg-background'}`} onClick={()=> setInvTab('finished')}>Finished</button>
-                  <button className={`px-3 py-1 text-sm ${invTab==='raw'?'bg-primary text-primary-foreground':'bg-background'}`} onClick={()=> setInvTab('raw')}>Raw</button>
+                  <button className={`px-3 py-1 text-sm ${invTab==='finished'?'bg-primary text-primary-foreground':'bg-background'}`} onClick={()=> setInvTab('finished')}>Production</button>
+                  <button className={`px-3 py-1 text-sm ${invTab==='raw'?'bg-primary text-primary-foreground':'bg-background'}`} onClick={()=> setInvTab('raw')}>Raw ingredients</button>
                 </div>
                 <div className="hidden md:flex items-center gap-2">
                   <Button size="sm" variant="outline" onClick={()=> setInvSheetOpen(true)}><Printer className="w-4 h-4 mr-1"/>Shelf sheet</Button>
@@ -1239,7 +1239,7 @@ export default function ProductionSection(){
           <DialogHeader><DialogTitle>Confirm delete order</DialogTitle></DialogHeader>
           <div className="space-y-2 text-sm">
             {pendingDeleteOrderId && (()=>{ const o = orders.find(x=> x.id===pendingDeleteOrderId)!; return (
-              <div className="text-xs text-muted-foreground">{outletsById[o.outletId]?.name} �� {new Date(o.dueISO).toLocaleString()}</div>
+              <div className="text-xs text-muted-foreground">{outletsById[o.outletId]?.name} • {new Date(o.dueISO).toLocaleString()}</div>
             ); })()}
             <label className="block">Reason<input className="w-full border rounded px-2 py-1" value={deleteReason} onChange={(e)=> setDeleteReason(e.target.value)} placeholder="Optional"/></label>
             <label className="block">Re-enter your PIN<input type="password" className="w-full border rounded px-2 py-1" value={deletePin} onChange={(e)=> setDeletePin(e.target.value)} placeholder="4–8 digits"/></label>
