@@ -122,13 +122,7 @@ export default function ProductionSection(){
   useEffect(()=> writeLS(LS_TASKS, tasks), [tasks]);
   useEffect(()=> writeLS(LS_INV_RAW, raw), [raw]);
   useEffect(()=> writeLS(LS_INV_FIN, fin), [fin]);
-  useEffect(()=> writeLS(LS_INV_LOTS, lots), [lots]);
-  useEffect(()=> writeLS(LS_STORAGE_AREAS, storageAreas), [storageAreas]);
   useEffect(()=> writeLS(LS_SESSION_USER, currentUserId), [currentUserId]);
-  useEffect(()=>{ setFinPage(1); }, [finQuery]);
-  useEffect(()=>{ setRawPage(1); }, [rawQuery]);
-  const bookedFinishedForDate = useMemo(()=>{ const m: Record<string, number> = {}; for(const t of tasks){ if(t.dateISO!==date) continue; for(const p of (t.pullFromFinished||[])){ m[p.finishedItemId] = (m[p.finishedItemId]||0) + (Number(p.qty)||0); } } return m; }, [tasks, date]);
-  const bookedRawForDate = useMemo(()=>{ const m: Record<string, number> = {}; for(const t of tasks){ if(t.dateISO!==date) continue; for(const u of (t.useRaw||[])){ m[u.rawItemId] = (m[u.rawItemId]||0) + (Number(u.qty)||0); } } return m; }, [tasks, date]);
 
   useEffect(()=>{
     const now = Date.now();
