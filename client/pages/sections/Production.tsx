@@ -529,9 +529,12 @@ export default function ProductionSection(){
                     const leftPct = `${(100/Math.max(Math.min(total,3),1))*lane}%`;
                     return (
                       <div key={t.id} className="absolute" style={{ top, height:h, left:leftPct, maxWidth, paddingRight:6 }}>
-                        <div className="rounded-lg border shadow p-2 text-sm select-none cursor-move w-max max-w-full" style={{ background: `linear-gradient(180deg, ${bg}22, transparent)`, touchAction:'none' as any }} onPointerDown={(e)=> startDrag(e, t, 'move')} onDoubleClick={()=> openTaskDialog(t)}>
+                        <div className="rounded-lg border shadow p-2 text-sm select-none cursor-move w-max max-w-full pointer-events-auto" style={{ background: `linear-gradient(180deg, ${bg}22, transparent)`, touchAction:'none' as any }} onPointerDown={(e)=> startDrag(e, t, 'move')} onDoubleClick={()=>{ if(t.orderId && ordersById[t.orderId]) openOrderDialog(ordersById[t.orderId]!); else openTaskDialog(t); }}>
                           <div className="flex items-center justify-between">
-                            <div className="font-medium truncate">{t.title}</div>
+                            <div className="font-medium truncate flex items-center gap-1">
+                              <span className="truncate">{t.title}</span>
+                              {t.orderId && (orderLinesCount[t.orderId]||0)>1 && <span className="ml-1 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white rounded-full" style={{ background:'#ef4444', boxShadow:'0 0 10px rgba(239,68,68,0.7)'}} title="Multiple items">→</span>}
+                            </div>
                             <div className="flex items-center gap-2">
                               <label className="text-xs flex items-center gap-1"><input type="checkbox" checked={!!t.done} onChange={(e)=> toggleTaskDone(t.id, e.target.checked)}/> Done</label>
                               <button className="text-xs text-red-600" onClick={()=>deleteTask(t.id)} title="Delete"><Trash className="w-4 h-4"/></button>
@@ -549,22 +552,7 @@ export default function ProductionSection(){
                       </div>
                     );
                   })}
-                  {overlapGroups.groups.map(g=>{
-                    // show overflow indicator if more than 3 lanes
-                    const items = g.items;
-                    if(!items.length) return null;
-                    const anyId = items[0].t.id; const info = laneInfo.get(anyId); const lanes = info?.lanesTotal||1;
-                    if(lanes<=3) return null;
-                    const top = Math.min(...items.map(i=> i.s))*pxPerMin;
-                    const leftPct = `${(100/3)*2}%`;
-                    return (
-                      <button key={`more-${g.id}`} className="absolute z-10 -mt-3 text-white font-bold px-1.5 py-0.5 rounded shadow-md"
-                        style={{ top, left:leftPct, background:'#ef4444', boxShadow:'0 0 14px rgba(239,68,68,0.7)'}}
-                        onClick={()=> setOverflowGroupId(g.id)} title="More items">
-                        →
-                      </button>
-                    );
-                  })}
+                  {/* indicator now lives on each pill when order has multiple lines */}
                 </div>
               </div>
             </div>
