@@ -53,6 +53,11 @@ export type Task = {
   useRaw?: { rawItemId: string; qty: number }[];
   done?: boolean;
   invAccounted?: boolean;
+  timePending?: boolean;
+  pendingOriginalDateISO?: string;
+  pendingOriginalStart?: string;
+  pendingOriginalEnd?: string;
+  laneBias?: number;
 };
 
 async function sha256Hex(text: string){
