@@ -789,7 +789,7 @@ export default function ProductionSection(){
       </Dialog>
 
       <Dialog open={orderDialogOpen} onOpenChange={(v)=>{ setOrderDialogOpen(v); if(!v){ setOrderEditingId(null); setOrderDraft(null); } }}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-3xl shadow-[0_0_28px_rgba(59,130,246,0.35)] dark:shadow-[0_0_32px_rgba(14,165,233,0.45)] hover:shadow-[0_0_44px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_52px_rgba(14,165,233,0.6)] transition-shadow">
           <DialogHeader><DialogTitle>Edit Order</DialogTitle></DialogHeader>
           {orderDraft && (
             <div className="space-y-3 text-sm">
