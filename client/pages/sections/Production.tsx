@@ -835,7 +835,16 @@ export default function ProductionSection(){
                 <tbody>
                   {(guideOutlet.guide||[]).map((g,idx)=> (
                     <tr key={idx} className="border-t">
-                      <td><input className="w-full border rounded px-1" value={g.item} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).map((x,i)=> i===idx? { ...x, item: e.target.value }: x) } : o))} /></td>
+                      <td>
+                        <div className="flex items-center gap-2">
+                          <input className="w-full border rounded px-1" value={g.item} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).map((x,i)=> i===idx? { ...x, item: e.target.value }: x) } : o))}
+                            onBlur={()=>{ const name=(g.item||'').trim(); if(!name) return; const exists = fin.some(f=> f.name.toLowerCase()===name.toLowerCase()); if(!exists){ setFin(prev=> [...prev, { id: uid(), name, unit: g.unit||'pcs', onHand:0, par:0 }]); } }}
+                          />
+                          {(()=>{ const name=(g.item||'').trim(); const exists = !!name && fin.some(f=> f.name.toLowerCase()===name.toLowerCase()); return !exists && name ? (
+                            <Button size="sm" onClick={()=>{ const name2=(g.item||'').trim(); if(!name2) return; if(!fin.some(f=> f.name.toLowerCase()===name2.toLowerCase())) setFin(prev=> [...prev, { id: uid(), name: name2, unit: g.unit||'pcs', onHand:0, par:0 }]); }}>Create</Button>
+                          ) : null; })()}
+                        </div>
+                      </td>
                       <td><input className="w-24 border rounded px-1" value={g.defaultQty} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).map((x,i)=> i===idx? { ...x, defaultQty: Number(e.target.value||0) }: x) } : o))} /></td>
                       <td><input className="w-24 border rounded px-1" value={g.unit} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).map((x,i)=> i===idx? { ...x, unit: e.target.value }: x) } : o))} /></td>
                       <td><button onClick={()=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).filter((_,i)=> i!==idx) } : o))}><Trash className="w-4 h-4"/></button></td>
