@@ -98,10 +98,6 @@ export default function ProductionSection(){
   const [multiAssignOrderId, setMultiAssignOrderId] = useState<string | null>(null);
   const [multiAssign, setMultiAssign] = useState<string[]>([]);
 
-  const [signOpen, setSignOpen] = useState(false);
-  const [signStaffId, setSignStaffId] = useState<string>("");
-  const [signPin, setSignPin] = useState("");
-  const [signError, setSignError] = useState("");
 
   const [confirmDelOpen, setConfirmDelOpen] = useState(false);
   const [pendingDeleteOrderId, setPendingDeleteOrderId] = useState<string | null>(null);
