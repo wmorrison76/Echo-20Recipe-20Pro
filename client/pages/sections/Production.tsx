@@ -350,10 +350,23 @@ export default function ProductionSection(){
   }
   function saveQuick(){
     if(!quickDraft) return;
-    const dueISO = new Date(`${quickDraft.date}T${quickDraft.time}:00`).toISOString();
-    const lines = quickDraft.lines.filter(l=> l.item && l.qty>0).map(l=> ({ id: uid(), item: l.item, qty: l.qty, unit: l.unit, finishedItemId: l.finishedItemId }));
-    if(!lines.length) { setQuickOpen(false); setQuickDraft(null); return; }
-    addOrderQuick({ outletId: quickDraft.outletId, dueISO, lines });
+    const baseLines = quickDraft.lines.filter(l=> l.item && l.qty>0).map(l=> ({ id: uid(), item: l.item, qty: l.qty, unit: l.unit, finishedItemId: l.finishedItemId }));
+    if(!baseLines.length) { setQuickOpen(false); setQuickDraft(null); return; }
+    if(!quickRecurring){
+      const dueISO = new Date(`${quickDraft.date}T${quickDraft.time}:00`).toISOString();
+      addOrderQuick({ outletId: quickDraft.outletId, dueISO, lines: baseLines });
+    } else {
+      const start = new Date(`${quickDraft.date}T00:00:00`);
+      const until = new Date(`${quickUntil}T23:59:59`);
+      for(let d = new Date(start); d <= until; d.setDate(d.getDate()+1)){
+        const dow = d.getDay();
+        if(quickDays.length && !quickDays.includes(dow)) continue;
+        const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
+        const dateStr = `${y}-${m}-${day}`;
+        const dueISO = new Date(`${dateStr}T${quickDraft.time}:00`).toISOString();
+        addOrderQuick({ outletId: quickDraft.outletId, dueISO, lines: baseLines.map(x=> ({...x, id: uid()})) });
+      }
+    }
     setQuickOpen(false); setQuickDraft(null);
   }
 
