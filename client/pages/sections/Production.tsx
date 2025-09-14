@@ -406,23 +406,39 @@ export default function ProductionSection(){
   function endDrag(){ window.removeEventListener('pointermove', onDrag as any); dragRef.current=null; }
   useEffect(()=>()=>{ window.removeEventListener('pointermove', onDrag as any); },[]);
 
-  // Overlap lanes
-  const laneInfo = useMemo(()=>{
-    const arr = dayTasks.map(t=> ({ t, s: hhmmToMin(t.start), e: hhmmToMin(t.end) }));
-    arr.sort((a,b)=> a.s - b.s || a.e - b.e);
-    const lanesEnd: number[] = [];
-    const res = new Map<string, { lane:number; lanesTotal:number }>();
-    for(const {t,s,e} of arr){
-      let lane = lanesEnd.findIndex(end=> end <= s);
-      if(lane===-1){ lane = lanesEnd.length; lanesEnd.push(e); } else { lanesEnd[lane]=e; }
-      res.set(t.id, { lane, lanesTotal: lanesEnd.length });
+  // Overlap groups and lanes (fit-content width, show overflow indicator when >3)
+  const overlapGroups = useMemo(()=>{
+    const arr = dayTasks.map(t=> ({ t, s: hhmmToMin(t.start), e: hhmmToMin(t.end) })).sort((a,b)=> a.s - b.s || a.e - b.e);
+    const groups: { id:number; items: { t:Task; s:number; e:number }[] }[] = [];
+    let gid = 0; let active: { s:number; e:number }[] = [];
+    for(const it of arr){
+      // start new group if no active overlaps
+      active = active.filter(a=> a.e > it.s);
+      if(active.length===0){ groups.push({ id: gid++, items: [] }); }
+      groups[groups.length-1].items.push(it);
+      active.push({ s: it.s, e: it.e });
     }
-    return res;
+    // assign lanes per group
+    const laneMap = new Map<string, { lane:number; lanesTotal:number; groupId:number }>();
+    for(const g of groups){
+      const laneEnds:number[] = [];
+      const items = [...g.items].sort((a,b)=> a.s - b.s || a.e - b.e);
+      for(const {t,s,e} of items){
+        let lane = laneEnds.findIndex(end=> end <= s);
+        if(lane===-1){ lane = laneEnds.length; laneEnds.push(e); } else { laneEnds[lane]=e; }
+        laneMap.set(t.id, { lane, lanesTotal: laneEnds.length, groupId: g.id });
+      }
+      // update lanesTotal to final
+      for(const {t} of items){ const info = laneMap.get(t.id); if(info) info.lanesTotal = laneEnds.length; }
+    }
+    return { groups, laneMap } as const;
   }, [dayTasks]);
+  const laneInfo = overlapGroups.laneMap;
 
   // Trash badge color
   const trashCount = ordersTrash.length;
   const trashColor = trashCount===0? '#94a3b8' : '#ef4444';
+  const [overflowGroupId, setOverflowGroupId] = useState<number|null>(null);
 
   function openDeleteOrderFlow(orderId: string){
     setPendingDeleteOrderId(orderId);
@@ -497,13 +513,15 @@ export default function ProductionSection(){
                     const top = hhmmToMin(t.start)*pxPerMin;
                     const h = Math.max(36, (hhmmToMin(t.end)-hhmmToMin(t.start))*pxPerMin);
                     const bg = taskBgColor(t);
-                    const lane = laneInfo.get(t.id)?.lane ?? 0;
-                    const total = laneInfo.get(t.id)?.lanesTotal ?? 1;
-                    const width = `calc(${100/Math.max(total,1)}% - 6px)`;
-                    const leftPct = `${(100/Math.max(total,1))*lane}%`;
+                    const info = laneInfo.get(t.id);
+                    const lane = info?.lane ?? 0;
+                    const total = info?.lanesTotal ?? 1;
+                    if((info?.lane??0) >= 3) return null; // show only up to 3, overflow arrow will appear
+                    const maxWidth = `calc(${100/Math.max(Math.min(total,3),1)}% - 6px)`;
+                    const leftPct = `${(100/Math.max(Math.min(total,3),1))*lane}%`;
                     return (
-                      <div key={t.id} className="absolute" style={{ top, height:h, left:leftPct, width, paddingRight:6 }}>
-                        <div className="rounded-lg border shadow p-2 text-sm select-none cursor-move" style={{ background: `linear-gradient(180deg, ${bg}22, transparent)`, touchAction:'none' as any }} onPointerDown={(e)=> startDrag(e, t, 'move')} onDoubleClick={()=> openTaskDialog(t)}>
+                      <div key={t.id} className="absolute" style={{ top, height:h, left:leftPct, maxWidth, paddingRight:6 }}>
+                        <div className="rounded-lg border shadow p-2 text-sm select-none cursor-move w-max max-w-full" style={{ background: `linear-gradient(180deg, ${bg}22, transparent)`, touchAction:'none' as any }} onPointerDown={(e)=> startDrag(e, t, 'move')} onDoubleClick={()=> openTaskDialog(t)}>
                           <div className="flex items-center justify-between">
                             <div className="font-medium truncate">{t.title}</div>
                             <div className="flex items-center gap-2">
@@ -523,11 +541,46 @@ export default function ProductionSection(){
                       </div>
                     );
                   })}
+                  {overlapGroups.groups.map(g=>{
+                    // show overflow indicator if more than 3 lanes
+                    const items = g.items;
+                    if(!items.length) return null;
+                    const anyId = items[0].t.id; const info = laneInfo.get(anyId); const lanes = info?.lanesTotal||1;
+                    if(lanes<=3) return null;
+                    const top = Math.min(...items.map(i=> i.s))*pxPerMin;
+                    const leftPct = `${(100/3)*2}%`;
+                    return (
+                      <button key={`more-${g.id}`} className="absolute z-10 -mt-3 text-white font-bold px-1.5 py-0.5 rounded shadow-md"
+                        style={{ top, left:leftPct, background:'#ef4444', boxShadow:'0 0 14px rgba(239,68,68,0.7)'}}
+                        onClick={()=> setOverflowGroupId(g.id)} title="More items">
+                        →
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
           </div>
         </TabsContent>
+
+        <Dialog open={overflowGroupId!==null} onOpenChange={(v)=>{ if(!v) setOverflowGroupId(null); }}>
+          <DialogContent className="max-w-md">
+            <DialogHeader><DialogTitle>Overlapping tasks</DialogTitle></DialogHeader>
+            <div className="max-h-80 overflow-auto text-sm">
+              {overlapGroups.groups.find(g=> g.id===overflowGroupId)?.items.map(({t})=> (
+                <div key={t.id} className="border-b py-2 flex items-center justify-between">
+                  <div>
+                    <div className="font-medium">{t.title}</div>
+                    <div className="text-xs text-muted-foreground">{t.start}–{t.end} • {t.qty? `${t.qty} ${t.unit||''}`:''}</div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={()=>{ openTaskDialog(t); setOverflowGroupId(null); }}>Open</Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
 
         <TabsContent value="global-cal">
           <div className="rounded-xl border p-3 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15">
