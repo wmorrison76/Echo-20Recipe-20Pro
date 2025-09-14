@@ -26,7 +26,7 @@ function uid(){ return Math.random().toString(36).slice(2) + Date.now().toString
 
 export type Role = { id: string; name: string };
 export type Staff = { id: string; name: string; roleId?: string; pinHash?: string };
-export type Outlet = { id: string; name: string; type: "Outlet"|"Banquets"|"Custom Cakes"; orderCutoff?: string; open?: string; close?: string; guide?: { item: string; defaultQty: number; unit: string }[] };
+export type Outlet = { id: string; name: string; type: "Outlet"|"Banquets"|"Custom Cakes"; orderCutoff?: string; open?: string; close?: string; guide?: { item: string; defaultQty: number; unit: string; recurring?: boolean; days?: number[]; times?: string }[] };
 export type RawItem = { id: string; code?: string; name: string; unit: string; onHand: number; par: number; unitCost?: number; vendor?: string; brand?: string; reordered?: boolean; location?: string; category?: string; storageAreaId?: string; shelf?: string; bin?: string };
 export type FinishedItem = { id: string; code?: string; name: string; unit: string; onHand: number; par: number; unitCost?: number; vendor?: string; brand?: string; reordered?: boolean; recipeId?: string; location?: string; category?: string; storageAreaId?: string; shelf?: string; bin?: string };
 
