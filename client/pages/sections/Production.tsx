@@ -431,16 +431,6 @@ export default function ProductionSection(){
         <div className="flex items-center justify-between">
           <div className="text-base font-semibold flex items-center gap-2"><CalendarClock className="w-4 h-4"/> Chef Production Calendar</div>
           <div className="flex items-center gap-2 text-sm">
-            <div className="hidden md:flex items-center gap-2 mr-2">
-              {currentUser? (
-                <>
-                  <span className="px-2 py-0.5 rounded bg-emerald-600 text-white">Signed in: {currentUser.name}</span>
-                  <Button size="sm" variant="outline" onClick={()=> setCurrentUserId(null)}>Sign out</Button>
-                </>
-              ):(
-                <Button size="sm" variant="outline" onClick={()=> setSignOpen(true)}>Sign in</Button>
-              )}
-            </div>
             <input type="date" value={date} onChange={(e)=> setDate(e.target.value)} className="rounded-md border px-2 py-1" />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -455,8 +445,8 @@ export default function ProductionSection(){
                 <DropdownMenuItem onClick={()=> openTaskDialog({})}>Custom…</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button size="sm" variant="secondary" onClick={openQuick}><ClipboardList className="w-4 h-4 mr-1"/>Quick order→plan</Button>
-            <Button size="sm" variant="outline" onClick={prepPrint}><Printer className="w-4 h-4 mr-1"/>Prep sheet</Button>
+            <Button size="sm" variant="secondary" onClick={openQuick}><Plus className="w-4 h-4 mr-1"/>Add order</Button>
+            <Button size="sm" variant="outline" onClick={()=> setPrepOpen(true)}><Printer className="w-4 h-4 mr-1"/>Prep sheet</Button>
           </div>
         </div>
       </div>
