@@ -28,8 +28,8 @@ function uid(){ return Math.random().toString(36).slice(2) + Date.now().toString
 export type Role = { id: string; name: string };
 export type Staff = { id: string; name: string; roleId?: string; pinHash?: string };
 export type Outlet = { id: string; name: string; type: "Outlet"|"Banquets"|"Custom Cakes"; orderCutoff?: string; open?: string; close?: string; guide?: { item: string; defaultQty: number; unit: string }[] };
-export type RawItem = { id: string; name: string; unit: string; onHand: number; par: number; unitCost?: number; location?: string; category?: string; storageAreaId?: string; shelf?: string; bin?: string };
-export type FinishedItem = { id: string; name: string; unit: string; onHand: number; par: number; unitCost?: number; recipeId?: string; location?: string; category?: string; storageAreaId?: string; shelf?: string; bin?: string };
+export type RawItem = { id: string; code?: string; name: string; unit: string; onHand: number; par: number; unitCost?: number; vendor?: string; brand?: string; reordered?: boolean; location?: string; category?: string; storageAreaId?: string; shelf?: string; bin?: string };
+export type FinishedItem = { id: string; code?: string; name: string; unit: string; onHand: number; par: number; unitCost?: number; vendor?: string; brand?: string; reordered?: boolean; recipeId?: string; location?: string; category?: string; storageAreaId?: string; shelf?: string; bin?: string };
 export type InvLot = { id:string; kind:'raw'|'fin'; itemId:string; lotCode?:string; qty:number; unit:string; receivedAt:number; expiryDate?:string; location?:string; note?:string; receiverId?:string; receiverName?:string };
 export type StorageArea = { id: string; name: string; note?: string };
 
@@ -85,6 +85,22 @@ export default function ProductionSection(){
   const [finPage, setFinPage] = useState(1);
   const [rawPage, setRawPage] = useState(1);
   const pageSize = 100;
+
+  function lotStats(kind: 'raw'|'fin', itemId: string){
+    const its = lots.filter(l=> l.kind===kind && l.itemId===itemId);
+    const latestPurchase = its.length? new Date(Math.max(...its.map(l=> l.receivedAt||0))) : undefined;
+    const upcoming = its.map(l=> l.expiryDate? new Date(l.expiryDate) : null).filter(Boolean) as Date[];
+    const nextExpiry = upcoming.length? new Date(Math.min(...upcoming.map(d=> d.getTime()))) : undefined;
+    const daysLeft = nextExpiry? Math.ceil((nextExpiry.getTime() - Date.now())/86400000) : undefined;
+    return { latestPurchase, nextExpiry, daysLeft } as const;
+  }
+  function expiryBg(days?: number){
+    if(days===undefined) return '';
+    if(days<=1) return 'bg-red-100 dark:bg-red-900/30';
+    if(days<=3) return 'bg-orange-100 dark:bg-orange-900/30';
+    if(days<=5) return 'bg-yellow-100 dark:bg-yellow-900/30';
+    return '';
+  }
   const [date, setDate] = useState<string>(()=> new Date().toISOString().slice(0,10));
 
   const [currentUserId, setCurrentUserId] = useState<string | null>(()=> readLS(LS_SESSION_USER, null));
@@ -709,16 +725,22 @@ export default function ProductionSection(){
                   </div>
                 </div>
                 <table className="w-full text-sm block overflow-x-auto whitespace-nowrap">
-                  <thead><tr className="text-left"><th>Name</th><th>Category</th><th>In stock</th><th>Booked</th><th>Available</th><th>Reorder point</th><th>Unit</th><th>Cost</th><th>Area</th><th>Location</th><th></th></tr></thead>
+                  <thead><tr className="text-left"><th>Item No</th><th>Item name</th><th>Category</th><th>Location</th><th>Vendor</th><th>Brand</th><th>Purchase date</th><th>Expiry date</th><th>Quantity</th><th>Reorder qty</th><th>Reordered?</th><th>Days before expiry</th><th>Unit</th><th>Cost</th><th>Area</th><th></th></tr></thead>
                   <tbody>
-                    {(()=>{ const q=finQuery.trim().toLowerCase(); const filtered = q? fin.filter(it=> `${it.name} ${it.category||''} ${it.location||''}`.toLowerCase().includes(q)) : fin; const pageItems = filtered.slice((finPage-1)*pageSize, finPage*pageSize); return pageItems; })().map(it=> { const booked = bookedFinishedForDate[it.id]||0; const avail = (it.onHand||0)-booked; return (
-                      <tr key={it.id} className="border-t">
+                    {(()=>{ const q=finQuery.trim().toLowerCase(); const filtered = q? fin.filter(it=> `${it.name} ${it.category||''} ${it.location||''} ${it.vendor||''} ${it.brand||''}`.toLowerCase().includes(q)) : fin; const pageItems = filtered.slice((finPage-1)*pageSize, finPage*pageSize); return pageItems; })().map(it=> { const { latestPurchase, nextExpiry, daysLeft } = lotStats('fin', it.id); const booked = bookedFinishedForDate[it.id]||0; const avail = (it.onHand||0)-booked; return (
+                      <tr key={it.id} className={`border-t ${expiryBg(daysLeft)}`}>
+                        <td><input className="w-24 border rounded px-1" value={it.code||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, code: e.target.value }:x))}/></td>
                         <td>{it.name}</td>
-                        <td><input className="w-32 border rounded px-1" value={it.category||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, category: e.target.value }:x))}/></td>
-                        <td><input className="w-20 border rounded px-1" value={it.onHand} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, onHand: Number(e.target.value||0)}:x))}/></td>
-                        <td className={booked>0? 'text-red-500':''}>{booked}</td>
-                        <td className={avail<0? 'text-red-600 font-medium':''}>{avail}</td>
+                        <td><input className="w-28 border rounded px-1" value={it.category||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, category: e.target.value }:x))}/></td>
+                        <td><input className="w-40 border rounded px-1" value={it.location||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, location: e.target.value }:x))}/></td>
+                        <td><input className="w-32 border rounded px-1" value={it.vendor||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, vendor: e.target.value }:x))}/></td>
+                        <td><input className="w-32 border rounded px-1" value={it.brand||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, brand: e.target.value }:x))}/></td>
+                        <td>{latestPurchase? latestPurchase.toLocaleDateString(): ''}</td>
+                        <td>{nextExpiry? nextExpiry.toLocaleDateString(): ''}</td>
+                        <td title={`Booked ${booked}`}>{avail}</td>
                         <td><input className="w-20 border rounded px-1" value={it.par} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, par: Number(e.target.value||0)}:x))}/></td>
+                        <td><input type="checkbox" checked={!!it.reordered} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, reordered: e.target.checked }:x))}/></td>
+                        <td className={daysLeft!==undefined && daysLeft<=3? 'text-red-600 font-medium':''}>{daysLeft?? ''}</td>
                         <td>{it.unit}</td>
                         <td><input className="w-24 border rounded px-1" value={it.unitCost||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, unitCost: Number(e.target.value||0)}:x))}/></td>
                         <td>
@@ -727,7 +749,6 @@ export default function ProductionSection(){
                             {storageAreas.map(a=> <option key={a.id} value={a.id}>{a.name}</option>)}
                           </select>
                         </td>
-                        <td><input className="w-56 border rounded px-1" value={it.location||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, location: e.target.value }:x))}/></td>
                         <td className="flex items-center gap-2">
                           <Button size="sm" variant="secondary" onClick={()=> openReceive('fin', it.id)}>Receive</Button>
                           <button onClick={()=> setFin(prev=> prev.filter(x=> x.id!==it.id))}><Trash className="w-4 h-4"/></button>
@@ -758,16 +779,22 @@ export default function ProductionSection(){
                   </div>
                 </div>
                 <table className="w-full text-sm block overflow-x-auto whitespace-nowrap">
-                  <thead><tr className="text-left"><th>Name</th><th>Category</th><th>In stock</th><th>Booked</th><th>Available</th><th>Reorder point</th><th>Unit</th><th>Cost</th><th>Area</th><th>Location</th><th></th></tr></thead>
+                  <thead><tr className="text-left"><th>Item No</th><th>Item name</th><th>Category</th><th>Location</th><th>Vendor</th><th>Brand</th><th>Purchase date</th><th>Expiry date</th><th>Quantity</th><th>Reorder qty</th><th>Reordered?</th><th>Days before expiry</th><th>Unit</th><th>Cost</th><th>Area</th><th></th></tr></thead>
                   <tbody>
-                    {(()=>{ const q=rawQuery.trim().toLowerCase(); const filtered = q? raw.filter(it=> `${it.name} ${it.category||''} ${it.location||''}`.toLowerCase().includes(q)) : raw; const pageItems = filtered.slice((rawPage-1)*pageSize, rawPage*pageSize); return pageItems; })().map(it=> { const booked = bookedRawForDate[it.id]||0; const avail = (it.onHand||0)-booked; return (
-                      <tr key={it.id} className="border-t">
+                    {(()=>{ const q=rawQuery.trim().toLowerCase(); const filtered = q? raw.filter(it=> `${it.name} ${it.category||''} ${it.location||''} ${it.vendor||''} ${it.brand||''}`.toLowerCase().includes(q)) : raw; const pageItems = filtered.slice((rawPage-1)*pageSize, rawPage*pageSize); return pageItems; })().map(it=> { const { latestPurchase, nextExpiry, daysLeft } = lotStats('raw', it.id); const booked = bookedRawForDate[it.id]||0; const avail = (it.onHand||0)-booked; return (
+                      <tr key={it.id} className={`border-t ${expiryBg(daysLeft)}`}>
+                        <td><input className="w-24 border rounded px-1" value={it.code||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, code: e.target.value }:x))}/></td>
                         <td>{it.name}</td>
-                        <td><input className="w-32 border rounded px-1" value={it.category||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, category: e.target.value }:x))}/></td>
-                        <td><input className="w-20 border rounded px-1" value={it.onHand} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, onHand: Number(e.target.value||0)}:x))}/></td>
-                        <td className={booked>0? 'text-red-500':''}>{booked}</td>
-                        <td className={avail<0? 'text-red-600 font-medium':''}>{avail}</td>
+                        <td><input className="w-28 border rounded px-1" value={it.category||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, category: e.target.value }:x))}/></td>
+                        <td><input className="w-40 border rounded px-1" value={it.location||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, location: e.target.value }:x))}/></td>
+                        <td><input className="w-32 border rounded px-1" value={it.vendor||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, vendor: e.target.value }:x))}/></td>
+                        <td><input className="w-32 border rounded px-1" value={it.brand||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, brand: e.target.value }:x))}/></td>
+                        <td>{latestPurchase? latestPurchase.toLocaleDateString(): ''}</td>
+                        <td>{nextExpiry? nextExpiry.toLocaleDateString(): ''}</td>
+                        <td title={`Booked ${booked}`}>{avail}</td>
                         <td><input className="w-20 border rounded px-1" value={it.par} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, par: Number(e.target.value||0)}:x))}/></td>
+                        <td><input type="checkbox" checked={!!it.reordered} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, reordered: e.target.checked }:x))}/></td>
+                        <td className={daysLeft!==undefined && daysLeft<=3? 'text-red-600 font-medium':''}>{daysLeft?? ''}</td>
                         <td>{it.unit}</td>
                         <td><input className="w-24 border rounded px-1" value={it.unitCost||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, unitCost: Number(e.target.value||0)}:x))}/></td>
                         <td>
@@ -776,7 +803,6 @@ export default function ProductionSection(){
                             {storageAreas.map(a=> <option key={a.id} value={a.id}>{a.name}</option>)}
                           </select>
                         </td>
-                        <td><input className="w-56 border rounded px-1" value={it.location||''} onChange={(e)=> setRaw(prev=> prev.map(x=> x.id===it.id? {...x, location: e.target.value }:x))}/></td>
                         <td className="flex items-center gap-2">
                           <Button size="sm" variant="secondary" onClick={()=> openReceive('raw', it.id)}>Receive</Button>
                           <button onClick={()=> setRaw(prev=> prev.filter(x=> x.id!==it.id))}><Trash className="w-4 h-4"/></button>
