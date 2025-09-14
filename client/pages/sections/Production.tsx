@@ -394,15 +394,19 @@ export default function ProductionSection(){
   }
 
   // Drag/move/resize
-  const pxPerMin = 0.8; // 48px per hour
+  const pxPerMin = 0.8; // 48px per hour vertically
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const [timelineWidth, setTimelineWidth] = useState(0);
+  useEffect(()=>{ const el = timelineRef.current; if(!el) return; const ro = new ResizeObserver(()=> setTimelineWidth(el.clientWidth)); ro.observe(el); setTimelineWidth(el.clientWidth); return ()=> ro.disconnect(); },[]);
+  const pxPerMinX = useMemo(()=> timelineWidth>0 ? timelineWidth/(24*60) : 2, [timelineWidth]);
   function startDrag(e: React.PointerEvent, t: Task, mode: 'move'|'resize'){
     const startMin = hhmmToMin(t.start), endMin = hhmmToMin(t.end);
-    dragRef.current = { id: t.id, type: mode, startY: e.clientY, startMin, endMin };
+    dragRef.current = { id: t.id, type: mode, startY: e.clientY, startX: e.clientX, startMin, endMin } as any;
     (e.currentTarget as Element).setPointerCapture?.(e.pointerId);
     window.addEventListener('pointermove', onDrag as any, { passive:false } as any);
     window.addEventListener('pointerup', endDrag as any, { once:true } as any);
   }
-  function onDrag(e: PointerEvent){ const s = dragRef.current; if(!s) return; const dy = e.clientY - s.startY; const dmin = Math.round(dy/pxPerMin/15)*15; setTasks(prev=> prev.map(x=>{ if(x.id!==s.id) return x; let start = s.startMin, end = s.endMin; if(s.type==='move'){ start+=dmin; end+=dmin; } else { end = Math.max(start+15, s.endMin + dmin); } start=Math.max(0,start); end=Math.min(24*60, end); return { ...x, start:minToHHMM(start), end:minToHHMM(end) }; })); }
+  function onDrag(e: PointerEvent){ const s = dragRef.current as any; if(!s) return; const dy = e.clientY - s.startY; const dx = e.clientX - s.startX; const dminY = Math.round(dy/pxPerMin/15)*15; const dminX = Math.round(dx/pxPerMinX/15)*15; setTasks(prev=> prev.map(x=>{ if(x.id!==s.id) return x; let start = s.startMin, end = s.endMin; if(s.type==='move'){ start+=dminY + dminX; end+=dminY + dminX; } else { end = Math.max(start+15, s.endMin + dminY); } start=Math.max(0,start); end=Math.min(24*60, end); return { ...x, start:minToHHMM(start), end:minToHHMM(end) }; })); }
   function endDrag(){ window.removeEventListener('pointermove', onDrag as any); dragRef.current=null; }
   useEffect(()=>()=>{ window.removeEventListener('pointermove', onDrag as any); },[]);
 
