@@ -516,7 +516,7 @@ export default function ProductionSection(){
                     <div key={i} className="h-12 border-b last:border-b-0" />
                   ))}
                 </div>
-                <div className="relative">
+                <div className="relative" ref={timelineRef}>
                   {dayTasks.map(t=>{
                     const top = hhmmToMin(t.start)*pxPerMin;
                     const h = Math.max(36, (hhmmToMin(t.end)-hhmmToMin(t.start))*pxPerMin);
