@@ -950,71 +950,77 @@ export default function ProductionSection(){
 
       <Dialog open={!!guideOutlet} onOpenChange={(v)=>{ if(!v) setGuideOutlet(null); }}>
         <DialogContent className="max-w-3xl shadow-[0_0_28px_rgba(59,130,246,0.35)] dark:shadow-[0_0_32px_rgba(14,165,233,0.45)] hover:shadow-[0_0_44px_rgba(59,130,246,0.5)] dark:hover:shadow-[0_0_52px_rgba(14,165,233,0.6)] transition-shadow">
-          <DialogHeader><DialogTitle>Order Guide — {guideOutlet?.name}</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>Outlet — {guideOutlet?.name}</DialogTitle></DialogHeader>
           {guideOutlet && (
             <div className="space-y-3 text-sm">
-              <div className="grid md:grid-cols-4 gap-2">
-                <label className="block">Start<input type="date" className="w-full border rounded px-2 py-1" value={guideStart} onChange={(e)=> setGuideStart(e.target.value)} /></label>
-                <label className="block">Time<input type="time" className="w-full border rounded px-2 py-1" value={guideTime} onChange={(e)=> setGuideTime(e.target.value)} /></label>
-                <label className="block">Until<input type="date" className="w-full border rounded px-2 py-1" value={guideUntil} onChange={(e)=> setGuideUntil(e.target.value)} /></label>
-                <div className="flex items-end">
-                  <label className="inline-flex items-center gap-2"><input type="checkbox" checked={guideRecurring} onChange={(e)=> setGuideRecurring(e.target.checked)} />Recurring</label>
-                </div>
+              <div className="grid md:grid-cols-5 gap-2">
+                <label className="block">Name<input className="w-full border rounded px-2 py-1" value={guideOutlet.name} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, name: e.target.value }: o))} /></label>
+                <label className="block">Type<select className="w-full border rounded px-2 py-1" value={guideOutlet.type} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, type: e.target.value as Outlet['type'] }: o))}><option>Outlet</option><option>Banquets</option><option>Custom Cakes</option></select></label>
+                <label className="block">Cutoff<input type="time" className="w-full border rounded px-2 py-1" value={guideOutlet.orderCutoff||''} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, orderCutoff: e.target.value }: o))} /></label>
+                <label className="block">Open<input type="time" className="w-full border rounded px-2 py-1" value={guideOutlet.open||''} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, open: e.target.value }: o))} /></label>
+                <label className="block">Close<input type="time" className="w-full border rounded px-2 py-1" value={guideOutlet.close||''} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, close: e.target.value }: o))} /></label>
               </div>
-              {guideRecurring && (
-                <div className="-mt-2 mb-1 flex flex-wrap gap-3 items-center">
-                  {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((d,i)=> (
-                    <label key={d} className="inline-flex items-center gap-1"><input type="checkbox" checked={guideDays.includes(i)} onChange={(e)=> setGuideDays(prev=> e.target.checked? [...prev, i]: prev.filter(x=> x!==i))} />{d}</label>
-                  ))}
-                </div>
-              )}
+              <div className="grid md:grid-cols-2 gap-2">
+                <label className="block">Start<input type="date" className="w-full border rounded px-2 py-1" value={guideStart} onChange={(e)=> setGuideStart(e.target.value)} /></label>
+                <label className="block">Until<input type="date" className="w-full border rounded px-2 py-1" value={guideUntil} onChange={(e)=> setGuideUntil(e.target.value)} /></label>
+              </div>
               <table className="w-full text-sm">
-                <thead><tr className="text-left"><th>Item</th><th>Default Qty</th><th>Unit</th><th></th></tr></thead>
+                <thead><tr className="text-left"><th>Item</th><th>Default Qty</th><th>Unit</th><th>Times (comma‑sep)</th><th>Recurring</th><th>Days</th><th></th></tr></thead>
                 <tbody>
                   {(guideOutlet.guide||[]).map((g,idx)=> (
-                    <tr key={idx} className="border-t">
-                      <td>
-                        <div className="flex items-center gap-2">
-                          <input className="w-full border rounded px-1" value={g.item} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).map((x,i)=> i===idx? { ...x, item: e.target.value }: x) } : o))}
-                            onBlur={()=>{ const name=(g.item||'').trim(); if(!name) return; const exists = fin.some(f=> f.name.toLowerCase()===name.toLowerCase()); if(!exists){ setFin(prev=> [...prev, { id: uid(), name, unit: g.unit||'pcs', onHand:0, par:0 }]); } }}
-                          />
-                          {(()=>{ const name=(g.item||'').trim(); const exists = !!name && fin.some(f=> f.name.toLowerCase()===name.toLowerCase()); return !exists && name ? (
-                            <Button size="sm" onClick={()=>{ const name2=(g.item||'').trim(); if(!name2) return; if(!fin.some(f=> f.name.toLowerCase()===name2.toLowerCase())) setFin(prev=> [...prev, { id: uid(), name: name2, unit: g.unit||'pcs', onHand:0, par:0 }]); }}>Create</Button>
-                          ) : null; })()}
-                        </div>
-                      </td>
+                    <tr key={idx} className="border-t align-top">
+                      <td><input className="w-full border rounded px-1" value={g.item} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).map((x,i)=> i===idx? { ...x, item: e.target.value }: x) } : o))} /></td>
                       <td><input className="w-24 border rounded px-1" value={g.defaultQty} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).map((x,i)=> i===idx? { ...x, defaultQty: Number(e.target.value||0) }: x) } : o))} /></td>
                       <td><input className="w-24 border rounded px-1" value={g.unit} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).map((x,i)=> i===idx? { ...x, unit: e.target.value }: x) } : o))} /></td>
+                      <td><input className="w-40 border rounded px-1" placeholder="06:00, 15:00" value={g.times||''} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).map((x,i)=> i===idx? { ...x, times: e.target.value }: x) } : o))} /></td>
+                      <td>
+                        <label className="inline-flex items-center gap-1">
+                          <input type="checkbox" checked={!!g.recurring} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).map((x,i)=> i===idx? { ...x, recurring: e.target.checked }: x) } : o))} />
+                          <span className="text-xs">Yes</span>
+                        </label>
+                      </td>
+                      <td>
+                        <div className="flex flex-wrap gap-1">
+                          {['S','M','T','W','T','F','S'].map((d,i)=> (
+                            <label key={i} className="inline-flex items-center gap-1 text-[11px]"><input type="checkbox" checked={(g.days||[]).includes(i)} onChange={(e)=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).map((x,xi)=> xi===idx? { ...x, days: e.target.checked? ([...(x.days||[]), i]) : (x.days||[]).filter(v=> v!==i) }: x) } : o))} />{d}</label>
+                          ))}
+                        </div>
+                      </td>
                       <td><button onClick={()=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: (o.guide||[]).filter((_,i)=> i!==idx) } : o))}><Trash className="w-4 h-4"/></button></td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              <Button size="sm" onClick={()=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: [ ...(o.guide||[]), { item:'', defaultQty:0, unit:'pcs' } ] }: o))}><Plus className="w-4 h-4 mr-1"/>Add line</Button>
+              <Button size="sm" onClick={()=> setOutlets(prev=> prev.map(o=> o.id===guideOutlet.id? { ...o, guide: [ ...(o.guide||[]), { item:'', defaultQty:0, unit:'pcs', times:'06:00' } ] }: o))}><Plus className="w-4 h-4 mr-1"/>Add line</Button>
               <div className="flex justify-between">
                 <Button variant="secondary" onClick={()=> setGuideOutlet(null)}>Close</Button>
                 <Button onClick={()=>{
                   const outlet = guideOutlet;
                   if(!outlet) return;
-                  const base = (outlet.guide||[]).filter(g=> g.item && (g.defaultQty||0)>0).map(g=> ({ id: uid(), item: g.item, qty: g.defaultQty||0, unit: g.unit||'pcs' }));
-                  if(!base.length) return;
-                  if(!guideRecurring){
-                    const dueISO = new Date(`${guideStart}T${guideTime||'06:00'}:00`).toISOString();
-                    addOrderQuick({ outletId: outlet.id, dueISO, lines: base });
-                  } else {
-                    const start = new Date(`${guideStart}T00:00:00`);
-                    const until = new Date(`${guideUntil}T23:59:59`);
-                    for(let d = new Date(start); d <= until; d.setDate(d.getDate()+1)){
-                      const dow = d.getDay();
-                      if(guideDays.length && !guideDays.includes(dow)) continue;
-                      const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
-                      const dateStr = `${y}-${m}-${day}`;
-                      const dueISO = new Date(`${dateStr}T${guideTime||'06:00'}:00`).toISOString();
-                      addOrderQuick({ outletId: outlet.id, dueISO, lines: base.map(x=> ({...x, id: uid()})) });
+                  const start = new Date(`${guideStart}T00:00:00`);
+                  const until = new Date(`${guideUntil}T23:59:59`);
+                  const buckets: Record<string, { dateStr:string; time:string; lines: { id:string; item:string; qty:number; unit:string }[] }> = {};
+                  for(let d = new Date(start); d <= until; d.setDate(d.getDate()+1)){
+                    const dow = d.getDay();
+                    const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
+                    const dateStr = `${y}-${m}-${day}`;
+                    for(const g of (outlet.guide||[])){
+                      if(!(g.item && (g.defaultQty||0)>0)) continue;
+                      const include = g.recurring? (!(g.days&&g.days.length) || (g.days||[]).includes(dow)) : true;
+                      if(!include) continue;
+                      const times = (g.times||'06:00').split(',').map(s=> s.trim()).filter(Boolean);
+                      for(const t of times){
+                        const key = `${dateStr}|${t}`;
+                        (buckets[key] ||= { dateStr, time: t, lines: [] }).lines.push({ id: uid(), item: g.item, qty: g.defaultQty||0, unit: g.unit||'pcs' });
+                      }
                     }
                   }
+                  Object.values(buckets).forEach(b=>{
+                    const dueISO = new Date(`${b.dateStr}T${b.time}:00`).toISOString();
+                    addOrderQuick({ outletId: outlet.id, dueISO, lines: b.lines });
+                  });
                   setGuideOutlet(null);
-                }}>Create order from guide</Button>
+                }}>Create Order Guide</Button>
               </div>
             </div>
           )}
