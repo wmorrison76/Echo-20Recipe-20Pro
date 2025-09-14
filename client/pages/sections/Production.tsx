@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAppData } from "@/context/AppDataContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, Trash, Users, CalendarClock, ClipboardList, Warehouse, ChefHat, Printer } from "lucide-react";
+import { Plus, Trash, Users, CalendarClock, ClipboardList, ChefHat, Printer } from "lucide-react";
 import { GlobalCalendar } from "@/components/panels/GlobalCalendar";
 import type { CalendarEvent } from "@/stores/beoStore";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -753,7 +753,7 @@ export default function ProductionSection(){
               {outlets.map(o=> (
                 <li key={o.id} className="flex items-center justify-between border-t py-1 gap-2">
                   <span className="flex-1">{o.name} • {o.type}</span>
-                  <span className="text-xs text-muted-foreground">Cutoff {o.orderCutoff||'—'} | Hours {o.open||'—'}–{o.close||'—'}</span>
+                  <span className="text-xs text-muted-foreground">Cutoff {o.orderCutoff||'���'} | Hours {o.open||'—'}–{o.close||'—'}</span>
                   <div className="flex items-center gap-2">
                     <Button size="sm" variant="secondary" onClick={()=> setGuideOutlet(o)}>Guide</Button>
                     <Button size="sm" variant="secondary" onClick={()=>{
