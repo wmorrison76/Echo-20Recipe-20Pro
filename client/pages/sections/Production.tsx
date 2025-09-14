@@ -101,6 +101,7 @@ export default function ProductionSection(){
     if(days<=5) return 'bg-yellow-100 dark:bg-yellow-900/30';
     return '';
   }
+  function fmtCurrency(n:number){ try { return n.toLocaleString(undefined, { style:'currency', currency:'USD' }); } catch { return `$${(n||0).toFixed(2)}`; } }
   const [date, setDate] = useState<string>(()=> new Date().toISOString().slice(0,10));
 
   const [currentUserId, setCurrentUserId] = useState<string | null>(()=> readLS(LS_SESSION_USER, null));
