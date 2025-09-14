@@ -559,24 +559,6 @@ export default function ProductionSection(){
           </div>
         </TabsContent>
 
-        <Dialog open={overflowGroupId!==null} onOpenChange={(v)=>{ if(!v) setOverflowGroupId(null); }}>
-          <DialogContent className="max-w-md">
-            <DialogHeader><DialogTitle>Overlapping tasks</DialogTitle></DialogHeader>
-            <div className="max-h-80 overflow-auto text-sm">
-              {overlapGroups.groups.find(g=> g.id===overflowGroupId)?.items.map(({t})=> (
-                <div key={t.id} className="border-b py-2 flex items-center justify-between">
-                  <div>
-                    <div className="font-medium">{t.title}</div>
-                    <div className="text-xs text-muted-foreground">{t.start}–{t.end} • {t.qty? `${t.qty} ${t.unit||''}`:''}</div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" onClick={()=>{ openTaskDialog(t); setOverflowGroupId(null); }}>Open</Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </DialogContent>
-        </Dialog>
 
         <TabsContent value="global-cal">
           <div className="rounded-xl border p-3 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15">
