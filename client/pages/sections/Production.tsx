@@ -73,12 +73,6 @@ export default function ProductionSection(){
   const [tasks, setTasks] = useState<Task[]>(()=> readLS(LS_TASKS, []));
   const [raw, setRaw] = useState<RawItem[]>(()=> readLS(LS_INV_RAW, [ { id: uid(), name: "Flour", unit: "kg", onHand: 50, par: 30, location:"Row A • Shelf 1 • Bin 1" }, { id: uid(), name: "Chocolate", unit: "kg", onHand: 20, par: 10, location:"Row B • Shelf 2 • Bin 3" } ]));
   const [fin, setFin] = useState<FinishedItem[]>(()=> readLS(LS_INV_FIN, [ { id: uid(), name: "Croissant", unit: "pcs", onHand: 80, par: 120, location:"Freezer 1 • Rack 2 • Tray A" }, { id: uid(), name: "Chocolate Bonbons", unit: "pcs", onHand: 120, par: 150, location:"Freezer 2 • Rack 1 • Tray C" } ]));
-  const [invTab, setInvTab] = useState<'finished'|'raw'>('finished');
-  const [finQuery, setFinQuery] = useState("");
-  const [rawQuery, setRawQuery] = useState("");
-  const [finPage, setFinPage] = useState(1);
-  const [rawPage, setRawPage] = useState(1);
-  const pageSize = 100;
 
   function lotStats(kind: 'raw'|'fin', itemId: string){
     const its = lots.filter(l=> l.kind===kind && l.itemId===itemId);
