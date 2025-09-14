@@ -756,6 +756,7 @@ export default function ProductionSection(){
                         <td className={daysLeft!==undefined && daysLeft<=3? 'text-red-600 font-medium':''}>{daysLeft?? ''}</td>
                         <td>{it.unit}</td>
                         <td><input className="w-24 border rounded px-1" value={it.unitCost||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, unitCost: Number(e.target.value||0)}:x))}/></td>
+                        <td>{fmtCurrency((it.onHand||0) * (it.unitCost||0))}</td>
                         <td>
                           <select className="w-40 border rounded px-1 text-xs" value={it.storageAreaId||''} onChange={(e)=> setFin(prev=> prev.map(x=> x.id===it.id? {...x, storageAreaId: e.target.value||undefined }:x))}>
                             <option value="">—</option>
