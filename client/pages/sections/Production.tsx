@@ -319,7 +319,15 @@ export default function ProductionSection(){
     return groups;
   }, [dayTasks, rolesById, outletsById]);
 
-  const prepPrint = () => { setPrepOpen(true); setTimeout(()=> window.print(), 50); };
+  const prepGroupsModal = useMemo(()=>{
+    const start = (prepStart||date);
+    const end = (prepEnd||date);
+    const inRange = (d:string)=> d>=start && d<=end;
+    const selected = selectedOutletIds.length? new Set(selectedOutletIds) : new Set(outlets.map(o=> o.id));
+    const groups: Record<string, Task[]> = {};
+    for(const t of tasks){ if(!inRange(t.dateISO)) continue; if(t.outletId && !selected.has(t.outletId)) continue; const key = `${outletsById[t.outletId||'']?.name||'Outlet'} • ${rolesById[t.roleId||'']?.name||'Unassigned'}`; (groups[key] ||= []).push(t); }
+    return groups;
+  }, [tasks, prepStart, prepEnd, selectedOutletIds, rolesById, outletsById, outlets, date]);
 
   const closeMenu = () => setMenu({ open:false, x:0, y:0 });
   const onOrderContext = (e: React.MouseEvent, id: string) => { e.preventDefault(); setMenu({ open:true, x:e.clientX, y:e.clientY, orderId:id }); };
