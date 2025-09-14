@@ -74,22 +74,6 @@ export default function ProductionSection(){
   const [raw, setRaw] = useState<RawItem[]>(()=> readLS(LS_INV_RAW, [ { id: uid(), name: "Flour", unit: "kg", onHand: 50, par: 30, location:"Row A • Shelf 1 • Bin 1" }, { id: uid(), name: "Chocolate", unit: "kg", onHand: 20, par: 10, location:"Row B • Shelf 2 • Bin 3" } ]));
   const [fin, setFin] = useState<FinishedItem[]>(()=> readLS(LS_INV_FIN, [ { id: uid(), name: "Croissant", unit: "pcs", onHand: 80, par: 120, location:"Freezer 1 • Rack 2 • Tray A" }, { id: uid(), name: "Chocolate Bonbons", unit: "pcs", onHand: 120, par: 150, location:"Freezer 2 • Rack 1 • Tray C" } ]));
 
-  function lotStats(kind: 'raw'|'fin', itemId: string){
-    const its = lots.filter(l=> l.kind===kind && l.itemId===itemId);
-    const latestPurchase = its.length? new Date(Math.max(...its.map(l=> l.receivedAt||0))) : undefined;
-    const upcoming = its.map(l=> l.expiryDate? new Date(l.expiryDate) : null).filter(Boolean) as Date[];
-    const nextExpiry = upcoming.length? new Date(Math.min(...upcoming.map(d=> d.getTime()))) : undefined;
-    const daysLeft = nextExpiry? Math.ceil((nextExpiry.getTime() - Date.now())/86400000) : undefined;
-    return { latestPurchase, nextExpiry, daysLeft } as const;
-  }
-  function expiryBg(days?: number){
-    if(days===undefined) return '';
-    if(days<=1) return 'bg-red-100 dark:bg-red-900/30';
-    if(days<=3) return 'bg-orange-100 dark:bg-orange-900/30';
-    if(days<=5) return 'bg-yellow-100 dark:bg-yellow-900/30';
-    return '';
-  }
-  function fmtCurrency(n:number){ try { return n.toLocaleString(undefined, { style:'currency', currency:'USD' }); } catch { return `$${(n||0).toFixed(2)}`; } }
   const [date, setDate] = useState<string>(()=> new Date().toISOString().slice(0,10));
 
   const [currentUserId, setCurrentUserId] = useState<string | null>(()=> readLS(LS_SESSION_USER, null));
