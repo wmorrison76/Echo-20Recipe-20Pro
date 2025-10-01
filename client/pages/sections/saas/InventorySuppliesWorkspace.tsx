@@ -825,7 +825,8 @@ function CatalogTable({
                     <td className="p-3 align-top text-right">
                       <div className="flex flex-col items-end gap-2">
                         <Button
-                          size="xs"
+                          size="sm"
+                          className="h-8 px-3 text-xs"
                           variant="secondary"
                           onClick={() => {
                             setMode("stock");
@@ -835,7 +836,8 @@ function CatalogTable({
                           Record count
                         </Button>
                         <Button
-                          size="xs"
+                          size="sm"
+                          className="h-8 px-3 text-xs"
                           variant="ghost"
                           onClick={() => {
                             setMode("par");
