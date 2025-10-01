@@ -1928,11 +1928,12 @@ export default function RecipeSearchSection() {
       >
         <div className="flex-1" data-echo-key="field:recipes:query">
           <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search by name, ingredient, tag…"
-            className="w-full rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring"
-          />
+          ref={searchInputRef}
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Search by name, ingredient, tag…"
+          className="w-full rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring"
+        />
         </div>
         <select
           value={fcuisine}
