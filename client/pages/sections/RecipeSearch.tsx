@@ -507,6 +507,122 @@ export default function RecipeSearchSection() {
   >(null);
   const inTrashView = cat === "trash";
 
+  const isCollectionDraftActive =
+    Boolean(activeCollectionId) ||
+    collectionDraftName.trim().length > 0 ||
+    selectedRecipeIds.length > 0;
+  const isCollectionSelectionEnabled = isCollectionDraftActive && !inTrashView;
+
+  useEffect(() => {
+    if (!selectedRecipeIds.length) return;
+    setSelectedRecipeIds((prev) =>
+      prev.filter((id) => recipes.some((recipe) => recipe.id === id)),
+    );
+  }, [recipes]);
+
+  const resetCollectionDraft = useCallback(() => {
+    setCollectionDraftName("");
+    setSelectedRecipeIds([]);
+    setActiveCollectionId(null);
+  }, []);
+
+  const toggleRecipeSelection = useCallback(
+    (recipeId: string) => {
+      if (!isCollectionSelectionEnabled) return;
+      setSelectedRecipeIds((prev) =>
+        prev.includes(recipeId)
+          ? prev.filter((id) => id !== recipeId)
+          : [...prev, recipeId],
+      );
+    },
+    [isCollectionSelectionEnabled],
+  );
+
+  const handleEditCollection = useCallback(
+    (collection: RecipeCollection) => {
+      setActiveCollectionId(collection.id);
+      setCollectionDraftName(collection.name);
+      setSelectedRecipeIds(
+        collection.recipeIds.filter((id) =>
+          recipes.some((recipe) => recipe.id === id),
+        ),
+      );
+      requestAnimationFrame(() => {
+        collectionNameRef.current?.focus();
+      });
+    },
+    [recipes],
+  );
+
+  const handleSaveCollection = useCallback(() => {
+    const trimmedName = collectionDraftName.trim();
+    if (!trimmedName) {
+      toast({
+        title: "Name required",
+        description: "Add a name before saving the collection.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (selectedRecipeIds.length === 0) {
+      toast({
+        title: "No recipes selected",
+        description: "Select at least one recipe to include.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (activeCollectionId) {
+      updateCollection(activeCollectionId, { name: trimmedName });
+      setCollectionRecipes(activeCollectionId, selectedRecipeIds);
+      toast({
+        title: "Collection updated",
+        description: "Changes have been saved.",
+      });
+    } else {
+      createCollection({
+        name: trimmedName,
+        season: "All",
+        year: new Date().getFullYear(),
+        version: 1,
+        recipeIds: selectedRecipeIds,
+      });
+      toast({
+        title: "Collection created",
+        description: `${selectedRecipeIds.length} recipe${selectedRecipeIds.length === 1 ? "" : "s"} saved to "${trimmedName}".`,
+      });
+    }
+    resetCollectionDraft();
+  }, [
+    activeCollectionId,
+    collectionDraftName,
+    createCollection,
+    resetCollectionDraft,
+    selectedRecipeIds,
+    setCollectionRecipes,
+    toast,
+    updateCollection,
+  ]);
+
+  const handleDeleteCollection = useCallback(() => {
+    if (!collectionToDelete) return;
+    deleteCollection(collectionToDelete.id);
+    if (collectionToDelete.id === activeCollectionId) {
+      resetCollectionDraft();
+    }
+    toast({
+      title: "Collection deleted",
+      description: `"${collectionToDelete.name}" removed.`,
+    });
+    setCollectionToDelete(null);
+  }, [
+    activeCollectionId,
+    collectionToDelete,
+    deleteCollection,
+    resetCollectionDraft,
+    toast,
+  ]);
+
   return (
     <div
       className="mx-auto max-w-[1200px] px-4 md:px-6 py-4 space-y-4"
