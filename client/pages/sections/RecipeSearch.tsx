@@ -342,6 +342,20 @@ export default function RecipeSearchSection() {
   const [scanCandidates, setScanCandidates] = useState<number[] | null>(null);
   const [scanBookName, setScanBookName] = useState<string | null>(null);
 
+  const { toast } = useToast();
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const collectionNameRef = useRef<HTMLInputElement | null>(null);
+  const [collectionDraftName, setCollectionDraftName] = useState("");
+  const [selectedRecipeIds, setSelectedRecipeIds] = useState<string[]>([]);
+  const [activeCollectionId, setActiveCollectionId] = useState<string | null>(null);
+  const [collectionToDelete, setCollectionToDelete] = useState<RecipeCollection | null>(null);
+
+  const sortedCollections = useMemo(() => {
+    return [...collections].sort((a, b) =>
+      Date.parse(b.updatedAt || "") - Date.parse(a.updatedAt || ""),
+    );
+  }, [collections]);
+
   const onFiles = async (files: File[]) => {
     const list = files.slice(0, 100);
     const jsonFiles = list.filter(
