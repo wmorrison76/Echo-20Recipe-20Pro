@@ -1183,56 +1183,62 @@ export default function RecipeSearchSection() {
         </div>
       </div>
       <div className="space-y-3 rounded-xl border border-primary/30 bg-background/80 p-4 shadow-sm dark:bg-zinc-900/60">
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex min-w-[240px] flex-1 items-center gap-3 rounded-full border border-primary/20 bg-background px-4 py-2 shadow-inner dark:bg-zinc-950/60">
-            <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              New Menu Collection
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex min-w-[240px] flex-1 flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Menu Collection
+              </div>
+              {activeCollectionId && (
+                <span className="rounded-full bg-primary/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                  Editing
+                </span>
+              )}
             </div>
-            <input
-              ref={collectionNameRef}
-              value={collectionDraftName}
-              onChange={(event) => setCollectionDraftName(event.target.value)}
-              placeholder={activeCollectionId ? "Rename collection" : "Name this collection"}
-              className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-            />
-            {activeCollectionId && (
-              <span className="rounded-full bg-primary/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-primary">
-                Editing
-              </span>
-            )}
+            <div className="flex items-center gap-3 rounded-full border border-primary/20 bg-background px-4 py-2 shadow-inner dark:bg-zinc-950/60">
+              <input
+                ref={collectionNameRef}
+                value={collectionDraftName}
+                onChange={(event) => setCollectionDraftName(event.target.value)}
+                placeholder="Collection Name"
+                className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              />
+            </div>
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            onClick={() => searchInputRef.current?.focus()}
-            title="Search recipes"
-          >
-            <Search className="h-4 w-4" />
-          </Button>
-          <Button
-            type="button"
-            variant="secondary"
-            size="icon"
-            onClick={handleSaveCollection}
-            disabled={
-              collectionDraftName.trim().length === 0 || selectedRecipeIds.length === 0
-            }
-            title="Save collection"
-          >
-            <Save className="h-4 w-4" />
-          </Button>
-          {isCollectionDraftActive && (
+          <div className="flex items-center gap-2">
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
               size="icon"
-              onClick={resetCollectionDraft}
-              title="Clear"
+              onClick={() => searchInputRef.current?.focus()}
+              title="Search recipes"
             >
-              <X className="h-4 w-4" />
+              <Search className="h-4 w-4" />
             </Button>
-          )}
+            <Button
+              type="button"
+              variant="secondary"
+              size="icon"
+              onClick={handleSaveCollection}
+              disabled={
+                collectionDraftName.trim().length === 0 || selectedRecipeIds.length === 0
+              }
+              title="Save collection"
+            >
+              <Save className="h-4 w-4" />
+            </Button>
+            {isCollectionDraftActive && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={resetCollectionDraft}
+                title="Clear"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
         </div>
         {isCollectionDraftActive && (
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
