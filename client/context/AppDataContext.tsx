@@ -8,6 +8,7 @@ import React, {
   useRef,
 } from "react";
 import JSZip from "jszip";
+import type { Recipe } from "@shared/recipes";
 // Mammoth is loaded on-demand to keep bundle small and avoid init errors in some environments
 
 export type GalleryImage = {
@@ -21,23 +22,6 @@ export type GalleryImage = {
   order: number;
   type?: string;
   unsupported?: boolean;
-};
-
-export type Recipe = {
-  id: string;
-  title: string;
-  description?: string;
-  ingredients?: string[];
-  instructions?: string[];
-  tags?: string[];
-  imageNames?: string[]; // filenames to link with gallery
-  imageDataUrls?: string[]; // resolved from gallery by name
-  createdAt: number;
-  sourceFile?: string;
-  extra?: Record<string, unknown>;
-  favorite?: boolean;
-  rating?: number; // 0-5
-  deletedAt?: number | null; // soft delete
 };
 
 export type LookBook = {
