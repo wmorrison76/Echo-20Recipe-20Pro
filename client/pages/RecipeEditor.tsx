@@ -302,7 +302,7 @@ export default function RecipeEditor() {
                 <Textarea
                   value={directionsText}
                   onChange={(e) => setDirectionsText(e.target.value)}
-                  minRows={8}
+                  rows={8}
                   placeholder={"1. Preheat oven to 350F\n2. Toast buns and prep toppings"}
                   className="min-h-[180px]"
                 />
