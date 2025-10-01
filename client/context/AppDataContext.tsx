@@ -539,6 +539,112 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     }, 0);
   }, [images, recipes, lookbooks]);
 
+  const createCollection = useCallback(
+    (input: {
+      name: string;
+      season: string;
+      year: number;
+      version: number;
+      description?: string;
+      recipeIds?: string[];
+    }): RecipeCollection => {
+      const now = new Date().toISOString();
+      const recipeIds = Array.from(new Set(input.recipeIds ?? []));
+      const item: RecipeCollection = {
+        id: uid(),
+        name: input.name.trim() || "Untitled Collection",
+        season: input.season.trim() || "All",
+        year: Number.isFinite(input.year) ? input.year : new Date().getFullYear(),
+        version: Number.isFinite(input.version) ? input.version : 1,
+        description: input.description?.trim() || undefined,
+        recipeIds,
+        createdAt: now,
+        updatedAt: now,
+      };
+      setCollections((prev) => [item, ...prev]);
+      return item;
+    },
+    [],
+  );
+
+  const updateCollection = useCallback(
+    (
+      id: string,
+      patch: Partial<Omit<RecipeCollection, "id" | "createdAt" | "recipeIds">>,
+    ) => {
+      setCollections((prev) =>
+        prev.map((collection) =>
+          collection.id === id
+            ? {
+                ...collection,
+                ...patch,
+                name: patch.name?.trim() || collection.name,
+                season: patch.season?.trim() || collection.season,
+                description: patch.description?.trim() || collection.description,
+                updatedAt: new Date().toISOString(),
+              }
+            : collection,
+        ),
+      );
+    },
+    [],
+  );
+
+  const deleteCollection = useCallback((id: string) => {
+    setCollections((prev) => prev.filter((collection) => collection.id !== id));
+  }, []);
+
+  const addRecipeToCollection = useCallback((collectionId: string, recipeId: string) => {
+    setCollections((prev) =>
+      prev.map((collection) =>
+        collection.id === collectionId
+          ? {
+              ...collection,
+              recipeIds: Array.from(new Set([...(collection.recipeIds || []), recipeId])),
+              updatedAt: new Date().toISOString(),
+            }
+          : collection,
+      ),
+    );
+  }, []);
+
+  const removeRecipeFromCollection = useCallback(
+    (collectionId: string, recipeId: string) => {
+      setCollections((prev) =>
+        prev.map((collection) =>
+          collection.id === collectionId
+            ? {
+                ...collection,
+                recipeIds: (collection.recipeIds || []).filter((id) => id !== recipeId),
+                updatedAt: new Date().toISOString(),
+              }
+            : collection,
+        ),
+      );
+    },
+    [],
+  );
+
+  const setCollectionRecipes = useCallback((collectionId: string, recipeIds: string[]) => {
+    const uniqueIds = Array.from(new Set(recipeIds));
+    setCollections((prev) =>
+      prev.map((collection) =>
+        collection.id === collectionId
+          ? {
+              ...collection,
+              recipeIds: uniqueIds,
+              updatedAt: new Date().toISOString(),
+            }
+          : collection,
+      ),
+    );
+  }, []);
+
+  const getCollectionById = useCallback(
+    (id: string) => collections.find((collection) => collection.id === id),
+    [collections],
+  );
+
   const normalizeRecipe = (
     raw: any,
   ): Omit<Recipe, "id" | "createdAt"> | null => {
@@ -2119,11 +2225,20 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       destroyRecipe,
       addDemoImages,
       addStockFoodPhotos,
+      collections,
+      createCollection,
+      updateCollection,
+      deleteCollection,
+      addRecipeToCollection,
+      removeRecipeFromCollection,
+      setCollectionRecipes,
+      getCollectionById,
     }),
     [
       recipes,
       images,
       lookbooks,
+      collections,
       addImages,
       restoreDemo,
       addRecipe,
@@ -2153,6 +2268,13 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       destroyRecipe,
       addDemoImages,
       addStockFoodPhotos,
+      createCollection,
+      updateCollection,
+      deleteCollection,
+      addRecipeToCollection,
+      removeRecipeFromCollection,
+      setCollectionRecipes,
+      getCollectionById,
     ],
   );
 
