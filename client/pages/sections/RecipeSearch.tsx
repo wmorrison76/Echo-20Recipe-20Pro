@@ -2091,88 +2091,112 @@ export default function RecipeSearchSection() {
           className="divide-y rounded-lg border glow"
           data-echo-key="section:recipes:results"
         >
-          {results.filter(Boolean).map((r) => (
-            <div
-              key={r.id || Math.random().toString(36).slice(2)}
-              className="p-3 flex items-start gap-3"
-              data-echo-key="card:recipes:result"
-            >
-              <div className="w-20 h-16 rounded bg-muted overflow-hidden">
-                {r.imageDataUrls?.[0] ? (
-                  <img
-                    src={r.imageDataUrls[0]}
-                    alt=""
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                ) : null}
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <div className="font-medium line-clamp-1">{r.title}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {r.createdAt
-                      ? new Date(r.createdAt).toLocaleDateString()
-                      : "-"}
+          {results.filter(Boolean).map((r) => {
+            const key = r.id || Math.random().toString(36).slice(2);
+            const selected = selectedRecipeIds.includes(r.id);
+            return (
+              <div
+                key={key}
+                className={cn(
+                  "flex items-start gap-3 p-3 transition-colors",
+                  isCollectionSelectionEnabled && selected
+                    ? "bg-primary/5 dark:bg-primary/15"
+                    : undefined,
+                )}
+                data-echo-key="card:recipes:result"
+              >
+                <div className="relative h-16 w-20 overflow-hidden rounded bg-muted">
+                  {r.imageDataUrls?.[0] ? (
+                    <img
+                      src={r.imageDataUrls[0]}
+                      alt=""
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                  ) : null}
+                  {isCollectionSelectionEnabled && (
+                    <button
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => toggleRecipeSelection(r.id)}
+                      className={cn(
+                        "absolute left-1.5 top-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold shadow focus-visible:outline-none focus-visible:ring",
+                        selected
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground",
+                      )}
+                    >
+                      {selected ? "Selected" : "Select"}
+                    </button>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <div className="line-clamp-1 font-medium">{r.title}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {r.createdAt
+                        ? new Date(r.createdAt).toLocaleDateString()
+                        : "-"}
+                    </div>
                   </div>
-                </div>
-                <div className="text-xs text-muted-foreground line-clamp-1">
-                  {r.tags?.join(" · ")}
-                </div>
-                <div className="mt-1 flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => setPreview(r)}
-                  >
-                    Preview
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    asChild
-                    data-echo-key="cta:recipes:open"
-                  >
-                    <a href={`/recipe/${r.id}/view`}>
-                      <ExternalLink className="mr-1" />
-                      Open
-                    </a>
-                  </Button>
-                  {inTrashView ? (
-                    <>
+                  <div className="line-clamp-1 text-xs text-muted-foreground">
+                    {r.tags?.join(" · ")}
+                  </div>
+                  <div className="mt-1 flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => setPreview(r)}
+                    >
+                      Preview
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      asChild
+                      data-echo-key="cta:recipes:open"
+                    >
+                      <a href={`/recipe/${r.id}/view`}>
+                        <ExternalLink className="mr-1" />
+                        Open
+                      </a>
+                    </Button>
+                    {inTrashView ? (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => restoreRecipe(r.id)}
+                          title="Restore"
+                        >
+                          <RotateCcw />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => {
+                            if (confirm("Delete forever?")) destroyRecipe(r.id);
+                          }}
+                          title="Delete forever"
+                        >
+                          <Trash2 />
+                        </Button>
+                      </>
+                    ) : (
                       <Button
                         size="sm"
-                        variant="outline"
-                        onClick={() => restoreRecipe(r.id)}
-                        title="Restore"
-                      >
-                        <RotateCcw />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => {
-                          if (confirm("Delete forever?")) destroyRecipe(r.id);
-                        }}
-                        title="Delete forever"
+                        variant="ghost"
+                        onClick={() => deleteRecipe(r.id)}
+                        title="Move to trash"
                       >
                         <Trash2 />
                       </Button>
-                    </>
-                  ) : (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => deleteRecipe(r.id)}
-                      title="Move to trash"
-                    >
-                      <Trash2 />
-                    </Button>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
