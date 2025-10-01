@@ -63,7 +63,8 @@ export default function ServerNotesSection() {
   };
 
   const handleRecipesChange = (recipesSelection: ServerNoteRecipe[]) => {
-    setCurrentNote((prev) => ({ ...prev, selectedRecipes: recipesSelection, updatedAt: new Date().toISOString() }));
+    const normalized = recipesSelection.map((item, index) => ({ ...item, order: index }));
+    setCurrentNote((prev) => ({ ...prev, selectedRecipes: normalized, updatedAt: new Date().toISOString() }));
   };
 
   const persistSettings = (note: ServerNote) => {
