@@ -152,6 +152,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [lookbooks, setLookbooks] = useState<LookBook[]>([]);
+  const [collections, setCollections] = useState<RecipeCollection[]>([]);
   const mountedRef = useRef(true);
   useEffect(() => {
     return () => {
