@@ -28,12 +28,17 @@ const buildRecipe = (
   },
 ): Recipe => {
   const instructions = exportData.directions
-    ? exportData.directions.split(/\n+/).map((line) => line.trim()).filter(Boolean)
+    ? exportData.directions
+        .split(/\n+/)
+        .map((line) => line.trim())
+        .filter(Boolean)
     : [];
   const ingredients = exportData.ingredients.map((row) =>
     [row.qty, row.unit, row.item, row.prep && `( ${row.prep} )`]
       .filter(Boolean)
-      .join(" ").replace(/\s{2,}/g, " ").trim(),
+      .join(" ")
+      .replace(/\s{2,}/g, " ")
+      .trim(),
   );
 
   const createdAt = options.createdYearsAgo
@@ -84,7 +89,8 @@ const meyerLemonExport = normalizeRecipe({
   selectedRecipeType: ["Pastry"],
   selectedPrepMethod: ["Bake"],
   selectedCookingEquipment: ["Tart Pan", "Stand Mixer"],
-  image: "https://images.unsplash.com/photo-1505253758473-96b7015fcd40?auto=format&fit=crop&w=720&q=70",
+  image:
+    "https://images.unsplash.com/photo-1505253758473-96b7015fcd40?auto=format&fit=crop&w=720&q=70",
   yieldQty: 8,
   yieldUnit: "slices",
   portionCount: 8,
@@ -129,7 +135,8 @@ const charredOctopusExport = normalizeRecipe({
   selectedRecipeType: ["Seafood"],
   selectedPrepMethod: ["Poach", "Grill"],
   selectedCookingEquipment: ["Grill", "Blender"],
-  image: "https://images.unsplash.com/photo-1516684669134-de6cec3f36c3?auto=format&fit=crop&w=720&q=70",
+  image:
+    "https://images.unsplash.com/photo-1516684669134-de6cec3f36c3?auto=format&fit=crop&w=720&q=70",
   yieldQty: 6,
   yieldUnit: "plates",
   portionCount: 6,
@@ -174,7 +181,8 @@ const wagyuExport = normalizeRecipe({
   selectedRecipeType: ["Meat"],
   selectedPrepMethod: ["Sear", "Roast"],
   selectedCookingEquipment: ["Carbon Steel Pan", "Oven"],
-  image: "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=720&q=70",
+  image:
+    "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=720&q=70",
   yieldQty: 6,
   yieldUnit: "plates",
   portionCount: 6,
@@ -218,7 +226,8 @@ const veganExport = normalizeRecipe({
   selectedRecipeType: ["Vegan"],
   selectedPrepMethod: ["Roast", "Glaze"],
   selectedCookingEquipment: ["Coal Grill", "Mandoline"],
-  image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=720&q=70",
+  image:
+    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=720&q=70",
   yieldQty: 6,
   yieldUnit: "plates",
   portionCount: 6,
@@ -245,7 +254,8 @@ const veganExport = normalizeRecipe({
 
 const recipes: Recipe[] = [
   buildRecipe("demo-lemon-tart", meyerLemonExport, {
-    description: "Silky Meyer lemon curd in a buttery pâte sucrée shell with torched meringue accents.",
+    description:
+      "Silky Meyer lemon curd in a buttery pâte sucrée shell with torched meringue accents.",
     tags: ["pastry", "citrus", "classic"],
     imageUrl: meyerLemonExport.imageDataUrl,
     course: "Dessert",
@@ -256,7 +266,8 @@ const recipes: Recipe[] = [
     createdYearsAgo: 1,
   }),
   buildRecipe("demo-octopus-romesco", charredOctopusExport, {
-    description: "Tender galician-style octopus kissed by flame over smoky romesco sauce.",
+    description:
+      "Tender galician-style octopus kissed by flame over smoky romesco sauce.",
     tags: ["seafood", "tapas", "smoked"],
     imageUrl: charredOctopusExport.imageDataUrl,
     course: "Appetizer",
@@ -267,7 +278,8 @@ const recipes: Recipe[] = [
     createdYearsAgo: 2,
   }),
   buildRecipe("demo-wagyu-bordelaise", wagyuExport, {
-    description: "Charred wagyu strip, bone marrow bordelaise, and glazed potatoes for the pass.",
+    description:
+      "Charred wagyu strip, bone marrow bordelaise, and glazed potatoes for the pass.",
     tags: ["beef", "luxury", "signature"],
     imageUrl: wagyuExport.imageDataUrl,
     course: "Entree",
@@ -278,7 +290,8 @@ const recipes: Recipe[] = [
     createdYearsAgo: 1,
   }),
   buildRecipe("demo-carrot-mosaic", veganExport, {
-    description: "Coal-roasted carrot mosaic with sprouted lentils, black garlic, and pistachio crunch.",
+    description:
+      "Coal-roasted carrot mosaic with sprouted lentils, black garlic, and pistachio crunch.",
     tags: ["vegan", "vegetable", "seasonal"],
     imageUrl: veganExport.imageDataUrl,
     course: "Vegetable",

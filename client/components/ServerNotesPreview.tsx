@@ -28,7 +28,10 @@ export default function ServerNotesPreview({
       >
         <div
           className="absolute inset-1 rounded-md"
-          style={{ border: `1px solid ${color.secondary}`, background: color.background }}
+          style={{
+            border: `1px solid ${color.secondary}`,
+            background: color.background,
+          }}
         />
         <div
           className={`absolute ${layout.standardLayout.headerStyle === "centered" ? "left-1/2 -translate-x-1/2" : "left-2"} top-2 h-1 w-14 rounded-full`}
@@ -38,15 +41,34 @@ export default function ServerNotesPreview({
           {layout.standardLayout.includeImages && (
             <div
               className="rounded-sm border"
-              style={{ borderColor: color.secondary, background: color.background }}
+              style={{
+                borderColor: color.secondary,
+                background: color.background,
+              }}
             />
           )}
-          <div className={layout.standardLayout.includeImages ? "col-span-2" : "col-span-3"}>
-            <div className="mb-1 h-1.5 w-3/4 rounded-full" style={headingRule(color.accent)} />
+          <div
+            className={
+              layout.standardLayout.includeImages ? "col-span-2" : "col-span-3"
+            }
+          >
+            <div
+              className="mb-1 h-1.5 w-3/4 rounded-full"
+              style={headingRule(color.accent)}
+            />
             <div className="space-y-1">
-              <div className="h-1 w-full rounded-full" style={headingRule(color.secondary)} />
-              <div className="h-1 w-5/6 rounded-full" style={headingRule(color.secondary)} />
-              <div className="h-1 w-2/3 rounded-full" style={headingRule(color.secondary)} />
+              <div
+                className="h-1 w-full rounded-full"
+                style={headingRule(color.secondary)}
+              />
+              <div
+                className="h-1 w-5/6 rounded-full"
+                style={headingRule(color.secondary)}
+              />
+              <div
+                className="h-1 w-2/3 rounded-full"
+                style={headingRule(color.secondary)}
+              />
             </div>
           </div>
         </div>
@@ -56,35 +78,59 @@ export default function ServerNotesPreview({
 
   if (pageFormat === "index-card") {
     const headerMinimal = layout.indexCardLayout.headerStyle === "minimal";
-    const fontSize = layout.indexCardLayout.fontSize === "small" ? "text-[10px]" : "text-[12px]";
+    const fontSize =
+      layout.indexCardLayout.fontSize === "small"
+        ? "text-[10px]"
+        : "text-[12px]";
     return (
-      <div className={variant === "mini" ? "scale-90 origin-top-left" : "space-y-3"}>
+      <div
+        className={
+          variant === "mini" ? "scale-90 origin-top-left" : "space-y-3"
+        }
+      >
         {[0, 1].map((idx) => (
           <div
             key={idx}
             className={`${baseCardClass} mx-auto h-48 w-[320px] border-[1.5px]`}
-            style={{ borderColor: color.secondary, background: color.background }}
+            style={{
+              borderColor: color.secondary,
+              background: color.background,
+            }}
           >
             {headerMinimal ? (
               <div className="px-3 pt-3">
-                <div className="text-[10px] uppercase tracking-wide" style={{ color: color.secondary }}>
+                <div
+                  className="text-[10px] uppercase tracking-wide"
+                  style={{ color: color.secondary }}
+                >
                   Signature Card
                 </div>
-                <div className="text-sm font-semibold" style={{ color: color.primary }}>
+                <div
+                  className="text-sm font-semibold"
+                  style={{ color: color.primary }}
+                >
                   Pan-Roasted Salmon
                 </div>
-                <div className="mt-2 h-[2px] w-full" style={headingRule(color.accent)} />
+                <div
+                  className="mt-2 h-[2px] w-full"
+                  style={headingRule(color.accent)}
+                />
               </div>
             ) : (
               <div
                 className="border-b px-3 py-2 text-center text-white"
                 style={{ background: color.primary, borderColor: color.accent }}
               >
-                <div className="text-[10px] uppercase opacity-80">Signature Card</div>
+                <div className="text-[10px] uppercase opacity-80">
+                  Signature Card
+                </div>
                 <div className="text-sm font-semibold">Pan-Roasted Salmon</div>
               </div>
             )}
-            <div className={`p-3 leading-tight ${fontSize}`} style={{ color: color.text }}>
+            <div
+              className={`p-3 leading-tight ${fontSize}`}
+              style={{ color: color.text }}
+            >
               {layout.indexCardLayout.includeImages && (
                 <div className="float-right ml-3">
                   <div
@@ -95,7 +141,10 @@ export default function ServerNotesPreview({
               )}
               {layout.indexCardLayout.contentPriority !== "instructions" && (
                 <div className="space-y-1">
-                  <div className="font-semibold" style={{ color: color.primary }}>
+                  <div
+                    className="font-semibold"
+                    style={{ color: color.primary }}
+                  >
                     Ingredients
                   </div>
                   <ul className="ml-4 list-disc space-y-0.5">
@@ -107,7 +156,10 @@ export default function ServerNotesPreview({
               )}
               {layout.indexCardLayout.contentPriority !== "ingredients" && (
                 <div className="mt-2 space-y-1">
-                  <div className="font-semibold" style={{ color: color.primary }}>
+                  <div
+                    className="font-semibold"
+                    style={{ color: color.primary }}
+                  >
                     Steps
                   </div>
                   <ol className="ml-4 list-decimal space-y-0.5">
@@ -150,7 +202,10 @@ export default function ServerNotesPreview({
         </div>
         <header
           className={`border-b px-6 py-4 ${layout.standardLayout.headerStyle === "centered" ? "text-center" : ""}`}
-          style={{ borderColor: color.primary, fontFamily: layout.standardLayout.fontFamily }}
+          style={{
+            borderColor: color.primary,
+            fontFamily: layout.standardLayout.fontFamily,
+          }}
         >
           <div
             className="absolute right-6 top-4 h-10 w-10 rounded-sm border"
@@ -178,12 +233,19 @@ export default function ServerNotesPreview({
               />
             </div>
           )}
-          <div className={layout.standardLayout.includeImages ? "col-span-8" : "col-span-12"}>
+          <div
+            className={
+              layout.standardLayout.includeImages ? "col-span-8" : "col-span-12"
+            }
+          >
             <div
               className="rounded-md border bg-white/70 p-3 text-xs dark:bg-slate-900/40"
               style={{ borderColor: color.accent }}
             >
-              <div className="text-[11px] font-semibold" style={{ color: color.primary }}>
+              <div
+                className="text-[11px] font-semibold"
+                style={{ color: color.primary }}
+              >
                 Selling Notes
               </div>
               <p className="mt-1 text-xs" style={{ color: color.secondary }}>

@@ -13,7 +13,10 @@ export const ALLERGENS = [
   "Mustard",
 ];
 
-export const DIET_PROFILES: Record<string, { allow: string[]; avoid: string[] }> = {
+export const DIET_PROFILES: Record<
+  string,
+  { allow: string[]; avoid: string[] }
+> = {
   vegan: {
     allow: ["Vegetables", "Legumes", "Whole Grains", "Seeds", "Fruits"],
     avoid: ["Meat", "Fish", "Eggs", "Dairy", "Honey", "Gelatin"],
@@ -31,13 +34,22 @@ export const DIET_PROFILES: Record<string, { allow: string[]; avoid: string[] }>
     avoid: ["Pork", "Alcohol", "Non-Halal Meat", "Blood"],
   },
   kosher: {
-    allow: ["Kosher Meat", "Fish with Fins and Scales", "Vegetables", "Dairy (with rules)", "Grains"],
+    allow: [
+      "Kosher Meat",
+      "Fish with Fins and Scales",
+      "Vegetables",
+      "Dairy (with rules)",
+      "Grains",
+    ],
     avoid: ["Pork", "Shellfish", "Meat with Dairy", "Non-Kosher Slaughter"],
   },
 };
 
 export function generateId(prefix = "id") {
-  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  ) {
     return `${prefix}-${crypto.randomUUID()}`;
   }
   return `${prefix}-${Math.random().toString(36).slice(2)}-${Date.now().toString(36)}`;
@@ -52,6 +64,7 @@ export function formatCurrency(amount: number, currency: string = "USD") {
 }
 
 export function percent(value: number, total: number) {
-  if (!Number.isFinite(value) || !Number.isFinite(total) || total === 0) return "0%";
+  if (!Number.isFinite(value) || !Number.isFinite(total) || total === 0)
+    return "0%";
   return `${Math.round((value / total) * 100)}%`;
 }

@@ -111,7 +111,10 @@ type AppData = {
     description?: string;
     recipeIds?: string[];
   }) => RecipeCollection;
-  updateCollection: (id: string, patch: Partial<Omit<RecipeCollection, "id" | "createdAt" | "recipeIds">>) => void;
+  updateCollection: (
+    id: string,
+    patch: Partial<Omit<RecipeCollection, "id" | "createdAt" | "recipeIds">>,
+  ) => void;
   deleteCollection: (id: string) => void;
   addRecipeToCollection: (collectionId: string, recipeId: string) => void;
   removeRecipeFromCollection: (collectionId: string, recipeId: string) => void;

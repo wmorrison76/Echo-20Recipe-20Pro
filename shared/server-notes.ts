@@ -171,7 +171,8 @@ export const layoutPresets: LayoutPreset[] = [
   {
     id: "tasting-flight",
     name: "Tasting Flight",
-    description: "Three course tasting flight with plating rhythm and beverage cues.",
+    description:
+      "Three course tasting flight with plating rhythm and beverage cues.",
     standardLayout: {
       id: "standard-flight",
       name: "Tasting Flight",
@@ -238,7 +239,10 @@ export const layoutPresets: LayoutPreset[] = [
   },
 ];
 
-export function createEmptyServerNote(preset: LayoutPreset = layoutPresets[0]!, color: ColorScheme = colorSchemes[0]!): ServerNote {
+export function createEmptyServerNote(
+  preset: LayoutPreset = layoutPresets[0]!,
+  color: ColorScheme = colorSchemes[0]!,
+): ServerNote {
   const now = new Date().toISOString();
   return {
     id: "",

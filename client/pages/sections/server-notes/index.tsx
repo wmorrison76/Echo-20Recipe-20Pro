@@ -24,7 +24,10 @@ export default function ServerNotesSection() {
   const { recipes } = useAppData();
   const { toast } = useToast();
 
-  const template = useMemo(() => createEmptyServerNote(layoutPresets[0]!, colorSchemes[0]!), []);
+  const template = useMemo(
+    () => createEmptyServerNote(layoutPresets[0]!, colorSchemes[0]!),
+    [],
+  );
   const [currentNote, setCurrentNote] = useState<ServerNote>(template);
   const [savedNotes, setSavedNotes] = useState<ServerNote[]>([]);
 
@@ -59,12 +62,23 @@ export default function ServerNotesSection() {
   }, [savedNotes]);
 
   const handleUpdate = (patch: Partial<ServerNote>) => {
-    setCurrentNote((prev) => ({ ...prev, ...patch, updatedAt: new Date().toISOString() }));
+    setCurrentNote((prev) => ({
+      ...prev,
+      ...patch,
+      updatedAt: new Date().toISOString(),
+    }));
   };
 
   const handleRecipesChange = (recipesSelection: ServerNoteRecipe[]) => {
-    const normalized = recipesSelection.map((item, index) => ({ ...item, order: index }));
-    setCurrentNote((prev) => ({ ...prev, selectedRecipes: normalized, updatedAt: new Date().toISOString() }));
+    const normalized = recipesSelection.map((item, index) => ({
+      ...item,
+      order: index,
+    }));
+    setCurrentNote((prev) => ({
+      ...prev,
+      selectedRecipes: normalized,
+      updatedAt: new Date().toISOString(),
+    }));
   };
 
   const persistSettings = (note: ServerNote) => {
@@ -79,7 +93,10 @@ export default function ServerNotesSection() {
   };
 
   const createNewNote = () => {
-    const next = createEmptyServerNote(currentNote.layout, currentNote.colorScheme);
+    const next = createEmptyServerNote(
+      currentNote.layout,
+      currentNote.colorScheme,
+    );
     next.companyName = currentNote.companyName;
     next.outletName = currentNote.outletName;
     next.logos = [...currentNote.logos];
@@ -88,9 +105,14 @@ export default function ServerNotesSection() {
 
   const saveNote = (note: ServerNote) => {
     const withId = note.id ? note : { ...note, id: `note-${Date.now()}` };
-    const noteWithTimestamp = { ...withId, updatedAt: new Date().toISOString() };
+    const noteWithTimestamp = {
+      ...withId,
+      updatedAt: new Date().toISOString(),
+    };
     setSavedNotes((prev) => {
-      const existingIndex = prev.findIndex((item) => item.id === noteWithTimestamp.id);
+      const existingIndex = prev.findIndex(
+        (item) => item.id === noteWithTimestamp.id,
+      );
       if (existingIndex === -1) {
         return [noteWithTimestamp, ...prev];
       }
@@ -121,7 +143,10 @@ export default function ServerNotesSection() {
   }, [currentNote.companyName, currentNote.outletName, currentNote.logos]);
 
   const sortedSelected = useMemo(
-    () => [...currentNote.selectedRecipes].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+    () =>
+      [...currentNote.selectedRecipes].sort(
+        (a, b) => (a.order ?? 0) - (b.order ?? 0),
+      ),
     [currentNote.selectedRecipes],
   );
 
@@ -135,7 +160,8 @@ export default function ServerNotesSection() {
               <div>
                 <h1 className="text-xl font-semibold">Server Notes</h1>
                 <p className="text-sm text-muted-foreground">
-                  Connect recipes, layouts, and service notes into shareable documents.
+                  Connect recipes, layouts, and service notes into shareable
+                  documents.
                 </p>
               </div>
             </div>
@@ -150,7 +176,10 @@ export default function ServerNotesSection() {
                 <CardTitle className="text-base">Configuration</CardTitle>
               </CardHeader>
               <CardContent className="max-h-[calc(100vh-220px)] space-y-6 overflow-y-auto pr-2">
-                <ServerNotesConfig config={currentNote} onUpdate={handleUpdate} />
+                <ServerNotesConfig
+                  config={currentNote}
+                  onUpdate={handleUpdate}
+                />
               </CardContent>
             </Card>
 
@@ -178,7 +207,10 @@ export default function ServerNotesSection() {
                   pageFormat={currentNote.pageFormat}
                   variant="mini"
                 />
-                <ServerNotesGenerator serverNote={currentNote} onSave={saveNote} />
+                <ServerNotesGenerator
+                  serverNote={currentNote}
+                  onSave={saveNote}
+                />
               </CardContent>
             </Card>
           </section>
@@ -187,15 +219,21 @@ export default function ServerNotesSection() {
             <div className="mb-2 flex items-center gap-2">
               <History className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium">Saved Documents</span>
-              {savedNotes.length > 0 && <Badge variant="secondary">{savedNotes.length}</Badge>}
+              {savedNotes.length > 0 && (
+                <Badge variant="secondary">{savedNotes.length}</Badge>
+              )}
             </div>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {savedNotes.map((note) => (
                 <Card key={note.id} className="hover:shadow-lg">
                   <CardHeader>
                     <CardTitle className="flex items-center justify-between text-base">
-                      <span className="line-clamp-1">{note.title || "Untitled"}</span>
-                      <Badge variant="outline">{note.selectedRecipes.length} recipes</Badge>
+                      <span className="line-clamp-1">
+                        {note.title || "Untitled"}
+                      </span>
+                      <Badge variant="outline">
+                        {note.selectedRecipes.length} recipes
+                      </Badge>
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4 text-sm">
@@ -209,17 +247,23 @@ export default function ServerNotesSection() {
                         </div>
                       )}
                       <div>
-                        <strong>Distribution:</strong> {new Date(note.distributionDate).toLocaleDateString()}
+                        <strong>Distribution:</strong>{" "}
+                        {new Date(note.distributionDate).toLocaleDateString()}
                       </div>
                       <div>
                         <strong>Layout:</strong> {note.layout.name}
                       </div>
                       <div>
-                        <strong>Updated:</strong> {new Date(note.updatedAt).toLocaleDateString()}
+                        <strong>Updated:</strong>{" "}
+                        {new Date(note.updatedAt).toLocaleDateString()}
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" className="flex-1" onClick={() => loadSavedNote(note)}>
+                      <Button
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => loadSavedNote(note)}
+                      >
                         Load & Edit
                       </Button>
                       {note.docxDataUrl && (
@@ -238,7 +282,12 @@ export default function ServerNotesSection() {
                           Download
                         </Button>
                       )}
-                      <Button variant="outline" size="sm" onClick={() => deleteNote(note.id)} className="text-red-600">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => deleteNote(note.id)}
+                        className="text-red-600"
+                      >
                         Delete
                       </Button>
                     </div>
@@ -247,7 +296,8 @@ export default function ServerNotesSection() {
               ))}
               {savedNotes.length === 0 && (
                 <div className="col-span-full rounded-lg border py-10 text-center text-sm text-muted-foreground">
-                  No saved documents yet. Generate and save a briefing to build your library.
+                  No saved documents yet. Generate and save a briefing to build
+                  your library.
                 </div>
               )}
             </div>

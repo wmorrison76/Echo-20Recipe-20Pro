@@ -166,7 +166,8 @@ export default function SaasRoadmapSection() {
         <div className="mb-4 space-y-1">
           <div className="text-sm font-semibold">Operational suites</div>
           <p className="text-xs text-muted-foreground">
-            These modules are fully coded and wired into the production experience.
+            These modules are fully coded and wired into the production
+            experience.
           </p>
         </div>
         <Tabs defaultValue="inventory" className="w-full">
@@ -198,19 +199,28 @@ export default function SaasRoadmapSection() {
           <div className="mb-4 space-y-1">
             <div className="text-sm font-semibold">Remaining roadmap</div>
             <p className="text-xs text-muted-foreground">
-              High-level milestones that remain in discovery or backlog planning.
+              High-level milestones that remain in discovery or backlog
+              planning.
             </p>
           </div>
           <Tabs defaultValue={roadmapSections[0].slug} className="w-full">
             <TabsList className="flex flex-wrap gap-1 rounded-lg bg-muted p-1">
               {roadmapSections.map((section) => (
-                <TabsTrigger key={section.slug} value={section.slug} className="text-xs">
+                <TabsTrigger
+                  key={section.slug}
+                  value={section.slug}
+                  className="text-xs"
+                >
                   {section.label}
                 </TabsTrigger>
               ))}
             </TabsList>
             {roadmapSections.map((section) => (
-              <TabsContent key={section.slug} value={section.slug} className="mt-3">
+              <TabsContent
+                key={section.slug}
+                value={section.slug}
+                className="mt-3"
+              >
                 <div className="rounded-xl border bg-white/95 p-4 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15">
                   {section.body}
                 </div>

@@ -15,7 +15,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import ServerNotesPreview from "@/components/ServerNotesPreview";
 import {
   layoutPresets,
@@ -31,7 +36,10 @@ export type ServerNotesConfigProps = {
   onUpdate: (patch: Partial<ServerNote>) => void;
 };
 
-export function ServerNotesConfig({ config, onUpdate }: ServerNotesConfigProps) {
+export function ServerNotesConfig({
+  config,
+  onUpdate,
+}: ServerNotesConfigProps) {
   const [dragOver, setDragOver] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewLayout, setPreviewLayout] = useState<LayoutPreset | null>(null);
@@ -104,17 +112,23 @@ export function ServerNotesConfig({ config, onUpdate }: ServerNotesConfigProps) 
                 <div
                   key={preset.id}
                   className={`rounded-lg border p-3 transition ${
-                    active ? "border-primary bg-primary/5" : "border-muted hover:border-primary/40"
+                    active
+                      ? "border-primary bg-primary/5"
+                      : "border-muted hover:border-primary/40"
                   }`}
                   role="button"
                   tabIndex={0}
                   onClick={() => handleLayoutChange(preset)}
-                  onKeyDown={(event) => event.key === "Enter" && handleLayoutChange(preset)}
+                  onKeyDown={(event) =>
+                    event.key === "Enter" && handleLayoutChange(preset)
+                  }
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <h4 className="text-sm font-semibold">{preset.name}</h4>
-                      <p className="mt-1 text-xs text-muted-foreground">{preset.description}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {preset.description}
+                      </p>
                     </div>
                     <Button
                       variant="outline"
@@ -163,34 +177,53 @@ export function ServerNotesConfig({ config, onUpdate }: ServerNotesConfigProps) 
                 onClick={() => updateColorScheme(scheme)}
               >
                 <div className="flex gap-1">
-                  <span className="h-4 w-4 rounded" style={{ background: scheme.primary }} />
-                  <span className="h-4 w-4 rounded" style={{ background: scheme.secondary }} />
-                  <span className="h-4 w-4 rounded" style={{ background: scheme.accent }} />
+                  <span
+                    className="h-4 w-4 rounded"
+                    style={{ background: scheme.primary }}
+                  />
+                  <span
+                    className="h-4 w-4 rounded"
+                    style={{ background: scheme.secondary }}
+                  />
+                  <span
+                    className="h-4 w-4 rounded"
+                    style={{ background: scheme.accent }}
+                  />
                 </div>
                 <div className="mt-2 text-sm font-medium">{scheme.name}</div>
               </button>
             ))}
           </div>
 
-          <div className={`rounded-lg border p-4 ${usingCustom ? "border-primary bg-primary/5" : "border-muted"}`}>
+          <div
+            className={`rounded-lg border p-4 ${usingCustom ? "border-primary bg-primary/5" : "border-muted"}`}
+          >
             <div className="flex items-center justify-between">
               <div className="text-sm font-semibold">Custom Palette</div>
               <Button
                 variant={usingCustom ? "default" : "outline"}
                 size="sm"
-                onClick={() => updateColorScheme({ ...customColors, id: "custom", name: customColors.name || "Custom" })}
+                onClick={() =>
+                  updateColorScheme({
+                    ...customColors,
+                    id: "custom",
+                    name: customColors.name || "Custom",
+                  })
+                }
               >
                 {usingCustom ? "Active" : "Use Custom"}
               </Button>
             </div>
             <div className="mt-4 grid gap-3 md:grid-cols-5">
-              {([
-                ["primary", "Primary"],
-                ["secondary", "Secondary"],
-                ["accent", "Accent"],
-                ["background", "Background"],
-                ["text", "Text"],
-              ] as [keyof ColorScheme, string][]).map(([key, label]) => (
+              {(
+                [
+                  ["primary", "Primary"],
+                  ["secondary", "Secondary"],
+                  ["accent", "Accent"],
+                  ["background", "Background"],
+                  ["text", "Text"],
+                ] as [keyof ColorScheme, string][]
+              ).map(([key, label]) => (
                 <div key={key} className="space-y-1 text-xs">
                   <Label>{label}</Label>
                   <div className="flex items-center gap-2">
@@ -198,11 +231,15 @@ export function ServerNotesConfig({ config, onUpdate }: ServerNotesConfigProps) 
                       type="color"
                       value={customColors[key]}
                       className="h-8 w-8 rounded border"
-                      onChange={(event) => updateCustomColor(key, event.target.value)}
+                      onChange={(event) =>
+                        updateCustomColor(key, event.target.value)
+                      }
                     />
                     <Input
                       value={customColors[key]}
-                      onChange={(event) => updateCustomColor(key, event.target.value)}
+                      onChange={(event) =>
+                        updateCustomColor(key, event.target.value)
+                      }
                     />
                   </div>
                 </div>
@@ -228,7 +265,9 @@ export function ServerNotesConfig({ config, onUpdate }: ServerNotesConfigProps) 
               <FileText className="h-4 w-4" /> Standard (8.5" × 11")
             </Button>
             <Button
-              variant={config.pageFormat === "index-card" ? "default" : "outline"}
+              variant={
+                config.pageFormat === "index-card" ? "default" : "outline"
+              }
               onClick={() => onUpdate({ ...config, pageFormat: "index-card" })}
               className="flex items-center gap-2"
             >
@@ -239,7 +278,9 @@ export function ServerNotesConfig({ config, onUpdate }: ServerNotesConfigProps) 
           {config.pageFormat === "standard" ? (
             <div className="flex gap-2">
               <Button
-                variant={config.orientation === "vertical" ? "default" : "outline"}
+                variant={
+                  config.orientation === "vertical" ? "default" : "outline"
+                }
                 onClick={() => onUpdate({ ...config, orientation: "vertical" })}
                 size="sm"
                 className="flex items-center gap-2"
@@ -247,8 +288,12 @@ export function ServerNotesConfig({ config, onUpdate }: ServerNotesConfigProps) 
                 <Smartphone className="h-4 w-4" /> Portrait
               </Button>
               <Button
-                variant={config.orientation === "horizontal" ? "default" : "outline"}
-                onClick={() => onUpdate({ ...config, orientation: "horizontal" })}
+                variant={
+                  config.orientation === "horizontal" ? "default" : "outline"
+                }
+                onClick={() =>
+                  onUpdate({ ...config, orientation: "horizontal" })
+                }
                 size="sm"
                 className="flex items-center gap-2"
               >
@@ -289,7 +334,9 @@ export function ServerNotesConfig({ config, onUpdate }: ServerNotesConfigProps) 
               <Input
                 id="company-name"
                 value={config.companyName}
-                onChange={(event) => onUpdate({ ...config, companyName: event.target.value })}
+                onChange={(event) =>
+                  onUpdate({ ...config, companyName: event.target.value })
+                }
                 placeholder="Restaurant name"
               />
             </div>
@@ -298,7 +345,9 @@ export function ServerNotesConfig({ config, onUpdate }: ServerNotesConfigProps) 
               <Input
                 id="outlet-name"
                 value={config.outletName}
-                onChange={(event) => onUpdate({ ...config, outletName: event.target.value })}
+                onChange={(event) =>
+                  onUpdate({ ...config, outletName: event.target.value })
+                }
                 placeholder="Location or concept"
               />
             </div>
@@ -334,19 +383,32 @@ export function ServerNotesConfig({ config, onUpdate }: ServerNotesConfigProps) 
                     id="server-notes-logo-upload"
                     onChange={(event) => handleLogoFiles(event.target.files)}
                   />
-                  <Button variant="outline" onClick={() => document.getElementById("server-notes-logo-upload")?.click()}>
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      document
+                        .getElementById("server-notes-logo-upload")
+                        ?.click()
+                    }
+                  >
                     Browse files
                   </Button>
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground">Maximum logos uploaded.</p>
+                <p className="text-sm text-muted-foreground">
+                  Maximum logos uploaded.
+                </p>
               )}
             </div>
             {config.logos.length > 0 && (
               <div className="flex gap-4">
                 {config.logos.map((logo, index) => (
                   <div key={index} className="relative">
-                    <img src={logo} alt={`Logo ${index + 1}`} className="h-16 w-16 rounded border object-contain" />
+                    <img
+                      src={logo}
+                      alt={`Logo ${index + 1}`}
+                      className="h-16 w-16 rounded border object-contain"
+                    />
                     <Button
                       variant="destructive"
                       size="icon"
@@ -379,7 +441,9 @@ export function ServerNotesConfig({ config, onUpdate }: ServerNotesConfigProps) 
             <Input
               id="document-title"
               value={config.title}
-              onChange={(event) => onUpdate({ ...config, title: event.target.value })}
+              onChange={(event) =>
+                onUpdate({ ...config, title: event.target.value })
+              }
               placeholder="Seasonal menu briefing"
             />
           </div>
@@ -389,7 +453,9 @@ export function ServerNotesConfig({ config, onUpdate }: ServerNotesConfigProps) 
               id="distribution-date"
               type="date"
               value={config.distributionDate.slice(0, 10)}
-              onChange={(event) => onUpdate({ ...config, distributionDate: event.target.value })}
+              onChange={(event) =>
+                onUpdate({ ...config, distributionDate: event.target.value })
+              }
             />
           </div>
           <div className="space-y-1">
@@ -398,7 +464,9 @@ export function ServerNotesConfig({ config, onUpdate }: ServerNotesConfigProps) 
               id="document-notes"
               placeholder="Optional notes shared with service team or attachments to include..."
               value={config.distributionNotes ?? ""}
-              onChange={(event) => onUpdate({ ...config, distributionNotes: event.target.value })}
+              onChange={(event) =>
+                onUpdate({ ...config, distributionNotes: event.target.value })
+              }
               rows={3}
             />
           </div>

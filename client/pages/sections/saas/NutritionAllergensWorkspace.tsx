@@ -21,11 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useAppData } from "@/context/AppDataContext";
 import { cn } from "@/lib/utils";
-import {
-  ALLERGENS,
-  DIET_PROFILES,
-  formatCurrency,
-} from "./shared";
+import { ALLERGENS, DIET_PROFILES, formatCurrency } from "./shared";
 
 type Macro = { kcal: number; fat: number; carbs: number; protein: number };
 
@@ -273,33 +269,52 @@ function parseQtyUnit(line: string) {
 
 function gramsFromQuantity(normalized: string, qty: number, unit: string) {
   if (UNIT_TO_G[unit]) return qty * UNIT_TO_G[unit];
-  if ((unit === "each" || unit === "ea") && normalized && EACH_WEIGHT_G[normalized]) {
+  if (
+    (unit === "each" || unit === "ea") &&
+    normalized &&
+    EACH_WEIGHT_G[normalized]
+  ) {
     return qty * EACH_WEIGHT_G[normalized];
   }
-  if ((unit === "cup" || unit === "cups") && normalized && CUP_DENSITY[normalized]) {
+  if (
+    (unit === "cup" || unit === "cups") &&
+    normalized &&
+    CUP_DENSITY[normalized]
+  ) {
     return qty * CUP_DENSITY[normalized];
   }
   if (
-    (unit === "tbsp" || unit === "tablespoon" || unit === "tablespoons" || unit === "tbsp.") &&
+    (unit === "tbsp" ||
+      unit === "tablespoon" ||
+      unit === "tablespoons" ||
+      unit === "tbsp.") &&
     normalized &&
     CUP_DENSITY[normalized]
   ) {
     return qty * (CUP_DENSITY[normalized] / 16);
   }
   if (
-    (unit === "tsp" || unit === "teaspoon" || unit === "teaspoons" || unit === "tsp.") &&
+    (unit === "tsp" ||
+      unit === "teaspoon" ||
+      unit === "teaspoons" ||
+      unit === "tsp.") &&
     normalized &&
     CUP_DENSITY[normalized]
   ) {
     return qty * (CUP_DENSITY[normalized] / (16 * 3));
   }
-  if ((unit === "stick" || unit === "sticks") && normalized === "butter") return qty * 113;
-  if ((unit === "clove" || unit === "cloves") && normalized === "garlic") return qty * 3;
+  if ((unit === "stick" || unit === "sticks") && normalized === "butter")
+    return qty * 113;
+  if ((unit === "clove" || unit === "cloves") && normalized === "garlic")
+    return qty * 3;
   if (unit === "pinch" || unit === "dash") return qty * 0.5;
   return qty;
 }
 
-function analyzeIngredients(ingredients: string[], servings: number): AnalysisResult {
+function analyzeIngredients(
+  ingredients: string[],
+  servings: number,
+): AnalysisResult {
   let totalGrams = 0;
   let totals: Macro = { kcal: 0, fat: 0, carbs: 0, protein: 0 };
   const breakdown: NutritionBreakdown[] = [];
@@ -332,10 +347,18 @@ function analyzeIngredients(ingredients: string[], servings: number): AnalysisRe
         protein: totals.protein + entry.protein,
       };
       const mappedAllergens = ALLERGEN_MAP[normalized];
-      if (mappedAllergens) for (const allergen of mappedAllergens) allergens[allergen] = true;
+      if (mappedAllergens)
+        for (const allergen of mappedAllergens) allergens[allergen] = true;
       normalizedList.push(normalized);
     } else {
-      breakdown.push({ item: normalized || parsed.item, grams, kcal: 0, fat: 0, carbs: 0, protein: 0 });
+      breakdown.push({
+        item: normalized || parsed.item,
+        grams,
+        kcal: 0,
+        fat: 0,
+        carbs: 0,
+        protein: 0,
+      });
       unknown.push(parsed.item);
       normalizedList.push(normalized || parsed.item.toLowerCase());
     }
@@ -359,16 +382,16 @@ function analyzeIngredients(ingredients: string[], servings: number): AnalysisRe
   };
 }
 
-function DietSuitabilitySummary({
-  normalized,
-}: {
-  normalized: string[];
-}) {
+function DietSuitabilitySummary({ normalized }: { normalized: string[] }) {
   const checks = useMemo(() => {
     const lower = normalized.map((n) => n.toLowerCase());
     return Object.entries(DIET_PROFILES).map(([key, profile]) => {
-      const containsAvoid = profile.avoid.some((item) => lower.some((ing) => ing.includes(item.toLowerCase())));
-      const hasAllow = profile.allow.some((item) => lower.some((ing) => ing.includes(item.toLowerCase())));
+      const containsAvoid = profile.avoid.some((item) =>
+        lower.some((ing) => ing.includes(item.toLowerCase())),
+      );
+      const hasAllow = profile.allow.some((item) =>
+        lower.some((ing) => ing.includes(item.toLowerCase())),
+      );
       return {
         key,
         profile,
@@ -383,7 +406,8 @@ function DietSuitabilitySummary({
       <CardHeader>
         <CardTitle>Diet suitability</CardTitle>
         <CardDescription>
-          Highlights which dietary profiles the recipe can satisfy based on detected ingredients.
+          Highlights which dietary profiles the recipe can satisfy based on
+          detected ingredients.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -399,16 +423,24 @@ function DietSuitabilitySummary({
           >
             <div className="flex items-center justify-between">
               <div className="font-medium capitalize">{check.key}</div>
-              <Badge variant={check.status === "compliant" ? "secondary" : "destructive"}>
-                {check.status === "compliant" ? "Compliant" : "Contains restricted items"}
+              <Badge
+                variant={
+                  check.status === "compliant" ? "secondary" : "destructive"
+                }
+              >
+                {check.status === "compliant"
+                  ? "Compliant"
+                  : "Contains restricted items"}
               </Badge>
             </div>
             <div className="mt-2 grid gap-1 text-xs text-foreground/80">
               <div>
-                <span className="font-semibold">Avoid:</span> {check.profile.avoid.join(", ")}
+                <span className="font-semibold">Avoid:</span>{" "}
+                {check.profile.avoid.join(", ")}
               </div>
               <div>
-                <span className="font-semibold">Allow:</span> {check.profile.allow.join(", ")}
+                <span className="font-semibold">Allow:</span>{" "}
+                {check.profile.allow.join(", ")}
               </div>
             </div>
           </div>
@@ -428,7 +460,9 @@ function NutritionLabel({
   return (
     <div className="rounded-xl border bg-white p-4 font-sans shadow-sm dark:bg-zinc-900">
       <div className="text-2xl font-black">Nutrition Facts</div>
-      <div className="text-xs text-muted-foreground">Servings per recipe {servings}</div>
+      <div className="text-xs text-muted-foreground">
+        Servings per recipe {servings}
+      </div>
       <div className="my-2 border-t-4 border-black" />
       <div className="flex justify-between text-xl font-semibold">
         <span>Calories</span>
@@ -451,7 +485,8 @@ function NutritionLabel({
       </div>
       <div className="mt-4 border-t border-muted" />
       <div className="mt-2 text-xs text-muted-foreground">
-        *Calculated using internal USDA/Spoonacular references. Values approximate.
+        *Calculated using internal USDA/Spoonacular references. Values
+        approximate.
       </div>
     </div>
   );
@@ -463,7 +498,8 @@ function BreakdownTable({ breakdown }: { breakdown: NutritionBreakdown[] }) {
       <CardHeader>
         <CardTitle>Ingredient contribution</CardTitle>
         <CardDescription>
-          Normalized ingredient matches with macro contribution for audit traceability.
+          Normalized ingredient matches with macro contribution for audit
+          traceability.
         </CardDescription>
       </CardHeader>
       <CardContent className="overflow-hidden">
@@ -514,7 +550,8 @@ function AllergenPanel({
       <CardHeader>
         <CardTitle>Allergen matrix</CardTitle>
         <CardDescription>
-          Automatically flagged allergens with manual verification tracking for QA audits.
+          Automatically flagged allergens with manual verification tracking for
+          QA audits.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -527,19 +564,25 @@ function AllergenPanel({
                 key={allergen}
                 className={cn(
                   "flex items-center justify-between gap-3 rounded-lg border p-3",
-                  present ? "border-destructive bg-destructive/10" : "border-muted bg-muted/40",
+                  present
+                    ? "border-destructive bg-destructive/10"
+                    : "border-muted bg-muted/40",
                 )}
               >
                 <div>
                   <div className="text-sm font-medium">{allergen}</div>
                   <div className="text-xs text-muted-foreground">
-                    {present ? "Detected in normalized ingredients" : "Not detected"}
+                    {present
+                      ? "Detected in normalized ingredients"
+                      : "Not detected"}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Checkbox
                     checked={verified}
-                    onCheckedChange={(next) => onToggle(allergen, Boolean(next))}
+                    onCheckedChange={(next) =>
+                      onToggle(allergen, Boolean(next))
+                    }
                   />
                   <span className="text-xs">Verified</span>
                 </div>
@@ -551,7 +594,8 @@ function AllergenPanel({
           <div className="rounded-md bg-amber-100 p-3 text-xs text-amber-900 dark:bg-amber-900/30 dark:text-amber-200">
             <div className="font-medium">Manual review suggested</div>
             <div>
-              Some ingredients could not be normalized: {unknownIngredients.join(", ")}
+              Some ingredients could not be normalized:{" "}
+              {unknownIngredients.join(", ")}
             </div>
           </div>
         ) : null}
@@ -563,14 +607,19 @@ function AllergenPanel({
 export default function NutritionAllergensWorkspace() {
   const { recipes } = useAppData();
   const recipeList = recipes.length ? recipes : DEMO_RECIPES;
-  const [selectedRecipeId, setSelectedRecipeId] = useState<string>(recipeList[0]?.id ?? "");
+  const [selectedRecipeId, setSelectedRecipeId] = useState<string>(
+    recipeList[0]?.id ?? "",
+  );
   const [servings, setServings] = useState<number>(12);
   const [portionName, setPortionName] = useState("serving");
   const [portionWeight, setPortionWeight] = useState("0");
   const [notes, setNotes] = useState("");
-  const [verifications, setVerifications] = useState<Record<string, boolean>>({});
+  const [verifications, setVerifications] = useState<Record<string, boolean>>(
+    {},
+  );
 
-  const recipe = recipeList.find((r) => r.id === selectedRecipeId) ?? recipeList[0];
+  const recipe =
+    recipeList.find((r) => r.id === selectedRecipeId) ?? recipeList[0];
 
   const analysis = useMemo(() => {
     const ingr = recipe?.ingredients ?? [];
@@ -593,11 +642,15 @@ export default function NutritionAllergensWorkspace() {
           <div>
             <CardTitle>Nutrition & allergen analysis</CardTitle>
             <CardDescription>
-              Generate compliant labels, calculate per-serving macros, and validate allergen disclosures.
+              Generate compliant labels, calculate per-serving macros, and
+              validate allergen disclosures.
             </CardDescription>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Select value={selectedRecipeId} onValueChange={setSelectedRecipeId}>
+            <Select
+              value={selectedRecipeId}
+              onValueChange={setSelectedRecipeId}
+            >
               <SelectTrigger className="min-w-[220px]">
                 <SelectValue />
               </SelectTrigger>
@@ -623,11 +676,22 @@ export default function NutritionAllergensWorkspace() {
           <div className="space-y-3">
             <NutritionLabel analysis={analysis} servings={servings || 1} />
             <div className="rounded-lg border p-3 text-xs text-muted-foreground">
-              <div className="font-medium text-foreground">Implementation notes</div>
+              <div className="font-medium text-foreground">
+                Implementation notes
+              </div>
               <ul className="list-disc space-y-1 pl-4 pt-2">
-                <li>USDA/Spoonacular dataset with per-ingredient yields and default loss factors.</li>
-                <li>Label template ready for print/web; export uses same data model.</li>
-                <li>Macronutrients recalculated automatically when portion size changes.</li>
+                <li>
+                  USDA/Spoonacular dataset with per-ingredient yields and
+                  default loss factors.
+                </li>
+                <li>
+                  Label template ready for print/web; export uses same data
+                  model.
+                </li>
+                <li>
+                  Macronutrients recalculated automatically when portion size
+                  changes.
+                </li>
               </ul>
             </div>
           </div>
@@ -641,7 +705,9 @@ export default function NutritionAllergensWorkspace() {
               <TabsContent value="overview" className="space-y-3">
                 <div className="grid gap-3 md:grid-cols-2">
                   <div className="rounded-lg border p-3">
-                    <div className="text-xs text-muted-foreground">Calories per {portionName}</div>
+                    <div className="text-xs text-muted-foreground">
+                      Calories per {portionName}
+                    </div>
                     <div className="text-2xl font-semibold">
                       {Math.round(analysis.perServing.kcal)} kcal
                     </div>
@@ -666,17 +732,27 @@ export default function NutritionAllergensWorkspace() {
                       type="number"
                       min={1}
                       value={servings}
-                      onChange={(e) => setServings(Math.max(1, Number(e.target.value) || 1))}
+                      onChange={(e) =>
+                        setServings(Math.max(1, Number(e.target.value) || 1))
+                      }
                     />
                   </label>
                   <label className="flex flex-col text-sm">
                     <span className="text-muted-foreground">Portion name</span>
-                    <Input value={portionName} onChange={(e) => setPortionName(e.target.value)} />
+                    <Input
+                      value={portionName}
+                      onChange={(e) => setPortionName(e.target.value)}
+                    />
                   </label>
                 </div>
                 <label className="flex flex-col text-sm">
-                  <span className="text-muted-foreground">Portion weight override (g)</span>
-                  <Input value={portionWeight} onChange={(e) => setPortionWeight(e.target.value)} />
+                  <span className="text-muted-foreground">
+                    Portion weight override (g)
+                  </span>
+                  <Input
+                    value={portionWeight}
+                    onChange={(e) => setPortionWeight(e.target.value)}
+                  />
                 </label>
                 <label className="flex flex-col text-sm">
                   <span className="text-muted-foreground">QC notes</span>
@@ -718,7 +794,8 @@ export default function NutritionAllergensWorkspace() {
           <CardHeader>
             <CardTitle>Per-serving cost estimate</CardTitle>
             <CardDescription>
-              Combines inventory cost data to emit nutrition label pricing guidance.
+              Combines inventory cost data to emit nutrition label pricing
+              guidance.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
@@ -731,11 +808,15 @@ export default function NutritionAllergensWorkspace() {
             <div className="flex items-center justify-between rounded-lg border bg-muted/60 p-3">
               <span>Cost per {portionName}</span>
               <span className="font-semibold">
-                {formatCurrency(((analysis.total.kcal / 1000) * 4.25) / (servings || 1), "USD")}
+                {formatCurrency(
+                  ((analysis.total.kcal / 1000) * 4.25) / (servings || 1),
+                  "USD",
+                )}
               </span>
             </div>
             <div className="text-xs text-muted-foreground">
-              Cost heuristics derived from ingredient calories * cost density. Replace with live inventory valuations for production.
+              Cost heuristics derived from ingredient calories * cost density.
+              Replace with live inventory valuations for production.
             </div>
           </CardContent>
         </Card>

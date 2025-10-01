@@ -19,12 +19,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
@@ -195,13 +190,18 @@ const LOCATION_LIMITS: Record<string, { min?: number; max?: number }> = {
   Freezer: { max: -15 },
 };
 
-function classifyReading(location: string, value: number): TemperatureLogEntry["status"] {
+function classifyReading(
+  location: string,
+  value: number,
+): TemperatureLogEntry["status"] {
   const limits = LOCATION_LIMITS[location];
   if (!limits) return "ok";
   if (typeof limits.min === "number" && value < limits.min) return "warning";
-  if (typeof limits.max === "number" && value > limits.max + 2) return "critical";
+  if (typeof limits.max === "number" && value > limits.max + 2)
+    return "critical";
   if (typeof limits.max === "number" && value > limits.max) return "warning";
-  if (typeof limits.min === "number" && value < limits.min - 5) return "critical";
+  if (typeof limits.min === "number" && value < limits.min - 5)
+    return "critical";
   return "ok";
 }
 
@@ -220,23 +220,29 @@ function ControlPointBoard({ points }: { points: ControlPoint[] }) {
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div>
                 <div className="text-sm font-semibold">{point.step}</div>
-                <div className="text-xs text-muted-foreground">Hazard: {point.hazard}</div>
+                <div className="text-xs text-muted-foreground">
+                  Hazard: {point.hazard}
+                </div>
               </div>
               <Badge variant="secondary">{point.frequency}</Badge>
             </div>
             <div className="mt-2 grid gap-2 text-xs text-foreground/80">
               <div>
-                <span className="font-semibold">Critical limits:</span> {point.criticalLimits}
+                <span className="font-semibold">Critical limits:</span>{" "}
+                {point.criticalLimits}
               </div>
               <div>
-                <span className="font-semibold">Monitoring:</span> {point.monitoring}
+                <span className="font-semibold">Monitoring:</span>{" "}
+                {point.monitoring}
               </div>
               <div className="grid gap-1 sm:grid-cols-2">
                 <span>
-                  <span className="font-semibold">Responsible:</span> {point.responsibleRole}
+                  <span className="font-semibold">Responsible:</span>{" "}
+                  {point.responsibleRole}
                 </span>
                 <span>
-                  <span className="font-semibold">Verification:</span> {point.verification}
+                  <span className="font-semibold">Verification:</span>{" "}
+                  {point.verification}
                 </span>
               </div>
               <div>
@@ -266,7 +272,10 @@ function TemperatureLog({
   const [corrective, setCorrective] = useState("");
 
   const sortedLogs = useMemo(
-    () => [...logs].sort((a, b) => new Date(b.takenAt).getTime() - new Date(a.takenAt).getTime()),
+    () =>
+      [...logs].sort(
+        (a, b) => new Date(b.takenAt).getTime() - new Date(a.takenAt).getTime(),
+      ),
     [logs],
   );
 
@@ -276,7 +285,8 @@ function TemperatureLog({
         <div>
           <CardTitle>Temperature monitoring</CardTitle>
           <CardDescription>
-            Capture cooling/cold-hold logs with automatic limit validation and corrective tracking.
+            Capture cooling/cold-hold logs with automatic limit validation and
+            corrective tracking.
           </CardDescription>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
@@ -286,7 +296,9 @@ function TemperatureLog({
           <DialogContent>
             <DialogHeader>
               <DialogTitle>New temperature log</DialogTitle>
-              <DialogDescription>Enter monitoring details for CCP verification.</DialogDescription>
+              <DialogDescription>
+                Enter monitoring details for CCP verification.
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-3">
               <div className="grid gap-2 sm:grid-cols-2">
@@ -306,18 +318,29 @@ function TemperatureLog({
                   </Select>
                 </label>
                 <label className="flex flex-col text-sm">
-                  <span className="text-muted-foreground">Sample / product</span>
-                  <Input value={sample} onChange={(e) => setSample(e.target.value)} />
+                  <span className="text-muted-foreground">
+                    Sample / product
+                  </span>
+                  <Input
+                    value={sample}
+                    onChange={(e) => setSample(e.target.value)}
+                  />
                 </label>
               </div>
               <div className="grid gap-2 sm:grid-cols-2">
                 <label className="flex flex-col text-sm">
                   <span className="text-muted-foreground">Reading</span>
-                  <Input value={reading} onChange={(e) => setReading(e.target.value)} />
+                  <Input
+                    value={reading}
+                    onChange={(e) => setReading(e.target.value)}
+                  />
                 </label>
                 <label className="flex flex-col text-sm">
                   <span className="text-muted-foreground">Unit</span>
-                  <Select value={unit} onValueChange={(value) => setUnit(value as typeof unit)}>
+                  <Select
+                    value={unit}
+                    onValueChange={(value) => setUnit(value as typeof unit)}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -330,10 +353,15 @@ function TemperatureLog({
               </div>
               <label className="flex flex-col text-sm">
                 <span className="text-muted-foreground">Taken by</span>
-                <Input value={takenBy} onChange={(e) => setTakenBy(e.target.value)} />
+                <Input
+                  value={takenBy}
+                  onChange={(e) => setTakenBy(e.target.value)}
+                />
               </label>
               <label className="flex flex-col text-sm">
-                <span className="text-muted-foreground">Corrective action (if applicable)</span>
+                <span className="text-muted-foreground">
+                  Corrective action (if applicable)
+                </span>
                 <Textarea
                   rows={3}
                   value={corrective}
@@ -353,7 +381,9 @@ function TemperatureLog({
                     unit,
                     takenAt: new Date().toISOString(),
                     takenBy,
-                    correctiveAction: corrective.trim() ? corrective.trim() : undefined,
+                    correctiveAction: corrective.trim()
+                      ? corrective.trim()
+                      : undefined,
                   });
                   setOpen(false);
                   setSample("Ambient");
@@ -401,7 +431,11 @@ function TemperatureLog({
                             : "destructive"
                       }
                     >
-                      {log.status === "ok" ? "Within limit" : log.status === "warning" ? "Check" : "Critical"}
+                      {log.status === "ok"
+                        ? "Within limit"
+                        : log.status === "warning"
+                          ? "Check"
+                          : "Critical"}
                     </Badge>
                   </td>
                   <td className="p-2 text-muted-foreground">
@@ -413,7 +447,8 @@ function TemperatureLog({
           </table>
         </div>
         <div className="rounded-md bg-muted/60 p-3 text-xs text-muted-foreground">
-          Logs flagged as critical automatically notify QA and create a corrective action task.
+          Logs flagged as critical automatically notify QA and create a
+          corrective action task.
         </div>
       </CardContent>
     </Card>
@@ -433,13 +468,17 @@ function ChecklistBoard({
 }) {
   const [signer, setSigner] = useState("");
   const [error, setError] = useState("");
-  const requiredComplete = tasks.filter((task) => task.required && !task.completed).length === 0;
+  const requiredComplete =
+    tasks.filter((task) => task.required && !task.completed).length === 0;
 
   return (
     <Card className="border shadow-sm">
       <CardHeader>
         <CardTitle>Shift compliance checklist</CardTitle>
-        <CardDescription>Ensure HACCP paperwork and sanitation tasks are complete before sign-off.</CardDescription>
+        <CardDescription>
+          Ensure HACCP paperwork and sanitation tasks are complete before
+          sign-off.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="space-y-2">
@@ -454,7 +493,11 @@ function ChecklistBoard({
                 onCheckedChange={(next) => onToggle(task.id, Boolean(next))}
               />
               <div>
-                <div className={cn("font-medium", task.completed ? "text-foreground" : "text-foreground/80")}
+                <div
+                  className={cn(
+                    "font-medium",
+                    task.completed ? "text-foreground" : "text-foreground/80",
+                  )}
                 >
                   {task.label}
                 </div>
@@ -499,7 +542,10 @@ function ChecklistBoard({
               <div className="text-muted-foreground">No sign-offs yet.</div>
             ) : (
               signatures.map((sig, idx) => (
-                <div key={`${sig.name}-${idx}`} className="flex justify-between text-muted-foreground">
+                <div
+                  key={`${sig.name}-${idx}`}
+                  className="flex justify-between text-muted-foreground"
+                >
                   <span>{sig.name}</span>
                   <span>{new Date(sig.at).toLocaleString()}</span>
                 </div>
@@ -527,13 +573,17 @@ function CorrectiveActionsPanel({
     <Card className="border shadow-sm">
       <CardHeader>
         <CardTitle>Corrective actions</CardTitle>
-        <CardDescription>Track open items and document resolution for inspections.</CardDescription>
+        <CardDescription>
+          Track open items and document resolution for inspections.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Tabs defaultValue="open" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="open">Open ({openActions.length})</TabsTrigger>
-            <TabsTrigger value="closed">Closed ({closedActions.length})</TabsTrigger>
+            <TabsTrigger value="closed">
+              Closed ({closedActions.length})
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="open" className="space-y-3">
             {openActions.length === 0 ? (
@@ -542,7 +592,10 @@ function CorrectiveActionsPanel({
               </div>
             ) : (
               openActions.map((action) => (
-                <div key={action.id} className="rounded-lg border bg-muted/60 p-3 text-sm">
+                <div
+                  key={action.id}
+                  className="rounded-lg border bg-muted/60 p-3 text-sm"
+                >
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div className="font-semibold">{action.description}</div>
                     <Badge variant="outline">{action.owner}</Badge>
@@ -556,7 +609,10 @@ function CorrectiveActionsPanel({
                     placeholder="Resolution notes"
                     value={resolution[action.id] ?? ""}
                     onChange={(e) =>
-                      setResolution((prev) => ({ ...prev, [action.id]: e.target.value }))
+                      setResolution((prev) => ({
+                        ...prev,
+                        [action.id]: e.target.value,
+                      }))
                     }
                   />
                   <Button
@@ -577,16 +633,26 @@ function CorrectiveActionsPanel({
           </TabsContent>
           <TabsContent value="closed" className="space-y-3">
             {closedActions.length === 0 ? (
-              <div className="text-xs text-muted-foreground">No closed actions yet.</div>
+              <div className="text-xs text-muted-foreground">
+                No closed actions yet.
+              </div>
             ) : (
               closedActions.map((action) => (
-                <div key={action.id} className="rounded-lg border bg-muted/40 p-3 text-xs">
-                  <div className="font-medium text-foreground">{action.description}</div>
+                <div
+                  key={action.id}
+                  className="rounded-lg border bg-muted/40 p-3 text-xs"
+                >
+                  <div className="font-medium text-foreground">
+                    {action.description}
+                  </div>
                   <div className="mt-1 text-muted-foreground">
-                    Closed {new Date(action.createdAt).toLocaleString()} · {action.owner}
+                    Closed {new Date(action.createdAt).toLocaleString()} ·{" "}
+                    {action.owner}
                   </div>
                   {action.resolutionNotes ? (
-                    <div className="mt-1 text-foreground/80">{action.resolutionNotes}</div>
+                    <div className="mt-1 text-foreground/80">
+                      {action.resolutionNotes}
+                    </div>
                   ) : null}
                 </div>
               ))
@@ -602,9 +668,13 @@ export default function HaccpComplianceWorkspace() {
   const [tempLogs, setTempLogs] = useState(INITIAL_TEMPERATURE_LOGS);
   const [actions, setActions] = useState(INITIAL_ACTIONS);
   const [tasks, setTasks] = useState(CHECKLIST_TEMPLATE);
-  const [signatures, setSignatures] = useState<{ name: string; at: string }[]>([]);
+  const [signatures, setSignatures] = useState<{ name: string; at: string }[]>(
+    [],
+  );
 
-  const handleCreateLog = (entry: Omit<TemperatureLogEntry, "id" | "status">) => {
+  const handleCreateLog = (
+    entry: Omit<TemperatureLogEntry, "id" | "status">,
+  ) => {
     const status = classifyReading(entry.location, entry.reading);
     const id = generateId("log");
     const log: TemperatureLogEntry = { ...entry, id, status };
@@ -670,7 +740,10 @@ export default function HaccpComplianceWorkspace() {
       </div>
       <div className="grid gap-4 lg:grid-cols-[1.4fr_0.8fr]">
         <TemperatureLog logs={tempLogs} onCreate={handleCreateLog} />
-        <CorrectiveActionsPanel actions={actions} onResolve={handleResolveAction} />
+        <CorrectiveActionsPanel
+          actions={actions}
+          onResolve={handleResolveAction}
+        />
       </div>
     </div>
   );

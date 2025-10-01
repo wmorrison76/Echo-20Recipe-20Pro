@@ -28,12 +28,7 @@ import {
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import {
-  ALLERGENS,
-  formatCurrency,
-  generateId,
-  percent,
-} from "./shared";
+import { ALLERGENS, formatCurrency, generateId, percent } from "./shared";
 
 export type Supplier = {
   id: string;
@@ -107,7 +102,8 @@ const INITIAL_SUPPLIERS: Supplier[] = [
     reliability: 0.91,
     certifications: ["GFSI", "PrimusGFS"],
     allergensHandled: ["Tree Nuts", "Peanuts"],
-    notes: "Allocates allergens on separate pallets. Shared allergen manifest available.",
+    notes:
+      "Allocates allergens on separate pallets. Shared allergen manifest available.",
   },
   {
     id: "sup-coastal-seafood",
@@ -117,7 +113,8 @@ const INITIAL_SUPPLIERS: Supplier[] = [
     reliability: 0.88,
     certifications: ["MSC Chain of Custody", "HACCP"],
     allergensHandled: ["Fish", "Shellfish"],
-    notes: "Requires temp probe on receipt. FedEx Freight tracking shared automatically.",
+    notes:
+      "Requires temp probe on receipt. FedEx Freight tracking shared automatically.",
   },
 ];
 
@@ -233,9 +230,7 @@ const INITIAL_POS: PurchaseOrder[] = [
     createdAt: new Date().toISOString(),
     submittedBy: "William Morrison",
     notes: "Hold shipment until cream tank sanitized (ticket QA-18).",
-    lines: [
-      { id: "pol-3", itemId: "item-cream-38", qty: 4, unit: "case" },
-    ],
+    lines: [{ id: "pol-3", itemId: "item-cream-38", qty: 4, unit: "case" }],
   },
 ];
 
@@ -302,13 +297,15 @@ function SupplierGrid({
     notes: "",
   });
   const [certDraft, setCertDraft] = useState("");
-  const canSave = draft.name.trim().length > 0 && draft.contact.trim().length > 0;
+  const canSave =
+    draft.name.trim().length > 0 && draft.contact.trim().length > 0;
   return (
     <Card className="border shadow-sm">
       <CardHeader>
         <CardTitle>Supplier catalog</CardTitle>
         <CardDescription>
-          Preferred partners with lead times, certifications, and allergen separation notes.
+          Preferred partners with lead times, certifications, and allergen
+          separation notes.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -316,21 +313,24 @@ function SupplierGrid({
           <div className="text-sm text-muted-foreground">
             {suppliers.length} approved suppliers · SLA monitored
           </div>
-          <Dialog open={open} onOpenChange={(next) => {
-            setOpen(next);
-            if (!next) {
-              setDraft({
-                name: "",
-                contact: "",
-                leadTimeDays: 2,
-                reliability: 0.9,
-                certifications: [],
-                allergensHandled: [],
-                notes: "",
-              });
-              setCertDraft("");
-            }
-          }}>
+          <Dialog
+            open={open}
+            onOpenChange={(next) => {
+              setOpen(next);
+              if (!next) {
+                setDraft({
+                  name: "",
+                  contact: "",
+                  leadTimeDays: 2,
+                  reliability: 0.9,
+                  certifications: [],
+                  allergensHandled: [],
+                  notes: "",
+                });
+                setCertDraft("");
+              }
+            }}
+          >
             <DialogTrigger asChild>
               <Button size="sm">New supplier</Button>
             </DialogTrigger>
@@ -338,14 +338,17 @@ function SupplierGrid({
               <DialogHeader>
                 <DialogTitle>Add supplier</DialogTitle>
                 <DialogDescription>
-                  Capture allergen handling and compliance information for onboarding.
+                  Capture allergen handling and compliance information for
+                  onboarding.
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-3">
                 <Input
                   placeholder="Supplier name"
                   value={draft.name}
-                  onChange={(e) => setDraft((prev) => ({ ...prev, name: e.target.value }))}
+                  onChange={(e) =>
+                    setDraft((prev) => ({ ...prev, name: e.target.value }))
+                  }
                 />
                 <Input
                   placeholder="Primary contact (email · phone)"
@@ -356,7 +359,9 @@ function SupplierGrid({
                 />
                 <div className="grid gap-2 sm:grid-cols-2">
                   <label className="flex flex-col text-sm">
-                    <span className="text-muted-foreground">Lead time (days)</span>
+                    <span className="text-muted-foreground">
+                      Lead time (days)
+                    </span>
                     <Input
                       type="number"
                       min={0}
@@ -379,14 +384,19 @@ function SupplierGrid({
                       onChange={(e) =>
                         setDraft((prev) => ({
                           ...prev,
-                          reliability: Math.max(0, Math.min(1, Number(e.target.value) / 100 || 0)),
+                          reliability: Math.max(
+                            0,
+                            Math.min(1, Number(e.target.value) / 100 || 0),
+                          ),
                         }))
                       }
                     />
                   </label>
                 </div>
                 <div className="space-y-2">
-                  <span className="text-sm text-muted-foreground">Certifications</span>
+                  <span className="text-sm text-muted-foreground">
+                    Certifications
+                  </span>
                   <div className="flex flex-wrap gap-2">
                     {draft.certifications.map((item) => (
                       <Badge
@@ -396,7 +406,9 @@ function SupplierGrid({
                         onClick={() =>
                           setDraft((prev) => ({
                             ...prev,
-                            certifications: prev.certifications.filter((c) => c !== item),
+                            certifications: prev.certifications.filter(
+                              (c) => c !== item,
+                            ),
                           }))
                         }
                       >
@@ -429,7 +441,9 @@ function SupplierGrid({
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <span className="text-sm text-muted-foreground">Allergens handled</span>
+                  <span className="text-sm text-muted-foreground">
+                    Allergens handled
+                  </span>
                   <div className="flex flex-wrap gap-2">
                     {ALLERGENS.map((allergen) => {
                       const active = draft.allergensHandled.includes(allergen);
@@ -447,7 +461,9 @@ function SupplierGrid({
                             setDraft((prev) => ({
                               ...prev,
                               allergensHandled: active
-                                ? prev.allergensHandled.filter((a) => a !== allergen)
+                                ? prev.allergensHandled.filter(
+                                    (a) => a !== allergen,
+                                  )
                                 : [...prev.allergensHandled, allergen],
                             }))
                           }
@@ -462,7 +478,9 @@ function SupplierGrid({
                   rows={3}
                   placeholder="Receiving notes, cut-off times, QA requirements"
                   value={draft.notes}
-                  onChange={(e) => setDraft((prev) => ({ ...prev, notes: e.target.value }))}
+                  onChange={(e) =>
+                    setDraft((prev) => ({ ...prev, notes: e.target.value }))
+                  }
                 />
               </div>
               <DialogFooter className="pt-4">
@@ -489,9 +507,15 @@ function SupplierGrid({
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="text-sm font-semibold">{supplier.name}</div>
-                  <div className="text-xs text-muted-foreground">{supplier.contact}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {supplier.contact}
+                  </div>
                 </div>
-                <Badge variant={supplier.reliability > 0.93 ? "default" : "secondary"}>
+                <Badge
+                  variant={
+                    supplier.reliability > 0.93 ? "default" : "secondary"
+                  }
+                >
                   {Math.round(supplier.reliability * 100)}% OTIF
                 </Badge>
               </div>
@@ -508,10 +532,14 @@ function SupplierGrid({
                   ))}
                 </div>
                 <div>
-                  <div className="font-medium text-foreground">Allergen zones</div>
+                  <div className="font-medium text-foreground">
+                    Allergen zones
+                  </div>
                   <div className="flex flex-wrap gap-1 pt-1">
                     {supplier.allergensHandled.length === 0 ? (
-                      <span className="text-muted-foreground">None declared</span>
+                      <span className="text-muted-foreground">
+                        None declared
+                      </span>
                     ) : (
                       supplier.allergensHandled.map((a) => (
                         <Badge key={a} variant="secondary">
@@ -549,7 +577,9 @@ function InventoryHealth({
   );
   const lowStock = useMemo(
     () =>
-      items.filter((item) => item.onHandBase < item.parLevelBase).sort((a, b) => a.onHandBase - b.onHandBase),
+      items
+        .filter((item) => item.onHandBase < item.parLevelBase)
+        .sort((a, b) => a.onHandBase - b.onHandBase),
     [items],
   );
   const bySupplier = useMemo(() => {
@@ -579,7 +609,8 @@ function InventoryHealth({
       <CardHeader>
         <CardTitle>Inventory health</CardTitle>
         <CardDescription>
-          Snapshot of stock value, reorder priorities, and safety stock coverage.
+          Snapshot of stock value, reorder priorities, and safety stock
+          coverage.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -594,7 +625,9 @@ function InventoryHealth({
             </div>
           </div>
           <div className="rounded-lg bg-secondary p-4">
-            <div className="text-xs text-secondary-foreground">Critical exposure</div>
+            <div className="text-xs text-secondary-foreground">
+              Critical exposure
+            </div>
             <div className="text-2xl font-semibold text-secondary-foreground">
               {criticalExposure.lowCritical}/{criticalExposure.totalCritical}
             </div>
@@ -607,10 +640,14 @@ function InventoryHealth({
           <div className="text-sm font-medium">Reorder priorities</div>
           <div className="mt-2 grid gap-2 text-xs">
             {lowStock.length === 0 ? (
-              <span className="text-muted-foreground">All items above par levels.</span>
+              <span className="text-muted-foreground">
+                All items above par levels.
+              </span>
             ) : (
               lowStock.map((item) => {
-                const supplier = suppliers.find((s) => s.id === item.supplierId);
+                const supplier = suppliers.find(
+                  (s) => s.id === item.supplierId,
+                );
                 const deficit = item.parLevelBase - item.onHandBase;
                 const toCase = convertFromBase(
                   item,
@@ -623,9 +660,12 @@ function InventoryHealth({
                     className="flex items-center justify-between rounded border bg-muted/60 px-3 py-2"
                   >
                     <div>
-                      <div className="font-medium text-foreground/90">{item.name}</div>
+                      <div className="font-medium text-foreground/90">
+                        {item.name}
+                      </div>
                       <div className="text-muted-foreground">
-                        {supplier?.name ?? "Supplier unknown"} · Par {Math.round(item.parLevelBase)} {item.baseUnit}
+                        {supplier?.name ?? "Supplier unknown"} · Par{" "}
+                        {Math.round(item.parLevelBase)} {item.baseUnit}
                       </div>
                     </div>
                     <Badge variant="destructive">
@@ -644,10 +684,14 @@ function InventoryHealth({
             {bySupplier.map((row) => {
               const supplier = suppliers.find((s) => s.id === row.supplierId);
               return (
-                <div key={row.supplierId} className="flex items-center justify-between">
+                <div
+                  key={row.supplierId}
+                  className="flex items-center justify-between"
+                >
                   <div>{supplier?.name ?? row.supplierId}</div>
                   <div className="text-foreground/80">
-                    {formatCurrency(row.value, items[0]?.currency ?? "USD")} ({percent(row.value, totalValue)})
+                    {formatCurrency(row.value, items[0]?.currency ?? "USD")} (
+                    {percent(row.value, totalValue)})
                   </div>
                 </div>
               );
@@ -668,9 +712,15 @@ function CatalogTable({
   items: CatalogItem[];
   suppliers: Supplier[];
   onAdjustStock: (itemId: string, nextBase: number) => void;
-  onUpdatePar: (itemId: string, nextParBase: number, safetyStockBase: number) => void;
+  onUpdatePar: (
+    itemId: string,
+    nextParBase: number,
+    safetyStockBase: number,
+  ) => void;
 }) {
-  const [selectedSupplier, setSelectedSupplier] = useState<string | "all">("all");
+  const [selectedSupplier, setSelectedSupplier] = useState<string | "all">(
+    "all",
+  );
   const filtered = useMemo(() => {
     if (selectedSupplier === "all") return items;
     return items.filter((item) => item.supplierId === selectedSupplier);
@@ -702,7 +752,10 @@ function CatalogTable({
     [],
   );
 
-  const itemForEdit = filtered.find((item) => item.id === editItemId) ?? items.find((item) => item.id === editItemId) ?? null;
+  const itemForEdit =
+    filtered.find((item) => item.id === editItemId) ??
+    items.find((item) => item.id === editItemId) ??
+    null;
 
   const [mode, setMode] = useState<"stock" | "par">("stock");
 
@@ -712,12 +765,15 @@ function CatalogTable({
         <div>
           <CardTitle>Catalog & stock counts</CardTitle>
           <CardDescription>
-            Track on-hand levels, allergen tagging, and convert purchase packs to production units.
+            Track on-hand levels, allergen tagging, and convert purchase packs
+            to production units.
           </CardDescription>
         </div>
         <Select
           value={selectedSupplier}
-          onValueChange={(value) => setSelectedSupplier(value as typeof selectedSupplier)}
+          onValueChange={(value) =>
+            setSelectedSupplier(value as typeof selectedSupplier)
+          }
         >
           <SelectTrigger className="w-[230px]">
             <SelectValue placeholder="Filter by supplier" />
@@ -749,20 +805,28 @@ function CatalogTable({
             </thead>
             <tbody>
               {filtered.map((item) => {
-                const supplier = suppliers.find((s) => s.id === item.supplierId);
+                const supplier = suppliers.find(
+                  (s) => s.id === item.supplierId,
+                );
                 const deficit = item.parLevelBase - item.onHandBase;
                 const warning = deficit > 0;
                 return (
                   <tr key={item.id} className="border-t">
                     <td className="p-3 align-top">
-                      <div className="font-medium text-foreground/90">{item.name}</div>
+                      <div className="font-medium text-foreground/90">
+                        {item.name}
+                      </div>
                       <div className="text-muted-foreground">{item.sku}</div>
-                      <div className="mt-1 text-muted-foreground">{item.storageArea}</div>
+                      <div className="mt-1 text-muted-foreground">
+                        {item.storageArea}
+                      </div>
                     </td>
                     <td className="p-3 align-top">
                       <div>{supplier?.name ?? "Unknown"}</div>
                       <div className="text-muted-foreground">
-                        {supplier ? `${supplier.leadTimeDays} day SLA` : "No SLA"}
+                        {supplier
+                          ? `${supplier.leadTimeDays} day SLA`
+                          : "No SLA"}
                       </div>
                     </td>
                     <td className="p-3 align-top">
@@ -771,7 +835,10 @@ function CatalogTable({
                       </div>
                       {item.units.case ? (
                         <div className="text-muted-foreground">
-                          {Math.round(convertFromBase(item, item.onHandBase, "case") * 10) / 10} cases
+                          {Math.round(
+                            convertFromBase(item, item.onHandBase, "case") * 10,
+                          ) / 10}{" "}
+                          cases
                         </div>
                       ) : null}
                       {warning ? (
@@ -781,7 +848,9 @@ function CatalogTable({
                       ) : null}
                     </td>
                     <td className="p-3 align-top">
-                      <div>{Math.round(item.parLevelBase)} {item.baseUnit}</div>
+                      <div>
+                        {Math.round(item.parLevelBase)} {item.baseUnit}
+                      </div>
                       <div className="text-muted-foreground">
                         Safety {Math.round(item.safetyStockBase)}
                       </div>
@@ -800,18 +869,31 @@ function CatalogTable({
                       </div>
                     </td>
                     <td className="p-3 align-top">
-                      <div>{formatCurrency(item.costPerBase, item.currency)} / {item.baseUnit}</div>
+                      <div>
+                        {formatCurrency(item.costPerBase, item.currency)} /{" "}
+                        {item.baseUnit}
+                      </div>
                       {item.units.case ? (
                         <div className="text-muted-foreground">
-                          {formatCurrency(item.costPerBase * item.units.case.toBase, item.currency)} / case
+                          {formatCurrency(
+                            item.costPerBase * item.units.case.toBase,
+                            item.currency,
+                          )}{" "}
+                          / case
                         </div>
                       ) : null}
                     </td>
                     <td className="p-3 align-top">
                       <div>{formatDate(item.lastAuditISO)}</div>
                       <div className="text-muted-foreground">
-                        {new Intl.RelativeTimeFormat("en", { numeric: "auto" }).format(
-                          Math.round((new Date(item.lastAuditISO).getTime() - Date.now()) / (24 * 3600 * 1000)),
+                        {new Intl.RelativeTimeFormat("en", {
+                          numeric: "auto",
+                        }).format(
+                          Math.round(
+                            (new Date(item.lastAuditISO).getTime() -
+                              Date.now()) /
+                              (24 * 3600 * 1000),
+                          ),
                           "day",
                         )}
                       </div>
@@ -876,7 +958,9 @@ function CatalogTable({
                 {mode === "stock" ? (
                   <div className="grid gap-2 sm:grid-cols-2">
                     <label className="flex flex-col text-sm">
-                      <span className="text-muted-foreground">Quantity counted</span>
+                      <span className="text-muted-foreground">
+                        Quantity counted
+                      </span>
                       <Input
                         type="number"
                         value={editQty}
@@ -884,17 +968,21 @@ function CatalogTable({
                       />
                     </label>
                     <label className="flex flex-col text-sm">
-                      <span className="text-muted-foreground">Counted unit</span>
+                      <span className="text-muted-foreground">
+                        Counted unit
+                      </span>
                       <Select value={editUnit} onValueChange={setEditUnit}>
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {Object.entries(itemForEdit.units).map(([unitKey, unit]) => (
-                            <SelectItem key={unitKey} value={unitKey}>
-                              {unit.display}
-                            </SelectItem>
-                          ))}
+                          {Object.entries(itemForEdit.units).map(
+                            ([unitKey, unit]) => (
+                              <SelectItem key={unitKey} value={unitKey}>
+                                {unit.display}
+                              </SelectItem>
+                            ),
+                          )}
                         </SelectContent>
                       </Select>
                     </label>
@@ -902,12 +990,22 @@ function CatalogTable({
                 ) : (
                   <div className="grid gap-3 sm:grid-cols-2">
                     <label className="flex flex-col text-sm">
-                      <span className="text-muted-foreground">Par (base unit)</span>
-                      <Input value={editPar} onChange={(e) => setEditPar(e.target.value)} />
+                      <span className="text-muted-foreground">
+                        Par (base unit)
+                      </span>
+                      <Input
+                        value={editPar}
+                        onChange={(e) => setEditPar(e.target.value)}
+                      />
                     </label>
                     <label className="flex flex-col text-sm">
-                      <span className="text-muted-foreground">Safety stock</span>
-                      <Input value={editSafety} onChange={(e) => setEditSafety(e.target.value)} />
+                      <span className="text-muted-foreground">
+                        Safety stock
+                      </span>
+                      <Input
+                        value={editSafety}
+                        onChange={(e) => setEditSafety(e.target.value)}
+                      />
                     </label>
                   </div>
                 )}
@@ -920,13 +1018,20 @@ function CatalogTable({
                   if (mode === "stock") {
                     const qty = Number(editQty);
                     if (!Number.isFinite(qty)) return;
-                    const nextBase = itemForEdit.onHandBase + convertToBase(itemForEdit, qty, editUnit);
+                    const nextBase =
+                      itemForEdit.onHandBase +
+                      convertToBase(itemForEdit, qty, editUnit);
                     onAdjustStock(itemForEdit.id, Math.max(0, nextBase));
                   } else {
                     const par = Number(editPar);
                     const safety = Number(editSafety);
-                    if (!Number.isFinite(par) || !Number.isFinite(safety)) return;
-                    onUpdatePar(itemForEdit.id, Math.max(0, par), Math.max(0, safety));
+                    if (!Number.isFinite(par) || !Number.isFinite(safety))
+                      return;
+                    onUpdatePar(
+                      itemForEdit.id,
+                      Math.max(0, par),
+                      Math.max(0, safety),
+                    );
                   }
                   setEditItemId(null);
                 }}
@@ -957,15 +1062,22 @@ function PurchaseOrderBoard({
   onCreate: (draft: Omit<PurchaseOrder, "id" | "status" | "createdAt">) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const [draftSupplier, setDraftSupplier] = useState<string>(suppliers[0]?.id ?? "");
-  const [expectedDate, setExpectedDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [draftSupplier, setDraftSupplier] = useState<string>(
+    suppliers[0]?.id ?? "",
+  );
+  const [expectedDate, setExpectedDate] = useState(() =>
+    new Date().toISOString().slice(0, 10),
+  );
   const [notes, setNotes] = useState("");
-  const [lines, setLines] = useState<PurchaseOrderLine[]>([{
-    id: generateId("pol"),
-    itemId: items[0]?.id ?? "",
-    qty: 1,
-    unit: items[0] && items[0].units.case ? "case" : items[0]?.baseUnit ?? "",
-  }]);
+  const [lines, setLines] = useState<PurchaseOrderLine[]>([
+    {
+      id: generateId("pol"),
+      itemId: items[0]?.id ?? "",
+      qty: 1,
+      unit:
+        items[0] && items[0].units.case ? "case" : (items[0]?.baseUnit ?? ""),
+    },
+  ]);
 
   const supplierOrders = useMemo(() => {
     const bySupplier = new Map<string, PurchaseOrder[]>();
@@ -982,27 +1094,34 @@ function PurchaseOrderBoard({
       <CardHeader>
         <CardTitle>Purchase orders</CardTitle>
         <CardDescription>
-          Track lifecycle from draft to receipt and trigger auto-receiving into stock levels.
+          Track lifecycle from draft to receipt and trigger auto-receiving into
+          stock levels.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex justify-end">
-          <Dialog open={open} onOpenChange={(next) => {
-            setOpen(next);
-            if (!next) {
-              setDraftSupplier(suppliers[0]?.id ?? "");
-              setExpectedDate(new Date().toISOString().slice(0, 10));
-              setNotes("");
-              setLines([
-                {
-                  id: generateId("pol"),
-                  itemId: items[0]?.id ?? "",
-                  qty: 1,
-                  unit: items[0] && items[0].units.case ? "case" : items[0]?.baseUnit ?? "",
-                },
-              ]);
-            }
-          }}>
+          <Dialog
+            open={open}
+            onOpenChange={(next) => {
+              setOpen(next);
+              if (!next) {
+                setDraftSupplier(suppliers[0]?.id ?? "");
+                setExpectedDate(new Date().toISOString().slice(0, 10));
+                setNotes("");
+                setLines([
+                  {
+                    id: generateId("pol"),
+                    itemId: items[0]?.id ?? "",
+                    qty: 1,
+                    unit:
+                      items[0] && items[0].units.case
+                        ? "case"
+                        : (items[0]?.baseUnit ?? ""),
+                  },
+                ]);
+              }
+            }}
+          >
             <DialogTrigger asChild>
               <Button size="sm">Create PO</Button>
             </DialogTrigger>
@@ -1010,14 +1129,18 @@ function PurchaseOrderBoard({
               <DialogHeader>
                 <DialogTitle>New purchase order</DialogTitle>
                 <DialogDescription>
-                  Draft a purchase order with allergen-aware routing for inbound QC.
+                  Draft a purchase order with allergen-aware routing for inbound
+                  QC.
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-3">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <label className="flex flex-col text-sm">
                     <span className="text-muted-foreground">Supplier</span>
-                    <Select value={draftSupplier} onValueChange={setDraftSupplier}>
+                    <Select
+                      value={draftSupplier}
+                      onValueChange={setDraftSupplier}
+                    >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
@@ -1031,7 +1154,9 @@ function PurchaseOrderBoard({
                     </Select>
                   </label>
                   <label className="flex flex-col text-sm">
-                    <span className="text-muted-foreground">Expected delivery</span>
+                    <span className="text-muted-foreground">
+                      Expected delivery
+                    </span>
                     <Input
                       type="date"
                       value={expectedDate}
@@ -1045,7 +1170,10 @@ function PurchaseOrderBoard({
                     {lines.map((line, index) => {
                       const item = items.find((it) => it.id === line.itemId);
                       return (
-                        <div key={line.id} className="grid gap-2 rounded-md border p-2 sm:grid-cols-[2fr_1fr_1fr_auto]">
+                        <div
+                          key={line.id}
+                          className="grid gap-2 rounded-md border p-2 sm:grid-cols-[2fr_1fr_1fr_auto]"
+                        >
                           <Select
                             value={line.itemId}
                             onValueChange={(value) =>
@@ -1055,10 +1183,12 @@ function PurchaseOrderBoard({
                                     ? {
                                         ...l,
                                         itemId: value,
-                                        unit:
-                                          items.find((it) => it.id === value)?.units.case
-                                            ? "case"
-                                            : items.find((it) => it.id === value)?.baseUnit ?? "",
+                                        unit: items.find(
+                                          (it) => it.id === value,
+                                        )?.units.case
+                                          ? "case"
+                                          : (items.find((it) => it.id === value)
+                                              ?.baseUnit ?? ""),
                                       }
                                     : l,
                                 ),
@@ -1092,7 +1222,11 @@ function PurchaseOrderBoard({
                           <Select
                             value={line.unit}
                             onValueChange={(value) =>
-                              setLines((prev) => prev.map((l) => (l.id === line.id ? { ...l, unit: value } : l)))
+                              setLines((prev) =>
+                                prev.map((l) =>
+                                  l.id === line.id ? { ...l, unit: value } : l,
+                                ),
+                              )
                             }
                           >
                             <SelectTrigger>
@@ -1114,7 +1248,11 @@ function PurchaseOrderBoard({
                                 variant="ghost"
                                 size="icon"
                                 aria-label="Remove line"
-                                onClick={() => setLines((prev) => prev.filter((l) => l.id !== line.id))}
+                                onClick={() =>
+                                  setLines((prev) =>
+                                    prev.filter((l) => l.id !== line.id),
+                                  )
+                                }
                               >
                                 ×
                               </Button>
@@ -1134,7 +1272,10 @@ function PurchaseOrderBoard({
                           id: generateId("pol"),
                           itemId: items[0]?.id ?? "",
                           qty: 1,
-                          unit: items[0] && items[0].units.case ? "case" : items[0]?.baseUnit ?? "",
+                          unit:
+                            items[0] && items[0].units.case
+                              ? "case"
+                              : (items[0]?.baseUnit ?? ""),
                         },
                       ])
                     }
@@ -1152,7 +1293,11 @@ function PurchaseOrderBoard({
               <DialogFooter className="pt-4">
                 <Button
                   onClick={() => {
-                    if (!draftSupplier || lines.some((line) => !line.itemId || line.qty <= 0)) return;
+                    if (
+                      !draftSupplier ||
+                      lines.some((line) => !line.itemId || line.qty <= 0)
+                    )
+                      return;
                     onCreate({
                       supplierId: draftSupplier,
                       expectedDate: new Date(expectedDate).toISOString(),
@@ -1178,12 +1323,15 @@ function PurchaseOrderBoard({
                   <div>
                     <div className="font-medium">{supplier.name}</div>
                     <div className="text-xs text-muted-foreground">
-                      {supplierPOs.length} open orders · {supplier.leadTimeDays} day SLA
+                      {supplierPOs.length} open orders · {supplier.leadTimeDays}{" "}
+                      day SLA
                     </div>
                   </div>
                 </div>
                 {supplierPOs.length === 0 ? (
-                  <div className="pt-3 text-xs text-muted-foreground">No open orders.</div>
+                  <div className="pt-3 text-xs text-muted-foreground">
+                    No open orders.
+                  </div>
                 ) : (
                   <div className="mt-3 space-y-2">
                     {supplierPOs.map((order) => (
@@ -1211,10 +1359,13 @@ function PurchaseOrderBoard({
                           </div>
                           <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
                             {order.lines.map((line) => {
-                              const item = items.find((it) => it.id === line.itemId);
+                              const item = items.find(
+                                (it) => it.id === line.itemId,
+                              );
                               return (
                                 <li key={line.id}>
-                                  {line.qty} {line.unit} · {item?.name ?? "Unknown"}
+                                  {line.qty} {line.unit} ·{" "}
+                                  {item?.name ?? "Unknown"}
                                 </li>
                               );
                             })}
@@ -1231,12 +1382,19 @@ function PurchaseOrderBoard({
                               size="sm"
                               variant="secondary"
                               onClick={() => {
-                                if (findStatusStep(order.status) >= STATUS_FLOW.length - 1) return;
-                                if (order.status === "in_transit") onReceive(order.id);
+                                if (
+                                  findStatusStep(order.status) >=
+                                  STATUS_FLOW.length - 1
+                                )
+                                  return;
+                                if (order.status === "in_transit")
+                                  onReceive(order.id);
                                 else onAdvance(order.id);
                               }}
                             >
-                              {order.status === "in_transit" ? "Receive" : "Advance"}
+                              {order.status === "in_transit"
+                                ? "Receive"
+                                : "Advance"}
                             </Button>
                           ) : (
                             <Badge variant="secondary">Closed</Badge>
@@ -1289,7 +1447,8 @@ function UnitConverter({ items }: { items: CatalogItem[] }) {
       <CardHeader>
         <CardTitle>Unit conversion</CardTitle>
         <CardDescription>
-          Convert supplier pack sizes to production units with density-aware factors per item.
+          Convert supplier pack sizes to production units with density-aware
+          factors per item.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-3 md:grid-cols-2">
@@ -1362,7 +1521,9 @@ function UnitConverter({ items }: { items: CatalogItem[] }) {
           <div className="flex flex-col justify-end rounded-md border bg-muted/60 p-3 text-sm">
             <span className="text-muted-foreground">Result</span>
             <span className="text-lg font-semibold">
-              {result === null ? "—" : `${Math.round(result * 100) / 100} ${toUnit}`}
+              {result === null
+                ? "—"
+                : `${Math.round(result * 100) / 100} ${toUnit}`}
             </span>
           </div>
         </div>
@@ -1376,12 +1537,9 @@ export default function InventorySuppliesWorkspace() {
   const [items, setItems] = useState(INITIAL_CATALOG);
   const [orders, setOrders] = useState(INITIAL_POS);
 
-  const handleCreateSupplier = useCallback(
-    (input: Omit<Supplier, "id">) => {
-      setSuppliers((prev) => [...prev, { id: generateId("sup"), ...input }]);
-    },
-    [],
-  );
+  const handleCreateSupplier = useCallback((input: Omit<Supplier, "id">) => {
+    setSuppliers((prev) => [...prev, { id: generateId("sup"), ...input }]);
+  }, []);
 
   const handleAdjustStock = useCallback((itemId: string, nextBase: number) => {
     setItems((prev) =>
@@ -1419,7 +1577,8 @@ export default function InventorySuppliesWorkspace() {
       prev.map((order) => {
         if (order.id !== orderId) return order;
         const currentStep = findStatusStep(order.status);
-        const nextStatus = STATUS_FLOW[Math.min(currentStep + 1, STATUS_FLOW.length - 1)];
+        const nextStatus =
+          STATUS_FLOW[Math.min(currentStep + 1, STATUS_FLOW.length - 1)];
         return { ...order, status: nextStatus };
       }),
     );
@@ -1444,7 +1603,8 @@ export default function InventorySuppliesWorkspace() {
           );
           return {
             ...item,
-            onHandBase: Math.round((item.onHandBase + receivedBase) * 100) / 100,
+            onHandBase:
+              Math.round((item.onHandBase + receivedBase) * 100) / 100,
             lastAuditISO: new Date().toISOString(),
           };
         });
@@ -1472,7 +1632,10 @@ export default function InventorySuppliesWorkspace() {
   return (
     <div className="space-y-4">
       <div className="grid gap-4 xl:grid-cols-[1.2fr_1fr]">
-        <SupplierGrid suppliers={suppliers} onCreateSupplier={handleCreateSupplier} />
+        <SupplierGrid
+          suppliers={suppliers}
+          onCreateSupplier={handleCreateSupplier}
+        />
         <InventoryHealth items={items} suppliers={suppliers} />
       </div>
       <CatalogTable

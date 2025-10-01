@@ -49,14 +49,14 @@ export type RecipeExport = {
 
 export const currencySymbol = (currency: string) =>
   (
-    {
+    ({
       USD: "$",
       CAD: "$",
       AUD: "$",
       EUR: "€",
       GBP: "£",
       JPY: "¥",
-    } as Record<string, string>
+    }) as Record<string, string>
   )[currency] ?? "$";
 
 export type RecipeNutrition = NonNullable<RecipeExport["nutrition"]>;
@@ -113,7 +113,9 @@ export function normalizeRecipe(data: NormalizeInput): RecipeExport {
   const trimmed = [...data.ingredients];
   while (
     trimmed.length &&
-    Object.values(trimmed[trimmed.length - 1]!).every((value) => !`${value}`.trim())
+    Object.values(trimmed[trimmed.length - 1]!).every(
+      (value) => !`${value}`.trim(),
+    )
   ) {
     trimmed.pop();
   }
@@ -180,7 +182,10 @@ export function downloadRecipeJSON(recipe: RecipeExport) {
   URL.revokeObjectURL(link.href);
 }
 
-export async function downloadRecipePDF(recipe: RecipeExport, opts?: { watermarkUrl?: string }) {
+export async function downloadRecipePDF(
+  recipe: RecipeExport,
+  opts?: { watermarkUrl?: string },
+) {
   const doc = new jsPDF({ unit: "pt", format: "letter" });
   const margin = 40;
   const colLeft = 270;
@@ -210,7 +215,16 @@ export async function downloadRecipePDF(recipe: RecipeExport, opts?: { watermark
     doc.setDrawColor(0, 0, 0);
     doc.setLineWidth(0.4);
     doc.rect(imgX + 4, imgY + 4, imgW, imgH, "F");
-    doc.addImage(recipe.imageDataUrl, "JPEG", imgX, imgY, imgW, imgH, undefined, "FAST");
+    doc.addImage(
+      recipe.imageDataUrl,
+      "JPEG",
+      imgX,
+      imgY,
+      imgW,
+      imgH,
+      undefined,
+      "FAST",
+    );
     doc.rect(imgX, imgY, imgW, imgH);
   }
 
@@ -234,7 +248,10 @@ export async function downloadRecipePDF(recipe: RecipeExport, opts?: { watermark
     `${recipe.portionCount ?? ""} ${recipe.portionUnit ?? ""}`.trim(),
   );
   if (typeof recipe.portionCost === "number") {
-    bullet("Portion Cost", `${currencySymbol(recipe.currency)}${recipe.portionCost.toFixed(2)}`);
+    bullet(
+      "Portion Cost",
+      `${currencySymbol(recipe.currency)}${recipe.portionCost.toFixed(2)}`,
+    );
   }
   if (recipe.allergens?.length) {
     doc.setTextColor(200, 0, 0);
@@ -257,7 +274,9 @@ export async function downloadRecipePDF(recipe: RecipeExport, opts?: { watermark
       row.item?.trim(),
       row.prep ? `, ${row.prep.trim()}` : "",
       row.yield ? ` (${row.yield.trim()})` : "",
-      row.cost ? ` — ${currencySymbol(recipe.currency)}${row.cost.replace(/[$€£¥,\s]/g, "")}` : "",
+      row.cost
+        ? ` — ${currencySymbol(recipe.currency)}${row.cost.replace(/[$€£¥,\s]/g, "")}`
+        : "",
     ].filter(Boolean);
     if (!pieces.length) continue;
     doc.circle(margin - 6, y - 4, 1.5, "F");
@@ -298,7 +317,16 @@ export async function downloadRecipePDF(recipe: RecipeExport, opts?: { watermark
 
   if (opts?.watermarkUrl) {
     try {
-      doc.addImage(opts.watermarkUrl, "PNG", 160, 520, 300, 180, undefined, "FAST");
+      doc.addImage(
+        opts.watermarkUrl,
+        "PNG",
+        160,
+        520,
+        300,
+        180,
+        undefined,
+        "FAST",
+      );
     } catch {
       /* ignore watermark failures */
     }
@@ -318,7 +346,9 @@ export async function downloadRecipePDF(recipe: RecipeExport, opts?: { watermark
     const push = (label: string, value: unknown, unit = "") => {
       if (value === undefined || value === null) return;
       const numeric = Number(value);
-      entries.push(`${label}: ${Number.isFinite(numeric) ? numeric.toFixed(unit ? 1 : 0) : value}${unit}`);
+      entries.push(
+        `${label}: ${Number.isFinite(numeric) ? numeric.toFixed(unit ? 1 : 0) : value}${unit}`,
+      );
     };
     const n = recipe.nutrition;
     push("Calories", n.calories);

@@ -1,12 +1,5 @@
 import { useState } from "react";
-import {
-  FileText,
-  Download,
-  Save,
-  Eye,
-  Clock,
-  ChefHat,
-} from "lucide-react";
+import { FileText, Download, Save, Eye, Clock, ChefHat } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -34,9 +27,14 @@ export type ServerNotesGeneratorProps = {
   onSave: (next: ServerNote) => void;
 };
 
-export function ServerNotesGenerator({ serverNote, onSave }: ServerNotesGeneratorProps) {
+export function ServerNotesGenerator({
+  serverNote,
+  onSave,
+}: ServerNotesGeneratorProps) {
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedDocument, setGeneratedDocument] = useState<string | null>(null);
+  const [generatedDocument, setGeneratedDocument] = useState<string | null>(
+    null,
+  );
   const [generatedDocxUrl, setGeneratedDocxUrl] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -149,7 +147,11 @@ export function ServerNotesGenerator({ serverNote, onSave }: ServerNotesGenerato
           />
           <SummaryRow
             icon={<Eye className="h-4 w-4 text-primary" />}
-            label={serverNote.pageFormat === "standard" ? "Orientation" : "Card Format"}
+            label={
+              serverNote.pageFormat === "standard"
+                ? "Orientation"
+                : "Card Format"
+            }
             value={
               serverNote.pageFormat === "standard"
                 ? serverNote.orientation
@@ -161,9 +163,18 @@ export function ServerNotesGenerator({ serverNote, onSave }: ServerNotesGenerato
         <div className="flex items-center gap-2 text-sm font-medium">
           <span>Color Scheme:</span>
           <div className="flex gap-1">
-            <span className="h-4 w-4 rounded border" style={{ background: serverNote.colorScheme.primary }} />
-            <span className="h-4 w-4 rounded border" style={{ background: serverNote.colorScheme.secondary }} />
-            <span className="h-4 w-4 rounded border" style={{ background: serverNote.colorScheme.accent }} />
+            <span
+              className="h-4 w-4 rounded border"
+              style={{ background: serverNote.colorScheme.primary }}
+            />
+            <span
+              className="h-4 w-4 rounded border"
+              style={{ background: serverNote.colorScheme.secondary }}
+            />
+            <span
+              className="h-4 w-4 rounded border"
+              style={{ background: serverNote.colorScheme.accent }}
+            />
           </div>
           <Badge variant="outline">{serverNote.colorScheme.name}</Badge>
         </div>
@@ -177,17 +188,29 @@ export function ServerNotesGenerator({ serverNote, onSave }: ServerNotesGenerato
             <FileText className="h-4 w-4" />
             {isGenerating ? "Generating..." : "Generate Document"}
           </Button>
-          <Button variant="outline" onClick={saveDocument} className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={saveDocument}
+            className="flex items-center gap-2"
+          >
             <Save className="h-4 w-4" />
             Save Draft
           </Button>
           {generatedDocument ? (
-            <Button variant="outline" onClick={printDocument} className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={printDocument}
+              className="flex items-center gap-2"
+            >
               Print
             </Button>
           ) : null}
           {generatedDocxUrl ? (
-            <Button variant="outline" onClick={downloadDocument} className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={downloadDocument}
+              className="flex items-center gap-2"
+            >
               <Download className="h-4 w-4" />
               Download Word (.docx)
             </Button>
@@ -230,7 +253,11 @@ function createDocumentHtml(serverNote: ServerNote): string {
       serverNote.layout.indexCardLayout.fontSize === "small" ? "12px" : "14px";
 
     const sheets: string[] = [];
-    for (let cursor = 0; cursor < serverNote.selectedRecipes.length; cursor += perPage) {
+    for (
+      let cursor = 0;
+      cursor < serverNote.selectedRecipes.length;
+      cursor += perPage
+    ) {
       const chunk = serverNote.selectedRecipes.slice(cursor, cursor + perPage);
       const cards = chunk
         .map((item) => {
@@ -238,14 +265,24 @@ function createDocumentHtml(serverNote: ServerNote): string {
             serverNote.layout.indexCardLayout.contentPriority !== "instructions"
               ? `<div class="card-subtitle">Ingredients</div>
                  <ul class="tight-list">
-                   ${item.recipe.ingredients?.slice(0, 8).map((ing) => `<li>${ing}</li>`).join("") || ""}
+                   ${
+                     item.recipe.ingredients
+                       ?.slice(0, 8)
+                       .map((ing) => `<li>${ing}</li>`)
+                       .join("") || ""
+                   }
                  </ul>`
               : "";
           const instructionsSection =
             serverNote.layout.indexCardLayout.contentPriority !== "ingredients"
               ? `<div class="card-subtitle">Steps</div>
                  <ol class="tight-list">
-                   ${item.recipe.instructions?.slice(0, 6).map((step) => `<li>${step}</li>`).join("") || ""}
+                   ${
+                     item.recipe.instructions
+                       ?.slice(0, 6)
+                       .map((step) => `<li>${step}</li>`)
+                       .join("") || ""
+                   }
                  </ol>`
               : "";
           const wineSection = item.wineSelection
@@ -320,9 +357,13 @@ function createDocumentHtml(serverNote: ServerNote): string {
               .map((s) => `<span class="silverware-item">${s}</span>`)
               .join("")}</div></div>`
           : "";
-      const allergenBlock = item.recipe.tags?.filter((tag) => /gluten|dairy|nut|shellfish|soy|egg|sesame/i.test(tag));
+      const allergenBlock = item.recipe.tags?.filter((tag) =>
+        /gluten|dairy|nut|shellfish|soy|egg|sesame/i.test(tag),
+      );
       const allergenSection =
-        allergenBlock && allergenBlock.length && serverNote.layout.standardLayout.includeNutrition
+        allergenBlock &&
+        allergenBlock.length &&
+        serverNote.layout.standardLayout.includeNutrition
           ? `<div class="section"><div class="section-title">Allergens</div><div class="wine-notes">${allergenBlock.join(", ")}</div></div>`
           : "";
 
@@ -337,10 +378,14 @@ function createDocumentHtml(serverNote: ServerNote): string {
           ${imageHtml}
           <div class="recipe-description">"${item.recipe.description ?? ""}"</div>
           <div class="section"><div class="section-title">Ingredients & Quantities</div><div class="ingredients-list">${
-            item.recipe.ingredients?.map((ing) => `<div class="ingredient">• ${ing}</div>`).join("") ?? ""
+            item.recipe.ingredients
+              ?.map((ing) => `<div class="ingredient">• ${ing}</div>`)
+              .join("") ?? ""
           }</div></div>
           <div class="section"><div class="section-title">Preparation Method</div><ol>${
-            item.recipe.instructions?.map((instruction) => `<li>${instruction}</li>`).join("") ?? ""
+            item.recipe.instructions
+              ?.map((instruction) => `<li>${instruction}</li>`)
+              .join("") ?? ""
           }</ol></div>
           ${wineSection}
           ${sellingSection}
@@ -392,9 +437,13 @@ function createDocumentHtml(serverNote: ServerNote): string {
 <body>
   <div class="page title-page">
     <div class="header">
-      ${serverNote.logos.length ? `<div class="logo-container">${serverNote.logos
-        .map((logo) => `<img src="${logo}" alt="Logo" class="logo" />`)
-        .join("")}</div>` : ""}
+      ${
+        serverNote.logos.length
+          ? `<div class="logo-container">${serverNote.logos
+              .map((logo) => `<img src="${logo}" alt="Logo" class="logo" />`)
+              .join("")}</div>`
+          : ""
+      }
       ${serverNote.companyName ? `<div class="company-name">${serverNote.companyName}</div>` : ""}
       ${serverNote.outletName ? `<div class="outlet-name">${serverNote.outletName}</div>` : ""}
       <div class="document-title">${serverNote.title}</div>
@@ -405,7 +454,10 @@ function createDocumentHtml(serverNote: ServerNote): string {
     <h2 style="color: ${colorScheme.primary}; border-bottom: 2px solid ${colorScheme.primary}; padding-bottom: 10px;">Menu Index</h2>
     <ul class="index-list">
       ${serverNote.selectedRecipes
-        .map((item, index) => `<li class="index-item"><span>${item.recipe.title}</span><span>Page ${index + 3}</span></li>`)
+        .map(
+          (item, index) =>
+            `<li class="index-item"><span>${item.recipe.title}</span><span>Page ${index + 3}</span></li>`,
+        )
         .join("")}
     </ul>
   </div>
@@ -416,13 +468,24 @@ function createDocumentHtml(serverNote: ServerNote): string {
 
 async function createDocx(note: ServerNote): Promise<Blob> {
   const standard = note.pageFormat === "standard";
-  const cardsPerPage = standard ? 1 : Math.max(1, Math.min(2, note.cardsPerPage || 2));
+  const cardsPerPage = standard
+    ? 1
+    : Math.max(1, Math.min(2, note.cardsPerPage || 2));
 
   const pageSize = standard
     ? {
-        width: note.orientation === "horizontal" ? convertInchesToTwip(11) : convertInchesToTwip(8.5),
-        height: note.orientation === "horizontal" ? convertInchesToTwip(8.5) : convertInchesToTwip(11),
-        orientation: note.orientation === "horizontal" ? PageOrientation.LANDSCAPE : PageOrientation.PORTRAIT,
+        width:
+          note.orientation === "horizontal"
+            ? convertInchesToTwip(11)
+            : convertInchesToTwip(8.5),
+        height:
+          note.orientation === "horizontal"
+            ? convertInchesToTwip(8.5)
+            : convertInchesToTwip(11),
+        orientation:
+          note.orientation === "horizontal"
+            ? PageOrientation.LANDSCAPE
+            : PageOrientation.PORTRAIT,
       }
     : {
         width: convertInchesToTwip(8.5),
@@ -430,25 +493,43 @@ async function createDocx(note: ServerNote): Promise<Blob> {
         orientation: PageOrientation.PORTRAIT,
       };
 
-  const font = (note.layout.standardLayout.fontFamily || "Times New Roman").split(",")[0]?.replace(/['"]/g, "").trim() || "Times New Roman";
+  const font =
+    (note.layout.standardLayout.fontFamily || "Times New Roman")
+      .split(",")[0]
+      ?.replace(/['"]/g, "")
+      .trim() || "Times New Roman";
 
   const toHex = (color: string) => color.replace("#", "") || "000000";
 
   type HeadingValue = (typeof HeadingLevel)[keyof typeof HeadingLevel];
   type AlignmentValue = (typeof AlignmentType)[keyof typeof AlignmentType];
 
-  const heading = (text: string, level: HeadingValue, align: AlignmentValue = AlignmentType.LEFT) =>
+  const heading = (
+    text: string,
+    level: HeadingValue,
+    align: AlignmentValue = AlignmentType.LEFT,
+  ) =>
     new Paragraph({
       heading: level,
       alignment: align,
       children: [
-        new TextRun({ text, bold: true, color: toHex(note.colorScheme.primary), font }),
+        new TextRun({
+          text,
+          bold: true,
+          color: toHex(note.colorScheme.primary),
+          font,
+        }),
       ],
     });
 
   const paragraph = (
     text: string,
-    options?: { align?: AlignmentValue; color?: string; bold?: boolean; size?: number },
+    options?: {
+      align?: AlignmentValue;
+      color?: string;
+      bold?: boolean;
+      size?: number;
+    },
   ) =>
     new Paragraph({
       alignment: options?.align,
@@ -495,10 +576,13 @@ async function createDocx(note: ServerNote): Promise<Blob> {
     }),
   );
   headerChildren.push(
-    paragraph(`Distribution Date: ${new Date(note.distributionDate).toLocaleDateString()}`, {
-      align: AlignmentType.CENTER,
-      color: note.colorScheme.secondary,
-    }),
+    paragraph(
+      `Distribution Date: ${new Date(note.distributionDate).toLocaleDateString()}`,
+      {
+        align: AlignmentType.CENTER,
+        color: note.colorScheme.secondary,
+      },
+    ),
   );
 
   sections.push({
@@ -549,17 +633,35 @@ async function createDocx(note: ServerNote): Promise<Blob> {
       }
 
       if (entry.recipe.description) {
-        children.push(paragraph(entry.recipe.description, { color: note.colorScheme.secondary }));
+        children.push(
+          paragraph(entry.recipe.description, {
+            color: note.colorScheme.secondary,
+          }),
+        );
       }
 
       if (note.layout.standardLayout.recipeLayout === "two-column") {
-        const ingredientParagraphs = entry.recipe.ingredients?.map((ing) => paragraph(`• ${ing}`)) || [];
-        const instructionParagraphs = entry.recipe.instructions?.map((step, idx) => paragraph(`${idx + 1}. ${step}`)) || [];
+        const ingredientParagraphs =
+          entry.recipe.ingredients?.map((ing) => paragraph(`• ${ing}`)) || [];
+        const instructionParagraphs =
+          entry.recipe.instructions?.map((step, idx) =>
+            paragraph(`${idx + 1}. ${step}`),
+          ) || [];
 
         const row = new TableRow({
           children: [
-            new TableCell({ children: [heading("Ingredients", HeadingLevel.HEADING_3), ...ingredientParagraphs] }),
-            new TableCell({ children: [heading("Preparation", HeadingLevel.HEADING_3), ...instructionParagraphs] }),
+            new TableCell({
+              children: [
+                heading("Ingredients", HeadingLevel.HEADING_3),
+                ...ingredientParagraphs,
+              ],
+            }),
+            new TableCell({
+              children: [
+                heading("Preparation", HeadingLevel.HEADING_3),
+                ...instructionParagraphs,
+              ],
+            }),
           ],
         });
 
@@ -571,9 +673,13 @@ async function createDocx(note: ServerNote): Promise<Blob> {
         );
       } else {
         children.push(heading("Ingredients", HeadingLevel.HEADING_3));
-        entry.recipe.ingredients?.forEach((ing) => children.push(paragraph(`• ${ing}`)));
+        entry.recipe.ingredients?.forEach((ing) =>
+          children.push(paragraph(`• ${ing}`)),
+        );
         children.push(heading("Preparation", HeadingLevel.HEADING_3));
-        entry.recipe.instructions?.forEach((step, idx) => children.push(paragraph(`${idx + 1}. ${step}`)));
+        entry.recipe.instructions?.forEach((step, idx) =>
+          children.push(paragraph(`${idx + 1}. ${step}`)),
+        );
       }
 
       if (entry.wineSelection) {
@@ -593,7 +699,9 @@ async function createDocx(note: ServerNote): Promise<Blob> {
 
       if (entry.silverwareRequired?.length) {
         children.push(heading("Required Silverware", HeadingLevel.HEADING_3));
-        entry.silverwareRequired.forEach((item) => children.push(paragraph(`• ${item}`)));
+        entry.silverwareRequired.forEach((item) =>
+          children.push(paragraph(`• ${item}`)),
+        );
       }
 
       sections.push({
@@ -620,7 +728,10 @@ async function createDocx(note: ServerNote): Promise<Blob> {
         const cells: Paragraph[] = [];
         cells.push(
           new Paragraph({
-            alignment: note.layout.indexCardLayout.headerStyle === "centered" ? AlignmentType.CENTER : AlignmentType.LEFT,
+            alignment:
+              note.layout.indexCardLayout.headerStyle === "centered"
+                ? AlignmentType.CENTER
+                : AlignmentType.LEFT,
             children: [
               new TextRun({
                 text: item.recipe.title,
@@ -644,12 +755,18 @@ async function createDocx(note: ServerNote): Promise<Blob> {
 
         if (note.layout.indexCardLayout.contentPriority !== "instructions") {
           cells.push(heading("Ingredients", HeadingLevel.HEADING_3));
-          item.recipe.ingredients?.slice(0, 8).forEach((ing) => cells.push(paragraph(`• ${ing}`)));
+          item.recipe.ingredients
+            ?.slice(0, 8)
+            .forEach((ing) => cells.push(paragraph(`• ${ing}`)));
         }
 
         if (note.layout.indexCardLayout.contentPriority !== "ingredients") {
           cells.push(heading("Steps", HeadingLevel.HEADING_3));
-          item.recipe.instructions?.slice(0, 6).forEach((step, indexStep) => cells.push(paragraph(`${indexStep + 1}. ${step}`)));
+          item.recipe.instructions
+            ?.slice(0, 6)
+            .forEach((step, indexStep) =>
+              cells.push(paragraph(`${indexStep + 1}. ${step}`)),
+            );
         }
 
         if (item.wineSelection) {
@@ -676,9 +793,17 @@ async function createDocx(note: ServerNote): Promise<Blob> {
                 width: { size: convertInchesToTwip(5), type: WidthType.DXA },
                 borders: {
                   top: { style: BorderStyle.SINGLE, size: 2, color: "999999" },
-                  bottom: { style: BorderStyle.SINGLE, size: 2, color: "999999" },
+                  bottom: {
+                    style: BorderStyle.SINGLE,
+                    size: 2,
+                    color: "999999",
+                  },
                   left: { style: BorderStyle.SINGLE, size: 2, color: "999999" },
-                  right: { style: BorderStyle.SINGLE, size: 2, color: "999999" },
+                  right: {
+                    style: BorderStyle.SINGLE,
+                    size: 2,
+                    color: "999999",
+                  },
                 },
                 children: cells,
               }),

@@ -26,14 +26,21 @@ export type RecipeSelectionProps = {
   onRecipesChange: (recipes: ServerNoteRecipe[]) => void;
 };
 
-export function RecipeSelection({ availableRecipes, selectedRecipes, onRecipesChange }: RecipeSelectionProps) {
+export function RecipeSelection({
+  availableRecipes,
+  selectedRecipes,
+  onRecipesChange,
+}: RecipeSelectionProps) {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [expanded, setExpanded] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [filterCourse, setFilterCourse] = useState<string>("");
   const [filterCuisine, setFilterCuisine] = useState<string>("");
 
-  const selectedIds = useMemo(() => new Set(selectedRecipes.map((item) => item.recipe.id)), [selectedRecipes]);
+  const selectedIds = useMemo(
+    () => new Set(selectedRecipes.map((item) => item.recipe.id)),
+    [selectedRecipes],
+  );
 
   const filteredRecipes = useMemo(() => {
     const lower = search.trim().toLowerCase();
@@ -50,9 +57,13 @@ export function RecipeSelection({ availableRecipes, selectedRecipes, onRecipesCh
   }, [availableRecipes, search, filterCourse, filterCuisine]);
 
   const toggleRecipe = (recipe: Recipe) => {
-    const existing = selectedRecipes.find((item) => item.recipe.id === recipe.id);
+    const existing = selectedRecipes.find(
+      (item) => item.recipe.id === recipe.id,
+    );
     if (existing) {
-      onRecipesChange(selectedRecipes.filter((item) => item.recipe.id !== recipe.id));
+      onRecipesChange(
+        selectedRecipes.filter((item) => item.recipe.id !== recipe.id),
+      );
     } else {
       onRecipesChange([
         ...selectedRecipes,
@@ -69,7 +80,9 @@ export function RecipeSelection({ availableRecipes, selectedRecipes, onRecipesCh
   };
 
   const moveRecipe = (recipeId: string, direction: -1 | 1) => {
-    const index = selectedRecipes.findIndex((item) => item.recipe.id === recipeId);
+    const index = selectedRecipes.findIndex(
+      (item) => item.recipe.id === recipeId,
+    );
     if (index === -1) return;
     const newIndex = index + direction;
     if (newIndex < 0 || newIndex >= selectedRecipes.length) return;
@@ -87,8 +100,20 @@ export function RecipeSelection({ availableRecipes, selectedRecipes, onRecipesCh
     );
   };
 
-  const courseOptions = useMemo(() => Array.from(new Set(availableRecipes.map((r) => r.course).filter(Boolean))) as string[], [availableRecipes]);
-  const cuisineOptions = useMemo(() => Array.from(new Set(availableRecipes.map((r) => r.cuisine).filter(Boolean))) as string[], [availableRecipes]);
+  const courseOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(availableRecipes.map((r) => r.course).filter(Boolean)),
+      ) as string[],
+    [availableRecipes],
+  );
+  const cuisineOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(availableRecipes.map((r) => r.cuisine).filter(Boolean)),
+      ) as string[],
+    [availableRecipes],
+  );
 
   return (
     <div className="space-y-6">
@@ -127,16 +152,23 @@ export function RecipeSelection({ availableRecipes, selectedRecipes, onRecipesCh
                     </Button>
                   </div>
                   <img
-                    src={entry.recipe.imageDataUrls?.[0] || entry.recipe.image || "https://cdn.builder.io/api/v1/image/assets%2Fplaceholder"}
+                    src={
+                      entry.recipe.imageDataUrls?.[0] ||
+                      entry.recipe.image ||
+                      "https://cdn.builder.io/api/v1/image/assets%2Fplaceholder"
+                    }
                     alt={entry.recipe.title}
                     className="h-16 w-16 rounded object-cover"
                   />
                   <div className="flex-1 space-y-1">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="text-sm font-medium">{entry.recipe.title}</h4>
+                        <h4 className="text-sm font-medium">
+                          {entry.recipe.title}
+                        </h4>
                         <p className="text-xs text-muted-foreground">
-                          {entry.recipe.course || "—"} • {entry.recipe.cuisine || "—"}
+                          {entry.recipe.course || "—"} •{" "}
+                          {entry.recipe.cuisine || "—"}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
@@ -144,7 +176,13 @@ export function RecipeSelection({ availableRecipes, selectedRecipes, onRecipesCh
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => setExpanded(expanded === entry.recipe.id ? null : entry.recipe.id)}
+                          onClick={() =>
+                            setExpanded(
+                              expanded === entry.recipe.id
+                                ? null
+                                : entry.recipe.id,
+                            )
+                          }
                           aria-label="Toggle details"
                         >
                           <ClipboardList className="h-4 w-4" />
@@ -162,55 +200,85 @@ export function RecipeSelection({ availableRecipes, selectedRecipes, onRecipesCh
                     {expanded === entry.recipe.id && (
                       <div className="mt-4 grid gap-4 md:grid-cols-2">
                         <div className="space-y-2">
-                          <Label htmlFor={`wine-${entry.recipe.id}`} className="flex items-center gap-2 text-xs">
-                            <Wine className="h-3.5 w-3.5" /> Wine Pairing & Selection
+                          <Label
+                            htmlFor={`wine-${entry.recipe.id}`}
+                            className="flex items-center gap-2 text-xs"
+                          >
+                            <Wine className="h-3.5 w-3.5" /> Wine Pairing &
+                            Selection
                           </Label>
                           <Textarea
                             id={`wine-${entry.recipe.id}`}
                             placeholder="Recommended pairings, glass pours, upsell notes..."
                             value={entry.wineSelection || ""}
-                            onChange={(event) => updateRecipe(entry.recipe.id, { wineSelection: event.target.value })}
+                            onChange={(event) =>
+                              updateRecipe(entry.recipe.id, {
+                                wineSelection: event.target.value,
+                              })
+                            }
                             rows={3}
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor={`sell-${entry.recipe.id}`} className="text-xs">
+                          <Label
+                            htmlFor={`sell-${entry.recipe.id}`}
+                            className="text-xs"
+                          >
                             Server Selling Notes
                           </Label>
                           <Textarea
                             id={`sell-${entry.recipe.id}`}
                             placeholder="Talking points, ingredient sourcing, flavor highlights..."
                             value={entry.sellingNotes || ""}
-                            onChange={(event) => updateRecipe(entry.recipe.id, { sellingNotes: event.target.value })}
+                            onChange={(event) =>
+                              updateRecipe(entry.recipe.id, {
+                                sellingNotes: event.target.value,
+                              })
+                            }
                             rows={3}
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor={`service-${entry.recipe.id}`} className="text-xs">
+                          <Label
+                            htmlFor={`service-${entry.recipe.id}`}
+                            className="text-xs"
+                          >
                             Service Instructions
                           </Label>
                           <Textarea
                             id={`service-${entry.recipe.id}`}
                             placeholder="Pass timing, finishing garnish, plating calls..."
                             value={entry.serviceInstructions || ""}
-                            onChange={(event) => updateRecipe(entry.recipe.id, { serviceInstructions: event.target.value })}
+                            onChange={(event) =>
+                              updateRecipe(entry.recipe.id, {
+                                serviceInstructions: event.target.value,
+                              })
+                            }
                             rows={3}
                           />
                         </div>
                         <div className="space-y-2">
                           <Label className="flex items-center gap-2 text-xs">
-                            <Utensils className="h-3.5 w-3.5" /> Required Silverware
+                            <Utensils className="h-3.5 w-3.5" /> Required
+                            Silverware
                           </Label>
                           <div className="grid max-h-32 grid-cols-2 gap-2 overflow-y-auto text-xs">
                             {silverwareOptions.map((item) => {
-                              const checked = entry.silverwareRequired?.includes(item) ?? false;
+                              const checked =
+                                entry.silverwareRequired?.includes(item) ??
+                                false;
                               return (
-                                <div key={item} className="flex items-center gap-2">
+                                <div
+                                  key={item}
+                                  className="flex items-center gap-2"
+                                >
                                   <Checkbox
                                     id={`${entry.recipe.id}-${item}`}
                                     checked={checked}
                                     onCheckedChange={(state) => {
-                                      const set = new Set(entry.silverwareRequired ?? []);
+                                      const set = new Set(
+                                        entry.silverwareRequired ?? [],
+                                      );
                                       if (state) {
                                         set.add(item);
                                       } else {
@@ -221,7 +289,9 @@ export function RecipeSelection({ availableRecipes, selectedRecipes, onRecipesCh
                                       });
                                     }}
                                   />
-                                  <Label htmlFor={`${entry.recipe.id}-${item}`}>{item}</Label>
+                                  <Label htmlFor={`${entry.recipe.id}-${item}`}>
+                                    {item}
+                                  </Label>
                                 </div>
                               );
                             })}
@@ -317,7 +387,11 @@ export function RecipeSelection({ availableRecipes, selectedRecipes, onRecipesCh
                   <div className="flex items-start gap-3">
                     <div className="relative">
                       <img
-                        src={recipe.imageDataUrls?.[0] || recipe.image || "https://cdn.builder.io/api/v1/image/assets%2Fplaceholder"}
+                        src={
+                          recipe.imageDataUrls?.[0] ||
+                          recipe.image ||
+                          "https://cdn.builder.io/api/v1/image/assets%2Fplaceholder"
+                        }
                         alt={recipe.title}
                         className="h-16 w-16 rounded object-cover"
                       />
@@ -329,22 +403,34 @@ export function RecipeSelection({ availableRecipes, selectedRecipes, onRecipesCh
                     </div>
                     <div className="flex-1 space-y-2">
                       <div>
-                        <h4 className="text-sm font-semibold">{recipe.title}</h4>
+                        <h4 className="text-sm font-semibold">
+                          {recipe.title}
+                        </h4>
                         <p className="line-clamp-2 text-xs text-muted-foreground">
                           {recipe.description}
                         </p>
                       </div>
                       <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
-                        {recipe.course && <Badge variant="secondary">{recipe.course}</Badge>}
-                        {recipe.cuisine && <Badge variant="outline">{recipe.cuisine}</Badge>}
+                        {recipe.course && (
+                          <Badge variant="secondary">{recipe.course}</Badge>
+                        )}
+                        {recipe.cuisine && (
+                          <Badge variant="outline">{recipe.cuisine}</Badge>
+                        )}
                         {recipe.tags?.slice(0, 2).map((tag) => (
-                          <span key={tag} className="rounded-full bg-muted px-2 py-0.5">
+                          <span
+                            key={tag}
+                            className="rounded-full bg-muted px-2 py-0.5"
+                          >
                             {tag}
                           </span>
                         ))}
-                        {typeof recipe.prepTime === "number" && typeof recipe.cookTime === "number" && (
-                          <span>{recipe.prepTime + recipe.cookTime} min total</span>
-                        )}
+                        {typeof recipe.prepTime === "number" &&
+                          typeof recipe.cookTime === "number" && (
+                            <span>
+                              {recipe.prepTime + recipe.cookTime} min total
+                            </span>
+                          )}
                       </div>
                     </div>
                   </div>
@@ -353,7 +439,8 @@ export function RecipeSelection({ availableRecipes, selectedRecipes, onRecipesCh
             })}
             {filteredRecipes.length === 0 && (
               <div className="col-span-full py-12 text-center text-sm text-muted-foreground">
-                No recipes match that filter. Adjust search or add new entries first.
+                No recipes match that filter. Adjust search or add new entries
+                first.
               </div>
             )}
           </div>
