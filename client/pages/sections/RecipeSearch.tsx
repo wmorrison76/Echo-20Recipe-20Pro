@@ -1973,6 +1973,9 @@ export default function RecipeSearchSection() {
               onDestroy={() => {
                 if (confirm("Delete this recipe forever?")) destroyRecipe(r.id);
               }}
+              selectMode={isCollectionSelectionEnabled}
+              selected={selectedRecipeIds.includes(r.id)}
+              onToggleSelect={() => toggleRecipeSelection(r.id)}
             />
           ))}
         </div>
