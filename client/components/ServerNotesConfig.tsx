@@ -394,8 +394,8 @@ export function ServerNotesConfig({ config, onUpdate }: ServerNotesConfigProps) 
             <Textarea
               id="document-notes"
               placeholder="Optional notes shared with service team or attachments to include..."
-              value={(config as any).distributionNotes || ""}
-              onChange={(event) => onUpdate({ ...(config as any), distributionNotes: event.target.value })}
+              value={config.distributionNotes ?? ""}
+              onChange={(event) => onUpdate({ ...config, distributionNotes: event.target.value })}
               rows={3}
             />
           </div>
