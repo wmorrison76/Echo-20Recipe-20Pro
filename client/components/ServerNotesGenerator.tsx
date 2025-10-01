@@ -539,18 +539,13 @@ async function createDocx(note: ServerNote): Promise<Blob> {
         }),
       );
 
-      if (note.layout.standardLayout.includeImages) {
-        const imageData = await fetchImage(entry.recipe.image);
-        if (imageData) {
-          children.push(
-            new Paragraph({
-              alignment: AlignmentType.RIGHT,
-              children: [
-                new ImageRun({ data: imageData, transformation: { width: 300, height: 220 } }),
-              ],
-            }),
-          );
-        }
+      if (note.layout.standardLayout.includeImages && entry.recipe.image) {
+        children.push(
+          paragraph(`[Image: ${entry.recipe.image}]`, {
+            align: AlignmentType.RIGHT,
+            color: note.colorScheme.secondary,
+          }),
+        );
       }
 
       if (entry.recipe.description) {
@@ -638,16 +633,13 @@ async function createDocx(note: ServerNote): Promise<Blob> {
           }),
         );
 
-        if (note.layout.indexCardLayout.includeImages) {
-          const img = await fetchImage(item.recipe.image);
-          if (img) {
-            cells.push(
-              new Paragraph({
-                alignment: AlignmentType.RIGHT,
-                children: [new ImageRun({ data: img, transformation: { width: 180, height: 140 } })],
-              }),
-            );
-          }
+        if (note.layout.indexCardLayout.includeImages && item.recipe.image) {
+          cells.push(
+            paragraph(`[Image: ${item.recipe.image}]`, {
+              align: AlignmentType.RIGHT,
+              color: note.colorScheme.secondary,
+            }),
+          );
         }
 
         if (note.layout.indexCardLayout.contentPriority !== "instructions") {
