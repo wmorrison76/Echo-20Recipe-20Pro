@@ -251,6 +251,11 @@ export default function RecipeSearchSection() {
     addImages,
     destroyRecipe,
     purgeDeleted,
+    collections,
+    createCollection,
+    updateCollection,
+    deleteCollection,
+    setCollectionRecipes,
   } = useAppData();
   const [q, setQ] = useState("");
   type Cat = "all" | "recent" | "top" | "favorites" | "uncategorized" | "trash";
@@ -1147,7 +1152,7 @@ export default function RecipeSearchSection() {
                         .filter(Boolean)
                         .slice(0, 80);
                       const qty =
-                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜���⅞])(?:\s*[a-zA-Z]+)?\b/;
+                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
                       let c = 0;
                       for (const L of ls) {
                         if (qty.test(L) || /^[•\-*]\s+/.test(L)) c++;
