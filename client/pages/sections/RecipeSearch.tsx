@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAppData } from "@/context/AppDataContext";
 import { Dropzone } from "@/components/Dropzone";
 import { Button } from "@/components/ui/button";
