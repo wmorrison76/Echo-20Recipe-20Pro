@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -26,7 +25,6 @@ import {
   ALLERGENS,
   DIET_PROFILES,
   formatCurrency,
-  generateId,
 } from "./shared";
 
 type Macro = { kcal: number; fat: number; carbs: number; protein: number };
