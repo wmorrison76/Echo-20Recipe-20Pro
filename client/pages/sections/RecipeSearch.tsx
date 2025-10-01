@@ -64,22 +64,47 @@ export function RecipeCard({
   const stars = Array.from({ length: 5 }, (_, i) => i < (r.rating || 0));
   return (
     <div
-      className="rounded-xl border bg-white dark:bg-zinc-900 shadow-sm overflow-hidden glow"
+      className={cn(
+        "rounded-xl border bg-white dark:bg-zinc-900 shadow-sm overflow-hidden glow transition-colors",
+        selectMode && selected
+          ? "border-primary ring-2 ring-primary/40 bg-primary/5 dark:bg-primary/10"
+          : undefined,
+      )}
       data-echo-key="card:recipes:result"
     >
       <div className="grid grid-cols-[120px_1fr] gap-3 p-3 items-start">
-        {cover ? (
-          <img
-            src={cover}
-            alt={r.title}
-            className="h-[110px] w-[110px] object-cover rounded"
-            loading="lazy"
-          />
-        ) : (
-          <div className="h-[110px] w-[110px] bg-muted rounded flex items-center justify-center text-muted-foreground">
-            No Image
-          </div>
-        )}
+        <div className="relative h-[110px] w-[110px] shrink-0">
+          {cover ? (
+            <img
+              src={cover}
+              alt={r.title}
+              className="h-full w-full rounded object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center rounded bg-muted text-muted-foreground">
+              No Image
+            </div>
+          )}
+          {selectMode && (
+            <button
+              type="button"
+              aria-pressed={selected}
+              onClick={(event) => {
+                event.preventDefault();
+                onToggleSelect?.();
+              }}
+              className={cn(
+                "absolute left-2 top-2 rounded-full px-3 py-1 text-xs font-semibold shadow focus-visible:outline-none focus-visible:ring",
+                selected
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground",
+              )}
+            >
+              {selected ? "Selected" : "Select"}
+            </button>
+          )}
+        </div>
         <div className="prose prose-sm dark:prose-invert max-w-none">
           <div className="flex items-start justify-between gap-2">
             <h2 className="m-0 text-base font-semibold line-clamp-1">
@@ -1122,7 +1147,7 @@ export default function RecipeSearchSection() {
                         .filter(Boolean)
                         .slice(0, 80);
                       const qty =
-                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
+                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜���⅞])(?:\s*[a-zA-Z]+)?\b/;
                       let c = 0;
                       for (const L of ls) {
                         if (qty.test(L) || /^[•\-*]\s+/.test(L)) c++;
