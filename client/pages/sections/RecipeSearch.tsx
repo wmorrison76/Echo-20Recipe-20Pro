@@ -351,8 +351,10 @@ export default function RecipeSearchSection() {
   const [collectionToDelete, setCollectionToDelete] = useState<RecipeCollection | null>(null);
 
   const sortedCollections = useMemo(() => {
-    return [...collections].sort((a, b) =>
-      Date.parse(b.updatedAt || "") - Date.parse(a.updatedAt || ""),
+    const timestamp = (value: string | undefined) =>
+      value ? Date.parse(value) || 0 : 0;
+    return [...collections].sort(
+      (a, b) => timestamp(b.updatedAt) - timestamp(a.updatedAt),
     );
   }, [collections]);
 
