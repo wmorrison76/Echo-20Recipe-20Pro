@@ -45,6 +45,9 @@ export function RecipeCard({
   onTrash,
   inTrash,
   onDestroy,
+  selectMode,
+  selected,
+  onToggleSelect,
 }: {
   r: ReturnType<typeof useAppData>["recipes"][number];
   onPreview: () => void;
@@ -53,6 +56,9 @@ export function RecipeCard({
   onTrash: () => void;
   inTrash?: boolean;
   onDestroy?: () => void;
+  selectMode?: boolean;
+  selected?: boolean;
+  onToggleSelect?: () => void;
 }) {
   const cover = r.imageDataUrls?.[0];
   const stars = Array.from({ length: 5 }, (_, i) => i < (r.rating || 0));
