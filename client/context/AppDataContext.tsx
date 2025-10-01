@@ -143,7 +143,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    setRecipes(readLS<Recipe[]>(LS_RECIPES, []));
+    const storedRecipes = readLS<Recipe[]>(LS_RECIPES, []);
+    setRecipes(storedRecipes.length ? storedRecipes : mockRecipes);
     setImages(readLS<GalleryImage[]>(LS_IMAGES, []));
     setLookbooks(readLS<LookBook[]>(LS_LOOKBOOKS, []));
   }, []);
