@@ -302,7 +302,6 @@ function TemperatureLog({
                           {loc}
                         </SelectItem>
                       ))}
-                      <SelectItem value="Cook Chill Kettle">Cook Chill Kettle</SelectItem>
                     </SelectContent>
                   </Select>
                 </label>
