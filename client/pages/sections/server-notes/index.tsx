@@ -1,202 +1,258 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { ClipboardList, History, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAppData, type Recipe } from "@/context/AppDataContext";
-import { LayoutPresetPanel } from "./LayoutPresetPanel";
-import { RecipeSelectionPanel } from "./RecipeSelectionPanel";
-import { PreviewPanel } from "./PreviewPanel";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { useAppData } from "@/context/AppDataContext";
+import ServerNotesPreview from "@/components/ServerNotesPreview";
+import { ServerNotesConfig } from "@/components/ServerNotesConfig";
+import { RecipeSelection } from "@/components/RecipeSelection";
+import { ServerNotesGenerator } from "@/components/ServerNotesGenerator";
 import {
-  DEFAULT_CONFIG,
+  createEmptyServerNote,
   layoutPresets,
-  type ServerNotesConfig,
-} from "./shared";
+  colorSchemes,
+  type ServerNote,
+  type ServerNoteRecipe,
+} from "@shared/server-notes";
 
-const CONFIG_KEY = "server-notes.config.v1";
-const SELECTION_KEY = "server-notes.selection.v1";
-
-type SortMode = "recent" | "alpha" | "tagged";
-
-function readConfig(): ServerNotesConfig {
-  if (typeof window === "undefined") return DEFAULT_CONFIG;
-  try {
-    const raw = window.localStorage.getItem(CONFIG_KEY);
-    if (!raw) return DEFAULT_CONFIG;
-    const parsed = JSON.parse(raw) as Partial<ServerNotesConfig>;
-    return { ...DEFAULT_CONFIG, ...parsed };
-  } catch {
-    return DEFAULT_CONFIG;
-  }
-}
-
-function readSelection(): string[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(SELECTION_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.filter((id) => typeof id === "string") : [];
-  } catch {
-    return [];
-  }
-}
+const SAVED_NOTES_KEY = "serverNotes:saved";
+const SETTINGS_KEY = "serverNotes:settings";
 
 export default function ServerNotesSection() {
   const { recipes } = useAppData();
-  const [config, setConfig] = useState<ServerNotesConfig>(() => readConfig());
-  const [selectedRecipeIds, setSelectedRecipeIds] = useState<string[]>(() => readSelection());
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortMode, setSortMode] = useState<SortMode>("recent");
+  const { toast } = useToast();
+
+  const template = useMemo(() => createEmptyServerNote(layoutPresets[0]!, colorSchemes[0]!), []);
+  const [currentNote, setCurrentNote] = useState<ServerNote>(template);
+  const [savedNotes, setSavedNotes] = useState<ServerNote[]>([]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
-  }, [config]);
+    try {
+      const raw = localStorage.getItem(SAVED_NOTES_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as ServerNote[];
+        setSavedNotes(parsed);
+      }
+    } catch (error) {
+      console.warn("Failed to read server notes", error);
+    }
+    try {
+      const settingsRaw = localStorage.getItem(SETTINGS_KEY);
+      if (settingsRaw) {
+        const settings = JSON.parse(settingsRaw);
+        setCurrentNote((prev) => ({
+          ...prev,
+          companyName: settings.companyName || prev.companyName,
+          outletName: settings.outletName || prev.outletName,
+          logos: settings.logos || prev.logos,
+        }));
+      }
+    } catch (error) {
+      console.warn("Failed to read server notes settings", error);
+    }
+  }, [template]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem(SELECTION_KEY, JSON.stringify(selectedRecipeIds));
-  }, [selectedRecipeIds]);
+    localStorage.setItem(SAVED_NOTES_KEY, JSON.stringify(savedNotes));
+  }, [savedNotes]);
 
-  const selectedIds = useMemo(() => new Set(selectedRecipeIds), [selectedRecipeIds]);
+  const handleUpdate = (patch: Partial<ServerNote>) => {
+    setCurrentNote((prev) => ({ ...prev, ...patch, updatedAt: new Date().toISOString() }));
+  };
 
-  const selectedRecipes = useMemo(() => {
-    const map = new Map(recipes.map((recipe) => [recipe.id, recipe] as const));
-    return selectedRecipeIds
-      .map((id) => map.get(id))
-      .filter((recipe): recipe is Recipe => Boolean(recipe));
-  }, [recipes, selectedRecipeIds]);
+  const handleRecipesChange = (recipesSelection: ServerNoteRecipe[]) => {
+    setCurrentNote((prev) => ({ ...prev, selectedRecipes: recipesSelection, updatedAt: new Date().toISOString() }));
+  };
 
-  const handleToggleRecipe = useCallback((id: string) => {
-    setSelectedRecipeIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
+  const persistSettings = (note: ServerNote) => {
+    localStorage.setItem(
+      SETTINGS_KEY,
+      JSON.stringify({
+        companyName: note.companyName,
+        outletName: note.outletName,
+        logos: note.logos,
+      }),
     );
-  }, []);
+  };
 
-  const handleBulkAdd = useCallback((ids: string[]) => {
-    setSelectedRecipeIds((prev) => {
-      const merged = new Set(prev);
-      ids.forEach((id) => merged.add(id));
-      return Array.from(merged);
+  const createNewNote = () => {
+    const next = createEmptyServerNote(currentNote.layout, currentNote.colorScheme);
+    next.companyName = currentNote.companyName;
+    next.outletName = currentNote.outletName;
+    next.logos = [...currentNote.logos];
+    setCurrentNote(next);
+  };
+
+  const saveNote = (note: ServerNote) => {
+    const withId = note.id ? note : { ...note, id: `note-${Date.now()}` };
+    const noteWithTimestamp = { ...withId, updatedAt: new Date().toISOString() };
+    setSavedNotes((prev) => {
+      const existingIndex = prev.findIndex((item) => item.id === noteWithTimestamp.id);
+      if (existingIndex === -1) {
+        return [noteWithTimestamp, ...prev];
+      }
+      const copy = [...prev];
+      copy[existingIndex] = noteWithTimestamp;
+      return copy;
     });
-  }, []);
+    setCurrentNote(noteWithTimestamp);
+    persistSettings(noteWithTimestamp);
+  };
 
-  const handleBulkClear = useCallback(() => {
-    setSelectedRecipeIds([]);
-  }, []);
+  const loadSavedNote = (note: ServerNote) => {
+    setCurrentNote(note);
+    persistSettings(note);
+    toast({
+      title: "Loaded",
+      description: `"${note.title || "Untitled"}" ready for editing.`,
+    });
+  };
 
-  const handleConfigChange = useCallback((next: ServerNotesConfig) => {
-    setConfig(next);
-  }, []);
+  const deleteNote = (noteId: string) => {
+    setSavedNotes((prev) => prev.filter((note) => note.id !== noteId));
+    toast({ title: "Deleted", description: "Server notes removed." });
+  };
 
-  const resetDocument = useCallback(() => {
-    setConfig({ ...DEFAULT_CONFIG });
-    setSelectedRecipeIds([]);
-    setSearchTerm("");
-    setSortMode("recent");
-  }, []);
+  useEffect(() => {
+    persistSettings(currentNote);
+  }, [currentNote.companyName, currentNote.outletName, currentNote.logos]);
 
-  const handleGenerate = useCallback(() => {
-    if (selectedRecipes.length === 0 || typeof window === "undefined") return;
-    const preset = layoutPresets.find((item) => item.id === config.layoutId);
-    const timestamp = new Date();
-    const heading = `Server Notes — ${timestamp.toLocaleDateString()} ${timestamp.toLocaleTimeString()}\n`; // newline ending
-    const meta = [
-      `Outlet: ${config.outlet}`,
-      `Layout: ${preset?.name ?? config.layoutId}`,
-      `Orientation: ${config.orientation}`,
-      `Service notes: ${config.includeServiceNotes ? "enabled" : "disabled"}`,
-      `Allergens: ${config.includeAllergens ? "visible" : "hidden"}`,
-      `Pairings: ${config.includePairings ? "included" : "omitted"}`,
-      `Chef sign-off: ${config.includeChefNotes ? "required" : "optional"}`,
-    ].join("\n");
-
-    const body = selectedRecipes
-      .map((recipe, index) => {
-        const parts = [`#${index + 1} ${recipe.title || "Untitled"}`];
-        if (config.includeServiceNotes) {
-          parts.push("Service: Stage at pass, fire 6 / pass 4 minutes");
-        }
-        if (config.includeAllergens && recipe.tags?.length) {
-          const allergenTags = recipe.tags.filter((tag) =>
-            /gluten|dairy|nut|shellfish|soy|egg|sesame/i.test(tag),
-          );
-          if (allergenTags.length) {
-            parts.push(`Allergens: ${allergenTags.join(", ")}`);
-          }
-        }
-        if (config.includePairings && recipe.extra && typeof recipe.extra === "object") {
-          const pairing = (recipe.extra as Record<string, unknown>).pairing;
-          if (typeof pairing === "string" && pairing.trim()) {
-            parts.push(`Pairing: ${pairing.trim()}`);
-          }
-        }
-        if (recipe.description) {
-          parts.push(recipe.description);
-        }
-        return parts.join("\n");
-      })
-      .join("\n\n");
-
-    const content = `${heading}${meta}\n\n${body}\n`;
-    const blob = new Blob([content], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `server-notes-${Date.now()}.txt`;
-    anchor.rel = "noopener";
-    anchor.click();
-    setTimeout(() => URL.revokeObjectURL(url), 2000);
-  }, [config, selectedRecipes]);
+  const sortedSelected = useMemo(
+    () => [...currentNote.selectedRecipes].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+    [currentNote.selectedRecipes],
+  );
 
   return (
-    <section className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 pb-16 pt-6">
-      <header className="flex flex-wrap items-center justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-semibold tracking-tight text-white">
-            Server Notes
-          </h1>
-          <p className="text-sm text-slate-300">
-            Merge recipes, pacing, and allergen signals into a brief that keeps
-            front-of-house and the pass aligned.
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            variant="outline"
-            className="border-white/20 bg-white/5 text-slate-100 hover:bg-white/10"
-            onClick={resetDocument}
-          >
-            Reset
-          </Button>
-          <Button className="bg-primary px-5" onClick={handleGenerate} disabled={selectedRecipes.length === 0}>
-            New Document
-          </Button>
-        </div>
-      </header>
-      <div className="grid gap-6 xl:grid-cols-[1.2fr_1fr]">
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="space-y-6">
-          <LayoutPresetPanel
-            presets={layoutPresets}
-            config={config}
-            onConfigChange={handleConfigChange}
-          />
-          <RecipeSelectionPanel
-            recipes={recipes}
-            selectedIds={selectedIds}
-            onToggle={handleToggleRecipe}
-            onBulkAdd={handleBulkAdd}
-            onBulkRemove={handleBulkClear}
-            searchTerm={searchTerm}
-            onSearchTermChange={setSearchTerm}
-            sortMode={sortMode}
-            onSortModeChange={setSortMode}
-          />
+          <header className="flex flex-wrap items-center justify-between gap-3 border-b pb-4">
+            <div className="flex items-center gap-3">
+              <ClipboardList className="h-6 w-6 text-primary" />
+              <div>
+                <h1 className="text-xl font-semibold">Server Notes</h1>
+                <p className="text-sm text-muted-foreground">
+                  Connect recipes, layouts, and service notes into shareable documents.
+                </p>
+              </div>
+            </div>
+            <Button variant="outline" onClick={createNewNote} className="gap-2">
+              <Plus className="h-4 w-4" /> New Document
+            </Button>
+          </header>
+
+          <section className="grid gap-4 lg:grid-cols-12">
+            <Card className="lg:col-span-4 xl:col-span-3">
+              <CardHeader className="py-4">
+                <CardTitle className="text-base">Configuration</CardTitle>
+              </CardHeader>
+              <CardContent className="max-h-[calc(100vh-220px)] space-y-6 overflow-y-auto pr-2">
+                <ServerNotesConfig config={currentNote} onUpdate={handleUpdate} />
+              </CardContent>
+            </Card>
+
+            <Card className="lg:col-span-4 xl:col-span-4">
+              <CardHeader className="py-4">
+                <CardTitle className="text-base">Recipe Selection</CardTitle>
+              </CardHeader>
+              <CardContent className="max-h-[calc(100vh-220px)] space-y-6 overflow-y-auto pr-2">
+                <RecipeSelection
+                  availableRecipes={recipes}
+                  selectedRecipes={sortedSelected}
+                  onRecipesChange={handleRecipesChange}
+                />
+              </CardContent>
+            </Card>
+
+            <Card className="lg:col-span-4 xl:col-span-5">
+              <CardHeader className="py-4">
+                <CardTitle className="text-base">Preview & Generate</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <ServerNotesPreview
+                  layout={currentNote.layout}
+                  color={currentNote.colorScheme}
+                  pageFormat={currentNote.pageFormat}
+                  variant="mini"
+                />
+                <ServerNotesGenerator serverNote={currentNote} onSave={saveNote} />
+              </CardContent>
+            </Card>
+          </section>
+
+          <section>
+            <div className="mb-2 flex items-center gap-2">
+              <History className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">Saved Documents</span>
+              {savedNotes.length > 0 && <Badge variant="secondary">{savedNotes.length}</Badge>}
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {savedNotes.map((note) => (
+                <Card key={note.id} className="hover:shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between text-base">
+                      <span className="line-clamp-1">{note.title || "Untitled"}</span>
+                      <Badge variant="outline">{note.selectedRecipes.length} recipes</Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4 text-sm">
+                    <div className="space-y-1 text-muted-foreground">
+                      <div>
+                        <strong>Company:</strong> {note.companyName || "—"}
+                      </div>
+                      {note.outletName && (
+                        <div>
+                          <strong>Outlet:</strong> {note.outletName}
+                        </div>
+                      )}
+                      <div>
+                        <strong>Distribution:</strong> {new Date(note.distributionDate).toLocaleDateString()}
+                      </div>
+                      <div>
+                        <strong>Layout:</strong> {note.layout.name}
+                      </div>
+                      <div>
+                        <strong>Updated:</strong> {new Date(note.updatedAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button size="sm" className="flex-1" onClick={() => loadSavedNote(note)}>
+                        Load & Edit
+                      </Button>
+                      {note.docxDataUrl && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const link = document.createElement("a");
+                            link.href = note.docxDataUrl!;
+                            link.download = `${note.title || "server-notes"}.docx`;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          }}
+                        >
+                          Download
+                        </Button>
+                      )}
+                      <Button variant="outline" size="sm" onClick={() => deleteNote(note.id)} className="text-red-600">
+                        Delete
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              {savedNotes.length === 0 && (
+                <div className="col-span-full rounded-lg border py-10 text-center text-sm text-muted-foreground">
+                  No saved documents yet. Generate and save a briefing to build your library.
+                </div>
+              )}
+            </div>
+          </section>
         </div>
-        <PreviewPanel
-          config={config}
-          selectedRecipes={selectedRecipes}
-          onGenerate={handleGenerate}
-        />
       </div>
-    </section>
+    </div>
   );
 }
