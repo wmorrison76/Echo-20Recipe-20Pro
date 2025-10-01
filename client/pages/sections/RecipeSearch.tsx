@@ -1338,6 +1338,34 @@ export default function RecipeSearchSection() {
         </div>
       </div>
       {status && <div className="rounded-md border p-3 text-sm">{status}</div>}
+      <AlertDialog
+        open={!!collectionToDelete}
+        onOpenChange={(open) => {
+          if (!open) setCollectionToDelete(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete collection?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {collectionToDelete
+                ? `"${collectionToDelete.name}" will be removed permanently.`
+                : "This action cannot be undone."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setCollectionToDelete(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleDeleteCollection}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <Dialog open={tocOpen} onOpenChange={setTocOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
