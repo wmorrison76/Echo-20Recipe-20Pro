@@ -58,6 +58,7 @@ export type ServerNote = {
   cardsPerPage: number;
   logos: string[];
   selectedRecipes: ServerNoteRecipe[];
+  distributionNotes?: string;
   docxDataUrl?: string;
   createdAt: string;
   updatedAt: string;
