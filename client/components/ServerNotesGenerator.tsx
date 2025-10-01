@@ -466,20 +466,6 @@ async function createDocx(note: ServerNote): Promise<Blob> {
   const sections: any[] = [];
 
   const headerChildren: Paragraph[] = [];
-  if (note.logos.length) {
-    for (const logo of note.logos.slice(0, 2)) {
-      const data = await fetchImage(logo);
-      if (!data) continue;
-      headerChildren.push(
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          children: [
-            new ImageRun({ data, transformation: { width: 140, height: 70 } }),
-          ],
-        }),
-      );
-    }
-  }
 
   if (note.companyName) {
     headerChildren.push(
