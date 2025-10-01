@@ -453,7 +453,10 @@ async function createDocx(note: ServerNote): Promise<Blob> {
     }
   };
 
-  const heading = (text: string, level: HeadingLevel, align: AlignmentType = AlignmentType.LEFT) =>
+  type HeadingValue = (typeof HeadingLevel)[keyof typeof HeadingLevel];
+  type AlignmentValue = (typeof AlignmentType)[keyof typeof AlignmentType];
+
+  const heading = (text: string, level: HeadingValue, align: AlignmentValue = AlignmentType.LEFT) =>
     new Paragraph({
       heading: level,
       alignment: align,
@@ -464,7 +467,7 @@ async function createDocx(note: ServerNote): Promise<Blob> {
 
   const paragraph = (
     text: string,
-    options?: { align?: AlignmentType; color?: string; bold?: boolean; size?: number },
+    options?: { align?: AlignmentValue; color?: string; bold?: boolean; size?: number },
   ) =>
     new Paragraph({
       alignment: options?.align,
