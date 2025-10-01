@@ -27,7 +27,6 @@ import {
   TextRun,
   WidthType,
   convertInchesToTwip,
-  ImageRun,
 } from "docx";
 
 export type ServerNotesGeneratorProps = {
