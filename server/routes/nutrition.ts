@@ -27,7 +27,6 @@ const NUTRITION_DB: Record<
   carrot: { kcal: 41, fat: 0.2, carbs: 10, protein: 0.9 },
   potato: { kcal: 77, fat: 0.1, carbs: 17, protein: 2 },
   cheese: { kcal: 402, fat: 33, carbs: 1.3, protein: 25 },
-  cream: { kcal: 340, fat: 36, carbs: 3, protein: 2 },
   fish: { kcal: 206, fat: 12, carbs: 0, protein: 22 },
   shrimp: { kcal: 99, fat: 0.3, carbs: 0.2, protein: 24 },
   almond: { kcal: 579, fat: 50, carbs: 22, protein: 21 },
