@@ -482,8 +482,8 @@ function BreakdownTable({ breakdown }: { breakdown: NutritionBreakdown[] }) {
               </tr>
             </thead>
             <tbody>
-              {breakdown.map((row) => (
-                <tr key={generateId("nut-row") + row.item} className="border-t">
+              {breakdown.map((row, index) => (
+                <tr key={`${row.item}-${index}`} className="border-t">
                   <td className="p-2 font-medium capitalize">{row.item}</td>
                   <td className="p-2">{Math.round(row.grams)}</td>
                   <td className="p-2">{Math.round(row.kcal)}</td>
