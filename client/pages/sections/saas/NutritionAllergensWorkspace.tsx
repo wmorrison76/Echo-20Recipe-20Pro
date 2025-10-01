@@ -237,7 +237,7 @@ function parseQtyUnit(line: string) {
     "⅔": "2/3",
     "⅕": "1/5",
     "⅖": "2/5",
-    "⅗": "3/5",
+    "���": "3/5",
     "⅘": "4/5",
     "⅙": "1/6",
     "⅚": "5/6",
@@ -613,7 +613,9 @@ export default function NutritionAllergensWorkspace() {
               <span>Total weight</span>
               <Badge variant="secondary">{Math.round(totalWeight)} g</Badge>
               <span>Per {portionName}</span>
-              <Badge variant="secondary">{Math.round(perServingWeight)} g</Badge>
+              <Badge variant="secondary">
+                {Math.round(perServingWeight * 10) / 10} g
+              </Badge>
             </div>
           </div>
         </CardHeader>
