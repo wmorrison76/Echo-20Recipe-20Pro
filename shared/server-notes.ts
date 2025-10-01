@@ -65,6 +65,18 @@ export type ServerNote = {
   updatedAt: string;
 };
 
+export type RecipeCollection = {
+  id: string;
+  name: string;
+  season: string;
+  year: number;
+  version: number;
+  description?: string;
+  recipeIds: string[];
+  createdAt: string;
+  updatedAt: string;
+};
+
 export const silverwareOptions = [
   "Dinner Fork",
   "Salad Fork",
