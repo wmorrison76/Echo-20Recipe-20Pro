@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useAppData } from "@/context/AppDataContext";
 import { Dropzone } from "@/components/Dropzone";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Star,
   LayoutGrid,
   Rows,
@@ -16,8 +26,16 @@ import {
   Trash2,
   RotateCcw,
   ExternalLink,
+  Search,
+  Save,
+  X,
+  Package,
+  Pencil,
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { axisOptions } from "@/lib/taxonomy";
+import { cn } from "@/lib/utils";
+import type { RecipeCollection } from "@shared/server-notes";
 
 export function RecipeCard({
   r,
