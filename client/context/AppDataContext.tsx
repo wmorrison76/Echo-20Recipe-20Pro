@@ -290,6 +290,10 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     writeLS(LS_LOOKBOOKS, lookbooks);
   }, [lookbooks]);
 
+  useEffect(() => {
+    writeLS(LS_COLLECTIONS, collections);
+  }, [collections]);
+
   const dataUrlFromFile = (file: File): Promise<string> =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
