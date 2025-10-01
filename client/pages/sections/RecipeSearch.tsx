@@ -518,7 +518,7 @@ export default function RecipeSearchSection() {
     setSelectedRecipeIds((prev) =>
       prev.filter((id) => recipes.some((recipe) => recipe.id === id)),
     );
-  }, [recipes]);
+  }, [recipes, selectedRecipeIds.length]);
 
   const resetCollectionDraft = useCallback(() => {
     setCollectionDraftName("");
