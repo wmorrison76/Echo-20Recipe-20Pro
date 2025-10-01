@@ -518,7 +518,7 @@ async function createDocx(note: ServerNote): Promise<Blob> {
 
   if (standard) {
     for (const entry of note.selectedRecipes) {
-      const children: Paragraph[] = [];
+      const children: (Paragraph | Table)[] = [];
       const headerAlign =
         note.layout.standardLayout.headerStyle === "centered"
           ? AlignmentType.CENTER
