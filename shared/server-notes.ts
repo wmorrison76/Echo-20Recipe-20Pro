@@ -9,6 +9,7 @@ export type StandardLayoutConfig = {
   includeImages: boolean;
   includeNutrition: boolean;
   fontFamily: string;
+  preferredOrientation?: "vertical" | "horizontal";
 };
 
 export type IndexCardLayoutConfig = {
@@ -146,6 +147,7 @@ export const layoutPresets: LayoutPreset[] = [
       includeImages: true,
       includeNutrition: true,
       fontFamily: "'Playfair Display', 'Times New Roman', serif",
+      preferredOrientation: "vertical",
     },
     indexCardLayout: {
       headerStyle: "centered",
@@ -167,6 +169,7 @@ export const layoutPresets: LayoutPreset[] = [
       includeImages: false,
       includeNutrition: false,
       fontFamily: "'Source Sans Pro', 'Helvetica', sans-serif",
+      preferredOrientation: "horizontal",
     },
     indexCardLayout: {
       headerStyle: "minimal",
@@ -189,6 +192,7 @@ export const layoutPresets: LayoutPreset[] = [
       includeImages: true,
       includeNutrition: false,
       fontFamily: "'IBM Plex Sans', 'Helvetica', sans-serif",
+      preferredOrientation: "vertical",
     },
     indexCardLayout: {
       headerStyle: "centered",
@@ -211,6 +215,7 @@ export const layoutPresets: LayoutPreset[] = [
       includeImages: true,
       includeNutrition: false,
       fontFamily: "'Montserrat', 'Helvetica', sans-serif",
+      preferredOrientation: "horizontal",
     },
     indexCardLayout: {
       headerStyle: "minimal",
