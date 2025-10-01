@@ -578,7 +578,13 @@ export default function NutritionAllergensWorkspace() {
   }, [recipe, servings]);
 
   const totalWeight = analysis.total.grams;
-  const perServingWeight = servings ? totalWeight / servings : totalWeight;
+  const overrideWeightNumber = Number(portionWeight);
+  const perServingWeight =
+    Number.isFinite(overrideWeightNumber) && overrideWeightNumber > 0
+      ? overrideWeightNumber
+      : servings
+        ? totalWeight / servings
+        : totalWeight;
 
   return (
     <div className="space-y-4">
