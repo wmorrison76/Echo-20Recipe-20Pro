@@ -10,6 +10,7 @@ import React, {
 import JSZip from "jszip";
 import mockRecipes from "@/data/mockRecipes";
 import type { Recipe } from "@shared/recipes";
+import type { RecipeCollection } from "@shared/server-notes";
 export type { Recipe } from "@shared/recipes";
 // Mammoth is loaded on-demand to keep bundle small and avoid init errors in some environments
 
@@ -830,7 +831,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
     const results: Recipe[] = [];
     const qtyRe =
-      /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
+      /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛��⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
 
     for (const sec of sections) {
       const els = sec.elements;
