@@ -51,8 +51,11 @@ export function ServerNotesConfig({ config, onUpdate }: ServerNotesConfigProps) 
 
   const handleLayoutChange = (preset: LayoutPreset) => {
     const next = { ...config, layout: preset };
-    if (preset.standardLayout.orientation && preset.standardLayout.orientation !== config.orientation) {
-      next.orientation = preset.standardLayout.orientation;
+    if (
+      preset.standardLayout.preferredOrientation &&
+      preset.standardLayout.preferredOrientation !== config.orientation
+    ) {
+      next.orientation = preset.standardLayout.preferredOrientation;
     }
     onUpdate(next);
   };
