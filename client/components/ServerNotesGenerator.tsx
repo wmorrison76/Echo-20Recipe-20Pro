@@ -522,7 +522,7 @@ async function createDocx(note: ServerNote): Promise<Blob> {
   headerChildren.push(
     new Paragraph({
       text: note.title || "Server Notes",
-      heading: HeadingLevel.HEADING1,
+      heading: HeadingLevel.HEADING_1,
       alignment: AlignmentType.CENTER,
       children: [new TextRun({ font })],
     }),
@@ -596,8 +596,8 @@ async function createDocx(note: ServerNote): Promise<Blob> {
 
         const row = new TableRow({
           children: [
-            new TableCell({ children: [heading("Ingredients", HeadingLevel.HEADING3), ...ingredientParagraphs] }),
-            new TableCell({ children: [heading("Preparation", HeadingLevel.HEADING3), ...instructionParagraphs] }),
+            new TableCell({ children: [heading("Ingredients", HeadingLevel.HEADING_3), ...ingredientParagraphs] }),
+            new TableCell({ children: [heading("Preparation", HeadingLevel.HEADING_3), ...instructionParagraphs] }),
           ],
         });
 
@@ -608,29 +608,29 @@ async function createDocx(note: ServerNote): Promise<Blob> {
           }),
         );
       } else {
-        children.push(heading("Ingredients", HeadingLevel.HEADING3));
+        children.push(heading("Ingredients", HeadingLevel.HEADING_3));
         entry.recipe.ingredients?.forEach((ing) => children.push(paragraph(`• ${ing}`)));
-        children.push(heading("Preparation", HeadingLevel.HEADING3));
+        children.push(heading("Preparation", HeadingLevel.HEADING_3));
         entry.recipe.instructions?.forEach((step, idx) => children.push(paragraph(`${idx + 1}. ${step}`)));
       }
 
       if (entry.wineSelection) {
-        children.push(heading("Wine Pairing", HeadingLevel.HEADING3));
+        children.push(heading("Wine Pairing", HeadingLevel.HEADING_3));
         children.push(paragraph(entry.wineSelection));
       }
 
       if (entry.sellingNotes) {
-        children.push(heading("Selling Points", HeadingLevel.HEADING3));
+        children.push(heading("Selling Points", HeadingLevel.HEADING_3));
         children.push(paragraph(entry.sellingNotes));
       }
 
       if (entry.serviceInstructions) {
-        children.push(heading("Service Instructions", HeadingLevel.HEADING3));
+        children.push(heading("Service Instructions", HeadingLevel.HEADING_3));
         children.push(paragraph(entry.serviceInstructions));
       }
 
       if (entry.silverwareRequired?.length) {
-        children.push(heading("Required Silverware", HeadingLevel.HEADING3));
+        children.push(heading("Required Silverware", HeadingLevel.HEADING_3));
         entry.silverwareRequired.forEach((item) => children.push(paragraph(`• ${item}`)));
       }
 
@@ -684,22 +684,22 @@ async function createDocx(note: ServerNote): Promise<Blob> {
         }
 
         if (note.layout.indexCardLayout.contentPriority !== "instructions") {
-          cells.push(heading("Ingredients", HeadingLevel.HEADING3));
+          cells.push(heading("Ingredients", HeadingLevel.HEADING_3));
           item.recipe.ingredients?.slice(0, 8).forEach((ing) => cells.push(paragraph(`• ${ing}`)));
         }
 
         if (note.layout.indexCardLayout.contentPriority !== "ingredients") {
-          cells.push(heading("Steps", HeadingLevel.HEADING3));
+          cells.push(heading("Steps", HeadingLevel.HEADING_3));
           item.recipe.instructions?.slice(0, 6).forEach((step, indexStep) => cells.push(paragraph(`${indexStep + 1}. ${step}`)));
         }
 
         if (item.wineSelection) {
-          cells.push(heading("Wine", HeadingLevel.HEADING3));
+          cells.push(heading("Wine", HeadingLevel.HEADING_3));
           cells.push(paragraph(item.wineSelection));
         }
 
         if (item.sellingNotes) {
-          cells.push(heading("Selling", HeadingLevel.HEADING3));
+          cells.push(heading("Selling", HeadingLevel.HEADING_3));
           cells.push(paragraph(item.sellingNotes));
         }
 
