@@ -4,6 +4,7 @@ import RecipeInputSection from "./sections/RecipeInput";
 import GallerySection from "./sections/Gallery";
 import AddRecipeSection from "./sections/AddRecipe";
 import SaasRoadmapSection from "./sections/SaasRoadmap";
+import ServerNotesSection from "./sections/server-notes";
 import ProductionSection from "./sections/Production";
 import TopTabs from "@/components/TopTabs";
 import SubtleBottomGlow from "@/components/SubtleBottomGlow";
