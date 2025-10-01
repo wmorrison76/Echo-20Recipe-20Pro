@@ -1119,6 +1119,7 @@ function PurchaseOrderBoard({
                               <Button
                                 variant="ghost"
                                 size="icon"
+                                aria-label="Remove line"
                                 onClick={() => setLines((prev) => prev.filter((l) => l.id !== line.id))}
                               >
                                 ×
