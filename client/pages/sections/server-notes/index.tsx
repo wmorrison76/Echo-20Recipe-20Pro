@@ -88,7 +88,7 @@ export default function ServerNotesSection() {
   }, []);
 
   const resetDocument = useCallback(() => {
-    setConfig(DEFAULT_CONFIG);
+    setConfig({ ...DEFAULT_CONFIG });
     setSelectedRecipeIds([]);
     setSearchTerm("");
     setSortMode("recent");
