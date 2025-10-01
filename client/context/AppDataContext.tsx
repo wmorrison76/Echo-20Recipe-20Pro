@@ -8,6 +8,7 @@ import React, {
   useRef,
 } from "react";
 import JSZip from "jszip";
+import mockRecipes from "@/data/mockRecipes";
 import type { Recipe } from "@shared/recipes";
 export type { Recipe } from "@shared/recipes";
 // Mammoth is loaded on-demand to keep bundle small and avoid init errors in some environments
