@@ -124,6 +124,7 @@ const CTX = createContext<AppData | null>(null);
 const LS_RECIPES = "app.recipes.v1";
 const LS_IMAGES = "app.images.v1";
 const LS_LOOKBOOKS = "app.lookbooks.v1";
+const LS_COLLECTIONS = "app.collections.v1";
 
 function uid() {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
