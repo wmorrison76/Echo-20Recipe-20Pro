@@ -102,6 +102,21 @@ type AppData = {
   addImagesToLookBook: (id: string, imageIds: string[]) => void;
   removeImagesFromLookBook: (id: string, imageIds: string[]) => void;
   exportAllZip: () => Promise<void>;
+  collections: RecipeCollection[];
+  createCollection: (input: {
+    name: string;
+    season: string;
+    year: number;
+    version: number;
+    description?: string;
+    recipeIds?: string[];
+  }) => RecipeCollection;
+  updateCollection: (id: string, patch: Partial<Omit<RecipeCollection, "id" | "createdAt" | "recipeIds">>) => void;
+  deleteCollection: (id: string) => void;
+  addRecipeToCollection: (collectionId: string, recipeId: string) => void;
+  removeRecipeFromCollection: (collectionId: string, recipeId: string) => void;
+  setCollectionRecipes: (collectionId: string, recipeIds: string[]) => void;
+  getCollectionById: (id: string) => RecipeCollection | undefined;
 };
 
 const CTX = createContext<AppData | null>(null);
