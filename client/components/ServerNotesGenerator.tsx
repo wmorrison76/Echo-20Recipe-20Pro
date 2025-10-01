@@ -434,25 +434,6 @@ async function createDocx(note: ServerNote): Promise<Blob> {
 
   const toHex = (color: string) => color.replace("#", "") || "000000";
 
-  const dataUrlToUint8 = async (dataUrl: string): Promise<Uint8Array> => {
-    if (dataUrl.startsWith("data:")) {
-      const response = await fetch(dataUrl);
-      const blob = await response.blob();
-      return new Uint8Array(await blob.arrayBuffer());
-    }
-    const response = await fetch(dataUrl, { mode: "cors" });
-    return new Uint8Array(await response.arrayBuffer());
-  };
-
-  const fetchImage = async (url?: string) => {
-    if (!url) return null;
-    try {
-      return await dataUrlToUint8(url);
-    } catch {
-      return null;
-    }
-  };
-
   type HeadingValue = (typeof HeadingLevel)[keyof typeof HeadingLevel];
   type AlignmentValue = (typeof AlignmentType)[keyof typeof AlignmentType];
 
