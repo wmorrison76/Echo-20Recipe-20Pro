@@ -256,7 +256,7 @@ export function ServerNotesConfig({
 
       <Card>
         <CardHeader className="space-y-2 px-4 py-3">
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-sm font-semibold">
             <FileText className="h-4 w-4" /> Page Format & Orientation
           </CardTitle>
         </CardHeader>
