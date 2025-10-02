@@ -1,5 +1,4 @@
-import * as React from "react";
-import * as React from "react";
+import { useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   BookOpenCheck,
@@ -66,8 +65,8 @@ function TabLink({ to, label, icon: Icon }: TabLinkProps) {
 
 export default function TopTabs() {
   const location = useLocation();
-  const [open, setOpen] = React.useState(true);
-  const [showHelp, setShowHelp] = React.useState(false);
+  const [open, setOpen] = useState(true);
+  const [showHelp, setShowHelp] = useState(false);
   const isAdd = new URLSearchParams(location.search).get("tab") === "add-recipe";
 
   const togglePanel = () => {
