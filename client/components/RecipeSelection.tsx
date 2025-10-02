@@ -349,6 +349,7 @@ export function RecipeSelection({
                 <Button
                   variant={view === "grid" ? "default" : "outline"}
                   size="icon"
+                  className="h-8 w-8"
                   onClick={() => setView("grid")}
                   aria-label="Grid view"
                 >
