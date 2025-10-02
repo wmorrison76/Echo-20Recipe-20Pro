@@ -129,7 +129,7 @@ export function RecipeSelection({
             {selectedRecipes.map((entry, index) => (
               <div key={entry.recipe.id} className="rounded-lg border p-2.5">
                 <div className="flex min-w-0 items-start gap-3">
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-1.5">
                     <Button
                       variant="ghost"
                       size="icon"
