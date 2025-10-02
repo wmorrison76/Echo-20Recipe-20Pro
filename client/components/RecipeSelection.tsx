@@ -119,7 +119,7 @@ export function RecipeSelection({
     <div className="space-y-6">
       {selectedRecipes.length > 0 && (
         <Card>
-          <CardHeader className="space-y-1 px-4 py-3">
+          <CardHeader className="space-y-1 px-3.5 py-3">
             <CardTitle className="flex flex-wrap items-center justify-between gap-2">
               <span>Selected Recipes ({selectedRecipes.length})</span>
               <Badge variant="secondary">Reorder with arrows</Badge>
