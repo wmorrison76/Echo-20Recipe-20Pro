@@ -305,8 +305,9 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         ];
         const next: GalleryImage[] = [];
         let order = 0;
+        const hasNetwork = typeof fetch === "function";
         for (const it of items) {
-          const loaded = await loadImageFromUrl(it.url);
+          const loaded = hasNetwork ? await loadImageFromUrl(it.url) : null;
           const payload = loaded ?? FALLBACK_GALLERY_IMAGE;
           next.push({
             id: uid(),
