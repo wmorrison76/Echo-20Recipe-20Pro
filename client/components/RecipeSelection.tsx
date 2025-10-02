@@ -321,7 +321,7 @@ export function RecipeSelection({
               <select
                 value={filterCourse}
                 onChange={(event) => setFilterCourse(event.target.value)}
-                className="h-9 rounded-md border bg-background px-2 text-sm"
+                className="h-9 rounded-md border bg-background px-2 text-xs"
               >
                 <option value="">Course</option>
                 {courseOptions.map((course) => (
