@@ -135,6 +135,7 @@ export function ServerNotesConfig({
                     <Button
                       variant="outline"
                       size="sm"
+                      className="h-8 px-3"
                       onClick={(event) => {
                         event.stopPropagation();
                         setPreviewLayout(preset);
