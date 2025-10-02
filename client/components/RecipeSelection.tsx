@@ -133,7 +133,7 @@ export function RecipeSelection({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-6 w-6"
+                      className="h-5.5 w-5.5"
                       onClick={() => moveRecipe(entry.recipe.id, -1)}
                       disabled={index === 0}
                       aria-label="Move up"
@@ -143,7 +143,7 @@ export function RecipeSelection({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-6 w-6"
+                      className="h-5.5 w-5.5"
                       onClick={() => moveRecipe(entry.recipe.id, 1)}
                       disabled={index === selectedRecipes.length - 1}
                       aria-label="Move down"
