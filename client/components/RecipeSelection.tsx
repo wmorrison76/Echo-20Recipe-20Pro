@@ -120,7 +120,7 @@ export function RecipeSelection({
       {selectedRecipes.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
+            <CardTitle className="flex flex-wrap items-center justify-between gap-2">
               <span>Selected Recipes ({selectedRecipes.length})</span>
               <Badge variant="secondary">Reorder with arrows</Badge>
             </CardTitle>
