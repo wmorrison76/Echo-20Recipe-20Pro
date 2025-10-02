@@ -446,7 +446,9 @@ export function ServerNotesConfig({
         </CardHeader>
         <CardContent className="space-y-3.5 px-4 pb-4 pt-0">
           <div className="space-y-1">
-            <Label htmlFor="document-title">Document Title</Label>
+            <Label htmlFor="document-title" className="text-xs">
+              Document Title
+            </Label>
             <Input
               id="document-title"
               value={config.title}
