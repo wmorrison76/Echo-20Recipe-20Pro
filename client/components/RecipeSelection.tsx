@@ -254,7 +254,7 @@ export function RecipeSelection({
                                 serviceInstructions: event.target.value,
                               })
                             }
-                            rows={3}
+                            rows={2}
                           />
                         </div>
                         <div className="space-y-2">
