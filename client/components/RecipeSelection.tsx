@@ -385,7 +385,7 @@ export function RecipeSelection({
                   }`}
                 >
                   <div className="flex min-w-0 items-start gap-3">
-                    <div className="relative">
+                    <div className="relative shrink-0">
                       <img
                         src={
                           recipe.imageDataUrls?.[0] ||
