@@ -336,7 +336,7 @@ export function RecipeSelection({
               <select
                 value={filterCuisine}
                 onChange={(event) => setFilterCuisine(event.target.value)}
-                className="h-9 rounded-md border bg-background px-2 text-xs"
+                className="h-8 rounded-md border bg-background px-2 text-[11px]"
               >
                 <option value="">Cuisine</option>
                 {cuisineOptions.map((cuisine) => (
