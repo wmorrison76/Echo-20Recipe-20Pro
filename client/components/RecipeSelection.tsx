@@ -383,7 +383,7 @@ export function RecipeSelection({
                   key={recipe.id}
                   type="button"
                   onClick={() => toggleRecipe(recipe)}
-                  className={`rounded-lg border p-3 text-left transition ${
+                  className={`rounded-lg border p-3 text-left text-[13px] transition ${
                     isSelected
                       ? "border-primary bg-primary/10"
                       : "border-muted hover:border-foreground/40"
