@@ -222,7 +222,7 @@ export function RecipeSelection({
                         <div className="space-y-2">
                           <Label
                             htmlFor={`sell-${entry.recipe.id}`}
-                            className="text-xs"
+                            className="text-[11px]"
                           >
                             Server Selling Notes
                           </Label>
