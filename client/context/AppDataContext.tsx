@@ -8,6 +8,10 @@ import React, {
   useRef,
 } from "react";
 import JSZip from "jszip";
+import mockRecipes from "@/data/mockRecipes";
+import type { Recipe } from "@shared/recipes";
+import type { RecipeCollection } from "@shared/server-notes";
+export type { Recipe } from "@shared/recipes";
 // Mammoth is loaded on-demand to keep bundle small and avoid init errors in some environments
 
 export type GalleryImage = {
@@ -23,28 +27,18 @@ export type GalleryImage = {
   unsupported?: boolean;
 };
 
-export type Recipe = {
-  id: string;
-  title: string;
-  description?: string;
-  ingredients?: string[];
-  instructions?: string[];
-  tags?: string[];
-  imageNames?: string[]; // filenames to link with gallery
-  imageDataUrls?: string[]; // resolved from gallery by name
-  createdAt: number;
-  sourceFile?: string;
-  extra?: Record<string, unknown>;
-  favorite?: boolean;
-  rating?: number; // 0-5
-  deletedAt?: number | null; // soft delete
-};
-
 export type LookBook = {
   id: string;
   name: string;
   imageIds: string[];
   createdAt: number;
+};
+
+const FALLBACK_GALLERY_IMAGE: { dataUrl: string; mime: string } = {
+  dataUrl: `data:image/svg+xml,${encodeURIComponent(
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='#4A8BFF'/><stop offset='100%' stop-color='#9A6BFF'/></linearGradient></defs><rect width='600' height='400' rx='40' fill='url(#g)'/><rect x='48' y='56' width='504' height='160' rx='28' fill='rgba(255,255,255,0.16)'/><circle cx='120' cy='260' r='36' fill='rgba(255,255,255,0.22)'/><circle cx='200' cy='300' r='52' fill='rgba(255,255,255,0.12)'/><text x='50%' y='55%' font-family=\"Inter,Arial,sans-serif\" font-size='48' font-weight='600' fill='white' text-anchor='middle'>LUCCCA</text></svg>"
+  )}`,
+  mime: "image/svg+xml",
 };
 
 type AppData = {
@@ -115,6 +109,24 @@ type AppData = {
   addImagesToLookBook: (id: string, imageIds: string[]) => void;
   removeImagesFromLookBook: (id: string, imageIds: string[]) => void;
   exportAllZip: () => Promise<void>;
+  collections: RecipeCollection[];
+  createCollection: (input: {
+    name: string;
+    season: string;
+    year: number;
+    version: number;
+    description?: string;
+    recipeIds?: string[];
+  }) => RecipeCollection;
+  updateCollection: (
+    id: string,
+    patch: Partial<Omit<RecipeCollection, "id" | "createdAt" | "recipeIds">>,
+  ) => void;
+  deleteCollection: (id: string) => void;
+  addRecipeToCollection: (collectionId: string, recipeId: string) => void;
+  removeRecipeFromCollection: (collectionId: string, recipeId: string) => void;
+  setCollectionRecipes: (collectionId: string, recipeIds: string[]) => void;
+  getCollectionById: (id: string) => RecipeCollection | undefined;
 };
 
 const CTX = createContext<AppData | null>(null);
@@ -122,6 +134,7 @@ const CTX = createContext<AppData | null>(null);
 const LS_RECIPES = "app.recipes.v1";
 const LS_IMAGES = "app.images.v1";
 const LS_LOOKBOOKS = "app.lookbooks.v1";
+const LS_COLLECTIONS = "app.collections.v1";
 
 function uid() {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
@@ -149,6 +162,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [lookbooks, setLookbooks] = useState<LookBook[]>([]);
+  const [collections, setCollections] = useState<RecipeCollection[]>([]);
   const mountedRef = useRef(true);
   useEffect(() => {
     return () => {
@@ -157,9 +171,11 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    setRecipes(readLS<Recipe[]>(LS_RECIPES, []));
+    const storedRecipes = readLS<Recipe[]>(LS_RECIPES, []);
+    setRecipes(storedRecipes.length ? storedRecipes : mockRecipes);
     setImages(readLS<GalleryImage[]>(LS_IMAGES, []));
     setLookbooks(readLS<LookBook[]>(LS_LOOKBOOKS, []));
+    setCollections(readLS<RecipeCollection[]>(LS_COLLECTIONS, []));
   }, []);
 
   useEffect(() => {
@@ -176,8 +192,55 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       );
     if (images.length > 0 && !onlyOldDemo) return;
 
+    if (seeded || typeof fetch !== "function") {
+      if (images.length === 0 && !seeded) {
+        setImages([
+          {
+            id: uid(),
+            name: "luccca-demo.svg",
+            dataUrl: FALLBACK_GALLERY_IMAGE.dataUrl,
+            createdAt: Date.now(),
+            tags: ["demo", "fallback"],
+            favorite: false,
+            order: 0,
+            type: FALLBACK_GALLERY_IMAGE.mime,
+          },
+        ]);
+        try {
+          localStorage.setItem("gallery:seeded:food:v1", "1");
+        } catch {}
+      }
+      return;
+    }
+
     (async () => {
       try {
+        const loadImageFromUrl = async (
+          url: string,
+        ): Promise<{ dataUrl: string; mime: string } | null> => {
+          if (!url || typeof fetch !== "function") return null;
+          const controller =
+            typeof AbortController !== "undefined" ? new AbortController() : undefined;
+          let timeout: ReturnType<typeof setTimeout> | undefined;
+          try {
+            if (controller) {
+              timeout = setTimeout(() => controller.abort(), 6000);
+            }
+            const response = await fetch(
+              url,
+              controller ? { signal: controller.signal } : undefined,
+            ).catch(() => null);
+            if (timeout) clearTimeout(timeout);
+            if (!response?.ok) return null;
+            const blob = await response.blob();
+            const dataUrl = await dataUrlFromBlob(blob);
+            return { dataUrl, mime: blob.type || "image/jpeg" };
+          } catch {
+            if (timeout) clearTimeout(timeout);
+            return null;
+          }
+        };
+
         const items = [
           {
             name: "pizza.jpg",
@@ -242,23 +305,20 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         ];
         const next: GalleryImage[] = [];
         let order = 0;
+        const hasNetwork = typeof fetch === "function";
         for (const it of items) {
-          try {
-            const res = await fetch(it.url);
-            if (!res.ok) continue;
-            const blob = await res.blob();
-            const dataUrl = await dataUrlFromBlob(blob);
-            next.push({
-              id: uid(),
-              name: it.name,
-              dataUrl,
-              createdAt: Date.now(),
-              tags: it.tags,
-              favorite: false,
-              order: order++,
-              type: blob.type || "image/jpeg",
-            });
-          } catch {}
+          const loaded = hasNetwork ? await loadImageFromUrl(it.url) : null;
+          const payload = loaded ?? FALLBACK_GALLERY_IMAGE;
+          next.push({
+            id: uid(),
+            name: it.name,
+            dataUrl: payload.dataUrl,
+            createdAt: Date.now(),
+            tags: it.tags,
+            favorite: false,
+            order: order++,
+            type: payload.mime,
+          });
         }
         if (!mountedRef.current) return;
         if (onlyOldDemo) setImages([]);
@@ -283,6 +343,10 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     writeLS(LS_LOOKBOOKS, lookbooks);
   }, [lookbooks]);
+
+  useEffect(() => {
+    writeLS(LS_COLLECTIONS, collections);
+  }, [collections]);
 
   const dataUrlFromFile = (file: File): Promise<string> =>
     new Promise((resolve, reject) => {
@@ -525,6 +589,112 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       a.remove();
     }, 0);
   }, [images, recipes, lookbooks]);
+
+  const createCollection = useCallback(
+    (input: {
+      name: string;
+      season: string;
+      year: number;
+      version: number;
+      description?: string;
+      recipeIds?: string[];
+    }): RecipeCollection => {
+      const now = new Date().toISOString();
+      const recipeIds = Array.from(new Set(input.recipeIds ?? []));
+      const item: RecipeCollection = {
+        id: uid(),
+        name: input.name.trim() || "Untitled Collection",
+        season: input.season.trim() || "All",
+        year: Number.isFinite(input.year) ? input.year : new Date().getFullYear(),
+        version: Number.isFinite(input.version) ? input.version : 1,
+        description: input.description?.trim() || undefined,
+        recipeIds,
+        createdAt: now,
+        updatedAt: now,
+      };
+      setCollections((prev) => [item, ...prev]);
+      return item;
+    },
+    [],
+  );
+
+  const updateCollection = useCallback(
+    (
+      id: string,
+      patch: Partial<Omit<RecipeCollection, "id" | "createdAt" | "recipeIds">>,
+    ) => {
+      setCollections((prev) =>
+        prev.map((collection) =>
+          collection.id === id
+            ? {
+                ...collection,
+                ...patch,
+                name: patch.name?.trim() || collection.name,
+                season: patch.season?.trim() || collection.season,
+                description: patch.description?.trim() || collection.description,
+                updatedAt: new Date().toISOString(),
+              }
+            : collection,
+        ),
+      );
+    },
+    [],
+  );
+
+  const deleteCollection = useCallback((id: string) => {
+    setCollections((prev) => prev.filter((collection) => collection.id !== id));
+  }, []);
+
+  const addRecipeToCollection = useCallback((collectionId: string, recipeId: string) => {
+    setCollections((prev) =>
+      prev.map((collection) =>
+        collection.id === collectionId
+          ? {
+              ...collection,
+              recipeIds: Array.from(new Set([...(collection.recipeIds || []), recipeId])),
+              updatedAt: new Date().toISOString(),
+            }
+          : collection,
+      ),
+    );
+  }, []);
+
+  const removeRecipeFromCollection = useCallback(
+    (collectionId: string, recipeId: string) => {
+      setCollections((prev) =>
+        prev.map((collection) =>
+          collection.id === collectionId
+            ? {
+                ...collection,
+                recipeIds: (collection.recipeIds || []).filter((id) => id !== recipeId),
+                updatedAt: new Date().toISOString(),
+              }
+            : collection,
+        ),
+      );
+    },
+    [],
+  );
+
+  const setCollectionRecipes = useCallback((collectionId: string, recipeIds: string[]) => {
+    const uniqueIds = Array.from(new Set(recipeIds));
+    setCollections((prev) =>
+      prev.map((collection) =>
+        collection.id === collectionId
+          ? {
+              ...collection,
+              recipeIds: uniqueIds,
+              updatedAt: new Date().toISOString(),
+            }
+          : collection,
+      ),
+    );
+  }, []);
+
+  const getCollectionById = useCallback(
+    (id: string) => collections.find((collection) => collection.id === id),
+    [collections],
+  );
 
   const normalizeRecipe = (
     raw: any,
@@ -843,7 +1013,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
     const results: Recipe[] = [];
     const qtyRe =
-      /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
+      /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛��⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
 
     for (const sec of sections) {
       const els = sec.elements;
@@ -2106,11 +2276,20 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       destroyRecipe,
       addDemoImages,
       addStockFoodPhotos,
+      collections,
+      createCollection,
+      updateCollection,
+      deleteCollection,
+      addRecipeToCollection,
+      removeRecipeFromCollection,
+      setCollectionRecipes,
+      getCollectionById,
     }),
     [
       recipes,
       images,
       lookbooks,
+      collections,
       addImages,
       restoreDemo,
       addRecipe,
@@ -2140,6 +2319,13 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       destroyRecipe,
       addDemoImages,
       addStockFoodPhotos,
+      createCollection,
+      updateCollection,
+      deleteCollection,
+      addRecipeToCollection,
+      removeRecipeFromCollection,
+      setCollectionRecipes,
+      getCollectionById,
     ],
   );
 

@@ -68,10 +68,10 @@ export default function GallerySection() {
     const cat = category.trim().toLowerCase();
     base.sort((a, b) => {
       const aMatch = cat
-        ? (a.tags || []).some((t) => t.toLowerCase().includes(cat))
+        ? Number((a.tags || []).some((t) => t.toLowerCase().includes(cat)))
         : 0;
       const bMatch = cat
-        ? (b.tags || []).some((t) => t.toLowerCase().includes(cat))
+        ? Number((b.tags || []).some((t) => t.toLowerCase().includes(cat)))
         : 0;
       if (aMatch !== bMatch) return bMatch - aMatch;
       return a.order - b.order;

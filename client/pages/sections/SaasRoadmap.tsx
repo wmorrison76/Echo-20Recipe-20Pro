@@ -1,6 +1,11 @@
+import InventorySuppliesWorkspace from "./saas/InventorySuppliesWorkspace";
+import { useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
+import NutritionAllergensWorkspace from "./saas/NutritionAllergensWorkspace";
+import HaccpComplianceWorkspace from "./saas/HaccpComplianceWorkspace";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const sections = [
+const roadmapSections = [
   {
     slug: "orgs",
     label: "Multi‑tenant Orgs/SSO",
@@ -55,60 +60,6 @@ const sections = [
         <ul className="list-disc pl-5">
           <li>Normalized ingredients, suppliers, price history</li>
           <li>Dashboards with margin and price recommendations</li>
-        </ul>
-      </div>
-    ),
-  },
-  {
-    slug: "inventory",
-    label: "Inventory & Suppliers",
-    body: (
-      <div className="space-y-2 text-sm">
-        <p className="font-medium">What it includes</p>
-        <ul className="list-disc pl-5">
-          <li>Supplier catalogs, unit conversions, allergens</li>
-          <li>Par levels, stock counts, purchase orders</li>
-        </ul>
-        <p className="font-medium">Implementation notes</p>
-        <ul className="list-disc pl-5">
-          <li>Catalog import (CSV/API), unit-normalized SKUs</li>
-          <li>PO workflow with approval and receiving</li>
-        </ul>
-      </div>
-    ),
-  },
-  {
-    slug: "nutrition",
-    label: "Nutrition/Allergens",
-    body: (
-      <div className="space-y-2 text-sm">
-        <p className="font-medium">What it includes</p>
-        <ul className="list-disc pl-5">
-          <li>Automatic nutrition labels and allergen flags</li>
-          <li>Diet suitability (vegan, keto, halal)</li>
-        </ul>
-        <p className="font-medium">Implementation notes</p>
-        <ul className="list-disc pl-5">
-          <li>USDA/Spoonacular datasets; calculated per serving</li>
-          <li>Label templates for print/web</li>
-        </ul>
-      </div>
-    ),
-  },
-  {
-    slug: "haccp",
-    label: "HACCP/Compliance",
-    body: (
-      <div className="space-y-2 text-sm">
-        <p className="font-medium">What it includes</p>
-        <ul className="list-disc pl-5">
-          <li>Critical control points, temp logs, corrective actions</li>
-          <li>Daily/shift checklists with sign-off</li>
-        </ul>
-        <p className="font-medium">Implementation notes</p>
-        <ul className="list-disc pl-5">
-          <li>Form builder + templated logs; immutable audit</li>
-          <li>PDF exports for inspectors</li>
         </ul>
       </div>
     ),
@@ -206,28 +157,123 @@ const sections = [
 ];
 
 export default function SaasRoadmapSection() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const suites = useMemo(
+    () => [
+      {
+        value: "inventory",
+        label: "Inventory & Supplies",
+        content: <InventorySuppliesWorkspace />,
+      },
+      {
+        value: "nutrition",
+        label: "Nutrition/Allergens",
+        content: <NutritionAllergensWorkspace />,
+      },
+      {
+        value: "haccp",
+        label: "HACCP/Compliance",
+        content: <HaccpComplianceWorkspace />,
+      },
+    ],
+    [],
+  );
+
+  const suiteParam = searchParams.get("suite");
+  const activeSuite = suites.some((suite) => suite.value === suiteParam)
+    ? (suiteParam as string)
+    : suites[0]!.value;
+
+  const handleSuiteChange = (value: string) => {
+    const next = new URLSearchParams(searchParams);
+    if (!next.get("tab")) {
+      next.set("tab", "saas");
+    }
+    next.set("suite", value);
+    setSearchParams(next, { replace: true });
+  };
+
   return (
-    <div className="container mx-auto px-4 py-4">
-      <div className="rounded-xl border p-3 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15 mb-3">
+    <div className="container mx-auto space-y-6 px-4 py-4">
+      <div className="rounded-xl border bg-white/95 p-3 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15">
         <div className="text-sm text-muted-foreground">LUCCCA SaaS Roadmap</div>
         <div className="text-base font-semibold">Capabilities</div>
       </div>
-      <Tabs defaultValue={sections[0].slug} className="w-full">
-        <TabsList className="flex flex-wrap gap-1 p-1 bg-muted rounded-lg">
-          {sections.map((s) => (
-            <TabsTrigger key={s.slug} value={s.slug} className="text-xs">
-              {s.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        {sections.map((s) => (
-          <TabsContent key={s.slug} value={s.slug}>
-            <div className="rounded-xl border p-4 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15">
-              {s.body}
+
+      <Tabs
+        value={activeSuite}
+        onValueChange={handleSuiteChange}
+        className="space-y-4"
+      >
+        <div className="rounded-xl border bg-white/95 p-4 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="space-y-1">
+              <div className="text-sm font-semibold">Operational suites</div>
+              <p className="text-xs text-muted-foreground">
+                These modules are fully coded and wired into the production
+                experience.
+              </p>
             </div>
+            <TabsList className="flex flex-wrap gap-1 rounded-lg bg-muted p-1">
+              {suites.map((suite) => (
+                <TabsTrigger
+                  key={suite.value}
+                  value={suite.value}
+                  className="text-xs"
+                >
+                  {suite.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
+        </div>
+
+        {suites.map((suite) => (
+          <TabsContent
+            key={suite.value}
+            value={suite.value}
+            className="rounded-xl border bg-white/95 p-2 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15"
+          >
+            {suite.content}
           </TabsContent>
         ))}
       </Tabs>
+
+      {roadmapSections.length ? (
+        <div className="rounded-xl border bg-white/95 p-4 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15">
+          <div className="mb-4 space-y-1">
+            <div className="text-sm font-semibold">Remaining roadmap</div>
+            <p className="text-xs text-muted-foreground">
+              High-level milestones that remain in discovery or backlog
+              planning.
+            </p>
+          </div>
+          <Tabs defaultValue={roadmapSections[0].slug} className="w-full">
+            <TabsList className="flex flex-wrap gap-1 rounded-lg bg-muted p-1">
+              {roadmapSections.map((section) => (
+                <TabsTrigger
+                  key={section.slug}
+                  value={section.slug}
+                  className="text-xs"
+                >
+                  {section.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            {roadmapSections.map((section) => (
+              <TabsContent
+                key={section.slug}
+                value={section.slug}
+                className="mt-3"
+              >
+                <div className="rounded-xl border bg-white/95 p-4 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15">
+                  {section.body}
+                </div>
+              </TabsContent>
+            ))}
+          </Tabs>
+        </div>
+      ) : null}
     </div>
   );
 }

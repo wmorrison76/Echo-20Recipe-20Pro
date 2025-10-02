@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAppData } from "@/context/AppDataContext";
 import { Dropzone } from "@/components/Dropzone";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Star,
   LayoutGrid,
   Rows,
@@ -16,8 +26,16 @@ import {
   Trash2,
   RotateCcw,
   ExternalLink,
+  Search,
+  Save,
+  X,
+  Package,
+  Pencil,
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { axisOptions } from "@/lib/taxonomy";
+import { cn } from "@/lib/utils";
+import type { RecipeCollection } from "@shared/server-notes";
 
 export function RecipeCard({
   r,
@@ -27,6 +45,9 @@ export function RecipeCard({
   onTrash,
   inTrash,
   onDestroy,
+  selectMode,
+  selected,
+  onToggleSelect,
 }: {
   r: ReturnType<typeof useAppData>["recipes"][number];
   onPreview: () => void;
@@ -35,27 +56,55 @@ export function RecipeCard({
   onTrash: () => void;
   inTrash?: boolean;
   onDestroy?: () => void;
+  selectMode?: boolean;
+  selected?: boolean;
+  onToggleSelect?: () => void;
 }) {
-  const cover = r.imageDataUrls?.[0];
+  const cover = r.imageDataUrls?.[0] ?? r.image ?? undefined;
   const stars = Array.from({ length: 5 }, (_, i) => i < (r.rating || 0));
   return (
     <div
-      className="rounded-xl border bg-white dark:bg-zinc-900 shadow-sm overflow-hidden glow"
+      className={cn(
+        "rounded-xl border bg-white dark:bg-zinc-900 shadow-sm overflow-hidden glow transition-colors",
+        selectMode && selected
+          ? "border-primary ring-2 ring-primary/40 bg-primary/5 dark:bg-primary/10"
+          : undefined,
+      )}
       data-echo-key="card:recipes:result"
     >
       <div className="grid grid-cols-[120px_1fr] gap-3 p-3 items-start">
-        {cover ? (
-          <img
-            src={cover}
-            alt={r.title}
-            className="h-[110px] w-[110px] object-cover rounded"
-            loading="lazy"
-          />
-        ) : (
-          <div className="h-[110px] w-[110px] bg-muted rounded flex items-center justify-center text-muted-foreground">
-            No Image
-          </div>
-        )}
+        <div className="relative h-[110px] w-[110px] shrink-0">
+          {cover ? (
+            <img
+              src={cover}
+              alt={r.title}
+              className="h-full w-full rounded object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center rounded bg-muted text-muted-foreground">
+              No Image
+            </div>
+          )}
+          {selectMode && (
+            <button
+              type="button"
+              aria-pressed={selected}
+              onClick={(event) => {
+                event.preventDefault();
+                onToggleSelect?.();
+              }}
+              className={cn(
+                "absolute left-2 top-2 rounded-full px-3 py-1 text-xs font-semibold shadow focus-visible:outline-none focus-visible:ring",
+                selected
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground",
+              )}
+            >
+              {selected ? "Selected" : "Select"}
+            </button>
+          )}
+        </div>
         <div className="prose prose-sm dark:prose-invert max-w-none">
           <div className="flex items-start justify-between gap-2">
             <h2 className="m-0 text-base font-semibold line-clamp-1">
@@ -202,6 +251,11 @@ export default function RecipeSearchSection() {
     addImages,
     destroyRecipe,
     purgeDeleted,
+    collections,
+    createCollection,
+    updateCollection,
+    deleteCollection,
+    setCollectionRecipes,
   } = useAppData();
   const [q, setQ] = useState("");
   type Cat = "all" | "recent" | "top" | "favorites" | "uncategorized" | "trash";
@@ -287,6 +341,22 @@ export default function RecipeSearchSection() {
   const [scanPageTexts, setScanPageTexts] = useState<string[] | null>(null);
   const [scanCandidates, setScanCandidates] = useState<number[] | null>(null);
   const [scanBookName, setScanBookName] = useState<string | null>(null);
+
+  const { toast } = useToast();
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const collectionNameRef = useRef<HTMLInputElement | null>(null);
+  const [collectionDraftName, setCollectionDraftName] = useState("");
+  const [selectedRecipeIds, setSelectedRecipeIds] = useState<string[]>([]);
+  const [activeCollectionId, setActiveCollectionId] = useState<string | null>(null);
+  const [collectionToDelete, setCollectionToDelete] = useState<RecipeCollection | null>(null);
+
+  const sortedCollections = useMemo(() => {
+    const timestamp = (value: string | undefined) =>
+      value ? Date.parse(value) || 0 : 0;
+    return [...collections].sort(
+      (a, b) => timestamp(b.updatedAt) - timestamp(a.updatedAt),
+    );
+  }, [collections]);
 
   const onFiles = async (files: File[]) => {
     const list = files.slice(0, 100);
@@ -437,6 +507,122 @@ export default function RecipeSearchSection() {
   >(null);
   const inTrashView = cat === "trash";
 
+  const isCollectionDraftActive =
+    Boolean(activeCollectionId) ||
+    collectionDraftName.trim().length > 0 ||
+    selectedRecipeIds.length > 0;
+  const isCollectionSelectionEnabled = isCollectionDraftActive && !inTrashView;
+
+  useEffect(() => {
+    if (!selectedRecipeIds.length) return;
+    setSelectedRecipeIds((prev) =>
+      prev.filter((id) => recipes.some((recipe) => recipe.id === id)),
+    );
+  }, [recipes, selectedRecipeIds.length]);
+
+  const resetCollectionDraft = useCallback(() => {
+    setCollectionDraftName("");
+    setSelectedRecipeIds([]);
+    setActiveCollectionId(null);
+  }, []);
+
+  const toggleRecipeSelection = useCallback(
+    (recipeId: string) => {
+      if (!isCollectionSelectionEnabled) return;
+      setSelectedRecipeIds((prev) =>
+        prev.includes(recipeId)
+          ? prev.filter((id) => id !== recipeId)
+          : [...prev, recipeId],
+      );
+    },
+    [isCollectionSelectionEnabled],
+  );
+
+  const handleEditCollection = useCallback(
+    (collection: RecipeCollection) => {
+      setActiveCollectionId(collection.id);
+      setCollectionDraftName(collection.name);
+      setSelectedRecipeIds(
+        collection.recipeIds.filter((id) =>
+          recipes.some((recipe) => recipe.id === id),
+        ),
+      );
+      requestAnimationFrame(() => {
+        collectionNameRef.current?.focus();
+      });
+    },
+    [recipes],
+  );
+
+  const handleSaveCollection = useCallback(() => {
+    const trimmedName = collectionDraftName.trim();
+    if (!trimmedName) {
+      toast({
+        title: "Name required",
+        description: "Add a name before saving the collection.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (selectedRecipeIds.length === 0) {
+      toast({
+        title: "No recipes selected",
+        description: "Select at least one recipe to include.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (activeCollectionId) {
+      updateCollection(activeCollectionId, { name: trimmedName });
+      setCollectionRecipes(activeCollectionId, selectedRecipeIds);
+      toast({
+        title: "Collection updated",
+        description: "Changes have been saved.",
+      });
+    } else {
+      createCollection({
+        name: trimmedName,
+        season: "All",
+        year: new Date().getFullYear(),
+        version: 1,
+        recipeIds: selectedRecipeIds,
+      });
+      toast({
+        title: "Collection created",
+        description: `${selectedRecipeIds.length} recipe${selectedRecipeIds.length === 1 ? "" : "s"} saved to "${trimmedName}".`,
+      });
+    }
+    resetCollectionDraft();
+  }, [
+    activeCollectionId,
+    collectionDraftName,
+    createCollection,
+    resetCollectionDraft,
+    selectedRecipeIds,
+    setCollectionRecipes,
+    toast,
+    updateCollection,
+  ]);
+
+  const handleDeleteCollection = useCallback(() => {
+    if (!collectionToDelete) return;
+    deleteCollection(collectionToDelete.id);
+    if (collectionToDelete.id === activeCollectionId) {
+      resetCollectionDraft();
+    }
+    toast({
+      title: "Collection deleted",
+      description: `"${collectionToDelete.name}" removed.`,
+    });
+    setCollectionToDelete(null);
+  }, [
+    activeCollectionId,
+    collectionToDelete,
+    deleteCollection,
+    resetCollectionDraft,
+    toast,
+  ]);
+
   return (
     <div
       className="mx-auto max-w-[1200px] px-4 md:px-6 py-4 space-y-4"
@@ -493,7 +679,7 @@ export default function RecipeSearchSection() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
         <Dropzone
           className="p-4 min-h-[96px] rounded-lg border border-dashed glow self-start"
           accept=".json,application/json,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.html,.htm,text/html,.pdf,application/pdf,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.xls,application/vnd.ms-excel,.csv,text/csv,application/zip,application/x-zip-compressed,.zip,image/*"
@@ -995,8 +1181,197 @@ export default function RecipeSearchSection() {
             </div>
           </div>
         </div>
+      <div className="space-y-3 rounded-lg border border-primary/30 bg-background/80 p-3 shadow-sm dark:bg-zinc-900/60 md:self-start md:col-span-1">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex min-w-[240px] flex-1 flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Menu Collection
+              </div>
+              {activeCollectionId && (
+                <span className="rounded-full bg-primary/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                  Editing
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-3 rounded-full border border-primary/20 bg-background px-4 py-2 shadow-inner dark:bg-zinc-950/60">
+              <input
+                ref={collectionNameRef}
+                value={collectionDraftName}
+                onChange={(event) => setCollectionDraftName(event.target.value)}
+                placeholder="Collection Name"
+                className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              onClick={() => searchInputRef.current?.focus()}
+              title="Search recipes"
+            >
+              <Search className="h-4 w-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              size="icon"
+              onClick={handleSaveCollection}
+              disabled={
+                collectionDraftName.trim().length === 0 || selectedRecipeIds.length === 0
+              }
+              title="Save collection"
+            >
+              <Save className="h-4 w-4" />
+            </Button>
+            {isCollectionDraftActive && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={resetCollectionDraft}
+                title="Clear"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        </div>
+        {isCollectionDraftActive && (
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+            <div>
+              {selectedRecipeIds.length} recipe
+              {selectedRecipeIds.length === 1 ? "" : "s"} selected
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedRecipeIds([])}
+                disabled={selectedRecipeIds.length === 0}
+              >
+                Clear picks
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => searchInputRef.current?.focus()}
+              >
+                Search catalog
+              </Button>
+            </div>
+          </div>
+        )}
+        <div className="space-y-2">
+          <div className="text-xs font-semibold uppercase text-muted-foreground">
+            Previous Collections
+          </div>
+          {sortedCollections.length === 0 ? (
+            <div className="rounded-lg border border-dashed px-3 py-4 text-center text-xs text-muted-foreground">
+              No collections yet. Create one to save curated menus.
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {sortedCollections.map((collection) => {
+                const isActive = activeCollectionId === collection.id;
+                const recipeCount = collection.recipeIds.length;
+                return (
+                  <div
+                    key={collection.id}
+                    className={cn(
+                      "rounded-lg border px-3 py-2 transition-colors",
+                      isActive
+                        ? "border-primary bg-primary/5 dark:bg-primary/15"
+                        : "border-border/60 bg-background/80 dark:bg-zinc-950/70",
+                    )}
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="text-sm font-medium truncate">
+                          {collection.name}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {collection.season} • {collection.year} • v{collection.version} • {recipeCount} recipe
+                          {recipeCount === 1 ? "" : "s"}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            const params = new URLSearchParams(window.location.search);
+                            params.set("tab", "server-notes");
+                            params.set("collection", collection.id);
+                            window.location.href = `/?${params.toString()}`;
+                          }}
+                          title="Build package"
+                        >
+                          <Package className="mr-1 h-4 w-4" />
+                          Build
+                        </Button>
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => handleEditCollection(collection)}
+                          title="Edit collection"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => setCollectionToDelete(collection)}
+                          title="Delete collection"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
       </div>
       {status && <div className="rounded-md border p-3 text-sm">{status}</div>}
+      <AlertDialog
+        open={!!collectionToDelete}
+        onOpenChange={(open) => {
+          if (!open) setCollectionToDelete(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete collection?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {collectionToDelete
+                ? `"${collectionToDelete.name}" will be removed permanently.`
+                : "This action cannot be undone."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setCollectionToDelete(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleDeleteCollection}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <Dialog open={tocOpen} onOpenChange={setTocOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
@@ -1559,11 +1934,12 @@ export default function RecipeSearchSection() {
       >
         <div className="flex-1" data-echo-key="field:recipes:query">
           <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search by name, ingredient, tag…"
-            className="w-full rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring"
-          />
+          ref={searchInputRef}
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Search by name, ingredient, tag…"
+          className="w-full rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring"
+        />
         </div>
         <select
           value={fcuisine}
@@ -1632,6 +2008,9 @@ export default function RecipeSearchSection() {
               onDestroy={() => {
                 if (confirm("Delete this recipe forever?")) destroyRecipe(r.id);
               }}
+              selectMode={isCollectionSelectionEnabled}
+              selected={selectedRecipeIds.includes(r.id)}
+              onToggleSelect={() => toggleRecipeSelection(r.id)}
             />
           ))}
         </div>
@@ -1640,174 +2019,219 @@ export default function RecipeSearchSection() {
           className="grid gap-3 grid-cols-2 md:grid-cols-3 xl:grid-cols-4"
           data-echo-key="section:recipes:results"
         >
-          {results.filter(Boolean).map((r) => (
-            <div
-              key={r.id || Math.random().toString(36).slice(2)}
-              className="rounded border p-3 flex items-start gap-2 glow"
-              data-echo-key="card:recipes:result"
-            >
-              <div className="w-16 h-12 rounded bg-muted overflow-hidden shrink-0">
-                {r.imageDataUrls?.[0] ? (
-                  <img
-                    src={r.imageDataUrls[0]}
-                    alt=""
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                ) : null}
-              </div>
-              <div className="min-w-0">
-                <div
-                  className="font-medium text-sm line-clamp-2"
-                  title={r.title}
-                >
-                  {r.title}
+          {results.filter(Boolean).map((r) => {
+            const key = r.id || Math.random().toString(36).slice(2);
+            const selected = selectedRecipeIds.includes(r.id);
+            return (
+              <div
+                key={key}
+                className={cn(
+                  "flex items-start gap-2 rounded border p-3 glow transition-colors",
+                  isCollectionSelectionEnabled && selected
+                    ? "border-primary bg-primary/5 dark:bg-primary/15"
+                    : undefined,
+                )}
+                data-echo-key="card:recipes:result"
+              >
+                <div className="relative h-12 w-16 shrink-0 overflow-hidden rounded bg-muted">
+                  {r.imageDataUrls?.[0] ? (
+                    <img
+                      src={r.imageDataUrls[0]}
+                      alt=""
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                  ) : null}
+                  {isCollectionSelectionEnabled && (
+                    <button
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => toggleRecipeSelection(r.id)}
+                      className={cn(
+                        "absolute left-1.5 top-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold shadow focus-visible:outline-none focus-visible:ring",
+                        selected
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground",
+                      )}
+                    >
+                      {selected ? "Selected" : "Select"}
+                    </button>
+                  )}
                 </div>
-                <div className="text-xs text-muted-foreground line-clamp-1">
-                  {r.tags?.join(" · ")}
-                </div>
-                <div className="mt-1 flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => setPreview(r)}
-                  >
-                    Preview
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    asChild
-                    data-echo-key="cta:recipes:open"
-                  >
-                    <a href={`/recipe/${r.id}/view`}>
-                      <ExternalLink className="mr-1" />
-                      Open
-                    </a>
-                  </Button>
-                  {inTrashView ? (
-                    <>
+                <div className="min-w-0">
+                  <div className="line-clamp-2 text-sm font-medium" title={r.title}>
+                    {r.title}
+                  </div>
+                  <div className="line-clamp-1 text-xs text-muted-foreground">
+                    {r.tags?.join(" �� ")}
+                  </div>
+                  <div className="mt-1 flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => setPreview(r)}
+                    >
+                      Preview
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      asChild
+                      data-echo-key="cta:recipes:open"
+                    >
+                      <a href={`/recipe/${r.id}/view`}>
+                        <ExternalLink className="mr-1" />
+                        Open
+                      </a>
+                    </Button>
+                    {inTrashView ? (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => restoreRecipe(r.id)}
+                          title="Restore"
+                        >
+                          <RotateCcw />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => {
+                            if (confirm("Delete forever?")) destroyRecipe(r.id);
+                          }}
+                          title="Delete forever"
+                        >
+                          <Trash2 />
+                        </Button>
+                      </>
+                    ) : (
                       <Button
                         size="sm"
-                        variant="outline"
-                        onClick={() => restoreRecipe(r.id)}
-                        title="Restore"
-                      >
-                        <RotateCcw />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => {
-                          if (confirm("Delete forever?")) destroyRecipe(r.id);
-                        }}
-                        title="Delete forever"
+                        variant="ghost"
+                        onClick={() => deleteRecipe(r.id)}
+                        title="Move to trash"
                       >
                         <Trash2 />
                       </Button>
-                    </>
-                  ) : (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => deleteRecipe(r.id)}
-                      title="Move to trash"
-                    >
-                      <Trash2 />
-                    </Button>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div
           className="divide-y rounded-lg border glow"
           data-echo-key="section:recipes:results"
         >
-          {results.filter(Boolean).map((r) => (
-            <div
-              key={r.id || Math.random().toString(36).slice(2)}
-              className="p-3 flex items-start gap-3"
-              data-echo-key="card:recipes:result"
-            >
-              <div className="w-20 h-16 rounded bg-muted overflow-hidden">
-                {r.imageDataUrls?.[0] ? (
-                  <img
-                    src={r.imageDataUrls[0]}
-                    alt=""
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                ) : null}
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <div className="font-medium line-clamp-1">{r.title}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {r.createdAt
-                      ? new Date(r.createdAt).toLocaleDateString()
-                      : "-"}
+          {results.filter(Boolean).map((r) => {
+            const key = r.id || Math.random().toString(36).slice(2);
+            const selected = selectedRecipeIds.includes(r.id);
+            return (
+              <div
+                key={key}
+                className={cn(
+                  "flex items-start gap-3 p-3 transition-colors",
+                  isCollectionSelectionEnabled && selected
+                    ? "bg-primary/5 dark:bg-primary/15"
+                    : undefined,
+                )}
+                data-echo-key="card:recipes:result"
+              >
+                <div className="relative h-16 w-20 overflow-hidden rounded bg-muted">
+                  {r.imageDataUrls?.[0] ? (
+                    <img
+                      src={r.imageDataUrls[0]}
+                      alt=""
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                  ) : null}
+                  {isCollectionSelectionEnabled && (
+                    <button
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => toggleRecipeSelection(r.id)}
+                      className={cn(
+                        "absolute left-1.5 top-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold shadow focus-visible:outline-none focus-visible:ring",
+                        selected
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground",
+                      )}
+                    >
+                      {selected ? "Selected" : "Select"}
+                    </button>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <div className="line-clamp-1 font-medium">{r.title}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {r.createdAt
+                        ? new Date(r.createdAt).toLocaleDateString()
+                        : "-"}
+                    </div>
                   </div>
-                </div>
-                <div className="text-xs text-muted-foreground line-clamp-1">
-                  {r.tags?.join(" · ")}
-                </div>
-                <div className="mt-1 flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => setPreview(r)}
-                  >
-                    Preview
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    asChild
-                    data-echo-key="cta:recipes:open"
-                  >
-                    <a href={`/recipe/${r.id}/view`}>
-                      <ExternalLink className="mr-1" />
-                      Open
-                    </a>
-                  </Button>
-                  {inTrashView ? (
-                    <>
+                  <div className="line-clamp-1 text-xs text-muted-foreground">
+                    {r.tags?.join(" · ")}
+                  </div>
+                  <div className="mt-1 flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => setPreview(r)}
+                    >
+                      Preview
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      asChild
+                      data-echo-key="cta:recipes:open"
+                    >
+                      <a href={`/recipe/${r.id}/view`}>
+                        <ExternalLink className="mr-1" />
+                        Open
+                      </a>
+                    </Button>
+                    {inTrashView ? (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => restoreRecipe(r.id)}
+                          title="Restore"
+                        >
+                          <RotateCcw />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => {
+                            if (confirm("Delete forever?")) destroyRecipe(r.id);
+                          }}
+                          title="Delete forever"
+                        >
+                          <Trash2 />
+                        </Button>
+                      </>
+                    ) : (
                       <Button
                         size="sm"
-                        variant="outline"
-                        onClick={() => restoreRecipe(r.id)}
-                        title="Restore"
-                      >
-                        <RotateCcw />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => {
-                          if (confirm("Delete forever?")) destroyRecipe(r.id);
-                        }}
-                        title="Delete forever"
+                        variant="ghost"
+                        onClick={() => deleteRecipe(r.id)}
+                        title="Move to trash"
                       >
                         <Trash2 />
                       </Button>
-                    </>
-                  ) : (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => deleteRecipe(r.id)}
-                      title="Move to trash"
-                    >
-                      <Trash2 />
-                    </Button>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

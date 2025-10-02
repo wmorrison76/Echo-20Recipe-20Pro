@@ -22,8 +22,10 @@
     "seed:builder": "node builder_seed_upload.mjs"
   },
   "dependencies": {
+    "docx": "^9.5.1",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "jspdf": "^3.0.3",
     "jszip": "^3.10.1",
     "mammoth": "^1.10.0",
     "zod": "^3.25.76"
