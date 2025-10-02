@@ -171,8 +171,8 @@ export function RecipeSelection({
                           {entry.recipe.cuisine || "—"}
                         </p>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <Badge variant="outline">#{index + 1}</Badge>
+                      <div className="flex items-center gap-1.5 text-[12px]">
+                        <Badge variant="outline" className="text-[11px]">#{index + 1}</Badge>
                         <Button
                           variant="ghost"
                           size="icon"
