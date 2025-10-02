@@ -181,44 +181,31 @@ export default function SaasRoadmapSection() {
         <div className="text-base font-semibold">Capabilities</div>
       </div>
 
-      <Tabs
-        value={activeSuite}
-        onValueChange={handleSuiteChange}
-        className="space-y-4"
-      >
-        <div className="rounded-xl border bg-white/95 p-4 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div className="space-y-1">
-              <div className="text-sm font-semibold">Operational suites</div>
-              <p className="text-xs text-muted-foreground">
-                These modules are fully coded and wired into the production
-                experience.
-              </p>
-            </div>
-            <TabsList className="flex flex-wrap gap-1 rounded-lg bg-muted p-1">
-              {suites.map((suite) => (
-                <TabsTrigger
-                  key={suite.value}
-                  value={suite.value}
-                  className="text-xs"
-                >
-                  {suite.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
+      <div className="rounded-xl border bg-white/95 p-4 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15">
+        <div className="space-y-4">
+          <div className="space-y-1">
+            <div className="text-sm font-semibold">Operational suites</div>
+            <p className="text-xs text-muted-foreground">
+              These modules are fully coded and wired into the production
+              experience. Jump into any workspace below.
+            </p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {suiteLinks.map((suite) => (
+              <Link
+                key={suite.value}
+                to={`/?tab=${suite.value}`}
+                className="rounded-lg border bg-white/80 p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:bg-white hover:shadow-md dark:bg-zinc-800/80"
+              >
+                <div className="text-sm font-semibold">{suite.label}</div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {suite.description}
+                </p>
+              </Link>
+            ))}
           </div>
         </div>
-
-        {suites.map((suite) => (
-          <TabsContent
-            key={suite.value}
-            value={suite.value}
-            className="rounded-xl border bg-white/95 p-2 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15"
-          >
-            {suite.content}
-          </TabsContent>
-        ))}
-      </Tabs>
+      </div>
 
       {roadmapSections.length ? (
         <div className="rounded-xl border bg-white/95 p-4 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15">
