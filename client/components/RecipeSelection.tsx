@@ -216,7 +216,7 @@ export function RecipeSelection({
                                 wineSelection: event.target.value,
                               })
                             }
-                            rows={3}
+                            rows={2}
                           />
                         </div>
                         <div className="space-y-2">
