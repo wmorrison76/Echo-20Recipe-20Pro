@@ -1,6 +1,27 @@
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+const suiteLinks = [
+  {
+    value: "inventory",
+    label: "Inventory & Supplies",
+    description:
+      "Supplier catalogs, stock health, purchase orders, and conversions in one workspace.",
+  },
+  {
+    value: "nutrition",
+    label: "Nutrition/Allergens",
+    description:
+      "Track dietary flags, allergen callouts, menu compliance, and guest-facing disclosures.",
+  },
+  {
+    value: "haccp",
+    label: "HACCP/Compliance",
+    description:
+      "Smart logs, checklists, and automated monitoring for HACCP plans and food safety audits.",
+  },
+];
+
 const roadmapSections = [
   {
     slug: "orgs",
