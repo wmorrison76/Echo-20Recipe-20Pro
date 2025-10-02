@@ -235,7 +235,7 @@ export function RecipeSelection({
                                 sellingNotes: event.target.value,
                               })
                             }
-                            rows={3}
+                            rows={2}
                           />
                         </div>
                         <div className="space-y-2">
