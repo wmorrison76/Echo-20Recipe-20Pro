@@ -105,7 +105,7 @@ export function ServerNotesConfig({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3">
             {availableLayouts.map((preset) => {
               const active = config.layout.id === preset.id;
               return (
