@@ -163,10 +163,10 @@ export function RecipeSelection({
                   <div className="min-w-0 flex-1 space-y-1">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="min-w-0">
-                        <h4 className="truncate text-sm font-medium">
+                        <h4 className="truncate text-[13px] font-medium">
                           {entry.recipe.title}
                         </h4>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-[11px] text-muted-foreground">
                           {entry.recipe.course || "—"} •{" "}
                           {entry.recipe.cuisine || "—"}
                         </p>
