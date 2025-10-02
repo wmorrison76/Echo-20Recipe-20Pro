@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import {
@@ -16,74 +16,92 @@ import {
   Save,
 } from "lucide-react";
 
+const navItems = [
+  { to: "/?tab=search", label: "RECIPES" },
+  { to: "/?tab=add-recipe", label: "ADD RECIPE" },
+  { to: "/?tab=server-notes", label: "SERVER NOTES" },
+  { to: "/?tab=production", label: "PRODUCTION" },
+  { to: "/?tab=gallery", label: "Gallery" },
+  { to: "/?tab=saas", label: "SaaS" },
+  { to: "/?tab=inventory", label: "Inventory & Supplies" },
+  { to: "/?tab=nutrition", label: "Nutrition/Allergens" },
+  { to: "/?tab=haccp", label: "HACCP/Compliance" },
+] as const;
+
 function TabLink({ to, label }: { to: string; label: string }) {
   const loc = useLocation();
   const active = new URLSearchParams(loc.search).get("tab") ?? "search";
   const value = new URLSearchParams(to.split("?")[1] || "").get("tab") || "";
   const isActive = active === value;
+
   return (
     <Link
       to={to}
-      className={`rounded-lg px-4 py-2 text-sm font-medium ${isActive ? "bg-white text-black shadow" : "text-foreground/80 hover:text-foreground"} bg-muted`}
+      className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition ${
+        isActive
+          ? "bg-primary text-primary-foreground shadow"
+          : "text-foreground/75 hover:bg-muted hover:text-foreground"
+      }`}
     >
-      {label}
+      <span className="truncate">{label}</span>
     </Link>
   );
 }
 
 export default function TopTabs() {
-  const isAdd =
-    new URLSearchParams(useLocation().search).get("tab") === "add-recipe";
+  const location = useLocation();
   const [showHelp, setShowHelp] = React.useState(false);
+  const isAdd = new URLSearchParams(location.search).get("tab") === "add-recipe";
+
   return (
-    <header className="border-b backdrop-blur bg-transparent supports-[backdrop-filter]:bg-transparent">
-      <div className="container mx-auto flex h-14 items-center justify-between gap-4">
-        <a
-          href="/?tab=search"
-          className="flex items-center gap-2"
-          aria-label="Home"
-        >
+    <aside className="flex h-full min-h-screen w-64 flex-col border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <div className="flex items-center gap-2 border-b px-4 py-4">
+        <a href="/?tab=search" className="flex items-center gap-2" aria-label="Home">
           <img
             src="https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2F3daeec161e9e466b9f19d163a3c58f71?format=webp&width=360"
             alt="Echo Recipe Pro"
-            className="h-8 md:h-9"
+            className="h-9"
           />
           <span className="sr-only">Echo Recipe Pro</span>
         </a>
-        <nav className="flex flex-wrap items-center gap-2 rounded-xl bg-muted p-1">
-          <TabLink to="/?tab=search" label="Recipe Search" />
-          <TabLink to="/?tab=gallery" label="Gallery" />
-          <TabLink to="/?tab=add-recipe" label="Add Recipe" />
-          <TabLink to="/?tab=saas" label="SaaS" />
-          <TabLink to="/?tab=inventory" label="Inventory & Supplies" />
-          <TabLink to="/?tab=nutrition" label="Nutrition/Allergens" />
-          <TabLink to="/?tab=haccp" label="HACCP/Compliance" />
-          <TabLink to="/?tab=server-notes" label="Server Notes" />
-          <TabLink to="/?tab=production" label="Production" />
-        </nav>
-        <div className="flex items-center gap-1">
-          <button
-            title="Finalize & Clear"
-            onClick={() => {
-              window.dispatchEvent(
-                new CustomEvent("recipe:action", {
-                  detail: { type: "finalizeImport" },
-                }),
-              );
-            }}
-            className="p-1 rounded hover:bg-black/10"
-          >
-            <Save className="w-4 h-4" />
-          </button>
-          <button
-            title="Help"
-            onClick={() => setShowHelp(true)}
-            className="p-1 rounded hover:bg-black/10"
-          >
-            <HelpCircle className="w-4 h-4" />
-          </button>
-          {isAdd && (
-            <div className="flex items-center gap-1 pr-1">
+      </div>
+
+      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+        {navItems.map((item) => (
+          <TabLink key={item.to} to={item.to} label={item.label} />
+        ))}
+      </nav>
+
+      <div className="space-y-3 border-t px-3 py-4">
+        <button
+          title="Finalize & Clear"
+          onClick={() => {
+            window.dispatchEvent(
+              new CustomEvent("recipe:action", {
+                detail: { type: "finalizeImport" },
+              }),
+            );
+          }}
+          className="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium text-foreground transition hover:bg-muted"
+        >
+          <span>Finalize & Clear</span>
+          <Save className="h-4 w-4" />
+        </button>
+        <button
+          title="Help"
+          onClick={() => setShowHelp(true)}
+          className="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium text-foreground transition hover:bg-muted"
+        >
+          <span>Help & Shortcuts</span>
+          <HelpCircle className="h-4 w-4" />
+        </button>
+
+        {isAdd && (
+          <div className="rounded-md border bg-muted/40 p-3 text-xs text-muted-foreground">
+            <div className="mb-2 text-sm font-semibold text-foreground">
+              Add Recipe Tools
+            </div>
+            <div className="grid grid-cols-2 gap-2">
               <button
                 title="Convert Units"
                 onClick={() =>
@@ -93,9 +111,9 @@ export default function TopTabs() {
                     }),
                   )
                 }
-                className="p-1 rounded hover:bg-black/10"
+                className="rounded border px-2 py-1 font-medium text-foreground transition hover:bg-muted"
               >
-                <Scale className="w-4 h-4" />
+                Convert Units
               </button>
               <button
                 title="Save Snapshot"
@@ -106,12 +124,12 @@ export default function TopTabs() {
                     }),
                   )
                 }
-                className="p-1 rounded hover:bg-black/10"
+                className="rounded border px-2 py-1 font-medium text-foreground transition hover:bg-muted"
               >
-                <NotebookPen className="w-4 h-4" />
+                Save Snapshot
               </button>
               <button
-                title="Convert Units"
+                title="Alt Units"
                 onClick={() =>
                   window.dispatchEvent(
                     new CustomEvent("recipe:action", {
@@ -119,9 +137,9 @@ export default function TopTabs() {
                     }),
                   )
                 }
-                className="p-1 rounded hover:bg-black/10"
+                className="rounded border px-2 py-1 font-medium text-foreground transition hover:bg-muted"
               >
-                <ArrowLeftRight className="w-4 h-4" />
+                Alt Units
               </button>
               <button
                 title="Currency"
@@ -132,9 +150,9 @@ export default function TopTabs() {
                     }),
                   )
                 }
-                className="p-1 rounded hover:bg-black/10"
+                className="rounded border px-2 py-1 font-medium text-foreground transition hover:bg-muted"
               >
-                <CircleDollarSign className="w-4 h-4" />
+                Currency
               </button>
               <button
                 title="R&D Labs (Yield Lab)"
@@ -145,27 +163,20 @@ export default function TopTabs() {
                     }),
                   )
                 }
-                className="p-1 rounded hover:bg-black/10"
+                className="rounded border px-2 py-1 font-medium text-foreground transition hover:bg-muted"
               >
-                {/* Flask icon via SVG to avoid extra imports */}
-                <svg
-                  viewBox="0 0 24 24"
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M10 2v3l-5 9a5 5 0 0 0 4.5 7h5a5 5 0 0 0 4.5-7l-5-9V2" />
-                  <path d="M8 6h8" />
-                </svg>
+                Yield Lab
               </button>
             </div>
-          )}
+          </div>
+        )}
+
+        <div className="flex items-center justify-between rounded-md bg-muted/60 px-3 py-2">
+          <span className="text-sm font-medium">Theme</span>
           <ThemeToggle />
         </div>
       </div>
+
       <Dialog open={showHelp} onOpenChange={setShowHelp}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
@@ -185,7 +196,7 @@ export default function TopTabs() {
               <li>Y=Difficulty</li>
               <li>E=Equipment</li>
             </ul>
-            <p className="font-medium mt-2">Adding recipes</p>
+            <p className="mt-2 font-medium">Adding recipes</p>
             <ul className="list-disc pl-5">
               <li>
                 Use Add Recipe to type/paste. “Save” persists immediately. CSV
@@ -198,7 +209,7 @@ export default function TopTabs() {
                 attaches the cover image to the gallery.
               </li>
             </ul>
-            <p className="font-medium mt-2">Importing a Book PDF</p>
+            <p className="mt-2 font-medium">Importing a Book PDF</p>
             <ul className="list-disc pl-5">
               <li>
                 Select a PDF in Recipe Search → Library. We parse the appendix
@@ -207,11 +218,11 @@ export default function TopTabs() {
               </li>
               <li>
                 Choose the recipes to import; each is processed one‑by‑one with
-                page cross‑reference, metadata (prep/cook/total/yield/temp) and
+                page cross-reference, metadata (prep/cook/total/yield/temp) and
                 a photo when available.
               </li>
             </ul>
-            <p className="font-medium mt-2">Gallery</p>
+            <p className="mt-2 font-medium">Gallery</p>
             <ul className="list-disc pl-5">
               <li>
                 Grid or Masonry layout; choose thumbnail size
@@ -220,16 +231,16 @@ export default function TopTabs() {
               </li>
               <li>
                 Use tags to group photos and create Look Books. Open a Look Book
-                for a flipbook with click, swipe or arrow‑key navigation.
+                for a flipbook with click, swipe or arrow-key navigation.
               </li>
             </ul>
             <p className="text-muted-foreground">
-              Tip: Use “Link to recipes” to auto‑match images to recipes by
+              Tip: Use “Link to recipes” to auto-match images to recipes by
               filename.
             </p>
           </div>
         </DialogContent>
       </Dialog>
-    </header>
+    </aside>
   );
 }
