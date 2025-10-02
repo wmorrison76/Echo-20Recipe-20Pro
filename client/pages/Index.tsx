@@ -43,6 +43,21 @@ export default function Index() {
             <TabsContent value="saas">
               <SaasRoadmapSection />
             </TabsContent>
+            <TabsContent value="inventory">
+              <div className="container mx-auto space-y-4 px-4 py-4">
+                <InventorySuppliesWorkspace />
+              </div>
+            </TabsContent>
+            <TabsContent value="nutrition">
+              <div className="container mx-auto space-y-4 px-4 py-4">
+                <NutritionAllergensWorkspace />
+              </div>
+            </TabsContent>
+            <TabsContent value="haccp">
+              <div className="container mx-auto space-y-4 px-4 py-4">
+                <HaccpComplianceWorkspace />
+              </div>
+            </TabsContent>
             <TabsContent value="server-notes">
               <ServerNotesSection />
             </TabsContent>
