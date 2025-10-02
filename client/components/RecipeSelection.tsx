@@ -125,9 +125,9 @@ export function RecipeSelection({
               <Badge variant="secondary">Reorder with arrows</Badge>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3.5 px-4 pb-4 pt-0">
+          <CardContent className="space-y-3 px-3.5 pb-3.5 pt-0">
             {selectedRecipes.map((entry, index) => (
-              <div key={entry.recipe.id} className="rounded-lg border p-3">
+              <div key={entry.recipe.id} className="rounded-lg border p-2.5">
                 <div className="flex min-w-0 items-start gap-3">
                   <div className="flex flex-col gap-1">
                     <Button
