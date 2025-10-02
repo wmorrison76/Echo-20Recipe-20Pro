@@ -10,8 +10,6 @@ export type ServerNotesPreviewProps = {
 const baseCardClass =
   "relative rounded-lg border shadow-sm overflow-hidden bg-white dark:bg-slate-900";
 
-const swatch = (background: string) => ({ background });
-
 const headingRule = (color: string) => ({ background: color });
 
 export default function ServerNotesPreview({
@@ -82,19 +80,19 @@ export default function ServerNotesPreview({
       layout.indexCardLayout.fontSize === "small"
         ? "text-[10px]"
         : "text-[12px]";
+    const cardMaxWidth = variant === "mini" ? 280 : 320;
+    const cardHeightClass = variant === "mini" ? "h-44" : "h-48";
+
     return (
-      <div
-        className={
-          variant === "mini" ? "scale-90 origin-top-left" : "space-y-3"
-        }
-      >
+      <div className="flex flex-col items-center gap-3">
         {[0, 1].map((idx) => (
           <div
             key={idx}
-            className={`${baseCardClass} mx-auto h-48 w-[320px] border-[1.5px]`}
+            className={`${baseCardClass} w-full border-[1.5px] ${cardHeightClass}`}
             style={{
               borderColor: color.secondary,
               background: color.background,
+              maxWidth: cardMaxWidth,
             }}
           >
             {headerMinimal ? (
@@ -176,21 +174,39 @@ export default function ServerNotesPreview({
     );
   }
 
-  const containerClass = variant === "mini" ? "scale-90 origin-top-left" : "";
+  const maxWidth = variant === "full" ? 520 : 420;
+  const headerPadding = variant === "mini" ? "px-4 py-3" : "px-6 py-4";
+  const mainPadding = variant === "mini" ? "p-4" : "p-6";
+  const mainGap = variant === "mini" ? "gap-3" : "gap-4";
+  const titleSize = variant === "mini" ? "text-lg" : "text-xl";
+  const headerLogoPosition =
+    variant === "mini" ? "right-4 top-3 h-8 w-8" : "right-6 top-4 h-10 w-10";
+  const notePadding = variant === "mini" ? "p-2.5" : "p-3";
+  const sectionGap = variant === "mini" ? "gap-3" : "gap-4";
+  const footerText = variant === "mini" ? "text-[9px]" : "text-[10px]";
 
   return (
-    <div className={containerClass}>
+    <div className="flex w-full justify-center">
       <div
-        className={`${baseCardClass} h-[340px] w-[520px]`}
-        style={{ background: color.background, borderColor: color.primary }}
+        className={`${baseCardClass} w-full`}
+        style={{
+          background: color.background,
+          borderColor: color.primary,
+          maxWidth,
+          aspectRatio: "26 / 17",
+        }}
       >
         <div
-          className="absolute inset-2 rounded-md"
+          className="absolute inset-[6px] rounded-md"
           style={{ border: `1px solid ${color.secondary}` }}
         />
         <div className="absolute left-4 -top-2 z-10">
           <div
-            className="rounded border px-2 py-0.5 text-[10px]"
+            className={`rounded border ${
+              variant === "mini"
+                ? "px-1.5 py-0.5 text-[9px]"
+                : "px-2 py-0.5 text-[10px]"
+            }`}
             style={{
               background: color.background,
               borderColor: color.primary,
@@ -201,14 +217,14 @@ export default function ServerNotesPreview({
           </div>
         </div>
         <header
-          className={`border-b px-6 py-4 ${layout.standardLayout.headerStyle === "centered" ? "text-center" : ""}`}
+          className={`relative border-b ${headerPadding} ${layout.standardLayout.headerStyle === "centered" ? "text-center" : ""}`}
           style={{
             borderColor: color.primary,
             fontFamily: layout.standardLayout.fontFamily,
           }}
         >
           <div
-            className="absolute right-6 top-4 h-10 w-10 rounded-sm border"
+            className={`absolute ${headerLogoPosition} rounded-sm border`}
             style={{ borderColor: color.secondary, background: "#fff" }}
           />
           <div
@@ -217,12 +233,12 @@ export default function ServerNotesPreview({
           >
             The Garden Bistro
           </div>
-          <div className="text-xl font-bold" style={{ color: color.primary }}>
+          <div className={`font-bold ${titleSize}`} style={{ color: color.primary }}>
             Roasted Chicken with Herbs
           </div>
         </header>
         <main
-          className="grid h-full grid-cols-12 gap-4 p-6"
+          className={`grid h-full grid-cols-12 ${mainGap} ${mainPadding}`}
           style={{ fontFamily: layout.standardLayout.fontFamily }}
         >
           {layout.standardLayout.includeImages && (
@@ -239,7 +255,7 @@ export default function ServerNotesPreview({
             }
           >
             <div
-              className="rounded-md border bg-white/70 p-3 text-xs dark:bg-slate-900/40"
+              className={`rounded-md border bg-white/70 text-xs dark:bg-slate-900/40 ${notePadding}`}
               style={{ borderColor: color.accent }}
             >
               <div
@@ -252,7 +268,7 @@ export default function ServerNotesPreview({
                 Classic, comforting, and aromatic—perfectly golden and juicy.
               </p>
             </div>
-            <div className="mt-3 grid grid-cols-2 gap-4 text-[11px]">
+            <div className={`mt-3 grid grid-cols-2 ${sectionGap} text-[11px]`}>
               <div>
                 <div className="font-semibold" style={{ color: color.primary }}>
                   Ingredients
@@ -274,9 +290,11 @@ export default function ServerNotesPreview({
                 </ol>
               </div>
             </div>
-            <div className="mt-4 grid grid-cols-2 gap-4 text-[10px]">
+            <div className={`mt-4 grid grid-cols-2 ${sectionGap} ${footerText}`}>
               <div
-                className="rounded-md border bg-white/70 p-2 dark:bg-slate-900/40"
+                className={`rounded-md border bg-white/70 dark:bg-slate-900/40 ${
+                  variant === "mini" ? "p-2" : "p-2.5"
+                }`}
                 style={{ borderColor: color.accent }}
               >
                 <div className="font-semibold" style={{ color: color.primary }}>
@@ -288,7 +306,9 @@ export default function ServerNotesPreview({
                 </ul>
               </div>
               <div
-                className="rounded-md border bg-white/70 p-2 text-right dark:bg-slate-900/40"
+                className={`rounded-md border bg-white/70 text-right dark:bg-slate-900/40 ${
+                  variant === "mini" ? "p-2" : "p-2.5"
+                }`}
                 style={{ borderColor: color.accent, color: color.secondary }}
               >
                 Dist Date: 06/01/2025
