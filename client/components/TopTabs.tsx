@@ -101,6 +101,25 @@ export default function TopTabs() {
   }, []);
 
   useEffect(() => {
+    if (typeof document !== "undefined") {
+      const value = collapsed
+        ? "5rem"
+        : "min(17rem, calc(100vw - 2.5rem))";
+      document.documentElement.style.setProperty("--sidebar-offset", value);
+    }
+  }, [collapsed]);
+
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      return () => {
+        document.documentElement.style.removeProperty("--sidebar-offset");
+      };
+    }
+
+    return undefined;
+  }, []);
+
+  useEffect(() => {
     if (collapsed) {
       setShowHelp(false);
     }
