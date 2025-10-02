@@ -406,7 +406,7 @@ export function ServerNotesConfig({
               )}
             </div>
             {config.logos.length > 0 && (
-              <div className="flex gap-4">
+              <div className="flex gap-3">
                 {config.logos.map((logo, index) => (
                   <div key={index} className="relative">
                     <img
