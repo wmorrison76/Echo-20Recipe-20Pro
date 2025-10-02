@@ -193,7 +193,7 @@ export function RecipeSelection({
                           onClick={() => toggleRecipe(entry.recipe)}
                           aria-label="Remove recipe"
                         >
-                          <X className="h-4 w-4" />
+                          <X className="h-3.5 w-3.5" />
                         </Button>
                       </div>
                     </div>
