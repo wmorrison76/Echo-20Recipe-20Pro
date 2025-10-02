@@ -262,7 +262,7 @@ export function RecipeSelection({
                             <Utensils className="h-3.5 w-3.5" /> Required
                             Silverware
                           </Label>
-                          <div className="grid max-h-32 grid-cols-2 gap-2 overflow-y-auto text-xs">
+                          <div className="grid max-h-32 grid-cols-2 gap-1.5 overflow-y-auto text-xs">
                             {silverwareOptions.map((item) => {
                               const checked =
                                 entry.silverwareRequired?.includes(item) ??
