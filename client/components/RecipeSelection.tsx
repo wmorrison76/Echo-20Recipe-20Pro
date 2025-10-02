@@ -127,7 +127,7 @@ export function RecipeSelection({
           </CardHeader>
           <CardContent className="space-y-3 px-3.5 pb-3.5 pt-0">
             {selectedRecipes.map((entry, index) => (
-              <div key={entry.recipe.id} className="rounded-lg border p-2.5">
+              <div key={entry.recipe.id} className="rounded-lg border p-2.5 text-[13px]">
                 <div className="flex min-w-0 items-start gap-3">
                   <div className="flex flex-col gap-1.5">
                     <Button
