@@ -198,7 +198,7 @@ export function RecipeSelection({
                       </div>
                     </div>
                     {expanded === entry.recipe.id && (
-                      <div className="mt-3 grid gap-3 md:grid-cols-2">
+                      <div className="mt-2.5 grid gap-2.5 md:grid-cols-2">
                         <div className="space-y-2">
                           <Label
                             htmlFor={`wine-${entry.recipe.id}`}
