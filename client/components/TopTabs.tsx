@@ -50,11 +50,14 @@ export default function TopTabs() {
           />
           <span className="sr-only">Echo Recipe Pro</span>
         </a>
-        <nav className="flex items-center gap-2 rounded-xl bg-muted p-1">
+        <nav className="flex flex-wrap items-center gap-2 rounded-xl bg-muted p-1">
           <TabLink to="/?tab=search" label="Recipe Search" />
           <TabLink to="/?tab=gallery" label="Gallery" />
           <TabLink to="/?tab=add-recipe" label="Add Recipe" />
           <TabLink to="/?tab=saas" label="SaaS" />
+          <TabLink to="/?tab=inventory" label="Inventory & Supplies" />
+          <TabLink to="/?tab=nutrition" label="Nutrition/Allergens" />
+          <TabLink to="/?tab=haccp" label="HACCP/Compliance" />
           <TabLink to="/?tab=server-notes" label="Server Notes" />
           <TabLink to="/?tab=production" label="Production" />
         </nav>
