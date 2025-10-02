@@ -406,7 +406,7 @@ export function RecipeSelection({
                         <h4 className="truncate text-sm font-semibold">
                           {recipe.title}
                         </h4>
-                        <p className="line-clamp-2 text-xs text-muted-foreground">
+                        <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
                           {recipe.description}
                         </p>
                       </div>
