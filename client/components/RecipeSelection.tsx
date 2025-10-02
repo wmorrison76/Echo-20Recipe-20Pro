@@ -289,7 +289,10 @@ export function RecipeSelection({
                                       });
                                     }}
                                   />
-                                  <Label htmlFor={`${entry.recipe.id}-${item}`}>
+                                  <Label
+                                    htmlFor={`${entry.recipe.id}-${item}`}
+                                    className="text-[11px]"
+                                  >
                                     {item}
                                   </Label>
                                 </div>
