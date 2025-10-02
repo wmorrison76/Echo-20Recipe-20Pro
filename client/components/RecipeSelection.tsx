@@ -270,7 +270,7 @@ export function RecipeSelection({
                               return (
                                 <div
                                   key={item}
-                                  className="flex items-center gap-2"
+                                  className="flex items-center gap-1.5"
                                 >
                                   <Checkbox
                                     id={`${entry.recipe.id}-${item}`}
