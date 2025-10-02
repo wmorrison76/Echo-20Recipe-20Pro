@@ -308,7 +308,7 @@ export function RecipeSelection({
       )}
 
       <Card>
-        <CardHeader>
+        <CardHeader className="space-y-2 px-4 py-3">
           <CardTitle className="flex flex-wrap items-center justify-between gap-3">
             <span>Available Recipes</span>
             <div className="flex flex-wrap items-center gap-2">
