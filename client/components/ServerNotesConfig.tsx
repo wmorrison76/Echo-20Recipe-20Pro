@@ -348,7 +348,9 @@ export function ServerNotesConfig({
               />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="outlet-name">Outlet Name</Label>
+              <Label htmlFor="outlet-name" className="text-xs">
+                Outlet Name
+              </Label>
               <Input
                 id="outlet-name"
                 value={config.outletName}
