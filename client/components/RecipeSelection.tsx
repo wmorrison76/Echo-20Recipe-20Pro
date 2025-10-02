@@ -367,8 +367,8 @@ export function RecipeSelection({
           <div
             className={
               view === "grid"
-                ? "grid gap-4 sm:grid-cols-2 2xl:grid-cols-3"
-                : "grid gap-4"
+                ? "grid gap-3.5 sm:grid-cols-2 2xl:grid-cols-3"
+                : "grid gap-3.5"
             }
           >
             {filteredRecipes.map((recipe) => {
