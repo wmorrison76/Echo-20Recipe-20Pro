@@ -20,57 +20,55 @@ export default function Index() {
   const active = params.get("tab") || "search";
   return (
     <TronBackdrop>
-      <div className="flex min-h-screen text-foreground">
+      <div className="min-h-screen text-foreground">
         <TopTabs />
-        <div className="relative flex-1">
-          <main className="w-full py-6">
-            <Tabs
-              value={active}
-              onValueChange={(v) => {
-                params.set("tab", v);
-                setParams(params, { replace: true });
-              }}
-              className="w-full"
-            >
-              <TabsContent value="search">
-                <RecipeSearchSection />
-              </TabsContent>
-              <TabsContent value="gallery">
-                <GallerySection />
-              </TabsContent>
-              <TabsContent value="add-recipe">
-                <AddRecipeSection />
-              </TabsContent>
-              <TabsContent value="saas">
-                <SaasRoadmapSection />
-              </TabsContent>
-              <TabsContent value="inventory">
-                <div className="container mx-auto space-y-4 px-4 py-4">
-                  <InventorySuppliesWorkspace />
-                </div>
-              </TabsContent>
-              <TabsContent value="nutrition">
-                <div className="container mx-auto space-y-4 px-4 py-4">
-                  <NutritionAllergensWorkspace />
-                </div>
-              </TabsContent>
-              <TabsContent value="haccp">
-                <div className="container mx-auto space-y-4 px-4 py-4">
-                  <HaccpComplianceWorkspace />
-                </div>
-              </TabsContent>
-              <TabsContent value="server-notes">
-                <ServerNotesSection />
-              </TabsContent>
-              <TabsContent value="production">
-                <ProductionSection />
-              </TabsContent>
-            </Tabs>
-          </main>
+        <main className="w-full py-6">
+          <Tabs
+            value={active}
+            onValueChange={(v) => {
+              params.set("tab", v);
+              setParams(params, { replace: true });
+            }}
+            className="w-full"
+          >
+            <TabsContent value="search">
+              <RecipeSearchSection />
+            </TabsContent>
+            <TabsContent value="gallery">
+              <GallerySection />
+            </TabsContent>
+            <TabsContent value="add-recipe">
+              <AddRecipeSection />
+            </TabsContent>
+            <TabsContent value="saas">
+              <SaasRoadmapSection />
+            </TabsContent>
+            <TabsContent value="inventory">
+              <div className="container mx-auto space-y-4 px-4 py-4">
+                <InventorySuppliesWorkspace />
+              </div>
+            </TabsContent>
+            <TabsContent value="nutrition">
+              <div className="container mx-auto space-y-4 px-4 py-4">
+                <NutritionAllergensWorkspace />
+              </div>
+            </TabsContent>
+            <TabsContent value="haccp">
+              <div className="container mx-auto space-y-4 px-4 py-4">
+                <HaccpComplianceWorkspace />
+              </div>
+            </TabsContent>
+            <TabsContent value="server-notes">
+              <ServerNotesSection />
+            </TabsContent>
+            <TabsContent value="production">
+              <ProductionSection />
+            </TabsContent>
+          </Tabs>
+        </main>
 
-          <SubtleBottomGlow />
-          <CornerBrand />
-        </div>
+        <SubtleBottomGlow />
+        <CornerBrand />
       </div>
     </TronBackdrop>
   );
