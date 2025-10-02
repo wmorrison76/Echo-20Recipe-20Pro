@@ -384,7 +384,7 @@ export function RecipeSelection({
                       : "border-muted hover:border-foreground/40"
                   }`}
                 >
-                  <div className="flex items-start gap-3">
+                  <div className="flex min-w-0 items-start gap-3">
                     <div className="relative">
                       <img
                         src={
