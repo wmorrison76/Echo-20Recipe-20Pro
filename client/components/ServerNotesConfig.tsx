@@ -160,12 +160,12 @@ export function ServerNotesConfig({
       </Card>
 
       <Card>
-        <CardHeader>
+        <CardHeader className="space-y-2 px-5 py-4">
           <CardTitle className="flex items-center gap-2">
             <Palette className="h-4 w-4" /> Color Scheme
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 px-5 pb-5 pt-0">
           <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
             {colorSchemes.map((scheme) => (
               <button
