@@ -396,7 +396,7 @@ export function RecipeSelection({
                         className="h-16 w-16 rounded object-cover"
                       />
                       {isSelected && (
-                        <div className="absolute -top-2 -right-2 rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold text-primary-foreground">
+                        <div className="absolute -top-1.5 -right-1.5 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
                           Selected
                         </div>
                       )}
