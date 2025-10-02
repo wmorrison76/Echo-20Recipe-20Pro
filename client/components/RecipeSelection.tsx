@@ -119,15 +119,15 @@ export function RecipeSelection({
     <div className="space-y-6">
       {selectedRecipes.length > 0 && (
         <Card>
-          <CardHeader>
+          <CardHeader className="space-y-1 px-4 py-3">
             <CardTitle className="flex flex-wrap items-center justify-between gap-2">
               <span>Selected Recipes ({selectedRecipes.length})</span>
               <Badge variant="secondary">Reorder with arrows</Badge>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3.5 px-4 pb-4 pt-0">
             {selectedRecipes.map((entry, index) => (
-              <div key={entry.recipe.id} className="rounded-lg border p-4">
+              <div key={entry.recipe.id} className="rounded-lg border p-3">
                 <div className="flex min-w-0 items-start gap-3">
                   <div className="flex flex-col gap-1">
                     <Button
