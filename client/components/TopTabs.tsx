@@ -1,14 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   BookOpenCheck,
   Boxes,
+  ChevronLeft,
+  ChevronRight,
   ClipboardList,
   Factory,
   HelpCircle,
   Images,
-  Menu,
-  PanelLeftClose,
   PenSquare,
   ShieldCheck,
   Sparkles,
@@ -23,8 +23,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
-const navItems: { to: string; label: string; icon: LucideIcon }[] = [
+type NavItem = {
+  to: string;
+  label: string;
+  icon: LucideIcon;
+};
+
+const navItems: NavItem[] = [
   { to: "/?tab=search", label: "RECIPES", icon: BookOpenCheck },
   { to: "/?tab=add-recipe", label: "ADD RECIPE", icon: PenSquare },
   { to: "/?tab=server-notes", label: "SERVER NOTES", icon: ClipboardList },
@@ -36,13 +43,11 @@ const navItems: { to: string; label: string; icon: LucideIcon }[] = [
   { to: "/?tab=gallery", label: "Gallery", icon: Images },
 ];
 
-type TabLinkProps = {
-  to: string;
-  label: string;
-  icon: LucideIcon;
+type TabLinkProps = NavItem & {
+  collapsed: boolean;
 };
 
-function TabLink({ to, label, icon: Icon }: TabLinkProps) {
+function TabLink({ to, label, icon: Icon, collapsed }: TabLinkProps) {
   const loc = useLocation();
   const active = new URLSearchParams(loc.search).get("tab") ?? "search";
   const value = new URLSearchParams(to.split("?")[1] || "").get("tab") || "";
@@ -51,170 +56,270 @@ function TabLink({ to, label, icon: Icon }: TabLinkProps) {
   return (
     <Link
       to={to}
-      className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition ${
+      aria-label={label}
+      className={cn(
+        "group flex w-full items-center rounded-md text-sm font-medium transition-all duration-500",
+        collapsed ? "justify-center gap-0 px-2 py-2" : "gap-2 px-3 py-2",
         isActive
           ? "bg-primary text-primary-foreground shadow"
-          : "text-foreground/75 hover:bg-muted hover:text-foreground"
-      }`}
+          : "text-foreground/75 hover:bg-muted hover:text-foreground",
+      )}
     >
-      <Icon className="h-4 w-4 flex-shrink-0" aria-hidden />
-      <span className="truncate">{label}</span>
+      <Icon
+        className={cn(
+          "h-4 w-4 flex-shrink-0 transition-transform duration-500",
+          collapsed ? "" : "group-hover:scale-[1.05]",
+        )}
+        aria-hidden
+      />
+      <span
+        aria-hidden={collapsed}
+        className={cn(
+          "ml-2 overflow-hidden text-ellipsis whitespace-nowrap transition-all duration-500 ease-out",
+          collapsed ? "ml-0 max-w-0 opacity-0" : "max-w-[180px] opacity-100",
+        )}
+      >
+        {label}
+      </span>
     </Link>
   );
 }
 
 export default function TopTabs() {
   const location = useLocation();
-  const [open, setOpen] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setCollapsed(true);
+    }, 425);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (collapsed) {
+      setShowHelp(false);
+    }
+  }, [collapsed]);
+
   const isAdd = new URLSearchParams(location.search).get("tab") === "add-recipe";
 
-  const togglePanel = () => {
-    setOpen((prev) => !prev);
-    setShowHelp(false);
+  const toggleCollapsed = () => {
+    setCollapsed((prev) => {
+      if (!prev) {
+        return true;
+      }
+      return false;
+    });
   };
+
+  const textClass = (extra?: string) =>
+    cn(
+      "overflow-hidden whitespace-nowrap transition-all duration-500 ease-out",
+      collapsed ? "max-w-0 opacity-0" : "max-w-full opacity-100",
+      extra,
+    );
 
   return (
     <>
-      {open && (
-        <aside className="fixed left-4 top-4 z-[1000] w-64 space-y-4 rounded-2xl border border-white/50 bg-white/70 p-4 shadow-[0_20px_45px_rgba(15,23,42,0.2)] backdrop-blur-xl transition dark:border-slate-800/80 dark:bg-slate-950/75 dark:shadow-[0_0_30px_rgba(56,189,248,0.28)]">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2F3daeec161e9e466b9f19d163a3c58f71?format=webp&width=240"
-                alt="Echo Recipe Pro"
-                className="h-7 w-auto"
-              />
-              <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                Echo Recipe Pro
-              </span>
-            </div>
-            <button
-              onClick={togglePanel}
-              className="rounded-full border border-white/40 bg-white/70 p-2 text-muted-foreground shadow-sm transition hover:bg-white dark:border-slate-700/60 dark:bg-slate-900/70 dark:text-slate-200"
-              aria-label="Collapse navigation"
-            >
-              <PanelLeftClose className="h-4 w-4" aria-hidden />
-            </button>
-          </div>
-
-          <nav className="max-h-[70vh] space-y-1 overflow-y-auto pr-1">
-            {navItems.map((item) => (
-              <TabLink key={item.to} {...item} />
-            ))}
-          </nav>
-
-          <div className="space-y-3 border-t border-white/50 pt-3 text-sm dark:border-slate-800/60">
-            <button
-              title="Finalize & Clear"
-              onClick={() => {
-                window.dispatchEvent(
-                  new CustomEvent("recipe:action", {
-                    detail: { type: "finalizeImport" },
-                  }),
-                );
-              }}
-              className="flex w-full items-center justify-between rounded-md bg-white/70 px-3 py-2 font-medium text-foreground shadow-sm transition hover:bg-white dark:bg-slate-900/80 dark:hover:bg-slate-900"
-            >
-              <span>Finalize & Clear</span>
-              <Save className="h-4 w-4" aria-hidden />
-            </button>
-            <button
-              title="Help"
-              onClick={() => setShowHelp(true)}
-              className="flex w-full items-center justify-between rounded-md px-3 py-2 font-medium text-foreground transition hover:bg-white/70 dark:hover:bg-slate-900/70"
-            >
-              <span>Help & Shortcuts</span>
-              <HelpCircle className="h-4 w-4" aria-hidden />
-            </button>
-
-            {isAdd && (
-              <div className="rounded-lg border border-white/40 bg-white/60 p-3 text-xs text-muted-foreground shadow-sm dark:border-slate-800/60 dark:bg-slate-900/70">
-                <div className="mb-2 text-sm font-semibold text-foreground">
-                  Add Recipe Tools
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() =>
-                      window.dispatchEvent(
-                        new CustomEvent("recipe:action", {
-                          detail: { type: "convertUnits" },
-                        }),
-                      )
-                    }
-                    className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
-                  >
-                    Convert Units
-                  </button>
-                  <button
-                    onClick={() =>
-                      window.dispatchEvent(
-                        new CustomEvent("recipe:action", {
-                          detail: { type: "saveVersion" },
-                        }),
-                      )
-                    }
-                    className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
-                  >
-                    Save Snapshot
-                  </button>
-                  <button
-                    onClick={() =>
-                      window.dispatchEvent(
-                        new CustomEvent("recipe:action", {
-                          detail: { type: "convertUnits" },
-                        }),
-                      )
-                    }
-                    className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
-                  >
-                    Alt Units
-                  </button>
-                  <button
-                    onClick={() =>
-                      window.dispatchEvent(
-                        new CustomEvent("recipe:action", {
-                          detail: { type: "cycleCurrency" },
-                        }),
-                      )
-                    }
-                    className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
-                  >
-                    Currency
-                  </button>
-                  <button
-                    onClick={() =>
-                      window.dispatchEvent(
-                        new CustomEvent("recipe:action", {
-                          detail: { type: "openYieldLab" },
-                        }),
-                      )
-                    }
-                    className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
-                  >
-                    Yield Lab
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <div className="flex items-center justify-between rounded-md bg-white/60 px-3 py-2 text-sm font-medium text-foreground shadow-sm dark:bg-slate-900/70">
-              <span>Theme</span>
-              <ThemeToggle />
-            </div>
-          </div>
-        </aside>
-      )}
-
-      {!open && (
-        <button
-          onClick={togglePanel}
-          className="fixed left-4 top-4 z-[1001] rounded-full border border-white/60 bg-white/80 p-3 text-foreground shadow-lg backdrop-blur-md transition hover:bg-white dark:border-slate-800/70 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-900"
-          aria-label="Show navigation"
+      <aside
+        className={cn(
+          "fixed left-4 top-4 z-[1000] flex flex-col overflow-hidden rounded-2xl border border-white/50 bg-white/70 shadow-[0_20px_45px_rgba(15,23,42,0.2)] backdrop-blur-xl transition-all duration-500 dark:border-slate-800/80 dark:bg-slate-950/75 dark:shadow-[0_0_30px_rgba(56,189,248,0.28)]",
+          collapsed ? "w-16 space-y-3 p-3" : "w-64 space-y-4 p-4",
+        )}
+      >
+        <div
+          className={cn(
+            "flex items-center gap-2 transition-all duration-500",
+            collapsed ? "justify-center" : "justify-between",
+          )}
         >
-          <Menu className="h-5 w-5" aria-hidden />
+          <div
+            className={cn(
+              "flex items-center gap-2 transition-all duration-500",
+              collapsed ? "gap-0" : "gap-2",
+            )}
+          >
+            <img
+              src="https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2F3daeec161e9e466b9f19d163a3c58f71?format=webp&width=240"
+              alt="Echo Recipe Pro"
+              className="h-7 w-auto"
+            />
+            <span
+              aria-hidden={collapsed}
+              className={textClass(
+                "text-xs font-semibold uppercase tracking-widest text-muted-foreground",
+              )}
+            >
+              Echo Recipe Pro
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              setCollapsed(true);
+            }}
+            className={cn(
+              "rounded-full border border-white/40 bg-white/70 p-2 text-muted-foreground shadow-sm transition hover:bg-white dark:border-slate-700/60 dark:bg-slate-900/70 dark:text-slate-200",
+              collapsed && "pointer-events-none opacity-0",
+            )}
+            aria-label="Collapse navigation"
+          >
+            <ChevronLeft className="h-4 w-4" aria-hidden />
+          </button>
+        </div>
+
+        <nav
+          className={cn(
+            "max-h-[70vh] space-y-1 overflow-y-auto pr-1 transition-all duration-500",
+            collapsed && "pr-0",
+          )}
+        >
+          {navItems.map((item) => (
+            <TabLink key={item.to} collapsed={collapsed} {...item} />
+          ))}
+        </nav>
+
+        <div
+          className={cn(
+            "space-y-3 border-t border-white/50 pt-3 text-sm transition-all duration-500 dark:border-slate-800/60",
+            collapsed && "border-transparent pt-2",
+          )}
+        >
+          <button
+            type="button"
+            title="Finalize & Clear"
+            onClick={() => {
+              window.dispatchEvent(
+                new CustomEvent("recipe:action", {
+                  detail: { type: "finalizeImport" },
+                }),
+              );
+            }}
+            className={cn(
+              "flex w-full items-center rounded-md bg-white/70 px-3 py-2 font-medium text-foreground shadow-sm transition hover:bg-white dark:bg-slate-900/80 dark:hover:bg-slate-900",
+              collapsed ? "justify-center px-2" : "justify-between",
+            )}
+          >
+            <span aria-hidden={collapsed} className={textClass("text-sm font-medium")}> 
+              Finalize & Clear
+            </span>
+            <Save className="h-4 w-4" aria-hidden />
+          </button>
+          <button
+            type="button"
+            title="Help & Shortcuts"
+            onClick={() => setShowHelp(true)}
+            className={cn(
+              "flex w-full items-center rounded-md px-3 py-2 font-medium text-foreground transition hover:bg-white/70 dark:hover:bg-slate-900/70",
+              collapsed ? "justify-center px-2" : "justify-between",
+            )}
+          >
+            <span aria-hidden={collapsed} className={textClass("text-sm font-medium")}> 
+              Help & Shortcuts
+            </span>
+            <HelpCircle className="h-4 w-4" aria-hidden />
+          </button>
+
+          {!collapsed && isAdd && (
+            <div className="rounded-lg border border-white/40 bg-white/60 p-3 text-xs text-muted-foreground shadow-sm dark:border-slate-800/60 dark:bg-slate-900/70">
+              <div className="mb-2 text-sm font-semibold text-foreground">
+                Add Recipe Tools
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() =>
+                    window.dispatchEvent(
+                      new CustomEvent("recipe:action", {
+                        detail: { type: "convertUnits" },
+                      }),
+                    )
+                  }
+                  className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
+                >
+                  Convert Units
+                </button>
+                <button
+                  onClick={() =>
+                    window.dispatchEvent(
+                      new CustomEvent("recipe:action", {
+                        detail: { type: "saveVersion" },
+                      }),
+                    )
+                  }
+                  className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
+                >
+                  Save Snapshot
+                </button>
+                <button
+                  onClick={() =>
+                    window.dispatchEvent(
+                      new CustomEvent("recipe:action", {
+                        detail: { type: "convertUnits" },
+                      }),
+                    )
+                  }
+                  className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
+                >
+                  Alt Units
+                </button>
+                <button
+                  onClick={() =>
+                    window.dispatchEvent(
+                      new CustomEvent("recipe:action", {
+                        detail: { type: "cycleCurrency" },
+                      }),
+                    )
+                  }
+                  className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
+                >
+                  Currency
+                </button>
+                <button
+                  onClick={() =>
+                    window.dispatchEvent(
+                      new CustomEvent("recipe:action", {
+                        detail: { type: "openYieldLab" },
+                      }),
+                    )
+                  }
+                  className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
+                >
+                  Yield Lab
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div
+            className={cn(
+              "flex items-center justify-between rounded-md bg-white/60 px-3 py-2 text-sm font-medium text-foreground shadow-sm dark:bg-slate-900/70",
+              collapsed && "flex-col gap-2 px-2 py-2",
+            )}
+          >
+            <span aria-hidden={collapsed} className={textClass("text-sm font-medium")}> 
+              Theme
+            </span>
+            <ThemeToggle />
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setCollapsed(false)}
+          className={cn(
+            "absolute right-[-14px] top-1/2 flex h-10 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-white/60 bg-white/80 text-muted-foreground shadow-lg transition hover:bg-white dark:border-slate-800/70 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-900",
+            collapsed ? "opacity-100" : "pointer-events-none opacity-0",
+          )}
+          aria-label="Expand navigation"
+        >
+          <ChevronRight className="h-4 w-4" aria-hidden />
         </button>
-      )}
+      </aside>
 
       <Dialog open={showHelp} onOpenChange={setShowHelp}>
         <DialogContent className="max-w-2xl">
