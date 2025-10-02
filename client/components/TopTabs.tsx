@@ -7,14 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Scale,
-  NotebookPen,
-  ArrowLeftRight,
-  CircleDollarSign,
-  HelpCircle,
-  Save,
-} from "lucide-react";
+import { HelpCircle, Save } from "lucide-react";
 
 const navItems = [
   { to: "/?tab=search", label: "RECIPES" },
