@@ -111,7 +111,7 @@ export function ServerNotesConfig({
               return (
                 <div
                   key={preset.id}
-                  className={`rounded-lg border p-3 transition ${
+                  className={`rounded-lg border p-2.5 transition ${
                     active
                       ? "border-primary bg-primary/5"
                       : "border-muted hover:border-primary/40"
