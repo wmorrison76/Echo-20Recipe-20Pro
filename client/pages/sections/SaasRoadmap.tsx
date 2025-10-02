@@ -1,5 +1,4 @@
 import InventorySuppliesWorkspace from "./saas/InventorySuppliesWorkspace";
-import InventorySuppliesWorkspace from "./saas/InventorySuppliesWorkspace";
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import NutritionAllergensWorkspace from "./saas/NutritionAllergensWorkspace";
