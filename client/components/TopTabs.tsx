@@ -21,11 +21,11 @@ const navItems = [
   { to: "/?tab=add-recipe", label: "ADD RECIPE" },
   { to: "/?tab=server-notes", label: "SERVER NOTES" },
   { to: "/?tab=production", label: "PRODUCTION" },
-  { to: "/?tab=gallery", label: "Gallery" },
   { to: "/?tab=saas", label: "SaaS" },
   { to: "/?tab=inventory", label: "Inventory & Supplies" },
   { to: "/?tab=nutrition", label: "Nutrition/Allergens" },
   { to: "/?tab=haccp", label: "HACCP/Compliance" },
+  { to: "/?tab=gallery", label: "Gallery" },
 ] as const;
 
 function TabLink({ to, label }: { to: string; label: string }) {
