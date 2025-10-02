@@ -108,15 +108,6 @@ export default function TopTabs() {
 
   const isAdd = new URLSearchParams(location.search).get("tab") === "add-recipe";
 
-  const toggleCollapsed = () => {
-    setCollapsed((prev) => {
-      if (!prev) {
-        return true;
-      }
-      return false;
-    });
-  };
-
   const textClass = (extra?: string) =>
     cn(
       "overflow-hidden whitespace-nowrap transition-all duration-500 ease-out",
