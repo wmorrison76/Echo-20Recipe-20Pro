@@ -199,19 +199,15 @@ export default function TopTabs() {
         </aside>
       )}
 
-      <button
-        onClick={togglePanel}
-        className={`fixed left-4 top-4 z-[1001] rounded-full border border-white/60 bg-white/80 p-3 text-foreground shadow-lg backdrop-blur-md transition hover:bg-white dark:border-slate-800/70 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-900 ${
-          open ? "translate-x-[260px]" : ""
-        }`}
-        aria-label={open ? "Hide navigation" : "Show navigation"}
-      >
-        {open ? (
-          <PanelRightOpen className="h-5 w-5" aria-hidden />
-        ) : (
+      {!open && (
+        <button
+          onClick={togglePanel}
+          className="fixed left-4 top-4 z-[1001] rounded-full border border-white/60 bg-white/80 p-3 text-foreground shadow-lg backdrop-blur-md transition hover:bg-white dark:border-slate-800/70 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-900"
+          aria-label="Show navigation"
+        >
           <Menu className="h-5 w-5" aria-hidden />
-        )}
-      </button>
+        </button>
+      )}
 
       <Dialog open={showHelp} onOpenChange={setShowHelp}>
         <DialogContent className="max-w-2xl">
