@@ -20,7 +20,10 @@ export default function Index() {
   const active = params.get("tab") || "search";
   return (
     <TronBackdrop>
-      <div className="min-h-screen text-foreground">
+      <div
+        className="min-h-screen text-foreground transition-[padding-left] duration-700 ease-out"
+        style={{ paddingLeft: "var(--sidebar-offset, 5rem)" }}
+      >
         <TopTabs />
         <main className="w-full py-6">
           <Tabs
