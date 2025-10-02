@@ -258,8 +258,8 @@ export function RecipeSelection({
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="flex items-center gap-2 text-xs">
-                            <Utensils className="h-3.5 w-3.5" /> Required
+                          <Label className="flex items-center gap-1.5 text-[11px]">
+                            <Utensils className="h-3 w-3" /> Required
                             Silverware
                           </Label>
                           <div className="grid max-h-32 grid-cols-2 gap-1.5 overflow-y-auto text-xs">
