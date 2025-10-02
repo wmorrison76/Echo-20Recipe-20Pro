@@ -60,7 +60,7 @@ export function RecipeCard({
   selected?: boolean;
   onToggleSelect?: () => void;
 }) {
-  const cover = r.imageDataUrls?.[0];
+  const cover = r.imageDataUrls?.[0] ?? r.image ?? undefined;
   const stars = Array.from({ length: 5 }, (_, i) => i < (r.rating || 0));
   return (
     <div
@@ -2063,7 +2063,7 @@ export default function RecipeSearchSection() {
                     {r.title}
                   </div>
                   <div className="line-clamp-1 text-xs text-muted-foreground">
-                    {r.tags?.join(" · ")}
+                    {r.tags?.join(" �� ")}
                   </div>
                   <div className="mt-1 flex gap-2">
                     <Button
