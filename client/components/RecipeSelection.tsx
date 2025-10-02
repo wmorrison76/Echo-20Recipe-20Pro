@@ -121,13 +121,20 @@ export function RecipeSelection({
         <Card>
           <CardHeader className="space-y-1 px-3.5 py-3">
             <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-sm">
-              <span className="font-medium">Selected Recipes ({selectedRecipes.length})</span>
-              <Badge variant="secondary" className="text-[11px]">Reorder with arrows</Badge>
+              <span className="font-medium">
+                Selected Recipes ({selectedRecipes.length})
+              </span>
+              <Badge variant="secondary" className="text-[11px]">
+                Reorder with arrows
+              </Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 px-3.5 pb-3.5 pt-0">
             {selectedRecipes.map((entry, index) => (
-              <div key={entry.recipe.id} className="rounded-lg border p-2.5 text-[13px]">
+              <div
+                key={entry.recipe.id}
+                className="rounded-lg border p-2.5 text-[13px]"
+              >
                 <div className="flex min-w-0 items-start gap-3">
                   <div className="flex flex-col gap-1.5">
                     <Button
@@ -172,7 +179,9 @@ export function RecipeSelection({
                         </p>
                       </div>
                       <div className="flex items-center gap-1.5 text-[12px]">
-                        <Badge variant="outline" className="text-[11px]">#{index + 1}</Badge>
+                        <Badge variant="outline" className="text-[11px]">
+                          #{index + 1}
+                        </Badge>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -259,8 +268,7 @@ export function RecipeSelection({
                         </div>
                         <div className="space-y-2">
                           <Label className="flex items-center gap-1.5 text-[11px]">
-                            <Utensils className="h-3 w-3" /> Required
-                            Silverware
+                            <Utensils className="h-3 w-3" /> Required Silverware
                           </Label>
                           <div className="grid max-h-32 grid-cols-2 gap-1.5 overflow-y-auto text-xs">
                             {silverwareOptions.map((item) => {

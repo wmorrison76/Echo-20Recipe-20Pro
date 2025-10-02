@@ -200,7 +200,11 @@ export default function SaasRoadmapSection() {
         <div className="text-base font-semibold">Capabilities</div>
       </div>
 
-      <Tabs value={activeSuite} onValueChange={handleSuiteChange} className="space-y-4">
+      <Tabs
+        value={activeSuite}
+        onValueChange={handleSuiteChange}
+        className="space-y-4"
+      >
         <div className="rounded-xl border bg-white/95 p-4 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="space-y-1">
@@ -212,7 +216,11 @@ export default function SaasRoadmapSection() {
             </div>
             <TabsList className="flex flex-wrap gap-1 rounded-lg bg-muted p-1">
               {suites.map((suite) => (
-                <TabsTrigger key={suite.value} value={suite.value} className="text-xs">
+                <TabsTrigger
+                  key={suite.value}
+                  value={suite.value}
+                  className="text-xs"
+                >
                   {suite.label}
                 </TabsTrigger>
               ))}
