@@ -120,9 +120,9 @@ export function RecipeSelection({
       {selectedRecipes.length > 0 && (
         <Card>
           <CardHeader className="space-y-1 px-3.5 py-3">
-            <CardTitle className="flex flex-wrap items-center justify-between gap-2">
-              <span>Selected Recipes ({selectedRecipes.length})</span>
-              <Badge variant="secondary">Reorder with arrows</Badge>
+            <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-sm">
+              <span className="font-medium">Selected Recipes ({selectedRecipes.length})</span>
+              <Badge variant="secondary" className="text-[11px]">Reorder with arrows</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 px-3.5 pb-3.5 pt-0">
