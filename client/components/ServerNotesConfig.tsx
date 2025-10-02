@@ -172,7 +172,7 @@ export function ServerNotesConfig({
                 className={`w-full rounded-lg border p-4 text-left transition ${
                   config.colorScheme.id === scheme.id
                     ? "border-primary bg-primary/5"
-                    : "border-muted hover-border-primary/40"
+                    : "border-muted hover:border-primary/40"
                 }`}
                 onClick={() => updateColorScheme(scheme)}
               >
