@@ -125,10 +125,10 @@ export function ServerNotesConfig({
                 >
                   <div className="flex items-start justify-between gap-1.5">
                     <div>
-                      <h4 className="text-sm font-semibold leading-tight">
+                      <h4 className="text-[13px] font-semibold leading-tight">
                         {preset.name}
                       </h4>
-                      <p className="mt-1 text-xs leading-snug text-muted-foreground line-clamp-3">
+                      <p className="mt-1 text-[11px] leading-snug text-muted-foreground line-clamp-3">
                         {preset.description}
                       </p>
                     </div>
