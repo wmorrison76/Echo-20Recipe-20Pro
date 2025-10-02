@@ -415,7 +415,7 @@ export function RecipeSelection({
                           {recipe.description}
                         </p>
                       </div>
-                      <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
+                      <div className="flex flex-wrap items-center gap-1.5 text-[10px] text-muted-foreground">
                         {recipe.course && (
                           <Badge variant="secondary">{recipe.course}</Badge>
                         )}
