@@ -99,13 +99,13 @@ export function ServerNotesConfig({
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader className="space-y-2 px-5 py-4">
+        <CardHeader className="space-y-2 px-4 py-3">
           <CardTitle className="flex items-center gap-2">
             <Type className="h-4 w-4" /> Layout Preset
           </CardTitle>
         </CardHeader>
-        <CardContent className="px-5 pb-5 pt-0">
-          <div className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3">
+        <CardContent className="px-4 pb-4 pt-0">
+          <div className="grid gap-2.5 sm:grid-cols-2 2xl:grid-cols-3">
             {availableLayouts.map((preset) => {
               const active = config.layout.id === preset.id;
               return (
