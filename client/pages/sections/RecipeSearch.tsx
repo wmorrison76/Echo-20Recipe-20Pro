@@ -1181,7 +1181,7 @@ export default function RecipeSearchSection() {
             </div>
           </div>
         </div>
-      <div className="space-y-3 rounded-lg border border-primary/30 bg-background/80 p-3 shadow-sm dark:bg-zinc-900/60 md:self-start">
+      <div className="space-y-3 rounded-lg border border-primary/30 bg-background/80 p-3 shadow-sm dark:bg-zinc-900/60 md:self-start md:col-span-1">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex min-w-[240px] flex-1 flex-col gap-1">
             <div className="flex items-center gap-2">
