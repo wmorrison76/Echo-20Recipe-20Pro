@@ -171,11 +171,11 @@ export default function ServerNotesSection() {
           </header>
 
           <section className="grid gap-4 lg:grid-cols-12">
-            <Card className="lg:col-span-4 xl:col-span-3">
+            <Card className="lg:col-span-4 xl:col-span-4">
               <CardHeader className="py-4">
                 <CardTitle className="text-base">Configuration</CardTitle>
               </CardHeader>
-              <CardContent className="max-h-[calc(100vh-220px)] space-y-6 overflow-y-auto pr-2">
+              <CardContent className="space-y-6 pr-2 lg:max-h-[calc(100vh-240px)] lg:overflow-y-auto">
                 <ServerNotesConfig
                   config={currentNote}
                   onUpdate={handleUpdate}
@@ -187,7 +187,7 @@ export default function ServerNotesSection() {
               <CardHeader className="py-4">
                 <CardTitle className="text-base">Recipe Selection</CardTitle>
               </CardHeader>
-              <CardContent className="max-h-[calc(100vh-220px)] space-y-6 overflow-y-auto pr-2">
+              <CardContent className="space-y-6 pr-2 lg:max-h-[calc(100vh-240px)] lg:overflow-y-auto">
                 <RecipeSelection
                   availableRecipes={recipes}
                   selectedRecipes={sortedSelected}
@@ -196,7 +196,7 @@ export default function ServerNotesSection() {
               </CardContent>
             </Card>
 
-            <Card className="lg:col-span-4 xl:col-span-5">
+            <Card className="lg:col-span-4 xl:col-span-4">
               <CardHeader className="py-4">
                 <CardTitle className="text-base">Preview & Generate</CardTitle>
               </CardHeader>
