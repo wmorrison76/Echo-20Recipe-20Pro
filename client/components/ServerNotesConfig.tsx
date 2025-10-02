@@ -219,7 +219,7 @@ export function ServerNotesConfig({
                 {usingCustom ? "Active" : "Use Custom"}
               </Button>
             </div>
-            <div className="mt-4 grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-3 grid gap-2.5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {(
                 [
                   ["primary", "Primary"],
