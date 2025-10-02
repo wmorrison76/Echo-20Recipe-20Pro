@@ -435,12 +435,12 @@ export function ServerNotesConfig({
       </Card>
 
       <Card>
-        <CardHeader className="space-y-2 px-5 py-4">
+        <CardHeader className="space-y-2 px-4 py-3">
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-4 w-4" /> Document Information
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 px-5 pb-5 pt-0">
+        <CardContent className="space-y-3.5 px-4 pb-4 pt-0">
           <div className="space-y-1">
             <Label htmlFor="document-title">Document Title</Label>
             <Input
