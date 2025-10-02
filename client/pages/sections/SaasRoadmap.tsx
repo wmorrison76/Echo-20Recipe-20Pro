@@ -1,4 +1,6 @@
 import InventorySuppliesWorkspace from "./saas/InventorySuppliesWorkspace";
+import { useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import NutritionAllergensWorkspace from "./saas/NutritionAllergensWorkspace";
 import HaccpComplianceWorkspace from "./saas/HaccpComplianceWorkspace";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
