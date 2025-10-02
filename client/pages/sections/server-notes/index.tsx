@@ -170,12 +170,12 @@ export default function ServerNotesSection() {
             </Button>
           </header>
 
-          <section className="grid gap-4 lg:grid-cols-12">
+          <section className="grid gap-3 lg:grid-cols-12">
             <Card className="lg:col-span-4 xl:col-span-4">
-              <CardHeader className="space-y-1 px-5 py-4">
+              <CardHeader className="space-y-1 px-4 py-3.5">
                 <CardTitle className="text-base">Configuration</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-5 px-5 pb-5 pt-0 lg:max-h-[calc(100vh-240px)] lg:overflow-y-auto">
+              <CardContent className="space-y-4 px-4 pb-4 pt-0 lg:max-h-[calc(100vh-240px)] lg:overflow-y-auto">
                 <ServerNotesConfig
                   config={currentNote}
                   onUpdate={handleUpdate}
