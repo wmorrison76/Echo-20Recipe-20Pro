@@ -58,7 +58,7 @@ function TabLink({ to, label, icon: Icon, collapsed }: TabLinkProps) {
       to={to}
       aria-label={label}
       className={cn(
-        "group flex w-full items-center rounded-md text-sm font-medium transition-all duration-500",
+        "group flex w-full items-center rounded-md text-sm font-medium transition-all duration-700",
         collapsed ? "justify-center gap-0 px-2 py-2" : "gap-2 px-3 py-2",
         isActive
           ? "bg-primary text-primary-foreground shadow"
@@ -75,7 +75,7 @@ function TabLink({ to, label, icon: Icon, collapsed }: TabLinkProps) {
       <span
         aria-hidden={collapsed}
         className={cn(
-          "ml-2 overflow-hidden text-ellipsis whitespace-nowrap transition-all duration-500 ease-out",
+          "ml-2 overflow-hidden text-ellipsis whitespace-nowrap transition-all duration-700 ease-out",
           collapsed ? "ml-0 max-w-0 opacity-0" : "max-w-[180px] opacity-100",
         )}
       >
@@ -110,7 +110,7 @@ export default function TopTabs() {
 
   const textClass = (extra?: string) =>
     cn(
-      "overflow-hidden whitespace-nowrap transition-all duration-500 ease-out",
+      "overflow-hidden whitespace-nowrap transition-all duration-700 ease-out",
       collapsed ? "max-w-0 opacity-0" : "max-w-full opacity-100",
       extra,
     );
@@ -119,7 +119,7 @@ export default function TopTabs() {
     <>
       <aside
         className={cn(
-          "fixed left-4 top-4 z-[1000] relative flex flex-col overflow-hidden rounded-2xl border border-white/50 bg-white/70 shadow-[0_20px_45px_rgba(15,23,42,0.2)] backdrop-blur-xl transition-all duration-500 dark:border-slate-800/80 dark:bg-slate-950/75 dark:shadow-[0_0_30px_rgba(56,189,248,0.28)]",
+          "fixed left-4 top-4 z-[1000] relative flex flex-col overflow-hidden rounded-2xl border border-white/50 bg-white/70 shadow-[0_20px_45px_rgba(15,23,42,0.2)] backdrop-blur-xl transition-all duration-700 dark:border-slate-800/80 dark:bg-slate-950/75 dark:shadow-[0_0_30px_rgba(56,189,248,0.28)]",
           collapsed ? "w-16 space-y-3 p-3" : "w-64 space-y-4 p-4",
         )}
       >
@@ -131,7 +131,7 @@ export default function TopTabs() {
         >
           <div
             className={cn(
-              "flex items-center gap-2 transition-all duration-500",
+              "flex items-center gap-2 transition-all duration-700",
               collapsed ? "gap-0" : "gap-2",
             )}
           >
@@ -155,7 +155,7 @@ export default function TopTabs() {
               setCollapsed(true);
             }}
             className={cn(
-              "rounded-full border border-white/40 bg-white/70 p-2 text-muted-foreground shadow-sm transition hover:bg-white dark:border-slate-700/60 dark:bg-slate-900/70 dark:text-slate-200",
+              "rounded-full border border-white/40 bg-white/70 p-2 text-muted-foreground shadow-sm transition duration-300 hover:bg-white dark:border-slate-700/60 dark:bg-slate-900/70 dark:text-slate-200",
               collapsed && "pointer-events-none opacity-0",
             )}
             aria-label="Collapse navigation"
@@ -166,7 +166,7 @@ export default function TopTabs() {
 
         <nav
           className={cn(
-            "max-h-[70vh] space-y-1 overflow-y-auto pr-1 transition-all duration-500",
+            "max-h-[70vh] space-y-1 overflow-y-auto pr-1 transition-all duration-700",
             collapsed && "pr-0",
           )}
         >
@@ -177,7 +177,7 @@ export default function TopTabs() {
 
         <div
           className={cn(
-            "space-y-3 border-t border-white/50 pt-3 text-sm transition-all duration-500 dark:border-slate-800/60",
+            "space-y-3 border-t border-white/50 pt-3 text-sm transition-all duration-700 dark:border-slate-800/60",
             collapsed && "border-transparent pt-2",
           )}
         >
@@ -192,7 +192,7 @@ export default function TopTabs() {
               );
             }}
             className={cn(
-              "flex w-full items-center rounded-md bg-white/70 px-3 py-2 font-medium text-foreground shadow-sm transition hover:bg-white dark:bg-slate-900/80 dark:hover:bg-slate-900",
+            "flex w-full items-center rounded-md bg-white/70 px-3 py-2 font-medium text-foreground shadow-sm transition duration-300 hover:bg-white dark:bg-slate-900/80 dark:hover:bg-slate-900",
               collapsed ? "justify-center px-2" : "justify-between",
             )}
           >
@@ -206,7 +206,7 @@ export default function TopTabs() {
             title="Help & Shortcuts"
             onClick={() => setShowHelp(true)}
             className={cn(
-              "flex w-full items-center rounded-md px-3 py-2 font-medium text-foreground transition hover:bg-white/70 dark:hover:bg-slate-900/70",
+            "flex w-full items-center rounded-md px-3 py-2 font-medium text-foreground transition duration-300 hover:bg-white/70 dark:hover:bg-slate-900/70",
               collapsed ? "justify-center px-2" : "justify-between",
             )}
           >
@@ -288,7 +288,7 @@ export default function TopTabs() {
 
           <div
             className={cn(
-              "flex items-center justify-between rounded-md bg-white/60 px-3 py-2 text-sm font-medium text-foreground shadow-sm dark:bg-slate-900/70",
+              "flex items-center justify-between rounded-md bg-white/60 px-3 py-2 text-sm font-medium text-foreground shadow-sm transition-all duration-700 dark:bg-slate-900/70",
               collapsed && "flex-col gap-2 px-2 py-2",
             )}
           >
@@ -303,7 +303,7 @@ export default function TopTabs() {
           type="button"
           onClick={() => setCollapsed(false)}
           className={cn(
-            "absolute right-[-14px] top-1/2 flex h-10 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-white/60 bg-white/80 text-muted-foreground shadow-lg transition hover:bg-white dark:border-slate-800/70 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-900",
+            "absolute right-[-14px] top-1/2 flex h-10 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-white/60 bg-white/80 text-muted-foreground shadow-lg transition duration-300 hover:bg-white dark:border-slate-800/70 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-900",
             collapsed ? "opacity-100" : "pointer-events-none opacity-0",
           )}
           aria-label="Expand navigation"
