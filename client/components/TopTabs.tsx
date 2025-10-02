@@ -142,193 +142,195 @@ export default function TopTabs() {
           collapsed ? "w-16 space-y-3 p-3" : "w-64 space-y-4 p-4",
         )}
       >
-        <div
-          className={cn(
-            "flex items-center gap-2 transition-all duration-500",
-            collapsed ? "justify-center" : "justify-between",
-          )}
-        >
+        <div className="relative flex h-full flex-col">
           <div
             className={cn(
-              "flex items-center gap-2 transition-all duration-700",
-              collapsed ? "gap-0" : "gap-2",
+              "flex items-center gap-2 transition-all duration-500",
+              collapsed ? "justify-center" : "justify-between",
             )}
           >
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2F3daeec161e9e466b9f19d163a3c58f71?format=webp&width=240"
-              alt="Echo Recipe Pro"
-              className="h-7 w-auto"
-            />
-            <span
-              aria-hidden={collapsed}
-              className={textClass(
-                "text-xs font-semibold uppercase tracking-widest text-muted-foreground",
+            <div
+              className={cn(
+                "flex items-center gap-2 transition-all duration-700",
+                collapsed ? "gap-0" : "gap-2",
               )}
             >
-              Echo Recipe Pro
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              setCollapsed(true);
-            }}
-            className={cn(
-              "rounded-full border border-white/40 bg-white/70 p-2 text-muted-foreground shadow-sm transition duration-300 hover:bg-white dark:border-slate-700/60 dark:bg-slate-900/70 dark:text-slate-200",
-              collapsed && "pointer-events-none opacity-0",
-            )}
-            aria-label="Collapse navigation"
-          >
-            <ChevronLeft className="h-4 w-4" aria-hidden />
-          </button>
-        </div>
-
-        <nav
-          className={cn(
-            "max-h-[70vh] space-y-1 overflow-y-auto pr-1 transition-all duration-700",
-            collapsed && "pr-0",
-          )}
-        >
-          {navItems.map((item) => (
-            <TabLink key={item.to} collapsed={collapsed} {...item} />
-          ))}
-        </nav>
-
-        <div
-          className={cn(
-            "space-y-3 border-t border-white/50 pt-3 text-sm transition-all duration-700 dark:border-slate-800/60",
-            collapsed && "border-transparent pt-2",
-          )}
-        >
-          <button
-            type="button"
-            title="Finalize & Clear"
-            onClick={() => {
-              window.dispatchEvent(
-                new CustomEvent("recipe:action", {
-                  detail: { type: "finalizeImport" },
-                }),
-              );
-            }}
-            className={cn(
-              "flex w-full items-center rounded-md bg-white/70 px-3 py-2 font-medium text-foreground shadow-sm transition duration-300 hover:bg-white dark:bg-slate-900/80 dark:hover:bg-slate-900",
-              collapsed ? "justify-center px-2" : "justify-between",
-            )}
-          >
-            <span aria-hidden={collapsed} className={textClass("text-sm font-medium")}>
-              Finalize & Clear
-            </span>
-            <Save className="h-4 w-4" aria-hidden />
-          </button>
-          <button
-            type="button"
-            title="Help & Shortcuts"
-            onClick={() => setShowHelp(true)}
-            className={cn(
-              "flex w-full items-center rounded-md px-3 py-2 font-medium text-foreground transition duration-300 hover:bg-white/70 dark:hover:bg-slate-900/70",
-              collapsed ? "justify-center px-2" : "justify-between",
-            )}
-          >
-            <span aria-hidden={collapsed} className={textClass("text-sm font-medium")}>
-              Help & Shortcuts
-            </span>
-            <HelpCircle className="h-4 w-4" aria-hidden />
-          </button>
-
-          {!collapsed && isAdd && (
-            <div className="rounded-lg border border-white/40 bg-white/60 p-3 text-xs text-muted-foreground shadow-sm dark:border-slate-800/60 dark:bg-slate-900/70">
-              <div className="mb-2 text-sm font-semibold text-foreground">
-                Add Recipe Tools
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() =>
-                    window.dispatchEvent(
-                      new CustomEvent("recipe:action", {
-                        detail: { type: "convertUnits" },
-                      }),
-                    )
-                  }
-                  className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
-                >
-                  Convert Units
-                </button>
-                <button
-                  onClick={() =>
-                    window.dispatchEvent(
-                      new CustomEvent("recipe:action", {
-                        detail: { type: "saveVersion" },
-                      }),
-                    )
-                  }
-                  className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
-                >
-                  Save Snapshot
-                </button>
-                <button
-                  onClick={() =>
-                    window.dispatchEvent(
-                      new CustomEvent("recipe:action", {
-                        detail: { type: "convertUnits" },
-                      }),
-                    )
-                  }
-                  className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
-                >
-                  Alt Units
-                </button>
-                <button
-                  onClick={() =>
-                    window.dispatchEvent(
-                      new CustomEvent("recipe:action", {
-                        detail: { type: "cycleCurrency" },
-                      }),
-                    )
-                  }
-                  className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
-                >
-                  Currency
-                </button>
-                <button
-                  onClick={() =>
-                    window.dispatchEvent(
-                      new CustomEvent("recipe:action", {
-                        detail: { type: "openYieldLab" },
-                      }),
-                    )
-                  }
-                  className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
-                >
-                  Yield Lab
-                </button>
-              </div>
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2F3daeec161e9e466b9f19d163a3c58f71?format=webp&width=240"
+                alt="Echo Recipe Pro"
+                className="h-7 w-auto"
+              />
+              <span
+                aria-hidden={collapsed}
+                className={textClass(
+                  "text-xs font-semibold uppercase tracking-widest text-muted-foreground",
+                )}
+              >
+                Echo Recipe Pro
+              </span>
             </div>
-          )}
+            <button
+              type="button"
+              onClick={() => {
+                setCollapsed(true);
+              }}
+              className={cn(
+                "rounded-full border border-white/40 bg-white/70 p-2 text-muted-foreground shadow-sm transition duration-300 hover:bg-white dark:border-slate-700/60 dark:bg-slate-900/70 dark:text-slate-200",
+                collapsed && "pointer-events-none opacity-0",
+              )}
+              aria-label="Collapse navigation"
+            >
+              <ChevronLeft className="h-4 w-4" aria-hidden />
+            </button>
+          </div>
+
+          <nav
+            className={cn(
+              "max-h-[70vh] space-y-1 overflow-y-auto pr-1 transition-all duration-700",
+              collapsed && "pr-0",
+            )}
+          >
+            {navItems.map((item) => (
+              <TabLink key={item.to} collapsed={collapsed} {...item} />
+            ))}
+          </nav>
 
           <div
             className={cn(
-              "flex items-center justify-between rounded-md bg-white/60 px-3 py-2 text-sm font-medium text-foreground shadow-sm transition-all duration-700 dark:bg-slate-900/70",
-              collapsed && "flex-col gap-2 px-2 py-2",
+              "space-y-3 border-t border-white/50 pt-3 text-sm transition-all duration-700 dark:border-slate-800/60",
+              collapsed && "border-transparent pt-2",
             )}
           >
-            <span aria-hidden={collapsed} className={textClass("text-sm font-medium")}> 
-              Theme
-            </span>
-            <ThemeToggle />
-          </div>
-        </div>
+            <button
+              type="button"
+              title="Finalize & Clear"
+              onClick={() => {
+                window.dispatchEvent(
+                  new CustomEvent("recipe:action", {
+                    detail: { type: "finalizeImport" },
+                  }),
+                );
+              }}
+              className={cn(
+                "flex w-full items-center rounded-md bg-white/70 px-3 py-2 font-medium text-foreground shadow-sm transition duration-300 hover:bg-white dark:bg-slate-900/80 dark:hover:bg-slate-900",
+                collapsed ? "justify-center px-2" : "justify-between",
+              )}
+            >
+              <span aria-hidden={collapsed} className={textClass("text-sm font-medium")}>
+                Finalize & Clear
+              </span>
+              <Save className="h-4 w-4" aria-hidden />
+            </button>
+            <button
+              type="button"
+              title="Help & Shortcuts"
+              onClick={() => setShowHelp(true)}
+              className={cn(
+                "flex w-full items-center rounded-md px-3 py-2 font-medium text-foreground transition duration-300 hover:bg-white/70 dark:hover:bg-slate-900/70",
+                collapsed ? "justify-center px-2" : "justify-between",
+              )}
+            >
+              <span aria-hidden={collapsed} className={textClass("text-sm font-medium")}>
+                Help & Shortcuts
+              </span>
+              <HelpCircle className="h-4 w-4" aria-hidden />
+            </button>
 
-        <button
-          type="button"
-          onClick={() => setCollapsed(false)}
-          className={cn(
-            "absolute right-[-14px] top-1/2 flex h-10 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-white/60 bg-white/80 text-muted-foreground shadow-lg transition duration-300 hover:bg-white dark:border-slate-800/70 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-900",
-            collapsed ? "opacity-100" : "pointer-events-none opacity-0",
-          )}
-          aria-label="Expand navigation"
-        >
-          <ChevronRight className="h-4 w-4" aria-hidden />
-        </button>
+            {!collapsed && isAdd && (
+              <div className="rounded-lg border border-white/40 bg-white/60 p-3 text-xs text-muted-foreground shadow-sm dark:border-slate-800/60 dark:bg-slate-900/70">
+                <div className="mb-2 text-sm font-semibold text-foreground">
+                  Add Recipe Tools
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() =>
+                      window.dispatchEvent(
+                        new CustomEvent("recipe:action", {
+                          detail: { type: "convertUnits" },
+                        }),
+                      )
+                    }
+                    className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
+                  >
+                    Convert Units
+                  </button>
+                  <button
+                    onClick={() =>
+                      window.dispatchEvent(
+                        new CustomEvent("recipe:action", {
+                          detail: { type: "saveVersion" },
+                        }),
+                      )
+                    }
+                    className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
+                  >
+                    Save Snapshot
+                  </button>
+                  <button
+                    onClick={() =>
+                      window.dispatchEvent(
+                        new CustomEvent("recipe:action", {
+                          detail: { type: "convertUnits" },
+                        }),
+                      )
+                    }
+                    className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
+                  >
+                    Alt Units
+                  </button>
+                  <button
+                    onClick={() =>
+                      window.dispatchEvent(
+                        new CustomEvent("recipe:action", {
+                          detail: { type: "cycleCurrency" },
+                        }),
+                      )
+                    }
+                    className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hoverbg-slate-900/70"
+                  >
+                    Currency
+                  </button>
+                  <button
+                    onClick={() =>
+                      window.dispatchEvent(
+                        new CustomEvent("recipe:action", {
+                          detail: { type: "openYieldLab" },
+                        }),
+                      )
+                    }
+                    className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
+                  >
+                    Yield Lab
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div
+              className={cn(
+                "flex items-center justify-between rounded-md bg-white/60 px-3 py-2 text-sm font-medium text-foreground shadow-sm transition-all duration-700 dark:bg-slate-900/70",
+                collapsed && "flex-col gap-2 px-2 py-2",
+              )}
+            >
+              <span aria-hidden={collapsed} className={textClass("text-sm font-medium")}>
+                Theme
+              </span>
+              <ThemeToggle />
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setCollapsed(false)}
+            className={cn(
+              "absolute right-[-14px] top-1/2 flex h-10 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-white/60 bg-white/80 text-muted-foreground shadow-lg transition duration-300 hover:bg-white dark:border-slate-800/70 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-900",
+              collapsed ? "opacity-100" : "pointer-events-none opacity-0",
+            )}
+            aria-label="Expand navigation"
+          >
+            <ChevronRight className="h-4 w-4" aria-hidden />
+          </button>
+        </div>
       </aside>
 
       <Dialog open={showHelp} onOpenChange={setShowHelp}>
