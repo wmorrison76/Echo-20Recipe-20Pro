@@ -157,6 +157,42 @@ const roadmapSections = [
 ];
 
 export default function SaasRoadmapSection() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const suites = useMemo(
+    () => [
+      {
+        value: "inventory",
+        label: "Inventory & Supplies",
+        content: <InventorySuppliesWorkspace />,
+      },
+      {
+        value: "nutrition",
+        label: "Nutrition/Allergens",
+        content: <NutritionAllergensWorkspace />,
+      },
+      {
+        value: "haccp",
+        label: "HACCP/Compliance",
+        content: <HaccpComplianceWorkspace />,
+      },
+    ],
+    [],
+  );
+
+  const suiteParam = searchParams.get("suite");
+  const activeSuite = suites.some((suite) => suite.value === suiteParam)
+    ? (suiteParam as string)
+    : suites[0]!.value;
+
+  const handleSuiteChange = (value: string) => {
+    const next = new URLSearchParams(searchParams);
+    if (!next.get("tab")) {
+      next.set("tab", "saas");
+    }
+    next.set("suite", value);
+    setSearchParams(next, { replace: true });
+  };
+
   return (
     <div className="container mx-auto space-y-6 px-4 py-4">
       <div className="rounded-xl border bg-white/95 p-3 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15">
@@ -164,37 +200,36 @@ export default function SaasRoadmapSection() {
         <div className="text-base font-semibold">Capabilities</div>
       </div>
 
-      <div className="rounded-xl border bg-white/95 p-4 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15">
-        <div className="mb-4 space-y-1">
-          <div className="text-sm font-semibold">Operational suites</div>
-          <p className="text-xs text-muted-foreground">
-            These modules are fully coded and wired into the production
-            experience.
-          </p>
+      <Tabs value={activeSuite} onValueChange={handleSuiteChange} className="space-y-4">
+        <div className="rounded-xl border bg-white/95 p-4 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="space-y-1">
+              <div className="text-sm font-semibold">Operational suites</div>
+              <p className="text-xs text-muted-foreground">
+                These modules are fully coded and wired into the production
+                experience.
+              </p>
+            </div>
+            <TabsList className="flex flex-wrap gap-1 rounded-lg bg-muted p-1">
+              {suites.map((suite) => (
+                <TabsTrigger key={suite.value} value={suite.value} className="text-xs">
+                  {suite.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
         </div>
-        <Tabs defaultValue="inventory" className="w-full">
-          <TabsList className="flex flex-wrap gap-1 rounded-lg bg-muted p-1">
-            <TabsTrigger value="inventory" className="text-xs">
-              Inventory &amp; Supplies
-            </TabsTrigger>
-            <TabsTrigger value="nutrition" className="text-xs">
-              Nutrition/Allergens
-            </TabsTrigger>
-            <TabsTrigger value="haccp" className="text-xs">
-              HACCP/Compliance
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="inventory" className="mt-4">
-            <InventorySuppliesWorkspace />
+
+        {suites.map((suite) => (
+          <TabsContent
+            key={suite.value}
+            value={suite.value}
+            className="rounded-xl border bg-white/95 p-2 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15"
+          >
+            {suite.content}
           </TabsContent>
-          <TabsContent value="nutrition" className="mt-4">
-            <NutritionAllergensWorkspace />
-          </TabsContent>
-          <TabsContent value="haccp" className="mt-4">
-            <HaccpComplianceWorkspace />
-          </TabsContent>
-        </Tabs>
-      </div>
+        ))}
+      </Tabs>
 
       {roadmapSections.length ? (
         <div className="rounded-xl border bg-white/95 p-4 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15">
