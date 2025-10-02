@@ -202,7 +202,7 @@ export function RecipeSelection({
                         <div className="space-y-2">
                           <Label
                             htmlFor={`wine-${entry.recipe.id}`}
-                            className="flex items-center gap-2 text-xs"
+                            className="flex items-center gap-1.5 text-[11px]"
                           >
                             <Wine className="h-3.5 w-3.5" /> Wine Pairing &
                             Selection
