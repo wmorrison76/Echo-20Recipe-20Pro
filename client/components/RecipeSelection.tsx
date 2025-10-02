@@ -158,7 +158,7 @@ export function RecipeSelection({
                       "https://cdn.builder.io/api/v1/image/assets%2Fplaceholder"
                     }
                     alt={entry.recipe.title}
-                    className="h-16 w-16 rounded object-cover"
+                    className="h-14 w-14 rounded object-cover"
                   />
                   <div className="min-w-0 flex-1 space-y-1">
                     <div className="flex flex-wrap items-center justify-between gap-2">
