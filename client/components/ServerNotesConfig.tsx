@@ -193,7 +193,7 @@ export function ServerNotesConfig({
                     style={{ background: scheme.accent }}
                   />
                 </div>
-                <div className="mt-2 text-sm font-medium leading-tight">
+                <div className="mt-2 text-[13px] font-medium leading-tight">
                   {scheme.name}
                 </div>
               </button>
