@@ -335,7 +335,9 @@ export function ServerNotesConfig({
         <CardContent className="space-y-3.5 px-4 pb-4 pt-0">
           <div className="grid gap-2.5 md:grid-cols-2">
             <div className="space-y-1">
-              <Label htmlFor="company-name">Company Name</Label>
+              <Label htmlFor="company-name" className="text-xs">
+                Company Name
+              </Label>
               <Input
                 id="company-name"
                 value={config.companyName}
