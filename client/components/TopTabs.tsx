@@ -30,8 +30,8 @@ const navItems: { to: string; label: string; icon: LucideIcon }[] = [
   { to: "/?tab=server-notes", label: "SERVER NOTES", icon: ClipboardList },
   { to: "/?tab=production", label: "PRODUCTION", icon: Factory },
   { to: "/?tab=saas", label: "SaaS", icon: Sparkles },
-  { to: "/?tab=inventory", label: "Inventory & Supplies", icon: Sprout },
-  { to: "/?tab=nutrition", label: "Nutrition/Allergens", icon: ShieldCheck },
+  { to: "/?tab=inventory", label: "Inventory & Supplies", icon: Boxes },
+  { to: "/?tab=nutrition", label: "Nutrition/Allergens", icon: Sprout },
   { to: "/?tab=haccp", label: "HACCP/Compliance", icon: ShieldCheck },
   { to: "/?tab=gallery", label: "Gallery", icon: Images },
 ];
