@@ -201,7 +201,7 @@ export function ServerNotesConfig({
           </div>
 
           <div
-            className={`rounded-lg border p-4 ${usingCustom ? "border-primary bg-primary/5" : "border-muted"}`}
+            className={`rounded-lg border p-3.5 ${usingCustom ? "border-primary bg-primary/5" : "border-muted"}`}
           >
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="text-sm font-semibold">Custom Palette</div>
