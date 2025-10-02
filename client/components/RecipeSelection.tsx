@@ -312,9 +312,9 @@ export function RecipeSelection({
 
       <Card>
         <CardHeader className="space-y-2 px-3.5 py-3">
-          <CardTitle className="flex flex-wrap items-center justify-between gap-3">
-            <span>Available Recipes</span>
-            <div className="flex flex-wrap items-center gap-1.5">
+          <CardTitle className="flex flex-wrap items-center justify-between gap-3 text-sm">
+            <span className="font-medium">Available Recipes</span>
+            <div className="flex flex-wrap items-center gap-1.5 text-[12px]">
               <Input
                 placeholder="Search recipes, tags, notes..."
                 value={search}
