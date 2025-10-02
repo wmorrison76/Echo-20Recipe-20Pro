@@ -123,7 +123,7 @@ export function ServerNotesConfig({
                     event.key === "Enter" && handleLayoutChange(preset)
                   }
                 >
-                  <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-start justify-between gap-1.5">
                     <div>
                       <h4 className="text-sm font-semibold leading-tight">
                         {preset.name}
