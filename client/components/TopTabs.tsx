@@ -1,4 +1,20 @@
 import * as React from "react";
+import type { LucideIcon } from "lucide-react";
+import {
+  BookOpenCheck,
+  ClipboardList,
+  Factory,
+  HelpCircle,
+  Images,
+  Menu,
+  PanelLeftClose,
+  PanelRightOpen,
+  PenSquare,
+  ShieldCheck,
+  Sparkles,
+  Sprout,
+  Save,
+} from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import {
@@ -7,21 +23,26 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { HelpCircle, Save } from "lucide-react";
 
-const navItems = [
-  { to: "/?tab=search", label: "RECIPES" },
-  { to: "/?tab=add-recipe", label: "ADD RECIPE" },
-  { to: "/?tab=server-notes", label: "SERVER NOTES" },
-  { to: "/?tab=production", label: "PRODUCTION" },
-  { to: "/?tab=saas", label: "SaaS" },
-  { to: "/?tab=inventory", label: "Inventory & Supplies" },
-  { to: "/?tab=nutrition", label: "Nutrition/Allergens" },
-  { to: "/?tab=haccp", label: "HACCP/Compliance" },
-  { to: "/?tab=gallery", label: "Gallery" },
-] as const;
+const navItems: { to: string; label: string; icon: LucideIcon }[] = [
+  { to: "/?tab=search", label: "RECIPES", icon: BookOpenCheck },
+  { to: "/?tab=add-recipe", label: "ADD RECIPE", icon: PenSquare },
+  { to: "/?tab=server-notes", label: "SERVER NOTES", icon: ClipboardList },
+  { to: "/?tab=production", label: "PRODUCTION", icon: Factory },
+  { to: "/?tab=saas", label: "SaaS", icon: Sparkles },
+  { to: "/?tab=inventory", label: "Inventory & Supplies", icon: Sprout },
+  { to: "/?tab=nutrition", label: "Nutrition/Allergens", icon: ShieldCheck },
+  { to: "/?tab=haccp", label: "HACCP/Compliance", icon: ShieldCheck },
+  { to: "/?tab=gallery", label: "Gallery", icon: Images },
+];
 
-function TabLink({ to, label }: { to: string; label: string }) {
+type TabLinkProps = {
+  to: string;
+  label: string;
+  icon: LucideIcon;
+};
+
+function TabLink({ to, label, icon: Icon }: TabLinkProps) {
   const loc = useLocation();
   const active = new URLSearchParams(loc.search).get("tab") ?? "search";
   const value = new URLSearchParams(to.split("?")[1] || "").get("tab") || "";
@@ -30,12 +51,13 @@ function TabLink({ to, label }: { to: string; label: string }) {
   return (
     <Link
       to={to}
-      className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition ${
+      className={`flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition ${
         isActive
           ? "bg-primary text-primary-foreground shadow"
           : "text-foreground/75 hover:bg-muted hover:text-foreground"
       }`}
     >
+      <Icon className="h-4 w-4 flex-shrink-0" aria-hidden />
       <span className="truncate">{label}</span>
     </Link>
   );
@@ -43,132 +65,153 @@ function TabLink({ to, label }: { to: string; label: string }) {
 
 export default function TopTabs() {
   const location = useLocation();
+  const [open, setOpen] = React.useState(true);
   const [showHelp, setShowHelp] = React.useState(false);
   const isAdd = new URLSearchParams(location.search).get("tab") === "add-recipe";
 
+  const togglePanel = () => {
+    setOpen((prev) => !prev);
+    setShowHelp(false);
+  };
+
   return (
-    <aside className="flex h-full min-h-screen w-64 flex-col border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      <div className="flex items-center gap-2 border-b px-4 py-4">
-        <a href="/?tab=search" className="flex items-center gap-2" aria-label="Home">
-          <img
-            src="https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2F3daeec161e9e466b9f19d163a3c58f71?format=webp&width=360"
-            alt="Echo Recipe Pro"
-            className="h-9"
-          />
-          <span className="sr-only">Echo Recipe Pro</span>
-        </a>
-      </div>
-
-      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-        {navItems.map((item) => (
-          <TabLink key={item.to} to={item.to} label={item.label} />
-        ))}
-      </nav>
-
-      <div className="space-y-3 border-t px-3 py-4">
-        <button
-          title="Finalize & Clear"
-          onClick={() => {
-            window.dispatchEvent(
-              new CustomEvent("recipe:action", {
-                detail: { type: "finalizeImport" },
-              }),
-            );
-          }}
-          className="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium text-foreground transition hover:bg-muted"
-        >
-          <span>Finalize & Clear</span>
-          <Save className="h-4 w-4" />
-        </button>
-        <button
-          title="Help"
-          onClick={() => setShowHelp(true)}
-          className="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium text-foreground transition hover:bg-muted"
-        >
-          <span>Help & Shortcuts</span>
-          <HelpCircle className="h-4 w-4" />
-        </button>
-
-        {isAdd && (
-          <div className="rounded-md border bg-muted/40 p-3 text-xs text-muted-foreground">
-            <div className="mb-2 text-sm font-semibold text-foreground">
-              Add Recipe Tools
+    <>
+      {open && (
+        <aside className="fixed left-4 top-4 z-[1000] w-64 space-y-4 rounded-2xl border border-white/50 bg-white/70 p-4 shadow-[0_20px_45px_rgba(15,23,42,0.2)] backdrop-blur-xl transition dark:border-slate-800/80 dark:bg-slate-950/75 dark:shadow-[0_0_30px_rgba(56,189,248,0.28)]">
+          <div className="flex items-center justify-between">
+            <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              Echo Recipe Pro
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                title="Convert Units"
-                onClick={() =>
-                  window.dispatchEvent(
-                    new CustomEvent("recipe:action", {
-                      detail: { type: "convertUnits" },
-                    }),
-                  )
-                }
-                className="rounded border px-2 py-1 font-medium text-foreground transition hover:bg-muted"
-              >
-                Convert Units
-              </button>
-              <button
-                title="Save Snapshot"
-                onClick={() =>
-                  window.dispatchEvent(
-                    new CustomEvent("recipe:action", {
-                      detail: { type: "saveVersion" },
-                    }),
-                  )
-                }
-                className="rounded border px-2 py-1 font-medium text-foreground transition hover:bg-muted"
-              >
-                Save Snapshot
-              </button>
-              <button
-                title="Alt Units"
-                onClick={() =>
-                  window.dispatchEvent(
-                    new CustomEvent("recipe:action", {
-                      detail: { type: "convertUnits" },
-                    }),
-                  )
-                }
-                className="rounded border px-2 py-1 font-medium text-foreground transition hover:bg-muted"
-              >
-                Alt Units
-              </button>
-              <button
-                title="Currency"
-                onClick={() =>
-                  window.dispatchEvent(
-                    new CustomEvent("recipe:action", {
-                      detail: { type: "cycleCurrency" },
-                    }),
-                  )
-                }
-                className="rounded border px-2 py-1 font-medium text-foreground transition hover:bg-muted"
-              >
-                Currency
-              </button>
-              <button
-                title="R&D Labs (Yield Lab)"
-                onClick={() =>
-                  window.dispatchEvent(
-                    new CustomEvent("recipe:action", {
-                      detail: { type: "openYieldLab" },
-                    }),
-                  )
-                }
-                className="rounded border px-2 py-1 font-medium text-foreground transition hover:bg-muted"
-              >
-                Yield Lab
-              </button>
+            <button
+              onClick={togglePanel}
+              className="rounded-full border border-white/40 bg-white/70 p-2 text-muted-foreground shadow-sm transition hover:bg-white dark:border-slate-700/60 dark:bg-slate-900/70 dark:text-slate-200"
+              aria-label="Collapse navigation"
+            >
+              <PanelLeftClose className="h-4 w-4" aria-hidden />
+            </button>
+          </div>
+
+          <nav className="max-h-[70vh] space-y-1 overflow-y-auto pr-1">
+            {navItems.map((item) => (
+              <TabLink key={item.to} {...item} />
+            ))}
+          </nav>
+
+          <div className="space-y-3 border-t border-white/50 pt-3 text-sm dark:border-slate-800/60">
+            <button
+              title="Finalize & Clear"
+              onClick={() => {
+                window.dispatchEvent(
+                  new CustomEvent("recipe:action", {
+                    detail: { type: "finalizeImport" },
+                  }),
+                );
+              }}
+              className="flex w-full items-center justify-between rounded-md bg-white/70 px-3 py-2 font-medium text-foreground shadow-sm transition hover:bg-white dark:bg-slate-900/80 dark:hover:bg-slate-900"
+            >
+              <span>Finalize & Clear</span>
+              <Save className="h-4 w-4" aria-hidden />
+            </button>
+            <button
+              title="Help"
+              onClick={() => setShowHelp(true)}
+              className="flex w-full items-center justify-between rounded-md px-3 py-2 font-medium text-foreground transition hover:bg-white/70 dark:hover:bg-slate-900/70"
+            >
+              <span>Help & Shortcuts</span>
+              <HelpCircle className="h-4 w-4" aria-hidden />
+            </button>
+
+            {isAdd && (
+              <div className="rounded-lg border border-white/40 bg-white/60 p-3 text-xs text-muted-foreground shadow-sm dark:border-slate-800/60 dark:bg-slate-900/70">
+                <div className="mb-2 text-sm font-semibold text-foreground">
+                  Add Recipe Tools
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() =>
+                      window.dispatchEvent(
+                        new CustomEvent("recipe:action", {
+                          detail: { type: "convertUnits" },
+                        }),
+                      )
+                    }
+                    className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
+                  >
+                    Convert Units
+                  </button>
+                  <button
+                    onClick={() =>
+                      window.dispatchEvent(
+                        new CustomEvent("recipe:action", {
+                          detail: { type: "saveVersion" },
+                        }),
+                      )
+                    }
+                    className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
+                  >
+                    Save Snapshot
+                  </button>
+                  <button
+                    onClick={() =>
+                      window.dispatchEvent(
+                        new CustomEvent("recipe:action", {
+                          detail: { type: "convertUnits" },
+                        }),
+                      )
+                    }
+                    className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
+                  >
+                    Alt Units
+                  </button>
+                  <button
+                    onClick={() =>
+                      window.dispatchEvent(
+                        new CustomEvent("recipe:action", {
+                          detail: { type: "cycleCurrency" },
+                        }),
+                      )
+                    }
+                    className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
+                  >
+                    Currency
+                  </button>
+                  <button
+                    onClick={() =>
+                      window.dispatchEvent(
+                        new CustomEvent("recipe:action", {
+                          detail: { type: "openYieldLab" },
+                        }),
+                      )
+                    }
+                    className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
+                  >
+                    Yield Lab
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between rounded-md bg-white/60 px-3 py-2 text-sm font-medium text-foreground shadow-sm dark:bg-slate-900/70">
+              <span>Theme</span>
+              <ThemeToggle />
             </div>
           </div>
-        )}
+        </aside>
+      )}
 
-        <div className="flex items-center justify-between rounded-md bg-muted/60 px-3 py-2">
-          <span className="text-sm font-medium">Theme</span>
-          <ThemeToggle />
-        </div>
-      </div>
+      <button
+        onClick={togglePanel}
+        className={`fixed left-4 top-4 z-[1001] rounded-full border border-white/60 bg-white/80 p-3 text-foreground shadow-lg backdrop-blur-md transition hover:bg-white dark:border-slate-800/70 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-900 ${
+          open ? "translate-x-[260px]" : ""`
+        }`}
+        aria-label={open ? "Hide navigation" : "Show navigation"}
+      >
+        {open ? (
+          <PanelRightOpen className="h-5 w-5" aria-hidden />
+        ) : (
+          <Menu className="h-5 w-5" aria-hidden />
+        )}
+      </button>
 
       <Dialog open={showHelp} onOpenChange={setShowHelp}>
         <DialogContent className="max-w-2xl">
@@ -234,6 +277,6 @@ export default function TopTabs() {
           </div>
         </DialogContent>
       </Dialog>
-    </aside>
+    </>
   );
 }
