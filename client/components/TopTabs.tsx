@@ -78,9 +78,16 @@ export default function TopTabs() {
     <>
       {open && (
         <aside className="fixed left-4 top-4 z-[1000] w-64 space-y-4 rounded-2xl border border-white/50 bg-white/70 p-4 shadow-[0_20px_45px_rgba(15,23,42,0.2)] backdrop-blur-xl transition dark:border-slate-800/80 dark:bg-slate-950/75 dark:shadow-[0_0_30px_rgba(56,189,248,0.28)]">
-          <div className="flex items-center justify-between">
-            <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Echo Recipe Pro
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2F3daeec161e9e466b9f19d163a3c58f71?format=webp&width=240"
+                alt="Echo Recipe Pro"
+                className="h-7 w-auto"
+              />
+              <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                Echo Recipe Pro
+              </span>
             </div>
             <button
               onClick={togglePanel}
