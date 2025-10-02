@@ -286,7 +286,7 @@ export default function TopTabs() {
                         }),
                       )
                     }
-                    className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hoverbg-slate-900/70"
+                    className="rounded border border-white/40 px-2 py-1 font-medium text-foreground transition hover:bg-white/70 dark:border-slate-700/60 dark:hover:bg-slate-900/70"
                   >
                     Currency
                   </button>
