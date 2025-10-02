@@ -204,7 +204,7 @@ export function RecipeSelection({
                             htmlFor={`wine-${entry.recipe.id}`}
                             className="flex items-center gap-1.5 text-[11px]"
                           >
-                            <Wine className="h-3.5 w-3.5" /> Wine Pairing &
+                            <Wine className="h-3 w-3" /> Wine Pairing &
                             Selection
                           </Label>
                           <Textarea
