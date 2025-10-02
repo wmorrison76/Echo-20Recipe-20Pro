@@ -408,10 +408,10 @@ export function RecipeSelection({
                     </div>
                     <div className="min-w-0 flex-1 space-y-2">
                       <div className="min-w-0">
-                        <h4 className="truncate text-sm font-semibold">
+                        <h4 className="truncate text-[13px] font-semibold">
                           {recipe.title}
                         </h4>
-                        <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+                        <p className="mt-0.5 line-clamp-2 text-[11px] text-muted-foreground">
                           {recipe.description}
                         </p>
                       </div>
