@@ -316,7 +316,7 @@ export function RecipeSelection({
                 placeholder="Search recipes, tags, notes..."
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                className="h-9 w-full min-w-[200px] md:w-64"
+                className="h-9 w-full min-w-[200px] md:w-60"
               />
               <select
                 value={filterCourse}
