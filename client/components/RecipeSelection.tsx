@@ -138,7 +138,7 @@ export function RecipeSelection({
                       disabled={index === 0}
                       aria-label="Move up"
                     >
-                      <ArrowUp className="h-3.5 w-3.5" />
+                      <ArrowUp className="h-3 w-3" />
                     </Button>
                     <Button
                       variant="ghost"
