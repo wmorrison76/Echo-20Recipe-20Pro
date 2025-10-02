@@ -145,7 +145,7 @@ export function ServerNotesConfig({
                       Preview
                     </Button>
                   </div>
-                  <div className="mt-4">
+                  <div className="mt-3">
                     <ServerNotesPreview
                       layout={preset}
                       color={config.colorScheme}
