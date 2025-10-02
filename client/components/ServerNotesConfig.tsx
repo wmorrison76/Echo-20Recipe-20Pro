@@ -360,7 +360,7 @@ export function ServerNotesConfig({
           <div className="space-y-1">
             <Label>Restaurant Logos (max 2)</Label>
             <div
-              className={`rounded-lg border-2 border-dashed p-6 text-center transition ${
+              className={`rounded-lg border-2 border-dashed p-5 text-center transition ${
                 dragOver ? "border-primary bg-primary/5" : "border-muted"
               }`}
               onDragOver={(event) => {
