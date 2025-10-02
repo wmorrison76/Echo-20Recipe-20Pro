@@ -472,7 +472,9 @@ export function ServerNotesConfig({
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor="document-notes">Distribution Notes</Label>
+            <Label htmlFor="document-notes" className="text-xs">
+              Distribution Notes
+            </Label>
             <Textarea
               id="document-notes"
               placeholder="Optional notes shared with service team or attachments to include..."
