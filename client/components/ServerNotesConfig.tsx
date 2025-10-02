@@ -459,7 +459,9 @@ export function ServerNotesConfig({
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor="distribution-date">Distribution Date</Label>
+            <Label htmlFor="distribution-date" className="text-xs">
+              Distribution Date
+            </Label>
             <Input
               id="distribution-date"
               type="date"
