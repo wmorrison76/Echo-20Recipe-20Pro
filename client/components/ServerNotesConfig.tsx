@@ -198,7 +198,7 @@ export function ServerNotesConfig({
           <div
             className={`rounded-lg border p-4 ${usingCustom ? "border-primary bg-primary/5" : "border-muted"}`}
           >
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="text-sm font-semibold">Custom Palette</div>
               <Button
                 variant={usingCustom ? "default" : "outline"}
