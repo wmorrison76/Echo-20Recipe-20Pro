@@ -401,9 +401,9 @@ export function RecipeSelection({
                         </div>
                       )}
                     </div>
-                    <div className="flex-1 space-y-2">
-                      <div>
-                        <h4 className="text-sm font-semibold">
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <div className="min-w-0">
+                        <h4 className="truncate text-sm font-semibold">
                           {recipe.title}
                         </h4>
                         <p className="line-clamp-2 text-xs text-muted-foreground">
