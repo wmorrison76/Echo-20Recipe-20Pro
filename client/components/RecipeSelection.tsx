@@ -358,6 +358,7 @@ export function RecipeSelection({
                 <Button
                   variant={view === "list" ? "default" : "outline"}
                   size="icon"
+                  className="h-8 w-8"
                   onClick={() => setView("list")}
                   aria-label="List view"
                 >
