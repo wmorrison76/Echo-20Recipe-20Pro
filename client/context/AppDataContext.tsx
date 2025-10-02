@@ -192,6 +192,27 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       );
     if (images.length > 0 && !onlyOldDemo) return;
 
+    if (seeded || typeof fetch !== "function") {
+      if (images.length === 0 && !seeded) {
+        setImages([
+          {
+            id: uid(),
+            name: "luccca-demo.svg",
+            dataUrl: FALLBACK_GALLERY_IMAGE.dataUrl,
+            createdAt: Date.now(),
+            tags: ["demo", "fallback"],
+            favorite: false,
+            order: 0,
+            type: FALLBACK_GALLERY_IMAGE.mime,
+          },
+        ]);
+        try {
+          localStorage.setItem("gallery:seeded:food:v1", "1");
+        } catch {}
+      }
+      return;
+    }
+
     (async () => {
       try {
         const loadImageFromUrl = async (
