@@ -105,7 +105,7 @@ export function ServerNotesConfig({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
             {availableLayouts.map((preset) => {
               const active = config.layout.id === preset.id;
               return (
@@ -164,7 +164,7 @@ export function ServerNotesConfig({
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid gap-3 md:grid-cols-5">
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
             {colorSchemes.map((scheme) => (
               <button
                 key={scheme.id}
@@ -214,7 +214,7 @@ export function ServerNotesConfig({
                 {usingCustom ? "Active" : "Use Custom"}
               </Button>
             </div>
-            <div className="mt-4 grid gap-3 md:grid-cols-5">
+            <div className="mt-4 grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {(
                 [
                   ["primary", "Primary"],
