@@ -172,7 +172,7 @@ export function ServerNotesConfig({
               <button
                 key={scheme.id}
                 type="button"
-                className={`w-full rounded-lg border p-4 text-left transition ${
+                className={`w-full rounded-lg border p-3.5 text-left transition ${
                   config.colorScheme.id === scheme.id
                     ? "border-primary bg-primary/5"
                     : "border-muted hover:border-primary/40"
