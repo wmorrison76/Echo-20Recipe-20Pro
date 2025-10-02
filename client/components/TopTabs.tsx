@@ -192,11 +192,11 @@ export default function TopTabs() {
               );
             }}
             className={cn(
-            "flex w-full items-center rounded-md bg-white/70 px-3 py-2 font-medium text-foreground shadow-sm transition duration-300 hover:bg-white dark:bg-slate-900/80 dark:hover:bg-slate-900",
+              "flex w-full items-center rounded-md bg-white/70 px-3 py-2 font-medium text-foreground shadow-sm transition duration-300 hover:bg-white dark:bg-slate-900/80 dark:hover:bg-slate-900",
               collapsed ? "justify-center px-2" : "justify-between",
             )}
           >
-            <span aria-hidden={collapsed} className={textClass("text-sm font-medium")}> 
+            <span aria-hidden={collapsed} className={textClass("text-sm font-medium")}>
               Finalize & Clear
             </span>
             <Save className="h-4 w-4" aria-hidden />
@@ -206,11 +206,11 @@ export default function TopTabs() {
             title="Help & Shortcuts"
             onClick={() => setShowHelp(true)}
             className={cn(
-            "flex w-full items-center rounded-md px-3 py-2 font-medium text-foreground transition duration-300 hover:bg-white/70 dark:hover:bg-slate-900/70",
+              "flex w-full items-center rounded-md px-3 py-2 font-medium text-foreground transition duration-300 hover:bg-white/70 dark:hover:bg-slate-900/70",
               collapsed ? "justify-center px-2" : "justify-between",
             )}
           >
-            <span aria-hidden={collapsed} className={textClass("text-sm font-medium")}> 
+            <span aria-hidden={collapsed} className={textClass("text-sm font-medium")}>
               Help & Shortcuts
             </span>
             <HelpCircle className="h-4 w-4" aria-hidden />
