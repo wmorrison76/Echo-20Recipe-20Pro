@@ -160,10 +160,10 @@ export function RecipeSelection({
                     alt={entry.recipe.title}
                     className="h-16 w-16 rounded object-cover"
                   />
-                  <div className="flex-1 space-y-1">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="text-sm font-medium">
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="min-w-0">
+                        <h4 className="truncate text-sm font-medium">
                           {entry.recipe.title}
                         </h4>
                         <p className="text-xs text-muted-foreground">
