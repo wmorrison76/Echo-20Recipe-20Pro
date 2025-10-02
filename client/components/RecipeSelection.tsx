@@ -363,12 +363,12 @@ export function RecipeSelection({
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent className="px-4 pb-4 pt-0">
+        <CardContent className="px-3.5 pb-3.5 pt-0">
           <div
             className={
               view === "grid"
-                ? "grid gap-3.5 sm:grid-cols-2 2xl:grid-cols-3"
-                : "grid gap-3.5"
+                ? "grid gap-3 sm:grid-cols-2 2xl:grid-cols-3"
+                : "grid gap-3"
             }
           >
             {filteredRecipes.map((recipe) => {
