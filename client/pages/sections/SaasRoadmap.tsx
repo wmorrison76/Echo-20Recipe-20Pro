@@ -174,42 +174,6 @@ const roadmapSections = [
 ];
 
 export default function SaasRoadmapSection() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const suites = useMemo(
-    () => [
-      {
-        value: "inventory",
-        label: "Inventory & Supplies",
-        content: <InventorySuppliesWorkspace />,
-      },
-      {
-        value: "nutrition",
-        label: "Nutrition/Allergens",
-        content: <NutritionAllergensWorkspace />,
-      },
-      {
-        value: "haccp",
-        label: "HACCP/Compliance",
-        content: <HaccpComplianceWorkspace />,
-      },
-    ],
-    [],
-  );
-
-  const suiteParam = searchParams.get("suite");
-  const activeSuite = suites.some((suite) => suite.value === suiteParam)
-    ? (suiteParam as string)
-    : suites[0]!.value;
-
-  const handleSuiteChange = (value: string) => {
-    const next = new URLSearchParams(searchParams);
-    if (!next.get("tab")) {
-      next.set("tab", "saas");
-    }
-    next.set("suite", value);
-    setSearchParams(next, { replace: true });
-  };
-
   return (
     <div className="container mx-auto space-y-6 px-4 py-4">
       <div className="rounded-xl border bg-white/95 p-3 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15">
