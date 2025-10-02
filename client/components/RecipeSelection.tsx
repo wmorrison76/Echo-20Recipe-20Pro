@@ -148,7 +148,7 @@ export function RecipeSelection({
                       disabled={index === selectedRecipes.length - 1}
                       aria-label="Move down"
                     >
-                      <ArrowDown className="h-3.5 w-3.5" />
+                      <ArrowDown className="h-3 w-3" />
                     </Button>
                   </div>
                   <img
