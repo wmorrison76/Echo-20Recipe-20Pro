@@ -34,6 +34,13 @@ export type LookBook = {
   createdAt: number;
 };
 
+const FALLBACK_GALLERY_IMAGE: { dataUrl: string; mime: string } = {
+  dataUrl: `data:image/svg+xml,${encodeURIComponent(
+    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 400'><defs><linearGradient id='g' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='#4A8BFF'/><stop offset='100%' stop-color='#9A6BFF'/></linearGradient></defs><rect width='600' height='400' rx='40' fill='url(#g)'/><rect x='48' y='56' width='504' height='160' rx='28' fill='rgba(255,255,255,0.16)'/><circle cx='120' cy='260' r='36' fill='rgba(255,255,255,0.22)'/><circle cx='200' cy='300' r='52' fill='rgba(255,255,255,0.12)'/><text x='50%' y='55%' font-family=\"Inter,Arial,sans-serif\" font-size='48' font-weight='600' fill='white' text-anchor='middle'>LUCCCA</text></svg>"
+  )}`,
+  mime: "image/svg+xml",
+};
+
 type AppData = {
   recipes: Recipe[];
   images: GalleryImage[];
