@@ -229,8 +229,8 @@ export function ServerNotesConfig({
                   ["text", "Text"],
                 ] as [keyof ColorScheme, string][]
               ).map(([key, label]) => (
-                <div key={key} className="space-y-1 text-xs">
-                  <Label className="leading-snug">{label}</Label>
+                <div key={key} className="space-y-1 text-[11px]">
+                  <Label className="leading-snug text-[11px]">{label}</Label>
                   <div className="flex items-center gap-1.5">
                     <input
                       type="color"
