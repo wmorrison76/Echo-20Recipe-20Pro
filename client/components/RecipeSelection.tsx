@@ -363,7 +363,7 @@ export function RecipeSelection({
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4 pb-4 pt-0">
           <div
             className={
               view === "grid"
