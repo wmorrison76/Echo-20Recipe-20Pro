@@ -185,7 +185,7 @@ export function RecipeSelection({
                           }
                           aria-label="Toggle details"
                         >
-                          <ClipboardList className="h-4 w-4" />
+                          <ClipboardList className="h-3.5 w-3.5" />
                         </Button>
                         <Button
                           variant="ghost"
