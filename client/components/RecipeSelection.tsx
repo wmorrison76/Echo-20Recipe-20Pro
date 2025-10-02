@@ -393,7 +393,7 @@ export function RecipeSelection({
                           "https://cdn.builder.io/api/v1/image/assets%2Fplaceholder"
                         }
                         alt={recipe.title}
-                        className="h-16 w-16 rounded object-cover"
+                        className="h-14 w-14 rounded object-cover"
                       />
                       {isSelected && (
                         <div className="absolute -top-1.5 -right-1.5 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
