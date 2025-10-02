@@ -194,6 +194,32 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
     (async () => {
       try {
+        const loadImageFromUrl = async (
+          url: string,
+        ): Promise<{ dataUrl: string; mime: string } | null> => {
+          if (!url || typeof fetch !== "function") return null;
+          const controller =
+            typeof AbortController !== "undefined" ? new AbortController() : undefined;
+          let timeout: ReturnType<typeof setTimeout> | undefined;
+          try {
+            if (controller) {
+              timeout = setTimeout(() => controller.abort(), 6000);
+            }
+            const response = await fetch(
+              url,
+              controller ? { signal: controller.signal } : undefined,
+            ).catch(() => null);
+            if (timeout) clearTimeout(timeout);
+            if (!response?.ok) return null;
+            const blob = await response.blob();
+            const dataUrl = await dataUrlFromBlob(blob);
+            return { dataUrl, mime: blob.type || "image/jpeg" };
+          } catch {
+            if (timeout) clearTimeout(timeout);
+            return null;
+          }
+        };
+
         const items = [
           {
             name: "pizza.jpg",
@@ -259,22 +285,18 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         const next: GalleryImage[] = [];
         let order = 0;
         for (const it of items) {
-          try {
-            const res = await fetch(it.url);
-            if (!res.ok) continue;
-            const blob = await res.blob();
-            const dataUrl = await dataUrlFromBlob(blob);
-            next.push({
-              id: uid(),
-              name: it.name,
-              dataUrl,
-              createdAt: Date.now(),
-              tags: it.tags,
-              favorite: false,
-              order: order++,
-              type: blob.type || "image/jpeg",
-            });
-          } catch {}
+          const loaded = await loadImageFromUrl(it.url);
+          const payload = loaded ?? FALLBACK_GALLERY_IMAGE;
+          next.push({
+            id: uid(),
+            name: it.name,
+            dataUrl: payload.dataUrl,
+            createdAt: Date.now(),
+            tags: it.tags,
+            favorite: false,
+            order: order++,
+            type: payload.mime,
+          });
         }
         if (!mountedRef.current) return;
         if (onlyOldDemo) setImages([]);
