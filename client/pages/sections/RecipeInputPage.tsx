@@ -114,8 +114,9 @@ const RecipeInputPage = () => {
     "Imperial",
   );
   const [uiLanguage, setUiLanguage] = useState<string>(() => {
+    if (typeof window === "undefined") return "en-US";
     try {
-      return localStorage.getItem("app:language") || "en-US";
+      return window.localStorage.getItem("app:language") || "en-US";
     } catch {
       return "en-US";
     }
@@ -229,7 +230,7 @@ const RecipeInputPage = () => {
     };
     let t = String(s).trim();
     // Expand unicode vulgar fractions
-    t = t.replace(/[¼½¾��⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
+    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
     // Allow forms like "1½" -> "1 1/2"
     t = t.replace(/(\d)\s*(\d\/\d)/, "$1 $2");
     // Mixed fraction
