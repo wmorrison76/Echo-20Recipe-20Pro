@@ -1531,7 +1531,7 @@ const RecipeInputPage = () => {
                     <span
                       className={`font-bold ${isDarkMode ? "text-cyan-300" : "text-black"}`}
                     >
-                      PREP TIME:
+                      {t("recipe.labels.prepTime", "PREP TIME:")}
                     </span>
                     <input
                       value={prepTime}
