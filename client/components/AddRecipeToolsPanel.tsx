@@ -1,3 +1,4 @@
+import LanguageMenu from "./LanguageMenu";
 import { cn } from "@/lib/utils";
 
 export type AddRecipeToolsPanelProps = {
@@ -6,20 +7,25 @@ export type AddRecipeToolsPanelProps = {
   onAltUnits?: () => void;
   onCycleCurrency: () => void;
   onOpenYieldLab: () => void;
+  languageValue: string;
+  onLanguageChange: (code: string) => void;
   isDarkMode?: boolean;
   className?: string;
 };
 
-const tools: { label: string; action: keyof Omit<AddRecipeToolsPanelProps, "isDarkMode" | "className"> }[] = [
-  { label: "Convert Units", action: "onConvertUnits" },
-  { label: "Save Snapshot", action: "onSaveSnapshot" },
-  { label: "Alt Units", action: "onAltUnits" },
-  { label: "Currency", action: "onCycleCurrency" },
-  { label: "Yield Lab", action: "onOpenYieldLab" },
-];
-
 export default function AddRecipeToolsPanel(props: AddRecipeToolsPanelProps) {
-  const { isDarkMode, className, ...handlers } = props;
+  const {
+    onConvertUnits,
+    onSaveSnapshot,
+    onAltUnits,
+    onCycleCurrency,
+    onOpenYieldLab,
+    languageValue,
+    onLanguageChange,
+    isDarkMode,
+    className,
+  } = props;
+
   const cardClasses = cn(
     "rounded-2xl border p-4 shadow-lg transition-colors",
     isDarkMode
@@ -29,29 +35,36 @@ export default function AddRecipeToolsPanel(props: AddRecipeToolsPanelProps) {
   );
 
   const buttonClasses = isDarkMode
-    ? "rounded-lg border border-cyan-400/40 bg-cyan-900/40 px-3 py-2 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-900/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/50 focus-visible:ring-offset-0"
-    : "rounded-lg border border-slate-300 bg-white/85 px-3 py-2 text-sm font-semibold text-slate-800 transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-0";
+    ? "w-full rounded-lg border border-cyan-400/40 bg-cyan-900/40 px-3 py-2 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-900/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/50 focus-visible:ring-offset-0"
+    : "w-full rounded-lg border border-slate-300 bg-white/85 px-3 py-2 text-sm font-semibold text-slate-800 transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-0";
+
+  const renderButton = (label: string, handler: () => void) => (
+    <button type="button" onClick={handler} className={buttonClasses}>
+      {label}
+    </button>
+  );
+
+  const altHandler = onAltUnits ?? onConvertUnits;
 
   return (
     <div className={cardClasses}>
-      <div className="mb-3 text-sm font-semibold uppercase tracking-[0.12em]">
-        Add Recipe Tools
+      <div className="mb-3 flex items-center justify-between">
+        <span className="text-sm font-semibold uppercase tracking-[0.12em]">
+          Add Recipe Tools
+        </span>
       </div>
       <div className="grid grid-cols-2 gap-2">
-        {tools.map((tool) => {
-          const specificHandler = handlers[tool.action] as (() => void) | undefined;
-          const handler = specificHandler ?? handlers.onConvertUnits;
-          return (
-            <button
-              key={tool.label}
-              type="button"
-              onClick={handler}
-              className={buttonClasses}
-            >
-              {tool.label}
-            </button>
-          );
-        })}
+        <LanguageMenu
+          value={languageValue}
+          onChange={onLanguageChange}
+          isDark={isDarkMode}
+          className="w-full justify-center"
+        />
+        {renderButton("Convert Units", onConvertUnits)}
+        {renderButton("Save Snapshot", onSaveSnapshot)}
+        {renderButton("Alt Units", altHandler)}
+        {renderButton("Currency", onCycleCurrency)}
+        {renderButton("Yield Lab", onOpenYieldLab)}
       </div>
     </div>
   );
