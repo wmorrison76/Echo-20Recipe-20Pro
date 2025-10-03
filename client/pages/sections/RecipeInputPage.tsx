@@ -193,7 +193,7 @@ const RecipeInputPage = () => {
 
   useEffect(() => {
     try {
-      localStorage.setItem("app:language", uiLanguage);
+      window.localStorage.setItem("app:language", uiLanguage);
     } catch {}
     if (typeof document !== "undefined") {
       document.documentElement.setAttribute("lang", uiLanguage);
