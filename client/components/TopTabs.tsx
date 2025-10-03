@@ -177,6 +177,18 @@ export default function TopTabs() {
 
   const navShortcut = `${shortcutLabel}+Shift+N`;
 
+  const setCollapsedManual = (value: boolean | ((prev: boolean) => boolean)) => {
+    manualOverrideRef.current = true;
+    if (collapseTimerRef.current !== null) {
+      window.clearTimeout(collapseTimerRef.current);
+      collapseTimerRef.current = null;
+    }
+    setCollapsed((prev) => {
+      const next = typeof value === "function" ? (value as (state: boolean) => boolean)(prev) : value;
+      return next;
+    });
+  };
+
   return (
     <>
       <TooltipProvider delayDuration={collapsed ? 0 : 200}>
