@@ -54,12 +54,12 @@ function TabLink({ to, label, icon: Icon, collapsed }: TabLinkProps) {
   const value = new URLSearchParams(to.split("?")[1] || "").get("tab") || "";
   const isActive = active === value;
 
-  return (
+  const link = (
     <Link
       to={to}
       aria-label={label}
       className={cn(
-        "group flex w-full items-center rounded-md text-sm font-medium transition-all duration-700",
+        "group flex w-full items-center rounded-md text-sm font-medium transition-all duration-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         collapsed ? "justify-center gap-0 px-2 py-2" : "gap-2 px-3 py-2",
         isActive
           ? "bg-primary text-primary-foreground shadow"
@@ -83,6 +83,19 @@ function TabLink({ to, label, icon: Icon, collapsed }: TabLinkProps) {
         {label}
       </span>
     </Link>
+  );
+
+  if (!collapsed) {
+    return link;
+  }
+
+  return (
+    <Tooltip delayDuration={0}>
+      <TooltipTrigger asChild>{link}</TooltipTrigger>
+      <TooltipContent side="right" align="center" className="text-xs font-medium">
+        {label}
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
