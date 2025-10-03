@@ -4,6 +4,8 @@ import { useAppData } from "@/context/AppDataContext";
 import ImageEditorModal from "./ImageEditorModal";
 import NutritionLabel from "./NutritionLabel";
 import AddRecipeToolsPanel from "@/components/AddRecipeToolsPanel";
+import LanguageMenu from "@/components/LanguageMenu";
+import { useTranslation } from "@/context/LanguageContext";
 import { defaultSelection, TaxonomySelection } from "@/lib/taxonomy";
 import {
   Save,
