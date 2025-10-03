@@ -46,9 +46,10 @@ const navItems: NavItem[] = [
 
 type TabLinkProps = NavItem & {
   collapsed: boolean;
+  shortcut?: string | null;
 };
 
-function TabLink({ to, label, icon: Icon, collapsed }: TabLinkProps) {
+function TabLink({ to, label, icon: Icon, collapsed, shortcut }: TabLinkProps) {
   const loc = useLocation();
   const active = new URLSearchParams(loc.search).get("tab") ?? "search";
   const value = new URLSearchParams(to.split("?")[1] || "").get("tab") || "";
@@ -93,7 +94,14 @@ function TabLink({ to, label, icon: Icon, collapsed }: TabLinkProps) {
     <Tooltip delayDuration={0}>
       <TooltipTrigger asChild>{link}</TooltipTrigger>
       <TooltipContent side="right" align="center" className="text-xs font-medium">
-        {label}
+        <div className="flex flex-col items-start">
+          <span>{label}</span>
+          {shortcut ? (
+            <span className="mt-1 text-[10px] font-normal uppercase tracking-[0.12em] text-muted-foreground">
+              {shortcut}
+            </span>
+          ) : null}
+        </div>
       </TooltipContent>
     </Tooltip>
   );
