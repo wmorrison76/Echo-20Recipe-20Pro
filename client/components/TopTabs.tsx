@@ -197,7 +197,6 @@ export default function TopTabs() {
 
   const setCollapsedManual = useCallback(
     (value: boolean | ((prev: boolean) => boolean)) => {
-      manualOverrideRef.current = true;
       storedPreferenceRef.current = true;
       if (collapseTimerRef.current !== null) {
         window.clearTimeout(collapseTimerRef.current);
