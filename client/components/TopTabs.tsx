@@ -308,6 +308,7 @@ export default function TopTabs() {
                 collapsed && "pointer-events-none opacity-0",
               )}
               aria-label="Collapse navigation"
+              title={`Collapse navigation (${navToggleShortcut})`}
             >
               <ChevronLeft className="h-4 w-4" aria-hidden />
             </button>
@@ -463,6 +464,7 @@ export default function TopTabs() {
               collapsed ? "opacity-100" : "pointer-events-none opacity-0",
             )}
             aria-label="Expand navigation"
+            title={`Expand navigation (${navToggleShortcut})`}
           >
             <ChevronRight className="h-4 w-4" aria-hidden />
           </button>
