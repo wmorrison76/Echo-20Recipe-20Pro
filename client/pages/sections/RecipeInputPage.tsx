@@ -1394,7 +1394,7 @@ const RecipeInputPage = () => {
                 value={uiLanguage}
                 onChange={setUiLanguage}
                 isDark={isDarkMode}
-                className="shrink-0"
+                className="shrink-0 px-2 py-1"
               />
               <button
                 onClick={convertUnits}
@@ -2777,7 +2777,7 @@ const RecipeInputPage = () => {
                 "⅙": "1/6",
                 "⅚": "5/6",
                 "⅛": "1/8",
-                "���": "3/8",
+                "⅜": "3/8",
                 "⅝": "5/8",
                 "⅞": "7/8",
               };
