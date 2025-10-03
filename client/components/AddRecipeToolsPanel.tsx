@@ -39,7 +39,8 @@ export default function AddRecipeToolsPanel(props: AddRecipeToolsPanelProps) {
       </div>
       <div className="grid grid-cols-2 gap-2">
         {tools.map((tool) => {
-          const handler = handlers[tool.action] ?? handlers.onConvertUnits;
+          const specificHandler = handlers[tool.action] as (() => void) | undefined;
+          const handler = specificHandler ?? handlers.onConvertUnits;
           return (
             <button
               key={tool.label}
