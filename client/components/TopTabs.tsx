@@ -26,22 +26,28 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
+type NavShortcut = {
+  key: string;
+  display: string;
+};
+
 type NavItem = {
   to: string;
   label: string;
   icon: LucideIcon;
+  shortcut?: NavShortcut;
 };
 
 const navItems: NavItem[] = [
-  { to: "/?tab=search", label: "RECIPES", icon: BookOpenCheck },
-  { to: "/?tab=add-recipe", label: "ADD RECIPE", icon: PenSquare },
-  { to: "/?tab=server-notes", label: "SERVER NOTES", icon: ClipboardList },
-  { to: "/?tab=production", label: "PRODUCTION", icon: Factory },
-  { to: "/?tab=saas", label: "SaaS", icon: Sparkles },
-  { to: "/?tab=inventory", label: "Inventory & Supplies", icon: Boxes },
-  { to: "/?tab=nutrition", label: "Nutrition/Allergens", icon: Sprout },
-  { to: "/?tab=haccp", label: "HACCP/Compliance", icon: ShieldCheck },
-  { to: "/?tab=gallery", label: "Gallery", icon: Images },
+  { to: "/?tab=search", label: "RECIPES", icon: BookOpenCheck, shortcut: { key: "Digit1", display: "1" } },
+  { to: "/?tab=add-recipe", label: "ADD RECIPE", icon: PenSquare, shortcut: { key: "Digit2", display: "2" } },
+  { to: "/?tab=server-notes", label: "SERVER NOTES", icon: ClipboardList, shortcut: { key: "Digit3", display: "3" } },
+  { to: "/?tab=production", label: "PRODUCTION", icon: Factory, shortcut: { key: "Digit4", display: "4" } },
+  { to: "/?tab=saas", label: "SaaS", icon: Sparkles, shortcut: { key: "Digit5", display: "5" } },
+  { to: "/?tab=inventory", label: "Inventory & Supplies", icon: Boxes, shortcut: { key: "Digit6", display: "6" } },
+  { to: "/?tab=nutrition", label: "Nutrition/Allergens", icon: Sprout, shortcut: { key: "Digit7", display: "7" } },
+  { to: "/?tab=haccp", label: "HACCP/Compliance", icon: ShieldCheck, shortcut: { key: "Digit8", display: "8" } },
+  { to: "/?tab=gallery", label: "Gallery", icon: Images, shortcut: { key: "Digit9", display: "9" } },
 ];
 
 type TabLinkProps = NavItem & {
