@@ -109,7 +109,20 @@ function TabLink({ to, label, icon: Icon, collapsed, shortcut }: TabLinkProps) {
 
 export default function TopTabs() {
   const location = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
+  const storedPreferenceRef = useRef(false);
+  const manualOverrideRef = useRef(false);
+  const collapseTimerRef = useRef<number>();
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+    const stored = window.sessionStorage.getItem("nav:collapsed");
+    if (stored === "true" || stored === "false") {
+      storedPreferenceRef.current = true;
+      return stored === "true";
+    }
+    return false;
+  });
   const [showHelp, setShowHelp] = useState(false);
   const shortcutLabel = useMemo(() => {
     if (typeof navigator === "undefined") {
