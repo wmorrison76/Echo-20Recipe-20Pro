@@ -4,7 +4,6 @@ import { useAppData } from "@/context/AppDataContext";
 import ImageEditorModal from "./ImageEditorModal";
 import NutritionLabel from "./NutritionLabel";
 import AddRecipeToolsPanel from "@/components/AddRecipeToolsPanel";
-import LanguageMenu from "@/components/LanguageMenu";
 import { defaultSelection, TaxonomySelection } from "@/lib/taxonomy";
 import {
   Save,
@@ -1088,7 +1087,7 @@ const RecipeInputPage = () => {
       "¼": "1/4",
       "½": "1/2",
       "¾": "3/4",
-      "⅓": "1/3",
+      "��": "1/3",
       "⅔": "2/3",
       "⅛": "1/8",
       "⅜": "3/8",
