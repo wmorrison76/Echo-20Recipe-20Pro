@@ -193,7 +193,16 @@ export default function TopTabs() {
       extra,
     );
 
-  const navShortcut = `${shortcutLabel}+Shift+N`;
+  const navToggleShortcut = `${shortcutLabel}+Shift+N`;
+
+  const navShortcutMap = useMemo(() => {
+    return navItems.reduce((acc, item) => {
+      if (item.shortcut) {
+        acc[item.shortcut.key] = item.to;
+      }
+      return acc;
+    }, {} as Record<string, string>);
+  }, []);
 
   const setCollapsedManual = useCallback(
     (value: boolean | ((prev: boolean) => boolean)) => {
