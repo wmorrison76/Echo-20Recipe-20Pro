@@ -103,6 +103,12 @@ export default function TopTabs() {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const shortcutLabel = useMemo(() => {
+    if (typeof navigator === "undefined") {
+      return "Ctrl";
+    }
+    return /(mac|iphone|ipad|ipod)/i.test(navigator.platform) ? "⌘" : "Ctrl";
+  }, []);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
