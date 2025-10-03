@@ -114,6 +114,13 @@ const RecipeInputPage = () => {
   const [currentUnits, setCurrentUnits] = useState<"Imperial" | "Metric">(
     "Imperial",
   );
+  const [uiLanguage, setUiLanguage] = useState<string>(() => {
+    try {
+      return localStorage.getItem("app:language") || "en-US";
+    } catch {
+      return "en-US";
+    }
+  });
   const [yieldQty, setYieldQty] = useState<number>(6);
   const [yieldUnit, setYieldUnit] = useState<string>("QTS");
   const yieldManualRef = useRef(false);
@@ -2045,7 +2052,7 @@ const RecipeInputPage = () => {
                           const v = [...ingredients];
                           v[index].item = text;
                           const hasCues =
-                            /(cups?|tsp|tbsp|oz|ounces?|lb|lbs|g|kg|ml|l|quarts?|qt|qts|pints?|pt|gal|gallons?|teaspoons?|tablespoons?|^\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|^\s*\/\d+|,)/i.test(
+                            /(cups?|tsp|tbsp|oz|ounces?|lb|lbs|g|kg|ml|l|quarts?|qt|qts|pints?|pt|gal|gallons?|teaspoons?|tablespoons?|^\s*[0-9¼½¾⅓⅔⅛⅜⅝��]|^\s*\/\d+|,)/i.test(
                               text,
                             );
                           if (hasCues) {
