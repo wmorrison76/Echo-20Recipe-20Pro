@@ -1384,15 +1384,18 @@ const RecipeInputPage = () => {
                 <Scale className="w-5 h-5" />
               </button>
               <button
-                onClick={() => {
-                  pushHistory({ ...serialize(), ts: Date.now() });
-                  alert("Snapshot saved");
-                }}
-                title="Save Version"
+                onClick={handleSaveSnapshot}
+                title="Save Snapshot"
                 className="p-1 rounded hover:bg-black/10"
               >
                 <NotebookPen className="w-5 h-5" />
               </button>
+              <LanguageMenu
+                value={uiLanguage}
+                onChange={setUiLanguage}
+                isDark={isDarkMode}
+                className="shrink-0"
+              />
               <button
                 onClick={convertUnits}
                 title="Convert Units"
@@ -2774,7 +2777,7 @@ const RecipeInputPage = () => {
                 "⅙": "1/6",
                 "⅚": "5/6",
                 "⅛": "1/8",
-                "⅜": "3/8",
+                "���": "3/8",
                 "⅝": "5/8",
                 "⅞": "7/8",
               };
