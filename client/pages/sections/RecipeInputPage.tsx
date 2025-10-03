@@ -229,7 +229,7 @@ const RecipeInputPage = () => {
     };
     let t = String(s).trim();
     // Expand unicode vulgar fractions
-    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
+    t = t.replace(/[¼½¾��⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
     // Allow forms like "1½" -> "1 1/2"
     t = t.replace(/(\d)\s*(\d\/\d)/, "$1 $2");
     // Mixed fraction
@@ -1491,6 +1491,8 @@ const RecipeInputPage = () => {
                 onSaveSnapshot={handleSaveSnapshot}
                 onCycleCurrency={cycleCurrency}
                 onOpenYieldLab={() => setYieldOpen(true)}
+                languageValue={uiLanguage}
+                onLanguageChange={setUiLanguage}
                 className="backdrop-blur-sm"
               />
             </div>
