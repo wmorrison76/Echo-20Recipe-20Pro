@@ -41,6 +41,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 
 const RecipeInputPage = () => {
   const [recipeName, setRecipeName] = useState("");
+  const { t } = useTranslation();
   const [ingredients, setIngredients] = useState([
     { qty: "", unit: "", item: "", prep: "", yield: "", cost: "", subId: "" },
   ]);
