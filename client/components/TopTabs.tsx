@@ -185,8 +185,6 @@ export default function TopTabs() {
     }
   }, [collapsed]);
 
-  const isAdd = new URLSearchParams(location.search).get("tab") === "add-recipe";
-
   const textClass = (extra?: string) =>
     cn(
       "overflow-hidden whitespace-nowrap transition-all duration-700 ease-out",
