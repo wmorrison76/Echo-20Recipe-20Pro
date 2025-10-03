@@ -952,6 +952,10 @@ const RecipeInputPage = () => {
     );
     setCurrentCurrency(next);
   };
+  const handleSaveSnapshot = () => {
+    pushHistory({ ...serialize(), ts: Date.now() });
+    alert("Snapshot saved");
+  };
   const scaleRecipe = () => {
     const target = Number(
       prompt("Scale to how many portions?", String(portionCount)) ||
