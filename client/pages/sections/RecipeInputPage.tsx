@@ -113,14 +113,6 @@ const RecipeInputPage = () => {
   const [currentUnits, setCurrentUnits] = useState<"Imperial" | "Metric">(
     "Imperial",
   );
-  const [uiLanguage, setUiLanguage] = useState<string>(() => {
-    if (typeof window === "undefined") return "en-US";
-    try {
-      return window.localStorage.getItem("app:language") || "en-US";
-    } catch {
-      return "en-US";
-    }
-  });
   const [yieldQty, setYieldQty] = useState<number>(6);
   const [yieldUnit, setYieldUnit] = useState<string>("QTS");
   const yieldManualRef = useRef(false);
@@ -190,18 +182,6 @@ const RecipeInputPage = () => {
       );
     }
   }, [ingredients]);
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem("app:language", uiLanguage);
-    } catch {}
-    if (typeof document !== "undefined") {
-      document.documentElement.setAttribute("lang", uiLanguage);
-    }
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new CustomEvent("app:language", { detail: uiLanguage }));
-    }
-  }, [uiLanguage]);
 
   const inputClass = `border p-3 rounded-lg text-sm transition-all focus:shadow-md focus:ring-2 ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30 shadow-none" : "bg-white border-gray-300 text-black focus:ring-blue-400/30 focus:border-blue-500 shadow-lg"}`;
 
@@ -1492,8 +1472,6 @@ const RecipeInputPage = () => {
                 onSaveSnapshot={handleSaveSnapshot}
                 onCycleCurrency={cycleCurrency}
                 onOpenYieldLab={() => setYieldOpen(true)}
-                languageValue={uiLanguage}
-                onLanguageChange={setUiLanguage}
                 className="backdrop-blur-sm"
               />
             </div>
