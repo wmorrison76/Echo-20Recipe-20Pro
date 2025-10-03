@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   BookOpenCheck,
@@ -132,12 +132,25 @@ export default function TopTabs() {
   }, []);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setCollapsed(true);
+    if (storedPreferenceRef.current) {
+      return;
+    }
+
+    collapseTimerRef.current = window.setTimeout(() => {
+      setCollapsed((prev) => {
+        if (prev) return prev;
+        if (typeof window !== "undefined") {
+          window.sessionStorage.setItem("nav:collapsed", "true");
+        }
+        return true;
+      });
     }, 425);
 
     return () => {
-      window.clearTimeout(timer);
+      if (collapseTimerRef.current !== null) {
+        window.clearTimeout(collapseTimerRef.current);
+        collapseTimerRef.current = null;
+      }
     };
   }, []);
 
@@ -177,17 +190,43 @@ export default function TopTabs() {
 
   const navShortcut = `${shortcutLabel}+Shift+N`;
 
-  const setCollapsedManual = (value: boolean | ((prev: boolean) => boolean)) => {
-    manualOverrideRef.current = true;
-    if (collapseTimerRef.current !== null) {
-      window.clearTimeout(collapseTimerRef.current);
-      collapseTimerRef.current = null;
+  const setCollapsedManual = useCallback(
+    (value: boolean | ((prev: boolean) => boolean)) => {
+      manualOverrideRef.current = true;
+      storedPreferenceRef.current = true;
+      if (collapseTimerRef.current !== null) {
+        window.clearTimeout(collapseTimerRef.current);
+        collapseTimerRef.current = null;
+      }
+      setCollapsed((prev) => {
+        const next =
+          typeof value === "function" ? (value as (state: boolean) => boolean)(prev) : value;
+        if (typeof window !== "undefined") {
+          window.sessionStorage.setItem("nav:collapsed", String(next));
+        }
+        return next;
+      });
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
     }
-    setCollapsed((prev) => {
-      const next = typeof value === "function" ? (value as (state: boolean) => boolean)(prev) : value;
-      return next;
-    });
-  };
+
+    const handleKeydown = (event: KeyboardEvent) => {
+      const isMac = /(mac|iphone|ipad|ipod)/i.test(navigator.platform);
+      const modifier = isMac ? event.metaKey : event.ctrlKey;
+      if (!modifier || !event.shiftKey) return;
+      if (event.key.toLowerCase() !== "n") return;
+      event.preventDefault();
+      setCollapsedManual((prev) => !prev);
+    };
+
+    window.addEventListener("keydown", handleKeydown);
+    return () => window.removeEventListener("keydown", handleKeydown);
+  }, [setCollapsedManual]);
 
   return (
     <>
@@ -228,7 +267,7 @@ export default function TopTabs() {
             <button
               type="button"
               onClick={() => {
-                setCollapsed(true);
+                setCollapsedManual(true);
               }}
               className={cn(
                 "rounded-full border border-white/40 bg-white/70 p-2 text-muted-foreground shadow-sm transition duration-300 hover:bg-white dark:border-slate-700/60 dark:bg-slate-900/70 dark:text-slate-200",
@@ -377,7 +416,7 @@ export default function TopTabs() {
 
           <button
             type="button"
-            onClick={() => setCollapsed(false)}
+            onClick={() => setCollapsedManual(false)}
             className={cn(
               "absolute right-[-14px] top-1/2 flex h-10 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-white/60 bg-white/80 text-muted-foreground shadow-lg transition duration-300 hover:bg-white dark:border-slate-800/70 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-900",
               collapsed ? "opacity-100" : "pointer-events-none opacity-0",
