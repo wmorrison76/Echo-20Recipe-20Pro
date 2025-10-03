@@ -1,5 +1,4 @@
 import LanguageMenu from "./LanguageMenu";
-import LanguageMenu from "./LanguageMenu";
 import { cn } from "@/lib/utils";
 
 export type AddRecipeToolsPanelProps = {
