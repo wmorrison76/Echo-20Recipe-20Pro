@@ -213,7 +213,7 @@ const RecipeInputPage = () => {
     };
     let t = String(s).trim();
     // Expand unicode vulgar fractions
-    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
+    t = t.replace(/[¼½¾⅐���⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
     // Allow forms like "1½" -> "1 1/2"
     t = t.replace(/(\d)\s*(\d\/\d)/, "$1 $2");
     // Mixed fraction
@@ -1351,47 +1351,51 @@ const RecipeInputPage = () => {
             </div>
           </div>
           <div className="flex flex-col items-end gap-2">
-            <div className="flex gap-3 items-center">
+            <div className="flex items-center gap-3">
               <button
                 onClick={() => setIsRightSidebarCollapsed((v) => !v)}
-                title="Toggle Tools"
+                title={t("recipe.actions.toggleTools", "Toggle Tools")}
                 className="p-1 rounded hover:bg-black/10"
               >
                 <Menu className="w-5 h-5" />
               </button>
               <button
                 onClick={scaleRecipe}
-                title="Scale Recipe"
+                title={t("recipe.actions.scale", "Scale Recipe")}
                 className="p-1 rounded hover:bg-black/10"
               >
                 <Scale className="w-5 h-5" />
               </button>
               <button
                 onClick={handleSaveSnapshot}
-                title="Save Snapshot"
+                title={t("recipe.actions.saveSnapshot", "Save Snapshot")}
                 className="p-1 rounded hover:bg-black/10"
               >
                 <NotebookPen className="w-5 h-5" />
               </button>
+              <LanguageMenu
+                variant="compact"
+                isDark={isDarkMode}
+                className="border-none bg-transparent p-1.5 text-xs text-foreground hover:bg-black/10 focus-visible:outline-none"
+                align="end"
+              />
               <button
                 onClick={convertUnits}
-                title="Convert Units"
+                title={t("recipe.actions.convertUnits", "Convert Units")}
                 className="p-1 rounded hover:bg-black/10"
               >
                 <ArrowLeftRight className="w-5 h-5" />
               </button>
               <button
                 onClick={cycleCurrency}
-                title="Change Currency"
+                title={t("recipe.actions.currency", "Change Currency")}
                 className="p-1 rounded hover:bg-black/10"
               >
                 <CircleDollarSign className="w-5 h-5" />
               </button>
               <button
-                onClick={() =>
-                  setIsRightSidebarCollapsed(!isRightSidebarCollapsed)
-                }
-                title="Recipe Tools"
+                onClick={() => setIsRightSidebarCollapsed(!isRightSidebarCollapsed)}
+                title={t("recipe.actions.recipeTools", "Recipe Tools")}
                 className="p-1 rounded hover:bg-black/10"
               >
                 <Settings className="w-5 h-5" />
@@ -1893,7 +1897,7 @@ const RecipeInputPage = () => {
                   !!line.yield &&
                   isNaN(Number(String(line.yield).replace(/[^0-9.\-]/g, "")));
                 const costNum = Number(
-                  String(line.cost).replace(/[$€£¥,\s]/g, ""),
+                  String(line.cost).replace(/[$€��¥,\s]/g, ""),
                 );
                 const updateAndNormalize = (row: any) => {
                   // Auto-fill yield if empty
@@ -2767,7 +2771,7 @@ const RecipeInputPage = () => {
                 "⅛": "1/8",
                 "⅜": "3/8",
                 "⅝": "5/8",
-                "⅞": "7/8",
+                "��": "7/8",
               };
               s = s.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => fracMap[ch] || ch);
               const m = s.match(
