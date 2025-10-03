@@ -150,7 +150,8 @@ export default function TopTabs() {
 
   return (
     <>
-      <aside
+      <TooltipProvider delayDuration={collapsed ? 0 : 200}>
+        <aside
         className={cn(
           "fixed left-4 top-4 z-[1000] flex flex-col overflow-hidden rounded-2xl border border-white/50 bg-white/70 shadow-[0_20px_45px_rgba(15,23,42,0.2)] backdrop-blur-xl transition-all duration-700 dark:border-slate-800/80 dark:bg-slate-950/75 dark:shadow-[0_0_30px_rgba(56,189,248,0.28)]",
           collapsed ? "w-16 space-y-3 p-3" : "w-64 space-y-4 p-4",
@@ -346,6 +347,7 @@ export default function TopTabs() {
           </button>
         </div>
       </aside>
+      </TooltipProvider>
 
       <Dialog open={showHelp} onOpenChange={setShowHelp}>
         <DialogContent className="max-w-2xl">
