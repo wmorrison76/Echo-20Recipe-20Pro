@@ -98,12 +98,14 @@ export default function AddRecipeToolsPanel({
         {t("recipe.tools.title", "Add Recipe Tools")}
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <LanguageMenu
-          variant="card"
-          isDark={isDarkMode}
-          className="col-span-1"
-          contentClassName={isDarkMode ? "border border-cyan-700/40" : "border border-slate-200"}
-        />
+        <div className="col-span-1">
+          <LanguageMenu
+            variant="card"
+            isDark={isDarkMode}
+            className="w-full"
+            contentClassName={isDarkMode ? "border border-cyan-700/40" : "border border-slate-200"}
+          />
+        </div>
         {tools.map((tool) => {
           const LabelIcon = tool.icon;
           return (
