@@ -1,4 +1,5 @@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, FlaskConical } from "lucide-react";
 
@@ -63,7 +64,13 @@ export default function LanguageMenu({ value, onChange, isDark, className }: Lan
           </span>
         </button>
       </PopoverTrigger>
-      <PopoverContent align="end" className={cn("w-60 p-2", isDark ? "bg-slate-900/95 text-cyan-100" : "bg-white/95 text-slate-900") )}>
+      <PopoverContent
+        align="end"
+        className={cn(
+          "w-60 p-2",
+          isDark ? "bg-slate-900/95 text-cyan-100" : "bg-white/95 text-slate-900",
+        )}
+      >
         <div className="space-y-1">
           {languageOptions.map((option) => {
             const selected = option.code === value;
