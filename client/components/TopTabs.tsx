@@ -162,6 +162,8 @@ export default function TopTabs() {
       extra,
     );
 
+  const navShortcut = `${shortcutLabel}+Shift+N`;
+
   return (
     <>
       <TooltipProvider delayDuration={collapsed ? 0 : 200}>
