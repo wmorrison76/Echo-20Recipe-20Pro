@@ -3,6 +3,8 @@ import RightSidebar from "./RightSidebar";
 import { useAppData } from "@/context/AppDataContext";
 import ImageEditorModal from "./ImageEditorModal";
 import NutritionLabel from "./NutritionLabel";
+import AddRecipeToolsPanel from "@/components/AddRecipeToolsPanel";
+import LanguageMenu from "@/components/LanguageMenu";
 import { defaultSelection, TaxonomySelection } from "@/lib/taxonomy";
 import {
   Save,
