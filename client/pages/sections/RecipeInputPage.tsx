@@ -213,7 +213,7 @@ const RecipeInputPage = () => {
     };
     let t = String(s).trim();
     // Expand unicode vulgar fractions
-    t = t.replace(/[¼½¾⅐���⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
+    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
     // Allow forms like "1½" -> "1 1/2"
     t = t.replace(/(\d)\s*(\d\/\d)/, "$1 $2");
     // Mixed fraction
@@ -1420,12 +1420,12 @@ const RecipeInputPage = () => {
                 maxLength={50}
                 value={recipeName}
                 onChange={(e) => setRecipeName(e.target.value)}
-                placeholder="RECIPE NAME"
+                placeholder={t("recipe.fields.recipeName", "RECIPE NAME")}
                 className={`w-full text-lg font-semibold uppercase bg-transparent focus:outline-none transition-colors ${isDarkMode ? "text-cyan-400 placeholder-cyan-600" : "text-gray-900 placeholder-gray-500"} focus:placeholder-gray-400`}
                 data-echo-key="field:add:name"
               />
               <textarea
-                placeholder="Description"
+                placeholder={t("recipe.fields.description", "Description")}
                 className={`mt-2 w-full border rounded-lg p-3 text-sm ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
                 rows={3}
                 onChange={(e) =>
@@ -1453,7 +1453,7 @@ const RecipeInputPage = () => {
                   <div
                     className={`font-semibold text-xs mb-2 ${isDarkMode ? "text-cyan-300" : "text-gray-700"}`}
                   >
-                    ALLERGENS
+                    {t("recipe.labels.allergens", "ALLERGENS")}
                   </div>
                   {selectedAllergens.length ? (
                     <div
@@ -1467,7 +1467,7 @@ const RecipeInputPage = () => {
                     <div
                       className={`text-xs italic ${isDarkMode ? "text-cyan-500" : "text-gray-500"}`}
                     >
-                      No allergens selected
+                      {t("recipe.labels.noAllergens", "No allergens selected")}
                     </div>
                   )}
                 </div>
@@ -1897,7 +1897,7 @@ const RecipeInputPage = () => {
                   !!line.yield &&
                   isNaN(Number(String(line.yield).replace(/[^0-9.\-]/g, "")));
                 const costNum = Number(
-                  String(line.cost).replace(/[$€��¥,\s]/g, ""),
+                  String(line.cost).replace(/[$€£¥,\s]/g, ""),
                 );
                 const updateAndNormalize = (row: any) => {
                   // Auto-fill yield if empty
@@ -2771,7 +2771,7 @@ const RecipeInputPage = () => {
                 "⅛": "1/8",
                 "⅜": "3/8",
                 "⅝": "5/8",
-                "��": "7/8",
+                "⅞": "7/8",
               };
               s = s.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => fracMap[ch] || ch);
               const m = s.match(
