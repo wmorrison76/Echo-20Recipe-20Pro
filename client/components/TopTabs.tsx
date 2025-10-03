@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   BookOpenCheck,
@@ -115,6 +116,7 @@ function TabLink({ to, label, icon: Icon, collapsed, shortcutDisplay }: TabLinkP
 
 export default function TopTabs() {
   const location = useLocation();
+  const navigate = useNavigate();
   const storedPreferenceRef = useRef(false);
   const collapseTimerRef = useRef<number | null>(null);
   const [collapsed, setCollapsed] = useState(() => {
