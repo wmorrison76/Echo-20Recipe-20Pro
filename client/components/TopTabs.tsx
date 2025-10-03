@@ -320,8 +320,15 @@ export default function TopTabs() {
             )}
           >
             {navItems.map((item) => (
-            <TabLink key={item.to} collapsed={collapsed} shortcut={navShortcut} {...item} />
-          ))}
+              <TabLink
+                key={item.to}
+                collapsed={collapsed}
+                shortcutDisplay={
+                  item.shortcut ? `${shortcutLabel}+${item.shortcut.display}` : undefined
+                }
+                {...item}
+              />
+            ))}
           </nav>
 
           <div
