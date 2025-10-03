@@ -58,7 +58,7 @@ export default function LanguageMenu({ value, onChange, isDark, className }: Lan
           aria-label={`Change language, currently ${active.label}`}
         >
           <FlaskConical className="h-4 w-4" aria-hidden />
-          <span className="hidden sm:inline">Language</span>
+          <span className="hidden sm:inline">Change Language</span>
           <span className="text-lg leading-none" aria-hidden>
             {active.flag}
           </span>
