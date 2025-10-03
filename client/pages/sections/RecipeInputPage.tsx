@@ -1460,35 +1460,46 @@ const RecipeInputPage = () => {
                 data-echo-key="field:add:description"
               />
             </div>
-            <div
-              className={`border rounded-xl w-1/3 flex flex-col justify-end shadow-lg backdrop-blur-sm ${isDarkMode ? "bg-black/50 border-cyan-400/30 shadow-[0_0_24px_rgba(34,211,238,0.25)]" : "bg-white border-gray-200 shadow-gray-200/50"}`}
-              style={{ minHeight: "3rem" }}
-            >
+            <div className="w-1/3 flex flex-col gap-4">
               <div
-                className="p-3 flex flex-col"
-                data-echo-key="section:add:allergens"
+                className={`border rounded-xl flex flex-col justify-end shadow-lg backdrop-blur-sm ${isDarkMode ? "bg-black/50 border-cyan-400/30 shadow-[0_0_24px_rgba(34,211,238,0.25)]" : "bg-white border-gray-200 shadow-gray-200/50"}`}
+                style={{ minHeight: "3rem" }}
               >
                 <div
-                  className={`font-semibold text-xs mb-2 ${isDarkMode ? "text-cyan-300" : "text-gray-700"}`}
+                  className="p-3 flex flex-col"
+                  data-echo-key="section:add:allergens"
                 >
-                  ALLERGENS
+                  <div
+                    className={`font-semibold text-xs mb-2 ${isDarkMode ? "text-cyan-300" : "text-gray-700"}`}
+                  >
+                    ALLERGENS
+                  </div>
+                  {selectedAllergens.length ? (
+                    <div
+                      className={`grid grid-cols-6 gap-1 text-xs ${isDarkMode ? "text-cyan-300" : "text-gray-700"}`}
+                    >
+                      {selectedAllergens.map((a) => (
+                        <div key={a}>{a}</div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div
+                      className={`text-xs italic ${isDarkMode ? "text-cyan-500" : "text-gray-500"}`}
+                    >
+                      No allergens selected
+                    </div>
+                  )}
                 </div>
-                {selectedAllergens.length ? (
-                  <div
-                    className={`grid grid-cols-6 gap-1 text-xs ${isDarkMode ? "text-cyan-300" : "text-gray-700"}`}
-                  >
-                    {selectedAllergens.map((a) => (
-                      <div key={a}>{a}</div>
-                    ))}
-                  </div>
-                ) : (
-                  <div
-                    className={`text-xs italic ${isDarkMode ? "text-cyan-500" : "text-gray-500"}`}
-                  >
-                    No allergens selected
-                  </div>
-                )}
               </div>
+              <AddRecipeToolsPanel
+                isDarkMode={isDarkMode}
+                onConvertUnits={convertUnits}
+                onAltUnits={convertUnits}
+                onSaveSnapshot={handleSaveSnapshot}
+                onCycleCurrency={cycleCurrency}
+                onOpenYieldLab={() => setYieldOpen(true)}
+                className="backdrop-blur-sm"
+              />
             </div>
           </div>
 
