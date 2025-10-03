@@ -32,26 +32,30 @@ type NavShortcut = {
   display: string;
 };
 
-type NavItem = {
+type NavItemConfig = {
   to: string;
-  label: string;
+  labelKey: string;
+  fallback: string;
   icon: LucideIcon;
   shortcut?: NavShortcut;
 };
 
-const navItems: NavItem[] = [
-  { to: "/?tab=search", label: "RECIPES", icon: BookOpenCheck, shortcut: { key: "Digit1", display: "1" } },
-  { to: "/?tab=add-recipe", label: "ADD RECIPE", icon: PenSquare, shortcut: { key: "Digit2", display: "2" } },
-  { to: "/?tab=server-notes", label: "SERVER NOTES", icon: ClipboardList, shortcut: { key: "Digit3", display: "3" } },
-  { to: "/?tab=production", label: "PRODUCTION", icon: Factory, shortcut: { key: "Digit4", display: "4" } },
-  { to: "/?tab=saas", label: "SaaS", icon: Sparkles, shortcut: { key: "Digit5", display: "5" } },
-  { to: "/?tab=inventory", label: "Inventory & Supplies", icon: Boxes, shortcut: { key: "Digit6", display: "6" } },
-  { to: "/?tab=nutrition", label: "Nutrition/Allergens", icon: Sprout, shortcut: { key: "Digit7", display: "7" } },
-  { to: "/?tab=haccp", label: "HACCP/Compliance", icon: ShieldCheck, shortcut: { key: "Digit8", display: "8" } },
-  { to: "/?tab=gallery", label: "Gallery", icon: Images, shortcut: { key: "Digit9", display: "9" } },
+const navItems: NavItemConfig[] = [
+  { to: "/?tab=search", labelKey: "nav.recipes", fallback: "RECIPES", icon: BookOpenCheck, shortcut: { key: "Digit1", display: "1" } },
+  { to: "/?tab=add-recipe", labelKey: "nav.addRecipe", fallback: "ADD RECIPE", icon: PenSquare, shortcut: { key: "Digit2", display: "2" } },
+  { to: "/?tab=server-notes", labelKey: "nav.serverNotes", fallback: "SERVER NOTES", icon: ClipboardList, shortcut: { key: "Digit3", display: "3" } },
+  { to: "/?tab=production", labelKey: "nav.production", fallback: "PRODUCTION", icon: Factory, shortcut: { key: "Digit4", display: "4" } },
+  { to: "/?tab=saas", labelKey: "nav.saas", fallback: "SaaS", icon: Sparkles, shortcut: { key: "Digit5", display: "5" } },
+  { to: "/?tab=inventory", labelKey: "nav.inventorySupplies", fallback: "Inventory & Supplies", icon: Boxes, shortcut: { key: "Digit6", display: "6" } },
+  { to: "/?tab=nutrition", labelKey: "nav.nutritionAllergens", fallback: "Nutrition/Allergens", icon: Sprout, shortcut: { key: "Digit7", display: "7" } },
+  { to: "/?tab=haccp", labelKey: "nav.haccpCompliance", fallback: "HACCP/Compliance", icon: ShieldCheck, shortcut: { key: "Digit8", display: "8" } },
+  { to: "/?tab=gallery", labelKey: "nav.gallery", fallback: "Gallery", icon: Images, shortcut: { key: "Digit9", display: "9" } },
 ];
 
-type TabLinkProps = NavItem & {
+type TabLinkProps = {
+  to: string;
+  label: string;
+  icon: LucideIcon;
   collapsed: boolean;
   shortcutDisplay?: string;
 };
