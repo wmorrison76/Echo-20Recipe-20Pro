@@ -15,7 +15,7 @@ import {
   Sprout,
   Save,
 } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import {
   Dialog,
