@@ -140,7 +140,7 @@ const RecipeInputPage = () => {
   const [prepTime, setPrepTime] = useState<string>("");
 
   const getCurrencySymbol = (c: string) =>
-    c === "EUR" ? "€" : c === "GBP" ? "£" : c === "JPY" ? "¥" : "$";
+    c === "EUR" ? "€" : c === "GBP" ? "£" : c === "JPY" ? "��" : "$";
   const calculateTotalCost = () =>
     ingredients.reduce(
       (s, r) => s + (parseFloat(String(r.cost).replace(/[$€£¥,\s]/g, "")) || 0),
@@ -1425,7 +1425,7 @@ const RecipeInputPage = () => {
         <div className="w-full px-6 space-y-6 pb-8">
           {/* Removed old hamburger toggle button */}
           <div
-            className="flex items-end gap-4"
+            className="flex items-start gap-4"
             data-echo-key="section:add:basics"
           >
             <div
