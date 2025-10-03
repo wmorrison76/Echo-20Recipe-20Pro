@@ -1087,7 +1087,7 @@ const RecipeInputPage = () => {
       "¼": "1/4",
       "½": "1/2",
       "¾": "3/4",
-      "��": "1/3",
+      "⅓": "1/3",
       "⅔": "2/3",
       "⅛": "1/8",
       "⅜": "3/8",
@@ -1389,12 +1389,6 @@ const RecipeInputPage = () => {
               >
                 <NotebookPen className="w-5 h-5" />
               </button>
-              <LanguageMenu
-                value={uiLanguage}
-                onChange={setUiLanguage}
-                isDark={isDarkMode}
-                className="shrink-0 px-2 py-1"
-              />
               <button
                 onClick={convertUnits}
                 title="Convert Units"
