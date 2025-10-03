@@ -242,6 +242,26 @@ export default function TopTabs() {
     return () => window.removeEventListener("keydown", handleKeydown);
   }, [setCollapsedManual, shortcutLabel]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const isMac = shortcutLabel === "⌘";
+
+    const handleNavShortcut = (event: KeyboardEvent) => {
+      const modifier = isMac ? event.metaKey : event.ctrlKey;
+      if (!modifier || event.repeat) return;
+      const target = navShortcutMap[event.code];
+      if (!target) return;
+      event.preventDefault();
+      navigate(target);
+    };
+
+    window.addEventListener("keydown", handleNavShortcut);
+    return () => window.removeEventListener("keydown", handleNavShortcut);
+  }, [navigate, navShortcutMap, shortcutLabel]);
+
   return (
     <>
       <TooltipProvider delayDuration={collapsed ? 0 : 200}>
