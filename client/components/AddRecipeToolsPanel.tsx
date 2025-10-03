@@ -1,5 +1,14 @@
 import LanguageMenu from "./LanguageMenu";
+import { useTranslation } from "@/context/LanguageContext";
 import { cn } from "@/lib/utils";
+import {
+  ArrowLeftRight,
+  CircleDollarSign,
+  FlaskConical,
+  NotebookPen,
+  Ruler,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 export type AddRecipeToolsPanelProps = {
   onConvertUnits: () => void;
@@ -7,64 +16,114 @@ export type AddRecipeToolsPanelProps = {
   onAltUnits?: () => void;
   onCycleCurrency: () => void;
   onOpenYieldLab: () => void;
-  languageValue: string;
-  onLanguageChange: (code: string) => void;
   isDarkMode?: boolean;
   className?: string;
 };
 
-export default function AddRecipeToolsPanel(props: AddRecipeToolsPanelProps) {
-  const {
-    onConvertUnits,
-    onSaveSnapshot,
-    onAltUnits,
-    onCycleCurrency,
-    onOpenYieldLab,
-    languageValue,
-    onLanguageChange,
-    isDarkMode,
-    className,
-  } = props;
+type ToolConfig = {
+  key: string;
+  labelKey: string;
+  fallback: string;
+  icon: LucideIcon;
+  handler: () => void;
+};
+
+export default function AddRecipeToolsPanel({
+  onConvertUnits,
+  onSaveSnapshot,
+  onAltUnits,
+  onCycleCurrency,
+  onOpenYieldLab,
+  isDarkMode,
+  className,
+}: AddRecipeToolsPanelProps) {
+  const { t } = useTranslation();
 
   const cardClasses = cn(
-    "rounded-2xl border p-4 shadow-lg transition-colors",
+    "rounded-3xl border p-5 shadow-lg transition-colors",
     isDarkMode
-      ? "border-cyan-400/30 bg-cyan-950/30 text-cyan-100 shadow-[0_0_24px_rgba(34,211,238,0.15)]"
-      : "border-slate-200 bg-white/90 text-slate-800 shadow-slate-200/60",
+      ? "border-cyan-400/40 bg-gradient-to-br from-cyan-950/40 via-slate-900/30 to-cyan-900/40 text-cyan-100 shadow-[0_30px_80px_-40px_rgba(34,211,238,0.55)]"
+      : "border-slate-200 bg-gradient-to-br from-white via-slate-50 to-slate-100 text-slate-800 shadow-[0_30px_90px_-50px_rgba(15,23,42,0.35)]",
     className,
   );
 
-  const buttonClasses = isDarkMode
-    ? "w-full rounded-lg border border-cyan-400/40 bg-cyan-900/40 px-3 py-2 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-900/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/50 focus-visible:ring-offset-0"
-    : "w-full rounded-lg border border-slate-300 bg-white/85 px-3 py-2 text-sm font-semibold text-slate-800 transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-200 focus-visible:ring-offset-0";
-
-  const renderButton = (label: string, handler: () => void) => (
-    <button type="button" onClick={handler} className={buttonClasses}>
-      {label}
-    </button>
+  const buttonClasses = cn(
+    "flex h-full items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-sm font-semibold tracking-tight transition-all duration-200",
+    isDarkMode
+      ? "border-cyan-400/30 bg-slate-900/40 text-cyan-100 hover:bg-slate-900/60 hover:border-cyan-300"
+      : "border-slate-200 bg-white/90 text-slate-800 hover:bg-white hover:shadow-sm",
   );
 
-  const altHandler = onAltUnits ?? onConvertUnits;
+  const tools: ToolConfig[] = [
+    {
+      key: "convert",
+      labelKey: "recipe.tools.convert",
+      fallback: "Convert Units",
+      icon: ArrowLeftRight,
+      handler: onConvertUnits,
+    },
+    {
+      key: "save",
+      labelKey: "recipe.tools.saveSnapshot",
+      fallback: "Save Snapshot",
+      icon: NotebookPen,
+      handler: onSaveSnapshot,
+    },
+    {
+      key: "alt",
+      labelKey: "recipe.tools.alt",
+      fallback: "Alt Units",
+      icon: Ruler,
+      handler: onAltUnits ?? onConvertUnits,
+    },
+    {
+      key: "currency",
+      labelKey: "recipe.tools.currency",
+      fallback: "Currency",
+      icon: CircleDollarSign,
+      handler: onCycleCurrency,
+    },
+    {
+      key: "yield",
+      labelKey: "recipe.tools.yield",
+      fallback: "Yield Lab",
+      icon: FlaskConical,
+      handler: onOpenYieldLab,
+    },
+  ];
 
   return (
     <div className={cardClasses}>
-      <div className="mb-3 flex items-center justify-between">
-        <span className="text-sm font-semibold uppercase tracking-[0.12em]">
-          Add Recipe Tools
-        </span>
+      <div className="mb-4 text-sm font-semibold uppercase tracking-[0.22em] opacity-90">
+        {t("recipe.tools.title", "Add Recipe Tools")}
       </div>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-3">
         <LanguageMenu
-          value={languageValue}
-          onChange={onLanguageChange}
+          variant="card"
           isDark={isDarkMode}
-          className="w-full justify-center"
+          className="col-span-1"
+          contentClassName={isDarkMode ? "border border-cyan-700/40" : "border border-slate-200"}
         />
-        {renderButton("Convert Units", onConvertUnits)}
-        {renderButton("Save Snapshot", onSaveSnapshot)}
-        {renderButton("Alt Units", altHandler)}
-        {renderButton("Currency", onCycleCurrency)}
-        {renderButton("Yield Lab", onOpenYieldLab)}
+        {tools.map((tool) => {
+          const LabelIcon = tool.icon;
+          return (
+            <button
+              key={tool.key}
+              type="button"
+              onClick={tool.handler}
+              className={buttonClasses}
+            >
+              <span className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500/15 via-transparent to-blue-400/25">
+                  <LabelIcon className="h-5 w-5" aria-hidden />
+                </span>
+                <span className="text-left leading-tight">
+                  {t(tool.labelKey, tool.fallback)}
+                </span>
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
