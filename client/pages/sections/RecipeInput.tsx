@@ -14,16 +14,23 @@ export default function RecipeInputSection() {
   const [importedTitles, setImportedTitles] = useState<string[]>([]);
 
   const onFiles = async (files: File[]) => {
-    const list = files.slice(0, 100);
+    const list = Array.from(files);
     const jsonFiles = list.filter((f) => f.type.includes("json") || f.name.toLowerCase().endsWith(".json"));
     const docxFiles = list.filter((f) => f.name.toLowerCase().endsWith(".docx"));
     const htmlFiles = list.filter((f) => /\.(html?|htm)$/i.test(f.name));
     const pdfFiles = list.filter((f) => f.name.toLowerCase().endsWith(".pdf"));
     const xlsFiles = list.filter((f) => /\.(xlsx|xls|csv)$/i.test(f.name));
-    const imageFiles = list.filter((f)=> f.type.startsWith('image/') || /\.(png|jpe?g|webp|heic|heif)$/i.test(f.name));
+    const imageFiles = list.filter((f) => f.type.startsWith("image/") || /\.(png|jpe?g|webp|heic|heif)$/i.test(f.name));
     const zipFiles = list.filter((f) => f.type.includes("zip") || f.name.toLowerCase().endsWith(".zip"));
 
-    const steps = jsonFiles.length + docxFiles.length + htmlFiles.length + pdfFiles.length + xlsFiles.length + imageFiles.length + zipFiles.length;
+    const steps =
+      jsonFiles.length +
+      docxFiles.length +
+      htmlFiles.length +
+      pdfFiles.length +
+      xlsFiles.length +
+      imageFiles.length +
+      zipFiles.length;
     setProcessed(0);
     setTotal(steps);
     setImportedTitles([]);
@@ -33,53 +40,51 @@ export default function RecipeInputSection() {
     let importedCount = 0;
     const allErrors: { file: string; error: string }[] = [];
 
-    for (const f of jsonFiles) {
-      const { added, errors, titles } = await addRecipesFromJsonFiles([f]);
-      importedCount += added;
-      allErrors.push(...errors);
-      if (titles?.length) setImportedTitles((t) => [...t, ...titles]);
-      setProcessed((p) => p + 1);
-    }
+    const runInChunks = async <T, R>(items: T[], size: number, handler: (chunk: T[]) => Promise<R>, after?: (chunk: T[], result: R) => void) => {
+      for (let i = 0; i < items.length; i += size) {
+        const chunk = items.slice(i, i + size);
+        const result = await handler(chunk);
+        after?.(chunk, result);
+        setProcessed((p) => p + chunk.length);
+        await new Promise((resolve) => requestAnimationFrame(() => resolve(undefined)));
+      }
+    };
 
-    for (const f of docxFiles) {
-      const { added, errors, titles } = await addRecipesFromDocxFiles([f]);
+    await runInChunks(jsonFiles, 25, addRecipesFromJsonFiles, (chunk, { added, errors, titles }) => {
       importedCount += added;
       allErrors.push(...errors);
       if (titles?.length) setImportedTitles((t) => [...t, ...titles]);
-      setProcessed((p) => p + 1);
-    }
+    });
 
-    for (const f of htmlFiles) {
-      const { added, errors, titles } = await addRecipesFromHtmlFiles([f]);
+    await runInChunks(docxFiles, 10, addRecipesFromDocxFiles, (chunk, { added, errors, titles }) => {
       importedCount += added;
       allErrors.push(...errors);
       if (titles?.length) setImportedTitles((t) => [...t, ...titles]);
-      setProcessed((p) => p + 1);
-    }
+    });
 
-    for (const f of pdfFiles) {
-      const { added, errors, titles } = await addRecipesFromPdfFiles([f]);
+    await runInChunks(htmlFiles, 15, addRecipesFromHtmlFiles, (chunk, { added, errors, titles }) => {
       importedCount += added;
       allErrors.push(...errors);
       if (titles?.length) setImportedTitles((t) => [...t, ...titles]);
-      setProcessed((p) => p + 1);
-    }
+    });
 
-    for (const f of xlsFiles) {
-      const { added, errors, titles } = await addRecipesFromExcelFiles([f]);
+    await runInChunks(pdfFiles, 6, addRecipesFromPdfFiles, (chunk, { added, errors, titles }) => {
       importedCount += added;
       allErrors.push(...errors);
       if (titles?.length) setImportedTitles((t) => [...t, ...titles]);
-      setProcessed((p) => p + 1);
-    }
+    });
 
-    for (const f of imageFiles) {
-      const { added, errors, titles } = await addRecipesFromImageOcr([f]);
+    await runInChunks(xlsFiles, 6, addRecipesFromExcelFiles, (chunk, { added, errors, titles }) => {
       importedCount += added;
       allErrors.push(...errors);
       if (titles?.length) setImportedTitles((t) => [...t, ...titles]);
-      setProcessed((p) => p + 1);
-    }
+    });
+
+    await runInChunks(imageFiles, 10, addRecipesFromImageOcr, (chunk, { added, errors, titles }) => {
+      importedCount += added;
+      allErrors.push(...errors);
+      if (titles?.length) setImportedTitles((t) => [...t, ...titles]);
+    });
 
     for (const z of zipFiles) {
       const res = await addFromZipArchive(z);
@@ -87,6 +92,7 @@ export default function RecipeInputSection() {
       for (const e of res.errors) allErrors.push({ file: e.entry, error: e.error });
       if (res.titles?.length) setImportedTitles((t) => [...t, ...res.titles]);
       setProcessed((p) => p + 1);
+      await new Promise((resolve) => requestAnimationFrame(() => resolve(undefined)));
     }
 
     setErrors(allErrors);
@@ -132,8 +138,8 @@ export default function RecipeInputSection() {
       <div className="grid gap-4 md:grid-cols-2">
         <Dropzone accept=".json,application/json,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.html,.htm,text/html,.pdf,application/pdf,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.xls,application/vnd.ms-excel,.csv,text/csv,application/zip,application/x-zip-compressed,.zip,image/*" multiple onFiles={onFiles}>
           <div className="flex flex-col items-center justify-center gap-2 text-sm">
-            <div className="text-foreground font-medium">Drag & drop up to 100 files: Word (.docx), PDF, Excel (.xlsx/.xls/.csv), HTML (.html/.htm), or JSON</div>
-            <div className="text-muted-foreground">We’ll auto-detect titles, ingredients, and instructions</div>
+            <div className="text-foreground font-medium">Drag & drop any number of files or entire ZIP exports—Word, PDF, Excel, HTML, JSON, or images.</div>
+            <div className="text-muted-foreground">We’ll queue everything automatically and auto-detect titles, ingredients, and instructions.</div>
           </div>
         </Dropzone>
 
