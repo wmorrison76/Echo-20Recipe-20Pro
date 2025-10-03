@@ -116,7 +116,6 @@ function TabLink({ to, label, icon: Icon, collapsed, shortcutDisplay }: TabLinkP
 export default function TopTabs() {
   const location = useLocation();
   const storedPreferenceRef = useRef(false);
-  const manualOverrideRef = useRef(false);
   const collapseTimerRef = useRef<number | null>(null);
   const [collapsed, setCollapsed] = useState(() => {
     if (typeof window === "undefined") {
