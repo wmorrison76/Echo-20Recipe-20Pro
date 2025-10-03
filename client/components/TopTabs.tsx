@@ -219,8 +219,9 @@ export default function TopTabs() {
       return;
     }
 
+    const isMac = shortcutLabel === "⌘";
+
     const handleKeydown = (event: KeyboardEvent) => {
-      const isMac = /(mac|iphone|ipad|ipod)/i.test(navigator.platform);
       const modifier = isMac ? event.metaKey : event.ctrlKey;
       if (!modifier || !event.shiftKey) return;
       if (event.key.toLowerCase() !== "n") return;
@@ -230,7 +231,7 @@ export default function TopTabs() {
 
     window.addEventListener("keydown", handleKeydown);
     return () => window.removeEventListener("keydown", handleKeydown);
-  }, [setCollapsedManual]);
+  }, [setCollapsedManual, shortcutLabel]);
 
   return (
     <>
