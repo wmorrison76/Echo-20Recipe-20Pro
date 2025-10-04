@@ -1586,7 +1586,7 @@ const RecipeInputPage = () => {
 
           <div className="flex items-start gap-4 mt-1">
             <div
-              className="w-2/3 flex flex-col space-y-6"
+              className="w-full flex flex-col space-y-6"
               style={{ minHeight: "18rem" }}
             >
               <div className="flex flex-col space-y-4">
