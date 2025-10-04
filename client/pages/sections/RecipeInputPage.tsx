@@ -444,9 +444,7 @@ const RecipeInputPage = () => {
   const restore = (s: any) => {
     if (!s) return;
     setRecipeName(s.recipeName || "");
-    const baseRows = s.ingredients || [
-      { qty: "", unit: "", item: "", prep: "", yield: "", cost: "", subId: "" },
-    ];
+    const baseRows = s.ingredients || [createIngredientRow()];
     // Auto-parse any row whose item starts with qty/unit (e.g., "24 oz marinara")
     const fixedRows = baseRows.map((r: any) => {
       if (r.qty && r.unit) return r;
