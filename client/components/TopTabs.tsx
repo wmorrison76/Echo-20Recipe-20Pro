@@ -119,6 +119,7 @@ function TabLink({ to, label, icon: Icon, collapsed, shortcutDisplay }: TabLinkP
 }
 
 export default function TopTabs() {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const storedPreferenceRef = useRef(false);
