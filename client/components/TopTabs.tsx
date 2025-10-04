@@ -60,6 +60,8 @@ type DissolvingTextProps = {
   className?: string;
   ariaHidden?: boolean;
   expandedMaxWidthClass?: string;
+  expandedWrapperClassName?: string;
+  collapsedWrapperClassName?: string;
   expandedClassName?: string;
   collapsedClassName?: string;
 };
@@ -70,6 +72,8 @@ function DissolvingText({
   className,
   ariaHidden,
   expandedMaxWidthClass = "max-w-full",
+  expandedWrapperClassName,
+  collapsedWrapperClassName,
   expandedClassName,
   collapsedClassName,
 }: DissolvingTextProps) {
@@ -228,13 +232,6 @@ export default function TopTabs() {
       setShowHelp(false);
     }
   }, [collapsed]);
-
-  const textClass = (extra?: string) =>
-    cn(
-      "overflow-hidden whitespace-nowrap transition-all duration-700 ease-out",
-      collapsed ? "max-w-0 opacity-0" : "max-w-full opacity-100",
-      extra,
-    );
 
   const navToggleShortcut = `${shortcutLabel}+Shift+N`;
 
