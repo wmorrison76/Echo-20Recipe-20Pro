@@ -200,6 +200,15 @@ export default function TopTabs() {
 
   const navToggleShortcut = `${shortcutLabel}+Shift+N`;
 
+  const translatedNavItems = useMemo(
+    () =>
+      navItems.map((item) => ({
+        ...item,
+        label: t(item.labelKey, item.fallback),
+      })),
+    [t],
+  );
+
   const navShortcutMap = useMemo(() => {
     return navItems.reduce((acc, item) => {
       if (item.shortcut) {
