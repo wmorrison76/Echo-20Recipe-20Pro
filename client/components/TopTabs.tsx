@@ -40,6 +40,8 @@ type NavItemConfig = {
   shortcut?: NavShortcut;
 };
 
+type NavItem = NavItemConfig & { label: string };
+
 const navItems: NavItemConfig[] = [
   { to: "/?tab=search", labelKey: "nav.recipes", fallback: "RECIPES", icon: BookOpenCheck, shortcut: { key: "Digit1", display: "1" } },
   { to: "/?tab=add-recipe", labelKey: "nav.addRecipe", fallback: "ADD RECIPE", icon: PenSquare, shortcut: { key: "Digit2", display: "2" } },
@@ -200,7 +202,7 @@ export default function TopTabs() {
 
   const navToggleShortcut = `${shortcutLabel}+Shift+N`;
 
-  const translatedNavItems = useMemo(
+  const translatedNavItems: NavItem[] = useMemo(
     () =>
       navItems.map((item) => ({
         ...item,
