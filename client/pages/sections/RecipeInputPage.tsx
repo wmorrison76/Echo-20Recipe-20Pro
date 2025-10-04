@@ -10,6 +10,7 @@ import { RDLabProvider } from "@/stores/rdLabStore";
 import { DiscoveryPanel } from "@/components/RDLab/DiscoveryPanel";
 import { WorkbenchPanel } from "@/components/RDLab/WorkbenchPanel";
 import { InsightsPanel } from "@/components/RDLab/InsightsPanel";
+import IngredientsGrid from "@/components/IngredientsGrid";
 import {
   Save,
   Image as ImageIcon,
