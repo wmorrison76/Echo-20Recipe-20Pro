@@ -44,11 +44,31 @@ import {
 } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
+type IngredientRow = {
+  qty: string;
+  unit: string;
+  item: string;
+  prep: string;
+  yield: string;
+  cost: string;
+  subId: string;
+};
+
+const createIngredientRow = (): IngredientRow => ({
+  qty: "",
+  unit: "",
+  item: "",
+  prep: "",
+  yield: "",
+  cost: "",
+  subId: "",
+});
+
 const RecipeInputPage = () => {
   const [recipeName, setRecipeName] = useState("");
   const { t } = useTranslation();
-  const [ingredients, setIngredients] = useState([
-    { qty: "", unit: "", item: "", prep: "", yield: "", cost: "", subId: "" },
+  const [ingredients, setIngredients] = useState<IngredientRow[]>([
+    createIngredientRow(),
   ]);
   const historyRef = useRef<any[]>([]);
   const futureRef = useRef<any[]>([]);
