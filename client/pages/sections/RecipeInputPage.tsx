@@ -72,6 +72,43 @@ const RecipeInputPage = () => {
 
   const [isRndLabsOpen, setIsRndLabsOpen] = useState(false);
   const [rightSidebarMode, setRightSidebarMode] = useState<"recipe" | "rnd">("recipe");
+  const [rndLayout, setRndLayout] = useState<[number, number, number]>(() => {
+    if (typeof window === "undefined") return [32, 36, 32];
+    try {
+      const stored = window.localStorage.getItem("recipe:rnd-layout");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (
+          Array.isArray(parsed) &&
+          parsed.length === 3 &&
+          parsed.every((value) => Number.isFinite(Number(value)))
+        ) {
+          return parsed.map((value) => Number(value)) as [number, number, number];
+        }
+      }
+    } catch {}
+    return [32, 36, 32];
+  });
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem("recipe:rnd-layout", JSON.stringify(rndLayout));
+    } catch {}
+  }, [rndLayout]);
+  const handleRndLayoutChange = useCallback((nextLayout: number[]) => {
+    if (!Array.isArray(nextLayout) || nextLayout.length !== 3) return;
+    setRndLayout((prev) => {
+      const next = nextLayout.map((value) => Number(value)) as [number, number, number];
+      return prev.every((value, index) => value === next[index]) ? prev : next;
+    });
+  }, []);
+
+  useEffect(() => {
+    setRightSidebarMode((prev) => {
+      const next = isRndLabsOpen ? "rnd" : "recipe";
+      return prev === next ? prev : next;
+    });
+  }, [isRndLabsOpen]);
 
   const accentMuted = isDarkMode ? "text-cyan-300/70" : "text-slate-500";
 
@@ -2914,7 +2951,7 @@ const RecipeInputPage = () => {
                 "⅙": "1/6",
                 "⅚": "5/6",
                 "⅛": "1/8",
-                "���": "3/8",
+                "⅜": "3/8",
                 "⅝": "5/8",
                 "⅞": "7/8",
               };
