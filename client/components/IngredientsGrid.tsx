@@ -182,7 +182,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                 className={inputTone(isDarkMode, undefined, true)}
                 placeholder="100"
               />
-              <div className="relative flex items-center gap-1">
+              <div className="relative flex w-full items-center gap-1">
                 <span className="pointer-events-none text-sm font-semibold text-slate-500 dark:text-cyan-300">
                   {currencySymbol}
                 </span>
