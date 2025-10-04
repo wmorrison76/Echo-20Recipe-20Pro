@@ -18,6 +18,7 @@ export type LabTask = {
   owner: string;
   due: string;
   isBlocked?: boolean;
+  isCompleted?: boolean;
 };
 
 type RDLabState = {
