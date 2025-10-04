@@ -1772,15 +1772,6 @@ const RecipeInputPage = () => {
             aria-label={t("recipe.actions.convertUnits", "Convert Units")}
             className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
           >
-            <ArrowLeftRight className="h-5 w-5" aria-hidden />
-          </button>
-          <button
-            type="button"
-            onClick={() => convertUnits()}
-            title={t("recipe.tools.alt", "Alt Units")}
-            aria-label={t("recipe.tools.alt", "Alt Units")}
-            className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
-          >
             <Ruler className="h-5 w-5" aria-hidden />
           </button>
           <button
