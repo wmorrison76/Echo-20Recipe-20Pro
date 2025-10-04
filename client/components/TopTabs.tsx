@@ -124,15 +124,14 @@ function TabLink({ to, label, icon: Icon, collapsed, shortcutDisplay }: TabLinkP
         )}
         aria-hidden
       />
-      <span
-        aria-hidden={collapsed}
-        className={cn(
-          "ml-2 overflow-hidden text-ellipsis whitespace-nowrap transition-all duration-700 ease-out",
-          collapsed ? "ml-0 max-w-0 opacity-0" : "max-w-[180px] opacity-100",
-        )}
+      <DissolvingText
+        collapsed={collapsed}
+        ariaHidden={collapsed}
+        className="ml-2 text-ellipsis"
+        expandedMaxWidthClass="max-w-[180px]"
       >
         {label}
-      </span>
+      </DissolvingText>
     </Link>
   );
 
