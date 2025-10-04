@@ -86,6 +86,7 @@ export default function RightSidebar(props: RightSidebarProps) {
     const currentId = focusExperiment?.id;
     return labStore.experiments.filter((item) => item.id !== currentId).slice(0, 4);
   }, [labStore, focusExperiment?.id]);
+  const experimentsList = labStore?.experiments ?? [];
   const backlog = labStore?.backlog ?? [];
   const insights = labStore?.insights ?? [];
   const translateClass = isCollapsed ? "translate-x-full" : "translate-x-0";
