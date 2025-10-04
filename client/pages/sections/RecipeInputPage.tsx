@@ -109,6 +109,28 @@ const RecipeInputPage = () => {
 
   const panelStyle = (weight: number) => ({ flexGrow: weight, flexBasis: 0, minWidth: 0 });
 
+  const handleClasses = isDarkMode
+    ? "relative flex w-2 cursor-col-resize items-center justify-center rounded-full bg-cyan-500/30 transition hover:bg-cyan-400/60"
+    : "relative flex w-2 cursor-col-resize items-center justify-center rounded-full bg-slate-300/80 transition hover:bg-slate-500/80";
+
+  const panelBaseClasses = isDarkMode
+    ? "flex h-full flex-col rounded-2xl border border-cyan-500/25 bg-slate-950/70 p-4 text-cyan-100 shadow-[0_0_28px_rgba(56,189,248,0.25)]"
+    : "flex h-full flex-col rounded-2xl border border-slate-200 bg-white/95 p-4 text-slate-800 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.35)]";
+
+  const panelAccentClasses = [
+    isDarkMode
+      ? "bg-gradient-to-br from-cyan-900/40 via-slate-950/70 to-slate-950/80"
+      : "bg-gradient-to-br from-sky-50 via-white to-slate-100",
+    isDarkMode
+      ? "bg-gradient-to-br from-cyan-800/40 via-slate-900/60 to-cyan-900/70"
+      : "bg-gradient-to-br from-white via-indigo-50 to-blue-100",
+    isDarkMode
+      ? "bg-gradient-to-br from-slate-900/40 via-slate-950/60 to-cyan-900/40"
+      : "bg-gradient-to-br from-white via-slate-50 to-slate-100",
+  ];
+
+  const accentMuted = isDarkMode ? "text-cyan-300/70" : "text-slate-500";
+
   const [pickerOpen, setPickerOpen] = useState<{ index: number } | null>(null);
   const [pickerQ, setPickerQ] = useState("");
   // Sync with global theme from ThemeToggle
@@ -248,7 +270,7 @@ const RecipeInputPage = () => {
       "¾": "3/4",
       "⅐": "1/7",
       "⅑": "1/9",
-      "��": "1/10",
+      "⅒": "1/10",
       "⅓": "1/3",
       "⅔": "2/3",
       "⅕": "1/5",
@@ -2068,7 +2090,7 @@ const RecipeInputPage = () => {
                       onChange={(e) => {
                         const raw = e.target.value;
                         const allowed = raw.replace(
-                          /[^0-9.\s/%¼½¾⅓⅔⅛⅜⅝⅞-]/g,
+                          /[^0-9.\s/%¼½¾⅓���⅛⅜⅝⅞-]/g,
                           "",
                         );
                         const v = [...ingredients];
