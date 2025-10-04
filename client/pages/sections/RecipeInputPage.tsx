@@ -1038,19 +1038,22 @@ const RecipeInputPage = () => {
 
     if (currentUnits === "Imperial") {
       setIngredients(
-        normalizedImperial.map((r) => {
-          const n = parseQuantity(r.qty);
-          const key = alias(r.unit);
-          const cv = map[key];
-          if (Number.isFinite(n) && cv) {
-            return {
-              ...r,
-              qty: String(Number(cv.f(n)).toFixed(2)),
-              unit: cv.unit,
-            };
-          }
-          return r;
-        }),
+        ensureIngredientRowIds(
+          normalizedImperial.map((r) => {
+            const base = ensureIngredientRowId(r);
+            const n = parseQuantity(base.qty);
+            const key = alias(base.unit);
+            const cv = map[key];
+            if (Number.isFinite(n) && cv) {
+              return {
+                ...base,
+                qty: String(Number(cv.f(n)).toFixed(2)),
+                unit: cv.unit,
+              };
+            }
+            return base;
+          }),
+        ),
       );
       // convert header units
       if (
@@ -1727,7 +1730,7 @@ const RecipeInputPage = () => {
                           .replace(/[^0-9]/g, "")
                           .slice(0, 3);
                         const suffix =
-                          currentUnits === "Imperial" ? "°F" : "°C";
+                          currentUnits === "Imperial" ? "°F" : "��C";
                         setCookTemp(
                           digits ? `${parseInt(digits, 10)}${suffix}` : "",
                         );
