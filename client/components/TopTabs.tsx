@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   BookOpenCheck,
@@ -439,7 +439,7 @@ export default function TopTabs() {
               </li>
               <li>
                 Import from the web: paste a URL in the right sidebar. The
-                importer reads JSON‑LD or page sections, pulls times/yield, and
+                importer reads JSON��LD or page sections, pulls times/yield, and
                 attaches the cover image to the gallery.
               </li>
             </ul>
