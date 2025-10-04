@@ -1523,15 +1523,64 @@ const RecipeInputPage = () => {
                   )}
                 </div>
               </div>
-              <AddRecipeToolsPanel
-                isDarkMode={isDarkMode}
-                onConvertUnits={convertUnits}
-                onAltUnits={convertUnits}
-                onSaveSnapshot={handleSaveSnapshot}
-                onCycleCurrency={cycleCurrency}
-                onOpenYieldLab={() => setYieldOpen(true)}
-                className="backdrop-blur-sm"
-              />
+              <div
+                className={`rounded-3xl border p-4 shadow-lg backdrop-blur-sm ${
+                  isDarkMode
+                    ? "bg-black/50 border-cyan-400/30 shadow-[0_0_24px_rgba(34,211,238,0.25)]"
+                    : "bg-white border-gray-200 shadow-gray-200/50"
+                }`}
+                data-echo-key="section:add:photos"
+              >
+                <div
+                  className={`mb-3 text-xs font-semibold uppercase tracking-[0.22em] ${
+                    isDarkMode ? "text-cyan-300" : "text-gray-700"
+                  }`}
+                >
+                  {t("recipe.labels.photo", "RECIPE IMAGE")}
+                </div>
+                <div className="flex justify-center">
+                  <div
+                    className="flex-shrink-0"
+                    style={{ width: "17rem", height: "17rem" }}
+                  >
+                    {image ? (
+                      <img
+                        src={image}
+                        alt="Recipe"
+                        className="h-full w-full rounded-md bg-white object-contain"
+                        style={{
+                          border: "0.5px solid #000",
+                          boxShadow:
+                            "0 6px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2)",
+                        }}
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center rounded-md border border-dashed border-gray-400/70 bg-gray-100">
+                        <label
+                          className="cursor-pointer text-xs text-gray-600"
+                          data-echo-key="cta:add:upload"
+                        >
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={async (e) => {
+                              const f = e.target.files?.[0];
+                              if (!f) return;
+                              try {
+                                const reader = new FileReader();
+                                reader.onload = () => setImage(String(reader.result));
+                                reader.readAsDataURL(f);
+                              } catch {}
+                            }}
+                          />
+                          Upload Photo
+                        </label>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
