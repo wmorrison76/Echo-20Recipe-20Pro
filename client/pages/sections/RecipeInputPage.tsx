@@ -51,8 +51,13 @@ import type { IngredientRow } from "@/types/ingredients";
 import { createIngredientRow, createDividerRow, generateIngredientRowId } from "@/types/ingredients";
 
 const ensureIngredientRowId = (row: IngredientRow): IngredientRow => {
-  if (row.subId && row.subId.trim()) return row;
-  return { ...row, subId: generateIngredientRowId() };
+  const type = row.type || "ingredient";
+  const subId = row.subId && row.subId.trim() ? row.subId : generateIngredientRowId();
+  const costPerUnit =
+    typeof row.costPerUnit === "number" && Number.isFinite(row.costPerUnit)
+      ? row.costPerUnit
+      : null;
+  return { ...row, type, subId, costPerUnit };
 };
 
 const ensureIngredientRowIds = (rows: IngredientRow[]): IngredientRow[] =>
