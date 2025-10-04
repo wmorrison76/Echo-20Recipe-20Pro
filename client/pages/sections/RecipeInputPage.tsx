@@ -299,15 +299,15 @@ const RecipeInputPage = () => {
           typeof option.cost === "number" && Number.isFinite(option.cost)
             ? option.cost
             : null;
-        const newRow: IngredientRow = {
-          qty: "",
-          unit: "",
+        const newRow = createIngredientRow({
           item: `Recipe - ${option.title}`,
+          qty: "1",
+          unit: option.yieldUnit ?? "",
           prep: "",
           yield: "100",
           cost: parsedCost != null ? parsedCost.toFixed(2) : "",
-          subId: generateIngredientRowId(),
-        };
+          costPerUnit: parsedCost ?? null,
+        });
         if (blankIndex >= 0) next[blankIndex] = newRow;
         else next.push(newRow);
       });
