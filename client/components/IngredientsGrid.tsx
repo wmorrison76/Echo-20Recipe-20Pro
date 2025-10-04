@@ -110,7 +110,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
       <div className="mt-4 overflow-x-auto">
         <div className="min-w-[960px] space-y-1">
           <div
-            className={`grid grid-cols-[2.25rem,5rem,7ch,minmax(18rem,2fr),minmax(16rem,1.6fr),6.5rem,minmax(10rem,1fr),2.5rem] items-center gap-3 rounded-xl px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] ${
+            className={`grid grid-cols-[2.25rem,5rem,7ch,minmax(18rem,2fr),minmax(16rem,1.6fr),5ch,minmax(11rem,1fr),2.5rem] items-center gap-3 rounded-xl px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] ${
               isDarkMode ? "bg-slate-900/70 text-cyan-200/70" : "bg-slate-100 text-slate-600"
             }`}
           >
@@ -126,7 +126,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
           {ingredients.map((row, index) => (
             <div
               key={`${index}-${row.item || "blank"}`}
-              className={`grid grid-cols-[2.25rem,5rem,7ch,minmax(18rem,2fr),minmax(16rem,1.6fr),6.5rem,minmax(10rem,1fr),2.5rem] items-stretch gap-3 rounded-2xl border px-3 py-2 ${
+              className={`grid grid-cols-[2.25rem,5rem,7ch,minmax(18rem,2fr),minmax(16rem,1.6fr),5ch,minmax(11rem,1fr),2.5rem] items-stretch gap-3 rounded-2xl border px-3 py-2 ${
                 isDarkMode
                   ? "border-cyan-500/20 bg-slate-950/40 shadow-[0_12px_28px_-18px_rgba(34,211,238,0.45)]"
                   : "border-slate-200 bg-white shadow-[0_12px_28px_-18px_rgba(15,23,42,0.35)]"
@@ -179,7 +179,8 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                 onChange={onFieldChange(index, "yield")}
                 onBlur={onFieldBlur(index, "yield")}
                 onKeyDown={onGridKeyDown}
-                className={inputTone(isDarkMode, undefined, true)}
+                className={inputTone(isDarkMode, "text-center", true)}
+                maxLength={5}
                 placeholder="100"
               />
               <div className="relative flex w-full items-center gap-1">
