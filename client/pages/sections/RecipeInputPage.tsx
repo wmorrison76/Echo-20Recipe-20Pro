@@ -3,7 +3,6 @@ import RightSidebar from "./RightSidebar";
 import { useAppData } from "@/context/AppDataContext";
 import ImageEditorModal from "./ImageEditorModal";
 import NutritionLabel from "./NutritionLabel";
-import AddRecipeToolsPanel from "@/components/AddRecipeToolsPanel";
 import LanguageMenu from "@/components/LanguageMenu";
 import { useTranslation } from "@/context/LanguageContext";
 import { defaultSelection, TaxonomySelection } from "@/lib/taxonomy";
@@ -24,11 +23,13 @@ import {
   Scale,
   NotebookPen,
   ArrowLeftRight,
+  Ruler,
   CircleDollarSign,
   Share2,
   FileDown,
   Printer,
   FlaskConical,
+  Atom,
 } from "lucide-react";
 import { Search, Link2, X } from "lucide-react";
 import {
@@ -1071,7 +1072,7 @@ const RecipeInputPage = () => {
       "¼": "1/4",
       "½": "1/2",
       "¾": "3/4",
-      "⅓": "1/3",
+      "��": "1/3",
       "⅔": "2/3",
       "⅛": "1/8",
       "⅜": "3/8",
