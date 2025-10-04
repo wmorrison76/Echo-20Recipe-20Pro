@@ -827,13 +827,15 @@ const RecipeInputPage = () => {
     [],
   );
 
-  const knownPrepMethods = useMemo(
-    () =>
-      Array.from(new Set(selectedPrepMethod))
-        .map((value) => value.trim())
-        .filter(Boolean),
-    [selectedPrepMethod],
-  );
+  const knownPrepMethods = useMemo(() => {
+    const sidebarMethods = selectedPrepMethod
+      .map((value) => value.trim())
+      .filter(Boolean);
+    const techniqueMethods = Array.from(taxonomy.technique ?? [])
+      .map((value) => String(value).trim())
+      .filter(Boolean);
+    return Array.from(new Set([...sidebarMethods, ...techniqueMethods]));
+  }, [selectedPrepMethod, taxonomy.technique]);
 
   const { activeIngredientCount, averageIngredientYield } = useMemo(() => {
     let active = 0;
