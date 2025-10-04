@@ -324,31 +324,14 @@ export default function TopTabs() {
           <div
             className={cn(
               "flex items-center gap-2 transition-all duration-500",
-              collapsed ? "justify-center" : "justify-between",
+              collapsed ? "justify-center" : "justify-end",
             )}
           >
-            <div
-              className={cn(
-                "flex items-center transition-all duration-700",
-                collapsed ? "justify-center gap-0" : "gap-3",
-              )}
-            >
-              <span
-                className={cn(
-                  "flex h-10 w-10 items-center justify-center rounded-2xl border border-white/50 bg-white/40 text-xs font-semibold uppercase tracking-[0.35em] text-slate-700 shadow-sm backdrop-blur-sm dark:border-cyan-500/40 dark:bg-cyan-500/15 dark:text-cyan-200",
-                  collapsed ? "w-10" : "w-12",
-                )}
-              >
-                ER
+            {!collapsed ? (
+              <span className="rounded-full border border-white/60 bg-white/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-slate-600 shadow-sm dark:border-cyan-500/40 dark:bg-slate-900/70 dark:text-cyan-200">
+                Navigation
               </span>
-              <DissolvingText
-                collapsed={collapsed}
-                ariaHidden={collapsed}
-                className="text-base font-semibold uppercase tracking-[0.65em] text-slate-700 dark:text-cyan-200"
-              >
-                ECHO RECIPE PRO
-              </DissolvingText>
-            </div>
+            ) : null}
             <button
               type="button"
               onClick={() => {
