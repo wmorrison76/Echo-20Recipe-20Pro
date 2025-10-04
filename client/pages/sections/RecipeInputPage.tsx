@@ -1373,7 +1373,7 @@ const RecipeInputPage = () => {
       "⅔": "2/3",
       "⅛": "1/8",
       "⅜": "3/8",
-      "⅝": "5/8",
+      "��": "5/8",
       "⅞": "7/8",
     };
     let t = s.trim().replace(/[¼½¾⅓⅔⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
@@ -2208,6 +2208,15 @@ const RecipeInputPage = () => {
               onAddSubRecipe={() => setIsSubRecipePickerOpen(true)}
             />
 
+            <SubRecipePicker
+              open={isSubRecipePickerOpen}
+              onOpenChange={setIsSubRecipePickerOpen}
+              options={subRecipeOptions}
+              onConfirm={insertSubRecipeRows}
+              isDarkMode={isDarkMode}
+              formatCurrency={formatRecipeCost}
+            />
+
             <Dialog open={yieldOpen} onOpenChange={setYieldOpen}>
               <DialogContent className="max-w-3xl w-full">
                 <DialogHeader>
@@ -2834,7 +2843,7 @@ const RecipeInputPage = () => {
                 "½": "1/2",
                 "¾": "3/4",
                 "⅐": "1/7",
-                "��": "1/9",
+                "⅑": "1/9",
                 "⅒": "1/10",
                 "⅓": "1/3",
                 "⅔": "2/3",
