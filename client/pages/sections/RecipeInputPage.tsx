@@ -39,6 +39,7 @@ import {
   X,
 } from "lucide-react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import type { RecipeExport } from "@shared/recipes";
 import {
   Dialog,
   DialogContent,
