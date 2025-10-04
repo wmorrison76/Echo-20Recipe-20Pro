@@ -61,6 +61,8 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
   onAddSubRecipe,
   onAddDivider,
 }) => {
+  const { t } = useTranslation();
+
   const handleDragStart = (index: number) => (event: React.DragEvent<HTMLButtonElement>) => {
     event.dataTransfer.setData("text/plain", String(index));
     event.dataTransfer.effectAllowed = "move";
