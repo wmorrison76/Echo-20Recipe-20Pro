@@ -383,7 +383,7 @@ const RecipeInputPage = () => {
   const inputClass = `border p-3 rounded-lg text-sm transition-all focus:shadow-md focus:ring-2 ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30 shadow-none" : "bg-white border-gray-300 text-black focus:ring-blue-400/30 focus:border-blue-500 shadow-lg"}`;
 
   // Parse numbers supporting mixed fractions and unicode fractions like "1 1/2", "3/4", "½", "1½"
-  const parseQuantity = (s: string): number => {
+  function parseQuantity(s: string): number {
     if (!s) return NaN as any;
     const map: Record<string, string> = {
       "¼": "1/4",
