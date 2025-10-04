@@ -110,7 +110,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
       <div className="mt-4 overflow-x-auto">
         <div className="min-w-[960px] space-y-1">
           <div
-            className={`grid grid-cols-[3rem,6rem,6rem,minmax(18rem,2fr),minmax(16rem,1.6fr),8rem,8rem,3rem] items-center gap-3 rounded-xl px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] ${
+            className={`grid grid-cols-[3rem,6rem,6rem,minmax(18rem,2fr),minmax(16rem,1.6fr),7rem,minmax(9rem,1fr),3rem] items-center gap-3 rounded-xl px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] ${
               isDarkMode ? "bg-slate-900/70 text-cyan-200/70" : "bg-slate-100 text-slate-600"
             }`}
           >
@@ -126,7 +126,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
           {ingredients.map((row, index) => (
             <div
               key={`${index}-${row.item || "blank"}`}
-              className={`grid grid-cols-[3rem,6rem,6rem,minmax(18rem,2fr),minmax(16rem,1.6fr),8rem,8rem,3rem] items-stretch gap-3 rounded-2xl border px-3 py-2 ${
+              className={`grid grid-cols-[3rem,6rem,6rem,minmax(18rem,2fr),minmax(16rem,1.6fr),7rem,minmax(9rem,1fr),3rem] items-stretch gap-3 rounded-2xl border px-3 py-2 ${
                 isDarkMode
                   ? "border-cyan-500/20 bg-slate-950/40 shadow-[0_12px_28px_-18px_rgba(34,211,238,0.45)]"
                   : "border-slate-200 bg-white shadow-[0_12px_28px_-18px_rgba(15,23,42,0.35)]"
@@ -182,8 +182,8 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                 className={inputTone(isDarkMode, undefined, true)}
                 placeholder="100"
               />
-              <div className="relative">
-                <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs text-slate-400 dark:text-cyan-500">
+              <div className="relative flex items-center gap-1">
+                <span className="pointer-events-none text-sm font-semibold text-slate-500 dark:text-cyan-300">
                   {currencySymbol}
                 </span>
                 <input
@@ -193,7 +193,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                   onChange={onFieldChange(index, "cost")}
                   onBlur={onFieldBlur(index, "cost")}
                   onKeyDown={onGridKeyDown}
-                  className={inputTone(isDarkMode, "pl-5", true)}
+                  className={inputTone(isDarkMode, "px-2 text-right", false)}
                   placeholder="0.00"
                 />
               </div>
