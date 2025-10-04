@@ -21,8 +21,7 @@ export default function Index() {
   return (
     <TronBackdrop>
       <div
-        className="min-h-screen text-foreground transition-[padding-left] duration-700 ease-out"
-        style={{ paddingLeft: "var(--sidebar-offset, 5rem)" }}
+        className="min-h-screen text-foreground pl-[5.5rem]"
       >
         <TopTabs />
         <main className="w-full py-6">
