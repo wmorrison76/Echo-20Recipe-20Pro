@@ -398,7 +398,11 @@ export default function RightSidebar(props: RightSidebarProps) {
               <select
                 className="w-full rounded border border-gray-400/50 bg-gray-100/50 p-2 text-sm text-slate-700 transition focus:bg-white focus:outline-none dark:border-slate-700/60 dark:bg-slate-900/60 dark:text-cyan-100"
                 value={taxonomy.cuisine || ""}
-                onChange={(event) => tset({ cuisine: event.target.value || undefined })}
+                onChange={(event) => {
+                  const value = event.target.value || undefined;
+                  tset({ cuisine: value });
+                  onNationalityChange(value ? [value] : []);
+                }}
               >
                 <option value="">—</option>
                 {axisOptions("cuisines").map((option) => (
