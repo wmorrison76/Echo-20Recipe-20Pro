@@ -292,7 +292,7 @@ const RecipeInputPage = () => {
     };
     let t = String(s).trim();
     // Expand unicode vulgar fractions
-    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
+    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜��⅞]/g, (ch) => map[ch] || ch);
     // Allow forms like "1½" -> "1 1/2"
     t = t.replace(/(\d)\s*(\d\/\d)/, "$1 $2");
     // Mixed fraction
@@ -1417,22 +1417,29 @@ const RecipeInputPage = () => {
         data-echo-key="page:recipes:add"
       >
         <div
-          className={`sticky top-0 z-[60] flex w-full items-center justify-between gap-4 px-6 py-4 transition-all duration-500 backdrop-blur-xl ${
-          isDarkMode
-            ? "border-b border-cyan-500/25 bg-slate-950/75 text-cyan-100 shadow-[0_24px_72px_-32px_rgba(56,189,248,0.55)]"
-            : "border-b border-slate-200/80 bg-white/85 text-slate-900 shadow-[0_24px_72px_-32px_rgba(15,23,42,0.35)]"
-        }`}
-      >
-        <div className="flex items-center gap-3">
-          <h1
-            className={`text-sm font-semibold uppercase tracking-[0.4em] ${
-              isDarkMode ? "text-cyan-300/80" : "text-slate-500/80"
-            }`}
-          >
-            {t("recipe.workspaceTitle", "Add Recipe Workspace")}
-          </h1>
-        </div>
-        <div className="flex flex-wrap items-center justify-end gap-2">
+          className={`sticky top-0 z-[60] flex w-full items-start justify-between gap-4 px-6 py-4 transition-all duration-500 backdrop-blur-xl ${
+            isDarkMode
+              ? "border-b border-cyan-500/25 bg-slate-950/75 text-cyan-100 shadow-[0_24px_72px_-32px_rgba(56,189,248,0.55)]"
+              : "border-b border-slate-200/80 bg-white/85 text-slate-900 shadow-[0_24px_72px_-32px_rgba(15,23,42,0.35)]"
+          }`}
+        >
+          <div className="flex flex-col gap-1">
+            <span
+              className={`text-[11px] font-semibold uppercase tracking-[0.35em] ${
+                isDarkMode ? "text-cyan-400/80" : "text-slate-500/70"
+              }`}
+            >
+              R&D Labs
+            </span>
+            <h1
+              className={`text-sm font-semibold uppercase tracking-[0.4em] ${
+                isDarkMode ? "text-cyan-200/85" : "text-slate-600"
+              }`}
+            >
+              {t("recipe.workspaceTitle", "Add Recipe Workspace")}
+            </h1>
+          </div>
+          <div className="flex flex-wrap items-center justify-end gap-2 sm:flex-nowrap">
           <button
             type="button"
             onClick={() => setIsRightSidebarCollapsed((v) => !v)}
