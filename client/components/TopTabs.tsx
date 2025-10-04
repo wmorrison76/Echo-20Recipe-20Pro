@@ -316,7 +316,7 @@ export default function TopTabs() {
       <TooltipProvider delayDuration={collapsed ? 0 : 200}>
         <aside
         className={cn(
-          "pointer-events-auto fixed left-4 top-4 z-[1000] flex flex-col overflow-hidden rounded-3xl border border-white/60 bg-white/40 shadow-[0_32px_65px_-18px_rgba(15,23,42,0.45)] backdrop-blur-2xl transition-all duration-700 dark:border-cyan-500/25 dark:bg-slate-950/70 dark:shadow-[0_0_70px_rgba(56,189,248,0.65)]",
+          "pointer-events-auto fixed left-1.5 top-24 z-[1000] flex flex-col overflow-hidden rounded-3xl border border-white/60 bg-white/40 shadow-[0_32px_65px_-18px_rgba(15,23,42,0.45)] backdrop-blur-2xl transition-all duration-700 dark:border-cyan-500/25 dark:bg-slate-950/70 dark:shadow-[0_0_70px_rgba(56,189,248,0.65)] sm:left-2 sm:top-28 lg:left-4",
           collapsed ? "w-16 space-y-3 p-3" : "w-64 space-y-4 p-5",
         )}
       >
