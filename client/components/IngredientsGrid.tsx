@@ -150,12 +150,12 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
             }`}
           >
             <span>#</span>
-            <span>Qty</span>
-            <span>Unit</span>
-            <span>Ingredient</span>
-            <span>Method / Prep</span>
-            <span>Yield %</span>
-            <span>Cost</span>
+            <span>{t("recipe.ingredients.columns.qty", "Qty")}</span>
+            <span>{t("recipe.ingredients.columns.unit", "Unit")}</span>
+            <span>{t("recipe.ingredients.columns.item", "Ingredient")}</span>
+            <span>{t("recipe.ingredients.columns.prep", "Method / Prep")}</span>
+            <span>{t("recipe.ingredients.columns.yield", "Yield %")}</span>
+            <span>{t("recipe.ingredients.columns.cost", "Cost")}</span>
             <span />
           </div>
           {ingredients.map((row, index) => {
