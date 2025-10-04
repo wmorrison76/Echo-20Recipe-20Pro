@@ -2,7 +2,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useLanguage, useTranslation } from "@/context/LanguageContext";
 import { languageOptions, type LanguageOption } from "@/i18n/config";
 import { cn } from "@/lib/utils";
-import { Atom, Check } from "lucide-react";
+import { Check } from "lucide-react";
 
 export type LanguageMenuVariant = "card" | "compact";
 
@@ -29,7 +29,7 @@ export default function LanguageMenu({
   const triggerClasses = cn(
     variant === "card"
       ? "flex h-full min-h-[4.25rem] w-full items-center justify-between rounded-2xl border px-4 py-3 text-left shadow-inner transition-colors"
-      : "inline-flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-sm font-semibold transition-colors",
+      : "inline-flex h-10 w-10 items-center justify-center rounded-full border text-lg transition-colors",
     isDark
       ? variant === "card"
         ? "border-cyan-400/40 bg-cyan-900/30 text-cyan-100 hover:bg-cyan-900/50"
@@ -65,28 +65,20 @@ export default function LanguageMenu({
         >
           {variant === "card" ? (
             <div className="flex w-full items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <Atom className="h-5 w-5" aria-hidden />
-                <span className="text-sm font-semibold leading-tight">
-                  {label.split(" ").length > 1 ? (
-                    <span className="block text-left leading-tight">{label}</span>
-                  ) : (
-                    label
-                  )}
-                </span>
-              </div>
+              <span className="text-sm font-semibold leading-tight">
+                {label}
+              </span>
               <span className="text-2xl leading-none" aria-hidden>
                 {active.flag}
               </span>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
-              <Atom className="h-4 w-4" aria-hidden />
-              <span className="sr-only">{label}</span>
-              <span className="text-lg leading-none" aria-hidden>
+            <>
+              <span className="sr-only">{`${label} (${active.label})`}</span>
+              <span className="text-2xl leading-none" aria-hidden>
                 {active.flag}
               </span>
-            </div>
+            </>
           )}
         </button>
       </PopoverTrigger>
@@ -111,7 +103,7 @@ export default function LanguageMenu({
                 <span className="text-xl leading-none" aria-hidden>
                   {option.flag}
                 </span>
-                <span className="flex-1 text-left font-medium">{option.label}</span>
+                <span className="sr-only">{option.label}</span>
                 {selected ? <Check className="h-4 w-4" aria-hidden /> : null}
               </button>
             );
