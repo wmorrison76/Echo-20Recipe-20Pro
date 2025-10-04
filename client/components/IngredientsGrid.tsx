@@ -119,20 +119,18 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
           }`}
         >
           <span>
-            Active items:{" "}
-            <strong className={isDarkMode ? "text-cyan-100" : "text-slate-900"}>
-              {activeCount}
-            </strong>
+            {t("recipe.ingredients.activeItems", "Active items")}:{" "}
+            <strong className={isDarkMode ? "text-cyan-100" : "text-slate-900"}>{activeCount}</strong>
           </span>
           <span>
-            Total cost:{" "}
+            {t("recipe.ingredients.totalCost", "Total cost")}:{" "}
             <strong className={isDarkMode ? "text-cyan-100" : "text-slate-900"}>
               {currencySymbol}
               {totalCost.toFixed(2)}
             </strong>
           </span>
           <span>
-            Avg yield:{" "}
+            {t("recipe.ingredients.averageYield", "Avg yield")}:{" "}
             <strong className={isDarkMode ? "text-cyan-100" : "text-slate-900"}>
               {averageYield == null ? "—" : `${averageYield.toFixed(1)}%`}
             </strong>
