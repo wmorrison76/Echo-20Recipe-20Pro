@@ -48,7 +48,7 @@ import {
 } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { IngredientRow } from "@/types/ingredients";
-import { createIngredientRow, generateIngredientRowId } from "@/types/ingredients";
+import { createIngredientRow, createDividerRow, generateIngredientRowId } from "@/types/ingredients";
 
 const ensureIngredientRowId = (row: IngredientRow): IngredientRow => {
   if (row.subId && row.subId.trim()) return row;
