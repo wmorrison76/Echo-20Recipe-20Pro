@@ -72,10 +72,7 @@ const ensureIngredientRowId = (row: IngredientRow): IngredientRow => {
       Math.abs(qtyValue as number) > Number.EPSILON
         ? Number((costValue / (qtyValue as number)).toFixed(6))
         : null;
-    base.costPerUnit =
-      typeof base.costPerUnit === "number" && Number.isFinite(base.costPerUnit)
-        ? base.costPerUnit
-        : derived;
+    base.costPerUnit = derived;
   } else {
     base.costPerUnit = null;
   }
@@ -282,7 +279,7 @@ const RecipeInputPage = () => {
   }, [recipes]);
 
   const getCurrencySymbol = (c: string) =>
-    c === "EUR" ? "��" : c === "GBP" ? "£" : c === "JPY" ? "��" : "$";
+    c === "EUR" ? "€" : c === "GBP" ? "£" : c === "JPY" ? "��" : "$";
   const formatRecipeCost = useCallback(
     (value: number | null | undefined, currency?: string | null) => {
       if (typeof value !== "number" || Number.isNaN(value)) return "—";
@@ -2952,7 +2949,7 @@ const RecipeInputPage = () => {
                 "⅝": "5/8",
                 "⅞": "7/8",
               };
-              s = s.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => fracMap[ch] || ch);
+              s = s.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝���]/g, (ch) => fracMap[ch] || ch);
               const m = s.match(
                 /^\s*([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?)?\s*([a-zA-Z\.]+)?\s*(.*)$/,
               );
