@@ -28,7 +28,6 @@ import {
   Sun,
   Moon,
   Scale,
-  ArrowLeftRight,
   Ruler,
   CircleDollarSign,
   Share2,
@@ -1177,7 +1176,7 @@ const RecipeInputPage = () => {
       } else {
         // Treat numeric/no-unit as Celsius when switching to Imperial
         if (
-          /(?:��?\s*C\b|celsius)/i.test(t) ||
+          /(?:°?\s*C\b|celsius)/i.test(t) ||
           /^(?:\d{2,3})$/.test(t.replace(/[^0-9]/g, ""))
         ) {
           const f = Math.round((num * 9) / 5 + 32);
