@@ -85,6 +85,7 @@ const RecipeInputPage = () => {
     : "border-slate-200 bg-white/85 text-slate-700 hover:bg-white focus-visible:ring-blue-200 focus-visible:ring-offset-white";
 
   const [isRndLabsOpen, setIsRndLabsOpen] = useState(false);
+  const [isSubRecipePickerOpen, setIsSubRecipePickerOpen] = useState(false);
   const [rightSidebarMode, setRightSidebarMode] = useState<"recipe" | "rnd">("recipe");
   const [rndLayout, setRndLayout] = useState<[number, number, number]>(() => {
     if (typeof window === "undefined") return [32, 36, 32];
