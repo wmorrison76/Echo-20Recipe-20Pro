@@ -438,9 +438,13 @@ export default function TopTabs() {
                 collapsed && "flex-col gap-2 px-2 py-2",
               )}
             >
-              <span aria-hidden={collapsed} className={textClass("text-sm font-medium")}>
+              <DissolvingText
+                collapsed={collapsed}
+                ariaHidden={collapsed}
+                className="text-sm font-medium"
+              >
                 {t("recipe.actions.theme", "Theme")}
-              </span>
+              </DissolvingText>
               <ThemeToggle />
             </div>
           </div>
