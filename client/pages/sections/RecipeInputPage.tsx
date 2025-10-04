@@ -256,6 +256,14 @@ const RecipeInputPage = () => {
 
   const getCurrencySymbol = (c: string) =>
     c === "EUR" ? "€" : c === "GBP" ? "£" : c === "JPY" ? "��" : "$";
+  const formatRecipeCost = useCallback(
+    (value: number | null | undefined, currency?: string | null) => {
+      if (typeof value !== "number" || Number.isNaN(value)) return "—";
+      const symbol = getCurrencySymbol(currency || currentCurrency);
+      return `${symbol}${value.toFixed(2)}`;
+    },
+    [currentCurrency],
+  );
   const calculateTotalCost = () =>
     ingredients.reduce(
       (s, r) => s + (parseFloat(String(r.cost).replace(/[$€£¥,\s]/g, "")) || 0),
@@ -323,7 +331,7 @@ const RecipeInputPage = () => {
       "⅑": "1/9",
       "⅒": "1/10",
       "⅓": "1/3",
-      "⅔": "2/3",
+      "��": "2/3",
       "⅕": "1/5",
       "⅖": "2/5",
       "⅗": "3/5",
