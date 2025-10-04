@@ -1990,8 +1990,7 @@ const RecipeInputPage = () => {
 
           <Dialog open={isRndLabsOpen} onOpenChange={setIsRndLabsOpen}>
             <DialogContent className="max-w-[min(1200px,95vw)] w-full h-[85vh] overflow-hidden border border-white/10 bg-white/95 p-0 text-slate-900 shadow-[0_40px_120px_-60px_rgba(15,23,42,0.65)] dark:border-cyan-500/20 dark:bg-slate-950/95 dark:text-cyan-100">
-              <RDLabProvider>
-                <div className="flex h-full flex-col">
+              <div className="flex h-full flex-col">
                   <DialogHeader className="flex flex-row items-center justify-between border-b px-6 py-4 dark:border-cyan-500/20">
                     <DialogTitle className="text-lg font-semibold uppercase tracking-[0.35em]">
                       R&D Labs
@@ -2063,7 +2062,6 @@ const RecipeInputPage = () => {
                     </PanelGroup>
                   </div>
                 </div>
-              </RDLabProvider>
             </DialogContent>
           </Dialog>
 
