@@ -42,7 +42,7 @@ export default function LanguageMenu({
 
   const optionClasses = (selected: boolean) =>
     cn(
-      "flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+      "flex w-full items-center justify-between gap-3 rounded-md px-3 py-2 text-sm transition-colors",
       selected
         ? isDark
           ? "bg-cyan-900/50 text-cyan-100"
