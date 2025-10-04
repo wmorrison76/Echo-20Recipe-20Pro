@@ -1411,10 +1411,11 @@ const RecipeInputPage = () => {
   };
 
   return (
-    <div
-      className={`relative w-full min-h-screen transition-all duration-300 text-foreground`}
-      data-echo-key="page:recipes:add"
-    >
+    <RDLabProvider>
+      <div
+        className={`relative w-full min-h-screen transition-all duration-300 text-foreground`}
+        data-echo-key="page:recipes:add"
+      >
       <div
         className={`sticky top-0 z-[60] flex w-full items-center justify-between gap-4 px-6 py-4 transition-all duration-500 backdrop-blur-xl ${
           isDarkMode
@@ -3096,7 +3097,8 @@ const RecipeInputPage = () => {
         onApply={(d) => setImage(d)}
         isDarkMode={isDarkMode}
       />
-    </div>
+      </div>
+    </RDLabProvider>
   );
 };
 
