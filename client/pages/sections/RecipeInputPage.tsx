@@ -111,6 +111,31 @@ const RecipeInputPage = () => {
   }, [isRndLabsOpen]);
 
   const accentMuted = isDarkMode ? "text-cyan-300/70" : "text-slate-500";
+  const rndPanelBaseClasses =
+    "flex h-full flex-col overflow-hidden rounded-3xl border p-5 shadow-[inset_0_1px_0_rgba(15,23,42,0.08)] backdrop-blur transition-colors duration-300";
+  const rndPanelToneClasses = isDarkMode
+    ? "border-cyan-500/25 text-cyan-100"
+    : "border-slate-200/80 text-slate-900";
+  const rndPanelThemes = useMemo(
+    () =>
+      isDarkMode
+        ? [
+            "bg-gradient-to-br from-cyan-900/60 via-slate-950/50 to-slate-900/30",
+            "bg-gradient-to-br from-slate-950/80 via-cyan-900/40 to-slate-950/30",
+            "bg-gradient-to-br from-slate-950/70 via-slate-900/45 to-cyan-900/35",
+          ]
+        : [
+            "bg-gradient-to-br from-sky-100/70 via-white/85 to-white/45",
+            "bg-gradient-to-br from-white/90 via-slate-50/80 to-sky-100/50",
+            "bg-gradient-to-br from-white/85 via-slate-50/75 to-indigo-100/45",
+          ],
+    [isDarkMode],
+  );
+  const rndPanelHeadingClasses =
+    "text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-600 dark:text-cyan-200/70";
+  const rndHandleClasses = isDarkMode
+    ? "group relative flex w-8 items-center justify-center rounded-full border border-cyan-500/20 bg-cyan-500/10 transition hover:bg-cyan-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+    : "group relative flex w-8 items-center justify-center rounded-full border border-slate-200 bg-white/80 transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white";
 
   const [pickerOpen, setPickerOpen] = useState<{ index: number } | null>(null);
   const [pickerQ, setPickerQ] = useState("");
