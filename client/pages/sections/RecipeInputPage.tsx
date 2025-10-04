@@ -65,6 +65,8 @@ const RecipeInputPage = () => {
     ? "border-cyan-500/30 bg-slate-900/70 text-cyan-100/90 hover:bg-slate-900/80 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-slate-950"
     : "border-slate-200 bg-white/85 text-slate-700 hover:bg-white focus-visible:ring-blue-200 focus-visible:ring-offset-white";
 
+  const [isRndLabsOpen, setIsRndLabsOpen] = useState(false);
+
   const [pickerOpen, setPickerOpen] = useState<{ index: number } | null>(null);
   const [pickerQ, setPickerQ] = useState("");
   // Sync with global theme from ThemeToggle
