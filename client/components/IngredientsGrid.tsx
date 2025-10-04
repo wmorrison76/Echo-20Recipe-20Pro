@@ -1,4 +1,5 @@
 import { GripVertical, Link2, MinusCircle, PlusCircle } from "lucide-react";
+import { useTranslation } from "@/context/LanguageContext";
 import type { IngredientRow } from "@/types/ingredients";
 
 type IngredientsGridProps = {
