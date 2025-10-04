@@ -63,23 +63,12 @@ export default function LanguageMenu({
           title={`${label} (${active.label})`}
           aria-label={`${label}, ${active.label}`}
         >
-          {variant === "card" ? (
-            <div className="flex w-full items-center justify-between gap-3">
-              <span className="text-sm font-semibold leading-tight">
-                {label}
-              </span>
-              <span className="text-2xl leading-none" aria-hidden>
-                {active.flag}
-              </span>
-            </div>
-          ) : (
-            <>
-              <span className="sr-only">{`${label} (${active.label})`}</span>
-              <span className="text-2xl leading-none" aria-hidden>
-                {active.flag}
-              </span>
-            </>
-          )}
+          <>
+            <span className="sr-only">{`${label} (${active.label})`}</span>
+            <span className="text-2xl leading-none" aria-hidden>
+              {active.flag}
+            </span>
+          </>
         </button>
       </PopoverTrigger>
       <PopoverContent
@@ -100,10 +89,10 @@ export default function LanguageMenu({
                 onClick={() => setLanguage(option.code)}
                 className={optionClasses(selected)}
               >
+                <span className="sr-only">{option.label}</span>
                 <span className="text-xl leading-none" aria-hidden>
                   {option.flag}
                 </span>
-                <span className="sr-only">{option.label}</span>
                 {selected ? <Check className="h-4 w-4" aria-hidden /> : null}
               </button>
             );
