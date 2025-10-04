@@ -292,7 +292,7 @@ const RecipeInputPage = () => {
     };
     let t = String(s).trim();
     // Expand unicode vulgar fractions
-    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
+    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖���⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
     // Allow forms like "1½" -> "1 1/2"
     t = t.replace(/(\d)\s*(\d\/\d)/, "$1 $2");
     // Mixed fraction
@@ -2009,11 +2009,10 @@ const RecipeInputPage = () => {
                     </p>
                     <PanelGroup
                       direction="horizontal"
-                      layout={rndLayout}
                       onLayout={handleRndLayoutChange}
                       className="flex h-full items-stretch gap-3"
                     >
-                      <Panel minSize={20} order={1} className="flex">
+                      <Panel minSize={20} order={1} defaultSize={rndLayout[0]} className="flex">
                         <section className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[0]}`}>
                           <header className={rndPanelHeadingClasses}>
                             Discovery runway
@@ -2029,7 +2028,7 @@ const RecipeInputPage = () => {
                       <PanelResizeHandle className={rndHandleClasses}>
                         <span className="pointer-events-none h-10 w-0.5 rounded-full bg-slate-500/60 dark:bg-cyan-200/80" />
                       </PanelResizeHandle>
-                      <Panel minSize={26} order={2} className="flex">
+                      <Panel minSize={26} order={2} defaultSize={rndLayout[1]} className="flex">
                         <section className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[1]}`}>
                           <header className={rndPanelHeadingClasses}>
                             Workbench
@@ -2045,7 +2044,7 @@ const RecipeInputPage = () => {
                       <PanelResizeHandle className={rndHandleClasses}>
                         <span className="pointer-events-none h-10 w-0.5 rounded-full bg-slate-500/60 dark:bg-cyan-200/80" />
                       </PanelResizeHandle>
-                      <Panel minSize={20} order={3} className="flex">
+                      <Panel minSize={20} order={3} defaultSize={rndLayout[2]} className="flex">
                         <section className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[2]}`}>
                           <header className={rndPanelHeadingClasses}>
                             Insight stack
