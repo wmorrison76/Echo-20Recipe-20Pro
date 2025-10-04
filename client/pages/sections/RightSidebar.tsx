@@ -38,7 +38,9 @@ const recipeAccessList = ["Bar", "Global", "Grab & Go", "Outlet", "Pastry"];
 
 export default function RightSidebar(props: RightSidebarProps) {
   const {
+    mode = "recipe",
     isCollapsed,
+    onOpenLabs,
     selectedAllergens,
     onAllergensChange,
     selectedRecipeAccess,
