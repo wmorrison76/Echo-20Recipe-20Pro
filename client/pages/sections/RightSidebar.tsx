@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Send, Palette } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Activity, ArrowUpRight, FlaskConical, Palette, Send } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { axisOptions, TaxonomySelection } from "@/lib/taxonomy";
+import { useOptionalRDLabStore } from "@/stores/rdLabStore";
 
 interface RightSidebarProps {
   isCollapsed: boolean;
