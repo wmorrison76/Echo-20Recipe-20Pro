@@ -1,5 +1,14 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
+
 export type ExperimentStatus = "ideation" | "testing" | "ready" | "archived";
 
 export type LabExperiment = {
@@ -89,7 +98,7 @@ const insightSeed = [
 
 const RDLabContext = createContext<RDLabState | null>(null);
 
-export function RDLabProvider({ children }: { children: React.ReactNode }) {
+export function RDLabProvider({ children }: { children: ReactNode }) {
   const [experiments, setExperiments] = useState<LabExperiment[]>(experimentsSeed);
   const [focusExperimentId, setFocusExperimentId] = useState<string>(experimentsSeed[0]?.id ?? "");
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -129,6 +138,10 @@ export function RDLabProvider({ children }: { children: React.ReactNode }) {
   );
 
   return <RDLabContext.Provider value={value}>{children}</RDLabContext.Provider>;
+}
+
+export function useOptionalRDLabStore() {
+  return useContext(RDLabContext);
 }
 
 export function useRDLabStore() {
