@@ -1491,6 +1491,161 @@ const RecipeInputPage = () => {
                 })()}
                 data-echo-key="field:add:description"
               />
+
+              <div className="mt-6 flex flex-col space-y-4">
+                <div className="flex flex-wrap items-center gap-4 text-sm">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`font-bold ${isDarkMode ? "text-cyan-300" : "text-black"}`}
+                    >
+                      {t("recipe.labels.cookTime", "COOK TIME:")}
+                    </span>
+                    <input
+                      value={cookTime}
+                      onChange={(e) => setCookTime(e.target.value)}
+                      placeholder="2:30"
+                      className={`w-24 rounded-xl border px-3 py-2 ${inputClass}`}
+                      data-echo-key="field:add:time"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`font-bold ${isDarkMode ? "text-cyan-300" : "text-black"}`}
+                    >
+                      {t("recipe.labels.cookTemp", "COOK TEMP:")}
+                    </span>
+                    <input
+                      value={cookTemp}
+                      onChange={(e) => {
+                        const digits = e.target.value
+                          .replace(/[^0-9]/g, "")
+                          .slice(0, 3);
+                        const suffix =
+                          currentUnits === "Imperial" ? "°F" : "°C";
+                        setCookTemp(
+                          digits ? `${parseInt(digits, 10)}${suffix}` : "",
+                        );
+                      }}
+                      placeholder="350°F"
+                      className={`w-24 rounded-xl border px-3 py-2 ${inputClass}`}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`font-bold ${isDarkMode ? "text-cyan-300" : "text-black"}`}
+                    >
+                      {t("recipe.labels.prepTime", "PREP TIME:")}
+                    </span>
+                    <input
+                      value={prepTime}
+                      onChange={(e) => setPrepTime(e.target.value)}
+                      placeholder="0:20"
+                      className={`w-24 rounded-xl border px-3 py-2 ${inputClass}`}
+                    />
+                  </div>
+                </div>
+
+                <div
+                  className={`text-sm space-y-2 ${
+                    isDarkMode ? "text-cyan-300" : "text-gray-700"
+                  }`}
+                >
+                  <div className="flex flex-wrap items-center gap-4">
+                    <span>
+                      <span className="font-bold">FULL RECIPE:</span>{" "}
+                      {getCurrencySymbol(currentCurrency)}
+                      {calculateTotalCost().toFixed(2)}
+                    </span>
+                    <span className="flex flex-wrap items-center gap-1">
+                      <span className="font-bold">YIELD:</span>
+                      <input
+                        type="number"
+                        value={yieldQty}
+                        onChange={(e) => {
+                          yieldManualRef.current = true;
+                          setYieldQty(Math.max(0, Number(e.target.value)));
+                        }}
+                        className={`w-16 rounded-md border px-2 py-1 text-sm ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
+                        data-echo-key="field:add:yield"
+                      />
+                      <input
+                        value={yieldUnit}
+                        onChange={(e) => {
+                          yieldManualRef.current = true;
+                          setYieldUnit(e.target.value.toUpperCase());
+                        }}
+                        className={`w-24 rounded-md border px-2 py-1 text-sm uppercase ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
+                      />
+                      <button
+                        type="button"
+                        title={t("recipe.tools.yield", "Yield Lab")}
+                        className={`ml-2 rounded border px-2 py-1 text-xs ${isDarkMode ? "border-cyan-400/50 text-cyan-300" : "border-gray-400 text-gray-800"}`}
+                        onClick={() => setYieldOpen(true)}
+                      >
+                        {t("recipe.tools.yield", "Yield Lab")}
+                      </button>
+                    </span>
+                    <span>
+                      <span className="font-bold">
+                        {t("recipe.labels.recipeAccess", "RECIPE ACCESS:")}
+                      </span>{" "}
+                      {selectedRecipeAccess.length
+                        ? selectedRecipeAccess.join(", ").toUpperCase()
+                        : t("recipe.labels.none", "NONE")}
+                    </span>
+                    <span>
+                      <span className="font-bold">
+                        {t("recipe.labels.recipeType", "RECIPE:")}
+                      </span>{" "}
+                      {selectedRecipeType.includes("Full Recipe")
+                        ? t("recipe.labels.full", "FULL")
+                        : selectedRecipeType.includes("Sub Recipe")
+                          ? t("recipe.labels.sub", "SUB")
+                          : t("recipe.labels.unspecified", "UNSPECIFIED")}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-4">
+                    <span className="flex items-center gap-1">
+                      <span className="font-bold">
+                        {t("recipe.labels.portion", "PORTION:")}
+                      </span>
+                      <input
+                        type="number"
+                        value={portionCount}
+                        onChange={(e) =>
+                          setPortionCount(Math.max(1, Number(e.target.value)))
+                        }
+                        className={`w-16 rounded-md border px-2 py-1 text-sm ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
+                      />
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <span className="font-bold">
+                        {t("recipe.labels.unit", "UNIT:")}
+                      </span>
+                      <input
+                        value={portionUnit}
+                        onChange={(e) =>
+                          setPortionUnit(e.target.value.toUpperCase())
+                        }
+                        className={`w-24 rounded-md border px-2 py-1 text-sm uppercase ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
+                      />
+                    </span>
+                    <span>
+                      <span className="font-bold">
+                        {t("recipe.labels.portionCost", "PORTION COST:")}
+                      </span>{" "}
+                      {getCurrencySymbol(currentCurrency)}
+                      {calculatePortionCost().toFixed(2)}
+                    </span>
+                    <span title={t("recipe.labels.theoreticalVolume", "Ψ:")}>
+                      <span className="font-bold">
+                        {t("recipe.labels.theoreticalVolume", "Ψ:")}
+                      </span>{" "}
+                      {formatMl(theoreticalVolumeMl)}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="w-1/3 flex flex-col gap-4">
               <div
@@ -1589,145 +1744,6 @@ const RecipeInputPage = () => {
               className="w-full flex flex-col space-y-6"
               style={{ minHeight: "18rem" }}
             >
-              <div className="flex flex-col space-y-4">
-                <div className="flex items-center gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`font-bold ${isDarkMode ? "text-cyan-300" : "text-black"}`}
-                    >
-                      {t("recipe.labels.cookTime", "COOK TIME:")}
-                    </span>
-                    <input
-                      value={cookTime}
-                      onChange={(e) => setCookTime(e.target.value)}
-                      placeholder="2:30"
-                      className={`w-24 p-3 ${inputClass}`}
-                      data-echo-key="field:add:time"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`font-bold ${isDarkMode ? "text-cyan-300" : "text-black"}`}
-                    >
-                      {t("recipe.labels.cookTemp", "COOK TEMP:")}
-                    </span>
-                    <input
-                      value={cookTemp}
-                      onChange={(e) => {
-                        const digits = e.target.value
-                          .replace(/[^0-9]/g, "")
-                          .slice(0, 3);
-                        const suffix =
-                          currentUnits === "Imperial" ? "°F" : "°C";
-                        setCookTemp(
-                          digits ? `${parseInt(digits, 10)}${suffix}` : "",
-                        );
-                      }}
-                      placeholder="350°F"
-                      className={`w-24 p-3 ${inputClass}`}
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`font-bold ${isDarkMode ? "text-cyan-300" : "text-black"}`}
-                    >
-                      {t("recipe.labels.prepTime", "PREP TIME:")}
-                    </span>
-                    <input
-                      value={prepTime}
-                      onChange={(e) => setPrepTime(e.target.value)}
-                      placeholder="0:20"
-                      className={`w-24 p-3 ${inputClass}`}
-                    />
-                  </div>
-                </div>
-                <div
-                  className={`text-sm space-y-2 ${isDarkMode ? "text-cyan-300" : "text-gray-700"}`}
-                >
-                  <div className="flex items-center gap-4">
-                    <span>
-                      <span className="font-bold">FULL RECIPE:</span>{" "}
-                      {getCurrencySymbol(currentCurrency)}
-                      {calculateTotalCost().toFixed(2)}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <span className="font-bold">YIELD:</span>
-                      <input
-                        type="number"
-                        value={yieldQty}
-                        onChange={(e) => {
-                          yieldManualRef.current = true;
-                          setYieldQty(Math.max(0, Number(e.target.value)));
-                        }}
-                        className={`w-16 px-2 py-1 border rounded text-sm ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
-                        data-echo-key="field:add:yield"
-                      />
-                      <input
-                        value={yieldUnit}
-                        onChange={(e) => {
-                          yieldManualRef.current = true;
-                          setYieldUnit(e.target.value.toUpperCase());
-                        }}
-                        className={`w-24 px-2 py-1 border rounded text-sm uppercase ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
-                      />
-                      <button
-                        type="button"
-                        title={t("recipe.tools.yield", "Yield Lab")}
-                        className={`ml-2 px-2 py-1 text-xs rounded border ${isDarkMode ? "border-cyan-400/50 text-cyan-300" : "border-gray-400 text-gray-800"}`}
-                        onClick={() => setYieldOpen(true)}
-                      >
-                        {t("recipe.tools.yield", "Yield Lab")}
-                      </button>
-                    </span>
-                    <span>
-                      <span className="font-bold">{t("recipe.labels.recipeAccess", "RECIPE ACCESS:")}</span>{" "}
-                      {selectedRecipeAccess.length
-                        ? selectedRecipeAccess.join(", ").toUpperCase()
-                        : t("recipe.labels.none", "NONE")}
-                    </span>
-                    <span>
-                      <span className="font-bold">{t("recipe.labels.recipeType", "RECIPE:")}</span>{" "}
-                      {selectedRecipeType.includes("Full Recipe")
-                        ? t("recipe.labels.full", "FULL")
-                        : selectedRecipeType.includes("Sub Recipe")
-                          ? t("recipe.labels.sub", "SUB")
-                          : t("recipe.labels.unspecified", "UNSPECIFIED")}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="flex items-center gap-1">
-                      <span className="font-bold">{t("recipe.labels.portion", "PORTION:")}</span>
-                      <input
-                        type="number"
-                        value={portionCount}
-                        onChange={(e) =>
-                          setPortionCount(Math.max(1, Number(e.target.value)))
-                        }
-                        className={`w-16 px-2 py-1 border rounded text-sm ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
-                      />
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <span className="font-bold">{t("recipe.labels.unit", "UNIT:")}</span>
-                      <input
-                        value={portionUnit}
-                        onChange={(e) =>
-                          setPortionUnit(e.target.value.toUpperCase())
-                        }
-                        className={`w-24 px-2 py-1 border rounded text-sm uppercase ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
-                      />
-                    </span>
-                    <span>
-                      <span className="font-bold">{t("recipe.labels.portionCost", "PORTION COST:")}</span>{" "}
-                      {getCurrencySymbol(currentCurrency)}
-                      {calculatePortionCost().toFixed(2)}
-                    </span>
-                    <span title={t("recipe.labels.theoreticalVolume", "Ψ:")}>
-                      <span className="font-bold">{t("recipe.labels.theoreticalVolume", "Ψ:")}</span>{" "}
-                      {formatMl(theoreticalVolumeMl)}
-                    </span>
-                  </div>
-                </div>
-              </div>
               <div
                 className={`border rounded-xl p-4 h-full shadow-lg ${isDarkMode ? "bg-blue-900/20 border-blue-400/30 shadow-blue-400/20" : "bg-blue-50 border-blue-200 shadow-gray-300/60"}`}
               >
