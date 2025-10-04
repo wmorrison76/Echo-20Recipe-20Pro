@@ -11,6 +11,7 @@ import { DiscoveryPanel } from "@/components/RDLab/DiscoveryPanel";
 import { WorkbenchPanel } from "@/components/RDLab/WorkbenchPanel";
 import { InsightsPanel } from "@/components/RDLab/InsightsPanel";
 import IngredientsGrid from "@/components/IngredientsGrid";
+import SubRecipePicker, { type SubRecipeOption } from "@/components/SubRecipePicker";
 import YieldLabForm from "@/components/YieldLabForm";
 import {
   Save,
@@ -35,9 +36,9 @@ import {
   Printer,
   FlaskConical,
   Atom,
+  X,
 } from "lucide-react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import { Search, Link2, X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
