@@ -84,7 +84,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
     event.preventDefault();
     const sourceIndex = Number(event.dataTransfer.getData("text/plain"));
     if (Number.isNaN(sourceIndex)) return;
-    onReorderRow(sourceIndex, ingredients.length - 1);
+    onReorderRow(sourceIndex, ingredients.length);
   };
 
   return (
