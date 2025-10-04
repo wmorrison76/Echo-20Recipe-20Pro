@@ -11,6 +11,7 @@ interface RightSidebarProps {
   isCollapsed: boolean;
   onToggle: () => void;
   onOpenLabs?: () => void;
+  onCloseLabs?: () => void;
   // legacy fields kept for compatibility
   selectedAllergens: string[];
   onAllergensChange: (allergens: string[]) => void;
