@@ -96,7 +96,10 @@ export default function LanguageMenu({
                 </span>
                 {selected ? (
                   <Check
-                    className="absolute right-1.5 top-1.5 h-4 w-4 rounded-full bg-black/70 p-0.5 text-white shadow"
+                    className={cn(
+                      "absolute right-1.5 top-1.5 h-4 w-4 rounded-full p-0.5 shadow",
+                      isDark ? "bg-cyan-500 text-slate-950" : "bg-slate-900 text-white",
+                    )}
                     aria-hidden
                   />
                 ) : null}
