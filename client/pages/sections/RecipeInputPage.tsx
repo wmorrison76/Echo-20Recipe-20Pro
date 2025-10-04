@@ -49,14 +49,37 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import type { IngredientRow } from "@/types/ingredients";
 import { createIngredientRow, createDividerRow, generateIngredientRowId } from "@/types/ingredients";
 
+const parseCostValue = (value: string): number => {
+  const numeric = Number(String(value ?? "").replace(/[$€£¥,\s]/g, "").replace(/,/g, "."));
+  return Number.isFinite(numeric) ? numeric : NaN;
+};
+
 const ensureIngredientRowId = (row: IngredientRow): IngredientRow => {
   const type = row.type || "ingredient";
   const subId = row.subId && row.subId.trim() ? row.subId : generateIngredientRowId();
-  const costPerUnit =
-    typeof row.costPerUnit === "number" && Number.isFinite(row.costPerUnit)
-      ? row.costPerUnit
-      : null;
-  return { ...row, type, subId, costPerUnit };
+  const base: IngredientRow = {
+    ...row,
+    type,
+    subId,
+    costPerUnit: row.costPerUnit ?? null,
+  };
+  if (base.type !== "divider") {
+    const qtyValue = parseQuantity(String(base.qty));
+    const costValue = parseCostValue(base.cost);
+    const derived =
+      Number.isFinite(costValue) &&
+      Number.isFinite(qtyValue) &&
+      Math.abs(qtyValue as number) > Number.EPSILON
+        ? Number((costValue / (qtyValue as number)).toFixed(6))
+        : null;
+    base.costPerUnit =
+      typeof base.costPerUnit === "number" && Number.isFinite(base.costPerUnit)
+        ? base.costPerUnit
+        : derived;
+  } else {
+    base.costPerUnit = null;
+  }
+  return base;
 };
 
 const ensureIngredientRowIds = (rows: IngredientRow[]): IngredientRow[] =>
