@@ -329,21 +329,24 @@ export default function TopTabs() {
           >
             <div
               className={cn(
-                "flex items-center gap-2 transition-all duration-700",
-                collapsed ? "gap-0" : "gap-2",
+                "flex items-center transition-all duration-700",
+                collapsed ? "justify-center gap-0" : "gap-3",
               )}
             >
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2F3daeec161e9e466b9f19d163a3c58f71?format=webp&width=240"
-                alt="Echo Recipe Pro"
-                className="h-7 w-auto"
-              />
+              <span
+                className={cn(
+                  "flex h-10 w-10 items-center justify-center rounded-2xl border border-white/50 bg-white/40 text-xs font-semibold uppercase tracking-[0.35em] text-slate-700 shadow-sm backdrop-blur-sm dark:border-cyan-500/40 dark:bg-cyan-500/15 dark:text-cyan-200",
+                  collapsed ? "w-10" : "w-12",
+                )}
+              >
+                ER
+              </span>
               <DissolvingText
                 collapsed={collapsed}
                 ariaHidden={collapsed}
-                className="text-xs font-semibold uppercase tracking-widest text-muted-foreground"
+                className="text-base font-semibold uppercase tracking-[0.65em] text-slate-700 dark:text-cyan-200"
               >
-                Echo Recipe Pro
+                ECHO RECIPE PRO
               </DissolvingText>
             </div>
             <button
