@@ -872,6 +872,32 @@ const RecipeInputPage = () => {
     [focusIngredientCell, setIngredients],
   );
 
+  const reorderIngredientRows = useCallback(
+    (from: number, to: number) => {
+      if (from === to) return;
+      setIngredients((prev) => {
+        if (from < 0 || from >= prev.length || to < 0 || to >= prev.length) return prev;
+        const next = ensureIngredientRowIds(prev.slice());
+        const [moved] = next.splice(from, 1);
+        next.splice(to, 0, moved);
+        return ensureIngredientRowIds(next);
+      });
+      focusIngredientCell(to, 0);
+    },
+    [focusIngredientCell, setIngredients],
+  );
+
+  const addDividerRow = useCallback(() => {
+    setIngredients((prev) => {
+      const next = ensureIngredientRowIds(prev.slice());
+      const existingDividers = next.filter((row) => row.type === "divider").length;
+      const label = `Step ${existingDividers + 1}`;
+      next.push(createDividerRow(label));
+      return ensureIngredientRowIds(next);
+    });
+    focusIngredientCell(ingredients.length, 2);
+  }, [focusIngredientCell, ingredients.length, setIngredients]);
+
   const handleIngredientFieldChange = useCallback(
     (index: number, field: keyof IngredientRow) =>
       (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
