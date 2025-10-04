@@ -3097,8 +3097,8 @@ const RecipeInputPage = () => {
         onApply={(d) => setImage(d)}
         isDarkMode={isDarkMode}
       />
-      </div>
-    </RDLabProvider>
+    </div>
+  </RDLabProvider>
   );
 };
 
