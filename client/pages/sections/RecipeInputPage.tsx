@@ -308,7 +308,7 @@ const RecipeInputPage = () => {
     };
     let t = String(s).trim();
     // Expand unicode vulgar fractions
-    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜��⅞]/g, (ch) => map[ch] || ch);
+    t = t.replace(/[¼½��⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜��⅞]/g, (ch) => map[ch] || ch);
     // Allow forms like "1½" -> "1 1/2"
     t = t.replace(/(\d)\s*(\d\/\d)/, "$1 $2");
     // Mixed fraction
@@ -1026,7 +1026,7 @@ const RecipeInputPage = () => {
       } else {
         // Treat numeric/no-unit as Celsius when switching to Imperial
         if (
-          /(?:��?\s*C\b|celsius)/i.test(t) ||
+          /(?:°?\s*C\b|celsius)/i.test(t) ||
           /^(?:\d{2,3})$/.test(t.replace(/[^0-9]/g, ""))
         ) {
           const f = Math.round((num * 9) / 5 + 32);
@@ -1176,10 +1176,15 @@ const RecipeInputPage = () => {
     if (!target || target <= 0) return;
     const factor = target / (portionCount || 1);
     setIngredients(
-      ingredients.map((r) => {
-        const n = parseQuantity(r.qty);
-        return !Number.isFinite(n) ? r : { ...r, qty: (n * factor).toFixed(2) };
-      }),
+      ensureIngredientRowIds(
+        ingredients.map((r) => {
+          const base = ensureIngredientRowId(r);
+          const n = parseQuantity(base.qty);
+          return !Number.isFinite(n)
+            ? base
+            : { ...base, qty: (n * factor).toFixed(2) };
+        }),
+      ),
     );
     setPortionCount(target);
   };
