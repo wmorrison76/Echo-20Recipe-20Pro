@@ -152,7 +152,7 @@ export default function RightSidebar(props: RightSidebarProps) {
       </button>
       <div
         onContextMenu={(e) => e.preventDefault()}
-        className={`fixed top-16 right-0 z-[70] ${isCollapsed ? "translate-x-full" : "translate-x-0"} w-72 h-[80vh] bg-gradient-to-b from-gray-100/60 via-gray-200/50 to-gray-300/60 backdrop-blur-sm border-l border-t border-gray-400/50 rounded-tl-2xl rounded-bl-2xl shadow-inner transition-transform duration-500 ease-in-out overflow-hidden no-callout text-black`}
+        className={panelClass}
       >
         {!isCollapsed && (
           <div className="flex flex-col h-full">
