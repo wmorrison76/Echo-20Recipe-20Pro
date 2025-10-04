@@ -288,11 +288,11 @@ const RecipeInputPage = () => {
       "⅛": "1/8",
       "⅜": "3/8",
       "⅝": "5/8",
-      "��": "7/8",
+      "⅞": "7/8",
     };
     let t = String(s).trim();
     // Expand unicode vulgar fractions
-    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖���⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
+    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
     // Allow forms like "1½" -> "1 1/2"
     t = t.replace(/(\d)\s*(\d\/\d)/, "$1 $2");
     // Mixed fraction
