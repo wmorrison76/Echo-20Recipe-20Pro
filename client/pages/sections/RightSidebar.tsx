@@ -142,7 +142,7 @@ export default function RightSidebar(props: RightSidebarProps) {
     <>
       <button
         aria-label="Toggle sidebar"
-        onClick={props.onToggle}
+        onClick={onToggle}
         onContextMenu={(e) => e.preventDefault()}
         className="fixed right-0 top-1/2 -translate-y-1/2 z-[71] bg-background border border-gray-300 rounded-l-full shadow px-2 py-3 hover:bg-muted no-callout select-none"
         style={{ transform: "translateY(-50%)" }}
