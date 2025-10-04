@@ -275,6 +275,37 @@ const RecipeInputPage = () => {
     return t / n;
   };
 
+  const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
+    if (!selected.length) return;
+    setIngredients((prev) => {
+      const next = ensureIngredientRowIds(prev.slice());
+      const isRowEmpty = (row: IngredientRow) =>
+        [row.qty, row.unit, row.item, row.prep, row.cost]
+          .map((value) => String(value ?? "").trim())
+          .every((value) => value.length === 0);
+      selected.forEach((option) => {
+        const blankIndex = next.findIndex((row) => isRowEmpty(row));
+        const parsedCost =
+          typeof option.cost === "number" && Number.isFinite(option.cost)
+            ? option.cost
+            : null;
+        const newRow: IngredientRow = {
+          qty: "",
+          unit: "",
+          item: `Recipe - ${option.title}`,
+          prep: "",
+          yield: "100",
+          cost: parsedCost != null ? parsedCost.toFixed(2) : "",
+          subId: generateIngredientRowId(),
+        };
+        if (blankIndex >= 0) next[blankIndex] = newRow;
+        else next.push(newRow);
+      });
+      return ensureIngredientRowIds(next);
+    });
+    setTimeout(() => pushHistory({ ...serialize(), ts: Date.now() }), 0);
+  };
+
   const detectAllergensFromIngredients = (rows: { item: string }[]) => {
     const text = rows
       .map((r) => r.item)
@@ -331,7 +362,7 @@ const RecipeInputPage = () => {
       "⅑": "1/9",
       "⅒": "1/10",
       "⅓": "1/3",
-      "��": "2/3",
+      "⅔": "2/3",
       "⅕": "1/5",
       "⅖": "2/5",
       "⅗": "3/5",
@@ -345,7 +376,7 @@ const RecipeInputPage = () => {
     };
     let t = String(s).trim();
     // Expand unicode vulgar fractions
-    t = t.replace(/[¼½��⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜��⅞]/g, (ch) => map[ch] || ch);
+    t = t.replace(/[¼½��⅐⅑⅒⅓���⅕⅖⅗⅘⅙⅚⅛⅜��⅞]/g, (ch) => map[ch] || ch);
     // Allow forms like "1½" -> "1 1/2"
     t = t.replace(/(\d)\s*(\d\/\d)/, "$1 $2");
     // Mixed fraction
