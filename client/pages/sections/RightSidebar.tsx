@@ -491,6 +491,7 @@ export default function RightSidebar(props: RightSidebarProps) {
                           ? taxonomy.technique.filter((value) => value !== option.slug)
                           : limitTechnique([...taxonomy.technique, option.slug]);
                         tset({ technique: next });
+                        onPrepMethodChange(next);
                       }}
                     />
                     {option.label}
