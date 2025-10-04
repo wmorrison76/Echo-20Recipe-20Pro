@@ -132,7 +132,9 @@ function TabLink({ to, label, icon: Icon, collapsed, shortcutDisplay }: TabLinkP
       <DissolvingText
         collapsed={collapsed}
         ariaHidden={collapsed}
-        className="ml-2 text-ellipsis"
+        className="text-ellipsis"
+        expandedClassName="ml-2"
+        collapsedClassName="ml-0"
         expandedMaxWidthClass="max-w-[180px]"
       >
         {label}
