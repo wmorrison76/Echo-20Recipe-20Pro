@@ -88,6 +88,14 @@ export default function RightSidebar(props: RightSidebarProps) {
   }, [labStore, focusExperiment?.id]);
   const backlog = labStore?.backlog ?? [];
   const insights = labStore?.insights ?? [];
+  const translateClass = isCollapsed ? "translate-x-full" : "translate-x-0";
+  const panelClass = [
+    "fixed top-16 right-0 z-[70] w-72 h-[80vh] backdrop-blur-sm border-l border-t rounded-tl-2xl rounded-bl-2xl shadow-inner transition-transform duration-500 ease-in-out overflow-hidden no-callout",
+    translateClass,
+    isRndMode
+      ? "bg-gradient-to-b from-cyan-50/70 via-white/85 to-emerald-100/60 border-cyan-300/50 text-slate-900 dark:from-slate-950/90 dark:via-cyan-950/40 dark:to-slate-950/70 dark:border-cyan-500/40 dark:text-cyan-100"
+      : "bg-gradient-to-b from-gray-100/60 via-gray-200/50 to-gray-300/60 border-gray-400/50 text-black dark:from-slate-950/85 dark:via-slate-900/60 dark:to-slate-900/70 dark:border-slate-700/60 dark:text-slate-100",
+  ].join(" ");
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
