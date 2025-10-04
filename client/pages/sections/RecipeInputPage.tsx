@@ -938,9 +938,10 @@ const RecipeInputPage = () => {
 
     // Normalize within Imperial before toggling systems for better readability
     const normalizedImperial = ingredients.map((r) => {
-      const n = parseQuantity(r.qty);
-      const u = alias(r.unit || "");
-      if (!Number.isFinite(n)) return r;
+      const base = ensureIngredientRowId(r);
+      const n = parseQuantity(base.qty);
+      const u = alias(base.unit || "");
+      if (!Number.isFinite(n)) return base;
       // Volume normalize
       const volUnits = [
         "TSP",
@@ -956,14 +957,14 @@ const RecipeInputPage = () => {
       ];
       if (volUnits.includes(u)) {
         const norm = normalizeImperialVolume(n, u);
-        return { ...r, qty: String(norm.qty), unit: norm.unit };
+        return { ...base, qty: String(norm.qty), unit: norm.unit };
       }
       // Weight normalize
       if (u === "OZ" || u === "OUNCE" || u === "OUNCES") {
         const norm = normalizeImperialWeight(n, u);
-        return { ...r, qty: String(norm.qty), unit: norm.unit };
+        return { ...base, qty: String(norm.qty), unit: norm.unit };
       }
-      return r;
+      return base;
     });
 
     const map: Record<string, { unit: string; f: (n: number) => number }> = {
