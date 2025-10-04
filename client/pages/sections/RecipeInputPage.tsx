@@ -376,7 +376,7 @@ const RecipeInputPage = () => {
     };
     let t = String(s).trim();
     // Expand unicode vulgar fractions
-    t = t.replace(/[¼½��⅐⅑⅒⅓���⅕⅖⅗⅘⅙⅚⅛⅜��⅞]/g, (ch) => map[ch] || ch);
+    t = t.replace(/[¼½��⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜��⅞]/g, (ch) => map[ch] || ch);
     // Allow forms like "1½" -> "1 1/2"
     t = t.replace(/(\d)\s*(\d\/\d)/, "$1 $2");
     // Mixed fraction
@@ -1231,10 +1231,6 @@ const RecipeInputPage = () => {
       ),
     );
     setCurrentCurrency(next);
-  };
-  const handleSaveSnapshot = () => {
-    pushHistory({ ...serialize(), ts: Date.now() });
-    alert("Snapshot saved");
   };
   const scaleRecipe = () => {
     const target = Number(
