@@ -347,14 +347,16 @@ const RecipeInputPage = () => {
   };
   useEffect(() => {
     if (!allergenManualRef.current)
-      setSelectedAllergens(detectAllergensFromIngredients(ingredients as any));
+      setSelectedAllergens(detectAllergensFromIngredients(ingredients));
     // ensure default yield percentage when missing; avoid update loop
-    if (ingredients.some((r: any) => !r.yield)) {
+    if (ingredients.some((row) => row.type !== "divider" && !row.yield)) {
       setIngredients((prev) =>
         ensureIngredientRowIds(
-          prev.map((r) =>
-            r.yield ? ensureIngredientRowId(r) : { ...ensureIngredientRowId(r), yield: String(100) },
-          ),
+          prev.map((row) => {
+            const base = ensureIngredientRowId(row);
+            if (base.type === "divider" || base.yield) return base;
+            return { ...base, yield: String(100) };
+          }),
         ),
       );
     }
