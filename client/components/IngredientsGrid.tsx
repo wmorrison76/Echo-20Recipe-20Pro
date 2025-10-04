@@ -1,5 +1,4 @@
-import React from "react";
-import { Link2, MinusCircle, PlusCircle } from "lucide-react";
+import { GripVertical, Link2, MinusCircle, PlusCircle } from "lucide-react";
 import type { IngredientRow } from "@/types/ingredients";
 
 type IngredientsGridProps = {
@@ -22,20 +21,25 @@ type IngredientsGridProps = {
   ) => (event: React.FocusEvent<HTMLInputElement>) => void;
   onAddRow: (index?: number) => void;
   onRemoveRow: (index: number) => void;
+  onReorderRow: (from: number, to: number) => void;
   onGridKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   onAddSubRecipe: () => void;
+  onAddDivider: () => void;
 };
 
 const inputTone = (
   isDark: boolean,
   extra?: string,
   alignRight?: boolean,
+  disabled?: boolean,
 ) =>
   `w-full rounded-lg border px-3 py-2 text-sm ${alignRight ? "text-right" : ""} ${
     isDark
       ? "border-cyan-500/30 bg-slate-900/70 text-cyan-100 placeholder-cyan-400/50 focus:ring-cyan-400/60 focus:ring-offset-slate-950"
       : "border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:ring-sky-300/60 focus:ring-offset-white"
-  } focus:outline-none focus:ring-2 focus:ring-offset-1 ${extra ?? ""}`;
+  } focus:outline-none focus:ring-2 focus:ring-offset-1 ${extra ?? ""} ${
+    disabled ? "opacity-60" : ""
+  }`;
 
 const IngredientsGrid: React.FC<IngredientsGridProps> = ({
   isDarkMode,
@@ -51,9 +55,35 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
   onFieldBlur,
   onAddRow,
   onRemoveRow,
+  onReorderRow,
   onGridKeyDown,
   onAddSubRecipe,
+  onAddDivider,
 }) => {
+  const handleDragStart = (index: number) => (event: React.DragEvent<HTMLButtonElement>) => {
+    event.dataTransfer.setData("text/plain", String(index));
+    event.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleRowDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+  };
+
+  const handleRowDrop = (targetIndex: number) => (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const sourceIndex = Number(event.dataTransfer.getData("text/plain"));
+    if (Number.isNaN(sourceIndex)) return;
+    onReorderRow(sourceIndex, targetIndex);
+  };
+
+  const handleContainerDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const sourceIndex = Number(event.dataTransfer.getData("text/plain"));
+    if (Number.isNaN(sourceIndex)) return;
+    onReorderRow(sourceIndex, ingredients.length - 1);
+  };
+
   return (
     <div
       className={`rounded-2xl border p-5 shadow-lg ${
@@ -108,9 +138,13 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
       </div>
 
       <div className="mt-4 overflow-x-auto">
-        <div className="min-w-[960px] space-y-1">
+        <div
+          className="min-w-[960px] space-y-1"
+          onDragOver={handleRowDragOver}
+          onDrop={handleContainerDrop}
+        >
           <div
-            className={`grid grid-cols-[2.25rem,5rem,7ch,minmax(18rem,2fr),minmax(16rem,1.6fr),6.5ch,6.5ch,2.5rem] items-center gap-3 rounded-xl px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] ${
+            className={`grid grid-cols-[minmax(2.75rem,3.5rem),5rem,7ch,minmax(18rem,2fr),minmax(16rem,1.6fr),6.5ch,6.5ch,2.5rem] items-center gap-3 rounded-xl px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] ${
               isDarkMode ? "bg-slate-900/70 text-cyan-200/70" : "bg-slate-100 text-slate-600"
             }`}
           >
@@ -123,110 +157,142 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
             <span>Cost</span>
             <span />
           </div>
-          {ingredients.map((row, index) => (
-            <div
-              key={`${index}-${row.item || "blank"}`}
-              className={`grid grid-cols-[2.25rem,5rem,7ch,minmax(18rem,2fr),minmax(16rem,1.6fr),6.5ch,6.5ch,2.5rem] items-stretch gap-3 rounded-2xl border px-3 py-2 ${
-                isDarkMode
-                  ? "border-cyan-500/20 bg-slate-950/40 shadow-[0_12px_28px_-18px_rgba(34,211,238,0.45)]"
-                  : "border-slate-200 bg-white shadow-[0_12px_28px_-18px_rgba(15,23,42,0.35)]"
-              }`}
-            >
-              <div className="flex items-center justify-center text-xs font-semibold text-slate-500 dark:text-cyan-300">
-                {index + 1}
-              </div>
-              <input
-                data-row={index}
-                data-col={0}
-                value={row.qty}
-                onChange={onFieldChange(index, "qty")}
-                onKeyDown={onGridKeyDown}
-                className={inputTone(isDarkMode, "px-2", false)}
-                placeholder="1 1/2"
-              />
-              <input
-                data-row={index}
-                data-col={1}
-                value={row.unit}
-                onChange={onFieldChange(index, "unit")}
-                onKeyDown={onGridKeyDown}
-                className={inputTone(isDarkMode, "px-2 text-center uppercase", false)}
-                placeholder="QTS"
-              />
-              <input
-                data-row={index}
-                data-col={2}
-                value={row.item}
-                onChange={onFieldChange(index, "item")}
-                onKeyDown={onGridKeyDown}
-                className={inputTone(isDarkMode)}
-                placeholder="Ingredient"
-              />
-              <input
-                data-row={index}
-                data-col={3}
-                value={row.prep}
-                onChange={onFieldChange(index, "prep")}
-                onKeyDown={onGridKeyDown}
-                list={methodOptions.length ? methodOptionsId : undefined}
-                className={inputTone(isDarkMode)}
-                placeholder="Method or prep notes"
-              />
-              <input
-                data-row={index}
-                data-col={4}
-                value={row.yield}
-                onChange={onFieldChange(index, "yield")}
-                onBlur={onFieldBlur(index, "yield")}
-                onKeyDown={onGridKeyDown}
-                className={inputTone(isDarkMode, "px-2 text-center", true)}
-                maxLength={5}
-                placeholder="100"
-              />
-              <div className="relative flex w-full items-center gap-1">
-                <span className="pointer-events-none text-sm font-semibold text-slate-500 dark:text-cyan-300">
-                  {currencySymbol}
-                </span>
+          {ingredients.map((row, index) => {
+            const isDivider = row.type === "divider";
+            const rowTone = isDivider
+              ? isDarkMode
+                ? "border-cyan-500/30 bg-cyan-500/10"
+                : "border-slate-300 bg-slate-100/80"
+              : isDarkMode
+                ? "border-cyan-500/20 bg-slate-950/40 shadow-[0_12px_28px_-18px_rgba(34,211,238,0.45)]"
+                : "border-slate-200 bg-white shadow-[0_12px_28px_-18px_rgba(15,23,42,0.35)]";
+
+            return (
+              <div
+                key={row.subId ?? `${index}-${row.item || "blank"}`}
+                className={`grid grid-cols-[minmax(2.75rem,3.5rem),5rem,7ch,minmax(18rem,2fr),minmax(16rem,1.6fr),6.5ch,6.5ch,2.5rem] items-stretch gap-3 rounded-2xl border px-3 py-2 transition-colors ${rowTone}`}
+                onDragOver={handleRowDragOver}
+                onDrop={handleRowDrop(index)}
+                data-row-kind={row.type}
+              >
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    draggable
+                    onDragStart={handleDragStart(index)}
+                    className={`flex h-6 w-6 items-center justify-center rounded-full border text-xs ${
+                      isDarkMode
+                        ? "border-cyan-500/40 text-cyan-200 hover:bg-cyan-500/10"
+                        : "border-slate-300 text-slate-500 hover:bg-slate-200/80"
+                    }`}
+                    title="Drag to reorder"
+                  >
+                    <GripVertical className="h-3.5 w-3.5" aria-hidden />
+                  </button>
+                  <span className="text-xs font-semibold text-slate-500 dark:text-cyan-300">
+                    {index + 1}
+                  </span>
+                </div>
                 <input
                   data-row={index}
-                  data-col={5}
-                  value={row.cost}
-                  onChange={onFieldChange(index, "cost")}
-                  onBlur={onFieldBlur(index, "cost")}
+                  data-col={0}
+                  value={row.qty}
+                  onChange={onFieldChange(index, "qty")}
                   onKeyDown={onGridKeyDown}
-                  className={inputTone(isDarkMode, "px-2 text-right", false)}
-                  maxLength={6}
-                  placeholder="0.00"
+                  disabled={isDivider}
+                  className={inputTone(isDarkMode, "px-2", false, isDivider)}
+                  placeholder={isDivider ? "" : "1 1/2"}
                 />
+                <input
+                  data-row={index}
+                  data-col={1}
+                  value={row.unit}
+                  onChange={onFieldChange(index, "unit")}
+                  onKeyDown={onGridKeyDown}
+                  disabled={isDivider}
+                  className={inputTone(
+                    isDarkMode,
+                    "px-2 text-center uppercase",
+                    false,
+                    isDivider,
+                  )}
+                  placeholder={isDivider ? "" : "QTS"}
+                />
+                <input
+                  data-row={index}
+                  data-col={2}
+                  value={row.item}
+                  onChange={onFieldChange(index, "item")}
+                  onKeyDown={onGridKeyDown}
+                  className={inputTone(
+                    isDarkMode,
+                    isDivider ? "font-semibold uppercase tracking-[0.2em]" : undefined,
+                    false,
+                    false,
+                  )}
+                  placeholder={isDivider ? "Step label or section" : "Ingredient"}
+                />
+                <input
+                  data-row={index}
+                  data-col={3}
+                  value={row.prep}
+                  onChange={onFieldChange(index, "prep")}
+                  onKeyDown={onGridKeyDown}
+                  disabled={isDivider}
+                  list={!isDivider && methodOptions.length ? methodOptionsId : undefined}
+                  className={inputTone(isDarkMode, undefined, false, isDivider)}
+                  placeholder={isDivider ? "" : "Method or prep notes"}
+                />
+                <input
+                  data-row={index}
+                  data-col={4}
+                  value={row.yield}
+                  onChange={onFieldChange(index, "yield")}
+                  onBlur={onFieldBlur(index, "yield")}
+                  onKeyDown={onGridKeyDown}
+                  disabled={isDivider}
+                  className={inputTone(isDarkMode, "px-2 text-center", true, isDivider)}
+                  maxLength={5}
+                  placeholder={isDivider ? "" : "100"}
+                />
+                <div className="relative flex w-full items-center gap-1">
+                  <span
+                    className={`pointer-events-none text-sm font-semibold ${
+                      isDarkMode ? "text-cyan-300" : "text-slate-500"
+                    } ${isDivider ? "opacity-40" : ""}`}
+                  >
+                    {currencySymbol}
+                  </span>
+                  <input
+                    data-row={index}
+                    data-col={5}
+                    value={row.cost}
+                    onChange={onFieldChange(index, "cost")}
+                    onBlur={onFieldBlur(index, "cost")}
+                    onKeyDown={onGridKeyDown}
+                    disabled={isDivider}
+                    className={inputTone(isDarkMode, "px-2 text-right", false, isDivider)}
+                    maxLength={6}
+                    placeholder={isDivider ? "" : "0.00"}
+                  />
+                </div>
+                <div className="flex items-center justify-end">
+                  <button
+                    type="button"
+                    onClick={() => onRemoveRow(index)}
+                    className={`rounded-full border p-1 transition ${
+                      isDarkMode
+                        ? "border-cyan-500/30 text-cyan-200 hover:bg-cyan-500/10"
+                        : "border-slate-300 text-slate-600 hover:bg-slate-100"
+                    }`}
+                    title="Remove row"
+                  >
+                    <MinusCircle className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => onAddRow(index)}
-                  className={`rounded-full border p-1 transition ${
-                    isDarkMode
-                      ? "border-cyan-500/30 text-cyan-200 hover:bg-cyan-500/10"
-                      : "border-slate-300 text-slate-600 hover:bg-slate-100"
-                  }`}
-                  title="Insert row below"
-                >
-                  <PlusCircle className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onRemoveRow(index)}
-                  className={`rounded-full border p-1 transition ${
-                    isDarkMode
-                      ? "border-cyan-500/30 text-cyan-200 hover:bg-cyan-500/10"
-                      : "border-slate-300 text-slate-600 hover:bg-slate-100"
-                  }`}
-                  title="Remove row"
-                >
-                  <MinusCircle className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
           {methodOptions.length > 0 && (
             <datalist id={methodOptionsId}>
               {methodOptions.map((method) => (
@@ -244,7 +310,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
             {theoreticalVolumeLabel}
           </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => onAddRow()}
@@ -268,6 +334,17 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
           >
             <Link2 className="h-4 w-4" />
             Add sub recipe
+          </button>
+          <button
+            type="button"
+            onClick={onAddDivider}
+            className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-sm transition ${
+              isDarkMode
+                ? "border border-cyan-500/30 text-cyan-200 hover:bg-cyan-500/10"
+                : "border border-slate-300 text-slate-700 hover:bg-slate-100"
+            }`}
+          >
+            Add break
           </button>
         </div>
       </div>
