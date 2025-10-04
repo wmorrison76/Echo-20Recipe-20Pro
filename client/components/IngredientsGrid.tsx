@@ -1,5 +1,5 @@
 import React from "react";
-import { MinusCircle, PlusCircle, Save } from "lucide-react";
+import { Link2, MinusCircle, PlusCircle } from "lucide-react";
 import type { IngredientRow } from "@/types/ingredients";
 
 type IngredientsGridProps = {
@@ -23,7 +23,7 @@ type IngredientsGridProps = {
   onAddRow: (index?: number) => void;
   onRemoveRow: (index: number) => void;
   onGridKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
-  onSnapshot: () => void;
+  onAddSubRecipe: () => void;
 };
 
 const inputTone = (
@@ -52,7 +52,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
   onAddRow,
   onRemoveRow,
   onGridKeyDown,
-  onSnapshot,
+  onAddSubRecipe,
 }) => {
   return (
     <div
@@ -257,15 +257,15 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
           </button>
           <button
             type="button"
-            onClick={onSnapshot}
+            onClick={onAddSubRecipe}
             className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-sm transition ${
               isDarkMode
                 ? "border border-cyan-500/30 text-cyan-200 hover:bg-cyan-500/10"
                 : "border border-slate-300 text-slate-700 hover:bg-slate-100"
             }`}
           >
-            <Save className="h-4 w-4" />
-            Snapshot
+            <Link2 className="h-4 w-4" />
+            Add sub recipe
           </button>
         </div>
       </div>
