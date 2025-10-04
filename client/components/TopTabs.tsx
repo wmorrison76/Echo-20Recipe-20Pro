@@ -274,8 +274,8 @@ export default function TopTabs() {
       <TooltipProvider delayDuration={collapsed ? 0 : 200}>
         <aside
         className={cn(
-          "fixed left-4 top-4 z-[1000] flex flex-col overflow-hidden rounded-2xl border border-white/50 bg-white/70 shadow-[0_20px_45px_rgba(15,23,42,0.2)] backdrop-blur-xl transition-all duration-700 dark:border-slate-800/80 dark:bg-slate-950/75 dark:shadow-[0_0_30px_rgba(56,189,248,0.28)]",
-          collapsed ? "w-16 space-y-3 p-3" : "w-64 space-y-4 p-4",
+          "pointer-events-auto fixed left-4 top-4 z-[1000] flex flex-col overflow-hidden rounded-3xl border border-white/60 bg-white/40 shadow-[0_28px_45px_-20px_rgba(15,23,42,0.35)] backdrop-blur-2xl transition-all duration-700 dark:border-cyan-500/25 dark:bg-slate-950/70 dark:shadow-[0_0_42px_rgba(56,189,248,0.45)]",
+          collapsed ? "w-16 space-y-3 p-3" : "w-64 space-y-4 p-5",
         )}
       >
         <div className="relative flex h-full flex-col">
