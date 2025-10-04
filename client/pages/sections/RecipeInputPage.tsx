@@ -1026,7 +1026,7 @@ const RecipeInputPage = () => {
       } else {
         // Treat numeric/no-unit as Celsius when switching to Imperial
         if (
-          /(?:°?\s*C\b|celsius)/i.test(t) ||
+          /(?:��?\s*C\b|celsius)/i.test(t) ||
           /^(?:\d{2,3})$/.test(t.replace(/[^0-9]/g, ""))
         ) {
           const f = Math.round((num * 9) / 5 + 32);
@@ -1153,11 +1153,14 @@ const RecipeInputPage = () => {
     const to = rates[next];
     const fx = to / from;
     setIngredients(
-      ingredients.map((r) => {
-        const n = parseFloat(String(r.cost).replace(/[$��£¥,\s]/g, ""));
-        if (isNaN(n)) return r;
-        return { ...r, cost: (n * fx).toFixed(2) };
-      }),
+      ensureIngredientRowIds(
+        ingredients.map((r) => {
+          const base = ensureIngredientRowId(r);
+          const n = parseFloat(String(base.cost).replace(/[$��£¥,\s]/g, ""));
+          if (Number.isNaN(n)) return base;
+          return { ...base, cost: (n * fx).toFixed(2) };
+        }),
+      ),
     );
     setCurrentCurrency(next);
   };
