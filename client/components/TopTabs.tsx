@@ -404,9 +404,13 @@ export default function TopTabs() {
                 collapsed ? "justify-center px-2" : "justify-between",
               )}
             >
-              <span aria-hidden={collapsed} className={textClass("text-sm font-medium")}>
+              <DissolvingText
+                collapsed={collapsed}
+                ariaHidden={collapsed}
+                className="text-sm font-medium"
+              >
                 {t("recipe.actions.finalize", "Finalize & Clear")}
-              </span>
+              </DissolvingText>
               <Save className="h-4 w-4" aria-hidden />
             </button>
             <button
