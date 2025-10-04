@@ -370,7 +370,7 @@ export default function TopTabs() {
               )}
             >
               <span aria-hidden={collapsed} className={textClass("text-sm font-medium")}>
-                Finalize & Clear
+                {t("recipe.actions.finalize", "Finalize & Clear")}
               </span>
               <Save className="h-4 w-4" aria-hidden />
             </button>
@@ -384,7 +384,7 @@ export default function TopTabs() {
               )}
             >
               <span aria-hidden={collapsed} className={textClass("text-sm font-medium")}>
-                Help & Shortcuts
+                {t("recipe.actions.help", "Help & Shortcuts")}
               </span>
               <HelpCircle className="h-4 w-4" aria-hidden />
             </button>
@@ -396,7 +396,7 @@ export default function TopTabs() {
               )}
             >
               <span aria-hidden={collapsed} className={textClass("text-sm font-medium")}>
-                Theme
+                {t("recipe.actions.theme", "Theme")}
               </span>
               <ThemeToggle />
             </div>
