@@ -4,9 +4,13 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { axisOptions, TaxonomySelection } from "@/lib/taxonomy";
 import { useOptionalRDLabStore } from "@/stores/rdLabStore";
 
+type RightSidebarMode = "recipe" | "rnd";
+
 interface RightSidebarProps {
+  mode?: RightSidebarMode;
   isCollapsed: boolean;
   onToggle: () => void;
+  onOpenLabs?: () => void;
   // legacy fields kept for compatibility
   selectedAllergens: string[];
   onAllergensChange: (allergens: string[]) => void;
