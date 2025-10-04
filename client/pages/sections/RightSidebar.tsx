@@ -72,6 +72,22 @@ export default function RightSidebar(props: RightSidebarProps) {
 
   const limitTechnique = (next: string[]) => next.slice(0, 3);
 
+  const labStore = useOptionalRDLabStore();
+  const isRndMode = mode === "rnd";
+  const focusExperiment = useMemo(() => {
+    if (!labStore) return undefined;
+    return (
+      labStore.experiments.find((item) => item.id === labStore.focusExperimentId) ??
+      labStore.experiments[0]
+    );
+  }, [labStore]);
+  const otherExperiments = useMemo(() => {
+    if (!labStore) return [];
+    const currentId = focusExperiment?.id;
+    return labStore.experiments.filter((item) => item.id !== currentId).slice(0, 4);
+  }, [labStore, focusExperiment?.id]);
+  const backlog = labStore?.backlog ?? [];
+  const insights = labStore?.insights ?? [];
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
