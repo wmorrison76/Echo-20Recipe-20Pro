@@ -272,7 +272,11 @@ const RecipeInputPage = () => {
     // ensure default yield percentage when missing; avoid update loop
     if (ingredients.some((r: any) => !r.yield)) {
       setIngredients((prev) =>
-        prev.map((r) => (r.yield ? r : { ...r, yield: String(100) })),
+        ensureIngredientRowIds(
+          prev.map((r) =>
+            r.yield ? ensureIngredientRowId(r) : { ...ensureIngredientRowId(r), yield: String(100) },
+          ),
+        ),
       );
     }
   }, [ingredients]);
