@@ -453,7 +453,7 @@ const RecipeInputPage = () => {
         prep: p.prep ?? r.prep,
       };
     });
-    setIngredients(fixedRows);
+    setIngredients(ensureIngredientRowIds(fixedRows));
     setDirections(s.directions || "1. ");
     setIsDarkMode(!!s.isDarkMode);
     setYieldQty(s.yieldQty || 0);
@@ -755,7 +755,8 @@ const RecipeInputPage = () => {
       setIngredients((prev) => {
         if (index < 0 || index >= prev.length) return prev;
         const next = prev.slice();
-        next[index] = { ...next[index], ...patch };
+        const current = ensureIngredientRowId(next[index]);
+        next[index] = ensureIngredientRowId({ ...current, ...patch });
         return next;
       });
     },
@@ -767,13 +768,13 @@ const RecipeInputPage = () => {
       const targetRow =
         typeof index === "number" && index >= 0 ? index + 1 : ingredients.length;
       setIngredients((prev) => {
-        const next = prev.slice();
+        const next = ensureIngredientRowIds(prev.slice());
         const insertAt =
           typeof index === "number" && index >= 0 && index < prev.length
             ? index + 1
             : prev.length;
         next.splice(insertAt, 0, createIngredientRow());
-        return next;
+        return ensureIngredientRowIds(next);
       });
       focusIngredientCell(targetRow, 0);
     },
@@ -786,7 +787,8 @@ const RecipeInputPage = () => {
         if (prev.length === 1) return [createIngredientRow()];
         const next = prev.slice();
         if (index >= 0 && index < next.length) next.splice(index, 1);
-        return next.length ? next : [createIngredientRow()];
+        const ensured = ensureIngredientRowIds(next.length ? next : [createIngredientRow()]);
+        return ensured;
       });
       focusIngredientCell(Math.max(0, index - 1), 0);
     },
