@@ -270,10 +270,15 @@ const RecipeInputPage = () => {
     [currentCurrency],
   );
   const calculateTotalCost = () =>
-    ingredients.reduce(
-      (s, r) => s + (parseFloat(String(r.cost).replace(/[$€£¥,\s]/g, "")) || 0),
-      0,
-    );
+    ingredients.reduce((sum, row) => {
+      if (row.type === "divider") return sum;
+      const parsed = Number(
+        String(row.cost)
+          .replace(/[$€£¥,\s]/g, "")
+          .replace(/,/g, "."),
+      );
+      return sum + (Number.isFinite(parsed) ? parsed : 0);
+    }, 0);
   const calculatePortionCost = () => {
     const t = calculateTotalCost();
     const n = portionCount > 0 ? portionCount : 1;
