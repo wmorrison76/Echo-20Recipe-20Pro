@@ -765,7 +765,7 @@ const RecipeInputPage = () => {
       e.preventDefault();
       setIngredients([
         ...ingredients,
-        { qty: "", unit: "", item: "", prep: "", yield: "", cost: "", subId: "" },
+        createIngredientRow(),
       ]);
       setTimeout(() => {
         const next = document.querySelector<HTMLInputElement>(
