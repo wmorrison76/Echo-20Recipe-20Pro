@@ -1,13 +1,6 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import * as React from "react";
 
 export type ExperimentStatus = "ideation" | "testing" | "ready" | "archived";
 
@@ -96,14 +89,18 @@ const insightSeed = [
   },
 ];
 
-const RDLabContext = createContext<RDLabState | null>(null);
+const RDLabContext = React.createContext<RDLabState | null>(null);
 
-export function RDLabProvider({ children }: { children: ReactNode }) {
-  const [experiments, setExperiments] = useState<LabExperiment[]>(experimentsSeed);
-  const [focusExperimentId, setFocusExperimentId] = useState<string>(experimentsSeed[0]?.id ?? "");
-  const [searchQuery, setSearchQuery] = useState<string>("");
+type RDLabProviderProps = {
+  children: React.ReactNode;
+};
 
-  const toggleArchive = useCallback((id: string) => {
+export function RDLabProvider({ children }: RDLabProviderProps) {
+  const [experiments, setExperiments] = React.useState<LabExperiment[]>(experimentsSeed);
+  const [focusExperimentId, setFocusExperimentId] = React.useState<string>(experimentsSeed[0]?.id ?? "");
+  const [searchQuery, setSearchQuery] = React.useState<string>("");
+
+  const toggleArchive = React.useCallback((id: string) => {
     setExperiments((prev) =>
       prev.map((exp) =>
         exp.id === id
@@ -116,13 +113,13 @@ export function RDLabProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
-  const updateNotes = useCallback((id: string, notes: string) => {
+  const updateNotes = React.useCallback((id: string, notes: string) => {
     setExperiments((prev) =>
       prev.map((exp) => (exp.id === id ? { ...exp, notes, lastUpdated: "Just now" } : exp)),
     );
   }, []);
 
-  const value = useMemo<RDLabState>(
+  const value = React.useMemo<RDLabState>(
     () => ({
       experiments,
       focusExperimentId,
@@ -141,11 +138,11 @@ export function RDLabProvider({ children }: { children: ReactNode }) {
 }
 
 export function useOptionalRDLabStore() {
-  return useContext(RDLabContext);
+  return React.useContext(RDLabContext);
 }
 
 export function useRDLabStore() {
-  const ctx = useContext(RDLabContext);
+  const ctx = React.useContext(RDLabContext);
   if (!ctx) throw new Error("useRDLabStore must be used within RDLabProvider");
   return ctx;
 }
