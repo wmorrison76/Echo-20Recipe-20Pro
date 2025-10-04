@@ -2205,7 +2205,7 @@ const RecipeInputPage = () => {
               onAddRow={addIngredientRow}
               onRemoveRow={removeIngredientRow}
               onGridKeyDown={onGridKeyDown}
-              onSnapshot={handleSaveSnapshot}
+              onAddSubRecipe={() => setIsSubRecipePickerOpen(true)}
             />
 
             <Dialog open={yieldOpen} onOpenChange={setYieldOpen}>
@@ -2834,7 +2834,7 @@ const RecipeInputPage = () => {
                 "½": "1/2",
                 "¾": "3/4",
                 "⅐": "1/7",
-                "⅑": "1/9",
+                "��": "1/9",
                 "⅒": "1/10",
                 "⅓": "1/3",
                 "⅔": "2/3",
