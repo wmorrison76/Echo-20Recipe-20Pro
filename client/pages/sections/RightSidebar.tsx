@@ -40,7 +40,9 @@ export default function RightSidebar(props: RightSidebarProps) {
   const {
     mode = "recipe",
     isCollapsed,
+    onToggle,
     onOpenLabs,
+    onCloseLabs,
     selectedAllergens,
     onAllergensChange,
     selectedRecipeAccess,
