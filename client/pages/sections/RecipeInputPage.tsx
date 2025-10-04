@@ -743,6 +743,139 @@ const RecipeInputPage = () => {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // Ingredient grid helpers + keyboard nav
+  const focusIngredientCell = useCallback(
+    (rowIndex: number, colIndex: number = 0) => {
+      requestAnimationFrame(() => {
+        const el = document.querySelector<HTMLInputElement>(
+          `input[data-row="${rowIndex}"][data-col="${colIndex}"]`,
+        );
+        if (el) {
+          el.focus();
+          el.select();
+        }
+      });
+    },
+  []);
+
+  const updateIngredientRow = useCallback(
+    (index: number, patch: Partial<IngredientRow>) => {
+      setIngredients((prev) => {
+        if (index < 0 || index >= prev.length) return prev;
+        const next = prev.slice();
+        next[index] = { ...next[index], ...patch };
+        return next;
+      });
+    },
+    [setIngredients],
+  );
+
+  const addIngredientRow = useCallback(
+    (index?: number) => {
+      const targetRow =
+        typeof index === "number" && index >= 0 ? index + 1 : ingredients.length;
+      setIngredients((prev) => {
+        const next = prev.slice();
+        const insertAt =
+          typeof index === "number" && index >= 0 && index < prev.length
+            ? index + 1
+            : prev.length;
+        next.splice(insertAt, 0, createIngredientRow());
+        return next;
+      });
+      focusIngredientCell(targetRow, 0);
+    },
+    [focusIngredientCell, ingredients.length, setIngredients],
+  );
+
+  const removeIngredientRow = useCallback(
+    (index: number) => {
+      setIngredients((prev) => {
+        if (prev.length === 1) return [createIngredientRow()];
+        const next = prev.slice();
+        if (index >= 0 && index < next.length) next.splice(index, 1);
+        return next.length ? next : [createIngredientRow()];
+      });
+      focusIngredientCell(Math.max(0, index - 1), 0);
+    },
+    [focusIngredientCell, setIngredients],
+  );
+
+  const handleIngredientFieldChange = useCallback(
+    (index: number, field: keyof IngredientRow) =>
+      (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        let value = event.target.value;
+        if (field === "unit") value = value.toUpperCase();
+        if (field === "yield") value = value.replace(/[^0-9.,]/g, "");
+        if (field === "cost") value = value.replace(/[^0-9.,-]/g, "");
+        updateIngredientRow(index, { [field]: value } as Partial<IngredientRow>);
+      },
+    [updateIngredientRow],
+  );
+
+  const handleIngredientBlur = useCallback(
+    (index: number, field: "yield" | "cost") =>
+      (event: React.FocusEvent<HTMLInputElement>) => {
+        const raw = event.target.value;
+        if (!raw) return;
+        const numeric = Number(
+          raw.replace(/[^0-9.,-]/g, "").replace(/,/g, "."),
+        );
+        if (!Number.isFinite(numeric)) return;
+        if (field === "yield") {
+          const normalized = Math.max(0, Math.min(999, numeric));
+          updateIngredientRow(index, {
+            yield:
+              normalized % 1 === 0
+                ? String(Math.round(normalized))
+                : normalized.toFixed(2),
+          });
+        } else {
+          const normalized = Math.max(-999999, Math.min(999999, numeric));
+          updateIngredientRow(index, { cost: normalized.toFixed(2) });
+        }
+      },
+    [updateIngredientRow],
+  );
+
+  const methodOptionsId = useMemo(
+    () => `prep-method-options-${Math.random().toString(36).slice(2)}`,
+    [],
+  );
+
+  const knownPrepMethods = useMemo(
+    () =>
+      Array.from(new Set(selectedPrepMethod))
+        .map((value) => value.trim())
+        .filter(Boolean),
+    [selectedPrepMethod],
+  );
+
+  const { activeIngredientCount, averageIngredientYield } = useMemo(() => {
+    let active = 0;
+    let sum = 0;
+    let count = 0;
+    for (const row of ingredients) {
+      const hasContent = [row.qty, row.unit, row.item, row.prep, row.cost].some(
+        (part) => String(part || "").trim().length > 0,
+      );
+      if (hasContent) active += 1;
+      const value = Number(String(row.yield || "").replace(/[^0-9.]/g, ""));
+      if (Number.isFinite(value)) {
+        sum += value;
+        count += 1;
+      }
+    }
+    return {
+      activeIngredientCount: active,
+      averageIngredientYield: count ? sum / count : null,
+    };
+  }, [ingredients]);
+
+  const totalIngredientCost = useMemo(() => calculateTotalCost(), [ingredients]);
+
+  const lastIngredientColumnIndex = 5;
+
   // Keyboard nav in grid
   const onGridKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const target = e.target as HTMLInputElement;
@@ -759,20 +892,11 @@ const RecipeInputPage = () => {
     if (
       e.key === "Tab" &&
       !e.shiftKey &&
-      col === 4 &&
+      col === lastIngredientColumnIndex &&
       row === ingredients.length - 1
     ) {
       e.preventDefault();
-      setIngredients([
-        ...ingredients,
-        createIngredientRow(),
-      ]);
-      setTimeout(() => {
-        const next = document.querySelector<HTMLInputElement>(
-          `input[data-row="${row + 1}"][data-col="0"]`,
-        );
-        next?.focus();
-      }, 0);
+      addIngredientRow(row);
       return;
     }
     if (e.key === "ArrowRight") {
