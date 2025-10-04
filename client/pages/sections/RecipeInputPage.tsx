@@ -875,13 +875,33 @@ const RecipeInputPage = () => {
   const handleIngredientFieldChange = useCallback(
     (index: number, field: keyof IngredientRow) =>
       (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        let value = event.target.value;
-        if (field === "unit") value = value.toUpperCase();
-        if (field === "yield") value = value.replace(/[^0-9.,]/g, "");
-        if (field === "cost") value = value.replace(/[^0-9.,-]/g, "");
-        updateIngredientRow(index, { [field]: value } as Partial<IngredientRow>);
+        const raw = event.target.value;
+        setIngredients((prev) => {
+          if (index < 0 || index >= prev.length) return prev;
+          const next = prev.slice();
+          const current = ensureIngredientRowId(next[index]);
+          if (current.type === "divider" && field !== "item") return prev;
+          let value = raw;
+          if (field === "unit") value = value.toUpperCase();
+          if (field === "yield") value = value.replace(/[^0-9.,]/g, "");
+          if (field === "cost") value = value.replace(/[^0-9.,-]/g, "");
+          const updated = ensureIngredientRowId({ ...current, [field]: value });
+          if (field === "qty" && updated.type === "ingredient") {
+            const qtyValue = parseQuantity(value);
+            if (
+              Number.isFinite(qtyValue) &&
+              Math.abs(qtyValue) > Number.EPSILON &&
+              updated.costPerUnit != null
+            ) {
+              const newCost = qtyValue * updated.costPerUnit;
+              updated.cost = newCost.toFixed(2);
+            }
+          }
+          next[index] = updated;
+          return ensureIngredientRowIds(next);
+        });
       },
-    [updateIngredientRow],
+    [setIngredients],
   );
 
   const handleIngredientBlur = useCallback(
@@ -1381,7 +1401,7 @@ const RecipeInputPage = () => {
       "��": "5/8",
       "⅞": "7/8",
     };
-    let t = s.trim().replace(/[¼½¾⅓⅔⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
+    let t = s.trim().replace(/[¼½¾⅓⅔��⅜⅝⅞]/g, (ch) => map[ch] || ch);
     t = t.replace(/^(?:\s*)\/(\d+)/, "1/$1");
     t = t.replace(/(\d)(\s*)(\d\/\d)/, "$1 $3");
     const m = t.match(
