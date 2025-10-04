@@ -109,7 +109,7 @@ export default function RightSidebar(props: RightSidebarProps) {
       const v = map[e.key.toLowerCase()];
       if (!v) return;
       e.preventDefault();
-      if (isCollapsed) props.onToggle();
+      if (isCollapsed) onToggle();
       setOpen((prev)=> prev.includes(v)? prev : [...prev, v]);
       setTimeout(()=> document.querySelector(`[data-accordion-section='${v}']`)?.scrollIntoView({ behavior:'smooth', block:'nearest' }), 0);
     };
