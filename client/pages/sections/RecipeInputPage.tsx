@@ -66,6 +66,48 @@ const RecipeInputPage = () => {
     : "border-slate-200 bg-white/85 text-slate-700 hover:bg-white focus-visible:ring-blue-200 focus-visible:ring-offset-white";
 
   const [isRndLabsOpen, setIsRndLabsOpen] = useState(false);
+  const rndContainerRef = useRef<HTMLDivElement | null>(null);
+  const [rndWidths, setRndWidths] = useState({ left: 1.1, middle: 4.6, right: 2.3 });
+
+  const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+
+  const startResize = (edge: "left" | "right") => (event: React.PointerEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const container = rndContainerRef.current;
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    if (rect.width <= 0) return;
+    const startX = event.clientX;
+    const initial = { ...rndWidths };
+    const total = initial.left + initial.middle + initial.right;
+    const pairTotal = edge === "left" ? initial.left + initial.middle : initial.middle + initial.right;
+    const minLeft = 0.8;
+    const minMiddle = 2.5;
+    const minRight = 1.1;
+
+    const onPointerMove = (moveEvent: PointerEvent) => {
+      const deltaFr = ((moveEvent.clientX - startX) / rect.width) * total;
+      if (edge === "left") {
+        const newLeft = clamp(initial.left + deltaFr, minLeft, pairTotal - minMiddle);
+        const newMiddle = pairTotal - newLeft;
+        setRndWidths({ left: newLeft, middle: newMiddle, right: initial.right });
+      } else {
+        const newRight = clamp(initial.right - deltaFr, minRight, pairTotal - minMiddle);
+        const newMiddle = pairTotal - newRight;
+        setRndWidths({ left: initial.left, middle: newMiddle, right: newRight });
+      }
+    };
+
+    const onPointerUp = () => {
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUp);
+    };
+
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", onPointerUp);
+  };
+
+  const panelStyle = (weight: number) => ({ flexGrow: weight, flexBasis: 0, minWidth: 0 });
 
   const [pickerOpen, setPickerOpen] = useState<{ index: number } | null>(null);
   const [pickerQ, setPickerQ] = useState("");
@@ -206,7 +248,7 @@ const RecipeInputPage = () => {
       "¾": "3/4",
       "⅐": "1/7",
       "⅑": "1/9",
-      "⅒": "1/10",
+      "��": "1/10",
       "⅓": "1/3",
       "⅔": "2/3",
       "⅕": "1/5",
