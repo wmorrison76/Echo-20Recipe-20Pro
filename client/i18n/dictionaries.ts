@@ -35,7 +35,7 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "recipe.labels.yieldQuantity": "Yield Quantity",
     "recipe.labels.yieldLab": "Yield Lab",
     "recipe.labels.recipeAccess": "RECIPE ACCESS:",
-    "recipe.labels.recipeType": "RECIPES:",
+    "recipe.labels.recipeType": "RECIPE:",
     "recipe.labels.none": "NONE",
     "recipe.labels.full": "FULL",
     "recipe.labels.sub": "SUB",
