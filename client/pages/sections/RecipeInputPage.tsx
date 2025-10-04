@@ -1970,7 +1970,8 @@ const RecipeInputPage = () => {
                   </div>
                 </div>
               </div>
-            </div>
+
+               </div>
 
             <Dialog open={yieldOpen} onOpenChange={setYieldOpen}>
               <DialogContent className="max-w-xl">
