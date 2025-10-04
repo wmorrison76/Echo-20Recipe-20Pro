@@ -2647,17 +2647,7 @@ const RecipeInputPage = () => {
             setIngredients(
               rows.length
                 ? rows
-                : [
-                    {
-                      qty: "",
-                      unit: "",
-                      item: "",
-                      prep: "",
-                      yield: "",
-                      cost: "",
-                      subId: "",
-                    },
-                  ],
+                : [createIngredientRow()],
             );
           }
           if (data?.instructions) {
