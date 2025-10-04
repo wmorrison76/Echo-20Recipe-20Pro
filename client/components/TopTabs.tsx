@@ -334,14 +334,16 @@ export default function TopTabs() {
               collapsed && "pr-0",
             )}
           >
-            {navItems.map((item) => (
+            {translatedNavItems.map((item) => (
               <TabLink
                 key={item.to}
+                to={item.to}
+                label={item.label}
+                icon={item.icon}
                 collapsed={collapsed}
                 shortcutDisplay={
                   item.shortcut ? `${shortcutLabel}+${item.shortcut.display}` : undefined
                 }
-                {...item}
               />
             ))}
           </nav>
