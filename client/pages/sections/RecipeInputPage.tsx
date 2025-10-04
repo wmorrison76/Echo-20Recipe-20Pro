@@ -282,7 +282,7 @@ const RecipeInputPage = () => {
   }, [recipes]);
 
   const getCurrencySymbol = (c: string) =>
-    c === "EUR" ? "€" : c === "GBP" ? "£" : c === "JPY" ? "��" : "$";
+    c === "EUR" ? "��" : c === "GBP" ? "£" : c === "JPY" ? "��" : "$";
   const formatRecipeCost = useCallback(
     (value: number | null | undefined, currency?: string | null) => {
       if (typeof value !== "number" || Number.isNaN(value)) return "—";
@@ -426,7 +426,7 @@ const RecipeInputPage = () => {
     }
     const num = Number(t.replace(/[^0-9.\-]/g, ""));
     return Number.isFinite(num) ? num : (NaN as any);
-  };
+  }
 
   // Normalize US volumes to best unit (e.g., 3072 1/4 tsp -> 4 gal)
   const normalizeImperialVolume = (
