@@ -295,7 +295,7 @@ const RecipeInputPage = () => {
     };
     let t = String(s).trim();
     // Expand unicode vulgar fractions
-    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗���⅙⅚⅛⅜��⅞]/g, (ch) => map[ch] || ch);
+    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜��⅞]/g, (ch) => map[ch] || ch);
     // Allow forms like "1½" -> "1 1/2"
     t = t.replace(/(\d)\s*(\d\/\d)/, "$1 $2");
     // Mixed fraction
@@ -2113,7 +2113,7 @@ const RecipeInputPage = () => {
             />
 
             <Dialog open={yieldOpen} onOpenChange={setYieldOpen}>
-              <DialogContent className="max-w-xl">
+              <DialogContent className="max-w-3xl w-full">
                 <DialogHeader>
                   <DialogTitle>Yield Lab</DialogTitle>
                 </DialogHeader>
@@ -2121,6 +2121,8 @@ const RecipeInputPage = () => {
                   defaultInputQty={yieldQty}
                   defaultInputUnit={yieldUnit}
                   recipeName={recipeName}
+                  defaultMethod={selectedPrepMethod[0] || ""}
+                  methodOptions={knownPrepMethods}
                   onClose={() => setYieldOpen(false)}
                 />
               </DialogContent>
