@@ -1341,10 +1341,17 @@ const RecipeInputPage = () => {
       ensureIngredientRowIds(
         ingredients.map((r) => {
           const base = ensureIngredientRowId(r);
-          const n = parseQuantity(base.qty);
-          return !Number.isFinite(n)
-            ? base
-            : { ...base, qty: (n * factor).toFixed(2) };
+          if (base.type === "divider") return base;
+          const qtyValue = parseQuantity(base.qty);
+          if (!Number.isFinite(qtyValue)) return base;
+          const newQty = (qtyValue as number) * factor;
+          const costValue = parseCostValue(base.cost);
+          const scaledCost = Number.isFinite(costValue) ? Number(costValue) * factor : null;
+          return {
+            ...base,
+            qty: newQty.toFixed(2),
+            cost: scaledCost != null ? scaledCost.toFixed(2) : base.cost,
+          };
         }),
       ),
     );
@@ -2949,7 +2956,7 @@ const RecipeInputPage = () => {
                 "⅝": "5/8",
                 "⅞": "7/8",
               };
-              s = s.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝���]/g, (ch) => fracMap[ch] || ch);
+              s = s.replace(/[¼½¾��⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝���]/g, (ch) => fracMap[ch] || ch);
               const m = s.match(
                 /^\s*([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?)?\s*([a-zA-Z\.]+)?\s*(.*)$/,
               );
