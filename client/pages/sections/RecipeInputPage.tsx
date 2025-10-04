@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import RightSidebar from "./RightSidebar";
 import { useAppData } from "@/context/AppDataContext";
 import ImageEditorModal from "./ImageEditorModal";
@@ -2914,7 +2914,7 @@ const RecipeInputPage = () => {
                 "⅙": "1/6",
                 "⅚": "5/6",
                 "⅛": "1/8",
-                "⅜": "3/8",
+                "���": "3/8",
                 "⅝": "5/8",
                 "⅞": "7/8",
               };
