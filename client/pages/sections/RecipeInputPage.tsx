@@ -272,7 +272,7 @@ const RecipeInputPage = () => {
     if (!s) return NaN as any;
     const map: Record<string, string> = {
       "¼": "1/4",
-      "½": "1/2",
+      "��": "1/2",
       "¾": "3/4",
       "⅐": "1/7",
       "⅑": "1/9",
@@ -1416,8 +1416,8 @@ const RecipeInputPage = () => {
         className={`relative w-full min-h-screen transition-all duration-300 text-foreground`}
         data-echo-key="page:recipes:add"
       >
-      <div
-        className={`sticky top-0 z-[60] flex w-full items-center justify-between gap-4 px-6 py-4 transition-all duration-500 backdrop-blur-xl ${
+        <div
+          className={`sticky top-0 z-[60] flex w-full items-center justify-between gap-4 px-6 py-4 transition-all duration-500 backdrop-blur-xl ${
           isDarkMode
             ? "border-b border-cyan-500/25 bg-slate-950/75 text-cyan-100 shadow-[0_24px_72px_-32px_rgba(56,189,248,0.55)]"
             : "border-b border-slate-200/80 bg-white/85 text-slate-900 shadow-[0_24px_72px_-32px_rgba(15,23,42,0.35)]"
