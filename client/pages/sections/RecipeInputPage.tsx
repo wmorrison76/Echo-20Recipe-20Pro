@@ -3098,7 +3098,7 @@ const RecipeInputPage = () => {
         isDarkMode={isDarkMode}
       />
     </div>
-  </RDLabProvider>
+    </RDLabProvider>
   );
 };
 
