@@ -48,6 +48,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import type { IngredientRow } from "@/types/ingredients";
 import { createIngredientRow, generateIngredientRowId } from "@/types/ingredients";
 
+const ensureIngredientRowId = (row: IngredientRow): IngredientRow => {
+  if (row.subId && row.subId.trim()) return row;
+  return { ...row, subId: generateIngredientRowId() };
+};
+
+const ensureIngredientRowIds = (rows: IngredientRow[]): IngredientRow[] =>
+  rows.map((row) => ensureIngredientRowId(row));
+
 const RecipeInputPage = () => {
   const [recipeName, setRecipeName] = useState("");
   const { t } = useTranslation();
