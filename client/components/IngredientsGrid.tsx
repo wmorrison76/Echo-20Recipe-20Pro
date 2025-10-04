@@ -150,7 +150,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                 value={row.unit}
                 onChange={onFieldChange(index, "unit")}
                 onKeyDown={onGridKeyDown}
-                className={inputTone(isDarkMode, "px-2 uppercase", false)}
+                className={inputTone(isDarkMode, "px-2 text-center uppercase", false)}
                 placeholder="QTS"
               />
               <input
