@@ -465,6 +465,7 @@ export default function RightSidebar(props: RightSidebarProps) {
                           ? taxonomy.course.filter((value) => value !== option.slug)
                           : [...taxonomy.course, option.slug];
                         tset({ course: next });
+                        onCoursesChange(next);
                       }}
                     />
                     {option.label}
