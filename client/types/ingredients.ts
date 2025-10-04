@@ -8,6 +8,13 @@ export type IngredientRow = {
   subId: string;
 };
 
+let ingredientRowCounter = 0;
+
+export const generateIngredientRowId = () => {
+  ingredientRowCounter = (ingredientRowCounter + 1) % Number.MAX_SAFE_INTEGER;
+  return `ing-${Date.now().toString(36)}-${ingredientRowCounter.toString(36)}`;
+};
+
 export const createIngredientRow = (): IngredientRow => ({
   qty: "",
   unit: "",
@@ -15,5 +22,5 @@ export const createIngredientRow = (): IngredientRow => ({
   prep: "",
   yield: "",
   cost: "",
-  subId: "",
+  subId: generateIngredientRowId(),
 });
