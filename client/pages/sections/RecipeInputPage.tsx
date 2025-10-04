@@ -1385,19 +1385,10 @@ const RecipeInputPage = () => {
           >
             <Scale className="h-5 w-5" aria-hidden />
           </button>
-          <button
-            type="button"
-            onClick={handleSaveSnapshot}
-            title={t("recipe.actions.saveSnapshot", "Save Snapshot")}
-            aria-label={t("recipe.actions.saveSnapshot", "Save Snapshot")}
-            className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
-          >
-            <NotebookPen className="h-5 w-5" aria-hidden />
-          </button>
           <LanguageMenu
             variant="compact"
             isDark={isDarkMode}
-            className={`${toolbarButtonBase} ${toolbarButtonTheme} px-3`}
+            className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
             align="end"
           />
           <button
@@ -1438,8 +1429,9 @@ const RecipeInputPage = () => {
           </button>
           <button
             type="button"
-            title="React Molecule"
-            aria-label="React Molecule"
+            title="R&D Labs"
+            aria-label="R&D Labs"
+            onClick={() => setIsRndLabsOpen(true)}
             className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
           >
             <Atom className="h-5 w-5" aria-hidden />
