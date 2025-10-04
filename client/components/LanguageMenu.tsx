@@ -29,7 +29,7 @@ export default function LanguageMenu({
   const triggerClasses = cn(
     variant === "card"
       ? "flex h-full min-h-[4.25rem] w-full items-center justify-between rounded-2xl border px-4 py-3 text-left shadow-inner transition-colors"
-      : "inline-flex h-10 w-10 items-center justify-center rounded-full border text-lg transition-colors",
+      : "inline-flex h-10 w-12 items-center justify-center rounded-full border text-2xl transition-colors",
     isDark
       ? variant === "card"
         ? "border-cyan-400/40 bg-cyan-900/30 text-cyan-100 hover:bg-cyan-900/50"
@@ -42,14 +42,14 @@ export default function LanguageMenu({
 
   const optionClasses = (selected: boolean) =>
     cn(
-      "flex w-full items-center justify-between gap-3 rounded-md px-3 py-2 text-sm transition-colors",
-      selected
-        ? isDark
-          ? "bg-cyan-900/50 text-cyan-100"
-          : "bg-blue-100 text-blue-900"
-        : isDark
-          ? "hover:bg-slate-800/60"
-          : "hover:bg-slate-100",
+      "relative flex aspect-square items-center justify-center rounded-lg border text-2xl transition",
+      isDark
+        ? selected
+          ? "border-cyan-400/60 bg-cyan-500/20 text-cyan-100"
+          : "border-cyan-500/25 bg-slate-950/70 text-cyan-200 hover:bg-slate-900/70"
+        : selected
+          ? "border-slate-500 bg-slate-200 text-slate-900"
+          : "border-slate-200 bg-white text-slate-700 hover:bg-slate-100",
     );
 
   const label = t("recipe.tools.language", "Change Language");
@@ -74,12 +74,12 @@ export default function LanguageMenu({
       <PopoverContent
         align={align}
         className={cn(
-          "w-60 p-2",
+          "w-64 p-3",
           isDark ? "bg-slate-900/95 text-cyan-100" : "bg-white/95 text-slate-900",
           contentClassName,
         )}
       >
-        <div className="space-y-1">
+        <div className="grid grid-cols-3 gap-2">
           {languageOptions.map((option) => {
             const selected = option.code === language;
             return (
@@ -88,12 +88,18 @@ export default function LanguageMenu({
                 type="button"
                 onClick={() => setLanguage(option.code)}
                 className={optionClasses(selected)}
+                aria-pressed={selected}
               >
                 <span className="sr-only">{option.label}</span>
-                <span className="text-xl leading-none" aria-hidden>
+                <span className="text-2xl leading-none" aria-hidden>
                   {option.flag}
                 </span>
-                {selected ? <Check className="h-4 w-4" aria-hidden /> : null}
+                {selected ? (
+                  <Check
+                    className="absolute right-1.5 top-1.5 h-4 w-4 rounded-full bg-black/70 p-0.5 text-white shadow"
+                    aria-hidden
+                  />
+                ) : null}
               </button>
             );
           })}
