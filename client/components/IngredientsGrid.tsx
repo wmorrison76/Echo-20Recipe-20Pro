@@ -324,7 +324,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className={isDarkMode ? "text-cyan-200/75" : "text-slate-500"}>
-          Theoretical volume captured:{" "}
+          {t("recipe.ingredients.volumeLabel", "Theoretical volume captured")}:{" "}
           <span className="font-semibold text-slate-700 dark:text-cyan-100">
             {theoreticalVolumeLabel}
           </span>
@@ -340,7 +340,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
             }`}
           >
             <PlusCircle className="h-4 w-4" />
-            Add ingredient
+            {t("recipe.ingredients.addIngredient", "Add ingredient")}
           </button>
           <button
             type="button"
@@ -352,7 +352,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
             }`}
           >
             <Link2 className="h-4 w-4" />
-            Add sub recipe
+            {t("recipe.ingredients.addSubRecipe", "Add sub recipe")}
           </button>
           <button
             type="button"
@@ -363,7 +363,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                 : "border border-slate-300 text-slate-700 hover:bg-slate-100"
             }`}
           >
-            Add break
+            {t("recipe.ingredients.addDivider", "Add break")}
           </button>
         </div>
       </div>
