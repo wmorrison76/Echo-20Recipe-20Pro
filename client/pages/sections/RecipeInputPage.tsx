@@ -295,7 +295,7 @@ const RecipeInputPage = () => {
     };
     let t = String(s).trim();
     // Expand unicode vulgar fractions
-    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜��⅞]/g, (ch) => map[ch] || ch);
+    t = t.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗���⅙⅚⅛⅜��⅞]/g, (ch) => map[ch] || ch);
     // Allow forms like "1½" -> "1 1/2"
     t = t.replace(/(\d)\s*(\d\/\d)/, "$1 $2");
     // Mixed fraction
@@ -2093,6 +2093,24 @@ const RecipeInputPage = () => {
                   </div>
                 </div>
               </div>
+
+            <IngredientsGrid
+              isDarkMode={isDarkMode}
+              ingredients={ingredients}
+              currencySymbol={getCurrencySymbol(currentCurrency)}
+              totalCost={totalIngredientCost}
+              theoreticalVolumeLabel={formatMl(theoreticalVolumeMl)}
+              activeCount={activeIngredientCount}
+              averageYield={averageIngredientYield}
+              methodOptions={knownPrepMethods}
+              methodOptionsId={methodOptionsId}
+              onFieldChange={handleIngredientFieldChange}
+              onFieldBlur={handleIngredientBlur}
+              onAddRow={addIngredientRow}
+              onRemoveRow={removeIngredientRow}
+              onGridKeyDown={onGridKeyDown}
+              onSnapshot={handleSaveSnapshot}
+            />
 
             <Dialog open={yieldOpen} onOpenChange={setYieldOpen}>
               <DialogContent className="max-w-xl">
