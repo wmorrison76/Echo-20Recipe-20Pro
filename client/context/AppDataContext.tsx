@@ -41,6 +41,112 @@ const FALLBACK_GALLERY_IMAGE: { dataUrl: string; mime: string } = {
   mime: "image/svg+xml",
 };
 
+const createDemoPlaceholder = (
+  title: string,
+  emoji: string,
+  from: string,
+  to: string,
+) =>
+  `data:image/svg+xml,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
+      <defs>
+        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="${from}" />
+          <stop offset="100%" stop-color="${to}" />
+        </linearGradient>
+      </defs>
+      <rect width="600" height="400" rx="42" fill="url(#grad)" />
+      <rect x="42" y="60" width="516" height="160" rx="28" fill="rgba(255,255,255,0.15)" />
+      <rect x="78" y="96" width="180" height="108" rx="28" fill="rgba(255,255,255,0.2)" />
+      <rect x="300" y="108" width="222" height="88" rx="24" fill="rgba(255,255,255,0.12)" />
+      <text x="50%" y="62%" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="600" fill="white" text-anchor="middle">${emoji}</text>
+      <text x="50%" y="77%" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="500" fill="white" text-anchor="middle">${title}</text>
+    </svg>`
+  )}`;
+
+type DemoImagePreset = {
+  name: string;
+  title: string;
+  emoji: string;
+  from: string;
+  to: string;
+  tags: string[];
+};
+
+const DEMO_IMAGE_PRESETS: DemoImagePreset[] = [
+  {
+    name: "pizza.svg",
+    title: "Wood-Fired Pizza",
+    emoji: "🍕",
+    from: "#f97316",
+    to: "#ea580c",
+    tags: ["food", "pizza", "demo"],
+  },
+  {
+    name: "burger.svg",
+    title: "Craft Burger",
+    emoji: "🍔",
+    from: "#ef4444",
+    to: "#dc2626",
+    tags: ["food", "burger", "demo"],
+  },
+  {
+    name: "salad.svg",
+    title: "Garden Salad",
+    emoji: "🥗",
+    from: "#22c55e",
+    to: "#15803d",
+    tags: ["food", "salad", "demo"],
+  },
+  {
+    name: "pasta.svg",
+    title: "Truffle Pasta",
+    emoji: "🍝",
+    from: "#facc15",
+    to: "#eab308",
+    tags: ["food", "pasta", "demo"],
+  },
+  {
+    name: "steak.svg",
+    title: "Seared Steak",
+    emoji: "🥩",
+    from: "#fb7185",
+    to: "#be123c",
+    tags: ["food", "steak", "demo"],
+  },
+  {
+    name: "sushi.svg",
+    title: "Sushi Board",
+    emoji: "🍣",
+    from: "#38bdf8",
+    to: "#0ea5e9",
+    tags: ["food", "sushi", "demo"],
+  },
+  {
+    name: "dessert.svg",
+    title: "Patisserie",
+    emoji: "🧁",
+    from: "#c084fc",
+    to: "#8b5cf6",
+    tags: ["food", "dessert", "demo"],
+  },
+  {
+    name: "bread.svg",
+    title: "Artisan Bread",
+    emoji: "🥖",
+    from: "#facc72",
+    to: "#f59e0b",
+    tags: ["food", "bread", "demo"],
+  },
+];
+
+const DEMO_PLACEHOLDERS = DEMO_IMAGE_PRESETS.map((preset) => ({
+  name: preset.name,
+  dataUrl: createDemoPlaceholder(preset.title, preset.emoji, preset.from, preset.to),
+  tags: preset.tags,
+  mime: "image/svg+xml",
+}));
+
 type AppData = {
   recipes: Recipe[];
   images: GalleryImage[];
@@ -215,111 +321,16 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
     (async () => {
       try {
-        const loadImageFromUrl = async (
-          url: string,
-        ): Promise<{ dataUrl: string; mime: string } | null> => {
-          if (!url || typeof fetch !== "function") return null;
-          const controller =
-            typeof AbortController !== "undefined" ? new AbortController() : undefined;
-          let timeout: ReturnType<typeof setTimeout> | undefined;
-          try {
-            if (controller) {
-              timeout = setTimeout(() => controller.abort(), 6000);
-            }
-            const response = await fetch(
-              url,
-              controller ? { signal: controller.signal } : undefined,
-            ).catch(() => null);
-            if (timeout) clearTimeout(timeout);
-            if (!response?.ok) return null;
-            const blob = await response.blob();
-            const dataUrl = await dataUrlFromBlob(blob);
-            return { dataUrl, mime: blob.type || "image/jpeg" };
-          } catch {
-            if (timeout) clearTimeout(timeout);
-            return null;
-          }
-        };
-
-        const items = [
-          {
-            name: "pizza.jpg",
-            url: "https://images.unsplash.com/photo-1548365328-9f547fb09530?auto=format&fit=crop&w=960&h=720&q=70",
-            tags: ["food", "pizza", "demo"],
-          },
-          {
-            name: "burger.jpg",
-            url: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=960&h=720&q=70",
-            tags: ["food", "burger", "demo"],
-          },
-          {
-            name: "salad.jpg",
-            url: "https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=960&h=720&q=70",
-            tags: ["food", "salad", "demo"],
-          },
-          {
-            name: "pasta.jpg",
-            url: "https://images.unsplash.com/photo-1521389508051-d7ffb5dc8bbf?auto=format&fit=crop&w=960&h=720&q=70",
-            tags: ["food", "pasta", "demo"],
-          },
-          {
-            name: "steak.jpg",
-            url: "https://images.unsplash.com/photo-1553163147-622ab57be1c7?auto=format&fit=crop&w=960&h=720&q=70",
-            tags: ["food", "steak", "demo"],
-          },
-          {
-            name: "sushi.jpg",
-            url: "https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=960&h=720&q=70",
-            tags: ["food", "sushi", "demo"],
-          },
-          {
-            name: "dessert.jpg",
-            url: "https://images.unsplash.com/photo-1541976076758-347942db1970?auto=format&fit=crop&w=960&h=720&q=70",
-            tags: ["food", "dessert", "demo"],
-          },
-          {
-            name: "bread.jpg",
-            url: "https://images.unsplash.com/photo-1509440159598-8b4e0b0b1f66?auto=format&fit=crop&w=960&h=720&q=70",
-            tags: ["food", "bread", "demo"],
-          },
-          {
-            name: "cupcake.jpg",
-            url: "https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea?auto=format&fit=crop&w=960&h=720&q=70",
-            tags: ["food", "dessert", "cupcake", "demo"],
-          },
-          {
-            name: "icecream.jpg",
-            url: "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=960&h=720&q=70",
-            tags: ["food", "dessert", "ice cream", "demo"],
-          },
-          {
-            name: "tiramisu.jpg",
-            url: "https://images.unsplash.com/photo-1604908176997-431be3fa7e4d?auto=format&fit=crop&w=960&h=720&q=70",
-            tags: ["food", "dessert", "tiramisu", "demo"],
-          },
-          {
-            name: "cheesecake.jpg",
-            url: "https://images.unsplash.com/photo-1478145046317-39f10e56b5e9?auto=format&fit=crop&w=960&h=720&q=70",
-            tags: ["food", "dessert", "cheesecake", "demo"],
-          },
-        ];
-        const next: GalleryImage[] = [];
-        let order = 0;
-        const hasNetwork = typeof fetch === "function";
-        for (const it of items) {
-          const loaded = hasNetwork ? await loadImageFromUrl(it.url) : null;
-          const payload = loaded ?? FALLBACK_GALLERY_IMAGE;
-          next.push({
-            id: uid(),
-            name: it.name,
-            dataUrl: payload.dataUrl,
-            createdAt: Date.now(),
-            tags: it.tags,
-            favorite: false,
-            order: order++,
-            type: payload.mime,
-          });
-        }
+        const next: GalleryImage[] = DEMO_PLACEHOLDERS.map((item, index) => ({
+          id: uid(),
+          name: item.name,
+          dataUrl: item.dataUrl,
+          createdAt: Date.now(),
+          tags: item.tags,
+          favorite: false,
+          order: index,
+          type: item.mime,
+        }));
         if (!mountedRef.current) return;
         if (onlyOldDemo) setImages([]);
         if (images.length === 0 || onlyOldDemo) {
