@@ -1345,71 +1345,114 @@ const RecipeInputPage = () => {
       data-echo-key="page:recipes:add"
     >
       <div
-        className={`hidden ${isDarkMode ? "bg-gradient-to-br from-gray-900 via-black to-blue-900" : "bg-gradient-to-br from-gray-50 to-white"}`}
+        className={`sticky top-0 z-[60] flex w-full items-center justify-between gap-4 px-6 py-4 transition-all duration-500 backdrop-blur-xl ${
+          isDarkMode
+            ? "border-b border-cyan-500/25 bg-slate-950/75 text-cyan-100 shadow-[0_24px_72px_-32px_rgba(56,189,248,0.55)]"
+            : "border-b border-slate-200/80 bg-white/85 text-slate-900 shadow-[0_24px_72px_-32px_rgba(15,23,42,0.35)]"
+        }`}
       >
-        <div className="w-full px-0 py-0 flex justify-between items-center">
-          <div className="p-0.5">
-            <div className="h-12 w-auto flex items-center">
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets%2Fc1bbdbb47a354d9ebc60f96efcabf821%2F544726159ed9468bb33ed78346c7b51b?format=webp&width=400"
-                alt="Echo Recipe Pro"
-                className="h-10 md:h-12 lg:h-14 w-auto select-none"
-                draggable={false}
-              />
-            </div>
-          </div>
-          <div className="flex flex-col items-end gap-2">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setIsRightSidebarCollapsed((v) => !v)}
-                title={t("recipe.actions.toggleTools", "Toggle Tools")}
-                className="p-1 rounded hover:bg-black/10"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
-              <button
-                onClick={scaleRecipe}
-                title={t("recipe.actions.scale", "Scale Recipe")}
-                className="p-1 rounded hover:bg-black/10"
-              >
-                <Scale className="w-5 h-5" />
-              </button>
-              <button
-                onClick={handleSaveSnapshot}
-                title={t("recipe.actions.saveSnapshot", "Save Snapshot")}
-                className="p-1 rounded hover:bg-black/10"
-              >
-                <NotebookPen className="w-5 h-5" />
-              </button>
-              <LanguageMenu
-                variant="compact"
-                isDark={isDarkMode}
-                className="border-none bg-transparent p-1.5 text-xs text-foreground hover:bg-black/10 focus-visible:outline-none"
-                align="end"
-              />
-              <button
-                onClick={convertUnits}
-                title={t("recipe.actions.convertUnits", "Convert Units")}
-                className="p-1 rounded hover:bg-black/10"
-              >
-                <ArrowLeftRight className="w-5 h-5" />
-              </button>
-              <button
-                onClick={cycleCurrency}
-                title={t("recipe.actions.currency", "Change Currency")}
-                className="p-1 rounded hover:bg-black/10"
-              >
-                <CircleDollarSign className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => setIsRightSidebarCollapsed(!isRightSidebarCollapsed)}
-                title={t("recipe.actions.recipeTools", "Recipe Tools")}
-                className="p-1 rounded hover:bg-black/10"
-              >
-                <Settings className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
+        <div className="flex items-center gap-3">
+          <img
+            src="https://cdn.builder.io/api/v1/image/assets%2Fc1bbdbb47a354d9ebc60f96efcabf821%2F544726159ed9468bb33ed78346c7b51b?format=webp&width=400"
+            alt="Echo Recipe Pro"
+            className="h-10 w-auto select-none md:h-12 lg:h-14"
+            draggable={false}
+          />
+          <span
+            className={`hidden text-xs font-semibold uppercase tracking-[0.32em] md:inline-flex ${
+              isDarkMode ? "text-cyan-300/80" : "text-slate-500/80"
+            }`}
+          >
+            Echo Recipe Pro
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={() => setIsRightSidebarCollapsed((v) => !v)}
+            title={t("recipe.actions.toggleTools", "Toggle Tools")}
+            aria-label={t("recipe.actions.toggleTools", "Toggle Tools")}
+            className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
+          >
+            <Menu className="h-5 w-5" aria-hidden />
+          </button>
+          <button
+            type="button"
+            onClick={scaleRecipe}
+            title={t("recipe.actions.scale", "Scale Recipe")}
+            aria-label={t("recipe.actions.scale", "Scale Recipe")}
+            className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
+          >
+            <Scale className="h-5 w-5" aria-hidden />
+          </button>
+          <button
+            type="button"
+            onClick={handleSaveSnapshot}
+            title={t("recipe.actions.saveSnapshot", "Save Snapshot")}
+            aria-label={t("recipe.actions.saveSnapshot", "Save Snapshot")}
+            className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
+          >
+            <NotebookPen className="h-5 w-5" aria-hidden />
+          </button>
+          <LanguageMenu
+            variant="compact"
+            isDark={isDarkMode}
+            className={`${toolbarButtonBase} ${toolbarButtonTheme} px-3`}
+            align="end"
+          />
+          <button
+            type="button"
+            onClick={convertUnits}
+            title={t("recipe.actions.convertUnits", "Convert Units")}
+            aria-label={t("recipe.actions.convertUnits", "Convert Units")}
+            className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
+          >
+            <ArrowLeftRight className="h-5 w-5" aria-hidden />
+          </button>
+          <button
+            type="button"
+            onClick={() => convertUnits()}
+            title={t("recipe.tools.alt", "Alt Units")}
+            aria-label={t("recipe.tools.alt", "Alt Units")}
+            className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
+          >
+            <Ruler className="h-5 w-5" aria-hidden />
+          </button>
+          <button
+            type="button"
+            onClick={cycleCurrency}
+            title={t("recipe.actions.currency", "Change Currency")}
+            aria-label={t("recipe.actions.currency", "Change Currency")}
+            className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
+          >
+            <CircleDollarSign className="h-5 w-5" aria-hidden />
+          </button>
+          <button
+            type="button"
+            onClick={() => setYieldOpen(true)}
+            title="Yield Lab"
+            aria-label="Yield Lab"
+            className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
+          >
+            <FlaskConical className="h-5 w-5" aria-hidden />
+          </button>
+          <button
+            type="button"
+            title="React Molecule"
+            aria-label="React Molecule"
+            className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
+          >
+            <Atom className="h-5 w-5" aria-hidden />
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsRightSidebarCollapsed(!isRightSidebarCollapsed)}
+            title={t("recipe.actions.recipeTools", "Recipe Tools")}
+            aria-label={t("recipe.actions.recipeTools", "Recipe Tools")}
+            className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
+          >
+            <Settings className="h-5 w-5" aria-hidden />
+          </button>
         </div>
       </div>
 
