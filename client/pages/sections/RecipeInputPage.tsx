@@ -1988,74 +1988,80 @@ const RecipeInputPage = () => {
 
           <Dialog open={isRndLabsOpen} onOpenChange={setIsRndLabsOpen}>
             <DialogContent className="max-w-[min(1200px,95vw)] w-full h-[85vh] overflow-hidden border border-white/10 bg-white/95 p-0 text-slate-900 shadow-[0_40px_120px_-60px_rgba(15,23,42,0.65)] dark:border-cyan-500/20 dark:bg-slate-950/95 dark:text-cyan-100">
-              <div className="flex h-full flex-col">
-                <DialogHeader className="flex flex-row items-center justify-between border-b px-6 py-4 dark:border-cyan-500/20">
-                  <DialogTitle className="text-lg font-semibold uppercase tracking-[0.35em]">
-                    R&amp;D Labs
-                  </DialogTitle>
-                  <button
-                    type="button"
-                    onClick={() => setIsRndLabsOpen(false)}
-                    className="rounded-full border border-transparent bg-slate-900/5 p-2 text-slate-500 transition hover:bg-slate-900/10 hover:text-slate-800 dark:bg-cyan-500/10 dark:text-cyan-200 dark:hover:bg-cyan-500/20"
-                    aria-label="Close R&D Labs"
-                  >
-                    <X className="h-4 w-4" aria-hidden />
-                  </button>
-                </DialogHeader>
-                <div className="flex flex-1 flex-col gap-4 px-6 py-4">
-                  <p className={`text-sm ${accentMuted}`}>
-                    Drag the dividers to resize each workspace. Use these surfaces for experiments, documentation, or automation flows.
-                  </p>
-                  <div
-                    ref={rndContainerRef}
-                    className="flex flex-1 items-stretch gap-3 overflow-hidden"
-                  >
-                    <section
-                      style={panelStyle(rndWidths.left)}
-                      className={`${panelBaseClasses} ${panelAccentClasses[0]}`}
+              <RDLabProvider>
+                <div className="flex h-full flex-col">
+                  <DialogHeader className="flex flex-row items-center justify-between border-b px-6 py-4 dark:border-cyan-500/20">
+                    <DialogTitle className="text-lg font-semibold uppercase tracking-[0.35em]">
+                      R&D Labs
+                    </DialogTitle>
+                    <button
+                      type="button"
+                      onClick={() => setIsRndLabsOpen(false)}
+                      className="rounded-full border border-transparent bg-slate-900/5 p-2 text-slate-500 transition hover:bg-slate-900/10 hover:text-slate-800 dark:bg-cyan-500/10 dark:text-cyan-200 dark:hover:bg-cyan-500/20"
+                      aria-label="Close R&D Labs"
                     >
-                      <h3 className="text-sm font-semibold uppercase tracking-[0.35em]">Discovery</h3>
-                      <p className={`mt-3 text-xs leading-relaxed ${accentMuted}`}>
-                        Stage inspiration, competitive research, and sourcing notes here.
-                      </p>
-                    </section>
-                    <div
-                      role="separator"
-                      aria-orientation="vertical"
-                      onPointerDown={startResize("left")}
-                      className={handleClasses}
+                      <X className="h-4 w-4" aria-hidden />
+                    </button>
+                  </DialogHeader>
+                  <div className="flex flex-1 flex-col gap-4 px-6 py-4">
+                    <p className={`text-sm ${accentMuted}`}>
+                      Drag the dividers to resize each workspace. Use these surfaces for experiments, documentation, or automation flows.
+                    </p>
+                    <PanelGroup
+                      direction="horizontal"
+                      layout={rndLayout}
+                      onLayout={handleRndLayoutChange}
+                      className="flex h-full items-stretch gap-3"
                     >
-                      <span className="pointer-events-none h-8 w-0.5 rounded-full bg-slate-500/60 dark:bg-cyan-200/80" />
-                    </div>
-                    <section
-                      style={panelStyle(rndWidths.middle)}
-                      className={`${panelBaseClasses} ${panelAccentClasses[1]}`}
-                    >
-                      <h3 className="text-sm font-semibold uppercase tracking-[0.35em]">Workbench</h3>
-                      <p className={`mt-3 text-xs leading-relaxed ${accentMuted}`}>
-                        Reserve this main lane for formulations, live tests, or shared prototypes.
-                      </p>
-                    </section>
-                    <div
-                      role="separator"
-                      aria-orientation="vertical"
-                      onPointerDown={startResize("right")}
-                      className={handleClasses}
-                    >
-                      <span className="pointer-events-none h-8 w-0.5 rounded-full bg-slate-500/60 dark:bg-cyan-200/80" />
-                    </div>
-                    <section
-                      style={panelStyle(rndWidths.right)}
-                      className={`${panelBaseClasses} ${panelAccentClasses[2]}`}
-                    >
-                      <h3 className="text-sm font-semibold uppercase tracking-[0.35em]">Insights</h3>
-                      <p className={`mt-3 text-xs leading-relaxed ${accentMuted}`}>
-                        Pin KPIs, AI summaries, or vendor comparisons for rapid decisions.
-                      </p>
-                    </section>
+                      <Panel minSize={20} order={1} className="flex">
+                        <section className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[0]}`}>
+                          <header className={rndPanelHeadingClasses}>
+                            Discovery runway
+                          </header>
+                          <p className={`mt-2 text-xs leading-relaxed ${accentMuted}`}>
+                            Stage inspiration, competitive research, and sourcing notes here.
+                          </p>
+                          <div className="mt-4 flex-1 overflow-hidden">
+                            <DiscoveryPanel />
+                          </div>
+                        </section>
+                      </Panel>
+                      <PanelResizeHandle className={rndHandleClasses}>
+                        <span className="pointer-events-none h-10 w-0.5 rounded-full bg-slate-500/60 dark:bg-cyan-200/80" />
+                      </PanelResizeHandle>
+                      <Panel minSize={26} order={2} className="flex">
+                        <section className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[1]}`}>
+                          <header className={rndPanelHeadingClasses}>
+                            Workbench
+                          </header>
+                          <p className={`mt-2 text-xs leading-relaxed ${accentMuted}`}>
+                            Reserve this lane for formulations, live tests, or shared prototypes.
+                          </p>
+                          <div className="mt-4 flex-1 overflow-hidden">
+                            <WorkbenchPanel />
+                          </div>
+                        </section>
+                      </Panel>
+                      <PanelResizeHandle className={rndHandleClasses}>
+                        <span className="pointer-events-none h-10 w-0.5 rounded-full bg-slate-500/60 dark:bg-cyan-200/80" />
+                      </PanelResizeHandle>
+                      <Panel minSize={20} order={3} className="flex">
+                        <section className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[2]}`}>
+                          <header className={rndPanelHeadingClasses}>
+                            Insight stack
+                          </header>
+                          <p className={`mt-2 text-xs leading-relaxed ${accentMuted}`}>
+                            Pin KPIs, AI summaries, or vendor comparisons for rapid decisions.
+                          </p>
+                          <div className="mt-4 flex-1 overflow-hidden">
+                            <InsightsPanel />
+                          </div>
+                        </section>
+                      </Panel>
+                    </PanelGroup>
                   </div>
                 </div>
-              </div>
+              </RDLabProvider>
             </DialogContent>
           </Dialog>
 
