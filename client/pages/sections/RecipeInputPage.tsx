@@ -929,16 +929,18 @@ const RecipeInputPage = () => {
             const normalized = Math.max(-999999, Math.min(999999, numeric));
             const formattedCost = normalized.toFixed(2);
             const qtyValue = parseQuantity(current.qty);
-            const costPerUnit =
+            const nextCostPerUnit =
               Number.isFinite(qtyValue) && Math.abs(qtyValue) > Number.EPSILON
                 ? normalized / qtyValue
                 : current.costPerUnit;
+            const sanitizedCostPerUnit =
+              typeof nextCostPerUnit === "number" && Number.isFinite(nextCostPerUnit)
+                ? Number(nextCostPerUnit.toFixed(6))
+                : null;
             next[index] = ensureIngredientRowId({
               ...current,
               cost: formattedCost,
-              costPerUnit: Number.isFinite(costPerUnit)
-                ? Number(costPerUnit.toFixed(6))
-                : null,
+              costPerUnit: sanitizedCostPerUnit,
             });
           }
           return ensureIngredientRowIds(next);
