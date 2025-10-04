@@ -186,7 +186,8 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                         ? "border-cyan-500/40 text-cyan-200 hover:bg-cyan-500/10"
                         : "border-slate-300 text-slate-500 hover:bg-slate-200/80"
                     }`}
-                    title="Drag to reorder"
+                    title={t("recipe.ingredients.dragHandle", "Drag to reorder")}
+                    aria-label={t("recipe.ingredients.dragHandle", "Drag to reorder")}
                   >
                     <GripVertical className="h-3.5 w-3.5" aria-hidden />
                   </button>
@@ -202,7 +203,9 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                   onKeyDown={onGridKeyDown}
                   disabled={isDivider}
                   className={inputTone(isDarkMode, "px-2", false, isDivider)}
-                  placeholder={isDivider ? "" : "1 1/2"}
+                  placeholder={
+                    isDivider ? "" : t("recipe.ingredients.placeholders.qty", "1 1/2")
+                  }
                 />
                 <input
                   data-row={index}
@@ -217,7 +220,9 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                     false,
                     isDivider,
                   )}
-                  placeholder={isDivider ? "" : "QTS"}
+                  placeholder={
+                    isDivider ? "" : t("recipe.ingredients.placeholders.unit", "QTS")
+                  }
                 />
                 <input
                   data-row={index}
@@ -231,7 +236,11 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                     false,
                     false,
                   )}
-                  placeholder={isDivider ? "Step label or section" : "Ingredient"}
+                  placeholder={
+                    isDivider
+                      ? t("recipe.ingredients.placeholders.step", "Step label or section")
+                      : t("recipe.ingredients.placeholders.item", "Ingredient")
+                  }
                 />
                 <input
                   data-row={index}
@@ -242,7 +251,11 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                   disabled={isDivider}
                   list={!isDivider && methodOptions.length ? methodOptionsId : undefined}
                   className={inputTone(isDarkMode, undefined, false, isDivider)}
-                  placeholder={isDivider ? "" : "Method or prep notes"}
+                  placeholder={
+                    isDivider
+                      ? ""
+                      : t("recipe.ingredients.placeholders.prep", "Method or prep notes")
+                  }
                 />
                 <input
                   data-row={index}
@@ -254,7 +267,9 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                   disabled={isDivider}
                   className={inputTone(isDarkMode, "px-2 text-center", true, isDivider)}
                   maxLength={5}
-                  placeholder={isDivider ? "" : "100"}
+                  placeholder={
+                    isDivider ? "" : t("recipe.ingredients.placeholders.yield", "100")
+                  }
                 />
                 <div className="relative flex w-full items-center gap-1">
                   <span
@@ -274,7 +289,9 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                     disabled={isDivider}
                     className={inputTone(isDarkMode, "px-2 text-right", false, isDivider)}
                     maxLength={6}
-                    placeholder={isDivider ? "" : "0.00"}
+                    placeholder={
+                      isDivider ? "" : t("recipe.ingredients.placeholders.cost", "0.00")
+                    }
                   />
                 </div>
                 <div className="flex items-center justify-end">
@@ -286,7 +303,8 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                         ? "border-cyan-500/30 text-cyan-200 hover:bg-cyan-500/10"
                         : "border-slate-300 text-slate-600 hover:bg-slate-100"
                     }`}
-                    title="Remove row"
+                    title={t("recipe.ingredients.removeRow", "Remove row")}
+                    aria-label={t("recipe.ingredients.removeRow", "Remove row")}
                   >
                     <MinusCircle className="h-4 w-4" />
                   </button>
