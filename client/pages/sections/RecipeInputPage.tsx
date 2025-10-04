@@ -913,20 +913,38 @@ const RecipeInputPage = () => {
           raw.replace(/[^0-9.,-]/g, "").replace(/,/g, "."),
         );
         if (!Number.isFinite(numeric)) return;
-        if (field === "yield") {
-          const normalized = Math.max(0, Math.min(999, numeric));
-          updateIngredientRow(index, {
-            yield:
+        setIngredients((prev) => {
+          if (index < 0 || index >= prev.length) return prev;
+          const next = prev.slice();
+          const current = ensureIngredientRowId(next[index]);
+          if (current.type === "divider") return prev;
+          if (field === "yield") {
+            const normalized = Math.max(0, Math.min(999, numeric));
+            const formatted =
               normalized % 1 === 0
                 ? String(Math.round(normalized))
-                : normalized.toFixed(2),
-          });
-        } else {
-          const normalized = Math.max(-999999, Math.min(999999, numeric));
-          updateIngredientRow(index, { cost: normalized.toFixed(2) });
-        }
+                : normalized.toFixed(2);
+            next[index] = ensureIngredientRowId({ ...current, yield: formatted });
+          } else {
+            const normalized = Math.max(-999999, Math.min(999999, numeric));
+            const formattedCost = normalized.toFixed(2);
+            const qtyValue = parseQuantity(current.qty);
+            const costPerUnit =
+              Number.isFinite(qtyValue) && Math.abs(qtyValue) > Number.EPSILON
+                ? normalized / qtyValue
+                : current.costPerUnit;
+            next[index] = ensureIngredientRowId({
+              ...current,
+              cost: formattedCost,
+              costPerUnit: Number.isFinite(costPerUnit)
+                ? Number(costPerUnit.toFixed(6))
+                : null,
+            });
+          }
+          return ensureIngredientRowIds(next);
+        });
       },
-    [updateIngredientRow],
+    [setIngredients],
   );
 
   const methodOptionsId = useMemo(
@@ -1401,7 +1419,7 @@ const RecipeInputPage = () => {
       "��": "5/8",
       "⅞": "7/8",
     };
-    let t = s.trim().replace(/[¼½¾⅓⅔��⅜⅝⅞]/g, (ch) => map[ch] || ch);
+    let t = s.trim().replace(/[¼½¾⅓⅔⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
     t = t.replace(/^(?:\s*)\/(\d+)/, "1/$1");
     t = t.replace(/(\d)(\s*)(\d\/\d)/, "$1 $3");
     const m = t.match(
