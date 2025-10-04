@@ -54,6 +54,43 @@ const navItems: NavItemConfig[] = [
   { to: "/?tab=gallery", labelKey: "nav.gallery", fallback: "Gallery", icon: Images, shortcut: { key: "Digit9", display: "9" } },
 ];
 
+type DissolvingTextProps = {
+  collapsed: boolean;
+  children: ReactNode;
+  className?: string;
+  ariaHidden?: boolean;
+  expandedMaxWidthClass?: string;
+};
+
+function DissolvingText({
+  collapsed,
+  children,
+  className,
+  ariaHidden,
+  expandedMaxWidthClass = "max-w-full",
+}: DissolvingTextProps) {
+  return (
+    <span
+      aria-hidden={ariaHidden}
+      className={cn(
+        "relative block overflow-hidden whitespace-nowrap transition-all duration-700 ease-in-out",
+        collapsed ? "max-w-0 delay-150" : "delay-0",
+        !collapsed && expandedMaxWidthClass,
+      )}
+    >
+      <span
+        className={cn(
+          "block transition-all duration-300 ease-out",
+          collapsed ? "opacity-0 blur-sm translate-y-1" : "opacity-100 blur-0 translate-y-0",
+          className,
+        )}
+      >
+        {children}
+      </span>
+    </span>
+  );
+}
+
 type TabLinkProps = {
   to: string;
   label: string;
