@@ -1264,7 +1264,7 @@ const RecipeInputPage = () => {
     let changed = false;
     const next = ingredients.map((r) => {
       if ((r.qty && r.unit) || !r.item) return r;
-      if (!/^(\s*[0-9¼½¾⅓������⅜⅝⅞]|\s*\/\d+|.*,)\b/i.test(String(r.item)))
+      if (!/^(\s*[0-9¼½¾⅓�������⅜⅝⅞]|\s*\/\d+|.*,)\b/i.test(String(r.item)))
         return r;
       const p = parseIngredientInline(String(r.item));
       if (!p) return r;
@@ -1424,19 +1424,13 @@ const RecipeInputPage = () => {
         }`}
       >
         <div className="flex items-center gap-3">
-          <img
-            src="https://cdn.builder.io/api/v1/image/assets%2Fc1bbdbb47a354d9ebc60f96efcabf821%2F544726159ed9468bb33ed78346c7b51b?format=webp&width=400"
-            alt="Echo Recipe Pro"
-            className="h-10 w-auto select-none md:h-12 lg:h-14"
-            draggable={false}
-          />
-          <span
-            className={`hidden text-xs font-semibold uppercase tracking-[0.32em] md:inline-flex ${
+          <h1
+            className={`text-sm font-semibold uppercase tracking-[0.4em] ${
               isDarkMode ? "text-cyan-300/80" : "text-slate-500/80"
             }`}
           >
-            Echo Recipe Pro
-          </span>
+            {t("recipe.workspaceTitle", "Add Recipe Workspace")}
+          </h1>
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
           <button
