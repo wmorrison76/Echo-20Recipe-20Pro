@@ -1,4 +1,5 @@
 import type { Recipe, RecipeExport, IngredientRow } from "@shared/recipes";
+import { createFoodPlaceholder } from "@/lib/placeholders";
 import { normalizeRecipe } from "@shared/recipes";
 
 const now = Date.now();
@@ -89,8 +90,7 @@ const meyerLemonExport = normalizeRecipe({
   selectedRecipeType: ["Pastry"],
   selectedPrepMethod: ["Bake"],
   selectedCookingEquipment: ["Tart Pan", "Stand Mixer"],
-  image:
-    "https://images.unsplash.com/photo-1505253758473-96b7015fcd40?auto=format&fit=crop&w=720&q=70",
+  image: createFoodPlaceholder("Meyer Lemon Tart", "🍋", "#facc15", "#f97316"),
   yieldQty: 8,
   yieldUnit: "slices",
   portionCount: 8,
@@ -135,8 +135,7 @@ const charredOctopusExport = normalizeRecipe({
   selectedRecipeType: ["Seafood"],
   selectedPrepMethod: ["Poach", "Grill"],
   selectedCookingEquipment: ["Grill", "Blender"],
-  image:
-    "https://images.unsplash.com/photo-1516684669134-de6cec3f36c3?auto=format&fit=crop&w=720&q=70",
+  image: createFoodPlaceholder("Charred Octopus", "🐙", "#38bdf8", "#0ea5e9"),
   yieldQty: 6,
   yieldUnit: "plates",
   portionCount: 6,
@@ -181,8 +180,7 @@ const wagyuExport = normalizeRecipe({
   selectedRecipeType: ["Meat"],
   selectedPrepMethod: ["Sear", "Roast"],
   selectedCookingEquipment: ["Carbon Steel Pan", "Oven"],
-  image:
-    "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=720&q=70",
+  image: createFoodPlaceholder("Wagyu Strip", "🥩", "#fb7185", "#be123c"),
   yieldQty: 6,
   yieldUnit: "plates",
   portionCount: 6,
