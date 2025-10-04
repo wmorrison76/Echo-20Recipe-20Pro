@@ -89,6 +89,7 @@ export default function RightSidebar(props: RightSidebarProps) {
   const experimentsList = labStore?.experiments ?? [];
   const backlog = labStore?.backlog ?? [];
   const insights = labStore?.insights ?? [];
+  const discoveryQueue = otherExperiments.length > 0 ? otherExperiments : experimentsList.slice(0, 4);
   const translateClass = isCollapsed ? "translate-x-full" : "translate-x-0";
   const panelClass = [
     "fixed top-16 right-0 z-[70] w-72 h-[80vh] backdrop-blur-sm border-l border-t rounded-tl-2xl rounded-bl-2xl shadow-inner transition-transform duration-500 ease-in-out overflow-hidden no-callout",
