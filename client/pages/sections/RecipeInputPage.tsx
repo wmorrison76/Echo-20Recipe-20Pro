@@ -884,27 +884,30 @@ const RecipeInputPage = () => {
     (from: number, to: number) => {
       if (from === to) return;
       setIngredients((prev) => {
-        if (from < 0 || from >= prev.length || to < 0 || to >= prev.length) return prev;
+        if (from < 0 || from >= prev.length) return prev;
         const next = ensureIngredientRowIds(prev.slice());
         const [moved] = next.splice(from, 1);
-        next.splice(to, 0, moved);
+        const clampedTarget = Math.max(0, Math.min(to, next.length));
+        next.splice(clampedTarget, 0, moved);
         return ensureIngredientRowIds(next);
       });
-      focusIngredientCell(to, 0);
+      focusIngredientCell(Math.max(0, Math.min(to, ingredients.length - 1)), 0);
     },
-    [focusIngredientCell, setIngredients],
+    [focusIngredientCell, ingredients.length, setIngredients],
   );
 
   const addDividerRow = useCallback(() => {
+    let insertedIndex = 0;
     setIngredients((prev) => {
       const next = ensureIngredientRowIds(prev.slice());
       const existingDividers = next.filter((row) => row.type === "divider").length;
       const label = `Step ${existingDividers + 1}`;
       next.push(createDividerRow(label));
+      insertedIndex = next.length - 1;
       return ensureIngredientRowIds(next);
     });
-    focusIngredientCell(ingredients.length, 2);
-  }, [focusIngredientCell, ingredients.length, setIngredients]);
+    setTimeout(() => focusIngredientCell(insertedIndex, 2), 0);
+  }, [focusIngredientCell, setIngredients]);
 
   const handleIngredientFieldChange = useCallback(
     (index: number, field: keyof IngredientRow) =>
@@ -1174,7 +1177,7 @@ const RecipeInputPage = () => {
       } else {
         // Treat numeric/no-unit as Celsius when switching to Imperial
         if (
-          /(?:°?\s*C\b|celsius)/i.test(t) ||
+          /(?:��?\s*C\b|celsius)/i.test(t) ||
           /^(?:\d{2,3})$/.test(t.replace(/[^0-9]/g, ""))
         ) {
           const f = Math.round((num * 9) / 5 + 32);
