@@ -21,7 +21,6 @@ import {
   Sun,
   Moon,
   Scale,
-  NotebookPen,
   ArrowLeftRight,
   Ruler,
   CircleDollarSign,
