@@ -228,6 +228,32 @@ const RecipeInputPage = () => {
   const [cookTemp, setCookTemp] = useState<string>("");
   const [prepTime, setPrepTime] = useState<string>("");
 
+  const subRecipeOptions = useMemo<SubRecipeOption[]>(() => {
+    if (!recipes || recipes.length === 0) return [];
+    return [...recipes]
+      .map((recipe) => {
+        const serverNotes = recipe.extra?.serverNotes as RecipeExport | undefined;
+        const costValue =
+          typeof serverNotes?.totals?.fullRecipeCost === "number"
+            ? serverNotes.totals.fullRecipeCost
+            : null;
+        const yieldQtyValue =
+          typeof serverNotes?.yieldQty === "number" ? serverNotes.yieldQty : null;
+        return {
+          id: recipe.id,
+          title: recipe.title,
+          course: recipe.course ?? null,
+          cuisine: recipe.cuisine ?? null,
+          tags: recipe.tags ?? [],
+          cost: costValue,
+          currency: serverNotes?.currency ?? null,
+          yieldQty: yieldQtyValue,
+          yieldUnit: serverNotes?.yieldUnit ?? null,
+        } satisfies SubRecipeOption;
+      })
+      .sort((a, b) => a.title.localeCompare(b.title));
+  }, [recipes]);
+
   const getCurrencySymbol = (c: string) =>
     c === "EUR" ? "€" : c === "GBP" ? "£" : c === "JPY" ? "��" : "$";
   const calculateTotalCost = () =>
