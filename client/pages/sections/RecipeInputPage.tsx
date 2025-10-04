@@ -316,9 +316,10 @@ const RecipeInputPage = () => {
     setTimeout(() => pushHistory({ ...serialize(), ts: Date.now() }), 0);
   };
 
-  const detectAllergensFromIngredients = (rows: { item: string }[]) => {
+  const detectAllergensFromIngredients = (rows: IngredientRow[]) => {
     const text = rows
-      .map((r) => r.item)
+      .filter((row) => row.type !== "divider")
+      .map((row) => row.item)
       .join(" ")
       .toLowerCase();
     const s = new Set<string>();
