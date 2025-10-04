@@ -66,68 +66,7 @@ const RecipeInputPage = () => {
     : "border-slate-200 bg-white/85 text-slate-700 hover:bg-white focus-visible:ring-blue-200 focus-visible:ring-offset-white";
 
   const [isRndLabsOpen, setIsRndLabsOpen] = useState(false);
-  const rndContainerRef = useRef<HTMLDivElement | null>(null);
-  const [rndWidths, setRndWidths] = useState({ left: 1.1, middle: 4.6, right: 2.3 });
-
-  const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
-
-  const startResize = (edge: "left" | "right") => (event: React.PointerEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    const container = rndContainerRef.current;
-    if (!container) return;
-    const rect = container.getBoundingClientRect();
-    if (rect.width <= 0) return;
-    const startX = event.clientX;
-    const initial = { ...rndWidths };
-    const total = initial.left + initial.middle + initial.right;
-    const pairTotal = edge === "left" ? initial.left + initial.middle : initial.middle + initial.right;
-    const minLeft = 0.8;
-    const minMiddle = 2.5;
-    const minRight = 1.1;
-
-    const onPointerMove = (moveEvent: PointerEvent) => {
-      const deltaFr = ((moveEvent.clientX - startX) / rect.width) * total;
-      if (edge === "left") {
-        const newLeft = clamp(initial.left + deltaFr, minLeft, pairTotal - minMiddle);
-        const newMiddle = pairTotal - newLeft;
-        setRndWidths({ left: newLeft, middle: newMiddle, right: initial.right });
-      } else {
-        const newRight = clamp(initial.right - deltaFr, minRight, pairTotal - minMiddle);
-        const newMiddle = pairTotal - newRight;
-        setRndWidths({ left: initial.left, middle: newMiddle, right: newRight });
-      }
-    };
-
-    const onPointerUp = () => {
-      window.removeEventListener("pointermove", onPointerMove);
-      window.removeEventListener("pointerup", onPointerUp);
-    };
-
-    window.addEventListener("pointermove", onPointerMove);
-    window.addEventListener("pointerup", onPointerUp);
-  };
-
-  const panelStyle = (weight: number) => ({ flexGrow: weight, flexBasis: 0, minWidth: 0 });
-
-  const handleClasses = isDarkMode
-    ? "relative flex w-2 cursor-col-resize items-center justify-center rounded-full bg-cyan-500/30 transition hover:bg-cyan-400/60"
-    : "relative flex w-2 cursor-col-resize items-center justify-center rounded-full bg-slate-300/80 transition hover:bg-slate-500/80";
-
-  const panelBaseClasses = isDarkMode
-    ? "flex h-full flex-col rounded-2xl border border-cyan-500/25 bg-slate-950/70 p-4 text-cyan-100 shadow-[0_0_28px_rgba(56,189,248,0.25)]"
-    : "flex h-full flex-col rounded-2xl border border-slate-200 bg-white/95 p-4 text-slate-800 shadow-[0_24px_60px_-35px_rgba(15,23,42,0.35)]";
-
-  const panelAccentClasses = [
-    isDarkMode
-      ? "bg-gradient-to-br from-cyan-900/40 via-slate-950/70 to-slate-950/80"
-      : "bg-gradient-to-br from-sky-50 via-white to-slate-100",
-    isDarkMode
-      ? "bg-gradient-to-br from-cyan-800/40 via-slate-900/60 to-cyan-900/70"
-      : "bg-gradient-to-br from-white via-indigo-50 to-blue-100",
-    isDarkMode
-      ? "bg-gradient-to-br from-slate-900/40 via-slate-950/60 to-cyan-900/40"
-      : "bg-gradient-to-br from-white via-slate-50 to-slate-100",
-  ];
+  const [rightSidebarMode, setRightSidebarMode] = useState<"recipe" | "rnd">("recipe");
 
   const accentMuted = isDarkMode ? "text-cyan-300/70" : "text-slate-500";
 
