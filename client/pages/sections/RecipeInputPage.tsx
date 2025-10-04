@@ -294,11 +294,7 @@ const RecipeInputPage = () => {
   const calculateTotalCost = () =>
     ingredients.reduce((sum, row) => {
       if (row.type === "divider") return sum;
-      const parsed = Number(
-        String(row.cost)
-          .replace(/[$€£¥,\s]/g, "")
-          .replace(/,/g, "."),
-      );
+      const parsed = parseCostValue(row.cost);
       return sum + (Number.isFinite(parsed) ? parsed : 0);
     }, 0);
   const calculatePortionCost = () => {
