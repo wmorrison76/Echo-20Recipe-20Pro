@@ -1905,52 +1905,6 @@ const RecipeInputPage = () => {
               </DialogContent>
             </Dialog>
 
-            <div
-              className="w-1/3 flex justify-center"
-              data-echo-key="section:add:photos"
-            >
-              <div
-                className="flex-shrink-0"
-                style={{ width: "17rem", height: "17rem" }}
-              >
-                {image ? (
-                  <img
-                    src={image}
-                    alt="Recipe"
-                    className="w-full h-full object-contain rounded-md bg-white"
-                    style={{
-                      border: "0.5px solid #000",
-                      boxShadow:
-                        "0 6px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2)",
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gray-100 border rounded-md flex items-center justify-center">
-                    <label
-                      className="text-xs text-gray-600 cursor-pointer"
-                      data-echo-key="cta:add:upload"
-                    >
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={async (e) => {
-                          const f = e.target.files?.[0];
-                          if (!f) return;
-                          try {
-                            const reader = new FileReader();
-                            reader.onload = () =>
-                              setImage(String(reader.result));
-                            reader.readAsDataURL(f);
-                          } catch {}
-                        }}
-                      />
-                      Upload Photo
-                    </label>
-                  </div>
-                )}
-              </div>
-            </div>
           </div>
           <div
             className={`ingredients-card rounded-2xl p-6 border ${isDarkMode ? "bg-gray-800 border-gray-700" : "bg-gradient-to-b from-white to-slate-50 border-gray-200"}`}
