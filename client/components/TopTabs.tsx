@@ -86,6 +86,7 @@ function DissolvingText({
         className={cn(
           "block transition-all duration-300 ease-out",
           collapsed ? "opacity-0 blur-sm translate-y-1" : "opacity-100 blur-0 translate-y-0",
+          collapsed ? collapsedClassName : expandedClassName,
           className,
         )}
       >
