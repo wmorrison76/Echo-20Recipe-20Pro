@@ -6,6 +6,10 @@ import NutritionLabel from "./NutritionLabel";
 import LanguageMenu from "@/components/LanguageMenu";
 import { useTranslation } from "@/context/LanguageContext";
 import { defaultSelection, TaxonomySelection } from "@/lib/taxonomy";
+import { RDLabProvider } from "@/stores/rdLabStore";
+import { DiscoveryPanel } from "@/components/RDLab/DiscoveryPanel";
+import { WorkbenchPanel } from "@/components/RDLab/WorkbenchPanel";
+import { InsightsPanel } from "@/components/RDLab/InsightsPanel";
 import {
   Save,
   Image as ImageIcon,
@@ -30,6 +34,7 @@ import {
   FlaskConical,
   Atom,
 } from "lucide-react";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { Search, Link2, X } from "lucide-react";
 import {
   Dialog,
