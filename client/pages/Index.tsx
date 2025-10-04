@@ -24,6 +24,21 @@ export default function Index() {
         className="min-h-screen text-foreground pl-[5.5rem]"
       >
         <TopTabs />
+        <header className="flex items-center justify-between px-6 pt-6 pb-2">
+          <div className="flex items-center gap-3">
+            <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/60 bg-white/80 text-xs font-semibold uppercase tracking-[0.35em] text-slate-700 shadow-sm backdrop-blur-sm dark:border-cyan-500/40 dark:bg-cyan-500/15 dark:text-cyan-200">
+              ER
+            </span>
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold uppercase tracking-[0.65em] text-slate-700 dark:text-cyan-200">
+                Echo Recipe Pro
+              </span>
+              <span className="text-xs uppercase tracking-[0.35em] text-slate-400 dark:text-cyan-300/70">
+                Research & Development Suite
+              </span>
+            </div>
+          </div>
+        </header>
         <main className="w-full py-6">
           <Tabs
             value={active}
