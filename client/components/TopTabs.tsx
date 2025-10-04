@@ -77,16 +77,18 @@ function DissolvingText({
     <span
       aria-hidden={ariaHidden}
       className={cn(
-        "relative block overflow-hidden whitespace-nowrap transition-all duration-700 ease-in-out",
-        collapsed ? "max-w-0 delay-150" : "delay-0",
-        !collapsed && expandedMaxWidthClass,
+        "relative block overflow-hidden whitespace-nowrap transition-all duration-500 ease-in-out",
+        collapsed
+          ? cn("max-w-0", collapsedWrapperClassName)
+          : cn(expandedMaxWidthClass, expandedWrapperClassName),
       )}
     >
       <span
         className={cn(
           "block transition-all duration-300 ease-out",
-          collapsed ? "opacity-0 blur-sm translate-y-1" : "opacity-100 blur-0 translate-y-0",
-          collapsed ? collapsedClassName : expandedClassName,
+          collapsed
+            ? cn("opacity-0 blur-sm translate-y-[2px]", collapsedClassName)
+            : cn("opacity-100 blur-0 translate-y-0", expandedClassName),
           className,
         )}
       >
