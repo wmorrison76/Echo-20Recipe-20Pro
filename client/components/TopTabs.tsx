@@ -60,6 +60,8 @@ type DissolvingTextProps = {
   className?: string;
   ariaHidden?: boolean;
   expandedMaxWidthClass?: string;
+  expandedClassName?: string;
+  collapsedClassName?: string;
 };
 
 function DissolvingText({
@@ -68,6 +70,8 @@ function DissolvingText({
   className,
   ariaHidden,
   expandedMaxWidthClass = "max-w-full",
+  expandedClassName,
+  collapsedClassName,
 }: DissolvingTextProps) {
   return (
     <span
