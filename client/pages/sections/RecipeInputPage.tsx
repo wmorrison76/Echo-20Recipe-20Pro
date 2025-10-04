@@ -2275,8 +2275,10 @@ const RecipeInputPage = () => {
               onFieldBlur={handleIngredientBlur}
               onAddRow={addIngredientRow}
               onRemoveRow={removeIngredientRow}
+              onReorderRow={reorderIngredientRows}
               onGridKeyDown={onGridKeyDown}
               onAddSubRecipe={() => setIsSubRecipePickerOpen(true)}
+              onAddDivider={addDividerRow}
             />
 
             <SubRecipePicker
