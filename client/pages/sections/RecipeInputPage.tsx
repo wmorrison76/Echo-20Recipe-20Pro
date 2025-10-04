@@ -59,6 +59,13 @@ const RecipeInputPage = () => {
       return false;
     }
   });
+
+  const toolbarButtonBase =
+    "group relative flex h-10 w-10 items-center justify-center rounded-full border text-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
+  const toolbarButtonTheme = isDarkMode
+    ? "border-cyan-500/30 bg-slate-900/70 text-cyan-100/90 hover:bg-slate-900/80 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-slate-950"
+    : "border-slate-200 bg-white/85 text-slate-700 hover:bg-white focus-visible:ring-blue-200 focus-visible:ring-offset-white";
+
   const [pickerOpen, setPickerOpen] = useState<{ index: number } | null>(null);
   const [pickerQ, setPickerQ] = useState("");
   // Sync with global theme from ThemeToggle
