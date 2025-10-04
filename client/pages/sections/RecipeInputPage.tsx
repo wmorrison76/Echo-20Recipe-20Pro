@@ -1979,6 +1979,80 @@ const RecipeInputPage = () => {
             </Dialog>
 
           </div>
+
+          <Dialog open={isRndLabsOpen} onOpenChange={setIsRndLabsOpen}>
+            <DialogContent className="max-w-[min(1200px,95vw)] w-full h-[85vh] overflow-hidden border border-white/10 bg-white/95 p-0 text-slate-900 shadow-[0_40px_120px_-60px_rgba(15,23,42,0.65)] dark:border-cyan-500/20 dark:bg-slate-950/95 dark:text-cyan-100">
+              <div className="flex h-full flex-col">
+                <DialogHeader className="flex flex-row items-center justify-between border-b px-6 py-4 dark:border-cyan-500/20">
+                  <DialogTitle className="text-lg font-semibold uppercase tracking-[0.35em]">
+                    R&amp;D Labs
+                  </DialogTitle>
+                  <button
+                    type="button"
+                    onClick={() => setIsRndLabsOpen(false)}
+                    className="rounded-full border border-transparent bg-slate-900/5 p-2 text-slate-500 transition hover:bg-slate-900/10 hover:text-slate-800 dark:bg-cyan-500/10 dark:text-cyan-200 dark:hover:bg-cyan-500/20"
+                    aria-label="Close R&D Labs"
+                  >
+                    <X className="h-4 w-4" aria-hidden />
+                  </button>
+                </DialogHeader>
+                <div className="flex flex-1 flex-col gap-4 px-6 py-4">
+                  <p className={`text-sm ${accentMuted}`}>
+                    Drag the dividers to resize each workspace. Use these surfaces for experiments, documentation, or automation flows.
+                  </p>
+                  <div
+                    ref={rndContainerRef}
+                    className="flex flex-1 items-stretch gap-3 overflow-hidden"
+                  >
+                    <section
+                      style={panelStyle(rndWidths.left)}
+                      className={`${panelBaseClasses} ${panelAccentClasses[0]}`}
+                    >
+                      <h3 className="text-sm font-semibold uppercase tracking-[0.35em]">Discovery</h3>
+                      <p className={`mt-3 text-xs leading-relaxed ${accentMuted}`}>
+                        Stage inspiration, competitive research, and sourcing notes here.
+                      </p>
+                    </section>
+                    <div
+                      role="separator"
+                      aria-orientation="vertical"
+                      onPointerDown={startResize("left")}
+                      className={handleClasses}
+                    >
+                      <span className="pointer-events-none h-8 w-0.5 rounded-full bg-slate-500/60 dark:bg-cyan-200/80" />
+                    </div>
+                    <section
+                      style={panelStyle(rndWidths.middle)}
+                      className={`${panelBaseClasses} ${panelAccentClasses[1]}`}
+                    >
+                      <h3 className="text-sm font-semibold uppercase tracking-[0.35em]">Workbench</h3>
+                      <p className={`mt-3 text-xs leading-relaxed ${accentMuted}`}>
+                        Reserve this main lane for formulations, live tests, or shared prototypes.
+                      </p>
+                    </section>
+                    <div
+                      role="separator"
+                      aria-orientation="vertical"
+                      onPointerDown={startResize("right")}
+                      className={handleClasses}
+                    >
+                      <span className="pointer-events-none h-8 w-0.5 rounded-full bg-slate-500/60 dark:bg-cyan-200/80" />
+                    </div>
+                    <section
+                      style={panelStyle(rndWidths.right)}
+                      className={`${panelBaseClasses} ${panelAccentClasses[2]}`}
+                    >
+                      <h3 className="text-sm font-semibold uppercase tracking-[0.35em]">Insights</h3>
+                      <p className={`mt-3 text-xs leading-relaxed ${accentMuted}`}>
+                        Pin KPIs, AI summaries, or vendor comparisons for rapid decisions.
+                      </p>
+                    </section>
+                  </div>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
           <div
             className={`ingredients-card rounded-2xl p-6 border ${isDarkMode ? "bg-gray-800 border-gray-700" : "bg-gradient-to-b from-white to-slate-50 border-gray-200"}`}
             data-echo-key="section:add:ingredients"
