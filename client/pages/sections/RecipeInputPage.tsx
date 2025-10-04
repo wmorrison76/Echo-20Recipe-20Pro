@@ -43,13 +43,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 const RecipeInputPage = () => {
   const [recipeName, setRecipeName] = useState("");
   const { t } = useTranslation();
-
-  const toolbarButtonBase =
-    "group relative flex h-10 w-10 items-center justify-center rounded-full border text-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2";
-  const toolbarButtonTheme = isDarkMode
-    ? "border-cyan-500/30 bg-slate-900/70 text-cyan-100/90 hover:bg-slate-900/80 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-slate-950"
-    : "border-slate-200 bg-white/85 text-slate-700 hover:bg-white focus-visible:ring-blue-200 focus-visible:ring-offset-white";
-
   const [ingredients, setIngredients] = useState([
     { qty: "", unit: "", item: "", prep: "", yield: "", cost: "", subId: "" },
   ]);
@@ -818,7 +811,7 @@ const RecipeInputPage = () => {
           /^(?:\d{2,3})$/.test(t.replace(/[^0-9]/g, ""))
         ) {
           const f = Math.round((num * 9) / 5 + 32);
-          return `${f}��F`;
+          return `${f}°F`;
         }
       }
       return t;
@@ -2071,7 +2064,7 @@ const RecipeInputPage = () => {
                           const v = [...ingredients];
                           v[index].item = text;
                           const hasCues =
-                            /(cups?|tsp|tbsp|oz|ounces?|lb|lbs|g|kg|ml|l|quarts?|qt|qts|pints?|pt|gal|gallons?|teaspoons?|tablespoons?|^\s*[0-9��½¾⅓⅔⅛⅜⅝⅞]|^\s*\/\d+|,)/i.test(
+                            /(cups?|tsp|tbsp|oz|ounces?|lb|lbs|g|kg|ml|l|quarts?|qt|qts|pints?|pt|gal|gallons?|teaspoons?|tablespoons?|^\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|^\s*\/\d+|,)/i.test(
                               text,
                             );
                           if (hasCues) {
