@@ -2935,8 +2935,11 @@ const RecipeInputPage = () => {
       </div>
 
       <RightSidebar
+        mode={rightSidebarMode}
         isCollapsed={isRightSidebarCollapsed}
         onToggle={() => setIsRightSidebarCollapsed(!isRightSidebarCollapsed)}
+        onOpenLabs={() => setIsRndLabsOpen(true)}
+        onCloseLabs={() => setIsRndLabsOpen(false)}
         selectedAllergens={selectedAllergens}
         onAllergensChange={handleAllergensChange}
         selectedNationality={selectedNationality}
