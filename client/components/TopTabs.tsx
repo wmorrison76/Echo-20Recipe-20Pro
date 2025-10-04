@@ -339,14 +339,13 @@ export default function TopTabs() {
                 alt="Echo Recipe Pro"
                 className="h-7 w-auto"
               />
-              <span
-                aria-hidden={collapsed}
-                className={textClass(
-                  "text-xs font-semibold uppercase tracking-widest text-muted-foreground",
-                )}
+              <DissolvingText
+                collapsed={collapsed}
+                ariaHidden={collapsed}
+                className="text-xs font-semibold uppercase tracking-widest text-muted-foreground"
               >
                 Echo Recipe Pro
-              </span>
+              </DissolvingText>
             </div>
             <button
               type="button"
