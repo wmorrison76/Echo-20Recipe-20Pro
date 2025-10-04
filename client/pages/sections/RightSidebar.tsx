@@ -115,7 +115,7 @@ export default function RightSidebar(props: RightSidebarProps) {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [isCollapsed, props.onToggle]);
+  }, [isCollapsed, onToggle]);
 
   const handleUrlSubmit = async () => {
     if (!recipeUrl || isImporting) return;
