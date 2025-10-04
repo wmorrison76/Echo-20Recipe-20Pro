@@ -1572,31 +1572,31 @@ const RecipeInputPage = () => {
                       />
                       <button
                         type="button"
-                        title="Yield Lab"
+                        title={t("recipe.tools.yield", "Yield Lab")}
                         className={`ml-2 px-2 py-1 text-xs rounded border ${isDarkMode ? "border-cyan-400/50 text-cyan-300" : "border-gray-400 text-gray-800"}`}
                         onClick={() => setYieldOpen(true)}
                       >
-                        Yield Lab
+                        {t("recipe.tools.yield", "Yield Lab")}
                       </button>
                     </span>
                     <span>
-                      <span className="font-bold">RECIPE ACCESS:</span>{" "}
+                      <span className="font-bold">{t("recipe.labels.recipeAccess", "RECIPE ACCESS:")}</span>{" "}
                       {selectedRecipeAccess.length
                         ? selectedRecipeAccess.join(", ").toUpperCase()
-                        : "NONE"}
+                        : t("recipe.labels.none", "NONE")}
                     </span>
                     <span>
-                      <span className="font-bold">RECIPE:</span>{" "}
+                      <span className="font-bold">{t("recipe.labels.recipeType", "RECIPE:")}</span>{" "}
                       {selectedRecipeType.includes("Full Recipe")
-                        ? "FULL"
+                        ? t("recipe.labels.full", "FULL")
                         : selectedRecipeType.includes("Sub Recipe")
-                          ? "SUB"
-                          : "UNSPECIFIED"}
+                          ? t("recipe.labels.sub", "SUB")
+                          : t("recipe.labels.unspecified", "UNSPECIFIED")}
                     </span>
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="flex items-center gap-1">
-                      <span className="font-bold">PORTION:</span>
+                      <span className="font-bold">{t("recipe.labels.portion", "PORTION:")}</span>
                       <input
                         type="number"
                         value={portionCount}
@@ -1607,7 +1607,7 @@ const RecipeInputPage = () => {
                       />
                     </span>
                     <span className="flex items-center gap-1">
-                      <span className="font-bold">UNIT:</span>
+                      <span className="font-bold">{t("recipe.labels.unit", "UNIT:")}</span>
                       <input
                         value={portionUnit}
                         onChange={(e) =>
@@ -1617,12 +1617,12 @@ const RecipeInputPage = () => {
                       />
                     </span>
                     <span>
-                      <span className="font-bold">PORTION COST:</span>{" "}
+                      <span className="font-bold">{t("recipe.labels.portionCost", "PORTION COST:")}</span>{" "}
                       {getCurrencySymbol(currentCurrency)}
                       {calculatePortionCost().toFixed(2)}
                     </span>
-                    <span title="Theoretical Volume">
-                      <span className="font-bold">Ψ:</span>{" "}
+                    <span title={t("recipe.labels.theoreticalVolume", "Ψ:")}>
+                      <span className="font-bold">{t("recipe.labels.theoreticalVolume", "Ψ:")}</span>{" "}
                       {formatMl(theoreticalVolumeMl)}
                     </span>
                   </div>
@@ -1634,7 +1634,7 @@ const RecipeInputPage = () => {
                 <div
                   className={`font-semibold text-sm mb-3 ${isDarkMode ? "text-blue-400" : "text-blue-700"}`}
                 >
-                  Modifiers
+                  {t("recipe.labels.modifiers", "Modifiers")}
                 </div>
                 <div
                   className={`${isDarkMode ? "bg-blue-900/20 border-blue-400/30" : "bg-blue-50 border-blue-200"} border rounded-lg p-2 text-xs`}
@@ -1674,31 +1674,31 @@ const RecipeInputPage = () => {
                   <div className="grid grid-cols-8 gap-1">
                     {taxonomy.cuisine && (
                       <div className="col-span-2">
-                        <div className="font-semibold">Cuisine</div>
+                        <div className="font-semibold">{t("recipe.labels.cuisineLabel", "Cuisine")}</div>
                         <div>{taxonomy.cuisine}</div>
                       </div>
                     )}
                     {taxonomy.difficulty && (
                       <div className="col-span-2">
-                        <div className="font-semibold">Difficulty</div>
+                        <div className="font-semibold">{t("recipe.labels.difficultyLabel", "Difficulty")}</div>
                         <div>{taxonomy.difficulty}</div>
                       </div>
                     )}
                     {taxonomy.mealPeriod && (
                       <div className="col-span-2">
-                        <div className="font-semibold">Meal</div>
+                        <div className="font-semibold">{t("recipe.labels.mealLabel", "Meal")}</div>
                         <div>{taxonomy.mealPeriod}</div>
                       </div>
                     )}
                     {taxonomy.serviceStyle && (
                       <div className="col-span-2">
-                        <div className="font-semibold">Service</div>
+                        <div className="font-semibold">{t("recipe.labels.serviceLabel", "Service")}</div>
                         <div>{taxonomy.serviceStyle}</div>
                       </div>
                     )}
                     {taxonomy.course.length > 0 && (
                       <div className="col-span-4">
-                        <div className="font-semibold">Course</div>
+                        <div className="font-semibold">{t("recipe.labels.courseLabel", "Course")}</div>
                         <div className="flex flex-wrap gap-1">
                           {[...taxonomy.course].sort().map((v) => (
                             <span
@@ -1713,7 +1713,7 @@ const RecipeInputPage = () => {
                     )}
                     {taxonomy.pastry.length > 0 && (
                       <div className="col-span-4">
-                        <div className="font-semibold">Pastry</div>
+                        <div className="font-semibold">{t("recipe.labels.pastryLabel", "Pastry")}</div>
                         <div className="flex flex-wrap gap-1">
                           {[...taxonomy.pastry].sort().map((v) => (
                             <span
@@ -1728,7 +1728,7 @@ const RecipeInputPage = () => {
                     )}
                     {taxonomy.technique.length > 0 && (
                       <div className="col-span-4">
-                        <div className="font-semibold">Technique</div>
+                        <div className="font-semibold">{t("recipe.labels.techniqueLabel", "Technique")}</div>
                         <div className="flex flex-wrap gap-1">
                           {[...taxonomy.technique].sort().map((v) => (
                             <span
@@ -1743,7 +1743,7 @@ const RecipeInputPage = () => {
                     )}
                     {taxonomy.components.length > 0 && (
                       <div className="col-span-4">
-                        <div className="font-semibold">Components</div>
+                        <div className="font-semibold">{t("recipe.labels.componentsLabel", "Components")}</div>
                         <div className="flex flex-wrap gap-1">
                           {[...taxonomy.components].sort().map((v) => (
                             <span
