@@ -624,9 +624,7 @@ const RecipeInputPage = () => {
           } catch {}
           recipeIdRef.current = null;
           setRecipeName("");
-          setIngredients([
-            { qty: "", unit: "", item: "", prep: "", yield: "", cost: "", subId: "" },
-          ]);
+          setIngredients([createIngredientRow()]);
           setDirections("1. ");
           setImage(null);
           setSelectedAllergens([]);
