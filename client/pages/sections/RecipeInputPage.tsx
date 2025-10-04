@@ -389,7 +389,7 @@ const RecipeInputPage = () => {
     };
     let t = String(s).trim();
     // Expand unicode vulgar fractions
-    t = t.replace(/[¼½��⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜��⅞]/g, (ch) => map[ch] || ch);
+    t = t.replace(/[¼½�����⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜��⅞]/g, (ch) => map[ch] || ch);
     // Allow forms like "1½" -> "1 1/2"
     t = t.replace(/(\d)\s*(\d\/\d)/, "$1 $2");
     // Mixed fraction
@@ -1003,6 +1003,7 @@ const RecipeInputPage = () => {
     let sum = 0;
     let count = 0;
     for (const row of ingredients) {
+      if (row.type === "divider") continue;
       const hasContent = [row.qty, row.unit, row.item, row.prep, row.cost].some(
         (part) => String(part || "").trim().length > 0,
       );
