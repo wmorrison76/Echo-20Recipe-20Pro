@@ -43,26 +43,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-
-type IngredientRow = {
-  qty: string;
-  unit: string;
-  item: string;
-  prep: string;
-  yield: string;
-  cost: string;
-  subId: string;
-};
-
-const createIngredientRow = (): IngredientRow => ({
-  qty: "",
-  unit: "",
-  item: "",
-  prep: "",
-  yield: "",
-  cost: "",
-  subId: "",
-});
+import type { IngredientRow } from "@/types/ingredients";
+import { createIngredientRow } from "@/types/ingredients";
 
 const RecipeInputPage = () => {
   const [recipeName, setRecipeName] = useState("");
