@@ -1104,19 +1104,22 @@ const RecipeInputPage = () => {
       setCurrentUnits("Metric");
     } else {
       setIngredients(
-        ingredients.map((r) => {
-          const n = parseQuantity(r.qty);
-          const key = alias(r.unit);
-          const cv = back[key];
-          if (Number.isFinite(n) && cv) {
-            return {
-              ...r,
-              qty: String(Number(cv.f(n)).toFixed(2)),
-              unit: cv.unit,
-            };
-          }
-          return r;
-        }),
+        ensureIngredientRowIds(
+          ingredients.map((r) => {
+            const base = ensureIngredientRowId(r);
+            const n = parseQuantity(base.qty);
+            const key = alias(base.unit);
+            const cv = back[key];
+            if (Number.isFinite(n) && cv) {
+              return {
+                ...base,
+                qty: String(Number(cv.f(n)).toFixed(2)),
+                unit: cv.unit,
+              };
+            }
+            return base;
+          }),
+        ),
       );
       if (["L", "ML", "G", "KG"].includes(yieldUnit.toUpperCase())) {
         const cv = back[alias(yieldUnit)];
@@ -1730,7 +1733,7 @@ const RecipeInputPage = () => {
                           .replace(/[^0-9]/g, "")
                           .slice(0, 3);
                         const suffix =
-                          currentUnits === "Imperial" ? "°F" : "��C";
+                          currentUnits === "Imperial" ? "°F" : "°C";
                         setCookTemp(
                           digits ? `${parseInt(digits, 10)}${suffix}` : "",
                         );
