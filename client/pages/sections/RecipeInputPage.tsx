@@ -387,7 +387,7 @@ const RecipeInputPage = () => {
   }, [recipes]);
 
   const getCurrencySymbol = (c: string) =>
-    c === "EUR" ? "€" : c === "GBP" ? "£" : c === "JPY" ? "��" : "$";
+    c === "EUR" ? "€" : c === "GBP" ? "£" : c === "JPY" ? "¥" : "$";
   const formatRecipeCost = useCallback(
     (value: number | null | undefined, currency?: string | null) => {
       if (typeof value !== "number" || Number.isNaN(value)) return "—";
