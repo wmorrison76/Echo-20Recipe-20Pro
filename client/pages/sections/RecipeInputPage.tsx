@@ -153,6 +153,25 @@ const RecipeInputPage = () => {
   const toolbarButtonTheme = isDarkMode
     ? "border-cyan-500/30 bg-slate-900/70 text-cyan-100/90 hover:bg-slate-900/80 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-slate-950"
     : "border-slate-200 bg-white/85 text-slate-700 hover:bg-white focus-visible:ring-blue-200 focus-visible:ring-offset-white";
+  const toolbarClass = `${toolbarButtonBase} ${toolbarButtonTheme}`;
+  const handleToggleTools = useCallback(() => {
+    setIsRightSidebarCollapsed((prev) => !prev);
+  }, []);
+  const handleScaleClick = useCallback(() => {
+    scaleRecipeRef.current?.();
+  }, []);
+  const handleConvertUnitsClick = useCallback(() => {
+    convertUnitsRef.current?.();
+  }, []);
+  const handleCycleCurrencyClick = useCallback(() => {
+    cycleCurrencyRef.current?.();
+  }, []);
+  const handleYieldClick = useCallback(() => {
+    setYieldOpen(true);
+  }, []);
+  const handleRndLabsClick = useCallback(() => {
+    setIsRndLabsOpen(true);
+  }, []);
 
   const [isRndLabsOpen, setIsRndLabsOpen] = useState(false);
   const [isSubRecipePickerOpen, setIsSubRecipePickerOpen] = useState(false);
@@ -3112,7 +3131,7 @@ const RecipeInputPage = () => {
                   "��": "2/3",
                   "⅕": "1/5",
                   "⅖": "2/5",
-                  "��": "3/5",
+                  "⅗": "3/5",
                   "⅘": "4/5",
                   "⅙": "1/6",
                   "⅚": "5/6",
