@@ -35,13 +35,13 @@ function IndexContent() {
   return (
     <TronBackdrop>
       <div
-        className="min-h-screen text-foreground transition-[padding-left] duration-300"
+        className="min-h-screen text-foreground"
         style={{
-          paddingLeft: "calc(var(--sidebar-offset, 128px) + 0.75rem)",
+          paddingLeft: "calc(var(--sidebar-offset, 116px) + 0.5rem)",
         }}
       >
         <TopTabs />
-        <header className="flex flex-wrap items-center justify-between gap-4 pr-6 pt-6 pb-2 pl-1 sm:flex-nowrap sm:pl-3">
+        <header className="flex flex-wrap items-center justify-between gap-4 pr-4 pt-4 pb-2 pl-2 sm:flex-nowrap sm:pl-3">
           <div className="flex items-center gap-3">
             <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/60 bg-white/80 text-xs font-semibold uppercase tracking-[0.35em] text-slate-700 shadow-sm backdrop-blur-sm dark:border-cyan-500/40 dark:bg-cyan-500/15 dark:text-cyan-200">
               ER
@@ -111,7 +111,7 @@ function IndexContent() {
             </AnimatePresence>
           </div>
         </header>
-        <main className="w-full py-6">
+        <main className="w-full py-4">
           <Tabs
             value={active}
             onValueChange={(v) => {
