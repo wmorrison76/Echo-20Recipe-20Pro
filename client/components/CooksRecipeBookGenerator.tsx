@@ -24,6 +24,7 @@ const cookbookLabels: Record<LanguageCode, {
   course: string;
   cuisine: string;
   totalTime: string;
+  totalRecipes: string;
   yield: string;
   language: string;
   generate: string;
@@ -44,6 +45,7 @@ const cookbookLabels: Record<LanguageCode, {
     totalTime: "Total Time",
     yield: "Yield",
     language: "Language",
+    totalRecipes: "Recipes",
     generate: "Generate Cookbook",
     print: "Print Cookbook",
     download: "Download HTML",
@@ -62,6 +64,7 @@ const cookbookLabels: Record<LanguageCode, {
     totalTime: "Temps total",
     yield: "Rendement",
     language: "Langue",
+    totalRecipes: "Recettes",
     generate: "Générer le carnet",
     print: "Imprimer le carnet",
     download: "Télécharger HTML",
@@ -80,6 +83,7 @@ const cookbookLabels: Record<LanguageCode, {
     totalTime: "Tempo totale",
     yield: "Resa",
     language: "Lingua",
+    totalRecipes: "Ricette",
     generate: "Genera ricettario",
     print: "Stampa ricettario",
     download: "Scarica HTML",
@@ -98,6 +102,7 @@ const cookbookLabels: Record<LanguageCode, {
     totalTime: "Tiempo total",
     yield: "Rendimiento",
     language: "Idioma",
+    totalRecipes: "Recetas",
     generate: "Generar libro",
     print: "Imprimir libro",
     download: "Descargar HTML",
@@ -116,6 +121,7 @@ const cookbookLabels: Record<LanguageCode, {
     totalTime: "Tempo total",
     yield: "Rendimento",
     language: "Idioma",
+    totalRecipes: "Receitas",
     generate: "Gerar livro",
     print: "Imprimir livro",
     download: "Baixar HTML",
@@ -134,6 +140,7 @@ const cookbookLabels: Record<LanguageCode, {
     totalTime: "Gesamtzeit",
     yield: "Ertrag",
     language: "Sprache",
+    totalRecipes: "Rezepte",
     generate: "Rezeptbuch erstellen",
     print: "Rezeptbuch drucken",
     download: "HTML herunterladen",
@@ -275,7 +282,7 @@ function buildCookbookHtml(
     <p class="meta">${labels.preparedFor} ${escapeHtml(note.companyName || "")}${note.outletName ? ` • ${escapeHtml(note.outletName)}` : ""}</p>
     <p class="meta">${labels.language}: ${escapeHtml(languageLabel)}</p>
     <p class="meta">${labels.generatedOn} ${formatDate(new Date().toISOString())}</p>
-    <p class="meta">${labels.totalTime}: ${entries.length} ${entries.length === 1 ? labels.recipes ?? "recipe" : labels.recipes ?? "recipes"}</p>
+    <p class="meta">${labels.totalRecipes}: ${entries.length}</p>
   </section>
   <section class="page index-page">
     <h2>${labels.index}</h2>
@@ -319,7 +326,7 @@ export function CooksRecipeBookGenerator({
 
   const languageLabel = useMemo(() => {
     return languageOptions.find((option) => option.code === language)?.label || language;
-  }, [language, languageOptions, language]);
+  }, [language, languageOptions]);
 
   const generate = async () => {
     if (!recipes.length) return;
@@ -368,12 +375,7 @@ export function CooksRecipeBookGenerator({
         </div>
         <Select value={language} onValueChange={(value) => onLanguageChange(value as LanguageCode)}>
           <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder={labels.language}>
-              <span className="flex items-center gap-1">
-                <Languages className="h-3.5 w-3.5" />
-                {languageLabel}
-              </span>
-            </SelectValue>
+            <SelectValue placeholder={labels.language} />
           </SelectTrigger>
           <SelectContent>
             {languageOptions.map((option) => (
