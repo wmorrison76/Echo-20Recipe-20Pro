@@ -28,15 +28,15 @@ export default function LanguageMenu({
 
   const triggerClasses = cn(
     variant === "card"
-      ? "flex h-full min-h-[4.25rem] w-full items-center justify-between rounded-2xl border px-4 py-3 text-left shadow-inner transition-colors"
-      : "inline-flex h-10 w-12 items-center justify-center rounded-full border text-2xl transition-colors",
+      ? "flex h-full min-h-[4.25rem] w-full items-center justify-center rounded-2xl border px-4 py-3 shadow-inner transition-colors"
+      : "inline-flex h-10 w-16 items-center justify-center rounded-full border text-3xl transition-colors",
     isDark
       ? variant === "card"
         ? "border-cyan-400/40 bg-cyan-900/30 text-cyan-100 hover:bg-cyan-900/50"
         : "border-cyan-400/40 bg-slate-900/70 text-cyan-100 hover:bg-slate-900/60"
       : variant === "card"
         ? "border-slate-200 bg-white/90 text-slate-800 hover:bg-white"
-        : "border-slate-300 bg-white/85 text-slate-700 hover:bg-white",
+        : "border-slate-300 bg-white/90 text-slate-700 hover:bg-white",
     className,
   );
 
@@ -74,7 +74,7 @@ export default function LanguageMenu({
       <PopoverContent
         align={align}
         className={cn(
-          "w-64 p-3",
+          "w-72 p-4",
           isDark ? "bg-slate-900/95 text-cyan-100" : "bg-white/95 text-slate-900",
           contentClassName,
         )}
