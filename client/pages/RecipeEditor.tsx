@@ -383,6 +383,8 @@ export default function RecipeEditor() {
       ? (Object.fromEntries(nutritionEntries) as RecipeNutrition)
       : null;
 
+    const existingClassification = ((recipe.extra ?? {}) as { classification?: Record<string, unknown> }).classification ?? {};
+
     updateRecipe(recipe.id, {
       title: localTitle.trim() || "Untitled",
       instructions: combinedDirections ? combinedDirections.split(/\r?\n/) : undefined,
