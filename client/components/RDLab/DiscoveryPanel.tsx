@@ -206,6 +206,17 @@ export function DiscoveryPanel() {
                 <div className="text-sm font-semibold tracking-tight">
                   {experiment.title}
                 </div>
+                <p className="text-[11px] leading-relaxed text-slate-500 dark:text-cyan-200/70">
+                  {experiment.hypothesis}
+                </p>
+                <div className="mt-1 flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.3em] text-slate-400 dark:text-cyan-300/60">
+                  <span>Variables:</span>
+                  {experiment.variablesUnderTest.slice(0, 3).map((variable) => (
+                    <span key={variable} className="rounded-full border border-white/40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] dark:border-cyan-400/30">
+                      {variable}
+                    </span>
+                  ))}
+                </div>
                 <div className="flex flex-wrap gap-2 text-[11px] font-medium uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-300/70">
                   {experiment.tags.map((tag) => (
                     <span key={tag} className="rounded-full bg-white/60 px-2 py-1 dark:bg-cyan-500/10">
@@ -213,7 +224,10 @@ export function DiscoveryPanel() {
                     </span>
                   ))}
                 </div>
-                <span className="text-xs text-slate-500 dark:text-cyan-200/60">Lead: {experiment.owner}</span>
+                <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-slate-500 dark:text-cyan-200/70">
+                  <span>Lead: {experiment.owner}</span>
+                  <span>Launch: {experiment.launchWindow}</span>
+                </div>
               </button>
             );
           })}
