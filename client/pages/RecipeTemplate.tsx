@@ -244,10 +244,10 @@ export default function RecipeTemplate() {
             <div>
               <SectionTitle>INGREDIENTS</SectionTitle>
               <ul className="mt-2 space-y-1 leading-7">
-                {ingredients.map((x, i) => (
-                  <li key={i} className="flex gap-2">
+                {scaledIngredients.map((item, index) => (
+                  <li key={index} className="flex gap-2">
                     <span>•</span>
-                    <span className="flex-1">{x}</span>
+                    <span className="flex-1">{item}</span>
                   </li>
                 ))}
               </ul>
