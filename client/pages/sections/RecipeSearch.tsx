@@ -3,6 +3,13 @@ import { useAppData } from "@/context/AppDataContext";
 import { Dropzone } from "@/components/Dropzone";
 import { Button } from "@/components/ui/button";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -35,6 +42,8 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { axisOptions } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/context/LanguageContext";
+import type { LanguageCode } from "@/i18n/config";
 import type { RecipeCollection } from "@shared/server-notes";
 
 export function RecipeCard({
@@ -260,6 +269,11 @@ export default function RecipeSearchSection() {
   const [q, setQ] = useState("");
   type Cat = "all" | "recent" | "top" | "favorites" | "uncategorized" | "trash";
   const [cat, setCat] = useState<Cat>("all");
+  const { language: appLanguage, setLanguage, options: languageOptions } =
+    useLanguage();
+  const [menuExportLanguage, setMenuExportLanguage] = useState<LanguageCode>(
+    appLanguage,
+  );
   // Taxonomy filters
   const [fcuisine, setFCuisine] = useState<string>("");
   const [ftech, setFTech] = useState<string>("");
@@ -306,6 +320,10 @@ export default function RecipeSearchSection() {
         return notDeleted;
     }
   }, [q, searchRecipes, cat, fcuisine, ftech, fcourse, fdiet]);
+
+  useEffect(() => {
+    setMenuExportLanguage(appLanguage);
+  }, [appLanguage]);
 
   const [status, setStatus] = useState<string | null>(null);
   const [mode, setMode] = useState<"cards" | "grid4" | "rows">("cards");
@@ -914,8 +932,31 @@ const onFiles = async (files: File[]) => {
             </button>
           ))}
         </div>
-        <div className="ml-auto flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={exportAllZip}>
+        <div className="ml-auto flex flex-wrap items-center gap-2">
+          <Select
+            value={menuExportLanguage}
+            onValueChange={(value) => {
+              const code = value as LanguageCode;
+              setMenuExportLanguage(code);
+              setLanguage(code);
+            }}
+          >
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Export language" />
+            </SelectTrigger>
+            <SelectContent>
+              {languageOptions.map((option) => (
+                <SelectItem key={option.code} value={option.code}>
+                  {option.flag} {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => exportAllZip(menuExportLanguage)}
+          >
             Export all (ZIP)
           </Button>
           {inTrashView && (
