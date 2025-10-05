@@ -20,12 +20,64 @@ export function DiscoveryPanel() {
     if (!searchQuery.trim()) return experiments;
     const query = searchQuery.toLowerCase();
     return experiments.filter((exp) =>
-      [exp.title, exp.owner, exp.notes, exp.tags.join(" ")]
+      [
+        exp.title,
+        exp.owner,
+        exp.notes,
+        exp.hypothesis,
+        exp.tags.join(" "),
+        exp.variablesUnderTest.join(" "),
+        exp.sensoryTargets.join(" "),
+      ]
         .join(" ")
         .toLowerCase()
         .includes(query),
     );
   }, [experiments, searchQuery]);
+
+  const [draftTitle, setDraftTitle] = useState("");
+  const [draftOwner, setDraftOwner] = useState("Lab Team");
+  const [draftHypothesis, setDraftHypothesis] = useState("");
+  const [draftVariables, setDraftVariables] = useState("");
+  const [draftTargets, setDraftTargets] = useState("");
+  const [draftEquipment, setDraftEquipment] = useState("");
+  const [draftTags, setDraftTags] = useState("");
+  const [draftLaunchWindow, setDraftLaunchWindow] = useState("");
+
+  const splitList = (value: string) =>
+    value
+      .split(/[\n,]/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+
+  const handleCreateExperiment = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const title = draftTitle.trim();
+    const hypothesis = draftHypothesis.trim();
+    if (!title || !hypothesis) return;
+    const owner = draftOwner.trim() || "Lab Team";
+    const experimentId = createExperiment({
+      title,
+      hypothesis,
+      owner,
+      tags: splitList(draftTags),
+      variablesUnderTest: splitList(draftVariables),
+      sensoryTargets: splitList(draftTargets),
+      equipment: splitList(draftEquipment),
+      testPlan: ["Bench validation queued"],
+      notes: hypothesis,
+      launchWindow: draftLaunchWindow.trim(),
+    });
+    setFocusExperiment(experimentId);
+    setSearchQuery("");
+    setDraftTitle("");
+    setDraftHypothesis("");
+    setDraftVariables("");
+    setDraftTargets("");
+    setDraftEquipment("");
+    setDraftTags("");
+    setDraftLaunchWindow("");
+  };
 
   return (
     <div className="flex h-full flex-col gap-5">
@@ -104,7 +156,7 @@ export function DiscoveryPanel() {
                 Techniques
               </div>
               <div className="text-[12px] text-slate-500 dark:text-cyan-200/80">
-                {texture.suggestedTechniques.join(" · ")}
+                {texture.suggestedTechniques.join(" �� ")}
               </div>
               {texture.platingNotes ? (
                 <div className="mt-2 text-[11px] italic text-slate-500/80 dark:text-cyan-200/70">
