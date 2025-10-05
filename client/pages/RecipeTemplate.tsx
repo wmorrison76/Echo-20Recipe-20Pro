@@ -2,6 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppData } from "@/context/AppDataContext";
 import { Button } from "@/components/ui/button";
+import { ScaleRecipeDialog } from "@/components/ScaleRecipeDialog";
+import {
+  applyScaleToIngredients,
+  deriveScaledValue,
+  formatQuantity,
+} from "@/lib/recipe-scaling";
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
