@@ -2050,14 +2050,14 @@ const RecipeInputPage = () => {
                   data-echo-key="field:add:description"
                 />
 
-                <div className="mt-6">
+                <div className="mt-6 space-y-2">
                   <div
-                    className={`grid grid-cols-1 sm:grid-cols-5 gap-2 sm:gap-3 text-[11px] sm:text-sm ${
+                    className={`grid grid-cols-1 sm:grid-cols-5 gap-2 text-[11px] sm:text-xs xl:text-sm ${
                       isDarkMode ? "text-cyan-200" : "text-slate-700"
                     }`}
                   >
-                    <div className="flex flex-col gap-1">
-                      <span className={infoLabelClass}>
+                    <div className="flex flex-col items-center gap-1 text-center">
+                      <span className={`${infoLabelClass} text-center`}>
                         {t("recipe.labels.cookTime", "COOK TIME")}
                       </span>
                       <div className="flex items-center gap-1">
@@ -2065,7 +2065,7 @@ const RecipeInputPage = () => {
                           value={cookTime}
                           onChange={(e) => setCookTime(e.target.value)}
                           placeholder="2:30"
-                          className={`${infoInputClass} w-full text-center`}
+                          className={`${infoInputClass} w-20 text-center`}
                           data-echo-key="field:add:time"
                         />
                         {cookTimeDisplay && (
@@ -2076,8 +2076,8 @@ const RecipeInputPage = () => {
                       </div>
                     </div>
 
-                    <div className="flex flex-col gap-1">
-                      <span className={infoLabelClass}>
+                    <div className="flex flex-col items-center gap-1 text-center">
+                      <span className={`${infoLabelClass} text-center`}>
                         {t("recipe.labels.cookTemp", "COOK TEMP")}
                       </span>
                       <input
@@ -2090,12 +2090,12 @@ const RecipeInputPage = () => {
                           setCookTemp(digits ? `${parseInt(digits, 10)}${suffix}` : "");
                         }}
                         placeholder="350°F"
-                        className={`${infoInputClass} w-full text-center`}
+                        className={`${infoInputClass} w-20 text-center`}
                       />
                     </div>
 
-                    <div className="flex flex-col gap-1">
-                      <span className={infoLabelClass}>
+                    <div className="flex flex-col items-center gap-1 text-center">
+                      <span className={`${infoLabelClass} text-center`}>
                         {t("recipe.labels.prepTime", "PREP TIME")}
                       </span>
                       <div className="flex items-center gap-1">
@@ -2103,7 +2103,7 @@ const RecipeInputPage = () => {
                           value={prepTime}
                           onChange={(e) => setPrepTime(e.target.value)}
                           placeholder="0:20"
-                          className={`${infoInputClass} w-full text-center`}
+                          className={`${infoInputClass} w-20 text-center`}
                         />
                         {prepTimeDisplay && (
                           <span className={`text-[10px] font-medium uppercase ${infoHelperClass}`}>
@@ -2113,15 +2113,15 @@ const RecipeInputPage = () => {
                       </div>
                     </div>
 
-                    <div className="flex flex-col gap-1">
-                      <span className={infoLabelClass}>FULL RECIPE</span>
+                    <div className="flex flex-col items-center gap-1 text-center">
+                      <span className={`${infoLabelClass} text-center`}>FULL RECIPE</span>
                       <span className={infoValuePillClass}>
                         {`${getCurrencySymbol(currentCurrency)}${calculateTotalCost().toFixed(2)}`}
                       </span>
                     </div>
 
-                    <div className="flex flex-col gap-1">
-                      <span className={infoLabelClass}>
+                    <div className="flex flex-col items-center gap-1 text-center">
+                      <span className={`${infoLabelClass} text-center`}>
                         {t("recipe.labels.recipeAccess", "RECIPE ACCESS")}
                       </span>
                       <span className={infoValuePillClass}>
@@ -2130,10 +2130,16 @@ const RecipeInputPage = () => {
                           : t("recipe.labels.none", "NONE")}
                       </span>
                     </div>
+                  </div>
 
-                    <div className="flex flex-col gap-1">
-                      <span className={infoLabelClass}>YIELD</span>
-                      <div className="flex flex-wrap items-center gap-1">
+                  <div
+                    className={`grid grid-cols-1 sm:grid-cols-4 gap-2 text-[11px] sm:text-xs xl:text-sm ${
+                      isDarkMode ? "text-cyan-200" : "text-slate-700"
+                    }`}
+                  >
+                    <div className="flex flex-col items-center gap-1 text-center">
+                      <span className={`${infoLabelClass} text-center`}>YIELD</span>
+                      <div className="flex flex-wrap items-center justify-center gap-1 sm:flex-nowrap">
                         <input
                           type="number"
                           value={yieldQty}
@@ -2150,7 +2156,7 @@ const RecipeInputPage = () => {
                             yieldManualRef.current = true;
                             setYieldUnit(e.target.value.toUpperCase());
                           }}
-                          className={`${infoInputClass} w-20 text-center uppercase`}
+                          className={`${infoInputClass} w-16 text-center uppercase`}
                         />
                         <button
                           type="button"
@@ -2167,8 +2173,8 @@ const RecipeInputPage = () => {
                       </div>
                     </div>
 
-                    <div className="flex flex-col gap-1">
-                      <span className={infoLabelClass}>
+                    <div className="flex flex-col items-center gap-1 text-center">
+                      <span className={`${infoLabelClass} text-center`}>
                         {t("recipe.labels.portion", "PORTION")}
                       </span>
                       <div className="flex items-center gap-1">
@@ -2185,13 +2191,13 @@ const RecipeInputPage = () => {
                           onChange={(e) =>
                             setPortionUnit(e.target.value.toUpperCase())
                           }
-                          className={`${infoInputClass} w-20 text-center uppercase`}
+                          className={`${infoInputClass} w-16 text-center uppercase`}
                         />
                       </div>
                     </div>
 
-                    <div className="flex flex-col gap-1">
-                      <span className={infoLabelClass}>
+                    <div className="flex flex-col items-center gap-1 text-center">
+                      <span className={`${infoLabelClass} text-center`}>
                         {t("recipe.labels.portionCost", "PORTION COST")}
                       </span>
                       <span className={infoValuePillClass}>
@@ -2199,8 +2205,8 @@ const RecipeInputPage = () => {
                       </span>
                     </div>
 
-                    <div className="flex flex-col gap-1">
-                      <span className={infoLabelClass}>
+                    <div className="flex flex-col items-center gap-1 text-center">
+                      <span className={`${infoLabelClass} text-center`}>
                         {t("recipe.labels.recipeType", "RECIPE")}
                       </span>
                       <span className={infoValuePillClass}>
@@ -2211,7 +2217,6 @@ const RecipeInputPage = () => {
                             : t("recipe.labels.unspecified", "UNSPECIFIED")}
                       </span>
                     </div>
-
                   </div>
                 </div>
               </div>
