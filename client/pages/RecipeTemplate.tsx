@@ -102,6 +102,66 @@ export default function RecipeTemplate() {
     ? recipe.ingredients.map(String)
     : [];
 
+  const pickNumber = (...values: unknown[]): number | undefined => {
+    for (const value of values) {
+      const numeric = Number(value);
+      if (Number.isFinite(numeric)) return numeric;
+    }
+    return undefined;
+  };
+  const pickString = (...values: unknown[]): string | undefined => {
+    for (const value of values) {
+      if (typeof value === "string" && value.trim()) return value;
+    }
+    return undefined;
+  };
+
+  const extra = ((recipe as any)?.extra ?? {}) as Record<string, any>;
+  const serverNotes = (extra?.serverNotes ?? extra?.recipe ?? {}) as Record<string, any>;
+
+  const basePortionCount = pickNumber(
+    serverNotes?.portionCount,
+    serverNotes?.portion_count,
+    serverNotes?.portioncount,
+    extra?.portionCount,
+  );
+  const portionUnit = pickString(
+    serverNotes?.portionUnit,
+    serverNotes?.portion_unit,
+    serverNotes?.portionunit,
+    extra?.portionUnit,
+  );
+
+  const baseYieldQty = pickNumber(
+    serverNotes?.yieldQty,
+    serverNotes?.yield_qty,
+    extra?.yieldQty,
+  );
+  const yieldUnit = pickString(
+    serverNotes?.yieldUnit,
+    serverNotes?.yield_unit,
+    extra?.yieldUnit,
+  );
+
+  const scaledPortionCount = deriveScaledValue(basePortionCount, appliedScale);
+  const scaledYieldQty = deriveScaledValue(baseYieldQty, appliedScale);
+
+  const scaledIngredients = useMemo(
+    () => applyScaleToIngredients(ingredients, appliedScale),
+    [ingredients, appliedScale],
+  );
+
+  const formatFactorLabel = (value: number) => {
+    if (!Number.isFinite(value) || value <= 0) return "1×";
+    if (Math.abs(value - Math.round(value)) < 1e-6) {
+      return `${Math.round(value)}×`;
+    }
+    return `${value.toFixed(2).replace(/\.00$/, "")}×`;
+  };
+
+  const displayQuantity = (value?: number) =>
+    Number.isFinite(value) ? formatQuantity(value as number) : undefined;
+
   const Nut = nutrition;
   const cal =
     Nut?.calories ?? (recipe as any)?.extra?.nutrition?.calories ?? "";
