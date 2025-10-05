@@ -1,7 +1,6 @@
 import { labPlaylists, trendSignals } from "@/data/textureReference";
 import { useMemo } from "react";
 
-import { labPlaylists, trendSignals } from "@/data/textureReference";
 import { useRDLabStore } from "@/stores/rdLabStore";
 
 export function InsightsPanel() {
