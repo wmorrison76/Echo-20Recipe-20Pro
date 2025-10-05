@@ -128,7 +128,7 @@ export function ServerNotesConfig({
                     event.key === "Enter" && handleLayoutChange(preset)
                   }
                 >
-                  <div className="flex items-start justify-between gap-2">
+                  <div className="space-y-3">
                     <div>
                       <h4 className="text-[13px] font-semibold leading-tight">
                         {preset.name}
@@ -137,26 +137,26 @@ export function ServerNotesConfig({
                         {preset.description}
                       </p>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-8 px-3"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        setPreviewLayout(preset);
-                        setPreviewOpen(true);
-                      }}
-                    >
-                      Preview
-                    </Button>
-                  </div>
-                  <div className="mt-3">
-                    <ServerNotesPreview
-                      layout={preset}
-                      color={config.colorScheme}
-                      pageFormat={config.pageFormat}
-                      variant="icon"
-                    />
+                    <div className="flex flex-col items-center gap-2">
+                      <ServerNotesPreview
+                        layout={preset}
+                        color={config.colorScheme}
+                        pageFormat={config.pageFormat}
+                        variant="icon"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 px-4"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          setPreviewLayout(preset);
+                          setPreviewOpen(true);
+                        }}
+                      >
+                        Preview
+                      </Button>
+                    </div>
                   </div>
                 </div>
               );
