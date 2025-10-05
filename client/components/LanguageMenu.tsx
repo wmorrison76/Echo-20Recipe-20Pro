@@ -42,7 +42,7 @@ export default function LanguageMenu({
 
   const optionClasses = (selected: boolean) =>
     cn(
-      "relative flex aspect-square items-center justify-center rounded-lg border text-2xl transition",
+      "relative flex aspect-square items-center justify-center rounded-lg border text-3xl transition",
       isDark
         ? selected
           ? "border-cyan-400/60 bg-cyan-500/20 text-cyan-100"
