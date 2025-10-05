@@ -1,5 +1,3 @@
-import { clamp } from "lodash-es";
-
 const FRACTION_MAP: Record<string, string> = {
   "¼": "1/4",
   "½": "1/2",
@@ -198,6 +196,9 @@ export const deriveScaledPortion = (
   if (!Number.isFinite(current) || !Number.isFinite(factor)) return current;
   if (factor <= 0) return current;
   const scaled = current * factor;
-  const rounded = clamp(Math.round(scaled * 1000) / 1000, 0, Number.MAX_SAFE_INTEGER);
+  const rounded = Math.min(
+    Math.max(Math.round(scaled * 1000) / 1000, 0),
+    Number.MAX_SAFE_INTEGER,
+  );
   return rounded;
 };
