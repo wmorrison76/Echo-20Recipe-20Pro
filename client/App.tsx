@@ -51,15 +51,17 @@ const App = () => (
         <Sonner />
         <LanguageProvider>
           <AppDataProvider>
+            <YieldProvider>
               <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/recipe/:id" element={<RecipeEditor />} />
-                <Route path="/recipe/:id/view" element={<RecipeTemplate />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/recipe/:id" element={<RecipeEditor />} />
+                  <Route path="/recipe/:id/view" element={<RecipeTemplate />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </YieldProvider>
           </AppDataProvider>
         </LanguageProvider>
       </TooltipProvider>
