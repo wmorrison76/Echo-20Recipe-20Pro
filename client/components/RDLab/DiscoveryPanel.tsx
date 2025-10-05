@@ -50,7 +50,7 @@ export function DiscoveryPanel() {
       .map((item) => item.trim())
       .filter(Boolean);
 
-  const handleCreateExperiment = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleCreateExperiment = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const title = draftTitle.trim();
     const hypothesis = draftHypothesis.trim();
