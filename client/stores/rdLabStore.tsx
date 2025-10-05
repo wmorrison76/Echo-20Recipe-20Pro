@@ -70,6 +70,29 @@ const experimentsSeed: LabExperiment[] = [
     notes:
       "Dial in double-ferment schedule. Current batch holding saline edge; consider maple lacto brine.",
     tags: ["fermentation", "dessert", "winter menu"],
+    hypothesis:
+      "Layering cold-smoke with maple lacto brine will yield a satin custard with amplified retronasal smoke while preserving silken structure.",
+    variablesUnderTest: [
+      "Maple brine salinity 1.6% vs 1.8%",
+      "Smoke dwell time 30 vs 45 minutes",
+      "Koji inoculation at 18%",
+    ],
+    sensoryTargets: [
+      "Satin wobble at 1.2 Hz on rheometer",
+      "Smoke intensity 6/10 on tasting panel",
+      "Residual sweetness under 12° Brix",
+    ],
+    testPlan: [
+      "Profile texture on rheometer after 12h set",
+      "Quantify maple volatiles via GC sniff session",
+      "Hold at 2°C for 24h to monitor syneresis",
+    ],
+    equipment: [
+      "Circulating cold smoker",
+      "Rheon texture analyzer",
+      "Gas chromatograph sniff port",
+    ],
+    launchWindow: "Tasting menu wk 9",
   },
   {
     id: "exp-carbon-02",
