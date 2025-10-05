@@ -310,7 +310,7 @@ export default function ServerNotesSection() {
                 <Badge variant="secondary">{savedNotes.length}</Badge>
               )}
             </div>
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid items-stretch gap-6 md:grid-cols-2 xl:grid-cols-3">
               {savedNotes.map((note) => (
                 <Card
                   key={note.id}
