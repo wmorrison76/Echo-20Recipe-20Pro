@@ -15,7 +15,16 @@ const statusColor: Record<ExperimentStatus, string> = {
 const statusOptions: ExperimentStatus[] = ["ideation", "testing", "ready", "archived"];
 
 export function WorkbenchPanel() {
-  const { experiments, focusExperimentId, toggleArchive, updateNotes } = useRDLabStore();
+  const {
+    experiments,
+    focusExperimentId,
+    toggleArchive,
+    updateNotes,
+    setExperimentStatus,
+    appendVariable,
+    appendTestStep,
+    appendSensoryTarget,
+  } = useRDLabStore();
   const experiment = useMemo(
     () => experiments.find((item) => item.id === focusExperimentId) ?? experiments[0],
     [experiments, focusExperimentId],
