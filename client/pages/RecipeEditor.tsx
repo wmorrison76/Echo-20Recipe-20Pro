@@ -214,7 +214,7 @@ export default function RecipeEditor() {
       <div className="p-6">
         <div className="mb-4 text-sm text-muted-foreground">Recipe not found.</div>
         <div className="flex items-center gap-2">
-          <Button onClick={() => nav("/")}>Back</Button>
+          <Button onClick={handleBack}>Back</Button>
           <a href="/" className="text-sm underline">
             Home
           </a>
