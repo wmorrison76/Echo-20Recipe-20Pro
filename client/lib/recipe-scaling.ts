@@ -189,7 +189,7 @@ export const applyScaleToIngredients = (
   return lines.map((line) => scaleIngredientText(line, factor));
 };
 
-export const deriveScaledPortion = (
+export const deriveScaledValue = (
   current: number | undefined,
   factor: number,
 ): number | undefined => {
