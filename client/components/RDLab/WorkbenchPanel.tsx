@@ -5,12 +5,14 @@ import { FormEvent, useMemo, useState } from "react";
 import { useRDLabStore, type ExperimentStatus } from "@/stores/rdLabStore";
 import { cn } from "@/lib/utils";
 
-const statusColor: Record<string, string> = {
+const statusColor: Record<ExperimentStatus, string> = {
   ideation: "bg-amber-400/20 text-amber-700 dark:text-amber-200",
   testing: "bg-sky-400/20 text-sky-700 dark:text-sky-200",
   ready: "bg-emerald-400/20 text-emerald-700 dark:text-emerald-200",
   archived: "bg-slate-500/20 text-slate-600 dark:text-slate-200",
 };
+
+const statusOptions: ExperimentStatus[] = ["ideation", "testing", "ready", "archived"];
 
 export function WorkbenchPanel() {
   const { experiments, focusExperimentId, toggleArchive, updateNotes } = useRDLabStore();
