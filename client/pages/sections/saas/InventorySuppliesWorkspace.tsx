@@ -942,6 +942,57 @@ function formatDate(iso: string) {
   }
 }
 
+function BuilderImportToolbar({
+  isLoading,
+  onImport,
+  lastImportAt,
+  metrics,
+}: {
+  isLoading: boolean;
+  onImport: () => void;
+  lastImportAt: number | null;
+  metrics: ImportMetrics | null;
+}) {
+  const summary = metrics
+    ? `${metrics.suppliers} suppliers · ${metrics.items} catalog items · ${metrics.orders} purchase orders`
+    : "Import the latest supplier catalog and purchase orders from Builder.io.";
+  const lastImportLabel = lastImportAt
+    ? new Date(lastImportAt).toLocaleString()
+    : null;
+
+  return (
+    <div className="flex flex-col gap-2 rounded-xl border bg-white/95 p-4 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15 sm:flex-row sm:items-center sm:justify-between">
+      <div className="space-y-1">
+        <div className="text-sm font-semibold">Purchasing & Receiving</div>
+        <p className="text-xs text-muted-foreground">{summary}</p>
+      </div>
+      <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
+        {lastImportLabel ? (
+          <span className="text-xs text-muted-foreground">
+            Last import: {lastImportLabel}
+          </span>
+        ) : null}
+        <Button
+          type="button"
+          size="sm"
+          onClick={onImport}
+          disabled={isLoading}
+          className="whitespace-nowrap"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+              Importing…
+            </>
+          ) : (
+            "Import from Builder.io"
+          )}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function SupplierGrid({
   suppliers,
   onCreateSupplier,
