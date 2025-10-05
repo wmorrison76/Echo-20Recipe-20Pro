@@ -221,7 +221,13 @@ export default function GallerySection() {
                 {images.length}
               </span>
             </div>
-            <Button variant="outline" size="sm" onClick={exportAllZip}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                void exportAllZip();
+              }}
+            >
               <Download className="w-4 h-4 mr-1" />
               Export all (ZIP)
             </Button>
