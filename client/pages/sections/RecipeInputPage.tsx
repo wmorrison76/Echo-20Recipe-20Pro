@@ -316,6 +316,9 @@ const RecipeInputPage = () => {
   const [portionUnit, setPortionUnit] = useState<string>("OZ");
   const [nutrition, setNutrition] = useState<any | null>(null);
   const [yieldOpen, setYieldOpen] = useState(false);
+  const handleYieldClick = useCallback(() => {
+    setYieldOpen(true);
+  }, []);
   const [taxonomy, setTaxonomy] = useState<TaxonomySelection>({
     ...defaultSelection,
   });
