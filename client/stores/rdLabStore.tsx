@@ -195,6 +195,17 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
   const [focusExperimentId, setFocusExperimentId] = React.useState<string>(experimentsSeed[0]?.id ?? "");
   const [searchQuery, setSearchQuery] = React.useState<string>("");
 
+  const generateExperimentId = React.useCallback(() => {
+    if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+      return `exp-${crypto.randomUUID()}`;
+    }
+    return `exp-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+  }, []);
+
+  const sanitizeList = React.useCallback((list?: string[]) => {
+    return list?.map((item) => item.trim()).filter(Boolean) ?? [];
+  }, []);
+
   const toggleArchive = React.useCallback((id: string) => {
     setExperiments((prev) =>
       prev.map((exp) =>
