@@ -11,12 +11,22 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useAppData } from "@/context/AppDataContext";
+import { useLanguage } from "@/context/LanguageContext";
 import ServerNotesPreview from "@/components/ServerNotesPreview";
 import { ServerNotesConfig } from "@/components/ServerNotesConfig";
 import { RecipeSelection } from "@/components/RecipeSelection";
 import { ServerNotesGenerator } from "@/components/ServerNotesGenerator";
+import { AllergyMatrixDialog } from "@/components/AllergyMatrixDialog";
+import { CooksRecipeBookGenerator } from "@/components/CooksRecipeBookGenerator";
 import {
   createEmptyServerNote,
   layoutPresets,
@@ -56,6 +66,7 @@ const WALKTHROUGH_STEPS: Array<{
 export default function ServerNotesSection() {
   const { recipes } = useAppData();
   const { toast } = useToast();
+  const { language, setLanguage, options: languageOptions } = useLanguage();
 
   const template = useMemo(
     () => createEmptyServerNote(layoutPresets[0]!, colorSchemes[0]!),
@@ -185,6 +196,10 @@ export default function ServerNotesSection() {
 
   const panelSurfaceClass =
     "overflow-hidden rounded-3xl border border-white/70 bg-white/80 shadow-[0_32px_90px_-48px_rgba(15,23,42,0.35)] backdrop-blur-xl transition-shadow dark:border-cyan-500/20 dark:bg-slate-950/70 dark:shadow-[0_0_70px_rgba(56,189,248,0.35)]";
+  const languageLabel = useMemo(
+    () => languageOptions.find((option) => option.code === language)?.label || language,
+    [language, languageOptions],
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -304,6 +319,31 @@ export default function ServerNotesSection() {
                 <CardTitle className="text-base">Preview & Generate</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-1 flex-col space-y-4 px-6 pb-6 pt-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+                    <span>Language</span>
+                    <Select
+                      value={language}
+                      onValueChange={(value) => setLanguage(value as typeof language)}
+                    >
+                      <SelectTrigger className="h-8 w-[160px] text-[11px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {languageOptions.map((option) => (
+                          <SelectItem key={option.code} value={option.code}>
+                            {option.flag} {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <AllergyMatrixDialog
+                    recipes={sortedSelected}
+                    language={language}
+                    languageOptions={languageOptions}
+                  />
+                </div>
                 <ServerNotesPreview
                   layout={currentNote.layout}
                   color={currentNote.colorScheme}
@@ -313,6 +353,15 @@ export default function ServerNotesSection() {
                 <ServerNotesGenerator
                   serverNote={currentNote}
                   onSave={saveNote}
+                  language={language}
+                  languageName={languageLabel}
+                />
+                <CooksRecipeBookGenerator
+                  recipes={sortedSelected}
+                  language={language}
+                  onLanguageChange={(code) => setLanguage(code)}
+                  languageOptions={languageOptions}
+                  note={currentNote}
                 />
               </CardContent>
             </Card>
