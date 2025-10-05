@@ -532,22 +532,88 @@ export default function RecipeEditor() {
 function IngredientsTable({ recipeId }: { recipeId: string }) {
   const { getRecipeById, updateRecipe } = useAppData();
   const recipe = getRecipeById(recipeId)!;
+
   type Row = {
-    qty?: string;
-    unit?: string;
-    item?: string;
-    prep?: string;
-    yield?: string;
-    cost?: string;
-    subId?: string;
+    qty: string;
+    unit: string;
+    item: string;
+    prep: string;
+    yield: string;
+    cost: string;
+    subId: string;
   };
-  const rows: Row[] =
-    ((recipe.extra as any)?.ingredientsTable as Row[] | undefined) ??
-    Array.from({ length: 10 }, () => ({ qty: "", unit: "", item: "", prep: "", yield: "", cost: "", subId: "" }));
+
+  const normalizeValue = (value: unknown): string => {
+    if (typeof value === "string") return value;
+    if (value === null || value === undefined) return "";
+    return String(value);
+  };
+
+  const createBlankRow = (): Row => ({
+    qty: "",
+    unit: "",
+    item: "",
+    prep: "",
+    yield: "",
+    cost: "",
+    subId: "",
+  });
+
+  const ingredientLines = useMemo(
+    () => (Array.isArray(recipe.ingredients) ? recipe.ingredients.map((item) => String(item ?? "")) : []),
+    [recipe.ingredients],
+  );
+
+  const rows = useMemo(() => {
+    const extraTable = (recipe.extra as any)?.ingredientsTable as Row[] | undefined;
+    const source = Array.isArray(extraTable) && extraTable.length > 0
+      ? extraTable.map((entry) => ({ ...createBlankRow(), ...entry }))
+      : ingredientLines.map((line) => ({ ...createBlankRow(), item: line }));
+    const padded = source.map((entry) => ({ ...createBlankRow(), ...entry }));
+    const targetLength = Math.max(ingredientLines.length || 0, 12);
+    while (padded.length < targetLength) {
+      padded.push(createBlankRow());
+    }
+    return padded;
+  }, [ingredientLines, recipe.extra]);
+
+  const isRowEmpty = (row: Row): boolean => {
+    return !row.qty.trim() && !row.unit.trim() && !row.item.trim() && !row.prep.trim() && !row.yield.trim() && !row.cost.trim();
+  };
 
   const setRow = (idx: number, patch: Partial<Row>) => {
-    const next = rows.map((r, i) => (i === idx ? { ...r, ...patch } : r));
-    updateRecipe(recipeId, { extra: { ...(recipe.extra ?? {}), ingredientsTable: next } });
+    const next = rows.map((r, i) => (i === idx ? { ...r, ...patch } : r)).map((row) => ({
+      qty: normalizeValue(row.qty).trim(),
+      unit: normalizeValue(row.unit).trim(),
+      item: normalizeValue(row.item).trim(),
+      prep: normalizeValue(row.prep).trim(),
+      yield: normalizeValue(row.yield).trim(),
+      cost: normalizeValue(row.cost).trim(),
+      subId: normalizeValue(row.subId).trim(),
+    }));
+
+    while (next.length && isRowEmpty(next[next.length - 1]!)) {
+      next.pop();
+    }
+
+    const ingredientStrings = next
+      .filter((row) => !isRowEmpty(row))
+      .map((row) => {
+        const quantityPart = [row.qty, row.unit, row.item].filter((part) => part.length > 0).join(" ").trim();
+        if (row.prep.length > 0) {
+          return quantityPart.length > 0 ? `${quantityPart}, ${row.prep}` : row.prep;
+        }
+        return quantityPart;
+      })
+      .filter((text) => text.length > 0);
+
+    updateRecipe(recipeId, {
+      ingredients: ingredientStrings.length ? ingredientStrings : recipe.ingredients,
+      extra: {
+        ...(recipe.extra ?? {}),
+        ingredientsTable: next,
+      },
+    });
   };
 
   return (
@@ -565,45 +631,45 @@ function IngredientsTable({ recipeId }: { recipeId: string }) {
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <tr key={i} className="border-t">
+            <tr key={`${r.item}-${i}`} className="border-t">
               <td className="p-1">
                 <input
-                  value={r.qty ?? ""}
+                  value={r.qty}
                   onChange={(e) => setRow(i, { qty: e.target.value })}
                   className="w-20 rounded border bg-background px-2 py-1"
                 />
               </td>
               <td className="p-1">
                 <input
-                  value={r.unit ?? ""}
+                  value={r.unit}
                   onChange={(e) => setRow(i, { unit: e.target.value })}
                   className="w-24 rounded border bg-background px-2 py-1"
                 />
               </td>
               <td className="p-1">
                 <input
-                  value={r.item ?? ""}
+                  value={r.item}
                   onChange={(e) => setRow(i, { item: e.target.value })}
                   className="w-full rounded border bg-background px-2 py-1"
                 />
               </td>
               <td className="p-1">
                 <input
-                  value={r.prep ?? ""}
+                  value={r.prep}
                   onChange={(e) => setRow(i, { prep: e.target.value })}
                   className="w-32 rounded border bg-background px-2 py-1"
                 />
               </td>
               <td className="p-1">
                 <input
-                  value={r.yield ?? ""}
+                  value={r.yield}
                   onChange={(e) => setRow(i, { yield: e.target.value })}
                   className="w-24 rounded border bg-background px-2 py-1"
                 />
               </td>
               <td className="p-1">
                 <input
-                  value={r.cost ?? ""}
+                  value={r.cost}
                   onChange={(e) => setRow(i, { cost: e.target.value })}
                   className="w-24 rounded border bg-background px-2 py-1"
                 />
