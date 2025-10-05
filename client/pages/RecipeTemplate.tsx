@@ -53,6 +53,7 @@ export default function RecipeTemplate() {
   const [loading, setLoading] = useState(false);
   const [appliedScale, setAppliedScale] = useState(1);
   const [scaleDialogOpen, setScaleDialogOpen] = useState(false);
+  const previousScaleRef = useRef<number | null>(null);
 
   useEffect(() => {
     const run = async () => {
