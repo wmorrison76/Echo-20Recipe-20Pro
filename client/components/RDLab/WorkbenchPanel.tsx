@@ -34,6 +34,32 @@ export function WorkbenchPanel() {
   const [draftTestStep, setDraftTestStep] = useState("");
   const [draftSensory, setDraftSensory] = useState("");
 
+  const handleStatusChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    if (!experiment) return;
+    setExperimentStatus(experiment.id, event.target.value as ExperimentStatus);
+  };
+
+  const handleVariableSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!experiment || !draftVariable.trim()) return;
+    appendVariable(experiment.id, draftVariable);
+    setDraftVariable("");
+  };
+
+  const handleTestStepSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!experiment || !draftTestStep.trim()) return;
+    appendTestStep(experiment.id, draftTestStep);
+    setDraftTestStep("");
+  };
+
+  const handleSensorySubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!experiment || !draftSensory.trim()) return;
+    appendSensoryTarget(experiment.id, draftSensory);
+    setDraftSensory("");
+  };
+
   if (!experiment) {
     return (
       <div className="flex h-full flex-col items-center justify-center rounded-2xl border border-dashed border-white/20 bg-white/10 text-sm text-slate-600 dark:border-cyan-500/20 dark:bg-slate-950/50 dark:text-cyan-200/70">
