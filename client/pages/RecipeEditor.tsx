@@ -223,10 +223,47 @@ export default function RecipeEditor() {
     );
   }
 
+  const modifiers = useMemo(() => {
+    const raw = (recipe.extra ?? {}) as Record<string, unknown>;
+    const list = raw.modifiers;
+    if (!Array.isArray(list)) return [] as string[];
+    return list
+      .map((entry) => String(entry))
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0);
+  }, [recipe.extra]);
+
+  const handleAddModifier = useCallback(() => {
+    const name = window.prompt("Modifier name");
+    if (!name) return;
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    const next = Array.from(new Set([...modifiers, trimmed]));
+    updateRecipe(recipe.id, {
+      extra: {
+        ...(recipe.extra ?? {}),
+        modifiers: next,
+      },
+    });
+  }, [modifiers, recipe, updateRecipe]);
+
+  const handleRemoveModifier = useCallback(
+    (index: number) => {
+      const next = modifiers.filter((_, idx) => idx !== index);
+      updateRecipe(recipe.id, {
+        extra: {
+          ...(recipe.extra ?? {}),
+          modifiers: next,
+        },
+      });
+    },
+    [modifiers, recipe, updateRecipe],
+  );
+
   return (
     <>
       <TopTabs />
-      <div className="container mx-auto space-y-6 py-6">
+      <div className="container mx-auto space-y-6 py-6 lg:pl-[18rem] xl:pl-[20rem]">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold">Edit Recipe</h1>
