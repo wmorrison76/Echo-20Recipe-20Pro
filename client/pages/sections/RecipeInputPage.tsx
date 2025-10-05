@@ -123,6 +123,35 @@ const ensureIngredientRowIds = (
 ): IngredientRow[] =>
   rows.filter(Boolean).map((row) => ensureIngredientRowId(row));
 
+const formatDurationLabel = (value: string): string => {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) return "";
+  const cleaned = trimmed.replace(/[^0-9:]/g, "");
+  if (!cleaned) return "";
+  const parts = cleaned.split(":");
+  let hours = 0;
+  let minutes = 0;
+  if (parts.length === 1) {
+    minutes = Number(parts[0] || 0);
+    if (!Number.isFinite(minutes)) return "";
+  } else {
+    hours = Number(parts[0] || 0);
+    minutes = Number(parts[1] || 0);
+    if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return "";
+  }
+  hours = Math.max(0, Math.floor(hours));
+  minutes = Math.max(0, Math.floor(minutes));
+  if (minutes >= 60) {
+    hours += Math.floor(minutes / 60);
+    minutes %= 60;
+  }
+  const partsOut: string[] = [];
+  if (hours > 0) partsOut.push(`${hours} hr.`);
+  if (minutes > 0) partsOut.push(`${minutes} min.`);
+  if (!partsOut.length) return "";
+  return partsOut.join(" ");
+};
+
 const RecipeInputPage = () => {
   const [recipeName, setRecipeName] = useState("");
   const { t } = useTranslation();
