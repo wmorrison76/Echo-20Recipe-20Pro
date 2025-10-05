@@ -294,73 +294,18 @@ export default function TopTabs() {
   }, []);
 
   useEffect(() => {
-    if (typeof document !== "undefined") {
-      return () => {
-        document.documentElement.style.removeProperty("--sidebar-offset");
-      };
-    }
-
-    return undefined;
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
+    if (typeof document === "undefined") {
       return;
     }
-
-    const asideEl = asideRef.current;
-    if (!asideEl) {
-      return;
-    }
-
-    let rafId: number | null = null;
-
-    const measureAndSet = () => {
-      if (!asideRef.current) {
-        return;
-      }
-      const { offsetWidth, offsetLeft } = asideRef.current;
-      const baseGap = collapsed ? 10 : 18;
-      const minimumWidth = collapsed ? 88 : 236;
-      const sidebarWidth = Math.max(offsetWidth, minimumWidth);
-      const offset = Math.round(offsetLeft + sidebarWidth + baseGap);
-      document.documentElement.style.setProperty(
-        "--sidebar-offset",
-        `${offset}px`,
-      );
-    };
-
-    const scheduleSidebarOffset = () => {
-      if (typeof window === "undefined") return;
-      if (rafId !== null) {
-        window.cancelAnimationFrame(rafId);
-      }
-      rafId = window.requestAnimationFrame(() => {
-        rafId = null;
-        measureAndSet();
-      });
-    };
-
-    scheduleSidebarOffset();
-
-    const handleResize = () => scheduleSidebarOffset();
-
-    let observer: ResizeObserver | null = null;
-    if (typeof ResizeObserver !== "undefined") {
-      observer = new ResizeObserver(() => scheduleSidebarOffset());
-      observer.observe(asideEl);
-    }
-
-    window.addEventListener("resize", handleResize);
-
+    const baseOffset = 116;
+    document.documentElement.style.setProperty(
+      "--sidebar-offset",
+      `${baseOffset}px`,
+    );
     return () => {
-      if (rafId !== null && typeof window !== "undefined") {
-        window.cancelAnimationFrame(rafId);
-      }
-      window.removeEventListener("resize", handleResize);
-      observer?.disconnect();
+      document.documentElement.style.removeProperty("--sidebar-offset");
     };
-  }, [collapsed]);
+  }, []);
 
   useEffect(() => {
     if (collapsed) {
