@@ -330,8 +330,9 @@ export default function RecipeSearchSection() {
   );
   const [tocChecked, setTocChecked] = useState<Record<string, boolean>>({});
   const pdfPendingRef = useRef<File | null>(null);
-  // Live scan state
-  const [scanOpen, setScanOpen] = useState(false);
+const [bookDropActive, setBookDropActive] = useState(false);
+// Live scan state
+const [scanOpen, setScanOpen] = useState(false);
   const [scanPageNo, setScanPageNo] = useState(0);
   const [scanTotal, setScanTotal] = useState(0);
   const [detectedOpen, setDetectedOpen] = useState(false);
