@@ -321,10 +321,11 @@ export default function RecipeTemplate() {
               )}
             </div>
             <div className="space-y-2">
-              {Number.isFinite(baseYieldQty) && yieldUnit && (
+              {Number.isFinite(baseYieldQty) && (
                 <div>
                   <span className="font-semibold">Yield:</span>{" "}
-                  {displayQuantity(scaledYieldQty ?? baseYieldQty)} {yieldUnit}
+                  {displayQuantity(scaledYieldQty ?? baseYieldQty)}
+                  {yieldUnitLabel ? ` ${yieldUnitLabel}` : ""}
                   {appliedScale !== 1 && Number.isFinite(baseYieldQty) && (
                     <span className="ml-1 text-xs text-muted-foreground">
                       (original {displayQuantity(baseYieldQty)})
@@ -332,10 +333,11 @@ export default function RecipeTemplate() {
                   )}
                 </div>
               )}
-              {Number.isFinite(basePortionCount) && portionUnit && (
+              {Number.isFinite(basePortionCount) && (
                 <div>
                   <span className="font-semibold">Portions:</span>{" "}
-                  {displayQuantity(scaledPortionCount ?? basePortionCount)} {portionUnit}
+                  {displayQuantity(scaledPortionCount ?? basePortionCount)}
+                  {portionUnitLabel ? ` ${portionUnitLabel}` : ""}
                   {appliedScale !== 1 && Number.isFinite(basePortionCount) && (
                     <span className="ml-1 text-xs text-muted-foreground">
                       (original {displayQuantity(basePortionCount)})
