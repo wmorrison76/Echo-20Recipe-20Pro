@@ -166,12 +166,6 @@ const RecipeInputPage = () => {
   const handleCycleCurrencyClick = useCallback(() => {
     cycleCurrencyRef.current?.();
   }, []);
-  const handleYieldClick = useCallback(() => {
-    setYieldOpen(true);
-  }, []);
-  const handleRndLabsClick = useCallback(() => {
-    setIsRndLabsOpen(true);
-  }, []);
 
   const [isRndLabsOpen, setIsRndLabsOpen] = useState(false);
   const [isSubRecipePickerOpen, setIsSubRecipePickerOpen] = useState(false);
