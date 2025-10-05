@@ -96,6 +96,89 @@ export function DiscoveryPanel() {
         />
       </div>
 
+      <div className="rounded-2xl border border-white/20 bg-white/8 p-4 backdrop-blur md:bg-white/14 dark:border-cyan-500/25 dark:bg-cyan-500/10">
+        <div className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-600 dark:text-cyan-200/80">
+          Rapid prototyping
+        </div>
+        <p className="mt-1 text-[11px] text-slate-500 dark:text-cyan-200/70">
+          Spin up a fresh experiment with hypothesis, variables, and target service window before you hit the bench.
+        </p>
+        <form onSubmit={handleCreateExperiment} className="mt-3 space-y-3 text-xs text-slate-600 dark:text-cyan-200/80">
+          <div className="grid gap-2 md:grid-cols-2">
+            <input
+              value={draftTitle}
+              onChange={(event) => setDraftTitle(event.target.value)}
+              placeholder="Working title"
+              className="rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-sky-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+            />
+            <input
+              value={draftOwner}
+              onChange={(event) => setDraftOwner(event.target.value)}
+              placeholder="Lab owner / lead"
+              className="rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-sky-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+            />
+          </div>
+          <textarea
+            value={draftHypothesis}
+            onChange={(event) => setDraftHypothesis(event.target.value)}
+            placeholder="Hypothesis: what will this technique unlock?"
+            rows={3}
+            className="w-full rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-sky-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+          />
+          <div className="grid gap-2 md:grid-cols-2">
+            <textarea
+              value={draftVariables}
+              onChange={(event) => setDraftVariables(event.target.value)}
+              placeholder="Variables under test (comma or newline separated)"
+              rows={2}
+              className="w-full rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-sky-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+            />
+            <textarea
+              value={draftTargets}
+              onChange={(event) => setDraftTargets(event.target.value)}
+              placeholder="Sensory targets (comma or newline separated)"
+              rows={2}
+              className="w-full rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-sky-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+            />
+          </div>
+          <textarea
+            value={draftEquipment}
+            onChange={(event) => setDraftEquipment(event.target.value)}
+            placeholder="Key instrumentation (comma or newline separated)"
+            rows={2}
+            className="w-full rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-sky-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+          />
+          <div className="grid gap-2 md:grid-cols-2">
+            <input
+              value={draftTags}
+              onChange={(event) => setDraftTags(event.target.value)}
+              placeholder="Tags (comma separated)"
+              className="rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-sky-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+            />
+            <input
+              value={draftLaunchWindow}
+              onChange={(event) => setDraftLaunchWindow(event.target.value)}
+              placeholder="Launch window or service"
+              className="rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-sky-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+            />
+          </div>
+          <div className="flex items-center justify-between gap-3 text-[11px] uppercase tracking-[0.3em] text-slate-500 dark:text-cyan-200/70">
+            <span>Splits lists by comma or new line.</span>
+            <button
+              type="submit"
+              disabled={isCreateDisabled}
+              className={`rounded-full px-4 py-2 text-[11px] font-semibold transition ${
+                isCreateDisabled
+                  ? "cursor-not-allowed border border-white/40 bg-white/30 text-slate-400 dark:border-cyan-500/15 dark:bg-slate-950/50 dark:text-cyan-300/40"
+                  : "border border-sky-400/50 bg-sky-500/80 text-white shadow-sm hover:bg-sky-500 dark:border-cyan-400/50 dark:bg-cyan-500/80"
+              }`}
+            >
+              Add to bench
+            </button>
+          </div>
+        </form>
+      </div>
+
       <div className="flex-1 overflow-hidden rounded-2xl border border-white/15 bg-white/4 backdrop-blur-sm dark:border-cyan-500/20 dark:bg-slate-950/40">
         <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 text-[11px] uppercase tracking-[0.3em] text-slate-500 dark:border-cyan-500/20 dark:text-cyan-300/70">
           <span>Active experiments</span>
