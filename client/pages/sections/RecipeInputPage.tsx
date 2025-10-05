@@ -420,18 +420,6 @@ const RecipeInputPage = () => {
   useEffect(() => {
     if (!allergenManualRef.current)
       setSelectedAllergens(detectAllergensFromIngredients(ingredients));
-    // ensure default yield percentage when missing; avoid update loop
-    if (ingredients.some((row) => row.type !== "divider" && !row.yield)) {
-      setIngredients((prev) =>
-        ensureIngredientRowIds(
-          prev.map((row) => {
-            const base = ensureIngredientRowId(row);
-            if (base.type === "divider" || base.yield) return base;
-            return { ...base, yield: String(100) };
-          }),
-        ),
-      );
-    }
   }, [ingredients]);
 
   const inputClass = `border p-3 rounded-lg text-sm transition-all focus:shadow-md focus:ring-2 ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30 shadow-none" : "bg-white border-gray-300 text-black focus:ring-blue-400/30 focus:border-blue-500 shadow-lg"}`;
