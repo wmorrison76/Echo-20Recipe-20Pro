@@ -410,6 +410,357 @@ function matchesRule(rule: BaseYieldRule, target: TokenTarget): number {
   return score;
 }
 
+const PANTRY_TOKENS = [
+  "salt",
+  "sugar",
+  "flour",
+  "starch",
+  "yeast",
+  "seasoning",
+  "spice",
+  "powder",
+  "soda",
+  "cornstarch",
+  "gelatin",
+  "panko",
+  "breadcrumbs",
+  "vinegar",
+  "baking",
+  "starch",
+  "cocoa",
+  "coffee",
+  "tea",
+] as const;
+
+const OUTER_LAYER_TOKENS = [
+  "peeled",
+  "peel",
+  "shell",
+  "shelled",
+  "husk",
+  "hulled",
+  "cored",
+  "pit",
+  "pitted",
+  "seeded",
+  "destemmed",
+  "stemmed",
+  "top",
+  "topped",
+  "skin",
+  "skinned",
+  "scaled",
+] as const;
+
+const TRIM_TOKENS = [
+  "trim",
+  "trimmed",
+  "fabricated",
+  "fabricate",
+  "butcher",
+  "butchered",
+  "clean",
+  "cleaned",
+  "debone",
+  "deboned",
+  "bone",
+  "boned",
+  "fillet",
+  "filleted",
+] as const;
+
+const KNIFE_PREP_TOKENS = [
+  "dice",
+  "diced",
+  "chop",
+  "chopped",
+  "mince",
+  "minced",
+  "slice",
+  "sliced",
+  "julienne",
+  "julienned",
+  "shave",
+  "shaved",
+  "grate",
+  "grated",
+  "brunoise",
+  "baton",
+  "batonnet",
+  "matchstick",
+  "cube",
+  "cubed",
+  "wedge",
+  "wedged",
+  "fine",
+  "rough",
+  "rondelle",
+  "chiffonade",
+  "segment",
+  "segmented",
+  "supreme",
+  "supremed",
+  "zest",
+  "zested",
+] as const;
+
+const HIGH_HEAT_TOKENS = [
+  "roast",
+  "roasted",
+  "grill",
+  "grilled",
+  "broil",
+  "broiled",
+  "bake",
+  "baked",
+  "char",
+  "charred",
+  "sear",
+  "seared",
+  "fry",
+  "fried",
+  "saute",
+  "sauteed",
+  "sauté",
+  "sautéed",
+  "smoke",
+  "smoked",
+  "toast",
+  "toasted",
+  "brown",
+  "browned",
+] as const;
+
+const MOIST_HEAT_TOKENS = [
+  "braise",
+  "braised",
+  "stew",
+  "stewed",
+  "simmer",
+  "simmered",
+  "poach",
+  "poached",
+  "boil",
+  "boiled",
+  "steam",
+  "steamed",
+  "blanch",
+  "blanched",
+  "confit",
+  "confited",
+  "sous",
+  "pressure",
+] as const;
+
+function evaluateHeuristicYield(target: TokenTarget): BaseYieldMatch {
+  const tokens = new Set(
+    [...target.nameTokens, ...target.descriptorTokens, ...target.prepTokens].filter(
+      Boolean,
+    ),
+  );
+  const categories = new Set(target.categories);
+  const hasAny = (values: readonly string[]) =>
+    values.some((value) => tokens.has(value));
+  const hasCategory = (value: string) => categories.has(value);
+  const hasProteinCategory =
+    hasCategory("protein") || hasCategory("poultry") || hasCategory("seafood");
+  const hasProduceCategory =
+    hasCategory("vegetable") ||
+    hasCategory("root") ||
+    hasCategory("bulb") ||
+    hasCategory("leaf") ||
+    hasCategory("fruit");
+
+  if (!hasProduceCategory && !hasProteinCategory && hasAny(PANTRY_TOKENS)) {
+    return {
+      percent: 100,
+      reason: "Pantry staple retains full yield",
+      ruleId: "heuristic:pantry-staple",
+    };
+  }
+
+  if (hasAny(OUTER_LAYER_TOKENS)) {
+    let percent = 86;
+    if (hasCategory("fruit")) percent = 82;
+    else if (hasCategory("bulb")) percent = 78;
+    else if (hasCategory("root")) percent = 84;
+    else if (hasCategory("seafood")) percent = 65;
+    else if (hasCategory("poultry")) percent = 72;
+    else if (hasCategory("protein")) percent = 74;
+    return {
+      percent: clampPercent(percent),
+      reason: "Estimated yield after removing outer layers",
+      ruleId: "heuristic:outer-layer-trim",
+    };
+  }
+
+  if (hasAny(TRIM_TOKENS)) {
+    let percent = hasProduceCategory ? 90 : 78;
+    let ruleId = hasProduceCategory
+      ? "heuristic:trim-produce"
+      : "heuristic:trim-protein";
+    let reason = hasProduceCategory
+      ? "Estimated produce yield after trimming"
+      : "Estimated protein yield after fabrication";
+    if (hasCategory("seafood")) {
+      percent = 68;
+      ruleId = "heuristic:trim-seafood";
+      reason = "Estimated seafood yield after fabrication";
+    } else if (hasCategory("poultry")) {
+      percent = 74;
+      ruleId = "heuristic:trim-poultry";
+      reason = "Estimated poultry yield after fabrication";
+    } else if (hasCategory("protein")) {
+      percent = 78;
+      ruleId = "heuristic:trim-protein";
+      reason = "Estimated protein yield after fabrication";
+    } else if (hasCategory("leaf")) {
+      percent = 92;
+      ruleId = "heuristic:trim-leaf";
+      reason = "Estimated leafy greens yield after trimming";
+    } else if (hasCategory("bulb") || hasCategory("root")) {
+      percent = 88;
+      ruleId = hasCategory("bulb")
+        ? "heuristic:trim-bulb"
+        : "heuristic:trim-root";
+      reason = hasCategory("bulb")
+        ? "Estimated aromatic yield after trimming"
+        : "Estimated root vegetable yield after trimming";
+    }
+    return {
+      percent: clampPercent(percent),
+      reason,
+      ruleId,
+    };
+  }
+
+  if (hasAny(KNIFE_PREP_TOKENS)) {
+    let percent = 93;
+    let ruleId = "heuristic:knife-prep:general";
+    let reason = "Estimated yield after knife prep";
+    if (hasCategory("bulb")) {
+      percent = 88;
+      ruleId = "heuristic:knife-prep:bulb";
+      reason = "Estimated aromatic yield after knife prep";
+    } else if (hasCategory("root")) {
+      percent = 90;
+      ruleId = "heuristic:knife-prep:root";
+      reason = "Estimated root vegetable yield after knife prep";
+    } else if (hasCategory("leaf")) {
+      percent = 92;
+      ruleId = "heuristic:knife-prep:leaf";
+      reason = "Estimated leafy greens yield after knife prep";
+    } else if (hasCategory("fruit")) {
+      percent = 91;
+      ruleId = "heuristic:knife-prep:fruit";
+      reason = "Estimated fruit yield after knife prep";
+    } else if (hasCategory("seafood")) {
+      percent = 82;
+      ruleId = "heuristic:knife-prep:seafood";
+      reason = "Estimated seafood yield after fabrication";
+    } else if (hasCategory("poultry")) {
+      percent = 80;
+      ruleId = "heuristic:knife-prep:poultry";
+      reason = "Estimated poultry yield after fabrication";
+    } else if (hasCategory("protein")) {
+      percent = 85;
+      ruleId = "heuristic:knife-prep:protein";
+      reason = "Estimated protein yield after fabrication";
+    }
+    return {
+      percent: clampPercent(percent),
+      reason,
+      ruleId,
+    };
+  }
+
+  if (hasAny(HIGH_HEAT_TOKENS)) {
+    const isProtein = hasProteinCategory;
+    return {
+      percent: clampPercent(isProtein ? 78 : 88),
+      reason: "Estimated yield after high-heat cooking",
+      ruleId: `heuristic:high-heat:${isProtein ? "protein" : "produce"}`,
+    };
+  }
+
+  if (hasAny(MOIST_HEAT_TOKENS)) {
+    const isProtein = hasProteinCategory;
+    return {
+      percent: clampPercent(isProtein ? 90 : 95),
+      reason: "Estimated yield after moist-heat cooking",
+      ruleId: `heuristic:moist-heat:${isProtein ? "protein" : "produce"}`,
+    };
+  }
+
+  if (hasCategory("seafood")) {
+    return {
+      percent: clampPercent(70),
+      reason: "Typical seafood fabrication loss",
+      ruleId: "heuristic:seafood-default",
+    };
+  }
+  if (hasCategory("poultry")) {
+    return {
+      percent: clampPercent(74),
+      reason: "Typical poultry fabrication loss",
+      ruleId: "heuristic:poultry-default",
+    };
+  }
+  if (hasCategory("protein")) {
+    return {
+      percent: clampPercent(78),
+      reason: "Typical protein fabrication loss",
+      ruleId: "heuristic:protein-default",
+    };
+  }
+  if (hasCategory("bulb")) {
+    return {
+      percent: clampPercent(90),
+      reason: "Typical aromatic prep yield",
+      ruleId: "heuristic:bulb-default",
+    };
+  }
+  if (hasCategory("root")) {
+    return {
+      percent: clampPercent(92),
+      reason: "Typical root vegetable prep yield",
+      ruleId: "heuristic:root-default",
+    };
+  }
+  if (hasCategory("leaf")) {
+    return {
+      percent: clampPercent(94),
+      reason: "Typical leafy greens prep yield",
+      ruleId: "heuristic:leaf-default",
+    };
+  }
+  if (hasCategory("fruit")) {
+    return {
+      percent: clampPercent(92),
+      reason: "Typical fruit prep yield",
+      ruleId: "heuristic:fruit-default",
+    };
+  }
+  if (hasCategory("vegetable")) {
+    return {
+      percent: clampPercent(95),
+      reason: "Typical vegetable prep yield",
+      ruleId: "heuristic:vegetable-default",
+    };
+  }
+
+  const fallbackPercent = hasProduceCategory ? 96 : 100;
+  return {
+    percent: clampPercent(fallbackPercent),
+    reason: hasProduceCategory
+      ? "General produce prep yield assumption"
+      : "Default yield assumption",
+    ruleId: hasProduceCategory
+      ? "heuristic:produce-fallback"
+      : "heuristic:default",
+  };
+}
+
 export function computeBaseYield(item: string, prep?: string): BaseYieldMatch {
   const target = buildTarget(item, prep);
   let bestScore = 0;
@@ -422,13 +773,20 @@ export function computeBaseYield(item: string, prep?: string): BaseYieldMatch {
     }
   }
   if (!bestRule) {
-    return { percent: null, reason: null, ruleId: null };
+    return evaluateHeuristicYield(target);
   }
   return {
     percent: bestRule.percent,
     reason: bestRule.reason,
     ruleId: bestRule.id,
   };
+}
+
+export function estimateHeuristicYield(
+  item: string,
+  prep?: string,
+): BaseYieldMatch {
+  return evaluateHeuristicYield(buildTarget(item, prep));
 }
 
 export function combineYields(
