@@ -82,6 +82,11 @@ export function ServerNotesConfig({
 
   const availableLayouts = useMemo(() => layoutPresets, []);
 
+  const controlPanelClass =
+    "overflow-hidden rounded-2xl border border-white/70 bg-white/90 shadow-[0_28px_85px_-58px_rgba(15,23,42,0.35)] backdrop-blur-lg transition-shadow dark:border-cyan-500/25 dark:bg-slate-950/70";
+  const subsectionSurfaceClass =
+    "rounded-xl border border-white/60 bg-white/75 p-3.5 shadow-sm backdrop-blur-sm transition dark:border-cyan-500/30 dark:bg-slate-950/50";
+
   const handleLogoFiles = (files: FileList | null) => {
     if (!files?.length) return;
     const allow = Math.max(0, 2 - config.logos.length);
