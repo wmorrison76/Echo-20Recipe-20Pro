@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Plus, Trash2, Upload } from "lucide-react";
+import { Plus, Settings, Trash2, Upload } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,9 +9,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { extractLeadingQuantity } from "@/lib/recipe-scaling";
+import { defaultSelection, type TaxonomySelection } from "@/lib/taxonomy";
 import TopTabs from "@/components/TopTabs";
 import SubtleBottomGlow from "@/components/SubtleBottomGlow";
 import CornerBrand from "@/components/CornerBrand";
+import TronBackdrop from "@/components/TronBackdrop";
+import RightSidebar from "@/pages/sections/RightSidebar";
 import { useAppData } from "@/context/AppDataContext";
 import { useToast } from "@/hooks/use-toast";
 import type { RecipeNutrition } from "@shared/recipes";
