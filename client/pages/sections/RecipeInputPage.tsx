@@ -45,6 +45,7 @@ import {
   Atom,
   X,
 } from "lucide-react";
+import { parseCostValue, parseQuantity } from "@/lib/recipe-scaling";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import type { RecipeExport } from "@shared/recipes";
 import {
@@ -64,65 +65,6 @@ import {
   createDividerRow,
   generateIngredientRowId,
 } from "@/types/ingredients";
-
-const parseCostValue = (value: string): number => {
-  const numeric = Number(
-    String(value ?? "")
-      .replace(/[$€£¥,\s]/g, "")
-      .replace(/,/g, "."),
-  );
-  return Number.isFinite(numeric) ? numeric : NaN;
-};
-
-const FRACTION_MAP: Record<string, string> = {
-  "¼": "1/4",
-  "½": "1/2",
-  "¾": "3/4",
-  "⅐": "1/7",
-  "⅑": "1/9",
-  "⅒": "1/10",
-  "⅓": "1/3",
-  "⅔": "2/3",
-  "⅕": "1/5",
-  "⅖": "2/5",
-  "⅗": "3/5",
-  "⅘": "4/5",
-  "⅙": "1/6",
-  "⅚": "5/6",
-  "⅛": "1/8",
-  "⅜": "3/8",
-  "⅝": "5/8",
-  "⅞": "7/8",
-};
-
-const parseQuantity = (value: string): number => {
-  if (!value) return Number.NaN;
-  let text = String(value).trim();
-  text = text.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => FRACTION_MAP[ch] ?? ch);
-  text = text.replace(/(\d)\s*(\d\/\d)/g, "$1 $2");
-
-  const mixed = text.match(/^(-?\d+)(?:\s+(\d+\/\d+))?$/);
-  if (mixed) {
-    const base = Number(mixed[1]);
-    if (mixed[2]) {
-      const [n, d] = mixed[2].split("/").map(Number);
-      return Number.isFinite(n) && Number.isFinite(d) && d !== 0
-        ? base + n / d
-        : Number.NaN;
-    }
-    return base;
-  }
-
-  if (/^-?\d+\/\d+$/.test(text)) {
-    const [n, d] = text.split("/").map(Number);
-    return Number.isFinite(n) && Number.isFinite(d) && d !== 0
-      ? n / d
-      : Number.NaN;
-  }
-
-  const numeric = Number(text.replace(/[^0-9.\-]/g, ""));
-  return Number.isFinite(numeric) ? numeric : Number.NaN;
-};
 
 const normalizeString = (value: unknown): string =>
   typeof value === "string" ? value : value == null ? "" : String(value);
