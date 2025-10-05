@@ -446,50 +446,69 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     return bytes;
   };
 
-  const exportAllZip = useCallback(async () => {
-    const zip = new JSZip();
-    zip.file("data/recipes.json", JSON.stringify(recipes, null, 2));
-    zip.file("data/lookbooks.json", JSON.stringify(lookbooks, null, 2));
-    zip.file(
-      "data/images.json",
-      JSON.stringify(
-        images.map((i) => ({
-          id: i.id,
-          name: i.name,
-          tags: i.tags,
-          order: i.order,
-          favorite: i.favorite,
-          type: i.type,
-        })),
-        null,
-        2,
-      ),
-    );
-    const folder = zip.folder("images");
-    if (folder) {
-      for (const img of images) {
-        if (img.dataUrl) {
-          folder.file(img.name, dataUrlToUint8(img.dataUrl));
-        } else if (img.blobUrl) {
-          try {
-            const res = await fetch(img.blobUrl);
-            const ab = await res.arrayBuffer();
-            folder.file(img.name, ab);
-          } catch {}
+  const exportAllZip = useCallback(
+    async (language: LanguageCode = defaultLanguage) => {
+      const zip = new JSZip();
+      const timestamp = new Date().toISOString();
+      zip.file("data/recipes.json", JSON.stringify(recipes, null, 2));
+      zip.file("data/lookbooks.json", JSON.stringify(lookbooks, null, 2));
+      zip.file("data/collections.json", JSON.stringify(collections, null, 2));
+      zip.file(
+        "data/images.json",
+        JSON.stringify(
+          images.map((i) => ({
+            id: i.id,
+            name: i.name,
+            tags: i.tags,
+            order: i.order,
+            favorite: i.favorite,
+            type: i.type,
+          })),
+          null,
+          2,
+        ),
+      );
+      zip.file(
+        "metadata.json",
+        JSON.stringify(
+          {
+            language,
+            exportedAt: timestamp,
+            recipeCount: recipes.length,
+            collectionCount: collections.length,
+            imageCount: images.length,
+          },
+          null,
+          2,
+        ),
+      );
+      const folder = zip.folder("images");
+      if (folder) {
+        for (const img of images) {
+          if (img.dataUrl) {
+            folder.file(img.name, dataUrlToUint8(img.dataUrl));
+          } else if (img.blobUrl) {
+            try {
+              const res = await fetch(img.blobUrl);
+              const ab = await res.arrayBuffer();
+              folder.file(img.name, ab);
+            } catch {}
+          }
         }
       }
-    }
-    const blob = await zip.generateAsync({ type: "blob" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `recipe-studio-export-${new Date().toISOString().slice(0, 10)}.zip`;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
-      URL.revokeObjectURL(a.href);
-      a.remove();
-    }, 0);
-  }, [images, recipes, lookbooks]);
+      const blob = await zip.generateAsync({ type: "blob" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `recipe-studio-export-${timestamp.slice(0, 10)}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(a.href);
+        a.remove();
+      }, 0);
+    },
+    [collections, images, lookbooks, recipes],
+  );
 
   const createCollection = useCallback(
     (input: {
