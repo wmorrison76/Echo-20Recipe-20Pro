@@ -890,7 +890,7 @@ const onFiles = async (files: File[]) => {
 
   return (
     <div
-      className="mx-auto max-w-[1200px] px-4 md:px-6 py-4 space-y-4"
+      className="mx-auto w-full max-w-[1400px] space-y-5 px-4 py-4 sm:px-6 lg:px-10"
       data-echo-key="page:recipes:search"
     >
       <div className="flex flex-wrap items-center gap-2">
