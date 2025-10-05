@@ -3226,15 +3226,14 @@ const RecipeInputPage = () => {
                 const unit = m?.[2] ? m[2].toUpperCase() : "";
                 const rest = (m?.[3] || "").trim();
                 const [item, ...prep] = rest.split(",");
-                return {
+                return createIngredientRow({
                   qty,
                   unit,
                   item: item.trim(),
                   prep: prep.join(",").trim(),
                   yield: "",
                   cost: "",
-                  subId: "",
-                };
+                });
               });
               setIngredients(rows.length ? rows : [createIngredientRow()]);
             }
