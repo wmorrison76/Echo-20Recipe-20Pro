@@ -477,6 +477,49 @@ export default function RecipeEditor() {
                 </div>
               </CardContent>
             </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Modifiers</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                <p className="text-xs text-muted-foreground">
+                  Add optional modifiers for service teams to reference variations or add-ons.
+                </p>
+                {modifiers.length ? (
+                  <ul className="space-y-2">
+                    {modifiers.map((modifier, index) => (
+                      <li
+                        key={`${modifier}-${index}`}
+                        className="flex items-center justify-between rounded-md border border-dashed border-border/60 bg-muted/20 px-3 py-2"
+                      >
+                        <span className="font-medium text-foreground">{modifier}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveModifier(index)}
+                          className="text-xs font-medium text-muted-foreground transition hover:text-destructive"
+                        >
+                          Remove
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="rounded-md border border-dashed border-border/60 bg-muted/10 px-3 py-2 text-muted-foreground">
+                    No modifiers yet.
+                  </div>
+                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full justify-start gap-2"
+                  onClick={handleAddModifier}
+                >
+                  <Plus className="h-4 w-4" /> Add Modifier
+                </Button>
+              </CardContent>
+            </Card>
           </aside>
         </div>
       </div>
