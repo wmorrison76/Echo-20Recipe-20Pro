@@ -150,10 +150,13 @@ export default function ServerNotesSection() {
     [currentNote.selectedRecipes],
   );
 
+  const panelSurfaceClass =
+    "overflow-hidden rounded-3xl border border-white/70 bg-white/80 shadow-[0_32px_90px_-48px_rgba(15,23,42,0.35)] backdrop-blur-xl transition-shadow dark:border-cyan-500/20 dark:bg-slate-950/70 dark:shadow-[0_0_70px_rgba(56,189,248,0.35)]";
+
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-7xl px-4 py-8">
-        <div className="space-y-6">
+      <div className="mx-auto max-w-7xl px-6 py-12 sm:px-8 lg:px-12">
+        <div className="space-y-8">
           <header className="flex flex-wrap items-center justify-between gap-3 border-b pb-4">
             <div className="flex items-center gap-3">
               <ClipboardList className="h-6 w-6 text-primary" />
