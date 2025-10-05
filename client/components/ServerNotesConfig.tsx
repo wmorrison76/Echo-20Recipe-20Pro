@@ -333,15 +333,15 @@ export function ServerNotesConfig({
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader className="space-y-2 px-4 py-3">
+      <Card className={controlPanelClass}>
+        <CardHeader className="space-y-2 border-b border-white/60 px-5 py-4 dark:border-cyan-500/25">
           <CardTitle className="flex items-center gap-2 text-sm font-semibold">
             <Building className="h-4 w-4" /> Company Information
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3.5 px-4 pb-4 pt-0">
-          <div className="grid gap-2.5 md:grid-cols-2">
-            <div className="space-y-1">
+        <CardContent className="space-y-4 px-5 pb-5 pt-4">
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className="space-y-1.5">
               <Label htmlFor="company-name" className="text-xs">
                 Company Name
               </Label>
@@ -354,7 +354,7 @@ export function ServerNotesConfig({
                 placeholder="Restaurant name"
               />
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               <Label htmlFor="outlet-name" className="text-xs">
                 Outlet Name
               </Label>
@@ -368,12 +368,12 @@ export function ServerNotesConfig({
               />
             </div>
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <Label>Restaurant Logos (max 2)</Label>
             <div
-              className={`rounded-lg border-2 border-dashed p-5 text-center transition ${
-                dragOver ? "border-primary bg-primary/5" : "border-muted"
-              }`}
+              className={`${subsectionSurfaceClass} border-2 border-dashed ${
+                dragOver ? "border-primary/60 bg-primary/10" : ""
+              } text-center`}
               onDragOver={(event) => {
                 event.preventDefault();
                 setDragOver(true);
@@ -423,7 +423,7 @@ export function ServerNotesConfig({
                     <img
                       src={logo}
                       alt={`Logo ${index + 1}`}
-                      className="h-16 w-16 rounded border object-contain"
+                      className="h-16 w-16 rounded border border-white/60 bg-white object-contain dark:border-cyan-500/30"
                     />
                     <Button
                       variant="destructive"
