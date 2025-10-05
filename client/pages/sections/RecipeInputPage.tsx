@@ -1398,7 +1398,7 @@ const RecipeInputPage = () => {
       ensureIngredientRowIds(
         ingredients.map((r) => {
           const base = ensureIngredientRowId(r);
-          const n = parseFloat(String(base.cost).replace(/[$��£¥,\s]/g, ""));
+          const n = parseFloat(String(base.cost).replace(/[$€£¥,\s]/g, ""));
           if (Number.isNaN(n)) return base;
           return { ...base, cost: (n * fx).toFixed(2) };
         }),
