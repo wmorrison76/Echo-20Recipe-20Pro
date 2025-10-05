@@ -102,6 +102,43 @@ export function InsightsPanel() {
         </div>
       </section>
 
+      <section className="rounded-2xl border border-white/15 bg-white/60 p-4 text-sm text-slate-700 shadow-inner backdrop-blur-sm dark:border-cyan-500/20 dark:bg-slate-950/70 dark:text-cyan-100">
+        <header className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
+          Pipeline radar
+        </header>
+        <div className="mt-3 space-y-3">
+          {pipeline.length ? (
+            pipeline.map((experiment) => (
+              <div
+                key={experiment.id}
+                className="rounded-xl border border-white/30 bg-white/70 p-3 shadow-sm dark:border-cyan-500/20 dark:bg-slate-950/60"
+              >
+                <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-slate-500 dark:text-cyan-200/70">
+                  <span>{experiment.stage}</span>
+                  <span>{experiment.launchWindow}</span>
+                </div>
+                <div className="mt-1 text-sm font-semibold tracking-tight text-slate-800 dark:text-cyan-100">
+                  {experiment.title}
+                </div>
+                {experiment.variables.length ? (
+                  <div className="mt-2 flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.3em] text-slate-400 dark:text-cyan-300/70">
+                    {experiment.variables.map((variable) => (
+                      <span key={variable} className="rounded-full bg-white/60 px-2 py-1 dark:bg-cyan-500/10">
+                        {variable}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            ))
+          ) : (
+            <div className="rounded-xl border border-dashed border-white/40 px-3 py-4 text-center text-xs italic text-slate-400 dark:border-cyan-500/30 dark:text-cyan-300/60">
+              Queue experiments to populate pipeline radar.
+            </div>
+          )}
+        </div>
+      </section>
+
       <section className="rounded-2xl border border-white/15 bg-white/60 p-4 text-xs text-slate-600 shadow-inner backdrop-blur-sm dark:border-cyan-500/20 dark:bg-slate-950/70 dark:text-cyan-200/80">
         <header className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
           Insights feed
