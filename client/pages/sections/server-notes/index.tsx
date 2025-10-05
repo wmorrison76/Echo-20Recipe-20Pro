@@ -75,6 +75,7 @@ export default function ServerNotesSection() {
   );
   const [currentNote, setCurrentNote] = useState<ServerNote>(template);
   const [savedNotes, setSavedNotes] = useState<ServerNote[]>([]);
+  const [noteSession, setNoteSession] = useState(0);
 
   useEffect(() => {
     try {
@@ -138,14 +139,24 @@ export default function ServerNotesSection() {
   };
 
   const createNewNote = () => {
-    const next = createEmptyServerNote(
-      currentNote.layout,
-      currentNote.colorScheme,
-    );
-    next.companyName = currentNote.companyName;
-    next.outletName = currentNote.outletName;
-    next.logos = [...currentNote.logos];
-    setCurrentNote(next);
+    setCurrentNote((prev) => {
+      const next: ServerNote = {
+        ...createEmptyServerNote(prev.layout, prev.colorScheme),
+        companyName: prev.companyName,
+        outletName: prev.outletName,
+        logos: [...prev.logos],
+        orientation: prev.orientation,
+        pageFormat: prev.pageFormat,
+        cardsPerPage: prev.cardsPerPage,
+      };
+      persistSettings(next);
+      return next;
+    });
+    setNoteSession((value) => value + 1);
+    toast({
+      title: "New document ready",
+      description: "Start drafting a fresh server notes briefing.",
+    });
   };
 
   const saveNote = (note: ServerNote) => {
@@ -172,6 +183,7 @@ export default function ServerNotesSection() {
   const loadSavedNote = (note: ServerNote) => {
     setCurrentNote(note);
     persistSettings(note);
+    setNoteSession((value) => value + 1);
     toast({
       title: "Loaded",
       description: `"${note.title || "Untitled"}" ready for editing.`,
@@ -265,7 +277,10 @@ export default function ServerNotesSection() {
             </div>
           </div>
 
-          <section className="grid items-stretch gap-6 lg:grid-cols-12">
+          <section
+            key={noteSession}
+            className="grid items-stretch gap-6 lg:grid-cols-12"
+          >
             <Card
               className={`${panelSurfaceClass} flex h-full flex-col lg:col-span-4 xl:col-span-4`}
             >
