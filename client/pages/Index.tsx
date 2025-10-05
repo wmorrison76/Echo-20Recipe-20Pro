@@ -37,7 +37,7 @@ function IndexContent() {
       <div
         className="min-h-screen text-foreground"
         style={{
-          paddingLeft: "calc(var(--sidebar-offset, 88px) + 0.25rem)",
+          paddingLeft: "calc(var(--sidebar-offset, 88px) - 0.35rem)",
         }}
       >
         <TopTabs />
