@@ -14,6 +14,7 @@ import RecipeEditor from "./pages/RecipeEditor";
 import RecipeTemplate from "./pages/RecipeTemplate";
 import { AppDataProvider } from "@/context/AppDataContext";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { YieldProvider } from "@/context/YieldContext";
 
 const queryClient = new QueryClient();
 
