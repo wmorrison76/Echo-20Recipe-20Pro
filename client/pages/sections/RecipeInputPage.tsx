@@ -1152,28 +1152,6 @@ const RecipeInputPage = () => {
     });
   }, [ingredients, findBestMatch]);
 
-  const handleApplyYieldSuggestion = useCallback(
-    (index: number) => {
-      const insight = ingredientYieldInsights[index];
-      if (!insight) return;
-      const suggestion =
-        insight.combinedPercent ??
-        insight.chefPercent ??
-        insight.basePercent;
-      if (suggestion == null) return;
-      const formatted = formatYieldPercent(suggestion);
-      setIngredients((prev) => {
-        if (index < 0 || index >= prev.length) return prev;
-        const current = ensureIngredientRowId(prev[index]);
-        if (current.type === "divider" || current.yield === formatted) return prev;
-        const next = prev.slice();
-        next[index] = ensureIngredientRowId({ ...current, yield: formatted });
-        return ensureIngredientRowIds(next);
-      });
-    },
-    [ingredientYieldInsights],
-  );
-
   useEffect(() => {
     setIngredients((prev) => {
       let changed = false;
