@@ -79,6 +79,8 @@ export function ScaleRecipeDialog({
   const [factorInput, setFactorInput] = useState(() => formatFactor(initialFactor));
   const hasPortion = Number.isFinite(basePortionCount) && (basePortionCount ?? 0) > 0;
   const hasYield = Number.isFinite(baseYieldQty) && (baseYieldQty ?? 0) > 0;
+  const portionLabel = portionUnit?.trim() ?? "";
+  const yieldLabel = yieldUnit?.trim() ?? "";
 
   useEffect(() => {
     if (open) {
@@ -198,8 +200,8 @@ export function ScaleRecipeDialog({
                 onChange={(event) => handlePortionTargetChange(event.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                Original portion: {formatNumeric(basePortionCount as number)}{" "}
-                {portionUnit?.trim()}
+                Original portion: {formatNumeric(basePortionCount as number)}
+                {portionLabel ? ` ${portionLabel}` : ""}
               </p>
             </div>
           )}
@@ -209,13 +211,15 @@ export function ScaleRecipeDialog({
               {hasPortion && (
                 <div>
                   <span className="font-medium">Scaled portions:</span>{" "}
-                  {formatNumeric(scaledPortion as number)} {portionUnit?.trim()}
+                  {formatNumeric(scaledPortion as number)}
+                  {portionLabel ? ` ${portionLabel}` : ""}
                 </div>
               )}
               {hasYield && (
                 <div className="mt-2">
-                  <span className="font-medium">Scaled yield:</span> {formatQuantity(scaledYield as number)}{" "}
-                  {yieldUnit?.trim()}
+                  <span className="font-medium">Scaled yield:</span>{" "}
+                  {formatQuantity(scaledYield as number)}
+                  {yieldLabel ? ` ${yieldLabel}` : ""}
                 </div>
               )}
             </div>
