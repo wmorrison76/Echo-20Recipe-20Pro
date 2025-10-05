@@ -46,6 +46,8 @@ export default function RecipeTemplate() {
 
   const [nutrition, setNutrition] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
+  const [appliedScale, setAppliedScale] = useState(1);
+  const [scaleDialogOpen, setScaleDialogOpen] = useState(false);
 
   useEffect(() => {
     const run = async () => {
