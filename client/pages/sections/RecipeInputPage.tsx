@@ -768,6 +768,104 @@ const RecipeInputPage = () => {
     return () => window.removeEventListener("recipe:action", onAction as any);
   }, [ingredients, portionCount, currentUnits, currentCurrency]);
   useEffect(() => {
+    const toolbarItems: PageToolbarItem[] = [
+      {
+        id: "toggle-tools",
+        label: t("recipe.actions.toggleTools", "Toggle Tools"),
+        ariaLabel: t("recipe.actions.toggleTools", "Toggle Tools"),
+        icon: Menu,
+        onClick: handleToggleTools,
+        className: toolbarClass,
+        title: t("recipe.actions.toggleTools", "Toggle Tools"),
+      },
+      {
+        id: "scale",
+        label: t("recipe.actions.scale", "Scale Recipe"),
+        ariaLabel: t("recipe.actions.scale", "Scale Recipe"),
+        icon: Scale,
+        onClick: handleScaleClick,
+        className: toolbarClass,
+        title: t("recipe.actions.scale", "Scale Recipe"),
+      },
+      {
+        id: "language",
+        type: "custom",
+        element: (
+          <LanguageMenu
+            variant="compact"
+            isDark={isDarkMode}
+            className={toolbarClass}
+            align="end"
+          />
+        ),
+      },
+      {
+        id: "convert",
+        label: t("recipe.actions.convertUnits", "Convert Units"),
+        ariaLabel: t("recipe.actions.convertUnits", "Convert Units"),
+        icon: Ruler,
+        onClick: handleConvertUnitsClick,
+        className: toolbarClass,
+        title: t("recipe.actions.convertUnits", "Convert Units"),
+      },
+      {
+        id: "currency",
+        label: t("recipe.actions.currency", "Change Currency"),
+        ariaLabel: t("recipe.actions.currency", "Change Currency"),
+        icon: CircleDollarSign,
+        onClick: handleCycleCurrencyClick,
+        className: toolbarClass,
+        title: t("recipe.actions.currency", "Change Currency"),
+      },
+      {
+        id: "yield",
+        label: "Yield Lab",
+        ariaLabel: "Yield Lab",
+        icon: FlaskConical,
+        onClick: handleYieldClick,
+        className: toolbarClass,
+        title: "Yield Lab",
+      },
+      {
+        id: "rnd",
+        label: "R&D Labs",
+        ariaLabel: "R&D Labs",
+        icon: Atom,
+        onClick: handleRndLabsClick,
+        className: toolbarClass,
+        title: "R&D Labs",
+      },
+      {
+        id: "recipe-tools",
+        label: t("recipe.actions.recipeTools", "Recipe Tools"),
+        ariaLabel: t("recipe.actions.recipeTools", "Recipe Tools"),
+        icon: Settings,
+        onClick: handleToggleTools,
+        className: toolbarClass,
+        title: t("recipe.actions.recipeTools", "Recipe Tools"),
+      },
+    ];
+    setToolbar({
+      title: t("nav.addRecipe", "Add Recipe"),
+      items: toolbarItems,
+    });
+    return () => {
+      resetToolbar();
+    };
+  }, [
+    setToolbar,
+    resetToolbar,
+    toolbarClass,
+    handleToggleTools,
+    handleScaleClick,
+    handleConvertUnitsClick,
+    handleCycleCurrencyClick,
+    handleYieldClick,
+    handleRndLabsClick,
+    isDarkMode,
+    t,
+  ]);
+  useEffect(() => {
     const id = setTimeout(() => {
       const s = serialize();
       localStorage.setItem("recipe:draft", JSON.stringify(s));
