@@ -373,6 +373,18 @@ export default function RecipeTemplate() {
           />
         </div>
       </div>
+      <ScaleRecipeDialog
+        open={scaleDialogOpen}
+        onOpenChange={setScaleDialogOpen}
+        initialFactor={appliedScale}
+        onApply={handleApplyScale}
+        onPrint={handleScaleAndPrint}
+        onReset={handleResetScale}
+        basePortionCount={basePortionCount}
+        portionUnit={portionUnitLabel}
+        baseYieldQty={baseYieldQty}
+        yieldUnit={yieldUnitLabel}
+      />
     </div>
   );
 }
