@@ -438,13 +438,17 @@ export default function TopTabs() {
             type="button"
             onClick={() => setCollapsedManual(false)}
             className={cn(
-              "absolute right-[-14px] top-1/2 flex h-10 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-white/60 bg-white/80 text-muted-foreground shadow-lg transition duration-300 hover:bg-white dark:border-slate-800/70 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-900",
+              "absolute right-[-18px] top-1/2 z-10 -translate-y-1/2 select-none rounded-r-full border border-gray-300 bg-background px-2 py-3 shadow transition duration-300 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-slate-700 dark:bg-slate-900/70 dark:hover:bg-slate-900",
               collapsed ? "opacity-100" : "pointer-events-none opacity-0",
             )}
             aria-label="Expand navigation"
             title={`Expand navigation (${navToggleShortcut})`}
           >
-            <ChevronRight className="h-4 w-4" aria-hidden />
+            <div className="flex flex-col items-center gap-1">
+              <span className="block h-4 w-0.5 rounded-full bg-gray-400 dark:bg-slate-500" />
+              <span className="block h-4 w-0.5 rounded-full bg-gray-400 dark:bg-slate-500" />
+              <span className="block h-4 w-0.5 rounded-full bg-gray-400 dark:bg-slate-500" />
+            </div>
           </button>
         </div>
       </aside>
