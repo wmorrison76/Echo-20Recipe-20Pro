@@ -322,14 +322,21 @@ export default function RecipeEditor() {
     setCoverPreview(recipe.imageDataUrls?.[0] ?? recipe.image ?? undefined);
   }, [recipe]);
 
-  const allergenList = useMemo(
-    () =>
-      allergens
-        .split(",")
-        .map((item) => item.trim())
-        .filter(Boolean),
-    [allergens],
-  );
+  const allergenList = selectedAllergenList;
+
+  const handleAllergensInputChange = useCallback((value: string) => {
+    setAllergens(value);
+    const next = value
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+    setSelectedAllergenList(next);
+  }, []);
+
+  const handleSidebarAllergensChange = useCallback((values: string[]) => {
+    setSelectedAllergenList(values);
+    setAllergens(values.join(", "));
+  }, []);
 
   const handleDirectionImageFiles = useCallback(async (list: FileList | null) => {
     if (!list?.length) return;
