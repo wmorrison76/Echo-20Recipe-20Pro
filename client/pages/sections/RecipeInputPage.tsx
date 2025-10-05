@@ -422,28 +422,6 @@ const RecipeInputPage = () => {
       setSelectedAllergens(detectAllergensFromIngredients(ingredients));
   }, [ingredients]);
 
-  useEffect(() => {
-    setIngredients((prev) => {
-      let changed = false;
-      const next = prev.map((row, index) => {
-        if (row.type === "divider") return row;
-        const trimmed = String(row.yield || "").trim();
-        if (trimmed) return row;
-        const insight = ingredientYieldInsights[index];
-        const suggestion =
-          insight?.combinedPercent ??
-          insight?.chefPercent ??
-          insight?.basePercent;
-        if (suggestion == null) return row;
-        const formatted = formatYieldPercent(suggestion);
-        if (formatted === row.yield) return row;
-        changed = true;
-        return { ...row, yield: formatted };
-      });
-      return changed ? ensureIngredientRowIds(next) : prev;
-    });
-  }, [ingredientYieldInsights]);
-
   const inputClass = `border p-3 rounded-lg text-sm transition-all focus:shadow-md focus:ring-2 ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30 shadow-none" : "bg-white border-gray-300 text-black focus:ring-blue-400/30 focus:border-blue-500 shadow-lg"}`;
 
   // Normalize US volumes to best unit (e.g., 3072 1/4 tsp -> 4 gal)
@@ -1564,7 +1542,7 @@ const RecipeInputPage = () => {
       "⅓": "1/3",
       "⅔": "2/3",
       "⅛": "1/8",
-      "⅜": "3/8",
+      "��": "3/8",
       "⅝": "5/8",
       "⅞": "7/8",
     };
