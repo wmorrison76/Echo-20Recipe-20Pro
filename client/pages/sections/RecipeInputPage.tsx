@@ -1158,19 +1158,32 @@ const RecipeInputPage = () => {
     setIngredients((prev) => {
       let changed = false;
       const next = prev.map((row, index) => {
-        if (row.type === "divider") return row;
-        const trimmed = String(row.yield || "").trim();
-        if (trimmed) return row;
+        const ensured = ensureIngredientRowId(row);
+        const subId = ensured.subId;
+        if (ensured.type === "divider") {
+          autoFilledYieldRef.current.delete(subId);
+          return row;
+        }
         const insight = ingredientYieldInsights[index];
         const suggestion =
           insight?.combinedPercent ??
           insight?.chefPercent ??
           insight?.basePercent;
-        if (suggestion == null) return row;
+        if (suggestion == null) {
+          autoFilledYieldRef.current.delete(subId);
+          return row;
+        }
         const formatted = formatYieldPercent(suggestion);
-        if (formatted === row.yield) return row;
+        const trimmed = ensured.yield.trim();
+        const previousAuto = autoFilledYieldRef.current.get(subId) ?? "";
+        if (trimmed && trimmed !== formatted && trimmed !== previousAuto) {
+          autoFilledYieldRef.current.delete(subId);
+          return row;
+        }
+        autoFilledYieldRef.current.set(subId, formatted);
+        if (trimmed === formatted) return row;
         changed = true;
-        return { ...row, yield: formatted };
+        return ensureIngredientRowId({ ...ensured, yield: formatted });
       });
       return changed ? ensureIngredientRowIds(next) : prev;
     });
@@ -1671,7 +1684,7 @@ const RecipeInputPage = () => {
       "⅝": "5/8",
       "⅞": "7/8",
     };
-    let t = s.trim().replace(/[¼½¾⅓⅔���⅜⅝⅞]/g, (ch) => map[ch] || ch);
+    let t = s.trim().replace(/[¼½¾⅓⅔⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
     t = t.replace(/^(?:\s*)\/(\d+)/, "1/$1");
     t = t.replace(/(\d)(\s*)(\d\/\d)/, "$1 $3");
     const m = t.match(
