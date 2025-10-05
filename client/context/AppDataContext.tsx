@@ -12,6 +12,7 @@ import mockRecipes from "@/data/mockRecipes";
 import { DEMO_PLACEHOLDERS, FALLBACK_GALLERY_IMAGE } from "@/lib/placeholders";
 import type { Recipe } from "@shared/recipes";
 import type { RecipeCollection } from "@shared/server-notes";
+import { defaultLanguage, type LanguageCode } from "@/i18n/config";
 export type { Recipe } from "@shared/recipes";
 // Mammoth is loaded on-demand to keep bundle small and avoid init errors in some environments
 
@@ -103,7 +104,7 @@ type AppData = {
   deleteLookBook: (id: string) => void;
   addImagesToLookBook: (id: string, imageIds: string[]) => void;
   removeImagesFromLookBook: (id: string, imageIds: string[]) => void;
-  exportAllZip: () => Promise<void>;
+  exportAllZip: (language?: LanguageCode) => Promise<void>;
   collections: RecipeCollection[];
   createCollection: (input: {
     name: string;
