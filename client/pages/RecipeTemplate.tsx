@@ -76,6 +76,32 @@ export default function RecipeTemplate() {
     run();
   }, [recipe?.id]);
 
+  const instructions = useMemo(() => {
+    if (!recipe) return [];
+    if (Array.isArray(recipe.instructions)) {
+      return (recipe.instructions as any[]).map(String);
+    }
+    const source = (recipe as any)?.instructions;
+    if (source == null) return [];
+    return String(source)
+      .split(/\r?\n|\u2028|\u2029/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }, [recipe]);
+
+  const ingredients = useMemo(() => {
+    if (!recipe) return [];
+    if (Array.isArray(recipe.ingredients)) {
+      return (recipe.ingredients as any[]).map(String);
+    }
+    return [];
+  }, [recipe]);
+
+  const scaledIngredients = useMemo(
+    () => applyScaleToIngredients(ingredients, appliedScale),
+    [ingredients, appliedScale],
+  );
+
   if (!recipe) {
     return (
       <div className="p-6">
@@ -93,15 +119,6 @@ export default function RecipeTemplate() {
   }
 
   const cover = recipe.imageDataUrls?.[0];
-  const instructions: string[] = Array.isArray(recipe.instructions)
-    ? (recipe.instructions as any).map(String)
-    : String((recipe as any).instructions || "")
-        .split(/\r?\n|\u2028|\u2029/)
-        .map((s) => s.trim())
-        .filter(Boolean);
-  const ingredients: string[] = Array.isArray(recipe.ingredients)
-    ? recipe.ingredients.map(String)
-    : [];
 
   const pickNumber = (...values: unknown[]): number | undefined => {
     for (const value of values) {
@@ -148,11 +165,6 @@ export default function RecipeTemplate() {
 
   const scaledPortionCount = deriveScaledValue(basePortionCount, appliedScale);
   const scaledYieldQty = deriveScaledValue(baseYieldQty, appliedScale);
-
-  const scaledIngredients = useMemo(
-    () => applyScaleToIngredients(ingredients, appliedScale),
-    [ingredients, appliedScale],
-  );
 
   const formatFactorLabel = (value: number) => {
     if (!Number.isFinite(value) || value <= 0) return "1×";
