@@ -4,7 +4,6 @@ import {
   BookOpenCheck,
   Boxes,
   ChevronLeft,
-  ChevronRight,
   ClipboardList,
   Factory,
   HelpCircle,
