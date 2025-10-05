@@ -103,23 +103,23 @@ export function ServerNotesConfig({
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader className="space-y-2 px-4 py-3">
+      <Card className={controlPanelClass}>
+        <CardHeader className="space-y-2 border-b border-white/60 px-5 py-4 dark:border-cyan-500/25">
           <CardTitle className="flex items-center gap-2 text-sm font-semibold">
             <Type className="h-4 w-4" /> Layout Preset
           </CardTitle>
         </CardHeader>
-        <CardContent className="px-4 pb-4 pt-0">
-          <div className="grid gap-2.5 sm:grid-cols-2 2xl:grid-cols-3">
+        <CardContent className="px-5 pb-5 pt-4">
+          <div className="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3">
             {availableLayouts.map((preset) => {
               const active = config.layout.id === preset.id;
               return (
                 <div
                   key={preset.id}
-                  className={`rounded-lg border p-2.5 transition ${
+                  className={`${subsectionSurfaceClass} ${
                     active
-                      ? "border-primary bg-primary/5"
-                      : "border-muted hover:border-primary/40"
+                      ? "border-primary/70 bg-primary/10 shadow-md"
+                      : "hover:border-primary/40"
                   }`}
                   role="button"
                   tabIndex={0}
@@ -128,7 +128,7 @@ export function ServerNotesConfig({
                     event.key === "Enter" && handleLayoutChange(preset)
                   }
                 >
-                  <div className="flex items-start justify-between gap-1.5">
+                  <div className="flex items-start justify-between gap-2">
                     <div>
                       <h4 className="text-[13px] font-semibold leading-tight">
                         {preset.name}
