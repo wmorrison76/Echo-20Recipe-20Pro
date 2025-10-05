@@ -1,7 +1,5 @@
 import * as React from "react";
 
-import React from "react";
-
 export type ExperimentStatus = "ideation" | "testing" | "ready" | "archived";
 
 export type LabExperiment = {
