@@ -445,14 +445,14 @@ export function ServerNotesConfig({
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader className="space-y-2 px-4 py-3">
-          <CardTitle className="flex items-center gap-2">
+      <Card className={controlPanelClass}>
+        <CardHeader className="space-y-2 border-b border-white/60 px-5 py-4 dark:border-cyan-500/25">
+          <CardTitle className="flex items-center gap-2 text-sm font-semibold">
             <Calendar className="h-4 w-4" /> Document Information
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3.5 px-4 pb-4 pt-0">
-          <div className="space-y-1">
+        <CardContent className="space-y-4 px-5 pb-5 pt-4">
+          <div className="space-y-1.5">
             <Label htmlFor="document-title" className="text-xs">
               Document Title
             </Label>
@@ -465,7 +465,7 @@ export function ServerNotesConfig({
               placeholder="Seasonal menu briefing"
             />
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <Label htmlFor="distribution-date" className="text-xs">
               Distribution Date
             </Label>
@@ -478,7 +478,7 @@ export function ServerNotesConfig({
               }
             />
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <Label htmlFor="document-notes" className="text-xs">
               Distribution Notes
             </Label>
