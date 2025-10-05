@@ -1158,8 +1158,10 @@ const onFiles = async (files: File[]) => {
             }
           }}
         >
-          <div className="flex items-center justify-between mb-1">
-            <div className="text-xs font-medium">Library (Book PDF) Import</div>
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <div className="text-sm font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+              Library (Book PDF) Import
+            </div>
             <div className="text-xs text-muted-foreground">
               {bookPhase ? (
                 <div className="flex items-center gap-2">
