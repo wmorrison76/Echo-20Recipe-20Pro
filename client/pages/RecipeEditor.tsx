@@ -362,7 +362,12 @@ export default function RecipeEditor() {
   }
 
   return (
-    <>
+    <div
+      className="min-h-screen text-foreground transition-[padding-left] duration-300"
+      style={{
+        paddingLeft: "max(calc(var(--sidebar-offset, 5.5rem) - 2.25rem), 1rem)",
+      }}
+    >
       <TopTabs />
       <div className="container mx-auto space-y-6 py-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
@@ -626,7 +631,7 @@ export default function RecipeEditor() {
       </div>
       <SubtleBottomGlow />
       <CornerBrand />
-    </>
+    </div>
   );
 }
 
