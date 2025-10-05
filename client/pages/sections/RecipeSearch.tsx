@@ -974,7 +974,26 @@ const onFiles = async (files: File[]) => {
             </div>
           </div>
         </Dropzone>
-        <div className="rounded-lg border p-2 self-start">
+        <div
+          className={cn(
+            "rounded-lg border p-2 self-start transition-colors",
+            bookDropActive &&
+              "border-primary/60 bg-primary/10 shadow-[0_0_0_1px_rgba(56,189,248,0.35)]",
+          )}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setBookDropActive(true);
+          }}
+          onDragLeave={() => setBookDropActive(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setBookDropActive(false);
+            const file = e.dataTransfer.files?.[0];
+            if (file) {
+              void importBookPdf(file);
+            }
+          }}
+        >
           <div className="flex items-center justify-between mb-1">
             <div className="text-xs font-medium">Library (Book PDF) Import</div>
             <div className="text-xs text-muted-foreground">
