@@ -497,6 +497,15 @@ const RecipeInputPage = () => {
     () => (isDarkMode ? "text-cyan-400/80" : "text-slate-500"),
     [isDarkMode],
   );
+  const infoValuePillClass = useMemo(
+    () =>
+      `inline-flex items-center justify-center gap-1 rounded-lg border px-3 py-1 text-sm font-semibold ${
+        isDarkMode
+          ? "border-cyan-400/40 bg-black/40 text-cyan-100"
+          : "border-slate-300 bg-white text-slate-800"
+      }`,
+    [isDarkMode],
+  );
   const cookTimeDisplay = useMemo(
     () => formatDurationLabel(cookTime),
     [cookTime],
@@ -2106,9 +2115,19 @@ const RecipeInputPage = () => {
 
                     <div className="flex flex-col gap-1">
                       <span className={infoLabelClass}>FULL RECIPE</span>
-                      <span className="text-sm font-semibold">
-                        {getCurrencySymbol(currentCurrency)}
-                        {calculateTotalCost().toFixed(2)}
+                      <span className={infoValuePillClass}>
+                        {`${getCurrencySymbol(currentCurrency)}${calculateTotalCost().toFixed(2)}`}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <span className={infoLabelClass}>
+                        {t("recipe.labels.recipeAccess", "RECIPE ACCESS")}
+                      </span>
+                      <span className={infoValuePillClass}>
+                        {selectedRecipeAccess.length
+                          ? selectedRecipeAccess.join(", ").toUpperCase()
+                          : t("recipe.labels.none", "NONE")}
                       </span>
                     </div>
 
@@ -2150,30 +2169,6 @@ const RecipeInputPage = () => {
 
                     <div className="flex flex-col gap-1">
                       <span className={infoLabelClass}>
-                        {t("recipe.labels.recipeAccess", "RECIPE ACCESS")}
-                      </span>
-                      <span className="text-xs font-semibold uppercase tracking-wide">
-                        {selectedRecipeAccess.length
-                          ? selectedRecipeAccess.join(", ").toUpperCase()
-                          : t("recipe.labels.none", "NONE")}
-                      </span>
-                    </div>
-
-                    <div className="flex flex-col gap-1">
-                      <span className={infoLabelClass}>
-                        {t("recipe.labels.recipeType", "RECIPE")}
-                      </span>
-                      <span className="text-xs font-semibold uppercase tracking-wide">
-                        {selectedRecipeType.includes("Full Recipe")
-                          ? t("recipe.labels.full", "FULL")
-                          : selectedRecipeType.includes("Sub Recipe")
-                            ? t("recipe.labels.sub", "SUB")
-                            : t("recipe.labels.unspecified", "UNSPECIFIED")}
-                      </span>
-                    </div>
-
-                    <div className="flex flex-col gap-1">
-                      <span className={infoLabelClass}>
                         {t("recipe.labels.portion", "PORTION")}
                       </span>
                       <div className="flex items-center gap-1">
@@ -2199,9 +2194,21 @@ const RecipeInputPage = () => {
                       <span className={infoLabelClass}>
                         {t("recipe.labels.portionCost", "PORTION COST")}
                       </span>
-                      <span className="text-sm font-semibold">
-                        {getCurrencySymbol(currentCurrency)}
-                        {calculatePortionCost().toFixed(2)}
+                      <span className={infoValuePillClass}>
+                        {`${getCurrencySymbol(currentCurrency)}${calculatePortionCost().toFixed(2)}`}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <span className={infoLabelClass}>
+                        {t("recipe.labels.recipeType", "RECIPE")}
+                      </span>
+                      <span className={infoValuePillClass}>
+                        {selectedRecipeType.includes("Full Recipe")
+                          ? t("recipe.labels.full", "FULL")
+                          : selectedRecipeType.includes("Sub Recipe")
+                            ? t("recipe.labels.sub", "SUB")
+                            : t("recipe.labels.unspecified", "UNSPECIFIED")}
                       </span>
                     </div>
 
@@ -2209,9 +2216,7 @@ const RecipeInputPage = () => {
                       <span className={infoLabelClass}>
                         {t("recipe.labels.theoreticalVolume", "Ψ")}
                       </span>
-                      <span className="text-sm font-semibold">
-                        {formatMl(theoreticalVolumeMl)}
-                      </span>
+                      <span className={infoValuePillClass}>{formatMl(theoreticalVolumeMl)}</span>
                     </div>
                   </div>
                 </div>
