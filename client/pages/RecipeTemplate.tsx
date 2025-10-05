@@ -169,6 +169,36 @@ export default function RecipeTemplate() {
   const carbs = Nut?.totalNutrients?.CHOCDF?.quantity ?? "";
   const protein = Nut?.totalNutrients?.PROCNT?.quantity ?? "";
 
+  const sanitizeScale = (value: number) =>
+    Number.isFinite(value) && value > 0 ? value : 1;
+
+  const openScaleDialog = () => {
+    setScaleDialogOpen(true);
+  };
+
+  const commitScale = (value: number) => {
+    setAppliedScale(sanitizeScale(value));
+  };
+
+  const handleApplyScale = (value: number) => {
+    commitScale(value);
+    setScaleDialogOpen(false);
+  };
+
+  const handleScaleAndPrint = (value: number) => {
+    commitScale(value);
+    setScaleDialogOpen(false);
+    if (typeof window !== "undefined") {
+      requestAnimationFrame(() => {
+        window.print();
+      });
+    }
+  };
+
+  const handleResetScale = () => {
+    commitScale(1);
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <div className="mx-auto max-w-4xl px-6 py-6 print:px-0">
