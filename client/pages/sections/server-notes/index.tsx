@@ -314,7 +314,7 @@ export default function ServerNotesSection() {
               {savedNotes.map((note) => (
                 <Card
                   key={note.id}
-                  className={`${panelSurfaceClass} hover:shadow-[0_38px_110px_-60px_rgba(15,23,42,0.45)]`}
+                  className={`${panelSurfaceClass} flex h-full flex-col hover:shadow-[0_38px_110px_-60px_rgba(15,23,42,0.45)]`}
                 >
                   <CardHeader className="border-b border-white/70 px-6 py-4 dark:border-cyan-500/25">
                     <CardTitle className="flex items-center justify-between text-base">
@@ -322,7 +322,7 @@ export default function ServerNotesSection() {
                       <Badge variant="outline">{note.selectedRecipes.length} recipes</Badge>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4 px-6 pb-6 pt-4 text-sm">
+                  <CardContent className="flex flex-1 flex-col justify-between space-y-4 px-6 pb-6 pt-4 text-sm">
                     <div className="space-y-1 text-muted-foreground">
                       <div>
                         <strong>Company:</strong> {note.companyName || "—"}
