@@ -57,7 +57,8 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "recipe.labels.techniqueLabel": "Technique",
     "recipe.labels.componentsLabel": "Components",
     "recipe.ingredients.title": "Ingredients",
-    "recipe.ingredients.subtitle": "Track each component with quantity, unit, prep method, yield %, and cost to keep recipe costing and lab documentation aligned.",
+    "recipe.ingredients.subtitle":
+      "Track each component with quantity, unit, prep method, yield %, and cost to keep recipe costing and lab documentation aligned.",
     "recipe.ingredients.activeItems": "Active items",
     "recipe.ingredients.totalCost": "Total cost",
     "recipe.ingredients.averageYield": "Avg yield",
@@ -148,7 +149,8 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "recipe.labels.techniqueLabel": "Technique",
     "recipe.labels.componentsLabel": "Composants",
     "recipe.ingredients.title": "Ingrédients",
-    "recipe.ingredients.subtitle": "Suivez chaque composant avec quantité, unité, méthode, rendement % et coût pour aligner le calcul de recette et la documentation.",
+    "recipe.ingredients.subtitle":
+      "Suivez chaque composant avec quantité, unité, méthode, rendement % et coût pour aligner le calcul de recette et la documentation.",
     "recipe.ingredients.activeItems": "Éléments actifs",
     "recipe.ingredients.totalCost": "Coût total",
     "recipe.ingredients.averageYield": "Rendement moyen",
@@ -239,7 +241,8 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "recipe.labels.techniqueLabel": "Tecnica",
     "recipe.labels.componentsLabel": "Componenti",
     "recipe.ingredients.title": "Ingredienti",
-    "recipe.ingredients.subtitle": "Traccia ogni componente con quantità, unità, metodo, resa % e costo per mantenere allineati food cost e documentazione.",
+    "recipe.ingredients.subtitle":
+      "Traccia ogni componente con quantità, unità, metodo, resa % e costo per mantenere allineati food cost e documentazione.",
     "recipe.ingredients.activeItems": "Elementi attivi",
     "recipe.ingredients.totalCost": "Costo totale",
     "recipe.ingredients.averageYield": "Resa media",
@@ -330,7 +333,8 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "recipe.labels.techniqueLabel": "Técnica",
     "recipe.labels.componentsLabel": "Componentes",
     "recipe.ingredients.title": "Ingredientes",
-    "recipe.ingredients.subtitle": "Controla cada componente con cantidad, unidad, método, rendimiento % y costo para mantener alineados el costeo y la documentación.",
+    "recipe.ingredients.subtitle":
+      "Controla cada componente con cantidad, unidad, método, rendimiento % y costo para mantener alineados el costeo y la documentación.",
     "recipe.ingredients.activeItems": "Elementos activos",
     "recipe.ingredients.totalCost": "Costo total",
     "recipe.ingredients.averageYield": "Rendimiento promedio",
@@ -421,7 +425,8 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "recipe.labels.techniqueLabel": "Técnica",
     "recipe.labels.componentsLabel": "Componentes",
     "recipe.ingredients.title": "Ingredientes",
-    "recipe.ingredients.subtitle": "Acompanhe cada componente com quantidade, unidade, método, rendimento % e custo para manter o custo da receita e a documentação alinhados.",
+    "recipe.ingredients.subtitle":
+      "Acompanhe cada componente com quantidade, unidade, método, rendimento % e custo para manter o custo da receita e a documentação alinhados.",
     "recipe.ingredients.activeItems": "Itens ativos",
     "recipe.ingredients.totalCost": "Custo total",
     "recipe.ingredients.averageYield": "Rendimento médio",
@@ -512,7 +517,8 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "recipe.labels.techniqueLabel": "Technik",
     "recipe.labels.componentsLabel": "Komponenten",
     "recipe.ingredients.title": "Zutaten",
-    "recipe.ingredients.subtitle": "Erfasse jede Komponente mit Menge, Einheit, Methode, Ausbeute % und Kosten, um Kalkulation und Dokumentation abzustimmen.",
+    "recipe.ingredients.subtitle":
+      "Erfasse jede Komponente mit Menge, Einheit, Methode, Ausbeute % und Kosten, um Kalkulation und Dokumentation abzustimmen.",
     "recipe.ingredients.activeItems": "Aktive Positionen",
     "recipe.ingredients.totalCost": "Gesamtkosten",
     "recipe.ingredients.averageYield": "Durchschnittliche Ausbeute",

@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import RightSidebar from "./RightSidebar";
 import { useAppData } from "@/context/AppDataContext";
 import ImageEditorModal from "./ImageEditorModal";
@@ -11,7 +17,9 @@ import { DiscoveryPanel } from "@/components/RDLab/DiscoveryPanel";
 import { WorkbenchPanel } from "@/components/RDLab/WorkbenchPanel";
 import { InsightsPanel } from "@/components/RDLab/InsightsPanel";
 import IngredientsGrid from "@/components/IngredientsGrid";
-import SubRecipePicker, { type SubRecipeOption } from "@/components/SubRecipePicker";
+import SubRecipePicker, {
+  type SubRecipeOption,
+} from "@/components/SubRecipePicker";
 import YieldLabForm from "@/components/YieldLabForm";
 import {
   Save,
@@ -45,25 +53,43 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import type { IngredientRow } from "@/types/ingredients";
-import { createIngredientRow, createDividerRow, generateIngredientRowId } from "@/types/ingredients";
+import {
+  createIngredientRow,
+  createDividerRow,
+  generateIngredientRowId,
+} from "@/types/ingredients";
 
 const parseCostValue = (value: string): number => {
-  const numeric = Number(String(value ?? "").replace(/[$€£¥,\s]/g, "").replace(/,/g, "."));
+  const numeric = Number(
+    String(value ?? "")
+      .replace(/[$€£¥,\s]/g, "")
+      .replace(/,/g, "."),
+  );
   return Number.isFinite(numeric) ? numeric : NaN;
 };
 
 const normalizeString = (value: unknown): string =>
   typeof value === "string" ? value : value == null ? "" : String(value);
 
-const ensureIngredientRowId = (row: IngredientRow | null | undefined): IngredientRow => {
+const ensureIngredientRowId = (
+  row: IngredientRow | null | undefined,
+): IngredientRow => {
   const source = row ?? createIngredientRow();
-  const raw = source as unknown as Partial<IngredientRow> & Record<string, unknown>;
-  const type: IngredientRow["type"] = raw.type === "divider" ? "divider" : "ingredient";
+  const raw = source as unknown as Partial<IngredientRow> &
+    Record<string, unknown>;
+  const type: IngredientRow["type"] =
+    raw.type === "divider" ? "divider" : "ingredient";
   const rawSubId = raw.subId ?? "";
   const subIdCandidate =
-    typeof rawSubId === "string" ? rawSubId.trim() : String(rawSubId ?? "").trim();
+    typeof rawSubId === "string"
+      ? rawSubId.trim()
+      : String(rawSubId ?? "").trim();
   const base: IngredientRow = {
     ...source,
     type,
@@ -92,7 +118,9 @@ const ensureIngredientRowId = (row: IngredientRow | null | undefined): Ingredien
   return base;
 };
 
-const ensureIngredientRowIds = (rows: Array<IngredientRow | null | undefined>): IngredientRow[] =>
+const ensureIngredientRowIds = (
+  rows: Array<IngredientRow | null | undefined>,
+): IngredientRow[] =>
   rows.filter(Boolean).map((row) => ensureIngredientRowId(row));
 
 const RecipeInputPage = () => {
@@ -123,7 +151,9 @@ const RecipeInputPage = () => {
 
   const [isRndLabsOpen, setIsRndLabsOpen] = useState(false);
   const [isSubRecipePickerOpen, setIsSubRecipePickerOpen] = useState(false);
-  const [rightSidebarMode, setRightSidebarMode] = useState<"recipe" | "rnd">("recipe");
+  const [rightSidebarMode, setRightSidebarMode] = useState<"recipe" | "rnd">(
+    "recipe",
+  );
   const [rndLayout, setRndLayout] = useState<[number, number, number]>(() => {
     if (typeof window === "undefined") return [32, 36, 32];
     try {
@@ -135,7 +165,11 @@ const RecipeInputPage = () => {
           parsed.length === 3 &&
           parsed.every((value) => Number.isFinite(Number(value)))
         ) {
-          return parsed.map((value) => Number(value)) as [number, number, number];
+          return parsed.map((value) => Number(value)) as [
+            number,
+            number,
+            number,
+          ];
         }
       }
     } catch {}
@@ -144,13 +178,20 @@ const RecipeInputPage = () => {
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
-      window.localStorage.setItem("recipe:rnd-layout", JSON.stringify(rndLayout));
+      window.localStorage.setItem(
+        "recipe:rnd-layout",
+        JSON.stringify(rndLayout),
+      );
     } catch {}
   }, [rndLayout]);
   const handleRndLayoutChange = useCallback((nextLayout: number[]) => {
     if (!Array.isArray(nextLayout) || nextLayout.length !== 3) return;
     setRndLayout((prev) => {
-      const next = nextLayout.map((value) => Number(value)) as [number, number, number];
+      const next = nextLayout.map((value) => Number(value)) as [
+        number,
+        number,
+        number,
+      ];
       return prev.every((value, index) => value === next[index]) ? prev : next;
     });
   }, []);
@@ -269,13 +310,17 @@ const RecipeInputPage = () => {
     if (!recipes || recipes.length === 0) return [];
     return [...recipes]
       .map((recipe) => {
-        const serverNotes = recipe.extra?.serverNotes as RecipeExport | undefined;
+        const serverNotes = recipe.extra?.serverNotes as
+          | RecipeExport
+          | undefined;
         const costValue =
           typeof serverNotes?.totals?.fullRecipeCost === "number"
             ? serverNotes.totals.fullRecipeCost
             : null;
         const yieldQtyValue =
-          typeof serverNotes?.yieldQty === "number" ? serverNotes.yieldQty : null;
+          typeof serverNotes?.yieldQty === "number"
+            ? serverNotes.yieldQty
+            : null;
         return {
           id: recipe.id,
           title: recipe.title,
@@ -861,7 +906,8 @@ const RecipeInputPage = () => {
         }
       });
     },
-  []);
+    [],
+  );
 
   const updateIngredientRow = useCallback(
     (index: number, patch: Partial<IngredientRow>) => {
@@ -879,7 +925,9 @@ const RecipeInputPage = () => {
   const addIngredientRow = useCallback(
     (index?: number) => {
       const targetRow =
-        typeof index === "number" && index >= 0 ? index + 1 : ingredients.length;
+        typeof index === "number" && index >= 0
+          ? index + 1
+          : ingredients.length;
       setIngredients((prev) => {
         const next = ensureIngredientRowIds(prev.slice());
         const insertAt =
@@ -900,7 +948,9 @@ const RecipeInputPage = () => {
         if (prev.length === 1) return [createIngredientRow()];
         const next = prev.slice();
         if (index >= 0 && index < next.length) next.splice(index, 1);
-        const ensured = ensureIngredientRowIds(next.length ? next : [createIngredientRow()]);
+        const ensured = ensureIngredientRowIds(
+          next.length ? next : [createIngredientRow()],
+        );
         return ensured;
       });
       focusIngredientCell(Math.max(0, index - 1), 0);
@@ -928,7 +978,9 @@ const RecipeInputPage = () => {
     let insertedIndex = 0;
     setIngredients((prev) => {
       const next = ensureIngredientRowIds(prev.slice());
-      const existingDividers = next.filter((row) => row.type === "divider").length;
+      const existingDividers = next.filter(
+        (row) => row.type === "divider",
+      ).length;
       const label = `Step ${existingDividers + 1}`;
       next.push(createDividerRow(label));
       insertedIndex = next.length - 1;
@@ -989,7 +1041,10 @@ const RecipeInputPage = () => {
               normalized % 1 === 0
                 ? String(Math.round(normalized))
                 : normalized.toFixed(2);
-            next[index] = ensureIngredientRowId({ ...current, yield: formatted });
+            next[index] = ensureIngredientRowId({
+              ...current,
+              yield: formatted,
+            });
           } else {
             const normalized = Math.max(-999999, Math.min(999999, numeric));
             const formattedCost = normalized.toFixed(2);
@@ -999,7 +1054,8 @@ const RecipeInputPage = () => {
                 ? normalized / qtyValue
                 : current.costPerUnit;
             const sanitizedCostPerUnit =
-              typeof nextCostPerUnit === "number" && Number.isFinite(nextCostPerUnit)
+              typeof nextCostPerUnit === "number" &&
+              Number.isFinite(nextCostPerUnit)
                 ? Number(nextCostPerUnit.toFixed(6))
                 : null;
             next[index] = ensureIngredientRowId({
@@ -1051,7 +1107,10 @@ const RecipeInputPage = () => {
     };
   }, [ingredients]);
 
-  const totalIngredientCost = useMemo(() => calculateTotalCost(), [ingredients]);
+  const totalIngredientCost = useMemo(
+    () => calculateTotalCost(),
+    [ingredients],
+  );
 
   const lastIngredientColumnIndex = 5;
 
@@ -1359,7 +1418,9 @@ const RecipeInputPage = () => {
           if (!Number.isFinite(qtyValue)) return base;
           const newQty = (qtyValue as number) * factor;
           const costValue = parseCostValue(base.cost);
-          const scaledCost = Number.isFinite(costValue) ? Number(costValue) * factor : null;
+          const scaledCost = Number.isFinite(costValue)
+            ? Number(costValue) * factor
+            : null;
           return {
             ...base,
             qty: newQty.toFixed(2),
@@ -1777,1299 +1838,1367 @@ const RecipeInputPage = () => {
             </h1>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2 sm:flex-nowrap">
-          <button
-            type="button"
-            onClick={() => setIsRightSidebarCollapsed((v) => !v)}
-            title={t("recipe.actions.toggleTools", "Toggle Tools")}
-            aria-label={t("recipe.actions.toggleTools", "Toggle Tools")}
-            className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
-          >
-            <Menu className="h-5 w-5" aria-hidden />
-          </button>
-          <button
-            type="button"
-            onClick={scaleRecipe}
-            title={t("recipe.actions.scale", "Scale Recipe")}
-            aria-label={t("recipe.actions.scale", "Scale Recipe")}
-            className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
-          >
-            <Scale className="h-5 w-5" aria-hidden />
-          </button>
-          <LanguageMenu
-            variant="compact"
-            isDark={isDarkMode}
-            className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
-            align="end"
-          />
-          <button
-            type="button"
-            onClick={convertUnits}
-            title={t("recipe.actions.convertUnits", "Convert Units")}
-            aria-label={t("recipe.actions.convertUnits", "Convert Units")}
-            className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
-          >
-            <Ruler className="h-5 w-5" aria-hidden />
-          </button>
-          <button
-            type="button"
-            onClick={cycleCurrency}
-            title={t("recipe.actions.currency", "Change Currency")}
-            aria-label={t("recipe.actions.currency", "Change Currency")}
-            className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
-          >
-            <CircleDollarSign className="h-5 w-5" aria-hidden />
-          </button>
-          <button
-            type="button"
-            onClick={() => setYieldOpen(true)}
-            title="Yield Lab"
-            aria-label="Yield Lab"
-            className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
-          >
-            <FlaskConical className="h-5 w-5" aria-hidden />
-          </button>
-          <button
-            type="button"
-            title="R&D Labs"
-            aria-label="R&D Labs"
-            onClick={() => setIsRndLabsOpen(true)}
-            className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
-          >
-            <Atom className="h-5 w-5" aria-hidden />
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsRightSidebarCollapsed(!isRightSidebarCollapsed)}
-            title={t("recipe.actions.recipeTools", "Recipe Tools")}
-            aria-label={t("recipe.actions.recipeTools", "Recipe Tools")}
-            className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
-          >
-            <Settings className="h-5 w-5" aria-hidden />
-          </button>
-        </div>
-      </div>
-
-      <div className="pt-8 h-full overflow-y-auto">
-        <div className="w-full px-6 space-y-6 pb-8">
-          {/* Removed old hamburger toggle button */}
-          <div
-            className="flex items-start gap-4"
-            data-echo-key="section:add:basics"
-          >
-            <div
-              className={`w-2/3 border p-4 rounded-xl shadow-lg ${isDarkMode ? "border-cyan-400/30 bg-black/50 shadow-cyan-400/20" : "border-gray-200 bg-white shadow-gray-200/50"} backdrop-blur-sm`}
-            >
-              <input
-                type="text"
-                maxLength={50}
-                value={recipeName}
-                onChange={(e) => setRecipeName(e.target.value)}
-                placeholder={t("recipe.fields.recipeName", "RECIPE NAME")}
-                className={`w-full text-lg font-semibold uppercase bg-transparent focus:outline-none transition-colors ${isDarkMode ? "text-cyan-400 placeholder-cyan-600" : "text-gray-900 placeholder-gray-500"} focus:placeholder-gray-400`}
-                data-echo-key="field:add:name"
-              />
-              <textarea
-                placeholder={t("recipe.fields.description", "Description")}
-                className={`mt-2 w-full border rounded-lg p-3 text-sm ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
-                rows={3}
-                onChange={(e) =>
-                  localStorage.setItem("recipe:add:description", e.target.value)
-                }
-                defaultValue={(() => {
-                  try {
-                    return localStorage.getItem("recipe:add:description") || "";
-                  } catch {
-                    return "";
-                  }
-                })()}
-                data-echo-key="field:add:description"
-              />
-
-              <div className="mt-6 flex flex-col space-y-4">
-                <div className="flex flex-wrap items-center gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`font-bold ${isDarkMode ? "text-cyan-300" : "text-black"}`}
-                    >
-                      {t("recipe.labels.cookTime", "COOK TIME:")}
-                    </span>
-                    <input
-                      value={cookTime}
-                      onChange={(e) => setCookTime(e.target.value)}
-                      placeholder="2:30"
-                      className={`w-24 rounded-xl border px-3 py-2 ${inputClass}`}
-                      data-echo-key="field:add:time"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`font-bold ${isDarkMode ? "text-cyan-300" : "text-black"}`}
-                    >
-                      {t("recipe.labels.cookTemp", "COOK TEMP:")}
-                    </span>
-                    <input
-                      value={cookTemp}
-                      onChange={(e) => {
-                        const digits = e.target.value
-                          .replace(/[^0-9]/g, "")
-                          .slice(0, 3);
-                        const suffix =
-                          currentUnits === "Imperial" ? "°F" : "°C";
-                        setCookTemp(
-                          digits ? `${parseInt(digits, 10)}${suffix}` : "",
-                        );
-                      }}
-                      placeholder="350°F"
-                      className={`w-24 rounded-xl border px-3 py-2 ${inputClass}`}
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`font-bold ${isDarkMode ? "text-cyan-300" : "text-black"}`}
-                    >
-                      {t("recipe.labels.prepTime", "PREP TIME:")}
-                    </span>
-                    <input
-                      value={prepTime}
-                      onChange={(e) => setPrepTime(e.target.value)}
-                      placeholder="0:20"
-                      className={`w-24 rounded-xl border px-3 py-2 ${inputClass}`}
-                    />
-                  </div>
-                </div>
-
-                <div
-                  className={`text-sm space-y-2 ${
-                    isDarkMode ? "text-cyan-300" : "text-gray-700"
-                  }`}
-                >
-                  <div className="flex flex-wrap items-center gap-4">
-                    <span>
-                      <span className="font-bold">FULL RECIPE:</span>{" "}
-                      {getCurrencySymbol(currentCurrency)}
-                      {calculateTotalCost().toFixed(2)}
-                    </span>
-                    <span className="flex flex-wrap items-center gap-1">
-                      <span className="font-bold">YIELD:</span>
-                      <input
-                        type="number"
-                        value={yieldQty}
-                        onChange={(e) => {
-                          yieldManualRef.current = true;
-                          setYieldQty(Math.max(0, Number(e.target.value)));
-                        }}
-                        className={`w-16 rounded-md border px-2 py-1 text-sm ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
-                        data-echo-key="field:add:yield"
-                      />
-                      <input
-                        value={yieldUnit}
-                        onChange={(e) => {
-                          yieldManualRef.current = true;
-                          setYieldUnit(e.target.value.toUpperCase());
-                        }}
-                        className={`w-24 rounded-md border px-2 py-1 text-sm uppercase ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
-                      />
-                      <button
-                        type="button"
-                        title={t("recipe.tools.yield", "Yield Lab")}
-                        className={`ml-2 rounded border px-2 py-1 text-xs ${isDarkMode ? "border-cyan-400/50 text-cyan-300" : "border-gray-400 text-gray-800"}`}
-                        onClick={() => setYieldOpen(true)}
-                      >
-                        {t("recipe.tools.yield", "Yield Lab")}
-                      </button>
-                    </span>
-                    <span>
-                      <span className="font-bold">
-                        {t("recipe.labels.recipeAccess", "RECIPE ACCESS:")}
-                      </span>{" "}
-                      {selectedRecipeAccess.length
-                        ? selectedRecipeAccess.join(", ").toUpperCase()
-                        : t("recipe.labels.none", "NONE")}
-                    </span>
-                    <span>
-                      <span className="font-bold">
-                        {t("recipe.labels.recipeType", "RECIPE:")}
-                      </span>{" "}
-                      {selectedRecipeType.includes("Full Recipe")
-                        ? t("recipe.labels.full", "FULL")
-                        : selectedRecipeType.includes("Sub Recipe")
-                          ? t("recipe.labels.sub", "SUB")
-                          : t("recipe.labels.unspecified", "UNSPECIFIED")}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-4">
-                    <span className="flex items-center gap-1">
-                      <span className="font-bold">
-                        {t("recipe.labels.portion", "PORTION:")}
-                      </span>
-                      <input
-                        type="number"
-                        value={portionCount}
-                        onChange={(e) =>
-                          setPortionCount(Math.max(1, Number(e.target.value)))
-                        }
-                        className={`w-16 rounded-md border px-2 py-1 text-sm ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
-                      />
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <span className="font-bold">
-                        {t("recipe.labels.unit", "UNIT:")}
-                      </span>
-                      <input
-                        value={portionUnit}
-                        onChange={(e) =>
-                          setPortionUnit(e.target.value.toUpperCase())
-                        }
-                        className={`w-24 rounded-md border px-2 py-1 text-sm uppercase ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
-                      />
-                    </span>
-                    <span>
-                      <span className="font-bold">
-                        {t("recipe.labels.portionCost", "PORTION COST:")}
-                      </span>{" "}
-                      {getCurrencySymbol(currentCurrency)}
-                      {calculatePortionCost().toFixed(2)}
-                    </span>
-                    <span title={t("recipe.labels.theoreticalVolume", "Ψ:")}>
-                      <span className="font-bold">
-                        {t("recipe.labels.theoreticalVolume", "Ψ:")}
-                      </span>{" "}
-                      {formatMl(theoreticalVolumeMl)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="w-1/3 flex flex-col gap-4">
-              <div
-                className={`border rounded-xl flex flex-col justify-end shadow-lg backdrop-blur-sm ${isDarkMode ? "bg-black/50 border-cyan-400/30 shadow-[0_0_24px_rgba(34,211,238,0.25)]" : "bg-white border-gray-200 shadow-gray-200/50"}`}
-                style={{ minHeight: "3rem" }}
-              >
-                <div
-                  className="p-3 flex flex-col"
-                  data-echo-key="section:add:allergens"
-                >
-                  <div
-                    className={`font-semibold text-xs mb-2 ${isDarkMode ? "text-cyan-300" : "text-gray-700"}`}
-                  >
-                    {t("recipe.labels.allergens", "ALLERGENS")}
-                  </div>
-                  {selectedAllergens.length ? (
-                    <div
-                      className={`grid grid-cols-6 gap-1 text-xs ${isDarkMode ? "text-cyan-300" : "text-gray-700"}`}
-                    >
-                      {selectedAllergens.map((a) => (
-                        <div key={a}>{a}</div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div
-                      className={`text-xs italic ${isDarkMode ? "text-cyan-500" : "text-gray-500"}`}
-                    >
-                      {t("recipe.labels.noAllergens", "No allergens selected")}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div
-                className={`rounded-3xl border p-4 shadow-lg backdrop-blur-sm ${
-                  isDarkMode
-                    ? "bg-black/50 border-cyan-400/30 shadow-[0_0_24px_rgba(34,211,238,0.25)]"
-                    : "bg-white border-gray-200 shadow-gray-200/50"
-                }`}
-                data-echo-key="section:add:photos"
-              >
-                <div
-                  className={`mb-3 text-xs font-semibold uppercase tracking-[0.22em] ${
-                    isDarkMode ? "text-cyan-300" : "text-gray-700"
-                  }`}
-                >
-                  {t("recipe.labels.photo", "RECIPE IMAGE")}
-                </div>
-                <div className="flex justify-center">
-                  <div
-                    className="flex-shrink-0"
-                    style={{ width: "17rem", height: "17rem" }}
-                  >
-                    {image ? (
-                      <img
-                        src={image}
-                        alt="Recipe"
-                        className="h-full w-full rounded-md bg-white object-contain"
-                        style={{
-                          border: "0.5px solid #000",
-                          boxShadow:
-                            "0 6px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2)",
-                        }}
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center rounded-md border border-dashed border-gray-400/70 bg-gray-100">
-                        <label
-                          className="cursor-pointer text-xs text-gray-600"
-                          data-echo-key="cta:add:upload"
-                        >
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={async (e) => {
-                              const f = e.target.files?.[0];
-                              if (!f) return;
-                              try {
-                                const reader = new FileReader();
-                                reader.onload = () => setImage(String(reader.result));
-                                reader.readAsDataURL(f);
-                              } catch {}
-                            }}
-                          />
-                          Upload Photo
-                        </label>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-4 mt-1">
-            <div
-              className="w-full flex flex-col space-y-6"
-              style={{ minHeight: "18rem" }}
-            >
-              <div
-                className={`border rounded-xl p-4 h-full shadow-lg ${isDarkMode ? "bg-blue-900/20 border-blue-400/30 shadow-blue-400/20" : "bg-blue-50 border-blue-200 shadow-gray-300/60"}`}
-              >
-                <div
-                  className={`font-semibold text-sm mb-3 ${isDarkMode ? "text-blue-400" : "text-blue-700"}`}
-                >
-                  {t("recipe.labels.modifiers", "Modifiers")}
-                </div>
-                <div
-                  className={`${isDarkMode ? "bg-blue-900/20 border-blue-400/30" : "bg-blue-50 border-blue-200"} border rounded-lg p-2 text-xs`}
-                >
-                  {(() => {
-                    const diet = new Set(taxonomy.diets);
-                    const txt = ingredients
-                      .map((r) => `${r.qty} ${r.unit} ${r.item}`)
-                      .join(" ")
-                      .toLowerCase();
-                    const meatRe =
-                      /(beef|pork|chicken|lamb|fish|shrimp|gelatin)/;
-                    const issues: string[] = [];
-                    const dir = (directions || "").toLowerCase();
-                    const tempMatch =
-                      dir.match(
-                        /(\d{2,3})\s*(?:°\s*)?(?:f|fahrenheit|degf)/i,
-                      ) || dir.match(/(\d{2,3})\s*degrees?\s*f/i);
-                    const cookT = String(cookTemp || "").match(/\d{2,3}/)?.[0];
-                    if (tempMatch && cookT && tempMatch[1] !== cookT)
-                      issues.push(
-                        `Cook temp mismatch: directions ${tempMatch[1]}F vs field ${cookT}F`,
-                      );
-                    if (
-                      (diet.has("vegetarian") || diet.has("vegan")) &&
-                      meatRe.test(txt)
-                    )
-                      issues.push("Selected diet conflicts with ingredients.");
-                    return issues.length ? (
-                      <div className="mb-2 text-red-600">
-                        {issues.map((s, i) => (
-                          <div key={i}>{s}</div>
-                        ))}
-                      </div>
-                    ) : null;
-                  })()}
-                  <div className="grid grid-cols-8 gap-1">
-                    {taxonomy.cuisine && (
-                      <div className="col-span-2">
-                        <div className="font-semibold">{t("recipe.labels.cuisineLabel", "Cuisine")}</div>
-                        <div>{taxonomy.cuisine}</div>
-                      </div>
-                    )}
-                    {taxonomy.difficulty && (
-                      <div className="col-span-2">
-                        <div className="font-semibold">{t("recipe.labels.difficultyLabel", "Difficulty")}</div>
-                        <div>{taxonomy.difficulty}</div>
-                      </div>
-                    )}
-                    {taxonomy.mealPeriod && (
-                      <div className="col-span-2">
-                        <div className="font-semibold">{t("recipe.labels.mealLabel", "Meal")}</div>
-                        <div>{taxonomy.mealPeriod}</div>
-                      </div>
-                    )}
-                    {taxonomy.serviceStyle && (
-                      <div className="col-span-2">
-                        <div className="font-semibold">{t("recipe.labels.serviceLabel", "Service")}</div>
-                        <div>{taxonomy.serviceStyle}</div>
-                      </div>
-                    )}
-                    {taxonomy.course.length > 0 && (
-                      <div className="col-span-4">
-                        <div className="font-semibold">{t("recipe.labels.courseLabel", "Course")}</div>
-                        <div className="flex flex-wrap gap-1">
-                          {[...taxonomy.course].sort().map((v) => (
-                            <span
-                              key={v}
-                              className="px-1 py-0.5 rounded border"
-                            >
-                              {v}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {taxonomy.pastry.length > 0 && (
-                      <div className="col-span-4">
-                        <div className="font-semibold">{t("recipe.labels.pastryLabel", "Pastry")}</div>
-                        <div className="flex flex-wrap gap-1">
-                          {[...taxonomy.pastry].sort().map((v) => (
-                            <span
-                              key={v}
-                              className="px-1 py-0.5 rounded border"
-                            >
-                              {v}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {taxonomy.technique.length > 0 && (
-                      <div className="col-span-4">
-                        <div className="font-semibold">{t("recipe.labels.techniqueLabel", "Technique")}</div>
-                        <div className="flex flex-wrap gap-1">
-                          {[...taxonomy.technique].sort().map((v) => (
-                            <span
-                              key={v}
-                              className="px-1 py-0.5 rounded border"
-                            >
-                              {v}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {taxonomy.components.length > 0 && (
-                      <div className="col-span-4">
-                        <div className="font-semibold">{t("recipe.labels.componentsLabel", "Components")}</div>
-                        <div className="flex flex-wrap gap-1">
-                          {[...taxonomy.components].sort().map((v) => (
-                            <span
-                              key={v}
-                              className="px-1 py-0.5 rounded border"
-                            >
-                              {v}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {taxonomy.equipment.length > 0 && (
-                      <div className="col-span-4">
-                        <div className="font-semibold">Equipment</div>
-                        <div className="flex flex-wrap gap-1">
-                          {[...taxonomy.equipment].sort().map((v) => (
-                            <span
-                              key={v}
-                              className="px-1 py-0.5 rounded border"
-                            >
-                              {v}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {taxonomy.diets.length > 0 && (
-                      <div className="col-span-4">
-                        <div className="font-semibold">Diets</div>
-                        <div className="flex flex-wrap gap-1">
-                          {[...taxonomy.diets].sort().map((v) => (
-                            <span
-                              key={v}
-                              className="px-1 py-0.5 rounded border"
-                            >
-                              {v}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-            <IngredientsGrid
-              isDarkMode={isDarkMode}
-              ingredients={ingredients}
-              currencySymbol={getCurrencySymbol(currentCurrency)}
-              totalCost={totalIngredientCost}
-              theoreticalVolumeLabel={formatMl(theoreticalVolumeMl)}
-              activeCount={activeIngredientCount}
-              averageYield={averageIngredientYield}
-              methodOptions={knownPrepMethods}
-              methodOptionsId={methodOptionsId}
-              onFieldChange={handleIngredientFieldChange}
-              onFieldBlur={handleIngredientBlur}
-              onAddRow={addIngredientRow}
-              onRemoveRow={removeIngredientRow}
-              onReorderRow={reorderIngredientRows}
-              onGridKeyDown={onGridKeyDown}
-              onAddSubRecipe={() => setIsSubRecipePickerOpen(true)}
-              onAddDivider={addDividerRow}
-            />
-
-            <SubRecipePicker
-              open={isSubRecipePickerOpen}
-              onOpenChange={setIsSubRecipePickerOpen}
-              options={subRecipeOptions}
-              onConfirm={insertSubRecipeRows}
-              isDarkMode={isDarkMode}
-              formatCurrency={formatRecipeCost}
-            />
-
-            <Dialog open={yieldOpen} onOpenChange={setYieldOpen}>
-              <DialogContent className="max-w-3xl w-full">
-                <DialogHeader>
-                  <DialogTitle>Yield Lab</DialogTitle>
-                </DialogHeader>
-                <YieldLabForm
-                  defaultInputQty={yieldQty}
-                  defaultInputUnit={yieldUnit}
-                  recipeName={recipeName}
-                  defaultMethod={selectedPrepMethod[0] || ""}
-                  methodOptions={knownPrepMethods}
-                  onClose={() => setYieldOpen(false)}
-                />
-              </DialogContent>
-            </Dialog>
-
-          </div>
-
-          <Dialog open={isRndLabsOpen} onOpenChange={setIsRndLabsOpen}>
-            <DialogContent className="max-w-[min(1200px,95vw)] w-full h-[85vh] overflow-hidden border border-white/10 bg-white/95 p-0 text-slate-900 shadow-[0_40px_120px_-60px_rgba(15,23,42,0.65)] dark:border-cyan-500/20 dark:bg-slate-950/95 dark:text-cyan-100">
-              <div className="flex h-full flex-col">
-                  <DialogHeader className="flex flex-row items-center justify-between border-b px-6 py-4 dark:border-cyan-500/20">
-                    <DialogTitle className="text-lg font-semibold uppercase tracking-[0.35em]">
-                      R&D Labs
-                    </DialogTitle>
-                    <button
-                      type="button"
-                      onClick={() => setIsRndLabsOpen(false)}
-                      className="rounded-full border border-transparent bg-slate-900/5 p-2 text-slate-500 transition hover:bg-slate-900/10 hover:text-slate-800 dark:bg-cyan-500/10 dark:text-cyan-200 dark:hover:bg-cyan-500/20"
-                      aria-label="Close R&D Labs"
-                    >
-                      <X className="h-4 w-4" aria-hidden />
-                    </button>
-                  </DialogHeader>
-                  <div className="flex flex-1 flex-col gap-4 px-6 py-4">
-                    <p className={`text-sm ${accentMuted}`}>
-                      Drag the dividers to resize each workspace. Use these surfaces for experiments, documentation, or automation flows.
-                    </p>
-                    <PanelGroup
-                      direction="horizontal"
-                      onLayout={handleRndLayoutChange}
-                      className="flex h-full items-stretch gap-3"
-                    >
-                      <Panel minSize={20} order={1} defaultSize={rndLayout[0]} className="flex">
-                        <section className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[0]}`}>
-                          <header className={rndPanelHeadingClasses}>
-                            Discovery runway
-                          </header>
-                          <p className={`mt-2 text-xs leading-relaxed ${accentMuted}`}>
-                            Stage inspiration, competitive research, and sourcing notes here.
-                          </p>
-                          <div className="mt-4 flex-1 overflow-hidden">
-                            <DiscoveryPanel />
-                          </div>
-                        </section>
-                      </Panel>
-                      <PanelResizeHandle className={rndHandleClasses}>
-                        <span className="pointer-events-none h-10 w-0.5 rounded-full bg-slate-500/60 dark:bg-cyan-200/80" />
-                      </PanelResizeHandle>
-                      <Panel minSize={26} order={2} defaultSize={rndLayout[1]} className="flex">
-                        <section className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[1]}`}>
-                          <header className={rndPanelHeadingClasses}>
-                            Workbench
-                          </header>
-                          <p className={`mt-2 text-xs leading-relaxed ${accentMuted}`}>
-                            Reserve this lane for formulations, live tests, or shared prototypes.
-                          </p>
-                          <div className="mt-4 flex-1 overflow-hidden">
-                            <WorkbenchPanel />
-                          </div>
-                        </section>
-                      </Panel>
-                      <PanelResizeHandle className={rndHandleClasses}>
-                        <span className="pointer-events-none h-10 w-0.5 rounded-full bg-slate-500/60 dark:bg-cyan-200/80" />
-                      </PanelResizeHandle>
-                      <Panel minSize={20} order={3} defaultSize={rndLayout[2]} className="flex">
-                        <section className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[2]}`}>
-                          <header className={rndPanelHeadingClasses}>
-                            Insight stack
-                          </header>
-                          <p className={`mt-2 text-xs leading-relaxed ${accentMuted}`}>
-                            Pin KPIs, AI summaries, or vendor comparisons for rapid decisions.
-                          </p>
-                          <div className="mt-4 flex-1 overflow-hidden">
-                            <InsightsPanel />
-                          </div>
-                        </section>
-                      </Panel>
-                    </PanelGroup>
-                  </div>
-                </div>
-            </DialogContent>
-          </Dialog>
-
-          </div>
-
-          <div
-            className={`rounded-2xl p-6 border ${isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h3
-                className={`font-bold text-xl ${isDarkMode ? "text-cyan-400" : "text-gray-900"}`}
-              >
-                DIRECTIONS
-              </h3>
-              <div className="flex gap-3">
-                <input
-                  ref={stepImageInputRef}
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  hidden
-                  onChange={async (e) => {
-                    const files = Array.from(e.target.files || []);
-                    for (const f of files) {
-                      try {
-                        const img = await new Promise<HTMLImageElement>(
-                          (res, rej) => {
-                            const r = new FileReader();
-                            r.onload = () => {
-                              const im = new Image();
-                              im.onload = () => res(im);
-                              im.onerror = rej;
-                              im.src = String(r.result);
-                            };
-                            r.onerror = rej;
-                            r.readAsDataURL(f);
-                          },
-                        );
-                        const scale = Math.min(
-                          1,
-                          STEP_IMG_MAX_W / (img.width || STEP_IMG_MAX_W),
-                        );
-                        const w = Math.round(
-                          (img.width || STEP_IMG_MAX_W) * scale,
-                        );
-                        const h = Math.round(
-                          (img.height || STEP_IMG_MAX_W) * scale,
-                        );
-                        const c = document.createElement("canvas");
-                        c.width = w;
-                        c.height = h;
-                        const ctx = c.getContext("2d");
-                        if (ctx) {
-                          ctx.drawImage(img, 0, 0, w, h);
-                        }
-                        const data = c.toDataURL("image/jpeg", 0.85);
-                        setDirections(
-                          (d) => (d ? d + "\n" : "") + `IMG:${data}`,
-                        );
-                      } catch {}
-                    }
-                    (e.target as HTMLInputElement).value = "";
-                  }}
-                />
-                <button
-                  title="Insert Step Photo"
-                  className={`p-2 rounded-lg transition-all hover:bg-gray-100 ${isDarkMode ? "hover:bg-gray-700" : ""}`}
-                  onClick={() => stepImageInputRef.current?.click()}
-                >
-                  <ImageIcon
-                    className={`w-5 h-5 ${isDarkMode ? "text-cyan-400" : "text-gray-600"}`}
-                  />
-                </button>
-                <button
-                  title="Bold"
-                  className={`p-2 rounded-lg transition-all hover:bg-gray-100 ${isDarkMode ? "hover:bg-gray-700" : ""}`}
-                  onClick={() => document.execCommand("bold", false)}
-                >
-                  <Bold
-                    className={`w-5 h-5 ${isDarkMode ? "text-cyan-400" : "text-gray-600"}`}
-                  />
-                </button>
-                <button
-                  title="Italic"
-                  className={`p-2 rounded-lg transition-all hover:bg-gray-100 ${isDarkMode ? "hover:bg-gray-700" : ""}`}
-                  onClick={() => document.execCommand("italic", false)}
-                >
-                  <Italic
-                    className={`w-5 h-5 ${isDarkMode ? "text-cyan-400" : "text-gray-600"}`}
-                  />
-                </button>
-                <button
-                  title="Underline"
-                  className={`p-2 rounded-lg transition-all hover:bg-gray-100 ${isDarkMode ? "hover:bg-gray-700" : ""}`}
-                  onClick={() => document.execCommand("underline", false)}
-                >
-                  <Underline
-                    className={`w-5 h-5 ${isDarkMode ? "text-cyan-400" : "text-gray-600"}`}
-                  />
-                </button>
-                <select
-                  className={`px-3 py-2 text-sm border rounded-lg ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-200 text-gray-900"}`}
-                  value={selectedFont}
-                  onChange={(e) => {
-                    setSelectedFont(e.target.value);
-                  }}
-                >
-                  <option>Arial</option>
-                  <option>Times</option>
-                  <option>Helvetica</option>
-                  <option>Georgia</option>
-                </select>
-                <select
-                  className={`px-3 py-2 text-sm border rounded-lg ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-200 text-gray-900"}`}
-                  value={selectedFontSize}
-                  onChange={(e) => setSelectedFontSize(e.target.value)}
-                >
-                  {["12px", "14px", "16px", "18px", "20px"].map((s) => (
-                    <option key={s}>{s}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div
-              id="directions-textarea"
-              contentEditable
-              suppressContentEditableWarning
-              ref={dirRef}
-              spellCheck
-              onDragOver={(e) => {
-                if (e.dataTransfer?.types?.includes("Files")) {
-                  e.preventDefault();
-                }
-              }}
-              onDrop={async (e) => {
-                try {
-                  e.preventDefault();
-                  const files = Array.from(e.dataTransfer?.files || []).filter(
-                    (f) => f.type.startsWith("image/"),
-                  );
-                  for (const f of files) {
-                    const img = await new Promise<HTMLImageElement>(
-                      (res, rej) => {
-                        const r = new FileReader();
-                        r.onload = () => {
-                          const im = new Image();
-                          im.onload = () => res(im);
-                          im.onerror = rej;
-                          im.src = String(r.result);
-                        };
-                        r.onerror = rej;
-                        r.readAsDataURL(f);
-                      },
-                    );
-                    const scale = Math.min(
-                      1,
-                      STEP_IMG_MAX_W / (img.width || STEP_IMG_MAX_W),
-                    );
-                    const w = Math.round((img.width || STEP_IMG_MAX_W) * scale);
-                    const h = Math.round(
-                      (img.height || STEP_IMG_MAX_W) * scale,
-                    );
-                    const c = document.createElement("canvas");
-                    c.width = w;
-                    c.height = h;
-                    const ctx = c.getContext("2d");
-                    if (ctx) {
-                      ctx.drawImage(img, 0, 0, w, h);
-                    }
-                    const data = c.toDataURL("image/jpeg", 0.85);
-                    setDirections((d) => (d ? d + "\n" : "") + `IMG:${data}`);
-                  }
-                } catch {}
-              }}
-              data-echo-key="field:add:steps"
-              className={`prose prose-sm max-w-none w-full border p-3 rounded-xl shadow-sm transition-all focus:shadow-md focus:ring-2 resize-none min-h-[160px] overflow-y-auto ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30" : "bg-white border-gray-200 text-gray-900 focus:ring-blue-400/30 focus:border-blue-400"}`}
-              style={{
-                lineHeight: "1.7",
-                whiteSpace: "pre-wrap",
-                fontFamily: selectedFont,
-                fontSize: selectedFontSize,
-              }}
-              onKeyDown={(e) => {
-                const el = dirRef.current;
-                if (!el) return;
-                const sel = window.getSelection();
-                if (!sel || !sel.anchorNode) return;
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  const text = el.textContent || "";
-                  let offset = 0;
-                  const range = sel.getRangeAt(0);
-                  const preRange = range.cloneRange();
-                  preRange.selectNodeContents(el);
-                  preRange.setEnd(range.endContainer, range.endOffset);
-                  const containerText = preRange.toString();
-                  offset = containerText.length;
-                  const before = text.slice(0, offset);
-                  const after = text.slice(offset);
-                  const lineStart = before.lastIndexOf("\n") + 1;
-                  const currentLine = before.slice(lineStart);
-                  const m = currentLine.match(/^\s*(\d+)[\.)]?\s*/);
-                  const nextNum = m ? String(Number(m[1]) + 1) + ". " : "• ";
-                  const newText = before + "\n" + nextNum + after;
-                  el.textContent = newText;
-                  const newOffset = offset + 1 + nextNum.length;
-                  const r = document.createRange();
-                  const walker = document.createTreeWalker(
-                    el,
-                    NodeFilter.SHOW_TEXT,
-                  );
-                  let seen = 0;
-                  let node: Node | null = walker.nextNode();
-                  while (node) {
-                    const len = (node.textContent || "").length;
-                    if (seen + len >= newOffset) {
-                      r.setStart(node, newOffset - seen);
-                      r.collapse(true);
-                      break;
-                    }
-                    seen += len;
-                    node = walker.nextNode();
-                  }
-                  sel.removeAllRanges();
-                  sel.addRange(r);
-                  setDirections(newText);
-                }
-              }}
-              onInput={(e) => {
-                let t = (e.target as HTMLDivElement).textContent || "";
-                const fixes: Record<string, string> = {
-                  "fist ": "first ",
-                  "teh ": "the ",
-                  "mized ": "mixed ",
-                  "choped ": "chopped ",
-                  "whiskd ": "whisked ",
-                };
-                let changed = t;
-                for (const [k, v] of Object.entries(fixes)) {
-                  changed = changed.replace(
-                    new RegExp("(^|\\s)" + k, "gi"),
-                    (s) =>
-                      s.toLowerCase().endsWith(k)
-                        ? s.slice(0, -k.length) + v
-                        : s,
-                  );
-                }
-                if (changed !== t) {
-                  (e.target as HTMLDivElement).textContent = changed;
-                  const sel = window.getSelection();
-                  if (sel) {
-                    const r = document.createRange();
-                    const el = dirRef.current!;
-                    r.selectNodeContents(el);
-                    r.collapse(false);
-                    sel.removeAllRanges();
-                    sel.addRange(r);
-                  }
-                }
-                setDirections(changed);
-              }}
-            ></div>
-          </div>
-
-          <div className="flex items-center justify-between mt-2">
-            <div className="ml-auto">
-              <button
-                data-echo-key="cta:add:publish"
-                onClick={() => {
-                  const title = (recipeName || "").trim() || "Untitled Recipe";
-                  const ingLines = ingredients
-                    .map((r) =>
-                      [r.qty, r.unit, r.item, r.prep]
-                        .filter(Boolean)
-                        .join(" ")
-                        .trim(),
-                    )
-                    .filter(Boolean);
-                  const insLines = String(directions || "")
-                    .split(/\r?\n/)
-                    .map((s) => s.trim())
-                    .filter(Boolean);
-                  const cover =
-                    image && image.startsWith("data:") ? [image] : undefined;
-                  if (!recipeIdRef.current) {
-                    recipeIdRef.current = addRecipe({
-                      title,
-                      ingredients: ingLines,
-                      instructions: insLines,
-                      imageDataUrls: cover,
-                      tags: [],
-                      extra: { source: "manual", taxonomy, published: true },
-                    });
-                  } else {
-                    updateRecipe(recipeIdRef.current, {
-                      title,
-                      ingredients: ingLines,
-                      instructions: insLines,
-                      imageDataUrls: cover,
-                      extra: { taxonomy, published: true },
-                    });
-                  }
-                  alert(`Published ${title}`);
-                }}
-                className={`px-3 py-2 text-sm rounded border ${isDarkMode ? "border-cyan-400/50 text-cyan-300" : "border-gray-400 text-gray-800"}`}
-              >
-                Publish
-              </button>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <button
-                data-echo-key="cta:add:save"
-                onClick={() => {
-                  const title = (recipeName || "").trim() || "Untitled Recipe";
-                  const ingLines = ingredients
-                    .map((r) =>
-                      [r.qty, r.unit, r.item, r.prep]
-                        .filter(Boolean)
-                        .join(" ")
-                        .trim(),
-                    )
-                    .filter(Boolean);
-                  const insLines = String(directions || "")
-                    .split(/\r?\n/)
-                    .map((s) => s.trim())
-                    .filter(Boolean);
-                  const cover =
-                    image && image.startsWith("data:") ? [image] : undefined;
-                  if (!recipeIdRef.current) {
-                    recipeIdRef.current = addRecipe({
-                      title,
-                      ingredients: ingLines,
-                      instructions: insLines,
-                      imageDataUrls: cover,
-                      tags: [],
-                      extra: { source: "manual", taxonomy },
-                    });
-                  } else {
-                    updateRecipe(recipeIdRef.current, {
-                      title,
-                      ingredients: ingLines,
-                      instructions: insLines,
-                      imageDataUrls: cover,
-                      extra: { taxonomy },
-                    });
-                  }
-                  pushHistory({ ...serialize(), ts: Date.now() });
-                  alert(`Saved ${title}`);
-                }}
-                className="flex items-center gap-2 text-gray-700 hover:text-black"
-              >
-                <Save className="w-5 h-5" />
-                Save
-              </button>
-              <button
-                onClick={exportCSV}
-                className="flex items-center gap-1 text-gray-700 hover:text-black"
-              >
-                <FileDown className="w-4 h-4" />
-                CSV
-              </button>
-              <button
-                onClick={() => window.print()}
-                className="flex items-center gap-1 text-gray-700 hover:text-black"
-              >
-                <Printer className="w-4 h-4" />
-                Print
-              </button>
-              <button
-                onClick={shareLink}
-                className="flex items-center gap-1 text-gray-700 hover:text-black"
-              >
-                <Share2 className="w-4 h-4" />
-                Share
-              </button>
-              <button
-                onClick={() => {
-                  const title = recipeName || "Recipe";
-                  const ing = ingredients
-                    .map((r) =>
-                      [r.qty, r.unit, r.item, r.prep].filter(Boolean).join(" "),
-                    )
-                    .filter(Boolean)
-                    .join("\n");
-                  const ins = String(directions || "")
-                    .split(/\r?\n/)
-                    .filter(Boolean)
-                    .map((s, i) => `${i + 1}. ${s}`)
-                    .join("\n");
-                  const bodyText = `${title}\n\nIngredients:\n${ing || "-"}\n\nDirections:\n${ins || "-"}`;
-                  const body = encodeURIComponent(bodyText);
-                  location.href = `sms:?&body=${body}`;
-                }}
-                className="flex items-center gap-1 text-gray-700 hover:text-black"
-              >
-                <Share2 className="w-4 h-4" />
-                SMS
-              </button>
-              <button
-                onClick={() => {
-                  const html = `<!DOCTYPE html><html><head><meta charset='utf-8'><title>${recipeName || "Recipe"}</title></head><body><h1>${recipeName || "Recipe"}</h1><h3>Ingredients</h3><ul>${ingredients.map((r) => `<li>${[r.qty, r.unit, r.item, r.prep].filter(Boolean).join(" ")}</li>`).join("")}</ul><h3>Directions</h3><pre style="white-space:pre-wrap;font-family:Arial, sans-serif;">${directions}</pre></body></html>`;
-                  const blob = new Blob([html], { type: "application/msword" });
-                  const a = document.createElement("a");
-                  a.href = URL.createObjectURL(blob);
-                  a.download = `${(recipeName || "recipe").replace(/[^a-z0-9-_]+/gi, "_")}.doc`;
-                  a.click();
-                  URL.revokeObjectURL(a.href);
-                }}
-                className="flex items-center gap-1 text-gray-700 hover:text-black"
-              >
-                <FileDown className="w-4 h-4" />
-                Word
-              </button>
-            </div>
             <button
-              onClick={analyzeNutrition}
-              disabled={nutritionLoading}
-              className={`text-xs px-3 py-2 rounded ${isDarkMode ? "border border-cyan-400/50 hover:bg-cyan-900/20 text-cyan-300" : "border border-gray-400 hover:bg-gray-100 text-gray-800"}`}
+              type="button"
+              onClick={() => setIsRightSidebarCollapsed((v) => !v)}
+              title={t("recipe.actions.toggleTools", "Toggle Tools")}
+              aria-label={t("recipe.actions.toggleTools", "Toggle Tools")}
+              className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
             >
-              {nutritionLoading ? "Analyzing��" : "Generate Nutrition Label"}
+              <Menu className="h-5 w-5" aria-hidden />
+            </button>
+            <button
+              type="button"
+              onClick={scaleRecipe}
+              title={t("recipe.actions.scale", "Scale Recipe")}
+              aria-label={t("recipe.actions.scale", "Scale Recipe")}
+              className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
+            >
+              <Scale className="h-5 w-5" aria-hidden />
+            </button>
+            <LanguageMenu
+              variant="compact"
+              isDark={isDarkMode}
+              className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
+              align="end"
+            />
+            <button
+              type="button"
+              onClick={convertUnits}
+              title={t("recipe.actions.convertUnits", "Convert Units")}
+              aria-label={t("recipe.actions.convertUnits", "Convert Units")}
+              className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
+            >
+              <Ruler className="h-5 w-5" aria-hidden />
+            </button>
+            <button
+              type="button"
+              onClick={cycleCurrency}
+              title={t("recipe.actions.currency", "Change Currency")}
+              aria-label={t("recipe.actions.currency", "Change Currency")}
+              className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
+            >
+              <CircleDollarSign className="h-5 w-5" aria-hidden />
+            </button>
+            <button
+              type="button"
+              onClick={() => setYieldOpen(true)}
+              title="Yield Lab"
+              aria-label="Yield Lab"
+              className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
+            >
+              <FlaskConical className="h-5 w-5" aria-hidden />
+            </button>
+            <button
+              type="button"
+              title="R&D Labs"
+              aria-label="R&D Labs"
+              onClick={() => setIsRndLabsOpen(true)}
+              className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
+            >
+              <Atom className="h-5 w-5" aria-hidden />
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                setIsRightSidebarCollapsed(!isRightSidebarCollapsed)
+              }
+              title={t("recipe.actions.recipeTools", "Recipe Tools")}
+              aria-label={t("recipe.actions.recipeTools", "Recipe Tools")}
+              className={`${toolbarButtonBase} ${toolbarButtonTheme}`}
+            >
+              <Settings className="h-5 w-5" aria-hidden />
             </button>
           </div>
+        </div>
 
-          <div
-            className={`mt-3 rounded-2xl p-6 border ${isDarkMode ? "bg-gray-900/50 border-cyan-400/30" : "bg-white/80 border-gray-200 shadow-sm"}`}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <h3
-                className={`font-bold text-xl ${isDarkMode ? "text-cyan-400" : "text-gray-900"}`}
+        <div className="pt-8 h-full overflow-y-auto">
+          <div className="w-full px-6 space-y-6 pb-8">
+            {/* Removed old hamburger toggle button */}
+            <div
+              className="flex items-start gap-4"
+              data-echo-key="section:add:basics"
+            >
+              <div
+                className={`w-2/3 border p-4 rounded-xl shadow-lg ${isDarkMode ? "border-cyan-400/30 bg-black/50 shadow-cyan-400/20" : "border-gray-200 bg-white shadow-gray-200/50"} backdrop-blur-sm`}
               >
-                NUTRITION
-              </h3>
+                <input
+                  type="text"
+                  maxLength={50}
+                  value={recipeName}
+                  onChange={(e) => setRecipeName(e.target.value)}
+                  placeholder={t("recipe.fields.recipeName", "RECIPE NAME")}
+                  className={`w-full text-lg font-semibold uppercase bg-transparent focus:outline-none transition-colors ${isDarkMode ? "text-cyan-400 placeholder-cyan-600" : "text-gray-900 placeholder-gray-500"} focus:placeholder-gray-400`}
+                  data-echo-key="field:add:name"
+                />
+                <textarea
+                  placeholder={t("recipe.fields.description", "Description")}
+                  className={`mt-2 w-full border rounded-lg p-3 text-sm ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
+                  rows={3}
+                  onChange={(e) =>
+                    localStorage.setItem(
+                      "recipe:add:description",
+                      e.target.value,
+                    )
+                  }
+                  defaultValue={(() => {
+                    try {
+                      return (
+                        localStorage.getItem("recipe:add:description") || ""
+                      );
+                    } catch {
+                      return "";
+                    }
+                  })()}
+                  data-echo-key="field:add:description"
+                />
+
+                <div className="mt-6 flex flex-col space-y-4">
+                  <div className="flex flex-wrap items-center gap-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`font-bold ${isDarkMode ? "text-cyan-300" : "text-black"}`}
+                      >
+                        {t("recipe.labels.cookTime", "COOK TIME:")}
+                      </span>
+                      <input
+                        value={cookTime}
+                        onChange={(e) => setCookTime(e.target.value)}
+                        placeholder="2:30"
+                        className={`w-24 rounded-xl border px-3 py-2 ${inputClass}`}
+                        data-echo-key="field:add:time"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`font-bold ${isDarkMode ? "text-cyan-300" : "text-black"}`}
+                      >
+                        {t("recipe.labels.cookTemp", "COOK TEMP:")}
+                      </span>
+                      <input
+                        value={cookTemp}
+                        onChange={(e) => {
+                          const digits = e.target.value
+                            .replace(/[^0-9]/g, "")
+                            .slice(0, 3);
+                          const suffix =
+                            currentUnits === "Imperial" ? "°F" : "°C";
+                          setCookTemp(
+                            digits ? `${parseInt(digits, 10)}${suffix}` : "",
+                          );
+                        }}
+                        placeholder="350°F"
+                        className={`w-24 rounded-xl border px-3 py-2 ${inputClass}`}
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`font-bold ${isDarkMode ? "text-cyan-300" : "text-black"}`}
+                      >
+                        {t("recipe.labels.prepTime", "PREP TIME:")}
+                      </span>
+                      <input
+                        value={prepTime}
+                        onChange={(e) => setPrepTime(e.target.value)}
+                        placeholder="0:20"
+                        className={`w-24 rounded-xl border px-3 py-2 ${inputClass}`}
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    className={`text-sm space-y-2 ${
+                      isDarkMode ? "text-cyan-300" : "text-gray-700"
+                    }`}
+                  >
+                    <div className="flex flex-wrap items-center gap-4">
+                      <span>
+                        <span className="font-bold">FULL RECIPE:</span>{" "}
+                        {getCurrencySymbol(currentCurrency)}
+                        {calculateTotalCost().toFixed(2)}
+                      </span>
+                      <span className="flex flex-wrap items-center gap-1">
+                        <span className="font-bold">YIELD:</span>
+                        <input
+                          type="number"
+                          value={yieldQty}
+                          onChange={(e) => {
+                            yieldManualRef.current = true;
+                            setYieldQty(Math.max(0, Number(e.target.value)));
+                          }}
+                          className={`w-16 rounded-md border px-2 py-1 text-sm ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
+                          data-echo-key="field:add:yield"
+                        />
+                        <input
+                          value={yieldUnit}
+                          onChange={(e) => {
+                            yieldManualRef.current = true;
+                            setYieldUnit(e.target.value.toUpperCase());
+                          }}
+                          className={`w-24 rounded-md border px-2 py-1 text-sm uppercase ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
+                        />
+                        <button
+                          type="button"
+                          title={t("recipe.tools.yield", "Yield Lab")}
+                          className={`ml-2 rounded border px-2 py-1 text-xs ${isDarkMode ? "border-cyan-400/50 text-cyan-300" : "border-gray-400 text-gray-800"}`}
+                          onClick={() => setYieldOpen(true)}
+                        >
+                          {t("recipe.tools.yield", "Yield Lab")}
+                        </button>
+                      </span>
+                      <span>
+                        <span className="font-bold">
+                          {t("recipe.labels.recipeAccess", "RECIPE ACCESS:")}
+                        </span>{" "}
+                        {selectedRecipeAccess.length
+                          ? selectedRecipeAccess.join(", ").toUpperCase()
+                          : t("recipe.labels.none", "NONE")}
+                      </span>
+                      <span>
+                        <span className="font-bold">
+                          {t("recipe.labels.recipeType", "RECIPE:")}
+                        </span>{" "}
+                        {selectedRecipeType.includes("Full Recipe")
+                          ? t("recipe.labels.full", "FULL")
+                          : selectedRecipeType.includes("Sub Recipe")
+                            ? t("recipe.labels.sub", "SUB")
+                            : t("recipe.labels.unspecified", "UNSPECIFIED")}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-4">
+                      <span className="flex items-center gap-1">
+                        <span className="font-bold">
+                          {t("recipe.labels.portion", "PORTION:")}
+                        </span>
+                        <input
+                          type="number"
+                          value={portionCount}
+                          onChange={(e) =>
+                            setPortionCount(Math.max(1, Number(e.target.value)))
+                          }
+                          className={`w-16 rounded-md border px-2 py-1 text-sm ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
+                        />
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="font-bold">
+                          {t("recipe.labels.unit", "UNIT:")}
+                        </span>
+                        <input
+                          value={portionUnit}
+                          onChange={(e) =>
+                            setPortionUnit(e.target.value.toUpperCase())
+                          }
+                          className={`w-24 rounded-md border px-2 py-1 text-sm uppercase ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
+                        />
+                      </span>
+                      <span>
+                        <span className="font-bold">
+                          {t("recipe.labels.portionCost", "PORTION COST:")}
+                        </span>{" "}
+                        {getCurrencySymbol(currentCurrency)}
+                        {calculatePortionCost().toFixed(2)}
+                      </span>
+                      <span title={t("recipe.labels.theoreticalVolume", "Ψ:")}>
+                        <span className="font-bold">
+                          {t("recipe.labels.theoreticalVolume", "Ψ:")}
+                        </span>{" "}
+                        {formatMl(theoreticalVolumeMl)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="w-1/3 flex flex-col gap-4">
+                <div
+                  className={`border rounded-xl flex flex-col justify-end shadow-lg backdrop-blur-sm ${isDarkMode ? "bg-black/50 border-cyan-400/30 shadow-[0_0_24px_rgba(34,211,238,0.25)]" : "bg-white border-gray-200 shadow-gray-200/50"}`}
+                  style={{ minHeight: "3rem" }}
+                >
+                  <div
+                    className="p-3 flex flex-col"
+                    data-echo-key="section:add:allergens"
+                  >
+                    <div
+                      className={`font-semibold text-xs mb-2 ${isDarkMode ? "text-cyan-300" : "text-gray-700"}`}
+                    >
+                      {t("recipe.labels.allergens", "ALLERGENS")}
+                    </div>
+                    {selectedAllergens.length ? (
+                      <div
+                        className={`grid grid-cols-6 gap-1 text-xs ${isDarkMode ? "text-cyan-300" : "text-gray-700"}`}
+                      >
+                        {selectedAllergens.map((a) => (
+                          <div key={a}>{a}</div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div
+                        className={`text-xs italic ${isDarkMode ? "text-cyan-500" : "text-gray-500"}`}
+                      >
+                        {t(
+                          "recipe.labels.noAllergens",
+                          "No allergens selected",
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div
+                  className={`rounded-3xl border p-4 shadow-lg backdrop-blur-sm ${
+                    isDarkMode
+                      ? "bg-black/50 border-cyan-400/30 shadow-[0_0_24px_rgba(34,211,238,0.25)]"
+                      : "bg-white border-gray-200 shadow-gray-200/50"
+                  }`}
+                  data-echo-key="section:add:photos"
+                >
+                  <div
+                    className={`mb-3 text-xs font-semibold uppercase tracking-[0.22em] ${
+                      isDarkMode ? "text-cyan-300" : "text-gray-700"
+                    }`}
+                  >
+                    {t("recipe.labels.photo", "RECIPE IMAGE")}
+                  </div>
+                  <div className="flex justify-center">
+                    <div
+                      className="flex-shrink-0"
+                      style={{ width: "17rem", height: "17rem" }}
+                    >
+                      {image ? (
+                        <img
+                          src={image}
+                          alt="Recipe"
+                          className="h-full w-full rounded-md bg-white object-contain"
+                          style={{
+                            border: "0.5px solid #000",
+                            boxShadow:
+                              "0 6px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2)",
+                          }}
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center rounded-md border border-dashed border-gray-400/70 bg-gray-100">
+                          <label
+                            className="cursor-pointer text-xs text-gray-600"
+                            data-echo-key="cta:add:upload"
+                          >
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={async (e) => {
+                                const f = e.target.files?.[0];
+                                if (!f) return;
+                                try {
+                                  const reader = new FileReader();
+                                  reader.onload = () =>
+                                    setImage(String(reader.result));
+                                  reader.readAsDataURL(f);
+                                } catch {}
+                              }}
+                            />
+                            Upload Photo
+                          </label>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 mt-1">
+              <div
+                className="w-full flex flex-col space-y-6"
+                style={{ minHeight: "18rem" }}
+              >
+                <div
+                  className={`border rounded-xl p-4 h-full shadow-lg ${isDarkMode ? "bg-blue-900/20 border-blue-400/30 shadow-blue-400/20" : "bg-blue-50 border-blue-200 shadow-gray-300/60"}`}
+                >
+                  <div
+                    className={`font-semibold text-sm mb-3 ${isDarkMode ? "text-blue-400" : "text-blue-700"}`}
+                  >
+                    {t("recipe.labels.modifiers", "Modifiers")}
+                  </div>
+                  <div
+                    className={`${isDarkMode ? "bg-blue-900/20 border-blue-400/30" : "bg-blue-50 border-blue-200"} border rounded-lg p-2 text-xs`}
+                  >
+                    {(() => {
+                      const diet = new Set(taxonomy.diets);
+                      const txt = ingredients
+                        .map((r) => `${r.qty} ${r.unit} ${r.item}`)
+                        .join(" ")
+                        .toLowerCase();
+                      const meatRe =
+                        /(beef|pork|chicken|lamb|fish|shrimp|gelatin)/;
+                      const issues: string[] = [];
+                      const dir = (directions || "").toLowerCase();
+                      const tempMatch =
+                        dir.match(
+                          /(\d{2,3})\s*(?:°\s*)?(?:f|fahrenheit|degf)/i,
+                        ) || dir.match(/(\d{2,3})\s*degrees?\s*f/i);
+                      const cookT = String(cookTemp || "").match(
+                        /\d{2,3}/,
+                      )?.[0];
+                      if (tempMatch && cookT && tempMatch[1] !== cookT)
+                        issues.push(
+                          `Cook temp mismatch: directions ${tempMatch[1]}F vs field ${cookT}F`,
+                        );
+                      if (
+                        (diet.has("vegetarian") || diet.has("vegan")) &&
+                        meatRe.test(txt)
+                      )
+                        issues.push(
+                          "Selected diet conflicts with ingredients.",
+                        );
+                      return issues.length ? (
+                        <div className="mb-2 text-red-600">
+                          {issues.map((s, i) => (
+                            <div key={i}>{s}</div>
+                          ))}
+                        </div>
+                      ) : null;
+                    })()}
+                    <div className="grid grid-cols-8 gap-1">
+                      {taxonomy.cuisine && (
+                        <div className="col-span-2">
+                          <div className="font-semibold">
+                            {t("recipe.labels.cuisineLabel", "Cuisine")}
+                          </div>
+                          <div>{taxonomy.cuisine}</div>
+                        </div>
+                      )}
+                      {taxonomy.difficulty && (
+                        <div className="col-span-2">
+                          <div className="font-semibold">
+                            {t("recipe.labels.difficultyLabel", "Difficulty")}
+                          </div>
+                          <div>{taxonomy.difficulty}</div>
+                        </div>
+                      )}
+                      {taxonomy.mealPeriod && (
+                        <div className="col-span-2">
+                          <div className="font-semibold">
+                            {t("recipe.labels.mealLabel", "Meal")}
+                          </div>
+                          <div>{taxonomy.mealPeriod}</div>
+                        </div>
+                      )}
+                      {taxonomy.serviceStyle && (
+                        <div className="col-span-2">
+                          <div className="font-semibold">
+                            {t("recipe.labels.serviceLabel", "Service")}
+                          </div>
+                          <div>{taxonomy.serviceStyle}</div>
+                        </div>
+                      )}
+                      {taxonomy.course.length > 0 && (
+                        <div className="col-span-4">
+                          <div className="font-semibold">
+                            {t("recipe.labels.courseLabel", "Course")}
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {[...taxonomy.course].sort().map((v) => (
+                              <span
+                                key={v}
+                                className="px-1 py-0.5 rounded border"
+                              >
+                                {v}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {taxonomy.pastry.length > 0 && (
+                        <div className="col-span-4">
+                          <div className="font-semibold">
+                            {t("recipe.labels.pastryLabel", "Pastry")}
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {[...taxonomy.pastry].sort().map((v) => (
+                              <span
+                                key={v}
+                                className="px-1 py-0.5 rounded border"
+                              >
+                                {v}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {taxonomy.technique.length > 0 && (
+                        <div className="col-span-4">
+                          <div className="font-semibold">
+                            {t("recipe.labels.techniqueLabel", "Technique")}
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {[...taxonomy.technique].sort().map((v) => (
+                              <span
+                                key={v}
+                                className="px-1 py-0.5 rounded border"
+                              >
+                                {v}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {taxonomy.components.length > 0 && (
+                        <div className="col-span-4">
+                          <div className="font-semibold">
+                            {t("recipe.labels.componentsLabel", "Components")}
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {[...taxonomy.components].sort().map((v) => (
+                              <span
+                                key={v}
+                                className="px-1 py-0.5 rounded border"
+                              >
+                                {v}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {taxonomy.equipment.length > 0 && (
+                        <div className="col-span-4">
+                          <div className="font-semibold">Equipment</div>
+                          <div className="flex flex-wrap gap-1">
+                            {[...taxonomy.equipment].sort().map((v) => (
+                              <span
+                                key={v}
+                                className="px-1 py-0.5 rounded border"
+                              >
+                                {v}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {taxonomy.diets.length > 0 && (
+                        <div className="col-span-4">
+                          <div className="font-semibold">Diets</div>
+                          <div className="flex flex-wrap gap-1">
+                            {[...taxonomy.diets].sort().map((v) => (
+                              <span
+                                key={v}
+                                className="px-1 py-0.5 rounded border"
+                              >
+                                {v}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <IngredientsGrid
+                  isDarkMode={isDarkMode}
+                  ingredients={ingredients}
+                  currencySymbol={getCurrencySymbol(currentCurrency)}
+                  totalCost={totalIngredientCost}
+                  theoreticalVolumeLabel={formatMl(theoreticalVolumeMl)}
+                  activeCount={activeIngredientCount}
+                  averageYield={averageIngredientYield}
+                  methodOptions={knownPrepMethods}
+                  methodOptionsId={methodOptionsId}
+                  onFieldChange={handleIngredientFieldChange}
+                  onFieldBlur={handleIngredientBlur}
+                  onAddRow={addIngredientRow}
+                  onRemoveRow={removeIngredientRow}
+                  onReorderRow={reorderIngredientRows}
+                  onGridKeyDown={onGridKeyDown}
+                  onAddSubRecipe={() => setIsSubRecipePickerOpen(true)}
+                  onAddDivider={addDividerRow}
+                />
+
+                <SubRecipePicker
+                  open={isSubRecipePickerOpen}
+                  onOpenChange={setIsSubRecipePickerOpen}
+                  options={subRecipeOptions}
+                  onConfirm={insertSubRecipeRows}
+                  isDarkMode={isDarkMode}
+                  formatCurrency={formatRecipeCost}
+                />
+
+                <Dialog open={yieldOpen} onOpenChange={setYieldOpen}>
+                  <DialogContent className="max-w-3xl w-full">
+                    <DialogHeader>
+                      <DialogTitle>Yield Lab</DialogTitle>
+                    </DialogHeader>
+                    <YieldLabForm
+                      defaultInputQty={yieldQty}
+                      defaultInputUnit={yieldUnit}
+                      recipeName={recipeName}
+                      defaultMethod={selectedPrepMethod[0] || ""}
+                      methodOptions={knownPrepMethods}
+                      onClose={() => setYieldOpen(false)}
+                    />
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              <Dialog open={isRndLabsOpen} onOpenChange={setIsRndLabsOpen}>
+                <DialogContent className="max-w-[min(1200px,95vw)] w-full h-[85vh] overflow-hidden border border-white/10 bg-white/95 p-0 text-slate-900 shadow-[0_40px_120px_-60px_rgba(15,23,42,0.65)] dark:border-cyan-500/20 dark:bg-slate-950/95 dark:text-cyan-100">
+                  <div className="flex h-full flex-col">
+                    <DialogHeader className="flex flex-row items-center justify-between border-b px-6 py-4 dark:border-cyan-500/20">
+                      <DialogTitle className="text-lg font-semibold uppercase tracking-[0.35em]">
+                        R&D Labs
+                      </DialogTitle>
+                      <button
+                        type="button"
+                        onClick={() => setIsRndLabsOpen(false)}
+                        className="rounded-full border border-transparent bg-slate-900/5 p-2 text-slate-500 transition hover:bg-slate-900/10 hover:text-slate-800 dark:bg-cyan-500/10 dark:text-cyan-200 dark:hover:bg-cyan-500/20"
+                        aria-label="Close R&D Labs"
+                      >
+                        <X className="h-4 w-4" aria-hidden />
+                      </button>
+                    </DialogHeader>
+                    <div className="flex flex-1 flex-col gap-4 px-6 py-4">
+                      <p className={`text-sm ${accentMuted}`}>
+                        Drag the dividers to resize each workspace. Use these
+                        surfaces for experiments, documentation, or automation
+                        flows.
+                      </p>
+                      <PanelGroup
+                        direction="horizontal"
+                        onLayout={handleRndLayoutChange}
+                        className="flex h-full items-stretch gap-3"
+                      >
+                        <Panel
+                          minSize={20}
+                          order={1}
+                          defaultSize={rndLayout[0]}
+                          className="flex"
+                        >
+                          <section
+                            className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[0]}`}
+                          >
+                            <header className={rndPanelHeadingClasses}>
+                              Discovery runway
+                            </header>
+                            <p
+                              className={`mt-2 text-xs leading-relaxed ${accentMuted}`}
+                            >
+                              Stage inspiration, competitive research, and
+                              sourcing notes here.
+                            </p>
+                            <div className="mt-4 flex-1 overflow-hidden">
+                              <DiscoveryPanel />
+                            </div>
+                          </section>
+                        </Panel>
+                        <PanelResizeHandle className={rndHandleClasses}>
+                          <span className="pointer-events-none h-10 w-0.5 rounded-full bg-slate-500/60 dark:bg-cyan-200/80" />
+                        </PanelResizeHandle>
+                        <Panel
+                          minSize={26}
+                          order={2}
+                          defaultSize={rndLayout[1]}
+                          className="flex"
+                        >
+                          <section
+                            className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[1]}`}
+                          >
+                            <header className={rndPanelHeadingClasses}>
+                              Workbench
+                            </header>
+                            <p
+                              className={`mt-2 text-xs leading-relaxed ${accentMuted}`}
+                            >
+                              Reserve this lane for formulations, live tests, or
+                              shared prototypes.
+                            </p>
+                            <div className="mt-4 flex-1 overflow-hidden">
+                              <WorkbenchPanel />
+                            </div>
+                          </section>
+                        </Panel>
+                        <PanelResizeHandle className={rndHandleClasses}>
+                          <span className="pointer-events-none h-10 w-0.5 rounded-full bg-slate-500/60 dark:bg-cyan-200/80" />
+                        </PanelResizeHandle>
+                        <Panel
+                          minSize={20}
+                          order={3}
+                          defaultSize={rndLayout[2]}
+                          className="flex"
+                        >
+                          <section
+                            className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[2]}`}
+                          >
+                            <header className={rndPanelHeadingClasses}>
+                              Insight stack
+                            </header>
+                            <p
+                              className={`mt-2 text-xs leading-relaxed ${accentMuted}`}
+                            >
+                              Pin KPIs, AI summaries, or vendor comparisons for
+                              rapid decisions.
+                            </p>
+                            <div className="mt-4 flex-1 overflow-hidden">
+                              <InsightsPanel />
+                            </div>
+                          </section>
+                        </Panel>
+                      </PanelGroup>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            <div
+              className={`rounded-2xl p-6 border ${isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3
+                  className={`font-bold text-xl ${isDarkMode ? "text-cyan-400" : "text-gray-900"}`}
+                >
+                  DIRECTIONS
+                </h3>
+                <div className="flex gap-3">
+                  <input
+                    ref={stepImageInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    hidden
+                    onChange={async (e) => {
+                      const files = Array.from(e.target.files || []);
+                      for (const f of files) {
+                        try {
+                          const img = await new Promise<HTMLImageElement>(
+                            (res, rej) => {
+                              const r = new FileReader();
+                              r.onload = () => {
+                                const im = new Image();
+                                im.onload = () => res(im);
+                                im.onerror = rej;
+                                im.src = String(r.result);
+                              };
+                              r.onerror = rej;
+                              r.readAsDataURL(f);
+                            },
+                          );
+                          const scale = Math.min(
+                            1,
+                            STEP_IMG_MAX_W / (img.width || STEP_IMG_MAX_W),
+                          );
+                          const w = Math.round(
+                            (img.width || STEP_IMG_MAX_W) * scale,
+                          );
+                          const h = Math.round(
+                            (img.height || STEP_IMG_MAX_W) * scale,
+                          );
+                          const c = document.createElement("canvas");
+                          c.width = w;
+                          c.height = h;
+                          const ctx = c.getContext("2d");
+                          if (ctx) {
+                            ctx.drawImage(img, 0, 0, w, h);
+                          }
+                          const data = c.toDataURL("image/jpeg", 0.85);
+                          setDirections(
+                            (d) => (d ? d + "\n" : "") + `IMG:${data}`,
+                          );
+                        } catch {}
+                      }
+                      (e.target as HTMLInputElement).value = "";
+                    }}
+                  />
+                  <button
+                    title="Insert Step Photo"
+                    className={`p-2 rounded-lg transition-all hover:bg-gray-100 ${isDarkMode ? "hover:bg-gray-700" : ""}`}
+                    onClick={() => stepImageInputRef.current?.click()}
+                  >
+                    <ImageIcon
+                      className={`w-5 h-5 ${isDarkMode ? "text-cyan-400" : "text-gray-600"}`}
+                    />
+                  </button>
+                  <button
+                    title="Bold"
+                    className={`p-2 rounded-lg transition-all hover:bg-gray-100 ${isDarkMode ? "hover:bg-gray-700" : ""}`}
+                    onClick={() => document.execCommand("bold", false)}
+                  >
+                    <Bold
+                      className={`w-5 h-5 ${isDarkMode ? "text-cyan-400" : "text-gray-600"}`}
+                    />
+                  </button>
+                  <button
+                    title="Italic"
+                    className={`p-2 rounded-lg transition-all hover:bg-gray-100 ${isDarkMode ? "hover:bg-gray-700" : ""}`}
+                    onClick={() => document.execCommand("italic", false)}
+                  >
+                    <Italic
+                      className={`w-5 h-5 ${isDarkMode ? "text-cyan-400" : "text-gray-600"}`}
+                    />
+                  </button>
+                  <button
+                    title="Underline"
+                    className={`p-2 rounded-lg transition-all hover:bg-gray-100 ${isDarkMode ? "hover:bg-gray-700" : ""}`}
+                    onClick={() => document.execCommand("underline", false)}
+                  >
+                    <Underline
+                      className={`w-5 h-5 ${isDarkMode ? "text-cyan-400" : "text-gray-600"}`}
+                    />
+                  </button>
+                  <select
+                    className={`px-3 py-2 text-sm border rounded-lg ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-200 text-gray-900"}`}
+                    value={selectedFont}
+                    onChange={(e) => {
+                      setSelectedFont(e.target.value);
+                    }}
+                  >
+                    <option>Arial</option>
+                    <option>Times</option>
+                    <option>Helvetica</option>
+                    <option>Georgia</option>
+                  </select>
+                  <select
+                    className={`px-3 py-2 text-sm border rounded-lg ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-200 text-gray-900"}`}
+                    value={selectedFontSize}
+                    onChange={(e) => setSelectedFontSize(e.target.value)}
+                  >
+                    {["12px", "14px", "16px", "18px", "20px"].map((s) => (
+                      <option key={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div
+                id="directions-textarea"
+                contentEditable
+                suppressContentEditableWarning
+                ref={dirRef}
+                spellCheck
+                onDragOver={(e) => {
+                  if (e.dataTransfer?.types?.includes("Files")) {
+                    e.preventDefault();
+                  }
+                }}
+                onDrop={async (e) => {
+                  try {
+                    e.preventDefault();
+                    const files = Array.from(
+                      e.dataTransfer?.files || [],
+                    ).filter((f) => f.type.startsWith("image/"));
+                    for (const f of files) {
+                      const img = await new Promise<HTMLImageElement>(
+                        (res, rej) => {
+                          const r = new FileReader();
+                          r.onload = () => {
+                            const im = new Image();
+                            im.onload = () => res(im);
+                            im.onerror = rej;
+                            im.src = String(r.result);
+                          };
+                          r.onerror = rej;
+                          r.readAsDataURL(f);
+                        },
+                      );
+                      const scale = Math.min(
+                        1,
+                        STEP_IMG_MAX_W / (img.width || STEP_IMG_MAX_W),
+                      );
+                      const w = Math.round(
+                        (img.width || STEP_IMG_MAX_W) * scale,
+                      );
+                      const h = Math.round(
+                        (img.height || STEP_IMG_MAX_W) * scale,
+                      );
+                      const c = document.createElement("canvas");
+                      c.width = w;
+                      c.height = h;
+                      const ctx = c.getContext("2d");
+                      if (ctx) {
+                        ctx.drawImage(img, 0, 0, w, h);
+                      }
+                      const data = c.toDataURL("image/jpeg", 0.85);
+                      setDirections((d) => (d ? d + "\n" : "") + `IMG:${data}`);
+                    }
+                  } catch {}
+                }}
+                data-echo-key="field:add:steps"
+                className={`prose prose-sm max-w-none w-full border p-3 rounded-xl shadow-sm transition-all focus:shadow-md focus:ring-2 resize-none min-h-[160px] overflow-y-auto ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30" : "bg-white border-gray-200 text-gray-900 focus:ring-blue-400/30 focus:border-blue-400"}`}
+                style={{
+                  lineHeight: "1.7",
+                  whiteSpace: "pre-wrap",
+                  fontFamily: selectedFont,
+                  fontSize: selectedFontSize,
+                }}
+                onKeyDown={(e) => {
+                  const el = dirRef.current;
+                  if (!el) return;
+                  const sel = window.getSelection();
+                  if (!sel || !sel.anchorNode) return;
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    const text = el.textContent || "";
+                    let offset = 0;
+                    const range = sel.getRangeAt(0);
+                    const preRange = range.cloneRange();
+                    preRange.selectNodeContents(el);
+                    preRange.setEnd(range.endContainer, range.endOffset);
+                    const containerText = preRange.toString();
+                    offset = containerText.length;
+                    const before = text.slice(0, offset);
+                    const after = text.slice(offset);
+                    const lineStart = before.lastIndexOf("\n") + 1;
+                    const currentLine = before.slice(lineStart);
+                    const m = currentLine.match(/^\s*(\d+)[\.)]?\s*/);
+                    const nextNum = m ? String(Number(m[1]) + 1) + ". " : "• ";
+                    const newText = before + "\n" + nextNum + after;
+                    el.textContent = newText;
+                    const newOffset = offset + 1 + nextNum.length;
+                    const r = document.createRange();
+                    const walker = document.createTreeWalker(
+                      el,
+                      NodeFilter.SHOW_TEXT,
+                    );
+                    let seen = 0;
+                    let node: Node | null = walker.nextNode();
+                    while (node) {
+                      const len = (node.textContent || "").length;
+                      if (seen + len >= newOffset) {
+                        r.setStart(node, newOffset - seen);
+                        r.collapse(true);
+                        break;
+                      }
+                      seen += len;
+                      node = walker.nextNode();
+                    }
+                    sel.removeAllRanges();
+                    sel.addRange(r);
+                    setDirections(newText);
+                  }
+                }}
+                onInput={(e) => {
+                  let t = (e.target as HTMLDivElement).textContent || "";
+                  const fixes: Record<string, string> = {
+                    "fist ": "first ",
+                    "teh ": "the ",
+                    "mized ": "mixed ",
+                    "choped ": "chopped ",
+                    "whiskd ": "whisked ",
+                  };
+                  let changed = t;
+                  for (const [k, v] of Object.entries(fixes)) {
+                    changed = changed.replace(
+                      new RegExp("(^|\\s)" + k, "gi"),
+                      (s) =>
+                        s.toLowerCase().endsWith(k)
+                          ? s.slice(0, -k.length) + v
+                          : s,
+                    );
+                  }
+                  if (changed !== t) {
+                    (e.target as HTMLDivElement).textContent = changed;
+                    const sel = window.getSelection();
+                    if (sel) {
+                      const r = document.createRange();
+                      const el = dirRef.current!;
+                      r.selectNodeContents(el);
+                      r.collapse(false);
+                      sel.removeAllRanges();
+                      sel.addRange(r);
+                    }
+                  }
+                  setDirections(changed);
+                }}
+              ></div>
+            </div>
+
+            <div className="flex items-center justify-between mt-2">
+              <div className="ml-auto">
+                <button
+                  data-echo-key="cta:add:publish"
+                  onClick={() => {
+                    const title =
+                      (recipeName || "").trim() || "Untitled Recipe";
+                    const ingLines = ingredients
+                      .map((r) =>
+                        [r.qty, r.unit, r.item, r.prep]
+                          .filter(Boolean)
+                          .join(" ")
+                          .trim(),
+                      )
+                      .filter(Boolean);
+                    const insLines = String(directions || "")
+                      .split(/\r?\n/)
+                      .map((s) => s.trim())
+                      .filter(Boolean);
+                    const cover =
+                      image && image.startsWith("data:") ? [image] : undefined;
+                    if (!recipeIdRef.current) {
+                      recipeIdRef.current = addRecipe({
+                        title,
+                        ingredients: ingLines,
+                        instructions: insLines,
+                        imageDataUrls: cover,
+                        tags: [],
+                        extra: { source: "manual", taxonomy, published: true },
+                      });
+                    } else {
+                      updateRecipe(recipeIdRef.current, {
+                        title,
+                        ingredients: ingLines,
+                        instructions: insLines,
+                        imageDataUrls: cover,
+                        extra: { taxonomy, published: true },
+                      });
+                    }
+                    alert(`Published ${title}`);
+                  }}
+                  className={`px-3 py-2 text-sm rounded border ${isDarkMode ? "border-cyan-400/50 text-cyan-300" : "border-gray-400 text-gray-800"}`}
+                >
+                  Publish
+                </button>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <button
+                  data-echo-key="cta:add:save"
+                  onClick={() => {
+                    const title =
+                      (recipeName || "").trim() || "Untitled Recipe";
+                    const ingLines = ingredients
+                      .map((r) =>
+                        [r.qty, r.unit, r.item, r.prep]
+                          .filter(Boolean)
+                          .join(" ")
+                          .trim(),
+                      )
+                      .filter(Boolean);
+                    const insLines = String(directions || "")
+                      .split(/\r?\n/)
+                      .map((s) => s.trim())
+                      .filter(Boolean);
+                    const cover =
+                      image && image.startsWith("data:") ? [image] : undefined;
+                    if (!recipeIdRef.current) {
+                      recipeIdRef.current = addRecipe({
+                        title,
+                        ingredients: ingLines,
+                        instructions: insLines,
+                        imageDataUrls: cover,
+                        tags: [],
+                        extra: { source: "manual", taxonomy },
+                      });
+                    } else {
+                      updateRecipe(recipeIdRef.current, {
+                        title,
+                        ingredients: ingLines,
+                        instructions: insLines,
+                        imageDataUrls: cover,
+                        extra: { taxonomy },
+                      });
+                    }
+                    pushHistory({ ...serialize(), ts: Date.now() });
+                    alert(`Saved ${title}`);
+                  }}
+                  className="flex items-center gap-2 text-gray-700 hover:text-black"
+                >
+                  <Save className="w-5 h-5" />
+                  Save
+                </button>
+                <button
+                  onClick={exportCSV}
+                  className="flex items-center gap-1 text-gray-700 hover:text-black"
+                >
+                  <FileDown className="w-4 h-4" />
+                  CSV
+                </button>
+                <button
+                  onClick={() => window.print()}
+                  className="flex items-center gap-1 text-gray-700 hover:text-black"
+                >
+                  <Printer className="w-4 h-4" />
+                  Print
+                </button>
+                <button
+                  onClick={shareLink}
+                  className="flex items-center gap-1 text-gray-700 hover:text-black"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Share
+                </button>
+                <button
+                  onClick={() => {
+                    const title = recipeName || "Recipe";
+                    const ing = ingredients
+                      .map((r) =>
+                        [r.qty, r.unit, r.item, r.prep]
+                          .filter(Boolean)
+                          .join(" "),
+                      )
+                      .filter(Boolean)
+                      .join("\n");
+                    const ins = String(directions || "")
+                      .split(/\r?\n/)
+                      .filter(Boolean)
+                      .map((s, i) => `${i + 1}. ${s}`)
+                      .join("\n");
+                    const bodyText = `${title}\n\nIngredients:\n${ing || "-"}\n\nDirections:\n${ins || "-"}`;
+                    const body = encodeURIComponent(bodyText);
+                    location.href = `sms:?&body=${body}`;
+                  }}
+                  className="flex items-center gap-1 text-gray-700 hover:text-black"
+                >
+                  <Share2 className="w-4 h-4" />
+                  SMS
+                </button>
+                <button
+                  onClick={() => {
+                    const html = `<!DOCTYPE html><html><head><meta charset='utf-8'><title>${recipeName || "Recipe"}</title></head><body><h1>${recipeName || "Recipe"}</h1><h3>Ingredients</h3><ul>${ingredients.map((r) => `<li>${[r.qty, r.unit, r.item, r.prep].filter(Boolean).join(" ")}</li>`).join("")}</ul><h3>Directions</h3><pre style="white-space:pre-wrap;font-family:Arial, sans-serif;">${directions}</pre></body></html>`;
+                    const blob = new Blob([html], {
+                      type: "application/msword",
+                    });
+                    const a = document.createElement("a");
+                    a.href = URL.createObjectURL(blob);
+                    a.download = `${(recipeName || "recipe").replace(/[^a-z0-9-_]+/gi, "_")}.doc`;
+                    a.click();
+                    URL.revokeObjectURL(a.href);
+                  }}
+                  className="flex items-center gap-1 text-gray-700 hover:text-black"
+                >
+                  <FileDown className="w-4 h-4" />
+                  Word
+                </button>
+              </div>
+              <button
+                onClick={analyzeNutrition}
+                disabled={nutritionLoading}
+                className={`text-xs px-3 py-2 rounded ${isDarkMode ? "border border-cyan-400/50 hover:bg-cyan-900/20 text-cyan-300" : "border border-gray-400 hover:bg-gray-100 text-gray-800"}`}
+              >
+                {nutritionLoading ? "Analyzing��" : "Generate Nutrition Label"}
+              </button>
+            </div>
+
+            <div
+              className={`mt-3 rounded-2xl p-6 border ${isDarkMode ? "bg-gray-900/50 border-cyan-400/30" : "bg-white/80 border-gray-200 shadow-sm"}`}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <h3
+                  className={`font-bold text-xl ${isDarkMode ? "text-cyan-400" : "text-gray-900"}`}
+                >
+                  NUTRITION
+                </h3>
+                {nutrition && (
+                  <div className="flex gap-2 text-xs">
+                    <button
+                      onClick={() => setNutritionPerServing(true)}
+                      className={`${nutritionPerServing ? "bg-blue-600 text-white" : ""} px-2 py-1 rounded border`}
+                    >
+                      Per Serving
+                    </button>
+                    <button
+                      onClick={() => setNutritionPerServing(false)}
+                      className={`${!nutritionPerServing ? "bg-blue-600 text-white" : ""} px-2 py-1 rounded border`}
+                    >
+                      Whole Recipe
+                    </button>
+                  </div>
+                )}
+              </div>
+              {!nutrition && !nutritionLoading && !nutritionError && (
+                <div
+                  className={`${isDarkMode ? "text-cyan-400/70" : "text-gray-500"}`}
+                >
+                  Click "Generate Nutrition Label" to analyze this recipe.
+                </div>
+              )}
+              {nutritionError && (
+                <div className="text-red-500 text-sm">{nutritionError}</div>
+              )}
               {nutrition && (
-                <div className="flex gap-2 text-xs">
-                  <button
-                    onClick={() => setNutritionPerServing(true)}
-                    className={`${nutritionPerServing ? "bg-blue-600 text-white" : ""} px-2 py-1 rounded border`}
-                  >
-                    Per Serving
-                  </button>
-                  <button
-                    onClick={() => setNutritionPerServing(false)}
-                    className={`${!nutritionPerServing ? "bg-blue-600 text-white" : ""} px-2 py-1 rounded border`}
-                  >
-                    Whole Recipe
-                  </button>
+                <div className="flex flex-col md:flex-row gap-4">
+                  <NutritionLabel
+                    data={nutrition}
+                    servings={portionCount || 1}
+                    perServing={nutritionPerServing}
+                  />
+                  <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-3 text-sm self-start">
+                    <div>
+                      <span className="font-semibold">Yield:</span> {yieldQty}{" "}
+                      {yieldUnit}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Servings:</span>{" "}
+                      {portionCount}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Unit:</span> {portionUnit}
+                    </div>
+                  </div>
+                </div>
+              )}
+              {chefNotes && (
+                <div
+                  className={`mt-4 rounded-xl border p-3 ${isDarkMode ? "border-gray-700 text-cyan-200" : "border-gray-200 text-gray-800 bg-gradient-to-b from-white to-slate-50"}`}
+                >
+                  <div className="font-semibold mb-1">Chef Notes</div>
+                  <div className="whitespace-pre-wrap text-sm">{chefNotes}</div>
                 </div>
               )}
             </div>
-            {!nutrition && !nutritionLoading && !nutritionError && (
-              <div
-                className={`${isDarkMode ? "text-cyan-400/70" : "text-gray-500"}`}
-              >
-                Click "Generate Nutrition Label" to analyze this recipe.
-              </div>
-            )}
-            {nutritionError && (
-              <div className="text-red-500 text-sm">{nutritionError}</div>
-            )}
-            {nutrition && (
-              <div className="flex flex-col md:flex-row gap-4">
-                <NutritionLabel
-                  data={nutrition}
-                  servings={portionCount || 1}
-                  perServing={nutritionPerServing}
-                />
-                <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-3 text-sm self-start">
-                  <div>
-                    <span className="font-semibold">Yield:</span> {yieldQty}{" "}
-                    {yieldUnit}
-                  </div>
-                  <div>
-                    <span className="font-semibold">Servings:</span>{" "}
-                    {portionCount}
-                  </div>
-                  <div>
-                    <span className="font-semibold">Unit:</span> {portionUnit}
-                  </div>
-                </div>
-              </div>
-            )}
-            {chefNotes && (
-              <div
-                className={`mt-4 rounded-xl border p-3 ${isDarkMode ? "border-gray-700 text-cyan-200" : "border-gray-200 text-gray-800 bg-gradient-to-b from-white to-slate-50"}`}
-              >
-                <div className="font-semibold mb-1">Chef Notes</div>
-                <div className="whitespace-pre-wrap text-sm">{chefNotes}</div>
-              </div>
-            )}
           </div>
         </div>
+
+        <RightSidebar
+          mode={rightSidebarMode}
+          isCollapsed={isRightSidebarCollapsed}
+          onToggle={() => setIsRightSidebarCollapsed(!isRightSidebarCollapsed)}
+          onOpenLabs={() => setIsRndLabsOpen(true)}
+          onCloseLabs={() => setIsRndLabsOpen(false)}
+          selectedAllergens={selectedAllergens}
+          onAllergensChange={handleAllergensChange}
+          selectedNationality={selectedNationality}
+          onNationalityChange={setSelectedNationality}
+          selectedCourses={selectedCourses}
+          onCoursesChange={setSelectedCourses}
+          selectedRecipeType={selectedRecipeType}
+          onRecipeTypeChange={setSelectedRecipeType}
+          selectedPrepMethod={selectedPrepMethod}
+          onPrepMethodChange={setSelectedPrepMethod}
+          selectedCookingEquipment={selectedCookingEquipment}
+          onCookingEquipmentChange={setSelectedCookingEquipment}
+          selectedRecipeAccess={selectedRecipeAccess}
+          onRecipeAccessChange={setSelectedRecipeAccess}
+          image={image}
+          onImageChange={setImage}
+          taxonomy={taxonomy}
+          onTaxonomyChange={setTaxonomy}
+          onRecipeImport={async (data) => {
+            const decode = (s: string) =>
+              s
+                .replace(/&quot;/g, '"')
+                .replace(/&#39;/g, "'")
+                .replace(/&amp;/g, "&")
+                .replace(/&lt;/g, "<")
+                .replace(/&gt;/g, ">");
+            if (data?.title)
+              setRecipeName(decode(String(data.title)).toUpperCase());
+            if (data?.ingredients?.length) {
+              const rows = (data.ingredients as string[]).map((s: string) => {
+                s = decode(s);
+                const fracMap: Record<string, string> = {
+                  "¼": "1/4",
+                  "½": "1/2",
+                  "¾": "3/4",
+                  "⅐": "1/7",
+                  "⅑": "1/9",
+                  "⅒": "1/10",
+                  "⅓": "1/3",
+                  "⅔": "2/3",
+                  "⅕": "1/5",
+                  "⅖": "2/5",
+                  "⅗": "3/5",
+                  "⅘": "4/5",
+                  "⅙": "1/6",
+                  "⅚": "5/6",
+                  "⅛": "1/8",
+                  "⅜": "3/8",
+                  "⅝": "5/8",
+                  "⅞": "7/8",
+                };
+                s = s.replace(
+                  /[¼½¾��⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝���]/g,
+                  (ch) => fracMap[ch] || ch,
+                );
+                const m = s.match(
+                  /^\s*([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?)?\s*([a-zA-Z\.]+)?\s*(.*)$/,
+                );
+                const qty = m?.[1] ? m[1] : "";
+                const unit = m?.[2] ? m[2].toUpperCase() : "";
+                const rest = (m?.[3] || "").trim();
+                const [item, ...prep] = rest.split(",");
+                return {
+                  qty,
+                  unit,
+                  item: item.trim(),
+                  prep: prep.join(",").trim(),
+                  yield: "",
+                  cost: "",
+                  subId: "",
+                };
+              });
+              setIngredients(rows.length ? rows : [createIngredientRow()]);
+            }
+            if (data?.instructions) {
+              const txt = decode(String(data.instructions));
+              setDirections(txt);
+              if (/recipe\s+follows|see\s+.+?\s+recipe/i.test(txt)) {
+                setChefNotes(
+                  (prev) =>
+                    (prev ? prev + "\n" : "") +
+                    "Note: This recipe references a sub‑recipe (e.g., buttercream). Import or add the sub‑recipe and link it here.",
+                );
+              }
+            }
+            if (data?.image) {
+              try {
+                const urlStr = String(data.image);
+                fetch(urlStr)
+                  .then((res) => res.blob())
+                  .then(async (blob) => {
+                    const ext = blob.type.includes("png") ? "png" : "jpg";
+                    const fname = `${(data.title || "cover")
+                      .toString()
+                      .toLowerCase()
+                      .replace(/[^a-z0-9]+/g, "-")}.${ext}`;
+                    await addImages(
+                      [
+                        new File([blob], fname, {
+                          type: blob.type || "image/jpeg",
+                        }),
+                      ],
+                      { tags: ["import", "web"] },
+                    );
+                    const reader = new FileReader();
+                    reader.onload = () =>
+                      setImage(String(reader.result || urlStr));
+                    reader.readAsDataURL(blob);
+                  })
+                  .catch(() => setImage(String(data.image)));
+              } catch {
+                setImage(String(data.image));
+              }
+            }
+            // Top info
+            if (data?.yield) {
+              const y = String(data.yield);
+              const ym = y.match(/([0-9]+(?:\.[0-9]+)?)/);
+              const um = y.match(
+                /(cups?|quarts?|pints?|gallons?|oz|ounces?|lb|lbs|servings?|qt|qts|gal)/i,
+              );
+              if (ym && um) {
+                setYieldQty(Number(ym[1]));
+                setYieldUnit(
+                  um[1]
+                    .toUpperCase()
+                    .replace("QUARTS", "QTS")
+                    .replace("QUART", "QTS")
+                    .replace("QT", "QTS")
+                    .replace("GAL", "GALLON")
+                    .replace("OUNCES", "OZ")
+                    .replace("OUNCE", "OZ")
+                    .replace("LBS", "LBS")
+                    .replace("LB", "LBS")
+                    .replace("CUPS", "CUP"),
+                );
+              }
+            }
+            if (data?.cookTime) setCookTime(String(data.cookTime));
+            if (data?.prepTime) setPrepTime(String(data.prepTime));
+          }}
+        />
+
+        <ImageEditorModal
+          isOpen={showImagePopup}
+          image={image}
+          onClose={() => setShowImagePopup(false)}
+          onApply={(d) => setImage(d)}
+          isDarkMode={isDarkMode}
+        />
       </div>
-
-      <RightSidebar
-        mode={rightSidebarMode}
-        isCollapsed={isRightSidebarCollapsed}
-        onToggle={() => setIsRightSidebarCollapsed(!isRightSidebarCollapsed)}
-        onOpenLabs={() => setIsRndLabsOpen(true)}
-        onCloseLabs={() => setIsRndLabsOpen(false)}
-        selectedAllergens={selectedAllergens}
-        onAllergensChange={handleAllergensChange}
-        selectedNationality={selectedNationality}
-        onNationalityChange={setSelectedNationality}
-        selectedCourses={selectedCourses}
-        onCoursesChange={setSelectedCourses}
-        selectedRecipeType={selectedRecipeType}
-        onRecipeTypeChange={setSelectedRecipeType}
-        selectedPrepMethod={selectedPrepMethod}
-        onPrepMethodChange={setSelectedPrepMethod}
-        selectedCookingEquipment={selectedCookingEquipment}
-        onCookingEquipmentChange={setSelectedCookingEquipment}
-        selectedRecipeAccess={selectedRecipeAccess}
-        onRecipeAccessChange={setSelectedRecipeAccess}
-        image={image}
-        onImageChange={setImage}
-        taxonomy={taxonomy}
-        onTaxonomyChange={setTaxonomy}
-        onRecipeImport={async (data) => {
-          const decode = (s: string) =>
-            s
-              .replace(/&quot;/g, '"')
-              .replace(/&#39;/g, "'")
-              .replace(/&amp;/g, "&")
-              .replace(/&lt;/g, "<")
-              .replace(/&gt;/g, ">");
-          if (data?.title)
-            setRecipeName(decode(String(data.title)).toUpperCase());
-          if (data?.ingredients?.length) {
-            const rows = (data.ingredients as string[]).map((s: string) => {
-              s = decode(s);
-              const fracMap: Record<string, string> = {
-                "¼": "1/4",
-                "½": "1/2",
-                "¾": "3/4",
-                "⅐": "1/7",
-                "⅑": "1/9",
-                "⅒": "1/10",
-                "⅓": "1/3",
-                "⅔": "2/3",
-                "⅕": "1/5",
-                "⅖": "2/5",
-                "⅗": "3/5",
-                "⅘": "4/5",
-                "⅙": "1/6",
-                "⅚": "5/6",
-                "⅛": "1/8",
-                "⅜": "3/8",
-                "⅝": "5/8",
-                "⅞": "7/8",
-              };
-              s = s.replace(/[¼½¾��⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝���]/g, (ch) => fracMap[ch] || ch);
-              const m = s.match(
-                /^\s*([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?)?\s*([a-zA-Z\.]+)?\s*(.*)$/,
-              );
-              const qty = m?.[1] ? m[1] : "";
-              const unit = m?.[2] ? m[2].toUpperCase() : "";
-              const rest = (m?.[3] || "").trim();
-              const [item, ...prep] = rest.split(",");
-              return {
-                qty,
-                unit,
-                item: item.trim(),
-                prep: prep.join(",").trim(),
-                yield: "",
-                cost: "",
-                subId: "",
-              };
-            });
-            setIngredients(
-              rows.length
-                ? rows
-                : [createIngredientRow()],
-            );
-          }
-          if (data?.instructions) {
-            const txt = decode(String(data.instructions));
-            setDirections(txt);
-            if (/recipe\s+follows|see\s+.+?\s+recipe/i.test(txt)) {
-              setChefNotes(
-                (prev) =>
-                  (prev ? prev + "\n" : "") +
-                  "Note: This recipe references a sub‑recipe (e.g., buttercream). Import or add the sub‑recipe and link it here.",
-              );
-            }
-          }
-          if (data?.image) {
-            try {
-              const urlStr = String(data.image);
-              fetch(urlStr)
-                .then((res) => res.blob())
-                .then(async (blob) => {
-                  const ext = blob.type.includes("png") ? "png" : "jpg";
-                  const fname = `${(data.title || "cover")
-                    .toString()
-                    .toLowerCase()
-                    .replace(/[^a-z0-9]+/g, "-")}.${ext}`;
-                  await addImages(
-                    [
-                      new File([blob], fname, {
-                        type: blob.type || "image/jpeg",
-                      }),
-                    ],
-                    { tags: ["import", "web"] },
-                  );
-                  const reader = new FileReader();
-                  reader.onload = () =>
-                    setImage(String(reader.result || urlStr));
-                  reader.readAsDataURL(blob);
-                })
-                .catch(() => setImage(String(data.image)));
-            } catch {
-              setImage(String(data.image));
-            }
-          }
-          // Top info
-          if (data?.yield) {
-            const y = String(data.yield);
-            const ym = y.match(/([0-9]+(?:\.[0-9]+)?)/);
-            const um = y.match(
-              /(cups?|quarts?|pints?|gallons?|oz|ounces?|lb|lbs|servings?|qt|qts|gal)/i,
-            );
-            if (ym && um) {
-              setYieldQty(Number(ym[1]));
-              setYieldUnit(
-                um[1]
-                  .toUpperCase()
-                  .replace("QUARTS", "QTS")
-                  .replace("QUART", "QTS")
-                  .replace("QT", "QTS")
-                  .replace("GAL", "GALLON")
-                  .replace("OUNCES", "OZ")
-                  .replace("OUNCE", "OZ")
-                  .replace("LBS", "LBS")
-                  .replace("LB", "LBS")
-                  .replace("CUPS", "CUP"),
-              );
-            }
-          }
-          if (data?.cookTime) setCookTime(String(data.cookTime));
-          if (data?.prepTime) setPrepTime(String(data.prepTime));
-        }}
-      />
-
-      <ImageEditorModal
-        isOpen={showImagePopup}
-        image={image}
-        onClose={() => setShowImagePopup(false)}
-        onApply={(d) => setImage(d)}
-        isDarkMode={isDarkMode}
-      />
-    </div>
     </RDLabProvider>
   );
 };

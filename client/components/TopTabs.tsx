@@ -1,4 +1,11 @@
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   BookOpenCheck,
@@ -22,7 +29,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/context/LanguageContext";
 
@@ -42,15 +54,69 @@ type NavItemConfig = {
 type NavItem = NavItemConfig & { label: string };
 
 const navItems: NavItemConfig[] = [
-  { to: "/?tab=search", labelKey: "nav.recipes", fallback: "RECIPES", icon: BookOpenCheck, shortcut: { key: "Digit1", display: "1" } },
-  { to: "/?tab=add-recipe", labelKey: "nav.addRecipe", fallback: "ADD RECIPE", icon: PenSquare, shortcut: { key: "Digit2", display: "2" } },
-  { to: "/?tab=server-notes", labelKey: "nav.serverNotes", fallback: "SERVER NOTES", icon: ClipboardList, shortcut: { key: "Digit3", display: "3" } },
-  { to: "/?tab=production", labelKey: "nav.production", fallback: "PRODUCTION", icon: Factory, shortcut: { key: "Digit4", display: "4" } },
-  { to: "/?tab=saas", labelKey: "nav.saas", fallback: "SaaS", icon: Sparkles, shortcut: { key: "Digit5", display: "5" } },
-  { to: "/?tab=inventory", labelKey: "nav.inventorySupplies", fallback: "Inventory & Supplies", icon: Boxes, shortcut: { key: "Digit6", display: "6" } },
-  { to: "/?tab=nutrition", labelKey: "nav.nutritionAllergens", fallback: "Nutrition/Allergens", icon: Sprout, shortcut: { key: "Digit7", display: "7" } },
-  { to: "/?tab=haccp", labelKey: "nav.haccpCompliance", fallback: "HACCP/Compliance", icon: ShieldCheck, shortcut: { key: "Digit8", display: "8" } },
-  { to: "/?tab=gallery", labelKey: "nav.gallery", fallback: "Gallery", icon: Images, shortcut: { key: "Digit9", display: "9" } },
+  {
+    to: "/?tab=search",
+    labelKey: "nav.recipes",
+    fallback: "RECIPES",
+    icon: BookOpenCheck,
+    shortcut: { key: "Digit1", display: "1" },
+  },
+  {
+    to: "/?tab=add-recipe",
+    labelKey: "nav.addRecipe",
+    fallback: "ADD RECIPE",
+    icon: PenSquare,
+    shortcut: { key: "Digit2", display: "2" },
+  },
+  {
+    to: "/?tab=server-notes",
+    labelKey: "nav.serverNotes",
+    fallback: "SERVER NOTES",
+    icon: ClipboardList,
+    shortcut: { key: "Digit3", display: "3" },
+  },
+  {
+    to: "/?tab=production",
+    labelKey: "nav.production",
+    fallback: "PRODUCTION",
+    icon: Factory,
+    shortcut: { key: "Digit4", display: "4" },
+  },
+  {
+    to: "/?tab=saas",
+    labelKey: "nav.saas",
+    fallback: "SaaS",
+    icon: Sparkles,
+    shortcut: { key: "Digit5", display: "5" },
+  },
+  {
+    to: "/?tab=inventory",
+    labelKey: "nav.inventorySupplies",
+    fallback: "Inventory & Supplies",
+    icon: Boxes,
+    shortcut: { key: "Digit6", display: "6" },
+  },
+  {
+    to: "/?tab=nutrition",
+    labelKey: "nav.nutritionAllergens",
+    fallback: "Nutrition/Allergens",
+    icon: Sprout,
+    shortcut: { key: "Digit7", display: "7" },
+  },
+  {
+    to: "/?tab=haccp",
+    labelKey: "nav.haccpCompliance",
+    fallback: "HACCP/Compliance",
+    icon: ShieldCheck,
+    shortcut: { key: "Digit8", display: "8" },
+  },
+  {
+    to: "/?tab=gallery",
+    labelKey: "nav.gallery",
+    fallback: "Gallery",
+    icon: Images,
+    shortcut: { key: "Digit9", display: "9" },
+  },
 ];
 
 type DissolvingTextProps = {
@@ -109,7 +175,13 @@ type TabLinkProps = {
   shortcutDisplay?: string;
 };
 
-function TabLink({ to, label, icon: Icon, collapsed, shortcutDisplay }: TabLinkProps) {
+function TabLink({
+  to,
+  label,
+  icon: Icon,
+  collapsed,
+  shortcutDisplay,
+}: TabLinkProps) {
   const loc = useLocation();
   const active = new URLSearchParams(loc.search).get("tab") ?? "search";
   const value = new URLSearchParams(to.split("?")[1] || "").get("tab") || "";
@@ -154,7 +226,11 @@ function TabLink({ to, label, icon: Icon, collapsed, shortcutDisplay }: TabLinkP
   return (
     <Tooltip delayDuration={0}>
       <TooltipTrigger asChild>{link}</TooltipTrigger>
-      <TooltipContent side="right" align="center" className="text-xs font-medium">
+      <TooltipContent
+        side="right"
+        align="center"
+        className="text-xs font-medium"
+      >
         <div className="flex flex-col items-start">
           <span>{label}</span>
           {shortcutDisplay ? (
@@ -244,7 +320,10 @@ export default function TopTabs() {
       const { offsetWidth, offsetLeft } = asideRef.current;
       const gap = 4;
       const offset = Math.max(Math.round(offsetLeft + offsetWidth + gap), 0);
-      document.documentElement.style.setProperty("--sidebar-offset", `${offset}px`);
+      document.documentElement.style.setProperty(
+        "--sidebar-offset",
+        `${offset}px`,
+      );
     };
 
     updateSidebarOffset();
@@ -283,12 +362,15 @@ export default function TopTabs() {
   );
 
   const navShortcutMap = useMemo(() => {
-    return navItems.reduce((acc, item) => {
-      if (item.shortcut) {
-        acc[item.shortcut.key] = item.to;
-      }
-      return acc;
-    }, {} as Record<string, string>);
+    return navItems.reduce(
+      (acc, item) => {
+        if (item.shortcut) {
+          acc[item.shortcut.key] = item.to;
+        }
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
   }, []);
 
   const setCollapsedManual = useCallback(
@@ -300,7 +382,9 @@ export default function TopTabs() {
       }
       setCollapsed((prev) => {
         const next =
-          typeof value === "function" ? (value as (state: boolean) => boolean)(prev) : value;
+          typeof value === "function"
+            ? (value as (state: boolean) => boolean)(prev)
+            : value;
         if (typeof window !== "undefined") {
           window.sessionStorage.setItem("nav:collapsed", String(next));
         }
@@ -353,144 +437,146 @@ export default function TopTabs() {
     <>
       <TooltipProvider delayDuration={collapsed ? 0 : 200}>
         <aside
-        ref={asideRef}
-        className={cn(
-          "pointer-events-auto fixed left-1.5 top-24 z-[1000] flex flex-col overflow-hidden rounded-3xl border border-white/60 bg-white/40 shadow-[0_32px_65px_-18px_rgba(15,23,42,0.45)] backdrop-blur-2xl transition-all duration-700 dark:border-cyan-500/25 dark:bg-slate-950/70 dark:shadow-[0_0_70px_rgba(56,189,248,0.65)] sm:left-2 sm:top-28 lg:left-4",
-          collapsed ? "w-16 space-y-3 p-3" : "w-64 space-y-4 p-5",
-        )}
-      >
-        <div className="relative flex h-full flex-col">
-          <div
-            className={cn(
-              "flex items-center gap-2 transition-all duration-500",
-              collapsed ? "justify-center" : "justify-end",
-            )}
-          >
-            {!collapsed ? (
-              <span className="rounded-full border border-white/60 bg-white/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-slate-600 shadow-sm dark:border-cyan-500/40 dark:bg-slate-900/70 dark:text-cyan-200">
-                Navigation
-              </span>
-            ) : null}
-            <button
-              type="button"
-              onClick={() => {
-                setCollapsedManual(true);
-              }}
+          ref={asideRef}
+          className={cn(
+            "pointer-events-auto fixed left-1.5 top-24 z-[1000] flex flex-col overflow-hidden rounded-3xl border border-white/60 bg-white/40 shadow-[0_32px_65px_-18px_rgba(15,23,42,0.45)] backdrop-blur-2xl transition-all duration-700 dark:border-cyan-500/25 dark:bg-slate-950/70 dark:shadow-[0_0_70px_rgba(56,189,248,0.65)] sm:left-2 sm:top-28 lg:left-4",
+            collapsed ? "w-16 space-y-3 p-3" : "w-64 space-y-4 p-5",
+          )}
+        >
+          <div className="relative flex h-full flex-col">
+            <div
               className={cn(
-                "rounded-full border border-white/40 bg-white/70 p-2 text-muted-foreground shadow-sm transition duration-300 hover:bg-white dark:border-slate-700/60 dark:bg-slate-900/70 dark:text-slate-200",
-                collapsed && "pointer-events-none opacity-0",
-              )}
-              aria-label="Collapse navigation"
-              title={`Collapse navigation (${navToggleShortcut})`}
-            >
-              <ChevronLeft className="h-4 w-4" aria-hidden />
-            </button>
-          </div>
-
-          <nav
-            className={cn(
-              "max-h-[70vh] space-y-1 overflow-y-auto pr-1 transition-all duration-700",
-              collapsed && "pr-0",
-            )}
-          >
-            {translatedNavItems.map((item) => (
-              <TabLink
-                key={item.to}
-                to={item.to}
-                label={item.label}
-                icon={item.icon}
-                collapsed={collapsed}
-                shortcutDisplay={
-                  item.shortcut ? `${shortcutLabel}+${item.shortcut.display}` : undefined
-                }
-              />
-            ))}
-          </nav>
-
-          <div
-            className={cn(
-              "space-y-3 border-t border-white/50 pt-3 text-sm transition-all duration-700 dark:border-slate-800/60",
-              collapsed && "border-transparent pt-2",
-            )}
-          >
-            <button
-              type="button"
-              title="Finalize & Clear"
-              onClick={() => {
-                window.dispatchEvent(
-                  new CustomEvent("recipe:action", {
-                    detail: { type: "finalizeImport" },
-                  }),
-                );
-              }}
-              className={cn(
-                "flex w-full items-center rounded-md bg-white/70 px-3 py-2 font-medium text-foreground shadow-sm transition duration-300 hover:bg-white dark:bg-slate-900/80 dark:hover:bg-slate-900",
-                collapsed ? "justify-center px-2" : "justify-between",
+                "flex items-center gap-2 transition-all duration-500",
+                collapsed ? "justify-center" : "justify-end",
               )}
             >
-              <DissolvingText
-                collapsed={collapsed}
-                ariaHidden={collapsed}
-                className="text-sm font-medium"
+              {!collapsed ? (
+                <span className="rounded-full border border-white/60 bg-white/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-slate-600 shadow-sm dark:border-cyan-500/40 dark:bg-slate-900/70 dark:text-cyan-200">
+                  Navigation
+                </span>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => {
+                  setCollapsedManual(true);
+                }}
+                className={cn(
+                  "rounded-full border border-white/40 bg-white/70 p-2 text-muted-foreground shadow-sm transition duration-300 hover:bg-white dark:border-slate-700/60 dark:bg-slate-900/70 dark:text-slate-200",
+                  collapsed && "pointer-events-none opacity-0",
+                )}
+                aria-label="Collapse navigation"
+                title={`Collapse navigation (${navToggleShortcut})`}
               >
-                {t("recipe.actions.finalize", "Finalize & Clear")}
-              </DissolvingText>
-              <Save className="h-4 w-4" aria-hidden />
-            </button>
-            <button
-              type="button"
-              title="Help & Shortcuts"
-              onClick={() => setShowHelp(true)}
+                <ChevronLeft className="h-4 w-4" aria-hidden />
+              </button>
+            </div>
+
+            <nav
               className={cn(
-                "flex w-full items-center rounded-md px-3 py-2 font-medium text-foreground transition duration-300 hover:bg-white/70 dark:hover:bg-slate-900/70",
-                collapsed ? "justify-center px-2" : "justify-between",
+                "max-h-[70vh] space-y-1 overflow-y-auto pr-1 transition-all duration-700",
+                collapsed && "pr-0",
               )}
             >
-              <DissolvingText
-                collapsed={collapsed}
-                ariaHidden={collapsed}
-                className="text-sm font-medium"
-              >
-                {t("recipe.actions.help", "Help & Shortcuts")}
-              </DissolvingText>
-              <HelpCircle className="h-4 w-4" aria-hidden />
-            </button>
+              {translatedNavItems.map((item) => (
+                <TabLink
+                  key={item.to}
+                  to={item.to}
+                  label={item.label}
+                  icon={item.icon}
+                  collapsed={collapsed}
+                  shortcutDisplay={
+                    item.shortcut
+                      ? `${shortcutLabel}+${item.shortcut.display}`
+                      : undefined
+                  }
+                />
+              ))}
+            </nav>
 
             <div
               className={cn(
-                "flex items-center justify-between rounded-md bg-white/60 px-3 py-2 text-sm font-medium text-foreground shadow-sm transition-all duration-700 dark:bg-slate-900/70",
-                collapsed && "flex-col gap-2 px-2 py-2",
+                "space-y-3 border-t border-white/50 pt-3 text-sm transition-all duration-700 dark:border-slate-800/60",
+                collapsed && "border-transparent pt-2",
               )}
             >
-              <DissolvingText
-                collapsed={collapsed}
-                ariaHidden={collapsed}
-                className="text-sm font-medium"
+              <button
+                type="button"
+                title="Finalize & Clear"
+                onClick={() => {
+                  window.dispatchEvent(
+                    new CustomEvent("recipe:action", {
+                      detail: { type: "finalizeImport" },
+                    }),
+                  );
+                }}
+                className={cn(
+                  "flex w-full items-center rounded-md bg-white/70 px-3 py-2 font-medium text-foreground shadow-sm transition duration-300 hover:bg-white dark:bg-slate-900/80 dark:hover:bg-slate-900",
+                  collapsed ? "justify-center px-2" : "justify-between",
+                )}
               >
-                {t("recipe.actions.theme", "Theme")}
-              </DissolvingText>
-              <ThemeToggle />
-            </div>
-          </div>
+                <DissolvingText
+                  collapsed={collapsed}
+                  ariaHidden={collapsed}
+                  className="text-sm font-medium"
+                >
+                  {t("recipe.actions.finalize", "Finalize & Clear")}
+                </DissolvingText>
+                <Save className="h-4 w-4" aria-hidden />
+              </button>
+              <button
+                type="button"
+                title="Help & Shortcuts"
+                onClick={() => setShowHelp(true)}
+                className={cn(
+                  "flex w-full items-center rounded-md px-3 py-2 font-medium text-foreground transition duration-300 hover:bg-white/70 dark:hover:bg-slate-900/70",
+                  collapsed ? "justify-center px-2" : "justify-between",
+                )}
+              >
+                <DissolvingText
+                  collapsed={collapsed}
+                  ariaHidden={collapsed}
+                  className="text-sm font-medium"
+                >
+                  {t("recipe.actions.help", "Help & Shortcuts")}
+                </DissolvingText>
+                <HelpCircle className="h-4 w-4" aria-hidden />
+              </button>
 
-          <button
-            type="button"
-            onClick={() => setCollapsedManual(false)}
-            className={cn(
-              "absolute right-[-18px] top-1/2 z-10 -translate-y-1/2 select-none rounded-r-full border border-gray-300 bg-background px-2 py-3 shadow transition duration-300 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-slate-700 dark:bg-slate-900/70 dark:hover:bg-slate-900",
-              collapsed ? "opacity-100" : "pointer-events-none opacity-0",
-            )}
-            aria-label="Expand navigation"
-            title={`Expand navigation (${navToggleShortcut})`}
-          >
-            <div className="flex flex-col items-center gap-1">
-              <span className="block h-4 w-0.5 rounded-full bg-gray-400 dark:bg-slate-500" />
-              <span className="block h-4 w-0.5 rounded-full bg-gray-400 dark:bg-slate-500" />
-              <span className="block h-4 w-0.5 rounded-full bg-gray-400 dark:bg-slate-500" />
+              <div
+                className={cn(
+                  "flex items-center justify-between rounded-md bg-white/60 px-3 py-2 text-sm font-medium text-foreground shadow-sm transition-all duration-700 dark:bg-slate-900/70",
+                  collapsed && "flex-col gap-2 px-2 py-2",
+                )}
+              >
+                <DissolvingText
+                  collapsed={collapsed}
+                  ariaHidden={collapsed}
+                  className="text-sm font-medium"
+                >
+                  {t("recipe.actions.theme", "Theme")}
+                </DissolvingText>
+                <ThemeToggle />
+              </div>
             </div>
-          </button>
-        </div>
-      </aside>
+
+            <button
+              type="button"
+              onClick={() => setCollapsedManual(false)}
+              className={cn(
+                "absolute right-[-18px] top-1/2 z-10 -translate-y-1/2 select-none rounded-r-full border border-gray-300 bg-background px-2 py-3 shadow transition duration-300 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-slate-700 dark:bg-slate-900/70 dark:hover:bg-slate-900",
+                collapsed ? "opacity-100" : "pointer-events-none opacity-0",
+              )}
+              aria-label="Expand navigation"
+              title={`Expand navigation (${navToggleShortcut})`}
+            >
+              <div className="flex flex-col items-center gap-1">
+                <span className="block h-4 w-0.5 rounded-full bg-gray-400 dark:bg-slate-500" />
+                <span className="block h-4 w-0.5 rounded-full bg-gray-400 dark:bg-slate-500" />
+                <span className="block h-4 w-0.5 rounded-full bg-gray-400 dark:bg-slate-500" />
+              </div>
+            </button>
+          </div>
+        </aside>
       </TooltipProvider>
 
       <Dialog open={showHelp} onOpenChange={setShowHelp}>

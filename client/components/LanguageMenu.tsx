@@ -1,4 +1,8 @@
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useLanguage, useTranslation } from "@/context/LanguageContext";
 import { languageOptions, type LanguageOption } from "@/i18n/config";
 import { cn } from "@/lib/utils";
@@ -24,7 +28,8 @@ export default function LanguageMenu({
   const { language, setLanguage } = useLanguage();
   const { t } = useTranslation();
 
-  const active = (languageOptions.find((option) => option.code === language) ?? languageOptions[0]) as LanguageOption;
+  const active = (languageOptions.find((option) => option.code === language) ??
+    languageOptions[0]) as LanguageOption;
 
   const triggerClasses = cn(
     variant === "card"
@@ -75,7 +80,9 @@ export default function LanguageMenu({
         align={align}
         className={cn(
           "w-72 p-4",
-          isDark ? "bg-slate-900/95 text-cyan-100" : "bg-white/95 text-slate-900",
+          isDark
+            ? "bg-slate-900/95 text-cyan-100"
+            : "bg-white/95 text-slate-900",
           contentClassName,
         )}
       >
@@ -98,7 +105,9 @@ export default function LanguageMenu({
                   <Check
                     className={cn(
                       "absolute right-1.5 top-1.5 h-4 w-4 rounded-full p-0.5 shadow",
-                      isDark ? "bg-cyan-500 text-slate-950" : "bg-slate-900 text-white",
+                      isDark
+                        ? "bg-cyan-500 text-slate-950"
+                        : "bg-slate-900 text-white",
                     )}
                     aria-hidden
                   />
