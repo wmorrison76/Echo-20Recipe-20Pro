@@ -53,6 +53,11 @@ type RDLabState = {
   insights: { headline: string; detail: string; metric?: string }[];
   toggleArchive: (id: string) => void;
   updateNotes: (id: string, notes: string) => void;
+  setExperimentStatus: (id: string, status: ExperimentStatus) => void;
+  createExperiment: (input: NewExperimentInput) => string;
+  appendVariable: (id: string, variable: string) => void;
+  appendTestStep: (id: string, step: string) => void;
+  appendSensoryTarget: (id: string, target: string) => void;
 };
 
 const experimentsSeed: LabExperiment[] = [
