@@ -426,7 +426,6 @@ const PANTRY_TOKENS = [
   "breadcrumbs",
   "vinegar",
   "baking",
-  "starch",
   "cocoa",
   "coffee",
   "tea",
