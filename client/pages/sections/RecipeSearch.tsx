@@ -361,7 +361,269 @@ const [scanOpen, setScanOpen] = useState(false);
     );
   }, [collections]);
 
-  const onFiles = async (files: File[]) => {
+  const importBookPdf = async (file: File) => {
+  if (!file) return;
+  const isPdf =
+    file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+  if (!isPdf) {
+    toast({
+      title: "PDF required",
+      description: "Drop a cookbook PDF to use the library importer.",
+      variant: "destructive",
+    });
+    return;
+  }
+  if (bookPhase && bookPhase !== "done") {
+    toast({
+      title: "Book import in progress",
+      description: "Wait for the current PDF import to finish before adding another.",
+    });
+    return;
+  }
+  if (
+    typeof window !== "undefined" &&
+    !confirm("Confirm you own/purchased this cookbook PDF for personal import?")
+  ) {
+    return;
+  }
+  try {
+    setBookFile(file.name);
+    setBookPhase("reading");
+    setStatus("Reading book PDF...");
+    const ab = await file.arrayBuffer();
+    pdfPendingRef.current = file;
+    const pdfjs: any = await import(
+      "https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs",
+    );
+    const workerSrc = "https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs";
+    if (pdfjs.GlobalWorkerOptions)
+      pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
+    const doc = await pdfjs.getDocument({ data: ab }).promise;
+    setBookTotal(doc.numPages);
+    setScanOpen(true);
+    setDetectedOpen(true);
+    setDetected([]);
+    setScanPageNo(0);
+    setScanTotal(doc.numPages);
+    let lines: string[] = [];
+    const isLikelyIngredientList = (txt: string) => {
+      const ls = txt
+        .split(/\n/)
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .slice(0, 80);
+      const qty =
+        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
+      let c = 0;
+      for (const L of ls) {
+        if (qty.test(L) || /^[•\-*]\s+/.test(L)) c++;
+      }
+      return c >= 3;
+    };
+    const normalizeLineA = (s: string) => {
+      let t = s.replace(/\s+/g, " ").trim();
+      if (
+        /^([A-Z]\s+){2,}[A-Z](?:\s+\d+)?[\s:]*$/.test(t) &&
+        t.length <= 60
+      ) {
+        t = t.replace(/\s+/g, "");
+      }
+      return t;
+    };
+    const pageTexts: string[] = [];
+    const candidates: number[] = [];
+    for (let p = 1; p <= doc.numPages; p++) {
+      const page = await doc.getPage(p);
+      const tc = await page.getTextContent();
+      const pageLines = (tc.items as any[])
+        .map((i: any) => String(i.str))
+        .filter(Boolean);
+      lines.push(...pageLines);
+      lines.push("");
+      const t = pageLines.join("\n");
+      pageTexts.push(t);
+      setBookPage(p);
+      setScanPageNo(p);
+      const hasIng =
+        /\bingredients?\b/i.test(t) || isLikelyIngredientList(t);
+      if (hasIng) {
+        candidates.push(p);
+        let guess = "";
+        const top = pageLines
+          .map(normalizeLineA)
+          .filter(Boolean)
+          .slice(0, 10);
+        for (const L of top) {
+          if (
+            /^[A-Z][A-Za-z0-9\-'\s]{2,80}$/.test(L) ||
+            /^([A-Z]\s+){2,}[A-Z][\s:]*$/.test(L)
+          ) {
+            guess = L.replace(/\s+/g, " ").trim();
+            break;
+          }
+        }
+        if (
+          /^see\b/i.test(guess) ||
+          /(flexipan|inch|inches|cm|diameter)\b/i.test(guess)
+        )
+          guess = "";
+        setDetected((d) => [...d, { page: p, title: guess || `Candidate p.${p}` }]);
+      }
+    }
+    try {
+      const keepTop = (obj: Record<string, number>, n: number) =>
+        Object.fromEntries(
+          Object.entries(obj)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, n),
+        );
+      const words: Record<string, number> = {},
+        bigrams: Record<string, number> = {};
+      const textAll = pageTexts
+        .join("\n")
+        .toLowerCase()
+        .replace(/[^a-z\s]/g, " ");
+      const arr = textAll
+        .split(/\s+/)
+        .filter((w) => w.length >= 3 && w.length <= 24);
+      for (let i = 0; i < arr.length; i++) {
+        const w = arr[i];
+        words[w] = (words[w] || 0) + 1;
+        if (i < arr.length - 1) {
+          const g = `${arr[i]} ${arr[i + 1]}`;
+          if (g.length >= 5 && g.length <= 40)
+            bigrams[g] = (bigrams[g] || 0) + 1;
+        }
+      }
+      const raw = localStorage.getItem("kb:cook") || "{}";
+      const kb = JSON.parse(raw || "{}");
+      kb.terms = keepTop({ ...kb.terms, ...words }, 400);
+      kb.bigrams = keepTop({ ...kb.bigrams, ...bigrams }, 600);
+      kb.books = Array.from(
+        new Set([...(kb.books || []), file.name.replace(/\.[^.]+$/, "")]),
+      );
+      localStorage.setItem("kb:cook", JSON.stringify(kb));
+    } catch {}
+    setScanOpen(false);
+    setBookPhase("selecting");
+    setScanPageTexts(pageTexts);
+    setScanCandidates(candidates);
+    setScanBookName(file.name.replace(/\.[^.]+$/, ""));
+    if (candidates.length >= 5) {
+      setStatus(
+        `Detected ${candidates.length} recipe candidates. Click "Import detected" to add them.`,
+      );
+      return;
+    }
+    const normLine = (s: string) => {
+      let t = s.replace(/\s+/g, " ").trim();
+      if (
+        /^([A-Z]\s+){2,}[A-Z](?:\s+\d+)?[\s:]*$/.test(t) &&
+        t.length <= 60
+      ) {
+        t = t.replace(/\s+/g, "");
+      }
+      return t;
+    };
+    const norm = lines.map(normLine);
+    let tocEntries = norm
+      .map((s) => {
+        const tests = [
+          /^(.{3,120}?)(?:[\.·•\s]{2,})(\d{1,4})$/,
+          /^(.{3,120}?)\s{3,}(\d{1,4})$/,
+          /^(.{3,120}?)\s+[-–—]\s*(\d{1,4})$/,
+        ];
+        let m: RegExpMatchArray | null = null;
+        for (const re of tests) {
+          m = s.match(re);
+          if (m) break;
+        }
+        if (!m) return null;
+        const title = m[1].trim();
+        const page = parseInt(m[2], 10);
+        const bad =
+          /^(?:contents|index|appendix|recipes?|chapter|table of contents|fig(?:\.|ures?)?(?:\s*\d+)?|plates?(?:\s*\d+)?|illustrations?(?:\s*\d+)?|photos?(?:\s*\d+)?|tables?(?:\s*\d+)?|maps?(?:\s*\d+)?|yield\b|to convert\b|see\b)/i;
+        if (!title || bad.test(title)) return null;
+        if (/(flexipan|inch|inches|cm|diameter)\b/i.test(title)) return null;
+        return { title, page };
+      })
+      .filter(Boolean) as { title: string; page: number }[];
+    const seen: Record<number, boolean> = {};
+    tocEntries = tocEntries.filter((e) => !seen[e.page] && (seen[e.page] = true));
+    if (tocEntries.length >= 5) {
+      setToc(tocEntries);
+      const checked: Record<string, boolean> = {};
+      tocEntries.forEach((x) => (checked[x.title] = true));
+      setTocChecked(checked);
+      setTocOpen(true);
+      setStatus("Select recipes to import");
+      return;
+    }
+    const items: any[] = [];
+    let i = 0;
+    const book = file.name.replace(/\.[^.]+$/, "");
+    const isTitle = (s: string) =>
+      s &&
+      s.length < 70 &&
+      /[A-Za-z]/.test(s) &&
+      (s === s.toUpperCase() || /^[A-Z][^.!?]{2,}$/.test(s));
+    while (i < norm.length) {
+      while (i < norm.length && !/ingredients?/i.test(norm[i])) i++;
+      if (i >= norm.length) break;
+      let tIdx = Math.max(0, i - 5);
+      let title = "";
+      for (let k = i - 1; k >= tIdx; k--) {
+        if (isTitle(norm[k])) {
+          title = norm[k];
+          break;
+        }
+      }
+      const ings: string[] = [];
+      i++;
+      while (i < norm.length && !/ingredients?/i.test(norm[i])) {
+        const s = norm[i];
+        if (/^(instructions|directions|method)/i.test(s)) break;
+        if (s) ings.push(s);
+        i++;
+      }
+      let ins: string[] = [];
+      while (i < norm.length && !/ingredients?/i.test(norm[i])) {
+        const s = norm[i];
+        if (s) ins.push(s);
+        i++;
+      }
+      if (title && (ings.length || ins.length))
+        items.push({
+          title,
+          ingredients: ings,
+          instructions: ins,
+          tags: [book],
+          extra: { book, source: "pdf-auto" },
+        });
+    }
+    setBookPhase("importing");
+    if (items.length) {
+      const blob = new Blob([JSON.stringify(items)], {
+        type: "application/json",
+      });
+      const jsonFile = new File([blob], `${book}.json`, {
+        type: "application/json",
+      });
+      const { added } = await addRecipesFromJsonFiles([jsonFile]);
+      setBookImported(added);
+      setStatus(`Imported ${added} recipes from book.`);
+      setBookPhase("done");
+    } else {
+      setStatus("Could not detect recipes in PDF");
+      setBookPhase(null);
+    }
+  } catch (e: any) {
+    setStatus(`Failed: ${e?.message || "error"}`);
+    setBookPhase(null);
+  }
+};
+
+const onFiles = async (files: File[]) => {
     const list = files.slice(0, 100);
     const jsonFiles = list.filter(
       (f) => f.type.includes("json") || f.name.toLowerCase().endsWith(".json"),
