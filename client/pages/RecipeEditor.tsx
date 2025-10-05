@@ -265,7 +265,7 @@ export default function RecipeEditor() {
   return (
     <>
       <TopTabs />
-      <div className="container mx-auto space-y-6 py-6 lg:pl-[18rem] xl:pl-[20rem]">
+      <div className="container mx-auto space-y-6 py-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold">Edit Recipe</h1>
