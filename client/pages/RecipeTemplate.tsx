@@ -189,9 +189,18 @@ export default function RecipeTemplate() {
   };
 
   const handleScaleAndPrint = (value: number) => {
+    const previousScale = appliedScale;
     commitScale(value);
     setScaleDialogOpen(false);
     if (typeof window !== "undefined") {
+      previousScaleRef.current = previousScale;
+      const handleAfterPrint = () => {
+        if (previousScaleRef.current != null) {
+          commitScale(previousScaleRef.current);
+          previousScaleRef.current = null;
+        }
+      };
+      window.addEventListener("afterprint", handleAfterPrint, { once: true });
       requestAnimationFrame(() => {
         window.print();
       });
