@@ -150,7 +150,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
           onDrop={handleContainerDrop}
         >
           <div
-            className={`grid grid-cols-[minmax(2.75rem,3.5rem),5rem,7ch,minmax(18rem,2fr),minmax(16rem,1.6fr),6.5ch,6.5ch,2.5rem] items-center gap-3 rounded-xl px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] ${
+            className={`grid grid-cols-[minmax(2.75rem,3.5rem),5rem,7ch,minmax(18rem,2fr),minmax(15rem,1.45fr),6.5ch,14.5ch,2.5rem] items-center gap-3 rounded-xl px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] ${
               isDarkMode ? "bg-slate-900/70 text-cyan-200/70" : "bg-slate-100 text-slate-600"
             }`}
           >
@@ -187,7 +187,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
             return (
               <div
                 key={row.subId ?? `${index}-${row.item || "blank"}`}
-                className={`grid grid-cols-[minmax(2.75rem,3.5rem),5rem,7ch,minmax(18rem,2fr),minmax(16rem,1.6fr),6.5ch,6.5ch,2.5rem] items-stretch gap-3 rounded-2xl border px-3 py-2 transition-colors ${rowTone}`}
+                className={`grid grid-cols-[minmax(2.75rem,3.5rem),5rem,7ch,minmax(18rem,2fr),minmax(15rem,1.45fr),6.5ch,14.5ch,2.5rem] items-stretch gap-3 rounded-2xl border px-3 py-2 transition-colors ${rowTone}`}
                 onDragOver={handleRowDragOver}
                 onDrop={handleRowDrop(index)}
                 data-row-kind={row.type}
@@ -358,7 +358,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                     onKeyDown={onGridKeyDown}
                     disabled={isDivider}
                     className={inputTone(isDarkMode, "px-2 text-right", false, isDivider)}
-                    maxLength={6}
+                    maxLength={14}
                     placeholder={
                       isDivider ? "" : t("recipe.ingredients.placeholders.cost", "0.00")
                     }
