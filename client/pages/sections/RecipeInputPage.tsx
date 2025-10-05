@@ -2446,6 +2446,7 @@ const RecipeInputPage = () => {
                       recipeName={recipeName}
                       defaultMethod={selectedPrepMethod[0] || ""}
                       methodOptions={knownPrepMethods}
+                      item={ingredients.find((row) => row.type !== "divider" && row.item.trim())?.item}
                       onClose={() => setYieldOpen(false)}
                     />
                   </DialogContent>
