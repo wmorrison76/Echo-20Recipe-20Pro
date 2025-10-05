@@ -21,6 +21,12 @@ import SubRecipePicker, {
   type SubRecipeOption,
 } from "@/components/SubRecipePicker";
 import YieldLabForm from "@/components/YieldLabForm";
+import { useYieldStore } from "@/context/YieldContext";
+import {
+  combineYields,
+  computeBaseYield,
+  formatYieldPercent,
+} from "@/lib/yield-calculations";
 import {
   Save,
   Image as ImageIcon,
@@ -59,7 +65,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import type { IngredientRow } from "@/types/ingredients";
+import type { IngredientRow, IngredientYieldInsight } from "@/types/ingredients";
 import {
   createIngredientRow,
   createDividerRow,
