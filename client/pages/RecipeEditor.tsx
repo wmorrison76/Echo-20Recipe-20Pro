@@ -404,7 +404,7 @@ export default function RecipeEditor() {
         nutrition: nutritionPayload ?? undefined,
         taxonomy,
         classification: {
-          ...((recipe.extra as Record<string, unknown> | undefined)?.classification as Record<string, unknown> | undefined),
+          ...existingClassification,
           nationality: selectedNationality,
           courses: selectedCourses,
           recipeType: selectedRecipeType,
