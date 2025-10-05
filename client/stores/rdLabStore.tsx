@@ -12,6 +12,12 @@ export type LabExperiment = {
   owner: string;
   notes: string;
   tags: string[];
+  hypothesis: string;
+  variablesUnderTest: string[];
+  sensoryTargets: string[];
+  testPlan: string[];
+  equipment: string[];
+  launchWindow: string;
 };
 
 export type LabTask = {
