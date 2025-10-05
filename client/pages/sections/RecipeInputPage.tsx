@@ -517,16 +517,6 @@ const RecipeInputPage = () => {
     return { qty, unit: U };
   };
 
-  const estimateYieldPercent = (item: string, prep: string): number | null => {
-    const txt = `${item} ${prep}`.toLowerCase();
-    if (/salt|spice|pepper|baking soda|baking powder/.test(txt)) return 100;
-    if (/peeled|shell|husk|hull|seeded|cored/.test(txt)) return 85;
-    if (/trimmed|butchered|deboned|cleaned/.test(txt)) return 90;
-    if (/fried|roast|grill|bake/.test(txt)) return 88;
-    if (/boil|poach|simmer|stew|steam/.test(txt)) return 95;
-    return null;
-  };
-
   React.useEffect(() => {
     const el = dirRef.current;
     if (!el) return;
