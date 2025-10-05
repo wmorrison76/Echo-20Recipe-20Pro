@@ -206,14 +206,19 @@ export default function RecipeTemplate() {
           <Button variant="secondary" onClick={() => nav(-1)}>
             Back
           </Button>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            {appliedScale !== 1 && (
+              <span className="rounded-full bg-muted px-2 py-1 text-xs font-medium text-muted-foreground">
+                {formatFactorLabel(appliedScale)}
+              </span>
+            )}
             <Button
               variant="outline"
               onClick={() => nav(`/recipe/${recipe.id}`)}
             >
               Edit
             </Button>
-            <Button onClick={() => window.print()}>Print</Button>
+            <Button onClick={openScaleDialog}>Print</Button>
           </div>
         </div>
 
