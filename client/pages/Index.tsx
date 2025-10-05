@@ -37,8 +37,7 @@ function IndexContent() {
       <div
         className="min-h-screen text-foreground transition-[padding-left] duration-300"
         style={{
-          paddingLeft:
-            "max(calc(var(--sidebar-offset, 6rem) - 4rem), 1rem)",
+          paddingLeft: "calc(var(--sidebar-offset, 128px) + 1.5rem)",
         }}
       >
         <TopTabs />
