@@ -2398,6 +2398,12 @@ export default function InventorySuppliesWorkspace() {
 
   return (
     <div className="space-y-4">
+      <BuilderImportToolbar
+        isLoading={isImporting}
+        onImport={handleImportFromBuilder}
+        lastImportAt={lastImportAt}
+        metrics={importMetrics}
+      />
       <div className="grid gap-4 xl:grid-cols-[1.2fr_1fr]">
         <SupplierGrid
           suppliers={suppliers}
