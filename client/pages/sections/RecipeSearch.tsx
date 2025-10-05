@@ -977,9 +977,170 @@ const onFiles = async (files: File[]) => {
             </div>
           </div>
         </Dropzone>
+        <div className="flex flex-col space-y-4 rounded-xl border border-primary/30 bg-background/90 p-4 shadow-sm dark:bg-zinc-900/70">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex min-w-[220px] flex-1 flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <div className="text-xs font-semibold uppercase tracking-[0.32em] text-muted-foreground">
+                  Menu Collection
+                </div>
+                {activeCollectionId && (
+                  <span className="rounded-full bg-primary/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                    Editing
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-3 rounded-full border border-primary/20 bg-background px-4 py-2 shadow-inner dark:bg-zinc-950/60">
+                <input
+                  ref={collectionNameRef}
+                  value={collectionDraftName}
+                  onChange={(event) => setCollectionDraftName(event.target.value)}
+                  placeholder="Collection Name"
+                  className="flex-1 bg-transparent text-sm font-medium text-foreground outline-none placeholder:text-muted-foreground"
+                />
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => searchInputRef.current?.focus()}
+                title="Search recipes"
+              >
+                <Search className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                size="icon"
+                onClick={handleSaveCollection}
+                disabled={
+                  collectionDraftName.trim().length === 0 || selectedRecipeIds.length === 0
+                }
+                title="Save collection"
+              >
+                <Save className="h-4 w-4" />
+              </Button>
+              {isCollectionDraftActive && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={resetCollectionDraft}
+                  title="Clear"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          </div>
+          {isCollectionDraftActive && (
+            <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+              <div>
+                {selectedRecipeIds.length} recipe
+                {selectedRecipeIds.length === 1 ? "" : "s"} selected
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedRecipeIds([])}
+                  disabled={selectedRecipeIds.length === 0}
+                >
+                  Clear picks
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => searchInputRef.current?.focus()}
+                >
+                  Search catalog
+                </Button>
+              </div>
+            </div>
+          )}
+          <div className="space-y-2">
+            <div className="text-xs font-semibold uppercase tracking-[0.25em] text-muted-foreground">
+              Previous Collections
+            </div>
+            {sortedCollections.length === 0 ? (
+              <div className="rounded-lg border border-dashed px-3 py-4 text-center text-xs text-muted-foreground">
+                No collections yet. Create one to save curated menus.
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {sortedCollections.map((collection) => {
+                  const isActive = activeCollectionId === collection.id;
+                  const recipeCount = collection.recipeIds.length;
+                  return (
+                    <div
+                      key={collection.id}
+                      className={cn(
+                        "rounded-lg border px-3 py-2 transition-colors",
+                        isActive
+                          ? "border-primary bg-primary/5 dark:bg-primary/15"
+                          : "border-border/60 bg-background/80 dark:bg-zinc-950/70",
+                      )}
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="truncate text-sm font-medium">
+                            {collection.name}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {collection.season} • {collection.year} • v{collection.version} • {recipeCount} recipe
+                            {recipeCount === 1 ? "" : "s"}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              const params = new URLSearchParams(window.location.search);
+                              params.set("tab", "server-notes");
+                              params.set("collection", collection.id);
+                              window.location.href = `/?${params.toString()}`;
+                            }}
+                            title="Build package"
+                          >
+                            <Package className="mr-1 h-4 w-4" />
+                            Build
+                          </Button>
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => handleEditCollection(collection)}
+                            title="Edit collection"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => setCollectionToDelete(collection)}
+                            title="Delete collection"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
         <div
           className={cn(
-            "rounded-lg border p-2 self-start transition-colors",
+            "rounded-xl border bg-background/85 p-4 shadow-sm transition-colors dark:bg-zinc-900/70 lg:col-span-2",
             bookDropActive &&
               "border-primary/60 bg-primary/10 shadow-[0_0_0_1px_rgba(56,189,248,0.35)]",
           )}
