@@ -1,6 +1,7 @@
 import { GripVertical, Link2, MinusCircle, PlusCircle } from "lucide-react";
 import { useTranslation } from "@/context/LanguageContext";
-import type { IngredientRow } from "@/types/ingredients";
+import { formatYieldPercent } from "@/lib/yield-calculations";
+import type { IngredientRow, IngredientYieldInsight } from "@/types/ingredients";
 
 type IngredientsGridProps = {
   isDarkMode: boolean;
@@ -12,6 +13,8 @@ type IngredientsGridProps = {
   averageYield: number | null;
   methodOptions: string[];
   methodOptionsId: string;
+  yieldInsights?: Array<IngredientYieldInsight | null>;
+  onApplyYieldSuggestion?: (index: number) => void;
   onFieldChange: (
     index: number,
     field: keyof IngredientRow,
@@ -60,6 +63,8 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
   onGridKeyDown,
   onAddSubRecipe,
   onAddDivider,
+  yieldInsights,
+  onApplyYieldSuggestion,
 }) => {
   const { t } = useTranslation();
 
