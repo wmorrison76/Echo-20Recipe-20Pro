@@ -320,8 +320,8 @@ export default function TopTabs() {
         return;
       }
       const { offsetWidth, offsetLeft } = asideRef.current;
-      const baseGap = collapsed ? 16 : 28;
-      const minimumWidth = collapsed ? 92 : 252;
+      const baseGap = collapsed ? 10 : 18;
+      const minimumWidth = collapsed ? 88 : 236;
       const sidebarWidth = Math.max(offsetWidth, minimumWidth);
       const offset = Math.round(offsetLeft + sidebarWidth + baseGap);
       document.documentElement.style.setProperty(
