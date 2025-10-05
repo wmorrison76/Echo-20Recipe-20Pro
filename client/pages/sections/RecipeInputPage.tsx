@@ -1666,7 +1666,7 @@ const RecipeInputPage = () => {
     let changed = false;
     const next = ingredients.map((r) => {
       if ((r.qty && r.unit) || !r.item) return r;
-      if (!/^(\s*[0-9¼½¾⅓�������⅜⅝⅞]|\s*\/\d+|.*,)\b/i.test(String(r.item)))
+      if (!/^(\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|\s*\/\d+|.*,)\b/i.test(String(r.item)))
         return r;
       const p = parseIngredientInline(String(r.item));
       if (!p) return r;
