@@ -44,6 +44,11 @@ export default function RecipeTemplate() {
     } catch {}
   }, [id, recipe]);
 
+  useEffect(() => {
+    setAppliedScale(1);
+    setScaleDialogOpen(false);
+  }, [recipe?.id]);
+
   const [nutrition, setNutrition] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
   const [appliedScale, setAppliedScale] = useState(1);
