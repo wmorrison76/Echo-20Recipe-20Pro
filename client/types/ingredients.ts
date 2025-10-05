@@ -1,5 +1,7 @@
 export type IngredientRowType = "ingredient" | "divider";
 
+import type { IngredientYieldSource } from "@/lib/yield-calculations";
+
 export type IngredientRow = {
   type: IngredientRowType;
   qty: string;
@@ -10,6 +12,18 @@ export type IngredientRow = {
   cost: string;
   subId: string;
   costPerUnit: number | null;
+};
+
+export type IngredientYieldInsight = {
+  basePercent: number | null;
+  baseReason: string | null;
+  baseRuleId: string | null;
+  chefPercent: number | null;
+  chefMethod?: string;
+  chefNote?: string;
+  chefRecordId?: string;
+  combinedPercent: number | null;
+  source: IngredientYieldSource;
 };
 
 let ingredientRowCounter = 0;
