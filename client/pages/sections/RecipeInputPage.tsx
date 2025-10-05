@@ -1741,7 +1741,7 @@ const RecipeInputPage = () => {
       "⅝": "5/8",
       "⅞": "7/8",
     };
-    let t = s.trim().replace(/[¼½¾⅓⅔⅛⅜⅝⅞]/g, (ch) => map[ch] || ch);
+    let t = s.trim().replace(/[¼½¾⅓⅔⅛⅜⅝���]/g, (ch) => map[ch] || ch);
     t = t.replace(/^(?:\s*)\/(\d+)/, "1/$1");
     t = t.replace(/(\d)(\s*)(\d\/\d)/, "$1 $3");
     const m = t.match(
@@ -2274,10 +2274,7 @@ const RecipeInputPage = () => {
                     {t("recipe.labels.photo", "RECIPE IMAGE")}
                   </div>
                   <div className="flex justify-center">
-                    <div
-                      className="flex-shrink-0"
-                      style={{ width: "17rem", height: "17rem" }}
-                    >
+                    <div className="flex-shrink-0 w-[13rem] h-[13rem] md:w-[14rem] md:h-[14rem]">
                       {image ? (
                         <img
                           src={image}
