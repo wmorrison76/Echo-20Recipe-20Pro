@@ -74,6 +74,56 @@ const parseCostValue = (value: string): number => {
   return Number.isFinite(numeric) ? numeric : NaN;
 };
 
+const FRACTION_MAP: Record<string, string> = {
+  "¼": "1/4",
+  "½": "1/2",
+  "¾": "3/4",
+  "⅐": "1/7",
+  "⅑": "1/9",
+  "⅒": "1/10",
+  "⅓": "1/3",
+  "⅔": "2/3",
+  "⅕": "1/5",
+  "⅖": "2/5",
+  "⅗": "3/5",
+  "⅘": "4/5",
+  "⅙": "1/6",
+  "⅚": "5/6",
+  "⅛": "1/8",
+  "⅜": "3/8",
+  "⅝": "5/8",
+  "⅞": "7/8",
+};
+
+const parseQuantity = (value: string): number => {
+  if (!value) return Number.NaN;
+  let text = String(value).trim();
+  text = text.replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (ch) => FRACTION_MAP[ch] ?? ch);
+  text = text.replace(/(\d)\s*(\d\/\d)/g, "$1 $2");
+
+  const mixed = text.match(/^(-?\d+)(?:\s+(\d+\/\d+))?$/);
+  if (mixed) {
+    const base = Number(mixed[1]);
+    if (mixed[2]) {
+      const [n, d] = mixed[2].split("/").map(Number);
+      return Number.isFinite(n) && Number.isFinite(d) && d !== 0
+        ? base + n / d
+        : Number.NaN;
+    }
+    return base;
+  }
+
+  if (/^-?\d+\/\d+$/.test(text)) {
+    const [n, d] = text.split("/").map(Number);
+    return Number.isFinite(n) && Number.isFinite(d) && d !== 0
+      ? n / d
+      : Number.NaN;
+  }
+
+  const numeric = Number(text.replace(/[^0-9.\-]/g, ""));
+  return Number.isFinite(numeric) ? numeric : Number.NaN;
+};
+
 const normalizeString = (value: unknown): string =>
   typeof value === "string" ? value : value == null ? "" : String(value);
 
@@ -436,52 +486,6 @@ const RecipeInputPage = () => {
   }, [ingredients]);
 
   const inputClass = `border p-3 rounded-lg text-sm transition-all focus:shadow-md focus:ring-2 ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30 shadow-none" : "bg-white border-gray-300 text-black focus:ring-blue-400/30 focus:border-blue-500 shadow-lg"}`;
-
-  // Parse numbers supporting mixed fractions and unicode fractions like "1 1/2", "3/4", "½", "1½"
-  function parseQuantity(s: string): number {
-    if (!s) return NaN as any;
-    const map: Record<string, string> = {
-      "¼": "1/4",
-      "��": "1/2",
-      "¾": "3/4",
-      "⅐": "1/7",
-      "⅑": "1/9",
-      "⅒": "1/10",
-      "⅓": "1/3",
-      "⅔": "2/3",
-      "⅕": "1/5",
-      "⅖": "2/5",
-      "⅗": "3/5",
-      "⅘": "4/5",
-      "⅙": "1/6",
-      "⅚": "5/6",
-      "⅛": "1/8",
-      "⅜": "3/8",
-      "⅝": "5/8",
-      "⅞": "7/8",
-    };
-    let t = String(s).trim();
-    // Expand unicode vulgar fractions
-    t = t.replace(/[¼½�����⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜��⅞]/g, (ch) => map[ch] || ch);
-    // Allow forms like "1½" -> "1 1/2"
-    t = t.replace(/(\d)\s*(\d\/\d)/, "$1 $2");
-    // Mixed fraction
-    const m = t.match(/^(-?\d+)(?:\s+(\d+\/\d+))?$/);
-    if (m) {
-      const base = Number(m[1]);
-      if (m[2]) {
-        const [n, d] = m[2].split("/").map(Number);
-        return base + (d ? n / d : 0);
-      }
-      return base;
-    }
-    if (/^\d+\/\d+$/.test(t)) {
-      const [n, d] = t.split("/").map(Number);
-      return d ? n / d : NaN;
-    }
-    const num = Number(t.replace(/[^0-9.\-]/g, ""));
-    return Number.isFinite(num) ? num : (NaN as any);
-  }
 
   // Normalize US volumes to best unit (e.g., 3072 1/4 tsp -> 4 gal)
   const normalizeImperialVolume = (
