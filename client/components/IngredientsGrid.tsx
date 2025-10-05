@@ -279,51 +279,6 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                         : t("recipe.ingredients.placeholders.yield", "100")
                     }
                   />
-                  {!isDivider && insight && (
-                    <div
-                      className={`rounded-md border px-2 py-1 text-[10px] leading-tight ${
-                        isDarkMode
-                          ? "border-cyan-500/20 bg-slate-900/70 text-cyan-200/80"
-                          : "border-slate-200 bg-slate-50 text-slate-600"
-                      }`}
-                    >
-                      <div className="flex flex-wrap items-center justify-between gap-1">
-                        <span>
-                          {recommendedPercent != null
-                            ? `Suggested: ${formatYieldPercent(
-                                recommendedPercent,
-                              )}%`
-                            : "No suggestion yet"}
-                        </span>
-                        {shouldShowApply && (
-                          <button
-                            type="button"
-                            className={`rounded border px-1 py-0.5 font-semibold uppercase tracking-wide ${
-                              isDarkMode
-                                ? "border-cyan-500/40 text-cyan-200"
-                                : "border-slate-300 text-slate-700"
-                            }`}
-                            onClick={() => onApplyYieldSuggestion?.(index)}
-                          >
-                            Apply
-                          </button>
-                        )}
-                      </div>
-                      <div className="mt-1 space-y-0.5">
-                        {insight.basePercent != null && insight.baseReason && (
-                          <div>
-                            Base: {formatYieldPercent(insight.basePercent)}% · {insight.baseReason}
-                          </div>
-                        )}
-                        {insight.chefPercent != null && (
-                          <div>
-                            Chef: {formatYieldPercent(insight.chefPercent)}%
-                            {insight.chefMethod ? ` · ${insight.chefMethod}` : ""}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
                 </div>
                 <div className="relative flex w-full items-center gap-1">
                   <span
