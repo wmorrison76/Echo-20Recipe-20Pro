@@ -1,4 +1,5 @@
 import { labPlaylists, trendSignals } from "@/data/textureReference";
+import { labPlaylists, trendSignals } from "@/data/textureReference";
 import { useRDLabStore } from "@/stores/rdLabStore";
 
 export function InsightsPanel() {
