@@ -209,31 +209,18 @@ export default function RecipeEditor() {
     toast,
   ]);
 
-  if (!recipe) {
-    return (
-      <div className="p-6">
-        <div className="mb-4 text-sm text-muted-foreground">Recipe not found.</div>
-        <div className="flex items-center gap-2">
-          <Button onClick={handleBack}>Back</Button>
-          <a href="/" className="text-sm underline">
-            Home
-          </a>
-        </div>
-      </div>
-    );
-  }
-
   const modifiers = useMemo(() => {
-    const raw = (recipe.extra ?? {}) as Record<string, unknown>;
+    const raw = (recipe?.extra ?? {}) as Record<string, unknown>;
     const list = raw.modifiers;
     if (!Array.isArray(list)) return [] as string[];
     return list
       .map((entry) => String(entry))
       .map((entry) => entry.trim())
       .filter((entry) => entry.length > 0);
-  }, [recipe.extra]);
+  }, [recipe]);
 
   const handleAddModifier = useCallback(() => {
+    if (!recipe) return;
     const name = window.prompt("Modifier name");
     if (!name) return;
     const trimmed = name.trim();
@@ -249,6 +236,7 @@ export default function RecipeEditor() {
 
   const handleRemoveModifier = useCallback(
     (index: number) => {
+      if (!recipe) return;
       const next = modifiers.filter((_, idx) => idx !== index);
       updateRecipe(recipe.id, {
         extra: {
@@ -259,6 +247,20 @@ export default function RecipeEditor() {
     },
     [modifiers, recipe, updateRecipe],
   );
+
+  if (!recipe) {
+    return (
+      <div className="p-6">
+        <div className="mb-4 text-sm text-muted-foreground">Recipe not found.</div>
+        <div className="flex items-center gap-2">
+          <Button onClick={handleBack}>Back</Button>
+          <a href="/" className="text-sm underline">
+            Home
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
