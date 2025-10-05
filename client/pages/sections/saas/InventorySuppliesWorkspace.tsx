@@ -2331,9 +2331,20 @@ export default function InventorySuppliesWorkspace() {
           ? error.message
           : "Unable to import Purchasing_Receiving data.";
       console.error("Builder import failed", error);
+      const fallback = getFallbackPurchasingData();
+      setSuppliers(fallback.suppliers);
+      setItems(fallback.items);
+      setOrders(fallback.orders);
+      const metrics: ImportMetrics = {
+        suppliers: fallback.suppliers.length,
+        items: fallback.items.length,
+        orders: fallback.orders.length,
+      };
+      setImportMetrics(metrics);
+      setLastImportAt(Date.now());
       toast({
-        title: "Import failed",
-        description: message,
+        title: "Builder import unavailable",
+        description: `${message} Loaded demo Purchasing_Receiving data instead.`,
         variant: "destructive",
       });
     } finally {
