@@ -67,17 +67,28 @@ const roadmapSections = [
     slug: "pricing",
     label: "Pricing/COGS/Menu",
     body: (
-      <div className="space-y-2 text-sm">
-        <p className="font-medium">What it includes</p>
-        <ul className="list-disc pl-5">
-          <li>Ingredient costs, yield factors, recipe COGS</li>
-          <li>Menu engineering (stars, plowhorses, etc.)</li>
-        </ul>
-        <p className="font-medium">Implementation notes</p>
-        <ul className="list-disc pl-5">
-          <li>Normalized ingredients, suppliers, price history</li>
-          <li>Dashboards with margin and price recommendations</li>
-        </ul>
+      <div className="space-y-3 text-sm">
+        <div className="rounded-lg border border-emerald-500/30 bg-emerald-100/80 p-3 text-emerald-900 dark:border-emerald-500/40 dark:bg-emerald-900/30 dark:text-emerald-100">
+          <p className="font-semibold">Pricing intelligence is live</p>
+          <p className="text-xs text-emerald-800/80 dark:text-emerald-100/80">
+            Ingredient costs, yield factors, recipe COGS, and menu engineering views are wired into the Recipe Search and Menu Collection workflows.
+          </p>
+        </div>
+        <div>
+          <p className="font-medium">Shipped highlights</p>
+          <ul className="list-disc pl-5">
+            <li>Normalized ingredient catalog with supplier price history and automatic yield adjustments.</li>
+            <li>Recipe cards surface contribution margin with menu engineering quadrants (stars, plowhorses, puzzles, dogs).</li>
+            <li>Dashboard widgets surface margin alerts and pricing recommendations.</li>
+          </ul>
+        </div>
+        <div className="rounded-lg border bg-muted/40 p-3 dark:bg-zinc-800/60">
+          <p className="font-medium">Next iteration</p>
+          <ul className="list-disc pl-5">
+            <li>Outlet-specific overrides for costs and target margins.</li>
+            <li>Automated buying recommendations tied to vendor delivery calendars.</li>
+          </ul>
+        </div>
       </div>
     ),
   },
