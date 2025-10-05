@@ -13,11 +13,27 @@ import TopTabs from "@/components/TopTabs";
 import SubtleBottomGlow from "@/components/SubtleBottomGlow";
 import TronBackdrop from "@/components/TronBackdrop";
 import CornerBrand from "@/components/CornerBrand";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { PageToolbarProvider, usePageToolbar } from "@/context/PageToolbarContext";
+import { AnimatePresence, motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
 
 export default function Index() {
+  return (
+    <PageToolbarProvider>
+      <IndexContent />
+    </PageToolbarProvider>
+  );
+}
+
+function IndexContent() {
   const [params, setParams] = useSearchParams();
   const active = params.get("tab") || "search";
+  const {
+    config: { items: toolbarItems, title: toolbarTitle },
+  } = usePageToolbar();
+  const toolbarTransition = { duration: 0.375, ease: [0.4, 0, 0.2, 1] } as const;
+
   return (
     <TronBackdrop>
       <div
@@ -28,7 +44,7 @@ export default function Index() {
         }}
       >
         <TopTabs />
-        <header className="flex items-center justify-between pr-6 pt-6 pb-2 pl-1 sm:pl-3">
+        <header className="flex flex-wrap items-center justify-between gap-4 pr-6 pt-6 pb-2 pl-1 sm:flex-nowrap sm:pl-3">
           <div className="flex items-center gap-3">
             <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/60 bg-white/80 text-xs font-semibold uppercase tracking-[0.35em] text-slate-700 shadow-sm backdrop-blur-sm dark:border-cyan-500/40 dark:bg-cyan-500/15 dark:text-cyan-200">
               ER
@@ -40,7 +56,62 @@ export default function Index() {
               <span className="text-xs uppercase tracking-[0.35em] text-slate-400 dark:text-cyan-300/70">
                 Research & Development Suite
               </span>
+              {toolbarTitle ? (
+                <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.4em] text-slate-500/80 dark:text-cyan-300/70">
+                  {toolbarTitle}
+                </span>
+              ) : null}
             </div>
+          </div>
+          <div className="flex items-center justify-end gap-2 sm:flex-nowrap">
+            <AnimatePresence mode="sync">
+              {toolbarItems.length ? (
+                <motion.div
+                  key="toolbar"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0, transition: toolbarTransition }}
+                  exit={{ opacity: 0, y: -12, transition: toolbarTransition }}
+                  className="flex flex-wrap items-center justify-end gap-2 sm:flex-nowrap"
+                >
+                  {toolbarItems.map((item, index) => (
+                    <motion.div
+                      key={item.id}
+                      initial={{ opacity: 0, scale: 0.92 }}
+                      animate={{
+                        opacity: 1,
+                        scale: 1,
+                        transition: {
+                          ...toolbarTransition,
+                          delay: index * 0.04,
+                        },
+                      }}
+                      exit={{
+                        opacity: 0,
+                        scale: 0.88,
+                        transition: toolbarTransition,
+                      }}
+                    >
+                      {item.type === "custom" ? (
+                        item.element
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={item.onClick}
+                          className={item.className}
+                          aria-label={item.ariaLabel || item.label}
+                          title={item.title || item.label}
+                        >
+                          {item.icon ? (
+                            <item.icon className="h-5 w-5" aria-hidden />
+                          ) : null}
+                          <span className="sr-only">{item.label}</span>
+                        </button>
+                      )}
+                    </motion.div>
+                  ))}
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
           </div>
         </header>
         <main className="w-full py-6">
