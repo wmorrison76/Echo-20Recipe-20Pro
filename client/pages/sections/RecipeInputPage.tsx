@@ -124,6 +124,7 @@ const ensureIngredientRowIds = (
 const RecipeInputPage = () => {
   const [recipeName, setRecipeName] = useState("");
   const { t } = useTranslation();
+  const { findBestMatch } = useYieldStore();
   const [ingredients, setIngredients] = useState<IngredientRow[]>([
     createIngredientRow(),
   ]);
