@@ -135,6 +135,29 @@ const experimentsSeed: LabExperiment[] = [
     owner: "C. Nguyen",
     notes: "Approved for service preview—capture allergen handoff.",
     tags: ["seafood", "sauce", "preview"],
+    hypothesis:
+      "Stabilizing raw oyster liquor with lecithin and xanthan will create a velvet sheen while retaining salinity cues.",
+    variablesUnderTest: [
+      "Xanthan inclusion 0.05%",
+      "Shear speed 2200 rpm",
+      "Service temperature 8°C",
+    ],
+    sensoryTargets: [
+      "Mirror gloss finish",
+      "Salinity 3.2%",
+      "Umami linger 9/10",
+    ],
+    testPlan: [
+      "Hold emulsion for 4h under pass lamp",
+      "Rapid cool re-test for break",
+      "Plate with nitrogen-frozen herb powder",
+    ],
+    equipment: [
+      "Pacojet",
+      "Rotor-stator blender",
+      "Nitrogen tunnel",
+    ],
+    launchWindow: "Chef's counter prelude",
   },
 ];
 
