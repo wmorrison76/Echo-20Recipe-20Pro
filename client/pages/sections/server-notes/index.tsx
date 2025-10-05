@@ -196,7 +196,50 @@ export default function ServerNotesSection() {
             </Button>
           </header>
 
-          <section className="grid gap-6 lg:grid-cols-12">
+          <div className={`${panelSurfaceClass} p-6`}>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground">
+                  Guided helper
+                </p>
+                <h2 className="text-lg font-semibold text-foreground">
+                  Walk me through creating a document
+                </h2>
+              </div>
+              <Badge
+                variant="secondary"
+                className="rounded-full px-3 py-1 text-xs uppercase tracking-[0.25em]"
+              >
+                Follow the steps
+              </Badge>
+            </div>
+            <div className="mt-4 grid gap-4 md:grid-cols-3">
+              {WALKTHROUGH_STEPS.map((step, index) => {
+                const Icon = step.icon;
+                return (
+                  <div
+                    key={step.title}
+                    className="flex items-start gap-3 rounded-2xl border border-white/60 bg-white/70 p-4 shadow-sm backdrop-blur-sm transition-colors dark:border-cyan-500/30 dark:bg-slate-950/60"
+                  >
+                    <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-white/80 bg-white text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-sm dark:border-cyan-500/40 dark:bg-slate-900 dark:text-cyan-200">
+                      {index + 1}
+                    </span>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                        <Icon className="h-4 w-4 text-primary" />
+                        <span>{step.title}</span>
+                      </div>
+                      <p className="text-xs leading-relaxed text-muted-foreground">
+                        {step.description}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <section className="grid items-stretch gap-6 lg:grid-cols-12">
             <Card className={`${panelSurfaceClass} lg:col-span-4 xl:col-span-4`}>
               <CardHeader className="space-y-1 border-b border-white/70 px-6 py-5 dark:border-cyan-500/25">
                 <CardTitle className="text-base">Configuration</CardTitle>
