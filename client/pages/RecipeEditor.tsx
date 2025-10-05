@@ -660,29 +660,64 @@ function IngredientsTable({ recipeId }: { recipeId: string }) {
     subId: "",
   });
 
-  const ingredientLines = useMemo(
-    () => (Array.isArray(recipe.ingredients) ? recipe.ingredients.map((item) => String(item ?? "")) : []),
-    [recipe.ingredients],
+  const ingredientLines = useMemo(() => {
+    if (!Array.isArray(recipe.ingredients)) return [] as string[];
+    return recipe.ingredients.map((item) => String(item ?? ""));
+  }, [recipe.ingredients]);
+
+  const parseLine = useCallback(
+    (line: string): Row => {
+      const blank = createBlankRow();
+      const trimmed = line.trim();
+      if (!trimmed) return blank;
+
+      const extracted = extractLeadingQuantity(trimmed);
+      let remainder = trimmed;
+      if (extracted) {
+        blank.qty = extracted.raw.trim();
+        remainder = extracted.remainder.trim();
+      }
+
+      const parts = remainder.split(/\s+/).filter(Boolean);
+      if (parts.length) {
+        const candidate = parts[0];
+        if (isLikelyUnit(candidate)) {
+          blank.unit = candidate;
+          parts.shift();
+        }
+      }
+
+      const remainingText = parts.join(" ").trim();
+      const { item, prep } = splitItemAndPrep(remainingText);
+      blank.item = item;
+      blank.prep = prep;
+      return blank;
+    },
+    [],
   );
 
   const rows = useMemo(() => {
     const extraTable = (recipe.extra as any)?.ingredientsTable as Row[] | undefined;
-    const source = Array.isArray(extraTable) && extraTable.length > 0
-      ? extraTable.map((entry) => ({ ...createBlankRow(), ...entry }))
-      : ingredientLines.map((line) => ({ ...createBlankRow(), item: line }));
-    const padded = source.map((entry) => ({ ...createBlankRow(), ...entry }));
-    const targetLength = Math.max(ingredientLines.length || 0, 12);
+    let base: Row[];
+    if (Array.isArray(extraTable) && extraTable.length > 0) {
+      base = extraTable.map((entry) => ({ ...createBlankRow(), ...entry }));
+    } else {
+      base = ingredientLines.map((line) => parseLine(line));
+    }
+    const targetLength = Math.max(base.length, ingredientLines.length, 12);
+    const padded = base.slice(0, targetLength).map((entry) => ({ ...createBlankRow(), ...entry }));
     while (padded.length < targetLength) {
       padded.push(createBlankRow());
     }
     return padded;
-  }, [ingredientLines, recipe.extra]);
+  }, [ingredientLines, parseLine, recipe.extra]);
 
   const isRowEmpty = (row: Row): boolean => {
     return !row.qty.trim() && !row.unit.trim() && !row.item.trim() && !row.prep.trim() && !row.yield.trim() && !row.cost.trim();
   };
 
   const setRow = (idx: number, patch: Partial<Row>) => {
+    if (!recipe) return;
     const next = rows.map((r, i) => (i === idx ? { ...r, ...patch } : r)).map((row) => ({
       qty: normalizeValue(row.qty).trim(),
       unit: normalizeValue(row.unit).trim(),
