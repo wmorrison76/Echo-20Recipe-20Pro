@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
+import { Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { ALLERGENS, formatCurrency, generateId, percent } from "./shared";
 
