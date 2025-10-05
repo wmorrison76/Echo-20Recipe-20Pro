@@ -232,6 +232,79 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
     );
   }, []);
 
+  const createExperiment = React.useCallback(
+    (input: NewExperimentInput): string => {
+      const id = generateExperimentId();
+      const experiment: LabExperiment = {
+        id,
+        title: input.title.trim(),
+        status: input.status ?? "ideation",
+        lastUpdated: "Just now",
+        owner: input.owner.trim(),
+        notes: input.notes?.trim() || input.hypothesis.trim(),
+        tags: sanitizeList(input.tags),
+        hypothesis: input.hypothesis.trim(),
+        variablesUnderTest: sanitizeList(input.variablesUnderTest),
+        sensoryTargets: sanitizeList(input.sensoryTargets),
+        testPlan: sanitizeList(input.testPlan),
+        equipment: sanitizeList(input.equipment),
+        launchWindow: input.launchWindow?.trim() || "TBD",
+      };
+      setExperiments((prev) => [experiment, ...prev]);
+      setFocusExperimentId(id);
+      return id;
+    },
+    [generateExperimentId, sanitizeList],
+  );
+
+  const appendVariable = React.useCallback((id: string, variable: string) => {
+    const entry = variable.trim();
+    if (!entry) return;
+    setExperiments((prev) =>
+      prev.map((exp) =>
+        exp.id === id
+          ? {
+              ...exp,
+              variablesUnderTest: [...exp.variablesUnderTest, entry],
+              lastUpdated: "Just now",
+            }
+          : exp,
+      ),
+    );
+  }, []);
+
+  const appendTestStep = React.useCallback((id: string, step: string) => {
+    const entry = step.trim();
+    if (!entry) return;
+    setExperiments((prev) =>
+      prev.map((exp) =>
+        exp.id === id
+          ? {
+              ...exp,
+              testPlan: [...exp.testPlan, entry],
+              lastUpdated: "Just now",
+            }
+          : exp,
+      ),
+    );
+  }, []);
+
+  const appendSensoryTarget = React.useCallback((id: string, target: string) => {
+    const entry = target.trim();
+    if (!entry) return;
+    setExperiments((prev) =>
+      prev.map((exp) =>
+        exp.id === id
+          ? {
+              ...exp,
+              sensoryTargets: [...exp.sensoryTargets, entry],
+              lastUpdated: "Just now",
+            }
+          : exp,
+      ),
+    );
+  }, []);
+
   const value = React.useMemo<RDLabState>(
     () => ({
       experiments,
