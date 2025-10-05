@@ -1470,6 +1470,16 @@ const RecipeInputPage = () => {
     setPortionCount(target);
   };
 
+  useEffect(() => {
+    convertUnitsRef.current = convertUnits;
+  }, [convertUnits]);
+  useEffect(() => {
+    cycleCurrencyRef.current = cycleCurrency;
+  }, [cycleCurrency]);
+  useEffect(() => {
+    scaleRecipeRef.current = scaleRecipe;
+  }, [scaleRecipe]);
+
   const exportCSV = () => {
     const header = ["qty", "unit", "item", "prep", "yield", "cost"];
     const rows = [
