@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { FileText, Download, Save, Eye, Clock, ChefHat } from "lucide-react";
+import { FileText, Download, Save, Eye, Clock, ChefHat, Languages } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import type { ServerNote, ServerNoteRecipe } from "@shared/server-notes";
+import { defaultLanguage, type LanguageCode } from "@/i18n/config";
 import {
   AlignmentType,
   BorderStyle,
@@ -25,11 +26,15 @@ import {
 export type ServerNotesGeneratorProps = {
   serverNote: ServerNote;
   onSave: (next: ServerNote) => void;
+  language?: LanguageCode;
+  languageName?: string;
 };
 
 export function ServerNotesGenerator({
   serverNote,
   onSave,
+  language = defaultLanguage,
+  languageName,
 }: ServerNotesGeneratorProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedDocument, setGeneratedDocument] = useState<string | null>(
@@ -41,11 +46,11 @@ export function ServerNotesGenerator({
   const generateDocument = async () => {
     setIsGenerating(true);
     try {
-      const blob = await createDocx(serverNote);
+      const blob = await createDocx(serverNote, language);
       if (generatedDocxUrl) URL.revokeObjectURL(generatedDocxUrl);
       const docxUrl = URL.createObjectURL(blob);
       setGeneratedDocxUrl(docxUrl);
-      setGeneratedDocument(createDocumentHtml(serverNote));
+      setGeneratedDocument(createDocumentHtml(serverNote, language));
       toast({
         title: "Document Generated",
         description: "Server notes document ready to print or download.",
@@ -158,6 +163,11 @@ export function ServerNotesGenerator({
                 : `${serverNote.cardsPerPage} cards / page`
             }
           />
+          <SummaryRow
+            icon={<Languages className="h-4 w-4 text-primary" />}
+            label="Language"
+            value={languageName || language}
+          />
         </div>
 
         <div className="flex items-center gap-2 text-sm font-medium">
@@ -244,7 +254,10 @@ function SummaryRow({ icon, label, value }: SummaryRowProps) {
   );
 }
 
-function createDocumentHtml(serverNote: ServerNote): string {
+function createDocumentHtml(
+  serverNote: ServerNote,
+  lang: LanguageCode = defaultLanguage,
+): string {
   const { colorScheme, orientation, pageFormat, cardsPerPage } = serverNote;
 
   if (pageFormat === "index-card") {
@@ -316,7 +329,7 @@ function createDocumentHtml(serverNote: ServerNote): string {
     }
 
     return `<!DOCTYPE html>
-<html>
+<html lang="${lang}">
 <head>
   <meta charset="utf-8" />
   <title>${serverNote.title} - Server Notes</title>
@@ -466,7 +479,10 @@ function createDocumentHtml(serverNote: ServerNote): string {
 </html>`;
 }
 
-async function createDocx(note: ServerNote): Promise<Blob> {
+async function createDocx(
+  note: ServerNote,
+  language: LanguageCode = defaultLanguage,
+): Promise<Blob> {
   const standard = note.pageFormat === "standard";
   const cardsPerPage = standard
     ? 1
@@ -834,6 +850,10 @@ async function createDocx(note: ServerNote): Promise<Blob> {
     }
   }
 
-  const doc = new DocxDocument({ sections });
+  const doc = new DocxDocument({
+    sections,
+    creator: "Echo Recipe Pro",
+    description: `Language: ${language}`,
+  });
   return Packer.toBlob(doc);
 }
