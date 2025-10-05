@@ -29,6 +29,20 @@ export type LabTask = {
   isCompleted?: boolean;
 };
 
+type NewExperimentInput = {
+  title: string;
+  owner: string;
+  hypothesis: string;
+  tags?: string[];
+  variablesUnderTest?: string[];
+  sensoryTargets?: string[];
+  testPlan?: string[];
+  equipment?: string[];
+  notes?: string;
+  status?: ExperimentStatus;
+  launchWindow?: string;
+};
+
 type RDLabState = {
   experiments: LabExperiment[];
   focusExperimentId: string;
