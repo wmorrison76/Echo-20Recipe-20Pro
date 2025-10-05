@@ -319,6 +319,28 @@ export default function RecipeTemplate() {
               )}
             </div>
             <div className="space-y-2">
+              {Number.isFinite(baseYieldQty) && yieldUnit && (
+                <div>
+                  <span className="font-semibold">Yield:</span>{" "}
+                  {displayQuantity(scaledYieldQty ?? baseYieldQty)} {yieldUnit}
+                  {appliedScale !== 1 && Number.isFinite(baseYieldQty) && (
+                    <span className="ml-1 text-xs text-muted-foreground">
+                      (original {displayQuantity(baseYieldQty)})
+                    </span>
+                  )}
+                </div>
+              )}
+              {Number.isFinite(basePortionCount) && portionUnit && (
+                <div>
+                  <span className="font-semibold">Portions:</span>{" "}
+                  {displayQuantity(scaledPortionCount ?? basePortionCount)} {portionUnit}
+                  {appliedScale !== 1 && Number.isFinite(basePortionCount) && (
+                    <span className="ml-1 text-xs text-muted-foreground">
+                      (original {displayQuantity(basePortionCount)})
+                    </span>
+                  )}
+                </div>
+              )}
               {(recipe as any)?.extra?.cookTime && (
                 <div>
                   <span className="font-semibold">Cook:</span>{" "}
