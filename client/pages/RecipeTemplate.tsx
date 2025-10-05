@@ -131,6 +131,7 @@ export default function RecipeTemplate() {
     serverNotes?.portionunit,
     extra?.portionUnit,
   );
+  const portionUnitLabel = portionUnit?.trim();
 
   const baseYieldQty = pickNumber(
     serverNotes?.yieldQty,
@@ -142,6 +143,7 @@ export default function RecipeTemplate() {
     serverNotes?.yield_unit,
     extra?.yieldUnit,
   );
+  const yieldUnitLabel = yieldUnit?.trim();
 
   const scaledPortionCount = deriveScaledValue(basePortionCount, appliedScale);
   const scaledYieldQty = deriveScaledValue(baseYieldQty, appliedScale);
