@@ -477,6 +477,34 @@ const RecipeInputPage = () => {
   }, [ingredients]);
 
   const inputClass = `border p-3 rounded-lg text-sm transition-all focus:shadow-md focus:ring-2 ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30 shadow-none" : "bg-white border-gray-300 text-black focus:ring-blue-400/30 focus:border-blue-500 shadow-lg"}`;
+  const infoInputClass = useMemo(
+    () =>
+      `rounded-lg border px-2 py-1 text-xs font-semibold tracking-wide transition-colors focus:outline-none focus:ring-1 ${
+        isDarkMode
+          ? "bg-black/40 border-cyan-500/40 text-cyan-200 focus:border-cyan-300 focus:ring-cyan-400/40"
+          : "bg-white border-slate-300 text-slate-800 focus:border-slate-500 focus:ring-slate-300/70"
+      }`,
+    [isDarkMode],
+  );
+  const infoLabelClass = useMemo(
+    () =>
+      `font-bold uppercase tracking-[0.22em] text-[10px] ${
+        isDarkMode ? "text-cyan-300" : "text-slate-700"
+      }`,
+    [isDarkMode],
+  );
+  const infoHelperClass = useMemo(
+    () => (isDarkMode ? "text-cyan-400/80" : "text-slate-500"),
+    [isDarkMode],
+  );
+  const cookTimeDisplay = useMemo(
+    () => formatDurationLabel(cookTime),
+    [cookTime],
+  );
+  const prepTimeDisplay = useMemo(
+    () => formatDurationLabel(prepTime),
+    [prepTime],
+  );
 
   // Normalize US volumes to best unit (e.g., 3072 1/4 tsp -> 4 gal)
   const normalizeImperialVolume = (
@@ -2806,7 +2834,7 @@ const RecipeInputPage = () => {
                     const lineStart = before.lastIndexOf("\n") + 1;
                     const currentLine = before.slice(lineStart);
                     const m = currentLine.match(/^\s*(\d+)[\.)]?\s*/);
-                    const nextNum = m ? String(Number(m[1]) + 1) + ". " : "• ";
+                    const nextNum = m ? String(Number(m[1]) + 1) + ". " : "�� ";
                     const newText = before + "\n" + nextNum + after;
                     el.textContent = newText;
                     const newOffset = offset + 1 + nextNum.length;
