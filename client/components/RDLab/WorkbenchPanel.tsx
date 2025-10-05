@@ -92,13 +92,29 @@ export function WorkbenchPanel() {
               <span>Updated: {experiment.lastUpdated}</span>
             </div>
           </div>
-          <button
-            type="button"
-            className="rounded-full border border-white/30 bg-white/50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-700 transition hover:border-slate-500/60 hover:bg-white/80 dark:border-cyan-500/30 dark:bg-slate-950/50 dark:text-cyan-200 dark:hover:border-cyan-400 dark:hover:bg-slate-950/80"
-            onClick={() => toggleArchive(experiment.id)}
-          >
-            {experiment.status === "archived" ? "Reopen" : "Archive"}
-          </button>
+          <div className="flex flex-col items-end gap-2 text-[11px] uppercase tracking-[0.3em] text-slate-500 dark:text-cyan-200/70">
+            <div className="flex items-center gap-2">
+              <span>Stage</span>
+              <select
+                value={experiment.status}
+                onChange={handleStatusChange}
+                className="rounded-full border border-white/40 bg-white/70 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-600 outline-none transition hover:border-sky-400 focus:border-sky-500 focus:text-slate-800 dark:border-cyan-500/25 dark:bg-slate-950/70 dark:text-cyan-100 dark:hover:border-cyan-400 dark:focus:border-cyan-300"
+              >
+                {statusOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option.toUpperCase()}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              type="button"
+              className="rounded-full border border-white/30 bg-white/50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-slate-700 transition hover:border-slate-500/60 hover:bg-white/80 dark:border-cyan-500/30 dark:bg-slate-950/50 dark:text-cyan-200 dark:hover:border-cyan-400 dark:hover:bg-slate-950/80"
+              onClick={() => toggleArchive(experiment.id)}
+            >
+              {experiment.status === "archived" ? "Reopen" : "Archive"}
+            </button>
+          </div>
         </div>
         <div className="mt-6 rounded-2xl border border-white/20 bg-white/50 p-4 text-sm text-slate-700 shadow-inner dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100">
           <div className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
