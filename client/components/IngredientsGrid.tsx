@@ -167,17 +167,6 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
               : isDarkMode
                 ? "border-cyan-500/20 bg-slate-950/40 shadow-[0_12px_28px_-18px_rgba(34,211,238,0.45)]"
                 : "border-slate-200 bg-white shadow-[0_12px_28px_-18px_rgba(15,23,42,0.35)]";
-            const insight = yieldInsights?.[index] ?? null;
-            const recommendedPercent = insight?.combinedPercent ?? null;
-            const parsedYield = Number(
-              String(row.yield || "").replace(/[^0-9.]/g, ""),
-            );
-            const shouldShowApply =
-              !isDivider &&
-              recommendedPercent != null &&
-              typeof onApplyYieldSuggestion === "function" &&
-              (!Number.isFinite(parsedYield) ||
-                Math.abs(parsedYield - recommendedPercent) > 0.51);
 
             return (
               <div
