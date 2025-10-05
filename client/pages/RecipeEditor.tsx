@@ -493,13 +493,13 @@ export default function RecipeEditor() {
 
   return (
     <div
-      className="min-h-screen text-foreground transition-[padding-left] duration-300"
+      className="min-h-screen text-foreground"
       style={{
-        paddingLeft: "calc(var(--sidebar-offset, 128px) + 0.75rem)",
+        paddingLeft: "calc(var(--sidebar-offset, 116px) + 0.5rem)",
       }}
     >
       <TopTabs />
-      <div className="container mx-auto space-y-6 py-6">
+      <div className="container mx-auto space-y-6 py-4">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold">Edit Recipe</h1>
