@@ -232,11 +232,45 @@ export default function RecipeEditor() {
   useEffect(() => {
     if (!recipe) return;
     const extra = (recipe.extra ?? {}) as Record<string, unknown>;
+    const serverNotes = extra.serverNotes as
+      | ({
+          allergens?: string[];
+          modifiers?: Partial<Record<string, string[]>>;
+          access?: string[];
+          cookTime?: string;
+          cookTemp?: string;
+          directions?: string;
+        } & Record<string, unknown>)
+      | undefined;
+
     setLocalTitle(recipe.title ?? "");
-    setAllergens(String(extra.allergens ?? ""));
-    setCookTime(String(extra.cookTime ?? ""));
-    setCookTemp(String(extra.cookTemp ?? ""));
-    const rawDirections = String(extra.directions ?? (recipe.instructions ?? []).join("\n") ?? "");
+
+    const inferredAllergens = (() => {
+      if (Array.isArray(extra.allergenList)) return extra.allergenList.map(String);
+      if (Array.isArray(serverNotes?.allergens)) return serverNotes!.allergens.map(String);
+      if (typeof extra.allergens === "string") {
+        return extra.allergens
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean);
+      }
+      return [] as string[];
+    })();
+    setSelectedAllergenList(inferredAllergens);
+    if (inferredAllergens.length) {
+      setAllergens(inferredAllergens.join(", "));
+    } else {
+      setAllergens(String(extra.allergens ?? ""));
+    }
+
+    const derivedCookTime = String(extra.cookTime ?? serverNotes?.cookTime ?? recipe.cookTime ?? "");
+    const derivedCookTemp = String(extra.cookTemp ?? serverNotes?.cookTemp ?? "");
+    setCookTime(derivedCookTime);
+    setCookTemp(derivedCookTemp);
+
+    const rawDirections = String(
+      extra.directions ?? serverNotes?.directions ?? (recipe.instructions ?? []).join("\n") ?? "",
+    );
     const lines = rawDirections
       .split(/\r?\n/)
       .map((line) => line.trim())
@@ -249,6 +283,7 @@ export default function RecipeEditor() {
         .map((line) => line.slice(4))
         .filter((src) => typeof src === "string" && src.length > 0),
     );
+
     const nutritionSource = (extra.nutrition as RecipeNutrition | undefined) ?? recipe.nutrition ?? null;
     const nextNutrition = createEmptyNutritionValues();
     if (nutritionSource) {
@@ -260,6 +295,30 @@ export default function RecipeEditor() {
       }
     }
     setNutritionValues(nextNutrition);
+
+    const classification = (extra.classification ?? {}) as Record<string, unknown>;
+    const modifiers = (serverNotes?.modifiers ?? {}) as Partial<Record<string, unknown>>;
+
+    const extractArray = (value: unknown): string[] => {
+      if (Array.isArray(value)) return value.map(String);
+      if (typeof value === "string")
+        return value
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean);
+      return [];
+    };
+
+    setSelectedNationality(extractArray(classification.nationality ?? modifiers.nationality));
+    setSelectedCourses(extractArray(classification.courses ?? modifiers.courses));
+    setSelectedRecipeType(extractArray(classification.recipeType ?? modifiers.recipeType));
+    setSelectedPrepMethod(extractArray(classification.prepMethod ?? modifiers.prepMethod));
+    setSelectedCookingEquipment(extractArray(classification.equipment ?? modifiers.equipment));
+    setSelectedRecipeAccess(extractArray(classification.recipeAccess ?? serverNotes?.access));
+
+    const storedTaxonomy = (extra.taxonomy as Partial<TaxonomySelection> | undefined) ?? undefined;
+    setTaxonomy({ ...defaultSelection, ...(storedTaxonomy ?? {}) });
+
     setCoverPreview(recipe.imageDataUrls?.[0] ?? recipe.image ?? undefined);
   }, [recipe]);
 
