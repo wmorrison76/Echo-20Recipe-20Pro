@@ -321,10 +321,11 @@ export default function TopTabs() {
       }
       const { offsetWidth, offsetLeft } = asideRef.current;
       const gap = 4;
-      const overlayWidth = collapsed ? offsetWidth : Math.min(offsetWidth, 96);
+      const preferredWidth = 96;
+      const measuredWidth = Math.min(offsetWidth, preferredWidth);
       const offset = Math.max(
-        Math.round(offsetLeft + overlayWidth + gap),
-        0,
+        Math.round(offsetLeft + measuredWidth + gap),
+        preferredWidth,
       );
       document.documentElement.style.setProperty(
         "--sidebar-offset",
@@ -571,12 +572,28 @@ export default function TopTabs() {
               className="absolute right-[-18px] top-1/2 z-10 -translate-y-1/2 select-none rounded-full border border-gray-300 bg-background px-2 py-3 shadow transition duration-300 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-slate-700 dark:bg-slate-900/70 dark:hover:bg-slate-900"
               aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
               aria-pressed={!collapsed}
+              aria-expanded={!collapsed}
               title={`${collapsed ? "Expand navigation" : "Collapse navigation"} (${navToggleShortcut})`}
             >
               <div className="flex flex-col items-center gap-1">
-                <span className="block h-4 w-0.5 rounded-full bg-gray-400 transition-transform duration-300 dark:bg-slate-500" />
-                <span className="block h-4 w-0.5 rounded-full bg-gray-400 transition-transform duration-300 dark:bg-slate-500" />
-                <span className="block h-4 w-0.5 rounded-full bg-gray-400 transition-transform duration-300 dark:bg-slate-500" />
+                <span
+                  className={cn(
+                    "block h-4 w-0.5 rounded-full bg-gray-400 transition-all duration-300 dark:bg-slate-500",
+                    collapsed ? "translate-y-0 rotate-0" : "-translate-y-[3px] rotate-45",
+                  )}
+                />
+                <span
+                  className={cn(
+                    "block h-4 w-0.5 rounded-full bg-gray-400 transition-all duration-300 dark:bg-slate-500",
+                    collapsed ? "opacity-100 scale-y-100" : "opacity-0 scale-y-0",
+                  )}
+                />
+                <span
+                  className={cn(
+                    "block h-4 w-0.5 rounded-full bg-gray-400 transition-all duration-300 dark:bg-slate-500",
+                    collapsed ? "translate-y-0 rotate-0" : "translate-y-[3px] -rotate-45",
+                  )}
+                />
               </div>
             </button>
           </div>
