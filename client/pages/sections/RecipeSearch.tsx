@@ -1526,12 +1526,12 @@ const onFiles = async (files: File[]) => {
             <div className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
               Import from the web
             </div>
-            <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_auto]">
+            <div className="flex flex-col items-stretch gap-2 lg:flex-row lg:justify-end lg:gap-3">
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search the web (e.g. 'chocolate cake recipe')"
-                className="rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                className="rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring lg:w-[320px]"
               />
               <Button
                 size="sm"
@@ -1547,12 +1547,12 @@ const onFiles = async (files: File[]) => {
                 Search
               </Button>
             </div>
-            <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_auto]">
+            <div className="flex flex-col items-stretch gap-2 lg:flex-row lg:justify-end lg:gap-3">
               <input
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="Paste a recipe page URL (https://...)"
-                className="rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                className="rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring lg:w-[320px]"
               />
               <Button
                 size="sm"
