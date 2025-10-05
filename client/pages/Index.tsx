@@ -1,6 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import RecipeSearchSection from "./sections/RecipeSearch";
-import RecipeInputSection from "./sections/RecipeInput";
 import GallerySection from "./sections/Gallery";
 import AddRecipeSection from "./sections/AddRecipe";
 import SaasRoadmapSection from "./sections/SaasRoadmap";
