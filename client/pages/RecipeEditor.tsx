@@ -633,7 +633,7 @@ function IngredientsTable({ recipeId }: { recipeId: string }) {
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <tr key={`${r.item}-${i}`} className="border-t">
+            <tr key={`ingredient-row-${i}`} className="border-t">
               <td className="p-1">
                 <input
                   value={r.qty}
