@@ -30,6 +30,9 @@ export function WorkbenchPanel() {
     [experiments, focusExperimentId],
   );
   const [draftNotes, setDraftNotes] = useState<string>(experiment?.notes ?? "");
+  const [draftVariable, setDraftVariable] = useState("");
+  const [draftTestStep, setDraftTestStep] = useState("");
+  const [draftSensory, setDraftSensory] = useState("");
 
   if (!experiment) {
     return (
