@@ -67,6 +67,14 @@ export default function RecipeEditor() {
   const { toast } = useToast();
   const recipe = useMemo(() => (id ? getRecipeById(id) : undefined), [id, getRecipeById]);
 
+  const handleBack = useCallback(() => {
+    if (window.history.length > 2) {
+      nav(-1);
+    } else {
+      nav("/");
+    }
+  }, [nav]);
+
   const [localTitle, setLocalTitle] = useState<string>("");
   const [allergens, setAllergens] = useState<string>("");
   const [cookTime, setCookTime] = useState<string>("");
