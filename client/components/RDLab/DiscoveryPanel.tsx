@@ -79,6 +79,8 @@ export function DiscoveryPanel() {
     setDraftLaunchWindow("");
   };
 
+  const isCreateDisabled = !draftTitle.trim() || !draftHypothesis.trim();
+
   return (
     <div className="flex h-full flex-col gap-5">
       <div className="rounded-2xl border border-white/20 bg-white/6 p-4 backdrop-blur md:bg-white/10 dark:border-cyan-500/25 dark:bg-cyan-500/5">
@@ -156,7 +158,7 @@ export function DiscoveryPanel() {
                 Techniques
               </div>
               <div className="text-[12px] text-slate-500 dark:text-cyan-200/80">
-                {texture.suggestedTechniques.join(" �� ")}
+                {texture.suggestedTechniques.join(" · ")}
               </div>
               {texture.platingNotes ? (
                 <div className="mt-2 text-[11px] italic text-slate-500/80 dark:text-cyan-200/70">
