@@ -60,8 +60,6 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
   onGridKeyDown,
   onAddSubRecipe,
   onAddDivider,
-  yieldInsights,
-  onApplyYieldSuggestion,
 }) => {
   const { t } = useTranslation();
 
