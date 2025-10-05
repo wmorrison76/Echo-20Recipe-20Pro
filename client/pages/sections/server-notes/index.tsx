@@ -139,8 +139,9 @@ export default function ServerNotesSection() {
   };
 
   const createNewNote = () => {
+    let nextNote: ServerNote | null = null;
     setCurrentNote((prev) => {
-      const next: ServerNote = {
+      nextNote = {
         ...createEmptyServerNote(prev.layout, prev.colorScheme),
         companyName: prev.companyName,
         outletName: prev.outletName,
@@ -149,9 +150,11 @@ export default function ServerNotesSection() {
         pageFormat: prev.pageFormat,
         cardsPerPage: prev.cardsPerPage,
       };
-      persistSettings(next);
-      return next;
+      return nextNote;
     });
+    if (nextNote) {
+      persistSettings(nextNote);
+    }
     setNoteSession((value) => value + 1);
     toast({
       title: "New document ready",
