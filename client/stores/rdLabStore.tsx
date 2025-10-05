@@ -242,7 +242,10 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
         lastUpdated: "Just now",
         owner: input.owner.trim(),
         notes: input.notes?.trim() || input.hypothesis.trim(),
-        tags: sanitizeList(input.tags),
+        tags: (() => {
+          const next = sanitizeList(input.tags);
+          return next.length ? next : ["lab"];
+        })(),
         hypothesis: input.hypothesis.trim(),
         variablesUnderTest: sanitizeList(input.variablesUnderTest),
         sensoryTargets: sanitizeList(input.sensoryTargets),
