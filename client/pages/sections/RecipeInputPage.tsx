@@ -3104,7 +3104,7 @@ const RecipeInputPage = () => {
                   "⅞": "7/8",
                 };
                 s = s.replace(
-                  /[¼½¾��⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝���]/g,
+                  /[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g,
                   (ch) => fracMap[ch] || ch,
                 );
                 const m = s.match(
