@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { YIELD_REFERENCE_DATA } from "@/data/yieldReference";
 
 type Dimension = "mass" | "volume" | "count";
 
