@@ -846,6 +846,8 @@ function evaluateHeuristicYield(target: TokenTarget): BaseYieldMatch {
 
 export function computeBaseYield(item: string, prep?: string): BaseYieldMatch {
   const target = buildTarget(item, prep);
+  const reference = findReferenceYield(target);
+  if (reference) return reference;
   let bestScore = 0;
   let bestRule: BaseYieldRule | null = null;
   for (const rule of BASE_YIELD_RULES) {
