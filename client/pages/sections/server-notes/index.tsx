@@ -173,12 +173,12 @@ export default function ServerNotesSection() {
             </Button>
           </header>
 
-          <section className="grid gap-3 lg:grid-cols-12">
-            <Card className="lg:col-span-4 xl:col-span-4">
-              <CardHeader className="space-y-1 px-4 py-3.5">
+          <section className="grid gap-6 lg:grid-cols-12">
+            <Card className={`${panelSurfaceClass} lg:col-span-4 xl:col-span-4`}>
+              <CardHeader className="space-y-1 border-b border-white/70 px-6 py-5 dark:border-cyan-500/25">
                 <CardTitle className="text-base">Configuration</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 px-4 pb-4 pt-0 lg:max-h-[calc(100vh-240px)] lg:overflow-y-auto">
+              <CardContent className="space-y-4 px-6 pb-6 pt-4 lg:max-h-[calc(100vh-260px)] lg:overflow-y-auto">
                 <ServerNotesConfig
                   config={currentNote}
                   onUpdate={handleUpdate}
@@ -186,11 +186,11 @@ export default function ServerNotesSection() {
               </CardContent>
             </Card>
 
-            <Card className="lg:col-span-4 xl:col-span-4">
-              <CardHeader className="space-y-1 px-4 py-3.5">
+            <Card className={`${panelSurfaceClass} lg:col-span-4 xl:col-span-4`}>
+              <CardHeader className="space-y-1 border-b border-white/70 px-6 py-5 dark:border-cyan-500/25">
                 <CardTitle className="text-base">Recipe Selection</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 px-4 pb-4 pt-0 lg:max-h-[calc(100vh-240px)] lg:overflow-y-auto">
+              <CardContent className="space-y-4 px-6 pb-6 pt-4 lg:max-h-[calc(100vh-260px)] lg:overflow-y-auto">
                 <RecipeSelection
                   availableRecipes={recipes}
                   selectedRecipes={sortedSelected}
@@ -199,11 +199,11 @@ export default function ServerNotesSection() {
               </CardContent>
             </Card>
 
-            <Card className="lg:col-span-4 xl:col-span-4">
-              <CardHeader className="space-y-1 px-4 py-3.5">
+            <Card className={`${panelSurfaceClass} lg:col-span-4 xl:col-span-4`}>
+              <CardHeader className="space-y-1 border-b border-white/70 px-6 py-5 dark:border-cyan-500/25">
                 <CardTitle className="text-base">Preview & Generate</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 px-4 pb-4 pt-0">
+              <CardContent className="space-y-4 px-6 pb-6 pt-4">
                 <ServerNotesPreview
                   layout={currentNote.layout}
                   color={currentNote.colorScheme}
@@ -219,27 +219,26 @@ export default function ServerNotesSection() {
           </section>
 
           <section>
-            <div className="mb-2 flex items-center gap-2">
-              <History className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-medium">Saved Documents</span>
+            <div className="mb-3 flex items-center gap-2 text-muted-foreground">
+              <History className="h-4 w-4" />
+              <span className="text-sm font-medium text-foreground">Saved Documents</span>
               {savedNotes.length > 0 && (
                 <Badge variant="secondary">{savedNotes.length}</Badge>
               )}
             </div>
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
               {savedNotes.map((note) => (
-                <Card key={note.id} className="hover:shadow-lg">
-                  <CardHeader>
+                <Card
+                  key={note.id}
+                  className={`${panelSurfaceClass} hover:shadow-[0_38px_110px_-60px_rgba(15,23,42,0.45)]`}
+                >
+                  <CardHeader className="border-b border-white/70 px-6 py-4 dark:border-cyan-500/25">
                     <CardTitle className="flex items-center justify-between text-base">
-                      <span className="line-clamp-1">
-                        {note.title || "Untitled"}
-                      </span>
-                      <Badge variant="outline">
-                        {note.selectedRecipes.length} recipes
-                      </Badge>
+                      <span className="line-clamp-1">{note.title || "Untitled"}</span>
+                      <Badge variant="outline">{note.selectedRecipes.length} recipes</Badge>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4 text-sm">
+                  <CardContent className="space-y-4 px-6 pb-6 pt-4 text-sm">
                     <div className="space-y-1 text-muted-foreground">
                       <div>
                         <strong>Company:</strong> {note.companyName || "—"}
@@ -250,23 +249,17 @@ export default function ServerNotesSection() {
                         </div>
                       )}
                       <div>
-                        <strong>Distribution:</strong>{" "}
-                        {new Date(note.distributionDate).toLocaleDateString()}
+                        <strong>Distribution:</strong> {new Date(note.distributionDate).toLocaleDateString()}
                       </div>
                       <div>
                         <strong>Layout:</strong> {note.layout.name}
                       </div>
                       <div>
-                        <strong>Updated:</strong>{" "}
-                        {new Date(note.updatedAt).toLocaleDateString()}
+                        <strong>Updated:</strong> {new Date(note.updatedAt).toLocaleDateString()}
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        className="flex-1"
-                        onClick={() => loadSavedNote(note)}
-                      >
+                      <Button size="sm" className="flex-1" onClick={() => loadSavedNote(note)}>
                         Load & Edit
                       </Button>
                       {note.docxDataUrl && (
@@ -298,9 +291,8 @@ export default function ServerNotesSection() {
                 </Card>
               ))}
               {savedNotes.length === 0 && (
-                <div className="col-span-full rounded-lg border py-10 text-center text-sm text-muted-foreground">
-                  No saved documents yet. Generate and save a briefing to build
-                  your library.
+                <div className="col-span-full rounded-3xl border border-dashed border-white/70 bg-white/40 py-12 text-center text-sm text-muted-foreground shadow-inner backdrop-blur-sm dark:border-cyan-500/25 dark:bg-slate-950/40">
+                  No saved documents yet. Generate and save a briefing to build your library.
                 </div>
               )}
             </div>
