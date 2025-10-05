@@ -261,13 +261,13 @@ export function ServerNotesConfig({
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader className="space-y-2 px-4 py-3">
+      <Card className={controlPanelClass}>
+        <CardHeader className="space-y-2 border-b border-white/60 px-5 py-4 dark:border-cyan-500/25">
           <CardTitle className="flex items-center gap-2 text-sm font-semibold">
             <FileText className="h-4 w-4" /> Page Format & Orientation
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3.5 px-4 pb-4 pt-0">
+        <CardContent className="space-y-4 px-5 pb-5 pt-4">
           <div className="flex flex-wrap gap-2">
             <Button
               variant={config.pageFormat === "standard" ? "default" : "outline"}
