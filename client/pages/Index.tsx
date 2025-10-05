@@ -22,10 +22,10 @@ export default function Index() {
     <TronBackdrop>
       <div
         className="min-h-screen text-foreground transition-[padding-left] duration-300"
-        style={{ paddingLeft: "var(--sidebar-offset, 5.5rem)" }}
+        style={{ paddingLeft: "max(calc(var(--sidebar-offset, 5.5rem) - 1.5rem), 1.25rem)" }}
       >
         <TopTabs />
-        <header className="flex items-center justify-between px-6 pt-6 pb-2">
+        <header className="flex items-center justify-between pr-6 pt-6 pb-2 pl-2 sm:pl-4">
           <div className="flex items-center gap-3">
             <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/60 bg-white/80 text-xs font-semibold uppercase tracking-[0.35em] text-slate-700 shadow-sm backdrop-blur-sm dark:border-cyan-500/40 dark:bg-cyan-500/15 dark:text-cyan-200">
               ER
