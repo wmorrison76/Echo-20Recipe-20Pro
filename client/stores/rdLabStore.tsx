@@ -103,6 +103,29 @@ const experimentsSeed: LabExperiment[] = [
     notes:
       "Need shelf-life test. Explore pairing with aged daikon broth for welcome toast amuse.",
     tags: ["spark", "amuse", "welcome"],
+    hypothesis:
+      "Encasing carbonated yuzu curd in alginate pearls will deliver an effervescent burst without collapse during tray pass.",
+    variablesUnderTest: [
+      "CO₂ charge 18 bar vs 22 bar",
+      "Alginate bath calcium ppm",
+      "Holding temperature 2°C vs 5°C",
+    ],
+    sensoryTargets: [
+      "Perlage sensation within 3 seconds of bite",
+      "Acid perception balanced at 5/10",
+      "Shell snap audible at 30 cm",
+    ],
+    testPlan: [
+      "Run 90-minute pass holding to map effervescence decay",
+      "Measure dissolved CO₂ post-encapsulation",
+      "Record guest feedback on sparkle intensity",
+    ],
+    equipment: [
+      "Carbonation rig",
+      "Immersion circulator",
+      "High-speed data logger",
+    ],
+    launchWindow: "Welcome toast revamp",
   },
   {
     id: "exp-satin-03",
