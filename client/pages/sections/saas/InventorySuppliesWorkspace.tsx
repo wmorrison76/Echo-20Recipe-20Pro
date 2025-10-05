@@ -721,6 +721,53 @@ function ensureIso(value: unknown): string {
   return new Date().toISOString();
 }
 
+function cloneSupplier(supplier: Supplier): Supplier {
+  return {
+    ...supplier,
+    certifications: [...supplier.certifications],
+    allergensHandled: [...supplier.allergensHandled],
+  };
+}
+
+function cloneCatalogUnits(units: Record<string, CatalogUnit>): Record<string, CatalogUnit> {
+  return Object.fromEntries(
+    Object.entries(units).map(([key, entry]) => [key, { ...entry }]),
+  );
+}
+
+function cloneCatalogItem(item: CatalogItem): CatalogItem {
+  return {
+    ...item,
+    units: cloneCatalogUnits(item.units),
+    allergens: [...item.allergens],
+  };
+}
+
+function clonePurchaseOrderLine(line: PurchaseOrderLine): PurchaseOrderLine {
+  return { ...line };
+}
+
+function clonePurchaseOrder(order: PurchaseOrder): PurchaseOrder {
+  return {
+    ...order,
+    lines: order.lines.map(clonePurchaseOrderLine),
+  };
+}
+
+const FALLBACK_PURCHASING_TEMPLATE: NormalizedBuilderData = {
+  suppliers: INITIAL_SUPPLIERS.map(cloneSupplier),
+  items: INITIAL_CATALOG.map(cloneCatalogItem),
+  orders: INITIAL_POS.map(clonePurchaseOrder),
+};
+
+function getFallbackPurchasingData(): NormalizedBuilderData {
+  return {
+    suppliers: FALLBACK_PURCHASING_TEMPLATE.suppliers.map(cloneSupplier),
+    items: FALLBACK_PURCHASING_TEMPLATE.items.map(cloneCatalogItem),
+    orders: FALLBACK_PURCHASING_TEMPLATE.orders.map(clonePurchaseOrder),
+  };
+}
+
 function normalizePurchaseOrders(
   rawList: unknown[],
   supplierMap: Map<string, string>,
