@@ -252,6 +252,667 @@ const STATUS_FLOW: PurchaseOrder["status"][] = [
   "received",
 ];
 
+const BUILDER_PUBLIC_API_KEY = "accc7891edf04665961a321335d9540b";
+const BUILDER_PURCHASING_MODEL = "Purchasing_Receiving";
+const BUILDER_CONTENT_ENDPOINT = "https://cdn.builder.io/api/v3/content";
+
+type BuilderContentResponse = {
+  results?: Array<{
+    data?: unknown;
+  }>;
+  data?: unknown;
+};
+
+type NormalizedBuilderData = {
+  suppliers: Supplier[];
+  items: CatalogItem[];
+  orders: PurchaseOrder[];
+};
+
+type ImportMetrics = {
+  suppliers: number;
+  items: number;
+  orders: number;
+};
+
+function toArray(value: unknown): unknown[] {
+  if (Array.isArray(value)) return value;
+  if (!value) return [];
+  if (typeof value === "object") {
+    return Object.values(value as Record<string, unknown>);
+  }
+  return [value];
+}
+
+function stringFrom(value: unknown): string {
+  if (typeof value === "string") return value.trim();
+  if (typeof value === "number") return String(value);
+  if (typeof value === "boolean") return value ? "true" : "false";
+  if (Array.isArray(value)) {
+    return value
+      .map((entry) => stringFrom(entry))
+      .filter((entry) => entry.length > 0)
+      .join(", ");
+  }
+  if (value && typeof value === "object") {
+    const obj = value as Record<string, unknown>;
+    const keys = ["text", "value", "label", "name", "title"];
+    for (const key of keys) {
+      if (typeof obj[key] === "string" && obj[key]) {
+        return stringFrom(obj[key]);
+      }
+    }
+  }
+  return "";
+}
+
+function normalizeNumber(value: unknown, fallback: number): number {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const cleaned = value.replace(/[^0-9.,-]+/g, "").replace(/,/g, ".");
+    const parsed = Number(cleaned);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  if (typeof value === "boolean") return value ? 1 : 0;
+  if (Array.isArray(value)) {
+    for (const entry of value) {
+      const candidate = normalizeNumber(entry, Number.NaN);
+      if (Number.isFinite(candidate)) return candidate;
+    }
+  }
+  return fallback;
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(Math.max(value, min), max);
+}
+
+function normalizeReliability(value: unknown): number {
+  const normalized = normalizeNumber(value, NaN);
+  if (Number.isFinite(normalized)) {
+    if (normalized > 1.5) {
+      return clamp(normalized / 100, 0, 1);
+    }
+    return clamp(normalized, 0, 1);
+  }
+  return 0.9;
+}
+
+function normalizeStringArray(value: unknown): string[] {
+  const result = new Set<string>();
+  if (Array.isArray(value)) {
+    for (const entry of value) {
+      const text = stringFrom(entry);
+      if (text) result.add(text);
+      else if (
+        entry &&
+        typeof entry === "object" &&
+        typeof (entry as Record<string, unknown>).name === "string"
+      ) {
+        const fallback = stringFrom((entry as Record<string, unknown>).name);
+        if (fallback) result.add(fallback);
+      }
+    }
+  } else {
+    const text = stringFrom(value);
+    if (text) result.add(text);
+  }
+  return Array.from(result);
+}
+
+function slugify(value: string): string {
+  return (
+    value
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "entry"
+  );
+}
+
+function ensureUniqueId(base: string, used: Set<string>): string {
+  let candidate = base;
+  let suffix = 1;
+  while (used.has(candidate)) {
+    candidate = `${base}-${suffix++}`;
+  }
+  used.add(candidate);
+  return candidate;
+}
+
+function extractRefKey(value: unknown): string | null {
+  if (typeof value === "string" && value.trim()) return value.trim();
+  if (typeof value === "number") return String(value);
+  if (!value || typeof value !== "object") return null;
+  const obj = value as Record<string, unknown>;
+  const directKeys = ["id", "code", "sku", "key", "value", "name", "ref"];
+  for (const key of directKeys) {
+    const candidate = obj[key];
+    if (typeof candidate === "string" && candidate.trim()) {
+      return candidate.trim();
+    }
+  }
+  const where = obj.where;
+  if (where && typeof where === "object") {
+    for (const candidate of Object.values(where as Record<string, unknown>)) {
+      const nested = extractRefKey(candidate);
+      if (nested) return nested;
+    }
+  }
+  if (Array.isArray(obj.ids)) {
+    for (const candidate of obj.ids) {
+      const nested = extractRefKey(candidate);
+      if (nested) return nested;
+    }
+  }
+  return null;
+}
+
+function addRefKey(map: Map<string, string>, value: unknown, id: string) {
+  const key = extractRefKey(value);
+  if (!key) return;
+  const normalized = key.toLowerCase();
+  if (!map.has(normalized)) {
+    map.set(normalized, id);
+  }
+}
+
+function resolveRef(
+  value: unknown,
+  map: Map<string, string>,
+): string | null {
+  const key = extractRefKey(value);
+  if (!key) return null;
+  return map.get(key.toLowerCase()) ?? null;
+}
+
+function normalizeUnits(
+  value: unknown,
+  baseUnit: string,
+): Record<string, CatalogUnit> {
+  const result: Record<string, CatalogUnit> = {};
+  const addUnit = (key: string, entry: Record<string, unknown>) => {
+    const normalizedKey = key.trim();
+    if (!normalizedKey) return;
+    const display =
+      stringFrom(entry.display ?? entry.label ?? entry.name) || normalizedKey;
+    const factor = normalizeNumber(
+      entry.toBase ?? entry.factor ?? entry.multiplier ?? entry.value,
+      NaN,
+    );
+    const toBase = Number.isFinite(factor) && factor !== 0 ? factor : 1;
+    result[normalizedKey] = { display, toBase };
+  };
+
+  if (Array.isArray(value)) {
+    for (const entry of value) {
+      if (!entry || typeof entry !== "object") continue;
+      const obj = entry as Record<string, unknown>;
+      const key =
+        stringFrom(obj.key ?? obj.code ?? obj.unit ?? obj.name) || baseUnit;
+      addUnit(key, obj);
+    }
+  } else if (value && typeof value === "object") {
+    for (const [key, raw] of Object.entries(value as Record<string, unknown>)) {
+      const obj = raw && typeof raw === "object" ? (raw as Record<string, unknown>) : {};
+      addUnit(key, obj);
+    }
+  }
+
+  if (baseUnit && !result[baseUnit]) {
+    result[baseUnit] = { display: baseUnit, toBase: 1 };
+  }
+  if (Object.keys(result).length === 0) {
+    const fallback = baseUnit || "each";
+    result[fallback] = { display: fallback, toBase: 1 };
+  }
+  return result;
+}
+
+type CatalogNormalizationResult = {
+  items: CatalogItem[];
+  map: Map<string, string>;
+  unitDefaults: Map<string, string>;
+};
+
+function normalizeSuppliers(rawList: unknown[]): {
+  suppliers: Supplier[];
+  map: Map<string, string>;
+} {
+  const map = new Map<string, string>();
+  const usedIds = new Set<string>();
+  const suppliers: Supplier[] = [];
+
+  rawList.forEach((entry, index) => {
+    if (!entry || typeof entry !== "object") return;
+    const obj = entry as Record<string, unknown>;
+    const candidate =
+      extractRefKey(obj.id) ??
+      extractRefKey(obj.supplierId) ??
+      extractRefKey(obj.vendorId) ??
+      extractRefKey(obj.code) ??
+      extractRefKey(obj.name);
+    const baseId = candidate
+      ? `builder-sup-${slugify(candidate)}`
+      : `builder-sup-${index + 1}`;
+    const id = ensureUniqueId(baseId, usedIds);
+    addRefKey(map, candidate, id);
+    addRefKey(map, obj.id, id);
+    addRefKey(map, obj.supplierId, id);
+    addRefKey(map, obj.vendorId, id);
+    addRefKey(map, obj.code, id);
+    addRefKey(map, obj.name, id);
+
+    const name =
+      stringFrom(obj.name ?? obj.title ?? obj.label) ||
+      `Supplier ${index + 1}`;
+    const contact =
+      stringFrom(
+        obj.contact ??
+          obj.email ??
+          obj.phone ??
+          obj.primaryContact ??
+          obj.contactInfo,
+      ) || "Contact not provided";
+    const leadTime = normalizeNumber(
+      obj.leadTimeDays ?? obj.leadTime ?? obj.leadDays ?? obj.lead_time,
+      2,
+    );
+    const reliability = normalizeReliability(
+      obj.reliability ??
+        obj.reliabilityPercent ??
+        obj.ontimePercent ??
+        obj.onTimeRate ??
+        obj.score,
+    );
+    const certifications = normalizeStringArray(
+      obj.certifications ??
+        obj.certificationsList ??
+        obj.badges ??
+        obj.qualityMarks,
+    );
+    const allergensHandled = normalizeStringArray(
+      obj.allergensHandled ??
+        obj.allergens ??
+        obj.allergenZones ??
+        obj.allergenFlags,
+    );
+    const notes =
+      stringFrom(
+        obj.notes ??
+          obj.description ??
+          obj.remarks ??
+          obj.comment ??
+          obj.memo,
+      ) || undefined;
+
+    suppliers.push({
+      id,
+      name,
+      contact,
+      leadTimeDays: clamp(Math.round(leadTime), 0, 365),
+      reliability,
+      certifications,
+      allergensHandled,
+      notes,
+    });
+  });
+
+  return { suppliers, map };
+}
+
+function normalizeCatalogItems(
+  rawList: unknown[],
+  supplierMap: Map<string, string>,
+  suppliers: Supplier[],
+): CatalogNormalizationResult {
+  const map = new Map<string, string>();
+  const unitDefaults = new Map<string, string>();
+  const usedIds = new Set<string>();
+  const items: CatalogItem[] = [];
+
+  rawList.forEach((entry, index) => {
+    if (!entry || typeof entry !== "object") return;
+    const obj = entry as Record<string, unknown>;
+    const candidate =
+      extractRefKey(obj.id) ??
+      extractRefKey(obj.itemId) ??
+      extractRefKey(obj.catalogId) ??
+      extractRefKey(obj.sku) ??
+      extractRefKey(obj.code) ??
+      extractRefKey(obj.name);
+    const baseId = candidate
+      ? `builder-item-${slugify(candidate)}`
+      : `builder-item-${index + 1}`;
+    const id = ensureUniqueId(baseId, usedIds);
+    addRefKey(map, candidate, id);
+    addRefKey(map, obj.id, id);
+    addRefKey(map, obj.itemId, id);
+    addRefKey(map, obj.catalogId, id);
+    addRefKey(map, obj.sku, id);
+    addRefKey(map, obj.code, id);
+    addRefKey(map, obj.name, id);
+
+    const name =
+      stringFrom(obj.name ?? obj.title ?? obj.displayName) ||
+      `Catalog item ${index + 1}`;
+    const sku =
+      stringFrom(obj.sku ?? obj.code ?? obj.catalogCode ?? obj.id) ||
+      name.toUpperCase().replace(/\s+/g, "-");
+    const baseUnit =
+      stringFrom(
+        obj.baseUnit ??
+          obj.unit ??
+          obj.defaultUnit ??
+          obj.purchaseUnit ??
+          obj.inventoryUnit,
+      ).toLowerCase() || "each";
+    const units = normalizeUnits(
+      obj.units ?? obj.conversions ?? obj.unitOptions ?? obj.unitVariants,
+      baseUnit,
+    );
+    const supplierId =
+      resolveRef(
+        obj.supplierId ??
+          obj.supplier ??
+          obj.vendor ??
+          obj.vendorId ??
+          obj.distributor,
+        supplierMap,
+      ) ?? suppliers[0]?.id ?? "supplier-unknown";
+
+    const costPerBase = normalizeNumber(
+      obj.costPerBase ?? obj.costPerBaseUnit ?? obj.cost ?? obj.unitCost,
+      0,
+    );
+    const parLevel = normalizeNumber(
+      obj.parLevelBase ?? obj.parLevel ?? obj.par ?? obj.par_units,
+      0,
+    );
+    const onHand = normalizeNumber(
+      obj.onHandBase ?? obj.onHand ?? obj.stockOnHand ?? obj.quantityOnHand,
+      0,
+    );
+    const safetyStock = normalizeNumber(
+      obj.safetyStockBase ?? obj.safetyStock ?? obj.safety ?? obj.buffer,
+      0,
+    );
+    const allergens = normalizeStringArray(
+      obj.allergens ??
+        obj.allergenFlags ??
+        obj.allergenTags ??
+        obj.allergenNotes,
+    );
+    const critical =
+      typeof obj.critical === "boolean"
+        ? obj.critical
+        : Boolean(obj.criticalItem ?? obj.isCritical ?? obj.criticalFlag);
+
+    const lastAudit =
+      stringFrom(obj.lastAuditISO ?? obj.lastAuditAt ?? obj.updatedAt) ||
+      undefined;
+
+    const item: CatalogItem = {
+      id,
+      sku,
+      name,
+      supplierId,
+      category:
+        stringFrom(obj.category ?? obj.categoryName ?? obj.type) || "General",
+      storageArea:
+        stringFrom(obj.storageArea ?? obj.storage ?? obj.location) ||
+        "Storage",
+      baseUnit,
+      units,
+      costPerBase: Math.max(0, Math.round(costPerBase * 100) / 100),
+      currency:
+        stringFrom(obj.currency ?? obj.currencyCode ?? obj.currency_symbol) ||
+        "USD",
+      parLevelBase: Math.max(0, parLevel),
+      onHandBase: Math.max(0, onHand),
+      safetyStockBase: Math.max(0, safetyStock),
+      allergens,
+      critical,
+      lastAuditISO: lastAudit ? ensureIso(lastAudit) : new Date().toISOString(),
+    };
+
+    items.push(item);
+    unitDefaults.set(id, baseUnit);
+  });
+
+  return { items, map, unitDefaults };
+}
+
+function normalizeStatus(value: unknown): PurchaseOrder["status"] {
+  if (typeof value !== "string") return "draft";
+  const key = value.trim().toLowerCase().replace(/[\s-]+/g, "_");
+  const alias: Record<string, PurchaseOrder["status"]> = {
+    draft: "draft",
+    submitted: "submitted",
+    confirmed: "confirmed",
+    in_transit: "in_transit",
+    intransit: "in_transit",
+    transit: "in_transit",
+    shipped: "in_transit",
+    pending: "submitted",
+    approved: "confirmed",
+    completed: "received",
+    closed: "received",
+    received: "received",
+  };
+  return (
+    alias[key] ??
+    (STATUS_FLOW.includes(key as PurchaseOrder["status"])
+      ? (key as PurchaseOrder["status"])
+      : "draft")
+  );
+}
+
+function ensureIso(value: unknown): string {
+  if (typeof value === "string" && value.trim()) {
+    const time = Date.parse(value);
+    if (!Number.isNaN(time)) {
+      return new Date(time).toISOString();
+    }
+  }
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return new Date(value).toISOString();
+  }
+  return new Date().toISOString();
+}
+
+function normalizePurchaseOrders(
+  rawList: unknown[],
+  supplierMap: Map<string, string>,
+  suppliers: Supplier[],
+  itemMap: Map<string, string>,
+  unitDefaults: Map<string, string>,
+): PurchaseOrder[] {
+  const orders: PurchaseOrder[] = [];
+  const usedIds = new Set<string>();
+
+  rawList.forEach((entry, index) => {
+    if (!entry || typeof entry !== "object") return;
+    const obj = entry as Record<string, unknown>;
+    const candidate =
+      extractRefKey(obj.id) ??
+      extractRefKey(obj.poNumber) ??
+      extractRefKey(obj.number) ??
+      extractRefKey(obj.po);
+    const baseId = candidate
+      ? `builder-po-${slugify(candidate)}`
+      : `builder-po-${index + 1}`;
+    const id = ensureUniqueId(baseId, usedIds);
+
+    const supplierId =
+      resolveRef(
+        obj.supplierId ??
+          obj.supplier ??
+          obj.vendor ??
+          obj.vendorId ??
+          obj.account,
+        supplierMap,
+      ) ?? suppliers[0]?.id ?? "supplier-unknown";
+
+    const status = normalizeStatus(obj.status ?? obj.state ?? obj.stage);
+    const expectedDate = ensureIso(
+      obj.expectedDate ??
+        obj.expected ??
+        obj.deliveryDate ??
+        obj.eta ??
+        obj.receiveBy,
+    );
+    const createdAt = ensureIso(
+      obj.createdAt ??
+        obj.created ??
+        obj.submittedAt ??
+        obj.updatedAt ??
+        Date.now(),
+    );
+    const submittedBy =
+      stringFrom(obj.submittedBy ?? obj.createdBy ?? obj.owner ?? obj.user) ||
+      "System";
+    const notes =
+      stringFrom(obj.notes ?? obj.note ?? obj.comments ?? obj.memo) || undefined;
+
+    const rawLines =
+      Array.isArray(obj.lines)
+        ? obj.lines
+        : Array.isArray(obj.items)
+          ? obj.items
+          : Array.isArray(obj.entries)
+            ? obj.entries
+            : [];
+
+    const lines: PurchaseOrderLine[] = [];
+    rawLines.forEach((lineEntry, lineIndex) => {
+      if (!lineEntry || typeof lineEntry !== "object") return;
+      const line = lineEntry as Record<string, unknown>;
+      const itemRef =
+        line.itemId ??
+        line.item ??
+        line.catalogItem ??
+        line.product ??
+        line.sku ??
+        line.code;
+      const itemId = resolveRef(itemRef, itemMap);
+      if (!itemId) return;
+
+      const qty = normalizeNumber(
+        line.qty ?? line.quantity ?? line.amount ?? line.units,
+        0,
+      );
+      if (!Number.isFinite(qty) || qty <= 0) return;
+
+      const unit =
+        stringFrom(line.unit ?? line.uom ?? line.measure) ||
+        unitDefaults.get(itemId) ||
+        "each";
+
+      const lineId =
+        extractRefKey(line.id ?? line.lineId) ??
+        `builder-pol-${slugify(id)}-${lineIndex + 1}`;
+
+      lines.push({
+        id: lineId,
+        itemId,
+        qty,
+        unit,
+      });
+    });
+
+    if (!lines.length) return;
+
+    orders.push({
+      id,
+      supplierId,
+      status,
+      expectedDate,
+      createdAt,
+      submittedBy,
+      notes,
+      lines,
+    });
+  });
+
+  return orders;
+}
+
+async function fetchPurchasingReceivingData(): Promise<NormalizedBuilderData> {
+  const url = `${BUILDER_CONTENT_ENDPOINT}/${encodeURIComponent(
+    BUILDER_PURCHASING_MODEL,
+  )}?apiKey=${BUILDER_PUBLIC_API_KEY}&limit=1`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    if (res.status === 404) {
+      throw new Error(
+        "Purchasing_Receiving model not found in Builder.io. Ensure the dataset exists and is published.",
+      );
+    }
+    let detail = "";
+    try {
+      detail = await res.text();
+    } catch {
+      detail = "";
+    }
+    throw new Error(
+      `Builder.io responded with ${res.status}. ${detail}`.trim(),
+    );
+  }
+  const body = (await res.json()) as BuilderContentResponse;
+  const entry =
+    Array.isArray(body.results) && body.results.length > 0
+      ? body.results[0]?.data
+      : body.data;
+  if (!entry || typeof entry !== "object") {
+    throw new Error(
+      "Builder.io response did not include Purchasing_Receiving data.",
+    );
+  }
+  const payload = entry as Record<string, unknown>;
+
+  const suppliersRaw = toArray(
+    payload.suppliers ??
+      payload.supplierCatalog ??
+      payload.vendors ??
+      payload.supplier_list ??
+      [],
+  );
+  const { suppliers, map: supplierMap } = normalizeSuppliers(suppliersRaw);
+
+  const itemsRaw = toArray(
+    payload.catalog ??
+      payload.items ??
+      payload.catalogItems ??
+      payload.inventoryItems ??
+      payload.inventory ??
+      [],
+  );
+  const {
+    items,
+    map: itemMap,
+    unitDefaults,
+  } = normalizeCatalogItems(itemsRaw, supplierMap, suppliers);
+
+  const ordersRaw = toArray(
+    payload.purchaseOrders ??
+      payload.orders ??
+      payload.po ??
+      payload.purchasing ??
+      payload.receiving ??
+      [],
+  );
+  const orders = normalizePurchaseOrders(
+    ordersRaw,
+    supplierMap,
+    suppliers,
+    itemMap,
+    unitDefaults,
+  );
+
+  return { suppliers, items, orders };
+}
+
 function findStatusStep(status: PurchaseOrder["status"]) {
   return STATUS_FLOW.indexOf(status);
 }
