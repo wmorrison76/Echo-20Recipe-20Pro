@@ -2432,8 +2432,6 @@ const RecipeInputPage = () => {
                   averageYield={averageIngredientYield}
                   methodOptions={knownPrepMethods}
                   methodOptionsId={methodOptionsId}
-                  yieldInsights={ingredientYieldInsights}
-                  onApplyYieldSuggestion={handleApplyYieldSuggestion}
                   onFieldChange={handleIngredientFieldChange}
                   onFieldBlur={handleIngredientBlur}
                   onAddRow={addIngredientRow}
