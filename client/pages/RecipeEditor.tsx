@@ -670,6 +670,25 @@ function IngredientsTable({ recipeId }: { recipeId: string }) {
     return recipe.ingredients.map((item) => String(item ?? ""));
   }, [recipe.ingredients]);
 
+  const serverNoteRows = useMemo(() => {
+    const extra = (recipe.extra ?? {}) as Record<string, unknown>;
+    const serverNotes = extra?.serverNotes as
+      | { ingredients?: Array<Record<string, unknown>> }
+      | undefined;
+    const ingredients = Array.isArray(serverNotes?.ingredients)
+      ? serverNotes!.ingredients
+      : [];
+    return ingredients.map((entry) => ({
+      ...createBlankRow(),
+      qty: normalizeValue((entry as any).qty),
+      unit: normalizeValue((entry as any).unit),
+      item: normalizeValue((entry as any).item),
+      prep: normalizeValue((entry as any).prep),
+      yield: normalizeValue((entry as any).yield),
+      cost: normalizeValue((entry as any).cost),
+    }));
+  }, [recipe.extra]);
+
   const parseLine = useCallback(
     (line: string): Row => {
       const blank = createBlankRow();
@@ -706,16 +725,18 @@ function IngredientsTable({ recipeId }: { recipeId: string }) {
     let base: Row[];
     if (Array.isArray(extraTable) && extraTable.length > 0) {
       base = extraTable.map((entry) => ({ ...createBlankRow(), ...entry }));
+    } else if (serverNoteRows.length > 0) {
+      base = serverNoteRows.map((entry) => ({ ...createBlankRow(), ...entry }));
     } else {
       base = ingredientLines.map((line) => parseLine(line));
     }
-    const targetLength = Math.max(base.length, ingredientLines.length, 12);
-    const padded = base.slice(0, targetLength).map((entry) => ({ ...createBlankRow(), ...entry }));
+    const padded = base.map((entry) => ({ ...createBlankRow(), ...entry }));
+    const targetLength = Math.max(padded.length, ingredientLines.length, serverNoteRows.length, 12);
     while (padded.length < targetLength) {
       padded.push(createBlankRow());
     }
     return padded;
-  }, [ingredientLines, parseLine, recipe.extra]);
+  }, [ingredientLines, parseLine, serverNoteRows, recipe.extra]);
 
   const isRowEmpty = (row: Row): boolean => {
     return !row.qty.trim() && !row.unit.trim() && !row.item.trim() && !row.prep.trim() && !row.yield.trim() && !row.cost.trim();
