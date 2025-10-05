@@ -297,7 +297,7 @@ export default function TopTabs() {
     if (typeof document === "undefined") {
       return;
     }
-    const baseOffset = 116;
+    const baseOffset = 88;
     document.documentElement.style.setProperty(
       "--sidebar-offset",
       `${baseOffset}px`,
