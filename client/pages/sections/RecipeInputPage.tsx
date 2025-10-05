@@ -1134,6 +1134,34 @@ const RecipeInputPage = () => {
     [setIngredients],
   );
 
+  const ingredientYieldInsights = useMemo<(IngredientYieldInsight | null)[]>(() => {
+    return ingredients.map((row) => {
+      if (row.type === "divider") return null;
+      const item = row.item.trim();
+      if (!item) return null;
+      const prep = row.prep.trim();
+      const base = computeBaseYield(item, prep);
+      const chef = findBestMatch({ item, prep: prep || undefined, method: prep || undefined });
+      const combined = combineYields(
+        base.percent,
+        chef?.percent != null ? chef.percent : null,
+      );
+      const insight: IngredientYieldInsight = {
+        basePercent: base.percent,
+        baseReason: base.reason,
+        baseRuleId: base.ruleId,
+        chefPercent: chef?.percent ?? null,
+        chefMethod: chef?.method,
+        chefNote: chef?.note,
+        chefRecordId: chef?.recordId,
+        combinedPercent: combined.percent,
+        source: combined.source,
+      };
+      if (insight.basePercent == null && insight.chefPercent == null) return null;
+      return insight;
+    });
+  }, [ingredients, findBestMatch]);
+
   const handleApplyYieldSuggestion = useCallback(
     (index: number) => {
       const insight = ingredientYieldInsights[index];
@@ -1192,34 +1220,6 @@ const RecipeInputPage = () => {
       .filter(Boolean);
     return Array.from(new Set([...sidebarMethods, ...techniqueMethods]));
   }, [selectedPrepMethod, taxonomy.technique]);
-
-  const ingredientYieldInsights = useMemo<(IngredientYieldInsight | null)[]>(() => {
-    return ingredients.map((row) => {
-      if (row.type === "divider") return null;
-      const item = row.item.trim();
-      if (!item) return null;
-      const prep = row.prep.trim();
-      const base = computeBaseYield(item, prep);
-      const chef = findBestMatch({ item, prep: prep || undefined, method: prep || undefined });
-      const combined = combineYields(
-        base.percent,
-        chef?.percent != null ? chef.percent : null,
-      );
-      const insight: IngredientYieldInsight = {
-        basePercent: base.percent,
-        baseReason: base.reason,
-        baseRuleId: base.ruleId,
-        chefPercent: chef?.percent ?? null,
-        chefMethod: chef?.method,
-        chefNote: chef?.note,
-        chefRecordId: chef?.recordId,
-        combinedPercent: combined.percent,
-        source: combined.source,
-      };
-      if (insight.basePercent == null && insight.chefPercent == null) return null;
-      return insight;
-    });
-  }, [ingredients, findBestMatch]);
 
   const { activeIngredientCount, averageIngredientYield } = useMemo(() => {
     let active = 0;
