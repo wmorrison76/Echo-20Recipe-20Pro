@@ -391,60 +391,58 @@ export function RecipeSelection({
                   key={recipe.id}
                   type="button"
                   onClick={() => toggleRecipe(recipe)}
-                  className={`rounded-lg border p-3 text-left text-[13px] transition ${
+                  className={`flex h-full flex-col items-center gap-2 rounded-lg border p-3 text-[13px] text-center transition ${
                     isSelected
                       ? "border-primary bg-primary/10"
                       : "border-muted hover:border-foreground/40"
                   }`}
                 >
-                  <div className="flex min-w-0 items-start gap-3">
-                    <div className="relative shrink-0">
-                      <img
-                        src={
-                          recipe.imageDataUrls?.[0] ||
-                          recipe.image ||
-                          "https://cdn.builder.io/api/v1/image/assets%2Fplaceholder"
-                        }
-                        alt={recipe.title}
-                        className="h-14 w-14 rounded object-cover"
-                      />
-                      {isSelected && (
-                        <div className="absolute -top-1.5 -right-1.5 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
-                          Selected
-                        </div>
-                      )}
+                  <div className="relative">
+                    <img
+                      src={
+                        recipe.imageDataUrls?.[0] ||
+                        recipe.image ||
+                        "https://cdn.builder.io/api/v1/image/assets%2Fplaceholder"
+                      }
+                      alt={recipe.title}
+                      className="h-16 w-16 rounded-full object-cover"
+                    />
+                    {isSelected && (
+                      <div className="absolute -top-1.5 -right-1.5 rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
+                        Selected
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex w-full flex-1 flex-col items-center gap-2">
+                    <div className="space-y-1">
+                      <h4 className="text-[13px] font-semibold">
+                        {recipe.title}
+                      </h4>
+                      <p className="line-clamp-3 text-[11px] text-muted-foreground">
+                        {recipe.description}
+                      </p>
                     </div>
-                    <div className="min-w-0 flex-1 space-y-2">
-                      <div className="min-w-0">
-                        <h4 className="truncate text-[13px] font-semibold">
-                          {recipe.title}
-                        </h4>
-                        <p className="mt-0.5 line-clamp-2 text-[11px] text-muted-foreground">
-                          {recipe.description}
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-1.5 text-[10px] text-muted-foreground">
-                        {recipe.course && (
-                          <Badge variant="secondary">{recipe.course}</Badge>
-                        )}
-                        {recipe.cuisine && (
-                          <Badge variant="outline">{recipe.cuisine}</Badge>
-                        )}
-                        {recipe.tags?.slice(0, 2).map((tag) => (
-                          <span
-                            key={tag}
-                            className="rounded-full bg-muted px-2 py-0.5"
-                          >
-                            {tag}
+                    <div className="flex flex-wrap items-center justify-center gap-1.5 text-[10px] text-muted-foreground">
+                      {recipe.course && (
+                        <Badge variant="secondary">{recipe.course}</Badge>
+                      )}
+                      {recipe.cuisine && (
+                        <Badge variant="outline">{recipe.cuisine}</Badge>
+                      )}
+                      {recipe.tags?.slice(0, 2).map((tag) => (
+                        <span
+                          key={tag}
+                          className="rounded-full bg-muted px-2 py-0.5"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                      {typeof recipe.prepTime === "number" &&
+                        typeof recipe.cookTime === "number" && (
+                          <span>
+                            {recipe.prepTime + recipe.cookTime} min total
                           </span>
-                        ))}
-                        {typeof recipe.prepTime === "number" &&
-                          typeof recipe.cookTime === "number" && (
-                            <span>
-                              {recipe.prepTime + recipe.cookTime} min total
-                            </span>
-                          )}
-                      </div>
+                        )}
                     </div>
                   </div>
                 </button>
