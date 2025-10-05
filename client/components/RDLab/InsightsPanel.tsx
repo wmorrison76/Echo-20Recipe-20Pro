@@ -1,9 +1,22 @@
 import { labPlaylists, trendSignals } from "@/data/textureReference";
+import { useMemo } from "react";
+
 import { labPlaylists, trendSignals } from "@/data/textureReference";
 import { useRDLabStore } from "@/stores/rdLabStore";
 
 export function InsightsPanel() {
-  const { backlog, insights } = useRDLabStore();
+  const { backlog, insights, experiments } = useRDLabStore();
+  const pipeline = useMemo(
+    () =>
+      experiments.slice(0, 4).map((experiment) => ({
+        id: experiment.id,
+        title: experiment.title,
+        stage: experiment.status,
+        launchWindow: experiment.launchWindow,
+        variables: experiment.variablesUnderTest.slice(0, 2),
+      })),
+    [experiments],
+  );
 
   return (
     <div className="flex h-full flex-col gap-5">
