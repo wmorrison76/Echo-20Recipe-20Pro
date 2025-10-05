@@ -128,6 +128,153 @@ export function WorkbenchPanel() {
             {experiment.notes}
           </p>
         </div>
+
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          <section className="rounded-2xl border border-white/15 bg-white/60 p-4 shadow-inner dark:border-cyan-500/25 dark:bg-slate-950/70">
+            <header className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
+              Variables under test
+            </header>
+            <ul className="mt-2 space-y-2 text-sm text-slate-600 dark:text-cyan-100/80">
+              {experiment.variablesUnderTest.length ? (
+                experiment.variablesUnderTest.map((variable) => (
+                  <li key={variable} className="flex items-start gap-2">
+                    <span className="mt-1 inline-block h-1.5 w-1.5 flex-shrink-0 rounded-full bg-sky-500" />
+                    <span>{variable}</span>
+                  </li>
+                ))
+              ) : (
+                <li className="italic text-slate-400 dark:text-cyan-300/60">
+                  Log your control vs variant deltas to map the experiment.
+                </li>
+              )}
+            </ul>
+            <form onSubmit={handleVariableSubmit} className="mt-3 flex gap-2 text-xs">
+              <input
+                value={draftVariable}
+                onChange={(event) => setDraftVariable(event.target.value)}
+                placeholder="Add variable delta"
+                className="flex-1 rounded-lg border border-white/40 bg-white/80 px-3 py-2 text-slate-700 outline-none transition focus:border-sky-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/25 dark:bg-slate-950/70 dark:text-cyan-100"
+              />
+              <button
+                type="submit"
+                disabled={isVariableDisabled}
+                className={`rounded-full px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.3em] transition ${
+                  isVariableDisabled
+                    ? "cursor-not-allowed border border-white/40 bg-white/40 text-slate-400 dark:border-cyan-500/20 dark:bg-slate-950/60"
+                    : "border border-sky-500/40 bg-sky-500/80 text-white hover:bg-sky-500 dark:border-cyan-400/40 dark:bg-cyan-500/80"
+                }`}
+              >
+                Add
+              </button>
+            </form>
+          </section>
+
+          <section className="rounded-2xl border border-white/15 bg-white/60 p-4 shadow-inner dark:border-cyan-500/25 dark:bg-slate-950/70">
+            <header className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
+              Sensory targets
+            </header>
+            <ul className="mt-2 space-y-2 text-sm text-slate-600 dark:text-cyan-100/80">
+              {experiment.sensoryTargets.length ? (
+                experiment.sensoryTargets.map((target) => (
+                  <li key={target} className="flex items-start gap-2">
+                    <span className="mt-1 inline-block h-1.5 w-1.5 flex-shrink-0 rounded-full bg-emerald-500" />
+                    <span>{target}</span>
+                  </li>
+                ))
+              ) : (
+                <li className="italic text-slate-400 dark:text-cyan-300/60">
+                  Define the mouthfeel, visual, or aromatic endpoints you are aiming for.
+                </li>
+              )}
+            </ul>
+            <form onSubmit={handleSensorySubmit} className="mt-3 flex gap-2 text-xs">
+              <input
+                value={draftSensory}
+                onChange={(event) => setDraftSensory(event.target.value)}
+                placeholder="Log sensory observation"
+                className="flex-1 rounded-lg border border-white/40 bg-white/80 px-3 py-2 text-slate-700 outline-none transition focus:border-emerald-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/25 dark:bg-slate-950/70 dark:text-cyan-100"
+              />
+              <button
+                type="submit"
+                disabled={isSensoryDisabled}
+                className={`rounded-full px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.3em] transition ${
+                  isSensoryDisabled
+                    ? "cursor-not-allowed border border-white/40 bg-white/40 text-slate-400 dark:border-cyan-500/20 dark:bg-slate-950/60"
+                    : "border border-emerald-500/40 bg-emerald-500/80 text-white hover:bg-emerald-500 dark:border-emerald-400/40 dark:bg-emerald-500/80"
+                }`}
+              >
+                Add
+              </button>
+            </form>
+          </section>
+
+          <section className="rounded-2xl border border-white/15 bg-white/60 p-4 shadow-inner dark:border-cyan-500/25 dark:bg-slate-950/70">
+            <header className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
+              Protocol queue
+            </header>
+            <ol className="mt-2 list-decimal space-y-2 pl-5 text-sm text-slate-600 dark:text-cyan-100/80">
+              {experiment.testPlan.length ? (
+                experiment.testPlan.map((step) => <li key={step}>{step}</li>)
+              ) : (
+                <li className="italic text-slate-400 dark:text-cyan-300/60">
+                  Draft the next bench steps, measurements, or service simulations.
+                </li>
+              )}
+            </ol>
+            <form onSubmit={handleTestStepSubmit} className="mt-3 flex gap-2 text-xs">
+              <input
+                value={draftTestStep}
+                onChange={(event) => setDraftTestStep(event.target.value)}
+                placeholder="Add protocol step"
+                className="flex-1 rounded-lg border border-white/40 bg-white/80 px-3 py-2 text-slate-700 outline-none transition focus:border-indigo-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/25 dark:bg-slate-950/70 dark:text-cyan-100"
+              />
+              <button
+                type="submit"
+                disabled={isTestStepDisabled}
+                className={`rounded-full px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.3em] transition ${
+                  isTestStepDisabled
+                    ? "cursor-not-allowed border border-white/40 bg-white/40 text-slate-400 dark:border-cyan-500/20 dark:bg-slate-950/60"
+                    : "border border-indigo-500/40 bg-indigo-500/80 text-white hover:bg-indigo-500 dark:border-indigo-400/40 dark:bg-indigo-500/80"
+                }`}
+              >
+                Queue
+              </button>
+            </form>
+          </section>
+
+          <section className="rounded-2xl border border-white/15 bg-white/60 p-4 shadow-inner dark:border-cyan-500/25 dark:bg-slate-950/70">
+            <header className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
+              Instrumentation & launch
+            </header>
+            <div className="mt-2 flex flex-wrap gap-2 text-xs uppercase tracking-[0.3em] text-slate-500 dark:text-cyan-200/70">
+              {experiment.equipment.length ? (
+                experiment.equipment.map((tool) => (
+                  <span
+                    key={tool}
+                    className="rounded-full border border-white/40 px-2 py-1 text-[11px] font-semibold dark:border-cyan-500/30"
+                  >
+                    {tool}
+                  </span>
+                ))
+              ) : (
+                <span className="italic text-slate-400 dark:text-cyan-300/60">
+                  List the lab rigs or plating tools required.
+                </span>
+              )}
+            </div>
+            <div className="mt-4 rounded-xl border border-white/30 bg-white/70 p-3 text-sm text-slate-600 shadow-inner dark:border-cyan-500/25 dark:bg-slate-950/60 dark:text-cyan-100">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
+                Launch window
+              </div>
+              <div className="mt-1 font-semibold text-slate-700 dark:text-cyan-100">
+                {experiment.launchWindow}
+              </div>
+              <div className="text-[10px] uppercase tracking-[0.35em] text-slate-400 dark:text-cyan-300/60">
+                Status: {experiment.status}
+              </div>
+            </div>
+          </section>
+        </div>
       </div>
 
       <div className="flex flex-col gap-3 rounded-2xl border border-white/15 bg-white/60 p-4 shadow-inner backdrop-blur-sm dark:border-cyan-500/25 dark:bg-slate-950/70">
