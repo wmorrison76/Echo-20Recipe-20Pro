@@ -325,7 +325,7 @@ export default function ServerNotesSection() {
                     <span>Language</span>
                     <Select
                       value={language}
-                      onValueChange={(value) => setLanguage(value as typeof language)}
+                      onValueChange={(value) => setLanguage(value as LanguageCode)}
                     >
                       <SelectTrigger className="h-8 w-[160px] text-[11px]">
                         <SelectValue />
@@ -360,7 +360,7 @@ export default function ServerNotesSection() {
                 <CooksRecipeBookGenerator
                   recipes={sortedSelected}
                   language={language}
-                  onLanguageChange={(code) => setLanguage(code)}
+                  onLanguageChange={(code) => setLanguage(code as LanguageCode)}
                   languageOptions={languageOptions}
                   note={currentNote}
                 />
