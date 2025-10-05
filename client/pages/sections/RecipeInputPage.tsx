@@ -54,15 +54,29 @@ const parseCostValue = (value: string): number => {
   return Number.isFinite(numeric) ? numeric : NaN;
 };
 
-const ensureIngredientRowId = (row: IngredientRow): IngredientRow => {
-  const type = row.type || "ingredient";
-  const subId = row.subId && row.subId.trim() ? row.subId : generateIngredientRowId();
+const normalizeString = (value: unknown): string =>
+  typeof value === "string" ? value : value == null ? "" : String(value);
+
+const ensureIngredientRowId = (row: IngredientRow | null | undefined): IngredientRow => {
+  const source = row ?? createIngredientRow();
+  const raw = source as unknown as Partial<IngredientRow> & Record<string, unknown>;
+  const type: IngredientRow["type"] = raw.type === "divider" ? "divider" : "ingredient";
+  const rawSubId = raw.subId ?? "";
+  const subIdCandidate =
+    typeof rawSubId === "string" ? rawSubId.trim() : String(rawSubId ?? "").trim();
   const base: IngredientRow = {
-    ...row,
+    ...source,
     type,
-    subId,
-    costPerUnit: row.costPerUnit ?? null,
+    subId: subIdCandidate || generateIngredientRowId(),
+    qty: normalizeString(raw.qty ?? source.qty),
+    unit: normalizeString(raw.unit ?? source.unit),
+    item: normalizeString(raw.item ?? source.item),
+    prep: normalizeString(raw.prep ?? source.prep),
+    yield: normalizeString(raw.yield ?? source.yield),
+    cost: normalizeString(raw.cost ?? source.cost),
+    costPerUnit: null,
   };
+
   if (base.type !== "divider") {
     const qtyValue = parseQuantity(String(base.qty));
     const costValue = parseCostValue(base.cost);
@@ -73,14 +87,13 @@ const ensureIngredientRowId = (row: IngredientRow): IngredientRow => {
         ? Number((costValue / (qtyValue as number)).toFixed(6))
         : null;
     base.costPerUnit = derived;
-  } else {
-    base.costPerUnit = null;
   }
+
   return base;
 };
 
-const ensureIngredientRowIds = (rows: IngredientRow[]): IngredientRow[] =>
-  rows.map((row) => ensureIngredientRowId(row));
+const ensureIngredientRowIds = (rows: Array<IngredientRow | null | undefined>): IngredientRow[] =>
+  rows.filter(Boolean).map((row) => ensureIngredientRowId(row));
 
 const RecipeInputPage = () => {
   const [recipeName, setRecipeName] = useState("");
