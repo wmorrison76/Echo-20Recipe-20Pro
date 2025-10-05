@@ -319,8 +319,24 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
       insights: insightSeed,
       toggleArchive,
       updateNotes,
+      setExperimentStatus,
+      createExperiment,
+      appendVariable,
+      appendTestStep,
+      appendSensoryTarget,
     }),
-    [experiments, focusExperimentId, searchQuery, toggleArchive, updateNotes],
+    [
+      experiments,
+      focusExperimentId,
+      searchQuery,
+      toggleArchive,
+      updateNotes,
+      setExperimentStatus,
+      createExperiment,
+      appendVariable,
+      appendTestStep,
+      appendSensoryTarget,
+    ],
   );
 
   return <RDLabContext.Provider value={value}>{children}</RDLabContext.Provider>;
