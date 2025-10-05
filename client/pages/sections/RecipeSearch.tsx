@@ -341,6 +341,8 @@ export default function RecipeSearchSection() {
   const [scanPageTexts, setScanPageTexts] = useState<string[] | null>(null);
   const [scanCandidates, setScanCandidates] = useState<number[] | null>(null);
   const [scanBookName, setScanBookName] = useState<string | null>(null);
+  const [ownershipConfirmOpen, setOwnershipConfirmOpen] = useState(false);
+  const [pendingOwnershipFile, setPendingOwnershipFile] = useState<File | null>(null);
 
   const { toast } = useToast();
   const searchInputRef = useRef<HTMLInputElement | null>(null);
