@@ -506,7 +506,7 @@ export default function RecipeEditor() {
                     <Input value={localTitle} onChange={(e) => setLocalTitle(e.target.value)} placeholder="House Burger" />
                   </Labeled>
                   <Labeled label="Allergens">
-                    <Input value={allergens} onChange={(e) => setAllergens(e.target.value)} placeholder="Gluten, Dairy" />
+                    <Input value={allergens} onChange={(e) => handleAllergensInputChange(e.target.value)} placeholder="Gluten, Dairy" />
                   </Labeled>
                   <Labeled label="Cook Time">
                     <Input value={cookTime} onChange={(e) => setCookTime(e.target.value)} placeholder="2:30" />
