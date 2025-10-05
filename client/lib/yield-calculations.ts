@@ -380,6 +380,89 @@ function buildTarget(item: string, prep?: string): TokenTarget {
   };
 }
 
+function countSharedTokens(a: readonly string[], b: readonly string[]): number {
+  if (!a.length || !b.length) return 0;
+  const setB = new Set(b);
+  let matches = 0;
+  for (const token of a) {
+    if (setB.has(token)) matches += 1;
+  }
+  return matches;
+}
+
+type YieldReferenceEntryInternal = {
+  id: string;
+  percent: number;
+  reason: string;
+  tokens: string[];
+  descriptorTokens: string[];
+  prepTokens: string[];
+  categories: string[];
+};
+
+const YIELD_REFERENCE_INDEX: YieldReferenceEntryInternal[] = YIELD_REFERENCE_DATA.map(
+  (entry) => {
+    const ingredientMeta = parseIngredient(entry.item);
+    const prepTokens = tokenize(entry.method);
+    const reasonBase = entry.notes
+      ? entry.notes
+      : `Reference yield for ${entry.item}${entry.method ? ` (${entry.method})` : ""}`;
+    return {
+      id: entry.id,
+      percent: clampPercent(entry.yield),
+      reason: reasonBase,
+      tokens: ingredientMeta.tokens,
+      descriptorTokens: ingredientMeta.descriptorTokens,
+      prepTokens,
+      categories: ingredientMeta.categories,
+    };
+  },
+);
+
+function findReferenceYield(target: TokenTarget): BaseYieldMatch | null {
+  let bestScore = 0;
+  let bestEntry: YieldReferenceEntryInternal | null = null;
+
+  for (const entry of YIELD_REFERENCE_INDEX) {
+    const baseOverlap = countSharedTokens(target.nameTokens, entry.tokens);
+    if (baseOverlap === 0) continue;
+
+    let score = baseOverlap * 8;
+    const descriptorOverlap = countSharedTokens(
+      target.descriptorTokens,
+      entry.descriptorTokens,
+    );
+    if (descriptorOverlap) score += descriptorOverlap * 4;
+
+    const methodOverlap = countSharedTokens(target.prepTokens, entry.prepTokens);
+    if (methodOverlap) score += methodOverlap * 7;
+
+    const descriptorToBase = countSharedTokens(target.descriptorTokens, entry.tokens);
+    if (descriptorToBase) score += descriptorToBase * 3;
+
+    if (entry.prepTokens.length && methodOverlap === 0) score *= 0.6;
+
+    for (const category of entry.categories) {
+      if (target.categories.includes(category)) score += 2;
+    }
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestEntry = entry;
+    }
+  }
+
+  if (!bestEntry) return null;
+  if (bestScore < 8 && bestEntry.prepTokens.length > 0) return null;
+  if (bestScore < 5) return null;
+
+  return {
+    percent: bestEntry.percent,
+    reason: bestEntry.reason,
+    ruleId: `reference:${bestEntry.id}`,
+  };
+}
+
 function matchesRule(rule: BaseYieldRule, target: TokenTarget): number {
   let score = 0;
   if (rule.ingredientTokens?.length) {
