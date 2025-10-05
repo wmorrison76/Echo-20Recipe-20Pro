@@ -319,12 +319,10 @@ export default function TopTabs() {
       if (!asideRef.current) {
         return;
       }
-      const { offsetWidth, offsetLeft } = asideRef.current;
-      const gap = 4;
+      const { offsetLeft } = asideRef.current;
       const preferredWidth = 96;
-      const measuredWidth = Math.min(offsetWidth, preferredWidth);
       const offset = Math.max(
-        Math.round(offsetLeft + measuredWidth + gap),
+        Math.round(offsetLeft + preferredWidth),
         preferredWidth,
       );
       document.documentElement.style.setProperty(
@@ -622,7 +620,7 @@ export default function TopTabs() {
             <p className="mt-2 font-medium">Adding recipes</p>
             <ul className="list-disc pl-5">
               <li>
-                Use Add Recipe to type/paste. “Save” persists immediately. CSV
+                Use Add Recipe to type/paste. “Save�� persists immediately. CSV
                 export includes Directions; Share and SMS send a formatted
                 recipe.
               </li>
