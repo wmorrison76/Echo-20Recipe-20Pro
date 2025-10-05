@@ -7,7 +7,14 @@ import { useRDLabStore } from "@/stores/rdLabStore";
 import { cn } from "@/lib/utils";
 
 export function DiscoveryPanel() {
-  const { experiments, focusExperimentId, setFocusExperiment, searchQuery, setSearchQuery } = useRDLabStore();
+  const {
+    experiments,
+    focusExperimentId,
+    setFocusExperiment,
+    searchQuery,
+    setSearchQuery,
+    createExperiment,
+  } = useRDLabStore();
 
   const filtered = useMemo(() => {
     if (!searchQuery.trim()) return experiments;
