@@ -202,9 +202,16 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
           ? {
               ...exp,
               status: exp.status === "archived" ? "ideation" : "archived",
+              lastUpdated: "Just now",
             }
           : exp,
       ),
+    );
+  }, []);
+
+  const setExperimentStatus = React.useCallback((id: string, status: ExperimentStatus) => {
+    setExperiments((prev) =>
+      prev.map((exp) => (exp.id === id ? { ...exp, status, lastUpdated: "Just now" } : exp)),
     );
   }, []);
 
