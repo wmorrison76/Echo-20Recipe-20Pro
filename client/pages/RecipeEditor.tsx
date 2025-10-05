@@ -686,6 +686,7 @@ function IngredientsTable({ recipeId }: { recipeId: string }) {
       prep: normalizeValue((entry as any).prep),
       yield: normalizeValue((entry as any).yield),
       cost: normalizeValue((entry as any).cost),
+      subId: normalizeValue((entry as any).subId),
     }));
   }, [recipe.extra]);
 
