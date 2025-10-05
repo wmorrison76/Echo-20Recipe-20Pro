@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-import { FormEvent, useMemo, useState } from "react";
+import { ChangeEvent, FormEvent, useMemo, useState } from "react";
 
 import { useRDLabStore, type ExperimentStatus } from "@/stores/rdLabStore";
 import { cn } from "@/lib/utils";
