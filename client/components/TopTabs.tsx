@@ -313,7 +313,9 @@ export default function TopTabs() {
       return;
     }
 
-    const updateSidebarOffset = () => {
+    let rafId: number | null = null;
+
+    const measureAndSet = () => {
       if (!asideRef.current) {
         return;
       }
@@ -326,19 +328,33 @@ export default function TopTabs() {
       );
     };
 
-    updateSidebarOffset();
+    const scheduleSidebarOffset = () => {
+      if (typeof window === "undefined") return;
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId);
+      }
+      rafId = window.requestAnimationFrame(() => {
+        rafId = null;
+        measureAndSet();
+      });
+    };
 
-    const handleResize = () => updateSidebarOffset();
+    scheduleSidebarOffset();
+
+    const handleResize = () => scheduleSidebarOffset();
 
     let observer: ResizeObserver | null = null;
     if (typeof ResizeObserver !== "undefined") {
-      observer = new ResizeObserver(updateSidebarOffset);
+      observer = new ResizeObserver(() => scheduleSidebarOffset());
       observer.observe(asideEl);
     }
 
     window.addEventListener("resize", handleResize);
 
     return () => {
+      if (rafId !== null && typeof window !== "undefined") {
+        window.cancelAnimationFrame(rafId);
+      }
       window.removeEventListener("resize", handleResize);
       observer?.disconnect();
     };
