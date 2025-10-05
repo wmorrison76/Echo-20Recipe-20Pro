@@ -168,6 +168,9 @@ const RecipeInputPage = () => {
   }, []);
 
   const [isRndLabsOpen, setIsRndLabsOpen] = useState(false);
+  const handleRndLabsClick = useCallback(() => {
+    setIsRndLabsOpen(true);
+  }, []);
   const [isSubRecipePickerOpen, setIsSubRecipePickerOpen] = useState(false);
   const [rightSidebarMode, setRightSidebarMode] = useState<"recipe" | "rnd">(
     "recipe",
