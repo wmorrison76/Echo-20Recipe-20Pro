@@ -946,7 +946,7 @@ const onFiles = async (files: File[]) => {
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
         <Dropzone
-          className="p-4 min-h-[96px] rounded-lg border border-dashed glow self-start"
+          className="glow flex min-h-[160px] flex-col items-center justify-center rounded-xl border border-dashed border-primary/35 bg-background/90 p-6 text-center shadow-sm transition-all hover:border-primary/60 hover:shadow-md dark:bg-zinc-900/70"
           accept=".json,application/json,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.html,.htm,text/html,.pdf,application/pdf,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.xls,application/vnd.ms-excel,.csv,text/csv,application/zip,application/x-zip-compressed,.zip,image/*"
           multiple
           onFiles={onFiles}
@@ -965,12 +965,15 @@ const onFiles = async (files: File[]) => {
                 : undefined
           }
         >
-          <div className="flex flex-col items-center justify-center gap-0.5 text-[11px]">
-            <div className="text-foreground font-medium">
-              Drag & drop recipes (Word/PDF/Excel/HTML/JSON/ZIP) or images
+          <div className="flex flex-col items-center gap-2">
+            <div className="text-2xl font-semibold uppercase tracking-[0.55em] text-primary">
+              Recipe Drop
             </div>
-            <div className="text-muted-foreground">
-              Auto-detects titles, ingredients, and instructions
+            <div className="text-sm font-medium text-foreground">
+              Drag or upload recipes and images (Word, PDF, Excel, HTML, JSON, ZIP).
+            </div>
+            <div className="text-xs text-muted-foreground">
+              We auto-detect titles, ingredients, yields, and instructions.
             </div>
           </div>
         </Dropzone>
