@@ -174,6 +174,7 @@ export default function TopTabs() {
   const navigate = useNavigate();
   const storedPreferenceRef = useRef(false);
   const collapseTimerRef = useRef<number | null>(null);
+  const asideRef = useRef<HTMLDivElement | null>(null);
   const [collapsed, setCollapsed] = useState(() => {
     if (typeof window === "undefined") {
       return false;
@@ -225,6 +226,44 @@ export default function TopTabs() {
 
     return undefined;
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const asideEl = asideRef.current;
+    if (!asideEl) {
+      return;
+    }
+
+    const updateSidebarOffset = () => {
+      if (!asideRef.current) {
+        return;
+      }
+      const { offsetWidth, offsetLeft } = asideRef.current;
+      const gap = 4;
+      const offset = Math.max(Math.round(offsetLeft + offsetWidth + gap), 0);
+      document.documentElement.style.setProperty("--sidebar-offset", `${offset}px`);
+    };
+
+    updateSidebarOffset();
+
+    const handleResize = () => updateSidebarOffset();
+
+    let observer: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined") {
+      observer = new ResizeObserver(updateSidebarOffset);
+      observer.observe(asideEl);
+    }
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      observer?.disconnect();
+    };
+  }, [collapsed]);
 
   useEffect(() => {
     if (collapsed) {
@@ -314,6 +353,7 @@ export default function TopTabs() {
     <>
       <TooltipProvider delayDuration={collapsed ? 0 : 200}>
         <aside
+        ref={asideRef}
         className={cn(
           "pointer-events-auto fixed left-1.5 top-24 z-[1000] flex flex-col overflow-hidden rounded-3xl border border-white/60 bg-white/40 shadow-[0_32px_65px_-18px_rgba(15,23,42,0.45)] backdrop-blur-2xl transition-all duration-700 dark:border-cyan-500/25 dark:bg-slate-950/70 dark:shadow-[0_0_70px_rgba(56,189,248,0.65)] sm:left-2 sm:top-28 lg:left-4",
           collapsed ? "w-16 space-y-3 p-3" : "w-64 space-y-4 p-5",
