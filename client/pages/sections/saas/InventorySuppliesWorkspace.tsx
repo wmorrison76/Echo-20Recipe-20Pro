@@ -2078,7 +2078,7 @@ function PurchaseOrderBoard({
                               );
                               return (
                                 <li key={line.id}>
-                                  {line.qty} {line.unit} ·{" "}
+                                  {line.qty} {line.unit} ��{" "}
                                   {item?.name ?? "Unknown"}
                                 </li>
                               );
@@ -2292,17 +2292,7 @@ export default function InventorySuppliesWorkspace() {
     } finally {
       setIsImporting(false);
     }
-  }, [
-    isImporting,
-    toast,
-    suppliers.length,
-    items.length,
-    orders.length,
-    setSuppliers,
-    setItems,
-    setOrders,
-    fetchPurchasingReceivingData,
-  ]);
+  }, [isImporting, toast, suppliers.length, items.length, orders.length]);
 
   const handleCreateSupplier = useCallback((input: Omit<Supplier, "id">) => {
     setSuppliers((prev) => [...prev, { id: generateId("sup"), ...input }]);
