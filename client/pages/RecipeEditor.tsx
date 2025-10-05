@@ -495,7 +495,7 @@ export default function RecipeEditor() {
     <div
       className="min-h-screen text-foreground transition-[padding-left] duration-300"
       style={{
-        paddingLeft: "calc(var(--sidebar-offset, 128px) + 1.5rem)",
+        paddingLeft: "calc(var(--sidebar-offset, 128px) + 0.75rem)",
       }}
     >
       <TopTabs />
