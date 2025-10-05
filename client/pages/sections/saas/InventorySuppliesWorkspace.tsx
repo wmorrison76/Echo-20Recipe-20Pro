@@ -2250,6 +2250,59 @@ export default function InventorySuppliesWorkspace() {
   const [suppliers, setSuppliers] = useState(INITIAL_SUPPLIERS);
   const [items, setItems] = useState(INITIAL_CATALOG);
   const [orders, setOrders] = useState(INITIAL_POS);
+  const { toast } = useToast();
+  const [isImporting, setIsImporting] = useState(false);
+  const [lastImportAt, setLastImportAt] = useState<number | null>(null);
+  const [importMetrics, setImportMetrics] = useState<ImportMetrics | null>(null);
+
+  const handleImportFromBuilder = useCallback(async () => {
+    if (isImporting) return;
+    setIsImporting(true);
+    try {
+      const data = await fetchPurchasingReceivingData();
+      if (!data.suppliers.length && !data.items.length && !data.orders.length) {
+        throw new Error("No Purchasing_Receiving records found in Builder.io.");
+      }
+      setSuppliers((prev) => (data.suppliers.length ? data.suppliers : prev));
+      setItems((prev) => (data.items.length ? data.items : prev));
+      setOrders((prev) => (data.orders.length ? data.orders : prev));
+
+      const metrics: ImportMetrics = {
+        suppliers: data.suppliers.length ? data.suppliers.length : suppliers.length,
+        items: data.items.length ? data.items.length : items.length,
+        orders: data.orders.length ? data.orders.length : orders.length,
+      };
+      setImportMetrics(metrics);
+      setLastImportAt(Date.now());
+      toast({
+        title: "Purchasing data synced",
+        description: `Suppliers ${metrics.suppliers}, catalog ${metrics.items}, orders ${metrics.orders}.`,
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unable to import Purchasing_Receiving data.";
+      console.error("Builder import failed", error);
+      toast({
+        title: "Import failed",
+        description: message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsImporting(false);
+    }
+  }, [
+    isImporting,
+    toast,
+    suppliers.length,
+    items.length,
+    orders.length,
+    setSuppliers,
+    setItems,
+    setOrders,
+    fetchPurchasingReceivingData,
+  ]);
 
   const handleCreateSupplier = useCallback((input: Omit<Supplier, "id">) => {
     setSuppliers((prev) => [...prev, { id: generateId("sup"), ...input }]);
