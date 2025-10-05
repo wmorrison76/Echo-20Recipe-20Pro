@@ -2041,185 +2041,177 @@ const RecipeInputPage = () => {
                   data-echo-key="field:add:description"
                 />
 
-                <div className="mt-6 space-y-4">
-                  <div className="grid gap-3 text-xs sm:text-sm">
-                    <div className="grid gap-3 sm:grid-cols-3">
-                      <div className="flex flex-col gap-1">
-                        <span className={infoLabelClass}>
-                          {t("recipe.labels.cookTime", "COOK TIME")}
-                        </span>
-                        <div className="flex items-center gap-2">
-                          <input
-                            value={cookTime}
-                            onChange={(e) => setCookTime(e.target.value)}
-                            placeholder="2:30"
-                            className={`${infoInputClass} w-20 text-center`}
-                            data-echo-key="field:add:time"
-                          />
-                          {cookTimeDisplay && (
-                            <span className={`text-[10px] font-medium uppercase ${infoHelperClass}`}>
-                              {cookTimeDisplay}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className={infoLabelClass}>
-                          {t("recipe.labels.cookTemp", "COOK TEMP")}
-                        </span>
-                        <div className="flex items-center gap-2">
-                          <input
-                            value={cookTemp}
-                            onChange={(e) => {
-                              const digits = e.target.value
-                                .replace(/[^0-9]/g, "")
-                                .slice(0, 3);
-                              const suffix =
-                                currentUnits === "Imperial" ? "°F" : "°C";
-                              setCookTemp(
-                                digits ? `${parseInt(digits, 10)}${suffix}` : "",
-                              );
-                            }}
-                            placeholder="350°F"
-                            className={`${infoInputClass} w-20 text-center`}
-                          />
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className={infoLabelClass}>
-                          {t("recipe.labels.prepTime", "PREP TIME")}
-                        </span>
-                        <div className="flex items-center gap-2">
-                          <input
-                            value={prepTime}
-                            onChange={(e) => setPrepTime(e.target.value)}
-                            placeholder="0:20"
-                            className={`${infoInputClass} w-20 text-center`}
-                          />
-                          {prepTimeDisplay && (
-                            <span className={`text-[10px] font-medium uppercase ${infoHelperClass}`}>
-                              {prepTimeDisplay}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
+                <div className="mt-6">
                   <div
-                    className={`grid gap-3 text-xs sm:text-sm ${
+                    className={`grid grid-cols-1 sm:grid-cols-5 gap-2 sm:gap-3 text-[11px] sm:text-sm ${
                       isDarkMode ? "text-cyan-200" : "text-slate-700"
                     }`}
                   >
-                    <div className="grid gap-3 sm:grid-cols-3">
-                      <div className="flex flex-col gap-1">
-                        <span className={infoLabelClass}>FULL RECIPE</span>
-                        <span className="text-sm font-semibold">
-                          {getCurrencySymbol(currentCurrency)}
-                          {calculateTotalCost().toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className={infoLabelClass}>YIELD</span>
-                        <div className="flex flex-wrap items-center gap-1">
-                          <input
-                            type="number"
-                            value={yieldQty}
-                            onChange={(e) => {
-                              yieldManualRef.current = true;
-                              setYieldQty(Math.max(0, Number(e.target.value)));
-                            }}
-                            className={`${infoInputClass} w-16 text-center`}
-                            data-echo-key="field:add:yield"
-                          />
-                          <input
-                            value={yieldUnit}
-                            onChange={(e) => {
-                              yieldManualRef.current = true;
-                              setYieldUnit(e.target.value.toUpperCase());
-                            }}
-                            className={`${infoInputClass} w-20 text-center uppercase`}
-                          />
-                          <button
-                            type="button"
-                            title={t("recipe.tools.yield", "Yield Lab")}
-                            className={`rounded border px-2 py-1 text-[10px] font-semibold uppercase tracking-wide ${
-                              isDarkMode
-                                ? "border-cyan-400/50 text-cyan-200"
-                                : "border-slate-400 text-slate-700"
-                            }`}
-                            onClick={() => setYieldOpen(true)}
-                          >
-                            {t("recipe.tools.yield", "Yield Lab")}
-                          </button>
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className={infoLabelClass}>
-                          {t("recipe.labels.recipeAccess", "RECIPE ACCESS")}
-                        </span>
-                        <span className="text-xs font-semibold uppercase tracking-wide">
-                          {selectedRecipeAccess.length
-                            ? selectedRecipeAccess.join(", ").toUpperCase()
-                            : t("recipe.labels.none", "NONE")}
-                        </span>
+                    <div className="flex flex-col gap-1">
+                      <span className={infoLabelClass}>
+                        {t("recipe.labels.cookTime", "COOK TIME")}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <input
+                          value={cookTime}
+                          onChange={(e) => setCookTime(e.target.value)}
+                          placeholder="2:30"
+                          className={`${infoInputClass} w-full text-center`}
+                          data-echo-key="field:add:time"
+                        />
+                        {cookTimeDisplay && (
+                          <span className={`text-[10px] font-medium uppercase ${infoHelperClass}`}>
+                            {cookTimeDisplay}
+                          </span>
+                        )}
                       </div>
                     </div>
 
-                    <div className="grid gap-3 sm:grid-cols-3">
-                      <div className="flex flex-col gap-1">
-                        <span className={infoLabelClass}>
-                          {t("recipe.labels.recipeType", "RECIPE")}
-                        </span>
-                        <span className="text-xs font-semibold uppercase tracking-wide">
-                          {selectedRecipeType.includes("Full Recipe")
-                            ? t("recipe.labels.full", "FULL")
-                            : selectedRecipeType.includes("Sub Recipe")
-                              ? t("recipe.labels.sub", "SUB")
-                              : t("recipe.labels.unspecified", "UNSPECIFIED")}
-                        </span>
+                    <div className="flex flex-col gap-1">
+                      <span className={infoLabelClass}>
+                        {t("recipe.labels.cookTemp", "COOK TEMP")}
+                      </span>
+                      <input
+                        value={cookTemp}
+                        onChange={(e) => {
+                          const digits = e.target.value
+                            .replace(/[^0-9]/g, "")
+                            .slice(0, 3);
+                          const suffix = currentUnits === "Imperial" ? "°F" : "°C";
+                          setCookTemp(digits ? `${parseInt(digits, 10)}${suffix}` : "");
+                        }}
+                        placeholder="350°F"
+                        className={`${infoInputClass} w-full text-center`}
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <span className={infoLabelClass}>
+                        {t("recipe.labels.prepTime", "PREP TIME")}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <input
+                          value={prepTime}
+                          onChange={(e) => setPrepTime(e.target.value)}
+                          placeholder="0:20"
+                          className={`${infoInputClass} w-full text-center`}
+                        />
+                        {prepTimeDisplay && (
+                          <span className={`text-[10px] font-medium uppercase ${infoHelperClass}`}>
+                            {prepTimeDisplay}
+                          </span>
+                        )}
                       </div>
-                      <div className="flex flex-col gap-1">
-                        <span className={infoLabelClass}>
-                          {t("recipe.labels.portion", "PORTION")}
-                        </span>
-                        <div className="flex items-center gap-1">
-                          <input
-                            type="number"
-                            value={portionCount}
-                            onChange={(e) =>
-                              setPortionCount(Math.max(1, Number(e.target.value)))
-                            }
-                            className={`${infoInputClass} w-16 text-center`}
-                          />
-                          <input
-                            value={portionUnit}
-                            onChange={(e) =>
-                              setPortionUnit(e.target.value.toUpperCase())
-                            }
-                            className={`${infoInputClass} w-20 text-center uppercase`}
-                          />
-                        </div>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <span className={infoLabelClass}>FULL RECIPE</span>
+                      <span className="text-sm font-semibold">
+                        {getCurrencySymbol(currentCurrency)}
+                        {calculateTotalCost().toFixed(2)}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <span className={infoLabelClass}>YIELD</span>
+                      <div className="flex flex-wrap items-center gap-1">
+                        <input
+                          type="number"
+                          value={yieldQty}
+                          onChange={(e) => {
+                            yieldManualRef.current = true;
+                            setYieldQty(Math.max(0, Number(e.target.value)));
+                          }}
+                          className={`${infoInputClass} w-16 text-center`}
+                          data-echo-key="field:add:yield"
+                        />
+                        <input
+                          value={yieldUnit}
+                          onChange={(e) => {
+                            yieldManualRef.current = true;
+                            setYieldUnit(e.target.value.toUpperCase());
+                          }}
+                          className={`${infoInputClass} w-20 text-center uppercase`}
+                        />
+                        <button
+                          type="button"
+                          title={t("recipe.tools.yield", "Yield Lab")}
+                          className={`rounded border px-2 py-1 text-[10px] font-semibold uppercase tracking-wide ${
+                            isDarkMode
+                              ? "border-cyan-400/50 text-cyan-200"
+                              : "border-slate-400 text-slate-700"
+                          }`}
+                          onClick={() => setYieldOpen(true)}
+                        >
+                          {t("recipe.tools.yield", "Yield Lab")}
+                        </button>
                       </div>
-                      <div className="flex flex-col gap-2">
-                        <div className="flex flex-col gap-1">
-                          <span className={infoLabelClass}>
-                            {t("recipe.labels.portionCost", "PORTION COST")}
-                          </span>
-                          <span className="text-sm font-semibold">
-                            {getCurrencySymbol(currentCurrency)}
-                            {calculatePortionCost().toFixed(2)}
-                          </span>
-                        </div>
-                        <div className="flex flex-col gap-1">
-                          <span className={infoLabelClass}>
-                            {t("recipe.labels.theoreticalVolume", "Ψ")}
-                          </span>
-                          <span className="text-sm font-semibold">
-                            {formatMl(theoreticalVolumeMl)}
-                          </span>
-                        </div>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <span className={infoLabelClass}>
+                        {t("recipe.labels.recipeAccess", "RECIPE ACCESS")}
+                      </span>
+                      <span className="text-xs font-semibold uppercase tracking-wide">
+                        {selectedRecipeAccess.length
+                          ? selectedRecipeAccess.join(", ").toUpperCase()
+                          : t("recipe.labels.none", "NONE")}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <span className={infoLabelClass}>
+                        {t("recipe.labels.recipeType", "RECIPE")}
+                      </span>
+                      <span className="text-xs font-semibold uppercase tracking-wide">
+                        {selectedRecipeType.includes("Full Recipe")
+                          ? t("recipe.labels.full", "FULL")
+                          : selectedRecipeType.includes("Sub Recipe")
+                            ? t("recipe.labels.sub", "SUB")
+                            : t("recipe.labels.unspecified", "UNSPECIFIED")}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <span className={infoLabelClass}>
+                        {t("recipe.labels.portion", "PORTION")}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="number"
+                          value={portionCount}
+                          onChange={(e) =>
+                            setPortionCount(Math.max(1, Number(e.target.value)))
+                          }
+                          className={`${infoInputClass} w-16 text-center`}
+                        />
+                        <input
+                          value={portionUnit}
+                          onChange={(e) =>
+                            setPortionUnit(e.target.value.toUpperCase())
+                          }
+                          className={`${infoInputClass} w-20 text-center uppercase`}
+                        />
                       </div>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <span className={infoLabelClass}>
+                        {t("recipe.labels.portionCost", "PORTION COST")}
+                      </span>
+                      <span className="text-sm font-semibold">
+                        {getCurrencySymbol(currentCurrency)}
+                        {calculatePortionCost().toFixed(2)}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <span className={infoLabelClass}>
+                        {t("recipe.labels.theoreticalVolume", "Ψ")}
+                      </span>
+                      <span className="text-sm font-semibold">
+                        {formatMl(theoreticalVolumeMl)}
+                      </span>
                     </div>
                   </div>
                 </div>
