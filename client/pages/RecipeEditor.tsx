@@ -162,6 +162,37 @@ const splitItemAndPrep = (text: string): { item: string; prep: string } => {
   return { item: itemPart.trim(), prep: rest.join(",").trim() };
 };
 
+const formatYieldValue = (input: unknown): string => {
+  if (input === null || input === undefined) return "";
+  if (typeof input === "number") {
+    if (!Number.isFinite(input)) return "";
+    if (input >= 0 && input <= 1) {
+      return `${Math.round(input * 100)}%`;
+    }
+    if (input > 1 && input < 100 && Number.isInteger(input)) {
+      return `${input}%`;
+    }
+    if (input > 1 && input < 100 && !Number.isInteger(input)) {
+      return `${Number(input.toFixed(2))}%`;
+    }
+    return `${input}`;
+  }
+  if (typeof input === "string") {
+    const trimmed = input.trim();
+    if (!trimmed) return "";
+    if (trimmed.endsWith("%")) return trimmed;
+    const numeric = Number(trimmed);
+    if (Number.isFinite(numeric)) {
+      if (numeric >= 0 && numeric <= 1) {
+        return `${Math.round(numeric * 100)}%`;
+      }
+      return `${trimmed}`;
+    }
+    return trimmed;
+  }
+  return "";
+};
+
 export default function RecipeEditor() {
   const { id } = useParams();
   const nav = useNavigate();
