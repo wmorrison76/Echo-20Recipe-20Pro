@@ -165,22 +165,22 @@ export function ServerNotesConfig({
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader className="space-y-2 px-4 py-3">
+      <Card className={controlPanelClass}>
+        <CardHeader className="space-y-2 border-b border-white/60 px-5 py-4 dark:border-cyan-500/25">
           <CardTitle className="flex items-center gap-2 text-sm font-semibold">
             <Palette className="h-4 w-4" /> Color Scheme
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 px-4 pb-4 pt-0">
-          <div className="grid gap-2.5 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
+        <CardContent className="space-y-5 px-5 pb-5 pt-4">
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
             {colorSchemes.map((scheme) => (
               <button
                 key={scheme.id}
                 type="button"
-                className={`w-full rounded-lg border p-3.5 text-left transition ${
+                className={`${subsectionSurfaceClass} w-full text-left ${
                   config.colorScheme.id === scheme.id
-                    ? "border-primary bg-primary/5"
-                    : "border-muted hover:border-primary/40"
+                    ? "border-primary/70 bg-primary/10 shadow-md"
+                    : "hover:border-primary/40"
                 }`}
                 onClick={() => updateColorScheme(scheme)}
               >
@@ -206,7 +206,9 @@ export function ServerNotesConfig({
           </div>
 
           <div
-            className={`rounded-lg border p-3.5 ${usingCustom ? "border-primary bg-primary/5" : "border-muted"}`}
+            className={`${subsectionSurfaceClass} ${
+              usingCustom ? "border-primary/70 bg-primary/10 shadow-md" : ""
+            }`}
           >
             <div className="flex flex-wrap items-center justify-between gap-2 text-[13px]">
               <div className="font-semibold">Custom Palette</div>
@@ -224,7 +226,7 @@ export function ServerNotesConfig({
                 {usingCustom ? "Active" : "Use Custom"}
               </Button>
             </div>
-            <div className="mt-3 grid gap-2.5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-3 grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {(
                 [
                   ["primary", "Primary"],
@@ -234,13 +236,13 @@ export function ServerNotesConfig({
                   ["text", "Text"],
                 ] as [keyof ColorScheme, string][]
               ).map(([key, label]) => (
-                <div key={key} className="space-y-1 text-[11px]">
+                <div key={key} className="space-y-1.5 text-[11px]">
                   <Label className="leading-snug text-[11px]">{label}</Label>
                   <div className="flex items-center gap-1.5">
                     <input
                       type="color"
                       value={customColors[key]}
-                      className="h-8 w-8 rounded border"
+                      className="h-8 w-8 rounded border border-white/60 bg-white"
                       onChange={(event) =>
                         updateCustomColor(key, event.target.value)
                       }
