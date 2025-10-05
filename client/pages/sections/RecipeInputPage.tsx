@@ -2212,12 +2212,6 @@ const RecipeInputPage = () => {
                       </span>
                     </div>
 
-                    <div className="flex flex-col gap-1">
-                      <span className={infoLabelClass}>
-                        {t("recipe.labels.theoreticalVolume", "Ψ")}
-                      </span>
-                      <span className={infoValuePillClass}>{formatMl(theoreticalVolumeMl)}</span>
-                    </div>
                   </div>
                 </div>
               </div>
