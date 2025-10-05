@@ -180,6 +180,7 @@ export default function RecipeTemplate() {
   };
 
   const commitScale = (value: number) => {
+    previousScaleRef.current = null;
     setAppliedScale(sanitizeScale(value));
   };
 
