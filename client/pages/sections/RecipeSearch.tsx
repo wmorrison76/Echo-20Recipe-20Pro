@@ -1522,114 +1522,118 @@ const onFiles = async (files: File[]) => {
               )}
             </div>
           )}
-          <div className="mt-3 space-y-3 text-sm">
+          <div className="mt-3 space-y-2 text-sm">
             <div className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
               Import from the web
             </div>
-            <div className="flex flex-col items-stretch gap-2 lg:flex-row lg:justify-end lg:gap-3">
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search the web (e.g. 'chocolate cake recipe')"
-                className="rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring lg:w-[320px]"
-              />
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  const q = encodeURIComponent(query);
-                  window.open(
-                    `https://www.google.com/search?q=${q}+recipe`,
-                    "_blank",
-                  );
-                }}
-              >
-                Search
-              </Button>
-            </div>
-            <div className="flex flex-col items-stretch gap-2 lg:flex-row lg:justify-end lg:gap-3">
-              <input
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="Paste a recipe page URL (https://...)"
-                className="rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring lg:w-[320px]"
-              />
-              <Button
-                size="sm"
-                onClick={async () => {
-                  try {
-                    setLoadingUrl(true);
-                    setStatus("Fetching recipe...");
-                    const r = await fetch("/api/recipe/import", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ url }),
-                    });
-                    if (!r.ok)
-                      throw new Error(
-                        (await r.json().catch(() => ({})))?.error || "Failed",
-                      );
-                    const data = await r.json();
-                    let imageName: string | undefined;
-                    const imgUrl =
-                      typeof data.image === "string"
-                        ? data.image
-                        : data.image?.url || data.image?.contentUrl || "";
-                    if (imgUrl) {
-                      try {
-                        const imgRes = await fetch(
-                          `/api/recipe/image?url=${encodeURIComponent(String(imgUrl))}`,
-                        );
-                        if (!imgRes.ok) throw new Error("image fetch");
-                        const blob = await imgRes.blob();
-                        imageName = (
-                          String(imgUrl).split("?")[0].split("/").pop() ||
-                          `${Date.now()}.jpg`
-                        ).replace(/[^A-Za-z0-9_.-]/g, "_");
-                        await addImages(
-                          [
-                            new File([blob], imageName, {
-                              type: blob.type || "image/jpeg",
-                            }),
-                          ],
-                          { tags: ["web"] },
-                        );
-                      } catch {}
-                    }
-                    const sample = [
-                      {
-                        title: data.title,
-                        image: imageName || undefined,
-                        ingredients: data.ingredients,
-                        instructions: Array.isArray(data.instructions)
-                          ? data.instructions
-                          : String(data.instructions || "")
-                              .split(/\r?\n/)
-                              .filter(Boolean),
-                        tags: [],
-                      },
-                    ];
-                    const file = new File(
-                      [
-                        new Blob([JSON.stringify(sample)], {
-                          type: "application/json",
-                        }),
-                      ],
-                      "web.json",
-                      { type: "application/json" },
+            <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 lg:flex-1">
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search the web (e.g. 'chocolate cake recipe')"
+                  className="flex-1 rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                />
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="sm:self-stretch"
+                  onClick={() => {
+                    const q = encodeURIComponent(query);
+                    window.open(
+                      `https://www.google.com/search?q=${q}+recipe`,
+                      "_blank",
                     );
-                    const { added } = await addRecipesFromJsonFiles([file]);
-                    setStatus(`Imported ${added} recipe(s) from web.`);
-                  } catch (e: any) {
-                    setStatus(`Failed: ${e?.message || "error"}`);
-                  } finally {
-                    setLoadingUrl(false);
-                  }
-                }}
-                disabled={loadingUrl || !url}
-              >
-                {loadingUrl ? "Importing..." : "Import"}
-              </Button>
+                  }}
+                >
+                  Search
+                </Button>
+              </div>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 lg:flex-1">
+                <input
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="Paste a recipe page URL (https://...)"
+                  className="flex-1 rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+                />
+                <Button
+                  size="sm"
+                  className="sm:self-stretch"
+                  onClick={async () => {
+                    try {
+                      setLoadingUrl(true);
+                      setStatus("Fetching recipe...");
+                      const r = await fetch("/api/recipe/import", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ url }),
+                      });
+                      if (!r.ok)
+                        throw new Error(
+                          (await r.json().catch(() => ({})))?.error || "Failed",
+                        );
+                      const data = await r.json();
+                      let imageName: string | undefined;
+                      const imgUrl =
+                        typeof data.image === "string"
+                          ? data.image
+                          : data.image?.url || data.image?.contentUrl || "";
+                      if (imgUrl) {
+                        try {
+                          const imgRes = await fetch(
+                            `/api/recipe/image?url=${encodeURIComponent(String(imgUrl))}`,
+                          );
+                          if (!imgRes.ok) throw new Error("image fetch");
+                          const blob = await imgRes.blob();
+                          imageName = (
+                            String(imgUrl).split("?")[0].split("/").pop() ||
+                            `${Date.now()}.jpg`
+                          ).replace(/[^A-Za-z0-9_.-]/g, "_");
+                          await addImages(
+                            [
+                              new File([blob], imageName, {
+                                type: blob.type || "image/jpeg",
+                              }),
+                            ],
+                            { tags: ["web"] },
+                          );
+                        } catch {}
+                      }
+                      const sample = [
+                        {
+                          title: data.title,
+                          image: imageName || undefined,
+                          ingredients: data.ingredients,
+                          instructions: Array.isArray(data.instructions)
+                            ? data.instructions
+                            : String(data.instructions || "")
+                                .split(/\r?\n/)
+                                .filter(Boolean),
+                          tags: [],
+                        },
+                      ];
+                      const file = new File(
+                        [
+                          new Blob([JSON.stringify(sample)], {
+                            type: "application/json",
+                          }),
+                        ],
+                        "web.json",
+                        { type: "application/json" },
+                      );
+                      const { added } = await addRecipesFromJsonFiles([file]);
+                      setStatus(`Imported ${added} recipe(s) from web.`);
+                    } catch (e: any) {
+                      setStatus(`Failed: ${e?.message || "error"}`);
+                    } finally {
+                      setLoadingUrl(false);
+                    }
+                  }}
+                  disabled={loadingUrl || !url}
+                >
+                  {loadingUrl ? "Importing..." : "Import"}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
