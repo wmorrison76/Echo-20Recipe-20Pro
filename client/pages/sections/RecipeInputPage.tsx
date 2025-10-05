@@ -1033,6 +1033,28 @@ const RecipeInputPage = () => {
     [ingredientYieldInsights],
   );
 
+  useEffect(() => {
+    setIngredients((prev) => {
+      let changed = false;
+      const next = prev.map((row, index) => {
+        if (row.type === "divider") return row;
+        const trimmed = String(row.yield || "").trim();
+        if (trimmed) return row;
+        const insight = ingredientYieldInsights[index];
+        const suggestion =
+          insight?.combinedPercent ??
+          insight?.chefPercent ??
+          insight?.basePercent;
+        if (suggestion == null) return row;
+        const formatted = formatYieldPercent(suggestion);
+        if (formatted === row.yield) return row;
+        changed = true;
+        return { ...row, yield: formatted };
+      });
+      return changed ? ensureIngredientRowIds(next) : prev;
+    });
+  }, [ingredientYieldInsights]);
+
   const methodOptionsId = useMemo(
     () => `prep-method-options-${Math.random().toString(36).slice(2)}`,
     [],
@@ -1542,7 +1564,7 @@ const RecipeInputPage = () => {
       "⅓": "1/3",
       "⅔": "2/3",
       "⅛": "1/8",
-      "��": "3/8",
+      "⅜": "3/8",
       "⅝": "5/8",
       "⅞": "7/8",
     };
@@ -3081,7 +3103,7 @@ const RecipeInputPage = () => {
                   "⅑": "1/9",
                   "⅒": "1/10",
                   "⅓": "1/3",
-                  "⅔": "2/3",
+                  "��": "2/3",
                   "⅕": "1/5",
                   "⅖": "2/5",
                   "⅗": "3/5",
