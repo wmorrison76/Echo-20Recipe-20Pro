@@ -172,6 +172,17 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
               : isDarkMode
                 ? "border-cyan-500/20 bg-slate-950/40 shadow-[0_12px_28px_-18px_rgba(34,211,238,0.45)]"
                 : "border-slate-200 bg-white shadow-[0_12px_28px_-18px_rgba(15,23,42,0.35)]";
+            const insight = yieldInsights?.[index] ?? null;
+            const recommendedPercent = insight?.combinedPercent ?? null;
+            const parsedYield = Number(
+              String(row.yield || "").replace(/[^0-9.]/g, ""),
+            );
+            const shouldShowApply =
+              !isDivider &&
+              recommendedPercent != null &&
+              typeof onApplyYieldSuggestion === "function" &&
+              (!Number.isFinite(parsedYield) ||
+                Math.abs(parsedYield - recommendedPercent) > 0.51);
 
             return (
               <div
@@ -262,20 +273,74 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                       : t("recipe.ingredients.placeholders.prep", "Method or prep notes")
                   }
                 />
-                <input
-                  data-row={index}
-                  data-col={4}
-                  value={row.yield}
-                  onChange={onFieldChange(index, "yield")}
-                  onBlur={onFieldBlur(index, "yield")}
-                  onKeyDown={onGridKeyDown}
-                  disabled={isDivider}
-                  className={inputTone(isDarkMode, "px-2 text-center", true, isDivider)}
-                  maxLength={5}
-                  placeholder={
-                    isDivider ? "" : t("recipe.ingredients.placeholders.yield", "100")
-                  }
-                />
+                <div className="flex flex-col gap-1">
+                  <input
+                    data-row={index}
+                    data-col={4}
+                    value={row.yield}
+                    onChange={onFieldChange(index, "yield")}
+                    onBlur={onFieldBlur(index, "yield")}
+                    onKeyDown={onGridKeyDown}
+                    disabled={isDivider}
+                    className={inputTone(
+                      isDarkMode,
+                      "px-2 text-center",
+                      true,
+                      isDivider,
+                    )}
+                    maxLength={6}
+                    placeholder={
+                      isDivider
+                        ? ""
+                        : t("recipe.ingredients.placeholders.yield", "100")
+                    }
+                  />
+                  {!isDivider && insight && (
+                    <div
+                      className={`rounded-md border px-2 py-1 text-[10px] leading-tight ${
+                        isDarkMode
+                          ? "border-cyan-500/20 bg-slate-900/70 text-cyan-200/80"
+                          : "border-slate-200 bg-slate-50 text-slate-600"
+                      }`}
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-1">
+                        <span>
+                          {recommendedPercent != null
+                            ? `Suggested: ${formatYieldPercent(
+                                recommendedPercent,
+                              )}%`
+                            : "No suggestion yet"}
+                        </span>
+                        {shouldShowApply && (
+                          <button
+                            type="button"
+                            className={`rounded border px-1 py-0.5 font-semibold uppercase tracking-wide ${
+                              isDarkMode
+                                ? "border-cyan-500/40 text-cyan-200"
+                                : "border-slate-300 text-slate-700"
+                            }`}
+                            onClick={() => onApplyYieldSuggestion?.(index)}
+                          >
+                            Apply
+                          </button>
+                        )}
+                      </div>
+                      <div className="mt-1 space-y-0.5">
+                        {insight.basePercent != null && insight.baseReason && (
+                          <div>
+                            Base: {formatYieldPercent(insight.basePercent)}% · {insight.baseReason}
+                          </div>
+                        )}
+                        {insight.chefPercent != null && (
+                          <div>
+                            Chef: {formatYieldPercent(insight.chefPercent)}%
+                            {insight.chefMethod ? ` · ${insight.chefMethod}` : ""}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
                 <div className="relative flex w-full items-center gap-1">
                   <span
                     className={`pointer-events-none text-sm font-semibold ${
