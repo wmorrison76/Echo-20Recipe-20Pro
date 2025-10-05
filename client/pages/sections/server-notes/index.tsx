@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { ClipboardList, History, Plus } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { ClipboardList, History, Plus, Sparkles, ListChecks, FileCheck2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,28 @@ import {
 
 const SAVED_NOTES_KEY = "serverNotes:saved";
 const SETTINGS_KEY = "serverNotes:settings";
+
+const WALKTHROUGH_STEPS: Array<{
+  title: string;
+  description: string;
+  icon: LucideIcon;
+}> = [
+  {
+    title: "Configure your briefing",
+    description: "Choose layout, colors, and company details so the document matches your brand.",
+    icon: Sparkles,
+  },
+  {
+    title: "Select featured recipes",
+    description: "Search, tag, and drag recipes into the briefing to build the agenda for service.",
+    icon: ListChecks,
+  },
+  {
+    title: "Preview & generate",
+    description: "Review the layout, adjust orientation, then export or save a reusable document.",
+    icon: FileCheck2,
+  },
+];
 
 export default function ServerNotesSection() {
   const { recipes } = useAppData();
