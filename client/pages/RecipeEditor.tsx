@@ -61,6 +61,104 @@ const fileToDataUrl = (file: File) =>
     reader.readAsDataURL(file);
   });
 
+const UNIT_KEYWORDS = new Set(
+  [
+    "g",
+    "gram",
+    "grams",
+    "kg",
+    "kilogram",
+    "kilograms",
+    "mg",
+    "milligram",
+    "milligrams",
+    "lb",
+    "lbs",
+    "pound",
+    "pounds",
+    "oz",
+    "ounce",
+    "ounces",
+    "ml",
+    "l",
+    "liter",
+    "liters",
+    "litre",
+    "litres",
+    "cl",
+    "dl",
+    "qt",
+    "pt",
+    "cup",
+    "cups",
+    "tbsp",
+    "tablespoon",
+    "tablespoons",
+    "tbs",
+    "tsp",
+    "teaspoon",
+    "teaspoons",
+    "gal",
+    "gallon",
+    "gallons",
+    "each",
+    "ea",
+    "dozen",
+    "stick",
+    "sticks",
+    "sheet",
+    "sheets",
+    "piece",
+    "pieces",
+    "clove",
+    "cloves",
+    "can",
+    "cans",
+    "bag",
+    "bags",
+    "sprig",
+    "sprigs",
+    "bunch",
+    "bunches",
+    "head",
+    "heads",
+    "slice",
+    "slices",
+    "pinch",
+    "pinches",
+    "dash",
+    "dashes",
+  ].map((token) => token.toLowerCase()),
+);
+
+const normalizeUnitToken = (token: string): string => token.toLowerCase().replace(/[^a-z%]/g, "");
+
+const isLikelyUnit = (token: string): boolean => {
+  const normalized = normalizeUnitToken(token);
+  if (!normalized) return false;
+  if (UNIT_KEYWORDS.has(normalized)) return true;
+  if (/^[a-z]{1,3}$/.test(normalized)) return true;
+  if (/^[a-z]+%$/.test(normalized)) return true;
+  return false;
+};
+
+const splitItemAndPrep = (text: string): { item: string; prep: string } => {
+  const trimmed = text.trim();
+  if (!trimmed) return { item: "", prep: "" };
+  const parenMatch = trimmed.match(/^(.*?)[\s]*\(([^)]*)\)\s*$/);
+  if (parenMatch) {
+    return {
+      item: parenMatch[1].trim().replace(/,\s*$/, ""),
+      prep: parenMatch[2].trim(),
+    };
+  }
+  const [itemPart, ...rest] = trimmed.split(",");
+  if (rest.length === 0) {
+    return { item: trimmed, prep: "" };
+  }
+  return { item: itemPart.trim(), prep: rest.join(",").trim() };
+};
+
 export default function RecipeEditor() {
   const { id } = useParams();
   const nav = useNavigate();
