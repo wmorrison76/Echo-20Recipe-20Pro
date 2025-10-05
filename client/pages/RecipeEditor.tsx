@@ -272,7 +272,7 @@ export default function RecipeEditor() {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="secondary" onClick={() => nav(-1)}>
+            <Button variant="secondary" onClick={handleBack}>
               Back
             </Button>
             <Button onClick={handleSave}>Save</Button>
