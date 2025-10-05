@@ -12,8 +12,6 @@ type IngredientsGridProps = {
   averageYield: number | null;
   methodOptions: string[];
   methodOptionsId: string;
-  yieldInsights?: Array<IngredientYieldInsight | null>;
-  onApplyYieldSuggestion?: (index: number) => void;
   onFieldChange: (
     index: number,
     field: keyof IngredientRow,
