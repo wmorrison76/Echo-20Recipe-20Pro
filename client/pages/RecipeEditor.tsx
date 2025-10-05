@@ -210,12 +210,21 @@ export default function RecipeEditor() {
 
   const [localTitle, setLocalTitle] = useState<string>("");
   const [allergens, setAllergens] = useState<string>("");
+  const [selectedAllergenList, setSelectedAllergenList] = useState<string[]>([]);
   const [cookTime, setCookTime] = useState<string>("");
   const [cookTemp, setCookTemp] = useState<string>("");
   const [directionsText, setDirectionsText] = useState<string>("");
   const [directionImages, setDirectionImages] = useState<string[]>([]);
   const [nutritionValues, setNutritionValues] = useState<NutritionValuesState>(createEmptyNutritionValues);
   const [coverPreview, setCoverPreview] = useState<string | undefined>(undefined);
+  const [selectedNationality, setSelectedNationality] = useState<string[]>([]);
+  const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
+  const [selectedRecipeType, setSelectedRecipeType] = useState<string[]>([]);
+  const [selectedPrepMethod, setSelectedPrepMethod] = useState<string[]>([]);
+  const [selectedCookingEquipment, setSelectedCookingEquipment] = useState<string[]>([]);
+  const [selectedRecipeAccess, setSelectedRecipeAccess] = useState<string[]>([]);
+  const [taxonomy, setTaxonomy] = useState<TaxonomySelection>({ ...defaultSelection });
+  const [isRightSidebarCollapsed, setRightSidebarCollapsed] = useState(true);
 
   const directionImageInputRef = useRef<HTMLInputElement | null>(null);
   const coverInputRef = useRef<HTMLInputElement | null>(null);
