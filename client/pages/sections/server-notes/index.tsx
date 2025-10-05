@@ -240,11 +240,17 @@ export default function ServerNotesSection() {
           </div>
 
           <section className="grid items-stretch gap-6 lg:grid-cols-12">
-            <Card className={`${panelSurfaceClass} lg:col-span-4 xl:col-span-4`}>
-              <CardHeader className="space-y-1 border-b border-white/70 px-6 py-5 dark:border-cyan-500/25">
+            <Card className={`${panelSurfaceClass} flex h-full flex-col lg:col-span-4 xl:col-span-4`}>
+              <CardHeader className="space-y-2 border-b border-white/70 px-6 py-5 dark:border-cyan-500/25">
+                <Badge
+                  variant="outline"
+                  className="w-fit rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.35em] text-muted-foreground"
+                >
+                  Step 1
+                </Badge>
                 <CardTitle className="text-base">Configuration</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 px-6 pb-6 pt-4 lg:max-h-[calc(100vh-260px)] lg:overflow-y-auto">
+              <CardContent className="flex-1 space-y-4 px-6 pb-6 pt-4 lg:max-h-[calc(100vh-260px)] lg:overflow-y-auto">
                 <ServerNotesConfig
                   config={currentNote}
                   onUpdate={handleUpdate}
@@ -252,11 +258,17 @@ export default function ServerNotesSection() {
               </CardContent>
             </Card>
 
-            <Card className={`${panelSurfaceClass} lg:col-span-4 xl:col-span-4`}>
-              <CardHeader className="space-y-1 border-b border-white/70 px-6 py-5 dark:border-cyan-500/25">
+            <Card className={`${panelSurfaceClass} flex h-full flex-col lg:col-span-4 xl:col-span-4`}>
+              <CardHeader className="space-y-2 border-b border-white/70 px-6 py-5 dark:border-cyan-500/25">
+                <Badge
+                  variant="outline"
+                  className="w-fit rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.35em] text-muted-foreground"
+                >
+                  Step 2
+                </Badge>
                 <CardTitle className="text-base">Recipe Selection</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 px-6 pb-6 pt-4 lg:max-h-[calc(100vh-260px)] lg:overflow-y-auto">
+              <CardContent className="flex-1 space-y-4 px-6 pb-6 pt-4 lg:max-h-[calc(100vh-260px)] lg:overflow-y-auto">
                 <RecipeSelection
                   availableRecipes={recipes}
                   selectedRecipes={sortedSelected}
@@ -265,11 +277,17 @@ export default function ServerNotesSection() {
               </CardContent>
             </Card>
 
-            <Card className={`${panelSurfaceClass} lg:col-span-4 xl:col-span-4`}>
-              <CardHeader className="space-y-1 border-b border-white/70 px-6 py-5 dark:border-cyan-500/25">
+            <Card className={`${panelSurfaceClass} flex h-full flex-col lg:col-span-4 xl:col-span-4`}>
+              <CardHeader className="space-y-2 border-b border-white/70 px-6 py-5 dark:border-cyan-500/25">
+                <Badge
+                  variant="outline"
+                  className="w-fit rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.35em] text-muted-foreground"
+                >
+                  Step 3
+                </Badge>
                 <CardTitle className="text-base">Preview & Generate</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 px-6 pb-6 pt-4">
+              <CardContent className="flex flex-1 flex-col space-y-4 px-6 pb-6 pt-4">
                 <ServerNotesPreview
                   layout={currentNote.layout}
                   color={currentNote.colorScheme}
