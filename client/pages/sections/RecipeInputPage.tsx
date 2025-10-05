@@ -622,7 +622,7 @@ const RecipeInputPage = () => {
       if (r.qty && r.unit) return r;
       const txt = String(r.item || "");
       if (!txt) return r;
-      if (!/^(\s*[0-9¼½¾⅓⅔⅛��⅝⅞]|\s*\/\d+|.*,)/i.test(txt)) return r;
+      if (!/^(\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|\s*\/\d+|.*,)/i.test(txt)) return r;
       const p = parseIngredientInline(txt.replace(/^\s*\/(\d+)/, "1/$1"));
       if (!p) return r;
       return {
@@ -2013,7 +2013,7 @@ const RecipeInputPage = () => {
           <div className="w-full px-4 sm:px-6 space-y-6 pb-8">
             {/* Removed old hamburger toggle button */}
             <div
-              className="flex items-start gap-4"
+              className="flex items-start gap-3"
               data-echo-key="section:add:basics"
             >
               <div
