@@ -626,7 +626,7 @@ const RecipeInputPage = () => {
   );
   const infoValuePillClass = useMemo(
     () =>
-      `inline-flex items-center justify-center gap-1 rounded-lg border px-2.5 py-1 text-[11px] font-semibold leading-tight ${
+      `inline-flex items-center justify-center gap-1 rounded-lg border px-2 py-0.5 text-[11px] font-semibold leading-tight ${
         isDarkMode
           ? "border-cyan-400/40 bg-black/40 text-cyan-100"
           : "border-slate-300 bg-white text-slate-800"
