@@ -1,6 +1,7 @@
 import { labPlaylists, trendSignals } from "@/data/textureReference";
 import { useMemo } from "react";
 
+import { futureFoodDrivers } from "@/data/flavorMatrix";
 import { useRDLabStore } from "@/stores/rdLabStore";
 
 export function InsightsPanel() {
