@@ -2181,7 +2181,7 @@ const RecipeInputPage = () => {
               data-echo-key="section:add:basics"
             >
               <div
-                className={`flex-1 min-w-0 border p-4 rounded-xl shadow-lg ${isDarkMode ? "border-cyan-400/30 bg-black/50 shadow-cyan-400/20" : "border-gray-200 bg-white shadow-gray-200/50"} backdrop-blur-sm`}
+                className={`flex-1 min-w-0 border p-3 rounded-xl shadow-lg ${isDarkMode ? "border-cyan-400/30 bg-black/50 shadow-cyan-400/20" : "border-gray-200 bg-white shadow-gray-200/50"} backdrop-blur-sm`}
               >
                 <input
                   type="text"
