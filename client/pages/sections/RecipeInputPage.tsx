@@ -123,7 +123,12 @@ const ensureIngredientRowId = (
       Math.abs(qtyValue as number) > Number.EPSILON
         ? Number((costValue / (qtyValue as number)).toFixed(6))
         : null;
-    base.costPerUnit = derived;
+    const provided = raw.costPerUnit;
+    const fallbackCostPerUnit =
+      typeof provided === "number" && Number.isFinite(provided)
+        ? Number(provided.toFixed ? provided.toFixed(6) : provided)
+        : null;
+    base.costPerUnit = derived ?? fallbackCostPerUnit;
   }
 
   return base;
