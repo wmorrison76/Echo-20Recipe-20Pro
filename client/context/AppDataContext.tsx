@@ -1415,6 +1415,31 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾���⅔⅛⅜⅝⅞])(?:\s*(?:cups?|cup|tsp|teaspoons?|tbsp|tablespoons?|grams?|gram|kg|kilograms?|g|ml|milliliters?|l|liters?|oz|ounces?|lb|lbs|pounds?|pinch|dash|cloves?|cans?|sticks?|slices?|heads?|bunch(?:es)?|sprigs?))?\b/;
       const metaSuppress = /^\s*(?:yield|serves|makes|prep(?:aration)?|cook|total)\b/i;
 
+      let lower = lines.map((line) => line.toLowerCase());
+      let cleaned = lower.map((line) => line.replace(/[:.\s]+$/, ""));
+
+      let coreIdx = -1;
+      for (let i = 0; i < lines.length; i++) {
+        if (
+          matchLabel(cleaned[i], ingredientLabels) ||
+          /^for the [a-z]/.test(cleaned[i]) ||
+          qtyRegex.test(lines[i]) ||
+          /^[:•\-*\u2022\u2023\u2043]\s*/.test(pairs[i].original) ||
+          matchLabel(cleaned[i], instructionLabels)
+        ) {
+          coreIdx = i;
+          break;
+        }
+      }
+      if (coreIdx > 4) {
+        const sliceStart = Math.max(0, coreIdx - 4);
+        pairs = pairs.slice(sliceStart);
+        lines = pairs.map((pair) => pair.normalized);
+        if (!lines.length) return null;
+        lower = lines.map((line) => line.toLowerCase());
+        cleaned = lower.map((line) => line.replace(/[:.\s]+$/, ""));
+      }
+
       let ingIdx = -1;
       for (let i = 0; i < cleaned.length; i++) {
         const line = cleaned[i];
