@@ -1,5 +1,7 @@
 import { GripVertical, Link2, MinusCircle, PlusCircle } from "lucide-react";
 import { useTranslation } from "@/context/LanguageContext";
+import type { SupplierQuoteMap } from "@/hooks/use-supplier-quotes";
+import type { SupplierQuote } from "@/lib/supplier-pricing";
 import type { IngredientRow } from "@/types/ingredients";
 
 type IngredientsGridProps = {
@@ -26,6 +28,8 @@ type IngredientsGridProps = {
   onGridKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => void;
   onAddSubRecipe: () => void;
   onAddDivider: () => void;
+  supplierQuotes?: SupplierQuoteMap;
+  onApplySupplierQuote?: (index: number, quote: SupplierQuote) => void;
 };
 
 const inputTone = (
@@ -60,6 +64,8 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
   onGridKeyDown,
   onAddSubRecipe,
   onAddDivider,
+  supplierQuotes,
+  onApplySupplierQuote,
 }) => {
   const { t } = useTranslation();
 
@@ -160,6 +166,8 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
           </div>
           {ingredients.map((row, index) => {
             const isDivider = row.type === "divider";
+            const rowKey = row.subId ?? `${index}`;
+            const quotes = supplierQuotes?.[rowKey] ?? [];
             const rowTone = isDivider
               ? isDarkMode
                 ? "border-cyan-500/30 bg-cyan-500/10"
@@ -280,28 +288,86 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                     }
                   />
                 </div>
-                <div className="relative flex w-full items-center gap-1">
-                  <span
-                    className={`pointer-events-none text-sm font-semibold ${
-                      isDarkMode ? "text-cyan-300" : "text-slate-500"
-                    } ${isDivider ? "opacity-40" : ""}`}
-                  >
-                    {currencySymbol}
-                  </span>
-                  <input
-                    data-row={index}
-                    data-col={5}
-                    value={row.cost}
-                    onChange={onFieldChange(index, "cost")}
-                    onBlur={onFieldBlur(index, "cost")}
-                    onKeyDown={onGridKeyDown}
-                    disabled={isDivider}
-                    className={inputTone(isDarkMode, "px-2 text-right", false, isDivider)}
-                    maxLength={14}
-                    placeholder={
-                      isDivider ? "" : t("recipe.ingredients.placeholders.cost", "0.00")
-                    }
-                  />
+                <div className="relative flex w-full flex-col gap-1">
+                  <div className="flex items-center gap-1">
+                    <span
+                      className={`pointer-events-none text-sm font-semibold ${
+                        isDarkMode ? "text-cyan-300" : "text-slate-500"
+                      } ${isDivider ? "opacity-40" : ""}`}
+                    >
+                      {currencySymbol}
+                    </span>
+                    <input
+                      data-row={index}
+                      data-col={5}
+                      value={row.cost}
+                      onChange={onFieldChange(index, "cost")}
+                      onBlur={onFieldBlur(index, "cost")}
+                      onKeyDown={onGridKeyDown}
+                      disabled={isDivider}
+                      className={inputTone(isDarkMode, "px-2 text-right", false, isDivider)}
+                      maxLength={14}
+                      placeholder={
+                        isDivider ? "" : t("recipe.ingredients.placeholders.cost", "0.00")
+                      }
+                    />
+                  </div>
+                  {!isDivider && quotes.length > 0 && (
+                    <div
+                      className={`rounded-lg border border-dashed p-2 ${
+                        isDarkMode
+                          ? "border-cyan-500/20 bg-cyan-500/5 text-cyan-100"
+                          : "border-slate-300/70 bg-slate-50 text-slate-600"
+                      }`}
+                    >
+                      {quotes.slice(0, 2).map((quote) => {
+                        const key = `${quote.sku}-${quote.supplierId}`;
+                        const unitCostText = quote.unitCost != null
+                          ? `${quote.currency} ${quote.unitCost.toFixed(2)} / ${quote.unitCostUnit ?? quote.packUnit}`
+                          : `${quote.currency} ${quote.pricePerPack.toFixed(2)} per ${quote.packSize}${quote.packUnit}`;
+                        const estimatedCostText =
+                          quote.estimatedCost != null
+                            ? `${currencySymbol}${quote.estimatedCost.toFixed(2)} for qty`
+                            : `${quote.currency} ${quote.pricePerPack.toFixed(2)} pack`;
+                        return (
+                          <div key={key} className="flex items-start justify-between gap-2 text-[10px]">
+                            <div className="space-y-1">
+                              <div className="font-semibold">
+                                {quote.supplierName}
+                                <span className="ml-1 font-normal text-[9px] opacity-80">
+                                  {unitCostText}
+                                </span>
+                              </div>
+                              <div className="flex flex-wrap gap-2 text-[9px] opacity-75">
+                                <span>LT {quote.leadTimeDays}d</span>
+                                <span>Min {quote.minOrderPacks} pack{quote.minOrderPacks > 1 ? "s" : ""}</span>
+                                <span>{estimatedCostText}</span>
+                              </div>
+                            </div>
+                            {onApplySupplierQuote && quote.estimatedCost != null && (
+                              <button
+                                type="button"
+                                onClick={() => onApplySupplierQuote(index, quote)}
+                                className={`rounded-full px-2 py-1 text-[10px] font-semibold transition ${
+                                  isDarkMode
+                                    ? "border border-cyan-400/40 text-cyan-100 hover:bg-cyan-500/20"
+                                    : "border border-slate-400 text-slate-700 hover:bg-slate-200"
+                                }`}
+                              >
+                                Apply
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
+                      {quotes.length > 2 && (
+                        <div className="mt-1 text-[9px] opacity-70">
+                          +{quotes.length - 2} additional supplier option
+                          {quotes.length - 2 > 1 ? "s" : ""}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center justify-end">
                   <button
