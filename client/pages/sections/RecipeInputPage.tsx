@@ -294,10 +294,29 @@ const RecipeInputPage = () => {
 
   useEffect(() => {
     if (!isRndLabsOpen) return;
+
     setRndLayout((prev) => {
       const next = sanitizeRndLayout(prev);
       return prev.every((value, index) => value === next[index]) ? prev : next;
     });
+
+    if (typeof document === "undefined") return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsRndLabsOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleEscape);
+    };
   }, [isRndLabsOpen]);
 
   const accentMuted = isDarkMode ? "text-cyan-200/80" : "text-slate-200/80";
