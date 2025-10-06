@@ -561,146 +561,222 @@ export default function GallerySection() {
 
       {filtered.length > 0 ? (
         <div
-          className={
+          className={cn(
             viewMode === "masonry"
-              ? "masonry columns-2 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7 gap-4 sm:gap-5 lg:gap-6"
-              : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:columns-6 gap-4 sm:gap-5 lg:gap-6"
-          }
+              ? "columns-2 gap-6 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7"
+              : "grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6",
+            "pb-2",
+          )}
           data-echo-key="section:gallery:grid"
         >
-          {filtered.map((img) => (
-            <div
-              key={img.id}
-              className={`mb-6 break-inside-avoid rounded-2xl overflow-hidden relative group shadow-lg ring-1 ring-black/5 bg-white dark:bg-slate-900 dark:ring-sky-500/25 dark:shadow-[0_0_30px_rgba(56,189,248,0.18)] transition-all hover:shadow-[0_10px_40px_rgba(56,189,248,0.25)] hover:ring-2 hover:ring-sky-300/50 dark:hover:ring-sky-400/40 ${viewMode === "masonry" ? "card" : ""}`}
-              draggable
-              onDragStart={() => onDragStart(img.id)}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={() => onDropOver(img.id)}
-              onContextMenu={(e) => e.preventDefault()}
-              data-echo-key="card:gallery:item"
-            >
-              <button
-                className="absolute top-2 right-2 z-10 rounded-full bg-black/40 p-1.5 text-white opacity-0 group-hover:opacity-100"
-                onClick={() => toggleFavorite(img.id)}
-                aria-label="Favorite"
-                data-echo-key="cta:gallery:fav"
-              >
-                <Star
-                  className={
-                    img.favorite ? "fill-yellow-300 text-yellow-300" : ""
-                  }
-                />
-              </button>
-              <input
-                type="checkbox"
-                className="absolute top-2 left-2 z-10 h-4 w-4"
-                checked={selected.includes(img.id)}
-                onChange={() => toggleSelect(img.id)}
-              />
-              <button
-                onClick={() => openLightboxAt(img.id)}
-                className="block w-full"
-                data-echo-key="cta:gallery:open"
-              >
-                {img.unsupported ? (
-                  <div className="h-40 w-full bg-muted flex items-center justify-center text-xs text-muted-foreground">
-                    Unsupported preview
-                  </div>
-                ) : (
-                  <img
-                    src={img.dataUrl || img.blobUrl}
-                    alt={img.name}
-                    loading="lazy"
-                    className={`w-full ${viewMode === "grid" ? (thumbSize === "s" ? "h-32" : thumbSize === "l" ? "h-56" : "h-44") : "h-auto"} object-cover transition-all duration-200 z-0`}
-                    onError={(e) => {
-                      const el = e.currentTarget;
-                      el.onerror = null;
-                      el.src = "/placeholder.svg";
-                      el.classList.add("opacity-70");
-                    }}
-                  />
+          {filtered.map((img) => {
+            const isSelected = selected.includes(img.id);
+            const displayTags = (img.tags || []).slice(0, 3);
+            const overflowCount = Math.max((img.tags || []).length - displayTags.length, 0);
+
+            return (
+              <div
+                key={img.id}
+                className={cn(
+                  "group relative mb-6 break-inside-avoid overflow-hidden rounded-[24px] backdrop-blur-xl transition-all duration-500",
+                  lucccaMode
+                    ? "ring-1 ring-slate-700/60 bg-slate-950/60 shadow-[0_24px_60px_rgba(14,165,233,0.24)]"
+                    : "ring-1 ring-white/70 bg-white/95 shadow-[0_24px_60px_rgba(15,23,42,0.14)]",
+                  isSelected &&
+                    (lucccaMode
+                      ? "ring-2 ring-sky-400 shadow-[0_32px_80px_rgba(14,165,233,0.32)]"
+                      : "ring-2 ring-sky-400 shadow-[0_32px_80px_rgba(56,189,248,0.22)]"),
                 )}
-              </button>
-              <button
-                className="absolute bottom-2 right-2 z-20 rounded-full bg-black/60 p-1.5 text-white opacity-0 group-hover:opacity-100 hover:bg-black/70"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (confirm("Delete this image?")) deleteImage(img.id);
-                }}
-                aria-label="Delete image"
-                title="Delete image"
+                draggable
+                onDragStart={() => onDragStart(img.id)}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={() => onDropOver(img.id)}
+                data-echo-key="card:gallery:item"
               >
-                <Trash />
-              </button>
-              <div className="p-3 flex flex-col gap-2 text-[11px] relative z-10">
+                <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/20" />
+                </div>
+
+                <button
+                  className="absolute right-3 top-3 z-30 flex h-8 w-8 items-center justify-center rounded-full bg-black/45 text-white opacity-0 transition duration-200 group-hover:opacity-100"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavorite(img.id);
+                  }}
+                  aria-label="Toggle favorite"
+                  data-echo-key="cta:gallery:fav"
+                >
+                  <Star
+                    className={cn(
+                      "h-4 w-4",
+                      img.favorite ? "fill-yellow-300 text-yellow-300" : "text-white",
+                    )}
+                  />
+                </button>
+
+                <label className="absolute left-3 top-3 z-30 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="peer sr-only"
+                    checked={isSelected}
+                    onChange={() => toggleSelect(img.id)}
+                  />
+                  <span
+                    className={cn(
+                      "flex h-7 w-7 items-center justify-center rounded-full border text-[11px] font-semibold transition-all",
+                      isSelected
+                        ? "border-sky-400 bg-sky-500 text-white shadow-[0_15px_30px_rgba(14,165,233,0.35)]"
+                        : "border-white/70 bg-white/70 text-transparent backdrop-blur peer-focus-visible:ring-2 peer-focus-visible:ring-sky-300",
+                    )}
+                  >
+                    ✓
+                  </span>
+                </label>
+
+                <button
+                  onClick={() => openLightboxAt(img.id)}
+                  className="block w-full overflow-hidden"
+                  data-echo-key="cta:gallery:open"
+                >
+                  {img.unsupported ? (
+                    <div className="flex h-48 w-full items-center justify-center bg-slate-200 text-xs uppercase tracking-[0.3em] text-slate-500">
+                      Unsupported preview
+                    </div>
+                  ) : (
+                    <img
+                      src={img.dataUrl || img.blobUrl}
+                      alt={img.name}
+                      loading="lazy"
+                      className={cn(
+                        "w-full object-cover transition duration-500 ease-out group-hover:scale-[1.03]",
+                        viewMode === "grid"
+                          ? thumbSize === "s"
+                            ? "aspect-[4/3]"
+                            : thumbSize === "l"
+                              ? "aspect-[3/2]"
+                              : "aspect-[5/4]"
+                          : "h-auto",
+                      )}
+                      onError={(e) => {
+                        const el = e.currentTarget;
+                        el.onerror = null;
+                        el.src = "/placeholder.svg";
+                        el.classList.add("opacity-70");
+                      }}
+                    />
+                  )}
+                </button>
+
+                <button
+                  className="absolute bottom-3 right-3 z-30 flex h-8 w-8 items-center justify-center rounded-full bg-black/45 text-white opacity-0 transition duration-200 group-hover:opacity-100 hover:bg-black/60"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (confirm("Delete this image?")) deleteImage(img.id);
+                  }}
+                  aria-label="Delete image"
+                  title="Delete image"
+                >
+                  <Trash className="h-4 w-4" />
+                </button>
+
                 {editingId === img.id ? (
-                  <div className="flex flex-col gap-2">
+                  <div
+                    className={cn(
+                      "absolute inset-x-0 bottom-0 z-40 space-y-2 border-t px-4 py-4 backdrop-blur-xl",
+                      lucccaMode
+                        ? "border-white/10 bg-slate-950/90"
+                        : "border-slate-200/60 bg-white/95",
+                    )}
+                  >
                     <input
                       autoFocus
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
                       onKeyDown={onEditKeyDown}
                       placeholder="Image name"
-                      className="w-full rounded-md border bg-background px-2 py-1 text-sm"
+                      className={cn(
+                        "w-full rounded-full border px-3 py-2 text-sm shadow-inner",
+                        lucccaMode ? "bg-slate-900/70" : "bg-white/85",
+                      )}
                     />
                     <input
                       value={editTags}
                       onChange={(e) => setEditTags(e.target.value)}
                       onKeyDown={onEditKeyDown}
                       placeholder="categories (comma separated)"
-                      className="w-full rounded-md border bg-background px-2 py-1 text-sm"
+                      className={cn(
+                        "w-full rounded-full border px-3 py-2 text-sm shadow-inner",
+                        lucccaMode ? "bg-slate-900/70" : "bg-white/85",
+                      )}
                     />
                     <div className="flex gap-2">
-                      <Button size="sm" onClick={saveEdit}>
+                      <Button size="sm" onClick={saveEdit} className="rounded-full px-4">
                         Save
                       </Button>
                       <Button
                         size="sm"
                         variant="secondary"
                         onClick={cancelEdit}
+                        className="rounded-full px-4"
                       >
                         Cancel
                       </Button>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-wrap items-center gap-1">
+                  <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col gap-1 bg-gradient-to-t from-black/80 via-black/10 to-transparent p-4 text-white">
                     <button
-                      className="truncate text-left underline-offset-2 hover:underline"
+                      className="truncate text-left text-sm font-medium underline-offset-4 hover:underline"
                       onClick={() => beginEdit(img.id)}
-                      title="Click to rename & categorize"
+                      title="Rename & categorize"
                     >
                       {img.name}
                     </button>
-                    {(img.tags || []).map((t) => (
-                      <button
-                        key={t}
-                        className="px-1.5 py-0.5 rounded-full bg-secondary text-secondary-foreground hover:ring-2 hover:ring-sky-300/50"
-                        onClick={() => beginEdit(img.id)}
-                        title="Click to edit categories"
-                      >
-                        {t}
-                      </button>
-                    ))}
-                    {(!img.tags || img.tags.length === 0) && (
-                      <button
-                        className="px-1.5 py-0.5 rounded-full bg-muted text-foreground/80 hover:bg-muted/70"
-                        onClick={() => beginEdit(img.id)}
-                        title="Add categories"
-                      >
-                        + categorize
-                      </button>
-                    )}
+                    <div className="flex flex-wrap gap-1 text-[11px]">
+                      {displayTags.length > 0 ? (
+                        <>
+                          {displayTags.map((t) => (
+                            <button
+                              key={t}
+                              className="pointer-events-auto rounded-full bg-white/30 px-2 py-0.5 text-white/90 backdrop-blur"
+                              onClick={() => beginEdit(img.id)}
+                              title="Edit categories"
+                            >
+                              {t}
+                            </button>
+                          ))}
+                          {overflowCount > 0 && (
+                            <button
+                              className="pointer-events-auto rounded-full bg-white/20 px-2 py-0.5 text-white/80 backdrop-blur"
+                              onClick={() => beginEdit(img.id)}
+                              title="Edit categories"
+                            >
+                              +{overflowCount}
+                            </button>
+                          )}
+                        </>
+                      ) : (
+                        <button
+                          className="pointer-events-auto rounded-full bg-white/20 px-2 py-0.5 text-white/80 backdrop-blur"
+                          onClick={() => beginEdit(img.id)}
+                          title="Add categories"
+                        >
+                          + categorize
+                        </button>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
-        <div className="rounded-md border p-6 text-center text-sm text-muted-foreground">
-          <div className="mb-2">No images yet.</div>
-          <Button onClick={() => restoreDemo()}>Restore demo images</Button>
+        <div className={cn("rounded-[28px] border p-8 text-center text-sm", cardSurface)}>
+          <div className="mb-2 opacity-80">No images yet.</div>
+          <Button onClick={() => restoreDemo()} className="rounded-full px-5">
+            Restore demo images
+          </Button>
         </div>
       )}
 
