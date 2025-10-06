@@ -1297,6 +1297,175 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       return { text, lines, charCount };
     };
 
+    const normLine = (s: string) => {
+      let t = s.replace(/\s+/g, " ").trim();
+      if (/^([A-Z]\s+){2,}[A-Z][\s:]*$/.test(t) && t.length <= 60)
+        t = t.replace(/\s+/g, "");
+      return t;
+    };
+
+    type DerivedRecipeSections = {
+      title: string;
+      ingredients?: string[];
+      instructions?: string[];
+      meta: Record<string, string>;
+    };
+
+    const deriveStructuredRecipe = (
+      text: string,
+    ): DerivedRecipeSections | null => {
+      const lines = text
+        .split(/\n/)
+        .map(normLine)
+        .filter((line) => line.length);
+      if (!lines.length) return null;
+      const lower = lines.map((line) => line.toLowerCase());
+      const cleaned = lower.map((line) => line.replace(/[:.\s]+$/, ""));
+      const ingredientLabels = [
+        "ingredients",
+        "ingredient list",
+        "mise en place",
+        "components",
+        "you will need",
+        "shopping list",
+        "for the dough",
+        "for the filling",
+        "for the topping",
+        "for the sauce",
+        "for the batter",
+        "for the crust",
+      ];
+      const instructionLabels = [
+        "instructions",
+        "directions",
+        "method",
+        "preparation",
+        "procedure",
+        "assembly",
+        "to assemble",
+        "to prepare",
+        "cooking directions",
+        "cooking instructions",
+        "finishing",
+        "finishing steps",
+        "to finish",
+      ];
+      const matchLabel = (line: string, labels: string[]) =>
+        labels.some(
+          (label) => line === label || line.startsWith(`${label} `),
+        );
+      const qtyRegex =
+        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*(?:cups?|cup|tsp|teaspoons?|tbsp|tablespoons?|grams?|gram|kg|kilograms?|g|ml|milliliters?|l|liters?|oz|ounces?|lb|lbs|pounds?|pinch|dash|cloves?|cans?|sticks?|slices?|heads?|bunch(?:es)?|sprigs?))?\b/;
+      const metaSuppress = /^\s*(?:yield|serves|makes|prep(?:aration)?|cook|total)\b/i;
+
+      let ingIdx = -1;
+      for (let i = 0; i < cleaned.length; i++) {
+        const line = cleaned[i];
+        if (matchLabel(line, ingredientLabels) || /^for the [a-z]/.test(line)) {
+          ingIdx = i;
+          break;
+        }
+      }
+      if (ingIdx < 0) {
+        for (let i = 0; i < Math.min(lines.length, 120); i++) {
+          const window = lines.slice(i, i + 6);
+          const matches = window.filter(
+            (entry) =>
+              qtyRegex.test(entry) ||
+              /^[:•\-*\u2022\u2023\u2043]\s*/.test(entry),
+          );
+          if (matches.length >= 3) {
+            ingIdx = Math.max(0, i - 1);
+            break;
+          }
+        }
+      }
+
+      let instIdx = -1;
+      for (let i = Math.max(ingIdx + 1, 0); i < cleaned.length; i++) {
+        const line = cleaned[i];
+        if (
+          matchLabel(line, instructionLabels) ||
+          /^to (?:assemble|finish|serve|prepare|cook|bake)\b/.test(line)
+        ) {
+          instIdx = i;
+          break;
+        }
+      }
+      if (instIdx < 0 && ingIdx >= 0) {
+        for (let i = ingIdx + 1; i < lines.length; i++) {
+          if (
+            /^(?:step\s*)?\d+\b/.test(lines[i]) ||
+            /^\d+\.\s+/.test(lines[i]) ||
+            /^•\s+/.test(lines[i]) ||
+            (lines[i].length > 30 && /[\.?!]/.test(lines[i]))
+          ) {
+            instIdx = i;
+            break;
+          }
+        }
+      }
+
+      const stripBullet = (line: string) =>
+        line.replace(/^[:•\-*\u2022\u2023\u2043]\s*/, "").trim();
+      const getRange = (start: number, end: number) =>
+        lines
+          .slice(start + 1, end > start ? end : undefined)
+          .map(stripBullet)
+          .filter((entry) => entry.length && !metaSuppress.test(entry));
+
+      let ingredients =
+        ingIdx >= 0
+          ? getRange(ingIdx, instIdx >= 0 ? instIdx : lines.length)
+          : undefined;
+      if (ingredients && ingredients.length < 2) {
+        const candidates = ingredients.filter((line) => qtyRegex.test(line));
+        if (candidates.length >= 2) ingredients = candidates;
+      } else if (ingredients && ingredients.length) {
+        ingredients = ingredients.filter((line) => !metaSuppress.test(line));
+      }
+
+      let instructions =
+        instIdx >= 0 ? getRange(instIdx, lines.length) : undefined;
+      if ((!instructions || instructions.length < 2) && lines.length) {
+        const start = instIdx >= 0 ? instIdx + 1 : Math.max(ingIdx + 1, 0);
+        const fallback = lines
+          .slice(start)
+          .map(stripBullet)
+          .filter(
+            (entry) =>
+              entry.length && !qtyRegex.test(entry) && !metaSuppress.test(entry),
+          );
+        if (fallback.length >= 2) instructions = fallback;
+      }
+
+      const headingLimit = ingIdx >= 0 ? ingIdx : Math.min(lines.length, 6);
+      const headingCandidates = lines.slice(0, Math.max(headingLimit, 1));
+      let title = "";
+      for (const candidate of headingCandidates) {
+        if (metaSuppress.test(candidate) || candidate.length < 3) continue;
+        if (
+          /^[A-Z][A-Za-z0-9\-\'\s]{2,80}$/.test(candidate) ||
+          /^[A-Za-z][A-Za-z0-9\-\'\s]{2,80}$/.test(candidate)
+        ) {
+          title = candidate.replace(/[:\-\s]+$/, "").trim();
+          break;
+        }
+      }
+      if (!title) title = lines[0];
+      title = title.replace(/\s+/g, " ").trim();
+
+      const meta = parseMeta(lines.join("\n"));
+      return {
+        title,
+        ingredients: ingredients && ingredients.length ? ingredients : undefined,
+        instructions: instructions && instructions.length
+          ? instructions
+          : undefined,
+        meta,
+      };
+    };
+
     for (const f of files) {
       if (!f.name.toLowerCase().endsWith("pdf")) {
         errors.push({ file: f.name, error: "Unsupported PDF type" });
