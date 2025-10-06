@@ -51,6 +51,16 @@ export default function GallerySection() {
   const [lucccaMode, setLucccaMode] = useState(false);
   const [openLookBook, setOpenLookBook] = useState(false);
   const dragId = useRef<string | null>(null);
+
+  const toolbarSurface = lucccaMode
+    ? "border-slate-700/80 bg-slate-900/70 text-slate-100 shadow-[0_26px_70px_rgba(14,165,233,0.28)]"
+    : "border-white/80 bg-white/95 text-slate-900 shadow-[0_26px_70px_rgba(15,23,42,0.14)]";
+  const cardSurface = lucccaMode
+    ? "border-slate-700/60 bg-slate-900/60 text-slate-100 shadow-[0_18px_48px_rgba(14,165,233,0.24)]"
+    : "border-white/70 bg-white/90 text-slate-900 shadow-[0_18px_48px_rgba(15,23,42,0.12)]";
+  const subtleSurface = lucccaMode
+    ? "border-slate-700/50 bg-slate-900/55 text-slate-100"
+    : "border-white/60 bg-white/85 text-slate-900";
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [editTags, setEditTags] = useState("");
