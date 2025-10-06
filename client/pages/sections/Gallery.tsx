@@ -448,13 +448,16 @@ export default function GallerySection() {
         </div>
       )}
 
-      <div className="rounded-2xl border p-4">
-        <div className="flex flex-wrap items-center gap-2">
+      <div className={cn("rounded-[28px] border p-6 backdrop-blur-xl", cardSurface)}>
+        <div className="flex flex-wrap items-center gap-3">
           <input
             value={newLookBookName}
             onChange={(e) => setNewLookBookName(e.target.value)}
             placeholder="New Look Book name"
-            className="rounded-md border bg-background px-3 py-2 text-sm"
+            className={cn(
+              "rounded-full border px-4 py-2 text-sm shadow-inner",
+              lucccaMode ? "bg-slate-900/70" : "bg-white/85",
+            )}
           />
           <Button
             onClick={() => {
