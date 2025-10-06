@@ -2293,7 +2293,7 @@ const RecipeInputPage = () => {
                       </span>
                     </div>
 
-                    <div className="col-span-4 flex flex-col gap-0.5 md:col-span-5">
+                    <div className="col-span-4 flex flex-col items-center gap-0.5 md:col-span-5">
                       <div className="flex items-center justify-between gap-2">
                         <span className={infoLabelClass}>YIELD</span>
                         <button
