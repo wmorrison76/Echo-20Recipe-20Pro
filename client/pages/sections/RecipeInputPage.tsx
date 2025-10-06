@@ -2655,6 +2655,12 @@ const RecipeInputPage = () => {
 
                 <YieldTrackingPanel className="mt-8" />
 
+                <TeamWorkflowPanel
+                  className="mt-8"
+                  ingredients={ingredients}
+                  onCaptureVersion={handleCaptureVersion}
+                />
+
                 <Dialog open={yieldOpen} onOpenChange={setYieldOpen}>
                   <DialogContent
                     className={`w-full max-w-[min(960px,95vw)] border p-6 transition-shadow backdrop-blur-xl ${
