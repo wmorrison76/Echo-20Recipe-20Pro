@@ -1206,46 +1206,6 @@ const RecipeInputPage = () => {
     [setIngredients],
   );
 
-  const handleApplySupplierQuote = useCallback(
-    (index: number, quote: SupplierQuote) => {
-      if (index < 0 || index >= ingredients.length) return;
-      const row = ensureIngredientRowId(ingredients[index]);
-      if (row.type === "divider") return;
-      const qtyValue = parseQuantity(row.qty);
-      const effectiveCost =
-        quote.estimatedCost != null && Number.isFinite(quote.estimatedCost)
-          ? quote.estimatedCost
-          : quote.unitCost != null &&
-              Number.isFinite(qtyValue) &&
-              Math.abs(qtyValue) > Number.EPSILON
-            ? quote.unitCost * qtyValue
-            : null;
-      const unitCost =
-        quote.unitCost != null
-          ? quote.unitCost
-          : effectiveCost != null &&
-              Number.isFinite(qtyValue) &&
-              Math.abs(qtyValue) > Number.EPSILON
-            ? effectiveCost / qtyValue
-            : null;
-
-      updateIngredientRow(index, {
-        cost:
-          effectiveCost != null && Number.isFinite(effectiveCost)
-            ? effectiveCost.toFixed(2)
-            : row.cost,
-        costPerUnit:
-          unitCost != null && Number.isFinite(unitCost)
-            ? Number(unitCost.toFixed(6))
-            : row.costPerUnit,
-        supplierId: quote.supplierId,
-        supplierName: quote.supplierName,
-        supplierSku: quote.sku,
-      });
-    },
-    [ingredients, updateIngredientRow],
-  );
-
   const addIngredientRow = useCallback(
     (index?: number) => {
       const targetRow =
