@@ -260,7 +260,7 @@ export function TeamWorkflowPanel({ className, ingredients, onCaptureVersion }: 
                 }))
               }
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Link ingredient" />
               </SelectTrigger>
               <SelectContent>
