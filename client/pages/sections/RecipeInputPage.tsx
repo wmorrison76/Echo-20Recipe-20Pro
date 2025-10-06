@@ -276,7 +276,7 @@ const RecipeInputPage = () => {
     });
   }, [isRndLabsOpen]);
 
-  const accentMuted = isDarkMode ? "text-cyan-300/70" : "text-slate-500";
+  const accentMuted = isDarkMode ? "text-cyan-200/80" : "text-slate-200/80";
   const rndPanelBaseClasses =
     "flex h-full min-h-0 flex-col overflow-hidden rounded-3xl border p-5 shadow-[inset_0_1px_0_rgba(15,23,42,0.08)] backdrop-blur transition-colors duration-300";
   const rndPanelToneClasses = isDarkMode
