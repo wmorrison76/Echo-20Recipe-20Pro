@@ -29,6 +29,9 @@ export function DiscoveryPanel() {
         exp.tags.join(" "),
         exp.variablesUnderTest.join(" "),
         exp.sensoryTargets.join(" "),
+        exp.textureObjectives.join(" "),
+        exp.flavorConstellations.join(" "),
+        exp.futureFoodAngles.join(" "),
       ]
         .join(" ")
         .toLowerCase()
