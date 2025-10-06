@@ -1974,7 +1974,7 @@ const RecipeInputPage = () => {
   ): { qty?: string; unit?: string; item?: string; prep?: string } | null {
     if (!s) return null;
     const map: Record<string, string> = {
-      "��": "1/4",
+      "¼": "1/4",
       "½": "1/2",
       "¾": "3/4",
       "⅓": "1/3",
@@ -3364,7 +3364,7 @@ const RecipeInputPage = () => {
                   "⅞": "7/8",
                 };
                 s = s.replace(
-                  /[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g,
+                  /[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗��⅙⅚⅛⅜⅝⅞]/g,
                   (ch) => fracMap[ch] || ch,
                 );
                 const m = s.match(
@@ -3575,7 +3575,7 @@ function RDLabsPortal({
   );
 
   const triggerHint = useCallback(() => {
-    if (!isBrowser || !isOpen) return;
+    if (!isBrowser || !isOpen || hintCount >= 5) return;
     setHintCount((prev) => {
       if (prev >= 5) return prev;
       const next = prev + 1;
@@ -3594,7 +3594,7 @@ function RDLabsPortal({
       }, 3600);
       return next;
     });
-  }, [isBrowser, isOpen]);
+  }, [isBrowser, isOpen, hintCount]);
 
   useEffect(() => {
     if (isOpen) return;
