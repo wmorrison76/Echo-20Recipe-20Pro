@@ -675,6 +675,14 @@ const onFiles = async (files: File[]) => {
     setErrors([]);
     setStatus("Processing...");
 
+    const collectedTitles: string[] = [];
+    const rememberTitles = (titles?: string[]) => {
+      if (titles?.length) {
+        collectedTitles.push(...titles);
+        setImportedTitles((t) => [...t, ...titles]);
+      }
+    };
+
     let importedCount = 0;
     const allErrors: { file: string; error: string }[] = [];
 
@@ -682,42 +690,42 @@ const onFiles = async (files: File[]) => {
       const { added, errors, titles } = await addRecipesFromJsonFiles([f]);
       importedCount += added;
       allErrors.push(...errors);
-      if (titles?.length) setImportedTitles((t) => [...t, ...titles]);
+      rememberTitles(titles);
       setProcessed((p) => p + 1);
     }
     for (const f of docxFiles) {
       const { added, errors, titles } = await addRecipesFromDocxFiles([f]);
       importedCount += added;
       allErrors.push(...errors);
-      if (titles?.length) setImportedTitles((t) => [...t, ...titles]);
+      rememberTitles(titles);
       setProcessed((p) => p + 1);
     }
     for (const f of htmlFiles) {
       const { added, errors, titles } = await addRecipesFromHtmlFiles([f]);
       importedCount += added;
       allErrors.push(...errors);
-      if (titles?.length) setImportedTitles((t) => [...t, ...titles]);
+      rememberTitles(titles);
       setProcessed((p) => p + 1);
     }
     for (const f of pdfFiles) {
       const { added, errors, titles } = await addRecipesFromPdfFiles([f]);
       importedCount += added;
       allErrors.push(...errors);
-      if (titles?.length) setImportedTitles((t) => [...t, ...titles]);
+      rememberTitles(titles);
       setProcessed((p) => p + 1);
     }
     for (const f of xlsFiles) {
       const { added, errors, titles } = await addRecipesFromExcelFiles([f]);
       importedCount += added;
       allErrors.push(...errors);
-      if (titles?.length) setImportedTitles((t) => [...t, ...titles]);
+      rememberTitles(titles);
       setProcessed((p) => p + 1);
     }
     for (const f of imageFiles) {
       const { added, errors, titles } = await addRecipesFromImageOcr([f]);
       importedCount += added;
       allErrors.push(...errors);
-      if (titles?.length) setImportedTitles((t) => [...t, ...titles]);
+      rememberTitles(titles);
       setProcessed((p) => p + 1);
     }
     for (const z of zipFiles) {
@@ -725,14 +733,32 @@ const onFiles = async (files: File[]) => {
       importedCount += res.addedRecipes;
       for (const e of res.errors)
         allErrors.push({ file: e.entry, error: e.error });
-      if (res.titles?.length) setImportedTitles((t) => [...t, ...res.titles]);
+      rememberTitles(res.titles);
       setProcessed((p) => p + 1);
     }
 
     setErrors(allErrors);
-    setStatus(
-      `Imported ${importedCount} recipe(s).${allErrors.length ? ` ${allErrors.length} item(s) had issues.` : ""}`,
-    );
+    const summary = `Imported ${importedCount} recipe${importedCount === 1 ? "" : "s"}.`;
+    const issueSummary =
+      allErrors.length > 0
+        ? `${allErrors.length} item${allErrors.length === 1 ? "" : "s"} had issues.`
+        : "No issues detected.";
+    const titleSummary =
+      collectedTitles.length > 0
+        ? `Added: ${collectedTitles
+            .slice(0, 4)
+            .join(", ")}${collectedTitles.length > 4 ? " …" : ""}`
+        : "";
+    const statusMessage = [summary, issueSummary].join(" ");
+    setStatus(titleSummary ? `${statusMessage} ${titleSummary}` : statusMessage);
+    toast({
+      title: "Recipe import complete",
+      description: [summary, issueSummary, titleSummary]
+        .filter(Boolean)
+        .join(" "),
+    });
+    setProcessed(0);
+    setTotal(0);
   };
 
   const importFromUrl = async () => {
