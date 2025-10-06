@@ -317,8 +317,15 @@ const YieldLabForm: React.FC<YieldLabFormProps> = ({
       setFormError("Enter the method that was tested before saving.");
       return;
     }
-    if (computedYield == null) {
-      setFormError("Enter compatible input and measured units so we can compute the yield %.");
+    if (itemType === "readyMade" && !selectedReadyMade) {
+      setFormError("Select a ready-made catalog item before saving.");
+      return;
+    }
+    const yieldToPersist = computedYield ?? effectiveYield ?? null;
+    if (yieldToPersist == null) {
+      setFormError(
+        "Enter compatible units or provide ready-made defaults so we can compute the yield %.",
+      );
       return;
     }
     addRecord({
