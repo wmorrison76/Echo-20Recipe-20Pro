@@ -1314,13 +1314,70 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     const deriveStructuredRecipe = (
       text: string,
     ): DerivedRecipeSections | null => {
-      const lines = text
+      const rawLines = text
         .split(/\n/)
-        .map(normLine)
+        .map((line) => line.replace(/\s+/g, " ").trim())
         .filter((line) => line.length);
+      if (!rawLines.length) return null;
+
+      type LinePair = { original: string; normalized: string };
+
+      let pairs = rawLines
+        .map((line) => {
+          const normalized = normLine(line);
+          if (!normalized.length) return null;
+          return { original: line, normalized };
+        })
+        .filter((value): value is LinePair => value !== null);
+      if (!pairs.length) return null;
+
+      let fallbackTitle: string | undefined;
+      const tocStopWords = /^(?:contents|index|appendix|chapter|recipes?)$/i;
+      const measurementTokens =
+        /\b(?:cup|cups?|tsp|teaspoons?|tbsp|tablespoons?|grams?|gram|kg|kilograms?|g|ml|milliliters?|l|liters?|oz|ounces?|lb|lbs|pounds?|serves?|makes|yield|minutes?|minute|mins?|hours?|hour|°f|°c|step|steps?)\b/i;
+      const tocPatterns = [
+        /^.{3,160}?[.\s·•]{2,}\d{1,4}(?:\D.*)?$/i,
+        /^.{3,160}?\s[-–—]\s*\d{1,4}(?:\D.*)?$/i,
+      ];
+      const looksLikeIndexEntry = (line: string) => {
+        if (line.length > 160) return false;
+        if (tocPatterns.some((re) => re.test(line))) return true;
+        const tokens = line.split(/\s+/);
+        if (tokens.length < 3) return false;
+        const last = tokens[tokens.length - 1];
+        if (!/^\d{1,4}$/.test(last)) return false;
+        const before = tokens.slice(0, -1).join(" ").trim();
+        if (before.length < 4) return false;
+        if (measurementTokens.test(before)) return false;
+        if (/\b(?:page|pg|step)\b/i.test(before)) return false;
+        return true;
+      };
+
+      while (pairs.length) {
+        const { original, normalized } = pairs[0];
+        const lower = normalized.toLowerCase();
+        if (tocStopWords.test(lower) || /\bcandidate\b/i.test(original)) {
+          pairs.shift();
+          continue;
+        }
+        if (looksLikeIndexEntry(original)) {
+          if (!fallbackTitle) {
+            fallbackTitle = original
+              .replace(/\s*\d{1,4}\s*$/, "")
+              .replace(/[.\·•\s]+$/, "")
+              .trim();
+          }
+          pairs.shift();
+          continue;
+        }
+        break;
+      }
+
+      pairs = pairs.filter((pair) => !/\bcandidate\b/i.test(pair.original));
+      if (!pairs.length) return null;
+
+      let lines = pairs.map((pair) => pair.normalized);
       if (!lines.length) return null;
-      const lower = lines.map((line) => line.toLowerCase());
-      const cleaned = lower.map((line) => line.replace(/[:.\s]+$/, ""));
       const ingredientLabels = [
         "ingredients",
         "ingredient list",
