@@ -403,7 +403,7 @@ export default function TopTabs() {
           ref={asideRef}
           className={cn(
             "pointer-events-auto fixed left-0 top-24 z-[3200] flex flex-col overflow-hidden rounded-3xl border border-white/60 bg-white/40 shadow-[0_32px_65px_-18px_rgba(15,23,42,0.45)] backdrop-blur-2xl transition-all duration-700 dark:border-cyan-500/25 dark:bg-slate-950/70 dark:shadow-[0_0_70px_rgba(56,189,248,0.65)] sm:top-28",
-            collapsed ? "w-16 space-y-3 p-3" : "w-64 space-y-4 p-5",
+            collapsed ? "w-14 space-y-2.5 p-2.5" : "w-60 space-y-3.5 p-4",
           )}
         >
           <div className="relative flex h-full flex-col">
