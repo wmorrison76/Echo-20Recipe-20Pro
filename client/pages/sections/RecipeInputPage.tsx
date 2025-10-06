@@ -2365,6 +2365,197 @@ const RecipeInputPage = () => {
                     </div>
                   </div>
                 </div>
+                <div
+                  className={`mt-3 rounded-lg border p-2.5 ${
+                    isDarkMode
+                      ? "bg-blue-900/15 border-blue-400/30"
+                      : "bg-blue-50 border-blue-200"
+                  }`}
+                >
+                  <div
+                    className={`mb-1 text-sm font-semibold ${
+                      isDarkMode ? "text-blue-300" : "text-blue-700"
+                    }`}
+                  >
+                    {t("recipe.labels.modifiers", "Modifiers")}
+                  </div>
+                  <div
+                    className={`${
+                      isDarkMode
+                        ? "bg-blue-900/20 border-blue-400/30"
+                        : "bg-blue-50 border-blue-200"
+                    } border rounded-md p-1 text-xs`}
+                  >
+                    {(() => {
+                      const diet = new Set(taxonomy.diets);
+                      const txt = ingredients
+                        .map((r) => `${r.qty} ${r.unit} ${r.item}`)
+                        .join(" ")
+                        .toLowerCase();
+                      const meatRe =
+                        /(beef|pork|chicken|lamb|fish|shrimp|gelatin)/;
+                      const issues: string[] = [];
+                      const dir = (directions || "").toLowerCase();
+                      const tempMatch =
+                        dir.match(
+                          /(\d{2,3})\s*(?:°\s*)?(?:f|fahrenheit|degf)/i,
+                        ) || dir.match(/(\d{2,3})\s*degrees?\s*f/i);
+                      const cookT = String(cookTemp || "").match(
+                        /\d{2,3}/,
+                      )?.[0];
+                      if (tempMatch && cookT && tempMatch[1] !== cookT)
+                        issues.push(
+                          `Cook temp mismatch: directions ${tempMatch[1]}F vs field ${cookT}F`,
+                        );
+                      if (
+                        (diet.has("vegetarian") || diet.has("vegan")) &&
+                        meatRe.test(txt)
+                      )
+                        issues.push(
+                          "Selected diet conflicts with ingredients.",
+                        );
+                      return issues.length ? (
+                        <div className="mb-1.5 text-red-600">
+                          {issues.map((s, i) => (
+                            <div key={i}>{s}</div>
+                          ))}
+                        </div>
+                      ) : null;
+                    })()}
+                    <div className="grid grid-cols-8 gap-0.5">
+                      {taxonomy.cuisine && (
+                        <div className="col-span-2">
+                          <div className="font-semibold">
+                            {t("recipe.labels.cuisineLabel", "Cuisine")}
+                          </div>
+                          <div>{taxonomy.cuisine}</div>
+                        </div>
+                      )}
+                      {taxonomy.difficulty && (
+                        <div className="col-span-2">
+                          <div className="font-semibold">
+                            {t("recipe.labels.difficultyLabel", "Difficulty")}
+                          </div>
+                          <div>{taxonomy.difficulty}</div>
+                        </div>
+                      )}
+                      {taxonomy.mealPeriod && (
+                        <div className="col-span-2">
+                          <div className="font-semibold">
+                            {t("recipe.labels.mealLabel", "Meal")}
+                          </div>
+                          <div>{taxonomy.mealPeriod}</div>
+                        </div>
+                      )}
+                      {taxonomy.serviceStyle && (
+                        <div className="col-span-2">
+                          <div className="font-semibold">
+                            {t("recipe.labels.serviceLabel", "Service")}
+                          </div>
+                          <div>{taxonomy.serviceStyle}</div>
+                        </div>
+                      )}
+                      {taxonomy.course.length > 0 && (
+                        <div className="col-span-4">
+                          <div className="font-semibold">
+                            {t("recipe.labels.courseLabel", "Course")}
+                          </div>
+                          <div className="flex flex-wrap gap-0.5">
+                            {[...taxonomy.course].sort().map((v) => (
+                              <span
+                                key={v}
+                                className="rounded border px-1 py-0.5"
+                              >
+                                {v}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {taxonomy.pastry.length > 0 && (
+                        <div className="col-span-4">
+                          <div className="font-semibold">
+                            {t("recipe.labels.pastryLabel", "Pastry")}
+                          </div>
+                          <div className="flex flex-wrap gap-0.5">
+                            {[...taxonomy.pastry].sort().map((v) => (
+                              <span
+                                key={v}
+                                className="rounded border px-1 py-0.5"
+                              >
+                                {v}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {taxonomy.technique.length > 0 && (
+                        <div className="col-span-4">
+                          <div className="font-semibold">
+                            {t("recipe.labels.techniqueLabel", "Technique")}
+                          </div>
+                          <div className="flex flex-wrap gap-0.5">
+                            {[...taxonomy.technique].sort().map((v) => (
+                              <span
+                                key={v}
+                                className="rounded border px-1 py-0.5"
+                              >
+                                {v}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {taxonomy.components.length > 0 && (
+                        <div className="col-span-4">
+                          <div className="font-semibold">
+                            {t("recipe.labels.componentsLabel", "Components")}
+                          </div>
+                          <div className="flex flex-wrap gap-0.5">
+                            {[...taxonomy.components].sort().map((v) => (
+                              <span
+                                key={v}
+                                className="rounded border px-1 py-0.5"
+                              >
+                                {v}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {taxonomy.equipment.length > 0 && (
+                        <div className="col-span-4">
+                          <div className="font-semibold">Equipment</div>
+                          <div className="flex flex-wrap gap-0.5">
+                            {[...taxonomy.equipment].sort().map((v) => (
+                              <span
+                                key={v}
+                                className="rounded border px-1 py-0.5"
+                              >
+                                {v}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {taxonomy.diets.length > 0 && (
+                        <div className="col-span-4">
+                          <div className="font-semibold">Diets</div>
+                          <div className="flex flex-wrap gap-0.5">
+                            {[...taxonomy.diets].sort().map((v) => (
+                              <span
+                                key={v}
+                                className="rounded border px-1 py-0.5"
+                              >
+                                {v}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
               <div className="flex w-full flex-col gap-3 sm:w-72 lg:w-80 xl:flex-shrink-0">
                 <div
@@ -3261,7 +3452,7 @@ const RecipeInputPage = () => {
                   "⅞": "7/8",
                 };
                 s = s.replace(
-                  /[��½¾⅐⅑⅒⅓⅔⅕⅖⅗��⅙⅚⅛⅜⅝⅞]/g,
+                  /[��½¾⅐⅑��⅓⅔⅕⅖⅗��⅙⅚⅛⅜⅝⅞]/g,
                   (ch) => fracMap[ch] || ch,
                 );
                 const m = s.match(
