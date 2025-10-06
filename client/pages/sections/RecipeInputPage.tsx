@@ -2348,7 +2348,21 @@ const RecipeInputPage = () => {
                     </div>
 
                     <div className="col-span-3 flex flex-col gap-1">
-                      <span className={infoLabelClass}>YIELD</span>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className={infoLabelClass}>YIELD</span>
+                        <button
+                          type="button"
+                          title={t("recipe.tools.yield", "Yield Lab")}
+                          className={`rounded-lg border px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.22em] ${
+                            isDarkMode
+                              ? "border-cyan-400/50 text-cyan-200"
+                              : "border-slate-400 text-slate-700"
+                          }`}
+                          onClick={() => setYieldOpen(true)}
+                        >
+                          {t("recipe.tools.yield", "Yield Lab")}
+                        </button>
+                      </div>
                       <div className="flex flex-wrap items-center gap-1">
                         <input
                           type="number"
@@ -2368,18 +2382,6 @@ const RecipeInputPage = () => {
                           }}
                           className={`${infoInputClass} w-14 flex-1 text-center uppercase`}
                         />
-                        <button
-                          type="button"
-                          title={t("recipe.tools.yield", "Yield Lab")}
-                          className={`rounded-lg border px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.22em] ${
-                            isDarkMode
-                              ? "border-cyan-400/50 text-cyan-200"
-                              : "border-slate-400 text-slate-700"
-                          }`}
-                          onClick={() => setYieldOpen(true)}
-                        >
-                          {t("recipe.tools.yield", "Yield Lab")}
-                        </button>
                       </div>
                     </div>
 
