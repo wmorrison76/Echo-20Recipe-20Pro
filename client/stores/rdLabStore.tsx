@@ -100,6 +100,18 @@ const experimentsSeed: LabExperiment[] = [
       "Gas chromatograph sniff port",
     ],
     launchWindow: "Tasting menu wk 9",
+    textureObjectives: [
+      "Custard wobble stays within 0.8–1.3 Hz band",
+      "Cold-smoke lacquer without visible weeping after 24h",
+    ],
+    flavorConstellations: [
+      "Smoked koji custard × maple lacto brine × spruce tip garnish",
+      "Fermented cream backbone balanced with buckwheat cacao crunch",
+    ],
+    futureFoodAngles: [
+      "Valorize koji whey as a dessert texture builder",
+      "Route smoker waste heat into low-carbon dessert flights",
+    ],
   },
   {
     id: "exp-carbon-02",
