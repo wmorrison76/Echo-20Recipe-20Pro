@@ -1,6 +1,6 @@
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useCallback, useMemo, useState } from "react";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useCallback, useMemo, useState } from "react";
 
 import { textureAtlas } from "@/data/textureReference";
 import { flavorConstellationLibrary, futureFoodDrivers } from "@/data/flavorMatrix";
