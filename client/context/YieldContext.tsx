@@ -8,6 +8,10 @@ import {
   extractIngredientMetadata,
   formatYieldPercent,
 } from "@/lib/yield-calculations";
+import type {
+  DemandSample,
+  ProcurementPlan,
+} from "@/lib/predictive-procurement";
 
 export type ChefYieldRecord = {
   id: string;
@@ -19,6 +23,9 @@ export type ChefYieldRecord = {
   prepTokens: string[];
   method: string;
   methodKey: string;
+  itemType: "ingredient" | "readyMade";
+  readyMadeId?: string;
+  readyMadeName?: string;
   tester?: string;
   testDate?: string;
   code?: string;
@@ -27,6 +34,16 @@ export type ChefYieldRecord = {
   inputUnit: string;
   outputQty: number;
   outputUnit: string;
+  outputPortions?: number;
+  portionSize?: number;
+  portionUnit?: string;
+  batchSize?: number;
+  batchUnit?: string;
+  forecastPortions?: number;
+  shrinkageBufferPercent?: number;
+  leadTimeDays?: number;
+  demandHistory?: DemandSample[];
+  procurementPlan?: ProcurementPlan | null;
   yieldPercent: number | null;
   recordedAt: number;
 };
@@ -44,6 +61,19 @@ type ChefYieldInput = {
   outputQty: number;
   outputUnit: string;
   yieldPercent?: number | null;
+  itemType?: "ingredient" | "readyMade";
+  readyMadeId?: string;
+  readyMadeName?: string;
+  outputPortions?: number;
+  portionSize?: number;
+  portionUnit?: string;
+  batchSize?: number;
+  batchUnit?: string;
+  forecastPortions?: number;
+  shrinkageBufferPercent?: number;
+  leadTimeDays?: number;
+  demandHistory?: DemandSample[];
+  procurementPlan?: ProcurementPlan | null;
 };
 
 type YieldQuery = {
@@ -87,6 +117,26 @@ function readFromStorage(): ChefYieldRecord[] {
     return parsed
       .map((entry) => ({
         ...entry,
+        itemType: entry.itemType === "readyMade" ? "readyMade" : "ingredient",
+        readyMadeId: entry.readyMadeId ?? undefined,
+        readyMadeName: entry.readyMadeName ?? undefined,
+        outputPortions: toNumberOrUndefined(entry.outputPortions),
+        portionSize: toNumberOrUndefined(entry.portionSize),
+        portionUnit: typeof entry.portionUnit === "string" ? entry.portionUnit : undefined,
+        batchSize: toNumberOrUndefined(entry.batchSize),
+        batchUnit: typeof entry.batchUnit === "string" ? entry.batchUnit : undefined,
+        forecastPortions: toNumberOrUndefined(entry.forecastPortions),
+        shrinkageBufferPercent: toNumberOrUndefined(entry.shrinkageBufferPercent),
+        leadTimeDays: toNumberOrUndefined(entry.leadTimeDays),
+        demandHistory: Array.isArray(entry.demandHistory)
+          ? entry.demandHistory
+              .map((sample: DemandSample) => ({
+                date: String(sample.date),
+                portions: Number(sample.portions) || 0,
+              }))
+              .filter((sample: DemandSample) => sample.date.length >= 8)
+          : undefined,
+        procurementPlan: entry.procurementPlan ?? null,
         recordedAt: Number(entry.recordedAt ?? Date.now()),
         yieldPercent: clampPercent(entry.yieldPercent),
       }))
@@ -95,6 +145,12 @@ function readFromStorage(): ChefYieldRecord[] {
     console.warn("Failed to read yield records", error);
     return [];
   }
+}
+
+function toNumberOrUndefined(value: unknown): number | undefined {
+  if (value == null) return undefined;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
 }
 
 function writeToStorage(records: ChefYieldRecord[]) {
@@ -136,6 +192,12 @@ export function YieldProvider({ children }: { children: React.ReactNode }) {
     const methodKey = createMethodKey(method);
     const prepKey = createPrepKey(prepDescription);
     const ingredientKey = createIngredientKey(ingredientName);
+    const itemType: "ingredient" | "readyMade" =
+      input.itemType === "readyMade" ? "readyMade" : "ingredient";
+    const readyMadeName =
+      itemType === "readyMade"
+        ? input.readyMadeName?.trim() || ingredientName
+        : undefined;
     const computedPercent =
       input.yieldPercent != null
         ? clampPercent(input.yieldPercent)
@@ -156,6 +218,9 @@ export function YieldProvider({ children }: { children: React.ReactNode }) {
       prepTokens,
       method,
       methodKey,
+      itemType,
+      readyMadeId: input.readyMadeId?.trim() || undefined,
+      readyMadeName,
       tester: input.tester?.trim() || undefined,
       testDate: input.testDate?.trim() || undefined,
       code: input.code?.trim() || undefined,
@@ -164,6 +229,16 @@ export function YieldProvider({ children }: { children: React.ReactNode }) {
       inputUnit: input.inputUnit.trim(),
       outputQty: Number(input.outputQty) || 0,
       outputUnit: input.outputUnit.trim(),
+      outputPortions: toNumberOrUndefined(input.outputPortions),
+      portionSize: toNumberOrUndefined(input.portionSize),
+      portionUnit: input.portionUnit?.trim() || undefined,
+      batchSize: toNumberOrUndefined(input.batchSize),
+      batchUnit: input.batchUnit?.trim() || undefined,
+      forecastPortions: toNumberOrUndefined(input.forecastPortions),
+      shrinkageBufferPercent: toNumberOrUndefined(input.shrinkageBufferPercent),
+      leadTimeDays: toNumberOrUndefined(input.leadTimeDays),
+      demandHistory: input.demandHistory,
+      procurementPlan: input.procurementPlan ?? null,
       yieldPercent: computedPercent,
       recordedAt: Date.now(),
     };
