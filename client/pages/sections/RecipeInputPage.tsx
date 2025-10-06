@@ -80,6 +80,32 @@ import {
 import { useSupplierQuotes } from "@/hooks/use-supplier-quotes";
 import type { SupplierQuote } from "@/lib/supplier-pricing";
 
+const DEFAULT_RND_LAYOUT: [number, number, number] = [32, 36, 32];
+const MIN_RND_LAYOUT: [number, number, number] = [20, 26, 20];
+
+const sanitizeRndLayout = (candidate: unknown): [number, number, number] => {
+  if (!Array.isArray(candidate) || candidate.length !== 3) {
+    return DEFAULT_RND_LAYOUT;
+  }
+
+  const sanitized = candidate.map((value, index) => {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) {
+      return DEFAULT_RND_LAYOUT[index];
+    }
+    return Math.max(MIN_RND_LAYOUT[index], numeric);
+  }) as [number, number, number];
+
+  const minimumTotal = MIN_RND_LAYOUT.reduce((total, value) => total + value, 0);
+  const sum = sanitized.reduce((total, value) => total + value, 0);
+
+  if (sum <= minimumTotal) {
+    return DEFAULT_RND_LAYOUT;
+  }
+
+  return sanitized;
+};
+
 const normalizeString = (value: unknown): string =>
   typeof value === "string" ? value : value == null ? "" : String(value);
 
