@@ -213,7 +213,7 @@ export function TeamWorkflowPanel({ className, ingredients, onCaptureVersion }: 
                           <Button
                             type="button"
                             variant="outline"
-                            size="xs"
+                            size="sm"
                             onClick={() => collaboration.assignTask(task.id, task.assignee === "Riley" ? "Jordan" : "Riley")}
                             className="h-7 px-2 text-[11px]"
                           >
@@ -307,8 +307,9 @@ export function TeamWorkflowPanel({ className, ingredients, onCaptureVersion }: 
                           <Button
                             type="button"
                             variant="outline"
-                            size="xs"
+                            size="sm"
                             onClick={() => collaboration.resolveFeedbackThread(thread.id)}
+                            className="h-7 px-2 text-[11px]"
                           >
                             Resolve
                           </Button>
