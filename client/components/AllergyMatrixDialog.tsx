@@ -105,21 +105,36 @@ function buildMatrixHtml(
   labels: (typeof matrixLabels)[LanguageCode],
   languageName: string,
 ) {
-  const headerCols = recipes
-    .map((recipe) => `<th>${recipe.recipe.title ? recipe.recipe.title : labels.recipe}</th>`)
-    .join("");
-  const rows = allergens
-    .map((allergen) => {
-      const cells = recipes
+  const hasAllergens = allergens.length > 0;
+  const headerCols = hasAllergens
+    ? recipes
+        .map((recipe) => `<th>${recipe.recipe.title ? recipe.recipe.title : labels.recipe}</th>`)
+        .join("")
+    : "";
+  const bodyRows = hasAllergens
+    ? allergens
+        .map((allergen) => {
+          const cells = recipes
+            .map((entry) => {
+              const set = new Set(extractRecipeAllergens(entry).map((item) => item.toLowerCase()));
+              const has = set.has(allergen.toLowerCase());
+              return `<td>${has ? labels.present : labels.absent}</td>`;
+            })
+            .join("");
+          return `<tr><th>${allergen}</th>${cells}</tr>`;
+        })
+        .join("")
+    : recipes
         .map((entry) => {
-          const set = new Set(extractRecipeAllergens(entry).map((item) => item.toLowerCase()));
-          const has = set.has(allergen.toLowerCase());
-          return `<td>${has ? labels.present : labels.absent}</td>`;
+          const title = entry.recipe.title || labels.recipe;
+          return `<tr><th>${title}</th><td>${labels.noAllergensRow}</td></tr>`;
         })
         .join("");
-      return `<tr><th>${allergen}</th>${cells}</tr>`;
-    })
-    .join("");
+
+  const headerRow = hasAllergens
+    ? `<tr><th>${labels.allergen}</th>${headerCols}</tr>`
+    : `<tr><th>${labels.recipe}</th><th>${labels.allergen}</th></tr>`;
+
   return `<!DOCTYPE html>
 <html lang="${language}">
 <head>
@@ -140,10 +155,10 @@ function buildMatrixHtml(
   <p>${labels.subtitle} — ${languageName}</p>
   <table>
     <thead>
-      <tr><th>${labels.allergen}</th>${headerCols}</tr>
+      ${headerRow}
     </thead>
     <tbody>
-      ${rows}
+      ${bodyRows}
     </tbody>
   </table>
 </body>
