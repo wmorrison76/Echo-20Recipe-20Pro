@@ -16,6 +16,9 @@ export type LabExperiment = {
   testPlan: string[];
   equipment: string[];
   launchWindow: string;
+  textureObjectives: string[];
+  flavorConstellations: string[];
+  futureFoodAngles: string[];
 };
 
 export type LabTask = {
