@@ -2650,252 +2650,67 @@ const RecipeInputPage = () => {
               </div>
             </div>
 
-            <div className="mt-1 flex flex-col gap-3">
-              <div className="w-full">
-                <div
-                  className={`w-full border rounded-xl p-2.5 shadow-lg ${isDarkMode ? "bg-blue-900/20 border-blue-400/30 shadow-blue-400/20" : "bg-blue-50 border-blue-200 shadow-gray-300/60"}`}
+            <div className="mt-1 space-y-3">
+              <IngredientsGrid
+                isDarkMode={isDarkMode}
+                ingredients={ingredients}
+                currencySymbol={getCurrencySymbol(currentCurrency)}
+                totalCost={totalIngredientCost}
+                theoreticalVolumeLabel={formatMl(theoreticalVolumeMl)}
+                activeCount={activeIngredientCount}
+                averageYield={averageIngredientYield}
+                methodOptions={knownPrepMethods}
+                methodOptionsId={methodOptionsId}
+                onFieldChange={handleIngredientFieldChange}
+                onFieldBlur={handleIngredientBlur}
+                onAddRow={addIngredientRow}
+                onRemoveRow={removeIngredientRow}
+                onReorderRow={reorderIngredientRows}
+                onGridKeyDown={onGridKeyDown}
+                onAddSubRecipe={() => setIsSubRecipePickerOpen(true)}
+                onAddDivider={addDividerRow}
+              />
+
+              <SubRecipePicker
+                open={isSubRecipePickerOpen}
+                onOpenChange={setIsSubRecipePickerOpen}
+                options={subRecipeOptions}
+                onConfirm={insertSubRecipeRows}
+                isDarkMode={isDarkMode}
+                formatCurrency={formatRecipeCost}
+              />
+
+              <Dialog open={yieldOpen} onOpenChange={setYieldOpen}>
+                <DialogContent
+                  className={`w-full max-w-[min(960px,95vw)] border p-6 transition-shadow backdrop-blur-xl ${
+                    isDarkMode
+                      ? "border-cyan-400/40 bg-slate-950/92 shadow-[0_45px_140px_-25px_rgba(34,211,238,0.65)]"
+                      : "border-slate-200/80 bg-white/97 shadow-[0_45px_140px_-25px_rgba(79,70,229,0.35)]"
+                  }`}
                 >
-                  <div
-                    className={`mb-1.5 text-sm font-semibold ${isDarkMode ? "text-blue-400" : "text-blue-700"}`}
-                  >
-                    {t("recipe.labels.modifiers", "Modifiers")}
-                  </div>
-                  <div
-                    className={`${isDarkMode ? "bg-blue-900/20 border-blue-400/30" : "bg-blue-50 border-blue-200"} border rounded-lg p-1 text-xs`}
-                  >
-                    {(() => {
-                      const diet = new Set(taxonomy.diets);
-                      const txt = ingredients
-                        .map((r) => `${r.qty} ${r.unit} ${r.item}`)
-                        .join(" ")
-                        .toLowerCase();
-                      const meatRe =
-                        /(beef|pork|chicken|lamb|fish|shrimp|gelatin)/;
-                      const issues: string[] = [];
-                      const dir = (directions || "").toLowerCase();
-                      const tempMatch =
-                        dir.match(
-                          /(\d{2,3})\s*(?:°\s*)?(?:f|fahrenheit|degf)/i,
-                        ) || dir.match(/(\d{2,3})\s*degrees?\s*f/i);
-                      const cookT = String(cookTemp || "").match(
-                        /\d{2,3}/,
-                      )?.[0];
-                      if (tempMatch && cookT && tempMatch[1] !== cookT)
-                        issues.push(
-                          `Cook temp mismatch: directions ${tempMatch[1]}F vs field ${cookT}F`,
-                        );
-                      if (
-                        (diet.has("vegetarian") || diet.has("vegan")) &&
-                        meatRe.test(txt)
-                      )
-                        issues.push(
-                          "Selected diet conflicts with ingredients.",
-                        );
-                      return issues.length ? (
-                        <div className="mb-1.5 text-red-600">
-                          {issues.map((s, i) => (
-                            <div key={i}>{s}</div>
-                          ))}
-                        </div>
-                      ) : null;
-                    })()}
-                    <div className="grid grid-cols-8 gap-0.5">
-                      {taxonomy.cuisine && (
-                        <div className="col-span-2">
-                          <div className="font-semibold">
-                            {t("recipe.labels.cuisineLabel", "Cuisine")}
-                          </div>
-                          <div>{taxonomy.cuisine}</div>
-                        </div>
-                      )}
-                      {taxonomy.difficulty && (
-                        <div className="col-span-2">
-                          <div className="font-semibold">
-                            {t("recipe.labels.difficultyLabel", "Difficulty")}
-                          </div>
-                          <div>{taxonomy.difficulty}</div>
-                        </div>
-                      )}
-                      {taxonomy.mealPeriod && (
-                        <div className="col-span-2">
-                          <div className="font-semibold">
-                            {t("recipe.labels.mealLabel", "Meal")}
-                          </div>
-                          <div>{taxonomy.mealPeriod}</div>
-                        </div>
-                      )}
-                      {taxonomy.serviceStyle && (
-                        <div className="col-span-2">
-                          <div className="font-semibold">
-                            {t("recipe.labels.serviceLabel", "Service")}
-                          </div>
-                          <div>{taxonomy.serviceStyle}</div>
-                        </div>
-                      )}
-                      {taxonomy.course.length > 0 && (
-                        <div className="col-span-4">
-                          <div className="font-semibold">
-                            {t("recipe.labels.courseLabel", "Course")}
-                          </div>
-                          <div className="flex flex-wrap gap-0.5">
-                            {[...taxonomy.course].sort().map((v) => (
-                              <span
-                                key={v}
-                                className="px-1 py-0.5 rounded border"
-                              >
-                                {v}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      {taxonomy.pastry.length > 0 && (
-                        <div className="col-span-4">
-                          <div className="font-semibold">
-                            {t("recipe.labels.pastryLabel", "Pastry")}
-                          </div>
-                          <div className="flex flex-wrap gap-0.5">
-                            {[...taxonomy.pastry].sort().map((v) => (
-                              <span
-                                key={v}
-                                className="px-1 py-0.5 rounded border"
-                              >
-                                {v}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      {taxonomy.technique.length > 0 && (
-                        <div className="col-span-4">
-                          <div className="font-semibold">
-                            {t("recipe.labels.techniqueLabel", "Technique")}
-                          </div>
-                          <div className="flex flex-wrap gap-0.5">
-                            {[...taxonomy.technique].sort().map((v) => (
-                              <span
-                                key={v}
-                                className="px-1 py-0.5 rounded border"
-                              >
-                                {v}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      {taxonomy.components.length > 0 && (
-                        <div className="col-span-4">
-                          <div className="font-semibold">
-                            {t("recipe.labels.componentsLabel", "Components")}
-                          </div>
-                          <div className="flex flex-wrap gap-0.5">
-                            {[...taxonomy.components].sort().map((v) => (
-                              <span
-                                key={v}
-                                className="px-1 py-0.5 rounded border"
-                              >
-                                {v}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      {taxonomy.equipment.length > 0 && (
-                        <div className="col-span-4">
-                          <div className="font-semibold">Equipment</div>
-                          <div className="flex flex-wrap gap-0.5">
-                            {[...taxonomy.equipment].sort().map((v) => (
-                              <span
-                                key={v}
-                                className="px-1 py-0.5 rounded border"
-                              >
-                                {v}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      {taxonomy.diets.length > 0 && (
-                        <div className="col-span-4">
-                          <div className="font-semibold">Diets</div>
-                          <div className="flex flex-wrap gap-0.5">
-                            {[...taxonomy.diets].sort().map((v) => (
-                              <span
-                                key={v}
-                                className="px-1 py-0.5 rounded border"
-                              >
-                                {v}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="flex-1 min-w-[320px] flex flex-col space-y-4">
-                <IngredientsGrid
-                  isDarkMode={isDarkMode}
-                  ingredients={ingredients}
-                  currencySymbol={getCurrencySymbol(currentCurrency)}
-                  totalCost={totalIngredientCost}
-                  theoreticalVolumeLabel={formatMl(theoreticalVolumeMl)}
-                  activeCount={activeIngredientCount}
-                  averageYield={averageIngredientYield}
-                  methodOptions={knownPrepMethods}
-                  methodOptionsId={methodOptionsId}
-                  onFieldChange={handleIngredientFieldChange}
-                  onFieldBlur={handleIngredientBlur}
-                  onAddRow={addIngredientRow}
-                  onRemoveRow={removeIngredientRow}
-                  onReorderRow={reorderIngredientRows}
-                  onGridKeyDown={onGridKeyDown}
-                  onAddSubRecipe={() => setIsSubRecipePickerOpen(true)}
-                  onAddDivider={addDividerRow}
-                />
-
-                <SubRecipePicker
-                  open={isSubRecipePickerOpen}
-                  onOpenChange={setIsSubRecipePickerOpen}
-                  options={subRecipeOptions}
-                  onConfirm={insertSubRecipeRows}
-                  isDarkMode={isDarkMode}
-                  formatCurrency={formatRecipeCost}
-                />
-
-                <Dialog open={yieldOpen} onOpenChange={setYieldOpen}>
-                  <DialogContent
-                    className={`w-full max-w-[min(960px,95vw)] border p-6 transition-shadow backdrop-blur-xl ${
-                      isDarkMode
-                        ? "border-cyan-400/40 bg-slate-950/92 shadow-[0_45px_140px_-25px_rgba(34,211,238,0.65)]"
-                        : "border-slate-200/80 bg-white/97 shadow-[0_45px_140px_-25px_rgba(79,70,229,0.35)]"
-                    }`}
-                  >
-                    <DialogHeader>
-                      <DialogTitle>Yield Lab</DialogTitle>
-                    </DialogHeader>
-                    <YieldLabForm
-                      defaultInputQty={yieldQty}
-                      defaultInputUnit={yieldUnit}
-                      recipeName={recipeName}
-                      defaultMethod={selectedPrepMethod[0] || ""}
-                      methodOptions={knownPrepMethods}
-                      item={ingredients.find((row) => row.type !== "divider" && row.item.trim())?.item}
-                      onClose={() => setYieldOpen(false)}
-                    />
-                  </DialogContent>
-                </Dialog>
-                <RDLabsPortal
-                  isOpen={isRndLabsOpen}
-                  onClose={() => setIsRndLabsOpen(false)}
-                  isDarkMode={isDarkMode}
-                  layout={rndLayout}
-                  onLayoutChange={handleRndLayoutChange}
-                  applyLayout={(nextLayout) => setRndLayout(nextLayout)}
-                  defaultLayout={DEFAULT_RND_LAYOUT}
-                />
-              </div>
+                  <DialogHeader>
+                    <DialogTitle>Yield Lab</DialogTitle>
+                  </DialogHeader>
+                  <YieldLabForm
+                    defaultInputQty={yieldQty}
+                    defaultInputUnit={yieldUnit}
+                    recipeName={recipeName}
+                    defaultMethod={selectedPrepMethod[0] || ""}
+                    methodOptions={knownPrepMethods}
+                    item={ingredients.find((row) => row.type !== "divider" && row.item.trim())?.item}
+                    onClose={() => setYieldOpen(false)}
+                  />
+                </DialogContent>
+              </Dialog>
+              <RDLabsPortal
+                isOpen={isRndLabsOpen}
+                onClose={() => setIsRndLabsOpen(false)}
+                isDarkMode={isDarkMode}
+                layout={rndLayout}
+                onLayoutChange={handleRndLayoutChange}
+                applyLayout={(nextLayout) => setRndLayout(nextLayout)}
+                defaultLayout={DEFAULT_RND_LAYOUT}
+              />
             </div>
 
             <div
