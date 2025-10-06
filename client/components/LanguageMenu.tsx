@@ -70,7 +70,7 @@ export default function LanguageMenu({
         >
           <>
             <span className="sr-only">{`${label} (${active.label})`}</span>
-            <span className="text-3xl leading-none" aria-hidden>
+            <span className="text-2xl leading-none" aria-hidden>
               {active.flag}
             </span>
           </>
