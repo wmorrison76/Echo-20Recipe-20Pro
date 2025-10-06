@@ -3816,7 +3816,7 @@ function RDLabsPortal({
                       Save and Close
                     </button>
                     {hintVisible ? (
-                      <div className="pointer-events-none absolute right-full top-1/2 mr-3 -translate-y-1/2 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-cyan-100 shadow-[0_12px_30px_-18px_rgba(56,189,248,0.65)] dark:border-cyan-500/30 dark:bg-cyan-500/10">
+                      <div className="pointer-events-none absolute right-full top-1/2 mr-3 -translate-y-1/2 rounded-lg border border-white/20 bg-white/10 px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.3em] text-cyan-100 shadow-[0_12px_30px_-18px_rgba(56,189,248,0.65)] dark:border-cyan-500/30 dark:bg-cyan-500/10">
                         Saving will lock in the last state.
                       </div>
                     ) : null}
