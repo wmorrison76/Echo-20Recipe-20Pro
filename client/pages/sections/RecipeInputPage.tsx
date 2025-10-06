@@ -2333,7 +2333,7 @@ const RecipeInputPage = () => {
 
                     <div className="col-span-4 flex flex-col gap-0.5 md:col-span-4">
                       <span className={infoLabelClass}>{t("recipe.labels.portion", "PORTION")}</span>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center justify-center gap-1">
                         <input
                           type="number"
                           value={portionCount}
