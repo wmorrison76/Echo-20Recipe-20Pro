@@ -395,12 +395,12 @@ export default function ServerNotesSection() {
             <Card
               className={`${panelSurfaceClass} flex h-full flex-col lg:col-span-4 xl:col-span-4`}
             >
-              <CardHeader className="border-b border-white/70 px-5 py-4 dark:border-cyan-500/25">
-                <div className="flex flex-wrap items-center justify-between gap-3">
+              <CardHeader className="border-b border-white/70 px-4 py-3.5 dark:border-cyan-500/25">
+                <div className="flex flex-wrap items-center justify-between gap-2.5">
                   <div className="flex items-center gap-2">
                     <Badge
                       variant="outline"
-                      className="rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.35em] text-muted-foreground"
+                      className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.35em] text-muted-foreground"
                     >
                       Step 2
                     </Badge>
@@ -408,7 +408,7 @@ export default function ServerNotesSection() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="flex-1 space-y-4 px-5 pb-5 pt-4 lg:max-h-[calc(100vh-248px)] lg:overflow-y-auto">
+              <CardContent className="flex-1 space-y-3.5 px-4 pb-4 pt-3 lg:max-h-[calc(100vh-220px)] lg:overflow-y-auto">
                 <RecipeSelection
                   availableRecipes={recipes}
                   selectedRecipes={sortedSelected}
