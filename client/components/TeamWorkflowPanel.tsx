@@ -345,7 +345,7 @@ export function TeamWorkflowPanel({ className, ingredients, onCaptureVersion }: 
                       ))}
                     </div>
                     <div className="mt-3 space-y-2 border-t pt-3">
-                      <div className="grid gap-2 sm:grid-cols-[minmax(12rem,0.6fr),1fr]">
+                      <div className="grid grid-cols-1 gap-2 md:grid-cols-[minmax(12rem,0.6fr),1fr]">
                         <Input
                           value={replyDraft.author}
                           onChange={(event) =>
