@@ -1783,43 +1783,31 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           }
         }
 
-        // Fallback: only import if the whole document clearly looks like a single recipe
+        // Fallback: treat the entire document as a single recipe if it scores well
         const text = pageTexts.join("\n").split(/\n/).map(normLine).join("\n");
-        const hasRecipeMarkers =
-          /\bingredients?\b/i.test(text) &&
-          /\b(instructions|directions|method|steps)\b/i.test(text);
-        if (hasRecipeMarkers) {
-          const lines = text.split(/\n/).map(normLine).filter(Boolean);
-          const lower = lines.map((l) => l.toLowerCase());
-          const find = (labels: string[]) =>
-            lower.findIndex((l) => labels.includes(l));
-          const ingIdx = find(["ingredients", "ingredient"]);
-          const instIdx = find([
-            "instructions",
-            "directions",
-            "method",
-            "steps",
-          ]);
-          const getRange = (s: number, e: number) =>
-            lines.slice(s + 1, e > s ? e : undefined).filter(Boolean);
-          const ingredients =
-            ingIdx >= 0
-              ? getRange(ingIdx, instIdx >= 0 ? instIdx : lines.length)
-              : undefined;
-          const instructions =
-            instIdx >= 0 ? getRange(instIdx, lines.length) : undefined;
-          const meta = parseMeta(text);
-          const title = lines[0] || f.name.replace(/\.pdf$/i, "");
-          collected.push({
-            id: uid(),
-            createdAt: Date.now(),
-            title,
+        const structured = deriveStructuredRecipe(text);
+        if (structured) {
+          const {
+            title: derivedTitle,
             ingredients,
             instructions,
-            sourceFile: f.name,
-            extra: { ...meta, source: "pdf-single" },
-          });
-          titles.push(title);
+            meta,
+          } = structured;
+          const ingredientCount = ingredients?.length ?? 0;
+          const instructionCount = instructions?.length ?? 0;
+          if (ingredientCount >= 2 || instructionCount >= 2) {
+            const title = derivedTitle || f.name.replace(/\.pdf$/i, "");
+            collected.push({
+              id: uid(),
+              createdAt: Date.now(),
+              title,
+              ingredients,
+              instructions,
+              sourceFile: f.name,
+              extra: { ...meta, source: "pdf-single" },
+            });
+            titles.push(title);
+          }
         }
       } catch (e: any) {
         errors.push({
