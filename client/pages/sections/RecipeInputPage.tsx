@@ -2409,7 +2409,7 @@ const RecipeInputPage = () => {
                   data-echo-key="section:add:photos"
                 >
                   <div
-                    className={`mb-2 text-xs font-semibold uppercase tracking-[0.22em] ${
+                    className={`mb-1.5 text-xs font-semibold uppercase tracking-[0.22em] ${
                       isDarkMode ? "text-cyan-300" : "text-gray-700"
                     }`}
                   >
