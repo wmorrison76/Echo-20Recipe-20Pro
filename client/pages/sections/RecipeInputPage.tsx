@@ -2762,6 +2762,7 @@ const RecipeInputPage = () => {
                           className="flex min-h-0"
                         >
                           <section
+                            data-chalk-label="FORMULATE"
                             className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[1]}`}
                           >
                             <header className={rndPanelHeadingClasses}>
