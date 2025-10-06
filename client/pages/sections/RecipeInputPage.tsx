@@ -2753,7 +2753,7 @@ const RecipeInputPage = () => {
                           </section>
                         </Panel>
                         <PanelResizeHandle className={rndHandleClasses}>
-                          <span className="pointer-events-none h-10 w-0.5 rounded-full bg-slate-500/60 dark:bg-cyan-200/80" />
+                          <span className="pointer-events-none h-10 w-0.5 rounded-full bg-white/60 opacity-80 transition group-hover:bg-cyan-200/80" />
                         </PanelResizeHandle>
                         <Panel
                           minSize={26}
@@ -2780,7 +2780,7 @@ const RecipeInputPage = () => {
                           </section>
                         </Panel>
                         <PanelResizeHandle className={rndHandleClasses}>
-                          <span className="pointer-events-none h-10 w-0.5 rounded-full bg-slate-500/60 dark:bg-cyan-200/80" />
+                          <span className="pointer-events-none h-10 w-0.5 rounded-full bg-white/60 opacity-80 transition group-hover:bg-cyan-200/80" />
                         </PanelResizeHandle>
                         <Panel
                           minSize={20}
