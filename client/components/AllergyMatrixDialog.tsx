@@ -215,11 +215,11 @@ export function AllergyMatrixDialog({
             <DialogTitle>{labels.title}</DialogTitle>
             <DialogDescription>{labels.subtitle}</DialogDescription>
           </DialogHeader>
-          {allergens.length === 0 || sortedRecipes.length === 0 ? (
+          {sortedRecipes.length === 0 ? (
             <div className="py-12 text-center text-sm text-muted-foreground">
               {labels.noData}
             </div>
-          ) : (
+          ) : hasAllergens ? (
             <div className="overflow-auto">
               <table className="w-full min-w-[480px] border-collapse text-sm">
                 <thead>
@@ -266,12 +266,39 @@ export function AllergyMatrixDialog({
                 </tbody>
               </table>
             </div>
+          ) : (
+            <div className="overflow-auto">
+              <table className="w-full min-w-[420px] border-collapse text-sm">
+                <thead>
+                  <tr>
+                    <th className="sticky left-0 bg-background px-3 py-2 text-left font-semibold uppercase tracking-[0.18em]">
+                      {labels.recipe}
+                    </th>
+                    <th className="px-3 py-2 text-left font-semibold uppercase tracking-[0.18em]">
+                      {labels.allergen}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sortedRecipes.map((entry) => (
+                    <tr key={entry.recipe.id} className="border-t">
+                      <th className="sticky left-0 bg-background px-3 py-2 text-left font-medium">
+                        {entry.recipe.title}
+                      </th>
+                      <td className="px-3 py-2 text-sm italic text-muted-foreground">
+                        {labels.noAllergensRow}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
           <DialogFooter>
             <Button
               variant="outline"
               onClick={printMatrix}
-              disabled={!allergens.length || !sortedRecipes.length}
+              disabled={sortedRecipes.length === 0}
               className="flex items-center gap-2"
             >
               <Printer className="h-4 w-4" />
