@@ -2719,7 +2719,7 @@ const RecipeInputPage = () => {
                           minSize={20}
                           order={1}
                           defaultSize={rndLayout[0]}
-                          className="flex"
+                          className="flex min-h-0"
                         >
                           <section
                             className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[0]}`}
