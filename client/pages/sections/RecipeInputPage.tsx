@@ -2459,13 +2459,10 @@ const RecipeInputPage = () => {
               </div>
             </div>
 
-            <div className="flex items-start gap-3 mt-1">
-              <div
-                className="w-full flex flex-col space-y-4"
-                style={{ minHeight: "18rem" }}
-              >
+            <div className="mt-1 flex flex-wrap items-start gap-3">
+              <div className="flex w-full flex-col gap-3 lg:w-[280px] xl:w-[320px]">
                 <div
-                  className={`border rounded-xl p-3 h-full shadow-lg ${isDarkMode ? "bg-blue-900/20 border-blue-400/30 shadow-blue-400/20" : "bg-blue-50 border-blue-200 shadow-gray-300/60"}`}
+                  className={`border rounded-xl p-3 shadow-lg ${isDarkMode ? "bg-blue-900/20 border-blue-400/30 shadow-blue-400/20" : "bg-blue-50 border-blue-200 shadow-gray-300/60"}`}
                 >
                   <div
                     className={`font-semibold text-sm mb-2 ${isDarkMode ? "text-blue-400" : "text-blue-700"}`}
@@ -2645,7 +2642,8 @@ const RecipeInputPage = () => {
                     </div>
                   </div>
                 </div>
-
+              </div>
+              <div className="flex-1 min-w-[320px] flex flex-col space-y-4">
                 <IngredientsGrid
                   isDarkMode={isDarkMode}
                   ingredients={ingredients}
@@ -2707,7 +2705,6 @@ const RecipeInputPage = () => {
                   defaultLayout={DEFAULT_RND_LAYOUT}
                 />
               </div>
-
             </div>
 
             <div
