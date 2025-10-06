@@ -175,6 +175,7 @@ const RecipeInputPage = () => {
   const { t } = useTranslation();
   const { findBestMatch } = useYieldStore();
   const { setToolbar, resetToolbar } = usePageToolbar();
+  const collaboration = useCollaboration();
   const scaleRecipeRef = useRef<() => void>(() => {});
   const convertUnitsRef = useRef<() => void>(() => {});
   const cycleCurrencyRef = useRef<() => void>(() => {});
@@ -184,6 +185,8 @@ const RecipeInputPage = () => {
   const supplierQuotes = useSupplierQuotes(ingredients);
   const historyRef = useRef<any[]>([]);
   const futureRef = useRef<any[]>([]);
+  const autoSnapshotTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoSnapshotFingerprintRef = useRef<string>("");
   const [directions, setDirections] = useState("1. ");
   const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
   const { addRecipe, updateRecipe, addImages, recipes } = useAppData();
