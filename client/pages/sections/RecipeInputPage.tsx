@@ -2690,14 +2690,14 @@ const RecipeInputPage = () => {
 
               <Dialog open={isRndLabsOpen} onOpenChange={setIsRndLabsOpen}>
                 <DialogContent
-                  className={`chalkboard-labs relative z-[90] flex h-[85vh] w-full max-w-[min(1200px,95vw)] flex-col overflow-hidden border p-0 text-slate-100 shadow-[0_40px_120px_-60px_rgba(15,23,42,0.65)] ${
+                  className={`chalkboard-labs relative z-[90] flex h-[85vh] w-full max-w-[min(1200px,95vw)] flex-col overflow-hidden border bg-[#070d16]/95 p-0 text-slate-100 shadow-[0_40px_120px_-60px_rgba(15,23,42,0.65)] ${
                     isDarkMode
                       ? "border-cyan-500/25 text-cyan-100/90"
                       : "border-slate-700/35 text-slate-100"
                   }`}
                 >
                   <div className="relative z-10 flex h-full min-h-0 flex-col">
-                    <DialogHeader className="relative z-10 flex flex-row items-center justify-between border-b border-white/10 bg-black/25 px-6 py-4 backdrop-blur-sm">
+                    <DialogHeader className="relative z-10 flex flex-row items-center justify-between border-b border-white/10 bg-black/40 px-6 py-4 backdrop-blur-sm">
                       <div className="space-y-1">
                         <DialogTitle className="text-lg font-semibold uppercase tracking-[0.35em] text-cyan-100/90">
                           R&D Labs
@@ -2708,20 +2708,19 @@ const RecipeInputPage = () => {
                           <span className="chalk-breath">Future</span>
                         </div>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => setIsRndLabsOpen(false)}
-                        className="rounded-full border border-white/20 bg-white/5 p-2 text-cyan-100 transition hover:bg-white/10 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/70"
-                        aria-label="Close R&D Labs"
-                      >
-                        <X className="h-4 w-4" aria-hidden />
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setIsRndLabsOpen(false)}
+                          className="inline-flex h-9 items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-100 transition hover:border-white/40 hover:bg-white/15 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/70"
+                        >
+                          Close Lab
+                        </button>
+                      </div>
                     </DialogHeader>
-                    <div className="relative z-10 flex flex-1 min-h-0 flex-col gap-4 px-6 py-4">
-                      <p className={`text-sm ${accentMuted}`}>
-                        Drag the dividers to resize each workspace. Use these
-                        surfaces for experiments, documentation, or automation
-                        flows.
+                    <div className="relative z-10 flex flex-1 min-h-0 flex-col gap-4 px-6 pb-6 pt-5">
+                      <p className={`max-w-3xl text-sm leading-relaxed ${accentMuted}`}>
+                        Drag the dividers to resize each workspace. Use these surfaces for experiments, documentation, or automation flows. Each column saves its width so your layout reappears the next time you open the lab.
                       </p>
                       <PanelGroup
                         direction="horizontal"
@@ -2747,7 +2746,7 @@ const RecipeInputPage = () => {
                               Stage inspiration, competitive research, and
                               sourcing notes here.
                             </p>
-                            <div className="mt-4 flex-1 min-h-0 overflow-hidden">
+                            <div className="mt-4 flex-1 min-h-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-3 shadow-inner shadow-cyan-500/5">
                               <DiscoveryPanel />
                             </div>
                           </section>
@@ -2774,7 +2773,7 @@ const RecipeInputPage = () => {
                               Reserve this lane for formulations, live tests, or
                               shared prototypes.
                             </p>
-                            <div className="mt-4 flex-1 min-h-0 overflow-hidden">
+                            <div className="mt-4 flex-1 min-h-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-3 shadow-inner shadow-cyan-500/5">
                               <WorkbenchPanel />
                             </div>
                           </section>
@@ -2801,7 +2800,7 @@ const RecipeInputPage = () => {
                               Pin KPIs, AI summaries, or vendor comparisons for
                               rapid decisions.
                             </p>
-                            <div className="mt-4 flex-1 min-h-0 overflow-hidden">
+                            <div className="mt-4 flex-1 min-h-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-3 shadow-inner shadow-cyan-500/5">
                               <InsightsPanel />
                             </div>
                           </section>
