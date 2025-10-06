@@ -1063,7 +1063,6 @@ const RecipeInputPage = () => {
     setToolbar,
     resetToolbar,
     toolbarClass,
-    handleToggleTools,
     handleScaleClick,
     handleConvertUnitsClick,
     handleCycleCurrencyClick,
