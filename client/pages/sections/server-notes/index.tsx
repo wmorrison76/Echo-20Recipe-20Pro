@@ -321,24 +321,24 @@ export default function ServerNotesSection() {
             </Button>
           </header>
 
-          <div className={`${panelSurfaceClass} p-5 sm:p-6`}>
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground">
+          <div className={`${panelSurfaceClass} p-4 sm:p-5`}>
+            <div className="flex flex-wrap items-center justify-between gap-2.5">
+              <div className="leading-tight">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-muted-foreground">
                   Guided helper
                 </p>
-                <h2 className="text-lg font-semibold text-foreground">
+                <h2 className="text-base font-semibold text-foreground">
                   Walk me through creating a document
                 </h2>
               </div>
               <Badge
                 variant="secondary"
-                className="rounded-full px-3 py-1 text-xs uppercase tracking-[0.25em]"
+                className="rounded-full px-2.5 py-0.5 text-[11px] uppercase tracking-[0.25em]"
               >
                 Follow the steps
               </Badge>
             </div>
-            <div className="mt-4 grid gap-3.5 md:grid-cols-3">
+            <div className="mt-3 grid gap-3 md:grid-cols-3">
               {WALKTHROUGH_STEPS.map((step, index) => {
                 const Icon = step.icon;
                 return (
