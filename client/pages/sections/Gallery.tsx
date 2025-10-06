@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { GalleryLightbox } from "@/components/GalleryLightbox";
-import { FlipBook } from "@/components/FlipBook";
+import { LookBookShowcase } from "@/components/LookBookShowcase";
 import { Download } from "lucide-react";
 import { Star, Search, UploadCloud, Pencil, Trash } from "lucide-react";
 
@@ -695,7 +695,7 @@ export default function GallerySection() {
         className={lucccaMode ? "luccca-theme lightbox-overlay" : ""}
       />
 
-      <FlipBook
+      <LookBookShowcase
         open={openLookBook}
         onClose={() => setOpenLookBook(false)}
         title={lookbooks.find((b) => b.id === activeLookBookId)?.name}
@@ -703,7 +703,17 @@ export default function GallerySection() {
           lookbooks.find((b) => b.id === activeLookBookId)?.imageIds || []
         ).map((id) => {
           const img = images.find((i) => i.id === id);
-          return { id, src: img?.dataUrl || img?.blobUrl, name: img?.name };
+          const tags = img?.tags || [];
+          return {
+            id,
+            src: img?.dataUrl || img?.blobUrl,
+            name: img?.name,
+            tags,
+            description:
+              tags.length > 0
+                ? `Highlights ${tags.slice(0, 3).join(" · ")}${tags.length > 3 ? " +" : ""}`
+                : undefined,
+          };
         })}
         className={lucccaMode ? "luccca-theme" : ""}
       />
