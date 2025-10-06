@@ -1974,7 +1974,7 @@ const RecipeInputPage = () => {
   ): { qty?: string; unit?: string; item?: string; prep?: string } | null {
     if (!s) return null;
     const map: Record<string, string> = {
-      "¼": "1/4",
+      "��": "1/4",
       "½": "1/2",
       "¾": "3/4",
       "⅓": "1/3",
@@ -2797,7 +2797,15 @@ const RecipeInputPage = () => {
                     />
                   </DialogContent>
                 </Dialog>
-                {rndLabsOverlay}
+                <RDLabsPortal
+                  isOpen={isRndLabsOpen}
+                  onClose={() => setIsRndLabsOpen(false)}
+                  isDarkMode={isDarkMode}
+                  layout={rndLayout}
+                  onLayoutChange={handleRndLayoutChange}
+                  applyLayout={(nextLayout) => setRndLayout(nextLayout)}
+                  defaultLayout={DEFAULT_RND_LAYOUT}
+                />
               </div>
 
             </div>
