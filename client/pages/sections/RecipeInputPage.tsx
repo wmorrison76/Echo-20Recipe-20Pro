@@ -2174,7 +2174,7 @@ const RecipeInputPage = () => {
         data-echo-key="page:recipes:add"
       >
         <div className="pt-6 h-full overflow-y-auto">
-          <div className="w-full px-4 sm:px-6 space-y-6 pb-8">
+          <div className="w-full px-3 sm:px-4 space-y-4 pb-6">
             {/* Removed old hamburger toggle button */}
             <div
               className="flex flex-wrap items-start gap-3"
