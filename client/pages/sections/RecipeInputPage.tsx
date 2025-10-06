@@ -2460,7 +2460,7 @@ const RecipeInputPage = () => {
             </div>
 
             <div className="mt-1 flex flex-col gap-3">
-              <div className="flex w-full flex-col gap-3 lg:w-[280px] xl:w-[320px]">
+              <div className="w-full">
                 <div
                   className={`border rounded-xl p-3 shadow-lg ${isDarkMode ? "bg-blue-900/20 border-blue-400/30 shadow-blue-400/20" : "bg-blue-50 border-blue-200 shadow-gray-300/60"}`}
                 >
