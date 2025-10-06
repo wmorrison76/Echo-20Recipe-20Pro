@@ -2785,7 +2785,7 @@ const RecipeInputPage = () => {
                               Pin KPIs, AI summaries, or vendor comparisons for
                               rapid decisions.
                             </p>
-                            <div className="mt-4 flex-1 overflow-hidden">
+                            <div className="mt-4 flex-1 min-h-0 overflow-hidden">
                               <InsightsPanel />
                             </div>
                           </section>
