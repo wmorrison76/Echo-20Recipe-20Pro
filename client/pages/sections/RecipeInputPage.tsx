@@ -2580,7 +2580,7 @@ const RecipeInputPage = () => {
                           <div className="font-semibold">
                             {t("recipe.labels.techniqueLabel", "Technique")}
                           </div>
-                          <div className="flex flex-wrap gap-1">
+                          <div className="flex flex-wrap gap-0.5">
                             {[...taxonomy.technique].sort().map((v) => (
                               <span
                                 key={v}
