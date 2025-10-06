@@ -2194,7 +2194,7 @@ const RecipeInputPage = () => {
                 />
                 <textarea
                   placeholder={t("recipe.fields.description", "Description")}
-                  className={`mt-2 w-full border rounded-lg p-3 text-sm ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
+                  className={`mt-2 w-full border rounded-lg p-2.5 text-sm ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
                   rows={3}
                   onChange={(e) =>
                     localStorage.setItem(
