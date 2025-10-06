@@ -93,14 +93,13 @@ export function useEchoActions(): EchoActions {
           { ingredient: "Packaging", percentage: 9 },
         ];
         const costPerPortion = portions > 0 ? baseCost / portions : 0;
-        const allowedFoodCost = targetFoodCostPct * 100;
         return {
           totalCost: Number(baseCost.toFixed(2)),
           costPerPortion: Number(costPerPortion.toFixed(2)),
           ingredientShare,
           currency: "USD",
-          targetFoodCostPct: allowedFoodCost,
-        } as CostRecipeResult & { targetFoodCostPct: number };
+          targetFoodCostPct,
+        };
       },
       async triageInvoice({ invoiceId, assignTo, priority, notes }) {
         await pause();
