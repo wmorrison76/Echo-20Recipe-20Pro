@@ -18,7 +18,7 @@ export function InsightsPanel() {
   );
 
   return (
-    <div className="flex h-full flex-col gap-5">
+    <div className="flex h-full min-h-0 flex-col gap-5 overflow-y-auto pr-1">
       <section className="rounded-2xl border border-white/20 bg-gradient-to-br from-white/60 via-white/30 to-white/10 p-5 backdrop-blur dark:border-cyan-500/25 dark:from-slate-950/70 dark:via-slate-900/60 dark:to-cyan-950/40">
         <header className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-600 dark:text-cyan-200/70">
           Live signals
