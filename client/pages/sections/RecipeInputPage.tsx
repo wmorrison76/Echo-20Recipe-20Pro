@@ -3824,7 +3824,7 @@ function RDLabsPortal({
                   <button
                     type="button"
                     onClick={() => setNewProjectOpen(true)}
-                    className="inline-flex h-9 items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-500/20 px-4 text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-100 transition hover:border-cyan-300/50 hover:bg-cyan-500/30 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
+                    className="inline-flex h-9 items-center gap-1.5 rounded-full border border-cyan-400/30 bg-cyan-500/20 px-3.5 text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-100 transition hover:border-cyan-300/50 hover:bg-cyan-500/30 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
                   >
                     New Project
                   </button>
