@@ -410,7 +410,7 @@ export default function TopTabs() {
         <div
           className={cn(
             "flex items-center gap-2 transition-all duration-500",
-            collapsed ? "justify-center" : "justify-start",
+            collapsed ? "justify-center gap-1" : "justify-start",
           )}
         >
               {!collapsed ? (
