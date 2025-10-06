@@ -442,6 +442,8 @@ export function RecipeSelection({
           >
             {filteredRecipes.map((recipe) => {
               const isSelected = selectedIds.has(recipe.id);
+              const menuName = resolveMenuName(recipe);
+              const menuPrice = resolveMenuPrice(recipe);
               return (
                 <button
                   key={recipe.id}
