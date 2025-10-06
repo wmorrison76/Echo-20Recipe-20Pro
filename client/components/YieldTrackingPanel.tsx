@@ -212,12 +212,16 @@ export function YieldTrackingPanel({ className }: YieldTrackingPanelProps) {
                     content={({ active, payload }) => {
                       if (!active || !payload?.length) return null;
                       const point = payload[0];
-                      const data = point.payload as { date: string; yieldPercent: number; label: string };
+                      const data = point.payload as {
+                        date: string;
+                        yieldPercent: number | null;
+                        label: string;
+                      };
                       return (
                         <div className="rounded-md border bg-background px-3 py-2 text-xs shadow">
                           <div className="font-medium">{data.date}</div>
                           <div>{data.label}</div>
-                          <div className="text-sky-500">{formatPercent(data.yieldPercent)}</div>
+                          <div className="text-sky-500">{formatPercent(data.yieldPercent ?? NaN)}</div>
                         </div>
                       );
                     }}
