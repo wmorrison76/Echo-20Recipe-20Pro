@@ -1323,12 +1323,13 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         let ocrBudget = 24; // cap OCR pages for performance
         for (let p = 1; p <= doc.numPages; p++) {
           const page = await doc.getPage(p);
-          const tc = await page.getTextContent();
-          let t = tc.items.map((i: any) => i.str).join("\n");
+          const extracted = await extractPageText(page);
+          let t = extracted.text;
+          let charCount = extracted.charCount;
           if (
             ocrEnabled &&
             ocrBudget > 0 &&
-            t.replace(/\s+/g, "").length < 20
+            charCount < 40
           ) {
             try {
               const viewport = page.getViewport({ scale: 1.6 });
@@ -1349,6 +1350,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
                 const txt = String(data?.text || "").trim();
                 if (txt) {
                   t = txt;
+                  charCount = txt.length;
                   ocrBudget--;
                 }
               }
