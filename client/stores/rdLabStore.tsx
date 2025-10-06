@@ -427,6 +427,32 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
     );
   }, []);
 
+  const serializeState = React.useCallback((): RDLabSnapshot => {
+    return {
+      experiments: cloneState(experiments),
+      focusExperimentId,
+      searchQuery,
+    };
+  }, [experiments, focusExperimentId, searchQuery]);
+
+  const hydrateState = React.useCallback(
+    (snapshot: RDLabSnapshot) => {
+      const nextExperiments = Array.isArray(snapshot?.experiments)
+        ? cloneState(snapshot.experiments)
+        : [];
+      setExperiments(nextExperiments);
+      const targetId = snapshot?.focusExperimentId;
+      const resolvedFocusId = nextExperiments.length
+        ? nextExperiments.some((exp) => exp.id === targetId)
+          ? targetId
+          : nextExperiments[0].id
+        : "";
+      setFocusExperimentId(resolvedFocusId);
+      setSearchQuery(typeof snapshot?.searchQuery === "string" ? snapshot.searchQuery : "");
+    },
+    [setExperiments, setFocusExperimentId, setSearchQuery],
+  );
+
   const value = React.useMemo<RDLabState>(
     () => ({
       experiments,
@@ -446,6 +472,8 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
       appendTextureObjective,
       appendFlavorConstellation,
       appendFutureFoodAngle,
+      serializeState,
+      hydrateState,
     }),
     [
       experiments,
@@ -461,6 +489,8 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
       appendTextureObjective,
       appendFlavorConstellation,
       appendFutureFoodAngle,
+      serializeState,
+      hydrateState,
     ],
   );
 
