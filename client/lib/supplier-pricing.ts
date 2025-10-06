@@ -131,7 +131,12 @@ function buildQuote(
     reliability: supplier.reliability,
     sustainabilityScore: supplier.sustainabilityScore,
     unitCost,
-    unitCostUnit: unitCost != null ? (requestedUnit || requestedUnitInfo?.unit || null) : null,
+    unitCostUnit:
+      unitCost != null
+        ? (requestedUnit
+            ? requestedUnit.toUpperCase()
+            : requestedUnitInfo?.unit?.toUpperCase() ?? null)
+        : null,
     estimatedCost,
     matchesUnit,
     lastUpdated: item.lastUpdated,
