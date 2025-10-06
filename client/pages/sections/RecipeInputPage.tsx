@@ -22,8 +22,10 @@ import SubRecipePicker, {
 } from "@/components/SubRecipePicker";
 import YieldLabForm from "@/components/YieldLabForm";
 import { YieldTrackingPanel } from "@/components/YieldTrackingPanel";
+import { TeamWorkflowPanel } from "@/components/TeamWorkflowPanel";
 import { useYieldStore } from "@/context/YieldContext";
 import { usePageToolbar } from "@/context/PageToolbarContext";
+import { useCollaboration } from "@/context/CollaborationContext";
 import type { PageToolbarItem } from "@/context/PageToolbarContext";
 import {
   combineYields,
