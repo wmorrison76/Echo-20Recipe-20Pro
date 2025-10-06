@@ -302,7 +302,6 @@ const RecipeInputPage = () => {
   const [ingredients, setIngredients] = useState<IngredientRow[]>([
     createIngredientRow(),
   ]);
-  const supplierQuotes = useSupplierQuotes(ingredients);
   const historyRef = useRef<any[]>([]);
   const futureRef = useRef<any[]>([]);
   const autoSnapshotTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
