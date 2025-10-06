@@ -3854,7 +3854,7 @@ function RDLabsPortal({
                 </div>
               </header>
               <div className="relative z-10 flex flex-1 min-h-0 overflow-hidden">
-                <div className="flex flex-1 min-h-0 flex-col gap-4 px-6 pb-6 pt-5">
+                <div className="flex flex-1 min-h-0 flex-col gap-3 px-4 pb-4 pt-4">
                   <p className={`max-w-3xl text-sm leading-relaxed ${accentMuted}`}>
                     Drag the dividers to resize each workspace. Use these surfaces for experiments, documentation, and automation flows. Layout widths persist so your lab reopens exactly how you left it.
                   </p>
