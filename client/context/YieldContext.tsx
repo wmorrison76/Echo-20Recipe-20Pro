@@ -122,9 +122,15 @@ function readFromStorage(): ChefYieldRecord[] {
         readyMadeName: entry.readyMadeName ?? undefined,
         outputPortions: toNumberOrUndefined(entry.outputPortions),
         portionSize: toNumberOrUndefined(entry.portionSize),
-        portionUnit: typeof entry.portionUnit === "string" ? entry.portionUnit : undefined,
+        portionUnit:
+          typeof entry.portionUnit === "string"
+            ? String(entry.portionUnit).trim().toUpperCase()
+            : undefined,
         batchSize: toNumberOrUndefined(entry.batchSize),
-        batchUnit: typeof entry.batchUnit === "string" ? entry.batchUnit : undefined,
+        batchUnit:
+          typeof entry.batchUnit === "string"
+            ? String(entry.batchUnit).trim().toUpperCase()
+            : undefined,
         forecastPortions: toNumberOrUndefined(entry.forecastPortions),
         shrinkageBufferPercent: toNumberOrUndefined(entry.shrinkageBufferPercent),
         leadTimeDays: toNumberOrUndefined(entry.leadTimeDays),
@@ -226,14 +232,14 @@ export function YieldProvider({ children }: { children: React.ReactNode }) {
       code: input.code?.trim() || undefined,
       notes: input.notes?.trim() || undefined,
       inputQty: Number(input.inputQty) || 0,
-      inputUnit: input.inputUnit.trim(),
+      inputUnit: input.inputUnit.trim().toUpperCase(),
       outputQty: Number(input.outputQty) || 0,
-      outputUnit: input.outputUnit.trim(),
+      outputUnit: input.outputUnit.trim().toUpperCase(),
       outputPortions: toNumberOrUndefined(input.outputPortions),
       portionSize: toNumberOrUndefined(input.portionSize),
-      portionUnit: input.portionUnit?.trim() || undefined,
+      portionUnit: input.portionUnit?.trim().toUpperCase() || undefined,
       batchSize: toNumberOrUndefined(input.batchSize),
-      batchUnit: input.batchUnit?.trim() || undefined,
+      batchUnit: input.batchUnit?.trim().toUpperCase() || undefined,
       forecastPortions: toNumberOrUndefined(input.forecastPortions),
       shrinkageBufferPercent: toNumberOrUndefined(input.shrinkageBufferPercent),
       leadTimeDays: toNumberOrUndefined(input.leadTimeDays),
