@@ -45,7 +45,6 @@ import {
   Image as ImageIcon,
   PlusCircle,
   MinusCircle,
-  Menu,
   Plus,
   Minus,
   Bold,
