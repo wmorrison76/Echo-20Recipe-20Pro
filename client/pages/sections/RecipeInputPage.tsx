@@ -2668,7 +2668,7 @@ const RecipeInputPage = () => {
 
               <Dialog open={yieldOpen} onOpenChange={setYieldOpen}>
                 <DialogContent
-                  className={`w-full max-w-[min(960px,95vw)] border p-6 transition-shadow backdrop-blur-xl ${
+                  className={`w-full max-w-[min(960px,95vw)] border p-5 transition-shadow backdrop-blur-xl ${
                     isDarkMode
                       ? "border-cyan-400/40 bg-slate-950/92 shadow-[0_45px_140px_-25px_rgba(34,211,238,0.65)]"
                       : "border-slate-200/80 bg-white/97 shadow-[0_45px_140px_-25px_rgba(79,70,229,0.35)]"
