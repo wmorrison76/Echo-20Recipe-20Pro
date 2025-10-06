@@ -517,7 +517,7 @@ export default function TopTabs() {
               aria-expanded={!collapsed}
               title={`${collapsed ? "Expand navigation" : "Collapse navigation"} (${navToggleShortcut})`}
             >
-              <div className="flex flex-col items-center gap-1">
+              <div className="flex flex-col items-center gap-0.5">
                 <span
                   className={cn(
                     "block h-4 w-0.5 rounded-full bg-gray-400 transition-all duration-300 dark:bg-slate-500",
