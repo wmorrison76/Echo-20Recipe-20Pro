@@ -3811,7 +3811,7 @@ function RDLabsPortal({
                     <button
                       type="button"
                       onClick={handleSaveAndClose}
-                      className="inline-flex h-9 items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-100 transition hover:border-white/40 hover:bg-white/15 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/70"
+                      className="inline-flex h-9 items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3.5 text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-100 transition hover:border-white/40 hover:bg-white/15 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/70"
                     >
                       Save and Close
                     </button>
