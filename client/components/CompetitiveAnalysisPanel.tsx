@@ -47,7 +47,7 @@ export function CompetitiveAnalysisPanel({ className }: CompetitiveAnalysisPanel
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 text-sm">
-          <div className="grid gap-3 md:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <MetricHighlight label="Strength lanes" value="Yield intelligence · Predictive procurement" />
             <MetricHighlight label="Parity lanes" value="Nutrition compliance · Menu engineering" />
             <MetricHighlight label="Catch-up lanes" value="None — we lead or meet in every focus" accent="emerald" />
