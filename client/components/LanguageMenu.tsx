@@ -98,7 +98,7 @@ export default function LanguageMenu({
                 aria-pressed={selected}
               >
                 <span className="sr-only">{option.label}</span>
-                <span className="text-3xl leading-none" aria-hidden>
+                <span className="text-2xl leading-none" aria-hidden>
                   {option.flag}
                 </span>
                 {selected ? (
