@@ -188,7 +188,7 @@ export function CollaborationProvider({ children }: { children: React.ReactNode 
   const [lastSyncedAt, setLastSyncedAt] = useState<number | null>(() =>
     readStorage<number | null>(SYNC_STORAGE_KEY, null),
   );
-  const pendingFlushRef = useRef<NodeJS.Timeout | null>(null);
+  const pendingFlushRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => writeStorage(TASK_STORAGE_KEY, tasks), [tasks]);
   useEffect(() => writeStorage(THREAD_STORAGE_KEY, threads), [threads]);
