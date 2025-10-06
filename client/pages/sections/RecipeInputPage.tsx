@@ -2173,7 +2173,7 @@ const RecipeInputPage = () => {
         className={`relative w-full min-h-screen transition-all duration-300 text-foreground`}
         data-echo-key="page:recipes:add"
       >
-        <div className="pt-6 h-full overflow-y-auto">
+        <div className="pt-4 h-full overflow-y-auto">
           <div className="w-full px-3 sm:px-4 space-y-4 pb-6">
             {/* Removed old hamburger toggle button */}
             <div
