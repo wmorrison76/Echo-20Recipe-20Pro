@@ -1126,6 +1126,15 @@ const onFiles = async (files: File[]) => {
                 >
                   Search catalog
                 </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  className="font-semibold"
+                  onClick={goToCookbookBuilder}
+                  disabled={selectedRecipeIds.length === 0}
+                >
+                  Build recipe book
+                </Button>
               </div>
             </div>
           )}
