@@ -1914,7 +1914,7 @@ const RecipeInputPage = () => {
       "⅝": "5/8",
       "⅞": "7/8",
     };
-    let t = s.trim().replace(/[¼��¾⅓⅔⅛⅜⅝����]/g, (ch) => map[ch] || ch);
+    let t = s.trim().replace(/[¼��¾⅓⅔⅛⅜⅝���]/g, (ch) => map[ch] || ch);
     t = t.replace(/^(?:\s*)\/(\d+)/, "1/$1");
     t = t.replace(/(\d)(\s*)(\d\/\d)/, "$1 $3");
     const m = t.match(
@@ -2501,7 +2501,7 @@ const RecipeInputPage = () => {
                           "Selected diet conflicts with ingredients.",
                         );
                       return issues.length ? (
-                        <div className="mb-2 text-red-600">
+                        <div className="mb-1.5 text-red-600">
                           {issues.map((s, i) => (
                             <div key={i}>{s}</div>
                           ))}
