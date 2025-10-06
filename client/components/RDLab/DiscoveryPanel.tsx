@@ -177,7 +177,7 @@ export function DiscoveryPanel() {
         </form>
       </div>
 
-      <div className="flex-1 overflow-hidden rounded-2xl border border-white/15 bg-white/4 backdrop-blur-sm dark:border-cyan-500/20 dark:bg-slate-950/40">
+      <div className="flex-1 min-h-0 overflow-hidden rounded-2xl border border-white/15 bg-white/4 backdrop-blur-sm dark:border-cyan-500/20 dark:bg-slate-950/40">
         <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 text-[11px] uppercase tracking-[0.3em] text-slate-500 dark:border-cyan-500/20 dark:text-cyan-300/70">
           <span>Active experiments</span>
           <span>{filtered.length}</span>
