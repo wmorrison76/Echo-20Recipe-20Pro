@@ -1527,12 +1527,6 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           }
           pageTexts.push(t);
         }
-        const normLine = (s: string) => {
-          let t = s.replace(/\s+/g, " ").trim();
-          if (/^([A-Z]\s+){2,}[A-Z][\s:]*$/.test(t) && t.length <= 60)
-            t = t.replace(/\s+/g, "");
-          return t;
-        };
         const allLines = pageTexts
           .join("\n")
           .split(/\r?\n/)
