@@ -30,6 +30,8 @@ type TeamWorkflowPanelProps = {
   onCaptureVersion: () => void;
 };
 
+const NO_LINK_VALUE = "__none";
+
 export function TeamWorkflowPanel({ className, ingredients, onCaptureVersion }: TeamWorkflowPanelProps) {
   const collaboration = useCollaboration();
   const ingredientOptions = useMemo(() => {
@@ -141,14 +143,19 @@ export function TeamWorkflowPanel({ className, ingredients, onCaptureVersion }: 
               onChange={(event) => setTaskForm((prev) => ({ ...prev, dueDate: event.target.value }))}
             />
             <Select
-              value={taskForm.relatedIngredient}
-              onValueChange={(value) => setTaskForm((prev) => ({ ...prev, relatedIngredient: value }))}
+              value={taskForm.relatedIngredient || NO_LINK_VALUE}
+              onValueChange={(value) =>
+                setTaskForm((prev) => ({
+                  ...prev,
+                  relatedIngredient: value === NO_LINK_VALUE ? "" : value,
+                }))
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Link ingredient" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">No link</SelectItem>
+                <SelectItem value={NO_LINK_VALUE}>No link</SelectItem>
                 {ingredientOptions.map((ingredient) => (
                   <SelectItem key={ingredient} value={ingredient}>
                     {ingredient}
@@ -245,14 +252,19 @@ export function TeamWorkflowPanel({ className, ingredients, onCaptureVersion }: 
               placeholder="Feedback topic"
             />
             <Select
-              value={threadForm.relatedIngredient}
-              onValueChange={(value) => setThreadForm((prev) => ({ ...prev, relatedIngredient: value }))}
+              value={threadForm.relatedIngredient || NO_LINK_VALUE}
+              onValueChange={(value) =>
+                setThreadForm((prev) => ({
+                  ...prev,
+                  relatedIngredient: value === NO_LINK_VALUE ? "" : value,
+                }))
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Link ingredient" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">No link</SelectItem>
+                <SelectItem value={NO_LINK_VALUE}>No link</SelectItem>
                 {ingredientOptions.map((ingredient) => (
                   <SelectItem key={ingredient} value={ingredient}>
                     {ingredient}
