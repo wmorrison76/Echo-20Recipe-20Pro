@@ -189,6 +189,18 @@ const experimentsSeed: LabExperiment[] = [
       "Nitrogen tunnel",
     ],
     launchWindow: "Chef's counter prelude",
+    textureObjectives: [
+      "Sheen maintains under pass lamp for 12 minutes",
+      "Emulsion coats spoon with zero break at 8°C",
+    ],
+    flavorConstellations: [
+      "Velvet oyster emulsion × nitrogen-frozen herb powder × smoked leek oil",
+      "Sea lettuce gel layered with pickled green strawberry kosho",
+    ],
+    futureFoodAngles: [
+      "Showcase regenerative shellfish as climate-positive luxury",
+      "Prototype cold-chain friendly oyster emulsion retail pack",
+    ],
   },
 ];
 
