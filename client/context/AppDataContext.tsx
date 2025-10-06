@@ -1355,7 +1355,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           (label) => line === label || line.startsWith(`${label} `),
         );
       const qtyRegex =
-        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*(?:cups?|cup|tsp|teaspoons?|tbsp|tablespoons?|grams?|gram|kg|kilograms?|g|ml|milliliters?|l|liters?|oz|ounces?|lb|lbs|pounds?|pinch|dash|cloves?|cans?|sticks?|slices?|heads?|bunch(?:es)?|sprigs?))?\b/;
+        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾���⅔⅛⅜⅝⅞])(?:\s*(?:cups?|cup|tsp|teaspoons?|tbsp|tablespoons?|grams?|gram|kg|kilograms?|g|ml|milliliters?|l|liters?|oz|ounces?|lb|lbs|pounds?|pinch|dash|cloves?|cans?|sticks?|slices?|heads?|bunch(?:es)?|sprigs?))?\b/;
       const metaSuppress = /^\s*(?:yield|serves|makes|prep(?:aration)?|cook|total)\b/i;
 
       let ingIdx = -1;
@@ -1502,11 +1502,15 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           const extracted = await extractPageText(page);
           let t = extracted.text;
           let charCount = extracted.charCount;
-          if (
-            ocrEnabled &&
+          const lineCount = extracted.lines.length;
+          let wordCount = t.split(/\s+/).filter(Boolean).length;
+          const avgLineLength = lineCount ? charCount / lineCount : charCount;
+          const allowOcr = ocrEnabled || charCount === 0;
+          const shouldAttemptOcr =
+            allowOcr &&
             ocrBudget > 0 &&
-            charCount < 40
-          ) {
+            (charCount < 60 || wordCount < 12 || lineCount <= 3 || avgLineLength < 6);
+          if (shouldAttemptOcr) {
             try {
               const viewport = page.getViewport({ scale: 1.6 });
               const canvas = document.createElement("canvas");
@@ -1516,21 +1520,30 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
                 canvas.height = viewport.height;
                 await page.render({ canvasContext: ctx, viewport }).promise;
                 const dataUrl = canvas.toDataURL("image/png");
-                const Tesseract: any = await import(
-                  "https://esm.sh/tesseract.js@5.1.1"
-                );
+                const Tesseract: any = await getTesseract();
                 const { data } = await Tesseract.recognize(
                   await (await fetch(dataUrl)).arrayBuffer(),
                   "eng",
                 );
-                const txt = String(data?.text || "").trim();
-                if (txt) {
-                  t = txt;
-                  charCount = txt.length;
-                  ocrBudget--;
+                const raw = String(data?.text || "").trim();
+                if (raw) {
+                  const cleaned = raw
+                    .split(/\n/)
+                    .map((line) => line.replace(/\s+/g, " ").trim())
+                    .filter(Boolean)
+                    .join("\n");
+                  const ocrWordCount = cleaned
+                    .split(/\s+/)
+                    .filter(Boolean).length;
+                  if (ocrWordCount > wordCount) {
+                    t = cleaned;
+                    wordCount = ocrWordCount;
+                    charCount = cleaned.length;
+                  }
                 }
               }
             } catch {}
+            ocrBudget = Math.max(0, ocrBudget - 1);
           }
           pageTexts.push(t);
         }
