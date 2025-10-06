@@ -30,6 +30,29 @@ export type LabTask = {
   isCompleted?: boolean;
 };
 
+export type RDLabSnapshot = {
+  experiments: LabExperiment[];
+  focusExperimentId: string;
+  searchQuery: string;
+};
+
+const cloneState = <T,>(value: T): T => {
+  if (typeof structuredClone === "function") {
+    return structuredClone(value);
+  }
+  try {
+    return JSON.parse(JSON.stringify(value)) as T;
+  } catch {
+    if (Array.isArray(value)) {
+      return [...value] as T;
+    }
+    if (value && typeof value === "object") {
+      return { ...(value as Record<string, unknown>) } as T;
+    }
+    return value;
+  }
+};
+
 type NewExperimentInput = {
   title: string;
   owner: string;
