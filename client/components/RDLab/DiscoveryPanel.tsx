@@ -166,6 +166,29 @@ export function DiscoveryPanel() {
             className="w-full rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-sky-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
           />
           <div className="grid gap-2 md:grid-cols-2">
+            <textarea
+              value={draftTextureObjectives}
+              onChange={(event) => setDraftTextureObjectives(event.target.value)}
+              placeholder="Texture objectives (comma or newline separated)"
+              rows={2}
+              className="w-full rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-emerald-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+            />
+            <textarea
+              value={draftFlavorConstellations}
+              onChange={(event) => setDraftFlavorConstellations(event.target.value)}
+              placeholder="Flavor constellations (comma or newline separated)"
+              rows={2}
+              className="w-full rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-rose-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+            />
+          </div>
+          <textarea
+            value={draftFutureAngles}
+            onChange={(event) => setDraftFutureAngles(event.target.value)}
+            placeholder="Future-of-food angles (comma or newline separated)"
+            rows={2}
+            className="w-full rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-indigo-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+          />
+          <div className="grid gap-2 md:grid-cols-2">
             <input
               value={draftTags}
               onChange={(event) => setDraftTags(event.target.value)}
