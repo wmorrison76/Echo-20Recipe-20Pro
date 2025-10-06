@@ -2465,7 +2465,7 @@ const RecipeInputPage = () => {
                   className={`w-full border rounded-xl p-2.5 shadow-lg ${isDarkMode ? "bg-blue-900/20 border-blue-400/30 shadow-blue-400/20" : "bg-blue-50 border-blue-200 shadow-gray-300/60"}`}
                 >
                   <div
-                    className={`font-semibold text-sm mb-2 ${isDarkMode ? "text-blue-400" : "text-blue-700"}`}
+                    className={`mb-1.5 text-sm font-semibold ${isDarkMode ? "text-blue-400" : "text-blue-700"}`}
                   >
                     {t("recipe.labels.modifiers", "Modifiers")}
                   </div>
