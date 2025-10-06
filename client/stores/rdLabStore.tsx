@@ -354,6 +354,54 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
     );
   }, []);
 
+  const appendTextureObjective = React.useCallback((id: string, objective: string) => {
+    const entry = objective.trim();
+    if (!entry) return;
+    setExperiments((prev) =>
+      prev.map((exp) =>
+        exp.id === id
+          ? {
+              ...exp,
+              textureObjectives: [...exp.textureObjectives, entry],
+              lastUpdated: "Just now",
+            }
+          : exp,
+      ),
+    );
+  }, []);
+
+  const appendFlavorConstellation = React.useCallback((id: string, constellation: string) => {
+    const entry = constellation.trim();
+    if (!entry) return;
+    setExperiments((prev) =>
+      prev.map((exp) =>
+        exp.id === id
+          ? {
+              ...exp,
+              flavorConstellations: [...exp.flavorConstellations, entry],
+              lastUpdated: "Just now",
+            }
+          : exp,
+      ),
+    );
+  }, []);
+
+  const appendFutureFoodAngle = React.useCallback((id: string, angle: string) => {
+    const entry = angle.trim();
+    if (!entry) return;
+    setExperiments((prev) =>
+      prev.map((exp) =>
+        exp.id === id
+          ? {
+              ...exp,
+              futureFoodAngles: [...exp.futureFoodAngles, entry],
+              lastUpdated: "Just now",
+            }
+          : exp,
+      ),
+    );
+  }, []);
+
   const value = React.useMemo<RDLabState>(
     () => ({
       experiments,
