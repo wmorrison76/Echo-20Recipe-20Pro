@@ -91,7 +91,7 @@ export function CompetitiveAnalysisPanel({ className }: CompetitiveAnalysisPanel
                         ))}
                       </div>
                     </div>
-                    <div className="grid gap-3 md:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                       {COMPETITORS.map((competitor) => {
                         const score = activeFeature.competitors[competitor.id];
                         const stance = stanceLabel[score.stance];
