@@ -418,6 +418,7 @@ export function YieldTrackingPanel({ className }: YieldTrackingPanelProps) {
 
             <Button
               type="button"
+              disabled={!procurementPlan}
               onClick={() => {
                 if (!selectedReadyMade || !procurementPlan) return;
                 addRecord({
