@@ -106,6 +106,39 @@ const YieldLabForm: React.FC<YieldLabFormProps> = ({
     setMeasuredUnit((prev) => prev || inputUnit);
   }, [inputUnit]);
 
+  useEffect(() => {
+    if (itemType !== "readyMade") {
+      if (!portionUnit.trim()) {
+        setPortionUnit(displayUnit(measuredUnit || inputUnit || "G"));
+      }
+      return;
+    }
+    const fallback = selectedReadyMade ?? READY_MADE_ITEMS[0];
+    if (!fallback) return;
+    if (!readyMadeId) setReadyMadeId(fallback.id);
+    if (!ingredientName.trim()) setIngredientName(fallback.name);
+    if (!method.trim()) setMethod("Ready-made integration");
+    if (!inputQty) setInputQty(fallback.standardBatchQty);
+    if (!inputUnit.trim()) setInputUnit(displayUnit(fallback.standardBatchUnit));
+    if (!portionUnit.trim()) setPortionUnit(displayUnit(fallback.portionUnit));
+    if (!portionSize) setPortionSize(fallback.portionSize);
+    if (!forecastPortions) setForecastPortions(fallback.defaultPortions);
+    if (!leadTimeDays || leadTimeDays <= 0) setLeadTimeDays(fallback.leadTimeDays);
+  }, [
+    itemType,
+    selectedReadyMade,
+    readyMadeId,
+    ingredientName,
+    method,
+    inputQty,
+    inputUnit,
+    portionUnit,
+    portionSize,
+    forecastPortions,
+    leadTimeDays,
+    measuredUnit,
+  ]);
+
   const activeIngredient = ingredientName.trim() || recipeName.trim();
   const normalizedInputUnit = normalizeUnitToken(inputUnit);
   const normalizedMeasuredUnit = normalizeUnitToken(measuredUnit);
