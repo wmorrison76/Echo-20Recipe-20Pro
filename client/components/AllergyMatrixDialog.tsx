@@ -31,7 +31,8 @@ const matrixLabels: Record<LanguageCode, {
     recipe: "Recipe",
     present: "Yes",
     absent: "No",
-    noData: "No allergens detected for these recipes.",
+    noData: "No recipes selected.",
+    noAllergensRow: "No allergens flagged",
     print: "Print Matrix",
   },
   "fr-FR": {
