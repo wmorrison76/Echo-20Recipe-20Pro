@@ -143,6 +143,11 @@ const YieldLabForm: React.FC<YieldLabFormProps> = ({
     return Array.from(registry);
   }, [methodOptions, mergedHistory]);
 
+  const selectedReadyMade = useMemo(
+    () => (readyMadeId ? getReadyMadeItem(readyMadeId) : undefined),
+    [readyMadeId],
+  );
+
   const computedYield = useMemo(() => {
     if (!Number.isFinite(inputQty) || inputQty <= 0) return null;
     if (!Number.isFinite(measuredQty) || measuredQty < 0) return null;
