@@ -3789,7 +3789,7 @@ function RDLabsPortal({
             }`}
           >
             <div className="relative z-10 flex h-full min-h-0 flex-col">
-              <header className="relative z-10 flex shrink-0 items-start justify-between gap-4 border-b border-white/10 bg-black/40 px-6 py-4 backdrop-blur-sm">
+              <header className="relative z-10 flex shrink-0 items-start justify-between gap-3 border-b border-white/10 bg-black/40 px-4 py-3 backdrop-blur-sm">
                 <div className="space-y-2">
                   <h2
                     id="rd-labs-title"
