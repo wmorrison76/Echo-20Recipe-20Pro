@@ -180,7 +180,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
               return (
                 <div
                   key={row.subId ?? `${index}-${row.item || "divider"}`}
-                  className={`flex items-center gap-3 rounded-2xl border px-3 py-2 transition-colors ${rowTone}`}
+                  className={`flex items-center gap-2.5 rounded-2xl border px-2.5 py-1.5 transition-colors ${rowTone}`}
                   onDragOver={handleRowDragOver}
                   onDrop={handleRowDrop(index)}
                   data-row-kind={row.type}
