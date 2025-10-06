@@ -95,14 +95,14 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
 
   return (
     <div
-      className={`rounded-2xl border p-5 shadow-lg ${
+      className={`rounded-2xl border p-4 shadow-lg ${
         isDarkMode
           ? "bg-slate-950/50 border-cyan-500/25 shadow-cyan-500/10"
           : "bg-white border-slate-200 shadow-slate-300/40"
       }`}
       data-echo-key="section:add:ingredients"
     >
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3
             className={`text-lg font-semibold uppercase tracking-[0.28em] ${
@@ -144,14 +144,14 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
         </div>
       </div>
 
-      <div className="mt-4 overflow-x-auto">
+      <div className="mt-3 overflow-x-auto">
         <div
           className="min-w-[960px] space-y-1"
           onDragOver={handleRowDragOver}
           onDrop={handleContainerDrop}
         >
           <div
-            className={`grid grid-cols-[minmax(2.75rem,3.5rem),5rem,7ch,minmax(18rem,2fr),minmax(13.5rem,1.25fr),6.5ch,14.5ch,2.5rem] items-center gap-3 rounded-xl px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] ${
+            className={`grid grid-cols-[minmax(2.75rem,3.5rem),5rem,7ch,minmax(18rem,2fr),minmax(13.5rem,1.25fr),6.5ch,14.5ch,2.5rem] items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] ${
               isDarkMode ? "bg-slate-900/70 text-cyan-200/70" : "bg-slate-100 text-slate-600"
             }`}
           >
@@ -241,7 +241,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
             return (
               <div
                 key={row.subId ?? `${index}-${row.item || "blank"}`}
-                className={`grid grid-cols-[minmax(2.75rem,3.5rem),5rem,7ch,minmax(18rem,2fr),minmax(13.5rem,1.25fr),6.5ch,14.5ch,2.5rem] items-stretch gap-3 rounded-2xl border px-3 py-2 transition-colors ${rowTone}`}
+                className={`grid grid-cols-[minmax(2.75rem,3.5rem),5rem,7ch,minmax(18rem,2fr),minmax(13.5rem,1.25fr),6.5ch,14.5ch,2.5rem] items-stretch gap-2.5 rounded-2xl border px-2.5 py-1.5 transition-colors ${rowTone}`}
                 onDragOver={handleRowDragOver}
                 onDrop={handleRowDrop(index)}
                 data-row-kind={row.type}
