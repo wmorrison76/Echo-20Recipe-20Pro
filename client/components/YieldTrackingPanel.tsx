@@ -418,6 +418,9 @@ export function YieldTrackingPanel({ className }: YieldTrackingPanelProps) {
                 if (!selectedReadyMade || !procurementPlan) return;
                 addRecord({
                   ingredientName: selectedReadyMade.name,
+                  prepDescription: "Predictive procurement draft",
+                  method: "Predictive procurement draft",
+                  notes: `Plan logged ${new Date().toISOString().slice(0, 10)}`,
                   inputQty: selectedReadyMade.standardBatchQty,
                   inputUnit: selectedReadyMade.standardBatchUnit,
                   outputQty: procurementPlan.expectedPortionsCovered * portionSize,
