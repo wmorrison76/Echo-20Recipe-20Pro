@@ -77,6 +77,7 @@ export default function ServerNotesSection() {
   const [currentNote, setCurrentNote] = useState<ServerNote>(template);
   const [savedNotes, setSavedNotes] = useState<ServerNote[]>([]);
   const [noteSession, setNoteSession] = useState(0);
+  const pendingSelectionSessionRef = useRef<number | null>(null);
 
   useEffect(() => {
     try {
