@@ -2372,7 +2372,7 @@ const RecipeInputPage = () => {
                   style={{ minHeight: "3rem" }}
                 >
                   <div
-                    className="p-3 flex flex-col"
+                    className="p-2.5 flex flex-col gap-1.5"
                     data-echo-key="section:add:allergens"
                   >
                     <div
