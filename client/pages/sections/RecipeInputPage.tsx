@@ -2343,7 +2343,7 @@ const RecipeInputPage = () => {
                   </div>
                 </div>
               </div>
-              <div className="w-1/3 flex flex-col gap-4">
+              <div className="flex w-full flex-col gap-4 sm:w-72 lg:w-80">
                 <div
                   className={`border rounded-xl flex flex-col justify-end shadow-lg backdrop-blur-sm ${isDarkMode ? "bg-black/50 border-cyan-400/30 shadow-[0_0_24px_rgba(34,211,238,0.25)]" : "bg-white border-gray-200 shadow-gray-200/50"}`}
                   style={{ minHeight: "3rem" }}
