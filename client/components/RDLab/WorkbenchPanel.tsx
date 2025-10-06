@@ -88,6 +88,9 @@ export function WorkbenchPanel() {
   const isVariableDisabled = !draftVariable.trim();
   const isTestStepDisabled = !draftTestStep.trim();
   const isSensoryDisabled = !draftSensory.trim();
+  const isTextureDisabled = !draftTextureObjective.trim();
+  const isFlavorDisabled = !draftFlavorConstellation.trim();
+  const isFutureAngleDisabled = !draftFutureAngle.trim();
 
   if (!experiment) {
     return (
