@@ -3173,7 +3173,7 @@ const RecipeInputPage = () => {
                 <div className="text-red-500 text-sm">{nutritionError}</div>
               )}
               {nutrition && (
-                <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex flex-col md:flex-row gap-3">
                   <NutritionLabel
                     data={nutrition}
                     servings={portionCount || 1}
