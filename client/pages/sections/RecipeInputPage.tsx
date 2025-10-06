@@ -1104,6 +1104,20 @@ const RecipeInputPage = () => {
     [ingredients, updateIngredientRow],
   );
 
+  const handleCaptureVersion = () => {
+    const payload = serialize();
+    const activeIngredients = ingredients.filter((row) => row.type !== "divider").length;
+    const summaryParts = [recipeName.trim() || "Untitled recipe"];
+    summaryParts.push(`${activeIngredients} ingredient${activeIngredients === 1 ? "" : "s"}`);
+    if (yieldQty) summaryParts.push(`yield ${yieldQty} ${yieldUnit || ""}`.trim());
+    collaboration.recordVersionSnapshot({
+      summary: summaryParts.join(" · "),
+      payload,
+      auto: false,
+      createdBy: "Manual capture",
+    });
+  };
+
   const addIngredientRow = useCallback(
     (index?: number) => {
       const targetRow =
