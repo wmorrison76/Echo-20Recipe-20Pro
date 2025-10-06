@@ -176,6 +176,68 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                 ? "border-cyan-500/20 bg-slate-950/40 shadow-[0_12px_28px_-18px_rgba(34,211,238,0.45)]"
                 : "border-slate-200 bg-white shadow-[0_12px_28px_-18px_rgba(15,23,42,0.35)]";
 
+            if (isDivider) {
+              return (
+                <div
+                  key={row.subId ?? `${index}-${row.item || "divider"}`}
+                  className={`flex items-center gap-3 rounded-2xl border px-3 py-2 transition-colors ${rowTone}`}
+                  onDragOver={handleRowDragOver}
+                  onDrop={handleRowDrop(index)}
+                  data-row-kind={row.type}
+                >
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      draggable
+                      onDragStart={handleDragStart(index)}
+                      className={`flex h-6 w-6 items-center justify-center rounded-full border text-xs ${
+                        isDarkMode
+                          ? "border-cyan-500/40 text-cyan-200 hover:bg-cyan-500/10"
+                          : "border-slate-300 text-slate-500 hover:bg-slate-200/80"
+                      }`}
+                      title={t("recipe.ingredients.dragHandle", "Drag to reorder")}
+                      aria-label={t("recipe.ingredients.dragHandle", "Drag to reorder")}
+                    >
+                      <GripVertical className="h-3.5 w-3.5" aria-hidden />
+                    </button>
+                    <span className="text-xs font-semibold text-slate-500 dark:text-cyan-300">
+                      {index + 1}
+                    </span>
+                  </div>
+                  <div className="flex flex-1 justify-center">
+                    <input
+                      data-row={index}
+                      data-col={2}
+                      value={row.item}
+                      onChange={onFieldChange(index, "item")}
+                      onKeyDown={onGridKeyDown}
+                      className={`w-full max-w-[240px] rounded-full border px-4 py-1 text-center text-[10px] font-semibold uppercase tracking-[0.4em] outline-none transition ${
+                        isDarkMode
+                          ? "border-cyan-500/40 bg-cyan-500/10 text-cyan-100 focus:border-cyan-300"
+                          : "border-slate-300/80 bg-slate-50 text-slate-600 focus:border-slate-500"
+                      }`}
+                      placeholder={t("recipe.ingredients.placeholders.step", "Step label")}
+                    />
+                  </div>
+                  <div className="flex items-center justify-end">
+                    <button
+                      type="button"
+                      onClick={() => onRemoveRow(index)}
+                      className={`rounded-full border p-1 transition ${
+                        isDarkMode
+                          ? "border-cyan-500/30 text-cyan-200 hover:bg-cyan-500/10"
+                          : "border-slate-300 text-slate-600 hover:bg-slate-100"
+                      }`}
+                      title={t("recipe.ingredients.removeRow", "Remove step")}
+                      aria-label={t("recipe.ingredients.removeRow", "Remove step")}
+                    >
+                      <MinusCircle className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              );
+            }
+
             return (
               <div
                 key={row.subId ?? `${index}-${row.item || "blank"}`}
@@ -211,9 +273,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                   onKeyDown={onGridKeyDown}
                   disabled={isDivider}
                   className={inputTone(isDarkMode, "px-2", false, isDivider)}
-                  placeholder={
-                    isDivider ? "" : t("recipe.ingredients.placeholders.qty", "1 1/2")
-                  }
+                  placeholder={t("recipe.ingredients.placeholders.qty", "1 1/2")}
                 />
                 <input
                   data-row={index}
@@ -221,16 +281,12 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                   value={row.unit}
                   onChange={onFieldChange(index, "unit")}
                   onKeyDown={onGridKeyDown}
-                  disabled={isDivider}
                   className={inputTone(
                     isDarkMode,
                     "px-2 text-center uppercase",
                     false,
-                    isDivider,
                   )}
-                  placeholder={
-                    isDivider ? "" : t("recipe.ingredients.placeholders.unit", "QTS")
-                  }
+                  placeholder={t("recipe.ingredients.placeholders.unit", "QTS")}
                 />
                 <input
                   data-row={index}
@@ -238,17 +294,8 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                   value={row.item}
                   onChange={onFieldChange(index, "item")}
                   onKeyDown={onGridKeyDown}
-                  className={inputTone(
-                    isDarkMode,
-                    isDivider ? "font-semibold uppercase tracking-[0.2em]" : undefined,
-                    false,
-                    false,
-                  )}
-                  placeholder={
-                    isDivider
-                      ? t("recipe.ingredients.placeholders.step", "Step label or section")
-                      : t("recipe.ingredients.placeholders.item", "Ingredient")
-                  }
+                  className={inputTone(isDarkMode, undefined, false, false)}
+                  placeholder={t("recipe.ingredients.placeholders.item", "Ingredient")}
                 />
                 <input
                   data-row={index}
@@ -256,14 +303,9 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                   value={row.prep}
                   onChange={onFieldChange(index, "prep")}
                   onKeyDown={onGridKeyDown}
-                  disabled={isDivider}
-                  list={!isDivider && methodOptions.length ? methodOptionsId : undefined}
-                  className={inputTone(isDarkMode, undefined, false, isDivider)}
-                  placeholder={
-                    isDivider
-                      ? ""
-                      : t("recipe.ingredients.placeholders.prep", "Method or prep notes")
-                  }
+                  list={methodOptions.length ? methodOptionsId : undefined}
+                  className={inputTone(isDarkMode, undefined, false, false)}
+                  placeholder={t("recipe.ingredients.placeholders.prep", "Method or prep notes")}
                 />
                 <div className="flex flex-col gap-1">
                   <input
@@ -273,19 +315,9 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                     onChange={onFieldChange(index, "yield")}
                     onBlur={onFieldBlur(index, "yield")}
                     onKeyDown={onGridKeyDown}
-                    disabled={isDivider}
-                    className={inputTone(
-                      isDarkMode,
-                      "px-2 text-center",
-                      true,
-                      isDivider,
-                    )}
+                    className={inputTone(isDarkMode, "px-2 text-center", true, false)}
                     maxLength={6}
-                    placeholder={
-                      isDivider
-                        ? ""
-                        : t("recipe.ingredients.placeholders.yield", "100")
-                    }
+                    placeholder={t("recipe.ingredients.placeholders.yield", "100")}
                   />
                 </div>
                 <div className="relative flex w-full flex-col gap-1">
@@ -293,7 +325,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                     <span
                       className={`pointer-events-none text-sm font-semibold ${
                         isDarkMode ? "text-cyan-300" : "text-slate-500"
-                      } ${isDivider ? "opacity-40" : ""}`}
+                      }`}
                     >
                       {currencySymbol}
                     </span>
@@ -304,15 +336,12 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                       onChange={onFieldChange(index, "cost")}
                       onBlur={onFieldBlur(index, "cost")}
                       onKeyDown={onGridKeyDown}
-                      disabled={isDivider}
-                      className={inputTone(isDarkMode, "px-2 text-right", false, isDivider)}
+                      className={inputTone(isDarkMode, "px-2 text-right", false, false)}
                       maxLength={14}
-                      placeholder={
-                        isDivider ? "" : t("recipe.ingredients.placeholders.cost", "0.00")
-                      }
+                      placeholder={t("recipe.ingredients.placeholders.cost", "0.00")}
                     />
                   </div>
-                  {!isDivider && quotes.length > 0 && (
+                  {quotes.length > 0 && (
                     <div
                       className={`rounded-lg border border-dashed p-2 ${
                         isDarkMode
