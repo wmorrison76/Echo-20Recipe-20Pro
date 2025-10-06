@@ -2208,7 +2208,7 @@ const RecipeInputPage = () => {
                   >
                     <div className="col-span-2 flex flex-col gap-0.5 md:col-span-2">
                       <span className={infoLabelClass}>{t("recipe.labels.cookTime", "COOK TIME")}</span>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center justify-center gap-1">
                         <input
                           value={cookTime}
                           onChange={(e) => setCookTime(e.target.value)}
