@@ -2177,7 +2177,7 @@ const RecipeInputPage = () => {
           <div className="w-full px-3 sm:px-4 space-y-4 pb-6">
             {/* Removed old hamburger toggle button */}
             <div
-              className="flex flex-wrap items-start gap-3"
+              className="flex flex-wrap items-start gap-2.5"
               data-echo-key="section:add:basics"
             >
               <div
