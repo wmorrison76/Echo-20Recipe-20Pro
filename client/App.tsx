@@ -15,6 +15,7 @@ import RecipeTemplate from "./pages/RecipeTemplate";
 import { AppDataProvider } from "@/context/AppDataContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { YieldProvider } from "@/context/YieldContext";
+import { CollaborationProvider } from "@/context/CollaborationContext";
 
 const queryClient = new QueryClient();
 
@@ -52,15 +53,17 @@ const App = () => (
         <LanguageProvider>
           <AppDataProvider>
             <YieldProvider>
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/recipe/:id" element={<RecipeEditor />} />
-                  <Route path="/recipe/:id/view" element={<RecipeTemplate />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
+              <CollaborationProvider>
+                  <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/recipe/:id" element={<RecipeEditor />} />
+                    <Route path="/recipe/:id/view" element={<RecipeTemplate />} />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </BrowserRouter>
+              </CollaborationProvider>
             </YieldProvider>
           </AppDataProvider>
         </LanguageProvider>
