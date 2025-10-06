@@ -1607,63 +1607,21 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             );
             const textRaw = pageTexts.slice(start - 1, end).join("\n");
             const text = textRaw.split(/\n/).map(normLine).join("\n");
-            // Only import if it looks like a recipe
-            const hasRecipeMarkers =
-              /\bingredients?\b/i.test(text) &&
-              /\b(instructions|directions|method|steps)\b/i.test(text);
-            if (!hasRecipeMarkers) continue;
-            const meta = parseMeta(text);
-            // Extract ingredients/instructions with fallbacks
-            const lines = text.split(/\n/).map(normLine).filter(Boolean);
-            const lower = lines.map((l) => l.toLowerCase());
-            const find = (labels: string[]) =>
-              lower.findIndex((l) => labels.some((x) => l.startsWith(x)));
-            let ingIdx = find(["ingredients", "ingredient"]);
-            let instIdx = find([
-              "instructions",
-              "directions",
-              "method",
-              "steps",
-            ]);
-            // Fallback: detect an ingredient block by qty/unit patterns
-            if (ingIdx < 0) {
-              const qtyRe =
-                /^(?:\d+\s+\d\/\d|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔��⅜⅝⅞])\b/;
-              for (let i = 0; i < Math.min(lines.length, 80); i++) {
-                if (qtyRe.test(lines[i])) {
-                  ingIdx = i - 1;
-                  break;
-                }
-              }
-            }
-            if (instIdx < 0 && ingIdx >= 0) {
-              for (let i = ingIdx + 1; i < Math.min(lines.length, 200); i++) {
-                if (
-                  /^(instructions|directions|method|steps)\b/i.test(lines[i]) ||
-                  /^\d+\.|^Step\s*\d+/i.test(lines[i])
-                ) {
-                  instIdx = i;
-                  break;
-                }
-              }
-            }
-            const getRange = (s: number, e: number) =>
-              lines.slice(s + 1, e > s ? e : undefined).filter(Boolean);
-            let ingredients =
-              ingIdx >= 0
-                ? getRange(ingIdx, instIdx >= 0 ? instIdx : lines.length)
-                : undefined;
-            let instructions =
-              instIdx >= 0 ? getRange(instIdx, lines.length) : undefined;
-            // If still missing, guess instructions as paragraphs after ingredients
-            if ((!instructions || instructions.length < 2) && ingIdx >= 0) {
-              const start = Math.max(ingIdx + 1, 0);
-              instructions = lines
-                .slice(start + Math.max(ingredients?.length || 0, 4))
-                .slice(0, 40);
-            }
+            const structured = deriveStructuredRecipe(text);
+            if (!structured) continue;
+            const {
+              title: derivedTitle,
+              ingredients,
+              instructions,
+              meta,
+            } = structured;
+            const ingredientCount = ingredients?.length ?? 0;
+            const instructionCount = instructions?.length ?? 0;
+            if (ingredientCount < 2 && instructionCount < 3) continue;
 
-            // Try to capture photo page or first recipe page as image
+            let finalTitle = derivedTitle || cur.title;
+            if (!finalTitle || finalTitle.length < 3) finalTitle = cur.title;
+
             let imgData: string | undefined;
             const pageToRender =
               cur.photoPage &&
@@ -1687,7 +1645,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             collected.push({
               id: uid(),
               createdAt: Date.now(),
-              title: cur.title,
+              title: finalTitle || cur.title,
               ingredients,
               instructions,
               tags: [bookTag],
@@ -1700,7 +1658,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
                 source: "pdf-appendix",
               },
             });
-            titles.push(cur.title);
+            titles.push(finalTitle || cur.title);
             importedFromIndex++;
           }
           try {
