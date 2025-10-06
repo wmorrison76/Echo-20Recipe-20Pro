@@ -34,7 +34,7 @@ export default function LanguageMenu({
   const triggerClasses = cn(
     variant === "card"
       ? "flex h-full min-h-[4.25rem] w-full items-center justify-center rounded-2xl border px-4 py-3 shadow-inner transition-colors"
-      : "inline-flex h-10 w-16 items-center justify-center rounded-full border text-3xl transition-colors",
+      : "inline-flex h-9 w-14 items-center justify-center rounded-full border text-2xl transition-colors",
     isDark
       ? variant === "card"
         ? "border-cyan-400/40 bg-cyan-900/30 text-cyan-100 hover:bg-cyan-900/50"
