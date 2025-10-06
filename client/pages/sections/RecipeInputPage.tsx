@@ -21,6 +21,7 @@ import SubRecipePicker, {
   type SubRecipeOption,
 } from "@/components/SubRecipePicker";
 import YieldLabForm from "@/components/YieldLabForm";
+import { YieldTrackingPanel } from "@/components/YieldTrackingPanel";
 import { useYieldStore } from "@/context/YieldContext";
 import { usePageToolbar } from "@/context/PageToolbarContext";
 import type { PageToolbarItem } from "@/context/PageToolbarContext";
@@ -2528,6 +2529,8 @@ const RecipeInputPage = () => {
                   isDarkMode={isDarkMode}
                   formatCurrency={formatRecipeCost}
                 />
+
+                <YieldTrackingPanel className="mt-8" />
 
                 <Dialog open={yieldOpen} onOpenChange={setYieldOpen}>
                   <DialogContent
