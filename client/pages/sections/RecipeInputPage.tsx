@@ -2378,10 +2378,10 @@ const RecipeInputPage = () => {
                   </div>
                 </div>
                 <div
-                  className={`rounded-3xl border p-3 shadow-lg backdrop-blur-sm ${
+                  className={`rounded-2xl border p-2 shadow-lg backdrop-blur-sm ${
                     isDarkMode
-                      ? "bg-black/50 border-cyan-400/30 shadow-[0_0_24px_rgba(34,211,238,0.25)]"
-                      : "bg-white border-gray-200 shadow-gray-200/50"
+                      ? "bg-black/50 border-cyan-400/30 shadow-[0_0_18px_rgba(34,211,238,0.25)]"
+                      : "bg-white border-gray-200 shadow-gray-200/40"
                   }`}
                   data-echo-key="section:add:photos"
                 >
@@ -2392,8 +2392,8 @@ const RecipeInputPage = () => {
                   >
                     {t("recipe.labels.photo", "RECIPE IMAGE")}
                   </div>
-                  <div className="flex justify-center pt-1">
-                    <div className="flex-shrink-0 w-[13rem] h-[13rem] md:w-[14rem] md:h-[14rem]">
+                  <div className="flex justify-center">
+                    <div className="flex-shrink-0 w-44 h-44 md:w-52 md:h-52">
                       {image ? (
                         <img
                           src={image}
