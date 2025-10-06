@@ -280,8 +280,8 @@ const RecipeInputPage = () => {
   const rndPanelBaseClasses =
     "chalk-panel relative flex h-full min-h-0 flex-col overflow-hidden rounded-3xl border p-5 shadow-[inset_0_1px_0_rgba(15,23,42,0.08)] backdrop-blur-lg transition-colors duration-300";
   const rndPanelToneClasses = isDarkMode
-    ? "border-cyan-500/25 text-cyan-100"
-    : "border-slate-200/80 text-slate-900";
+    ? "border-cyan-400/30 text-cyan-100/90"
+    : "border-slate-200/40 text-slate-100";
   const rndPanelThemes = useMemo(
     () =>
       isDarkMode
