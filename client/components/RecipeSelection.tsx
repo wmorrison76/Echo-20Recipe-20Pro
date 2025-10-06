@@ -16,7 +16,7 @@ import {
   Wine,
   Utensils,
 } from "lucide-react";
-import type { Recipe } from "@shared/recipes";
+import { currencySymbol, type Recipe } from "@shared/recipes";
 import type { ServerNoteRecipe } from "@shared/server-notes";
 import { silverwareOptions } from "@shared/server-notes";
 
