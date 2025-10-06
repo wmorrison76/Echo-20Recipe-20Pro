@@ -88,6 +88,8 @@ type RDLabState = {
   appendTextureObjective: (id: string, objective: string) => void;
   appendFlavorConstellation: (id: string, constellation: string) => void;
   appendFutureFoodAngle: (id: string, angle: string) => void;
+  serializeState: () => RDLabSnapshot;
+  hydrateState: (snapshot: RDLabSnapshot) => void;
 };
 
 const experimentsSeed: LabExperiment[] = [
