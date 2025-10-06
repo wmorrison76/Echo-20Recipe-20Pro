@@ -837,6 +837,23 @@ const onFiles = async (files: File[]) => {
     );
   }, [recipes, selectedRecipeIds.length]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const key = "serverNotes:presetSelection";
+    if (!selectedRecipeIds.length) {
+      window.sessionStorage.removeItem(key);
+      return;
+    }
+    window.sessionStorage.setItem(
+      key,
+      JSON.stringify({
+        version: 1,
+        ids: selectedRecipeIds,
+        savedAt: Date.now(),
+      }),
+    );
+  }, [selectedRecipeIds]);
+
   const resetCollectionDraft = useCallback(() => {
     setCollectionDraftName("");
     setSelectedRecipeIds([]);
