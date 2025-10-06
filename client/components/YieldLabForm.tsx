@@ -2,12 +2,17 @@ import React, { useEffect, useMemo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { useYieldStore } from "@/context/YieldContext";
 import type { ChefYieldRecord } from "@/context/YieldContext";
+import { READY_MADE_ITEMS, getReadyMadeItem } from "@/data/readyMadeItems";
 import {
   areCompatibleUnits,
   computeYieldPercent,
   formatYieldPercent,
   normalizeUnit as normalizeUnitToken,
 } from "@/lib/yield-calculations";
+import {
+  calculateProcurementPlan,
+  type DemandSample,
+} from "@/lib/predictive-procurement";
 
 const clampPercent = (value: number): number => Math.max(0, Math.min(9999, value));
 
