@@ -46,7 +46,6 @@ import {
 import {
   Save,
   Image as ImageIcon,
-  Settings,
   PlusCircle,
   MinusCircle,
   Menu,
@@ -3355,7 +3354,7 @@ const RecipeInputPage = () => {
                   "⅞": "7/8",
                 };
                 s = s.replace(
-                  /[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗��⅙⅚⅛⅜⅝⅞]/g,
+                  /[��½¾⅐⅑⅒⅓⅔⅕⅖⅗��⅙⅚⅛⅜⅝⅞]/g,
                   (ch) => fracMap[ch] || ch,
                 );
                 const m = s.match(
