@@ -316,7 +316,7 @@ export default function ServerNotesSection() {
             </Button>
           </header>
 
-          <div className={`${panelSurfaceClass} p-6`}>
+          <div className={`${panelSurfaceClass} p-5 sm:p-6`}>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground">
@@ -333,13 +333,13 @@ export default function ServerNotesSection() {
                 Follow the steps
               </Badge>
             </div>
-            <div className="mt-4 grid gap-4 md:grid-cols-3">
+            <div className="mt-4 grid gap-3.5 md:grid-cols-3">
               {WALKTHROUGH_STEPS.map((step, index) => {
                 const Icon = step.icon;
                 return (
                   <div
                     key={step.title}
-                    className="flex items-start gap-3 rounded-2xl border border-white/60 bg-white/70 p-4 shadow-sm backdrop-blur-sm transition-colors dark:border-cyan-500/30 dark:bg-slate-950/60"
+                    className="flex items-start gap-3 rounded-2xl border border-white/60 bg-white/70 p-3.5 shadow-sm backdrop-blur-sm transition-colors dark:border-cyan-500/30 dark:bg-slate-950/60"
                   >
                     <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-white/80 bg-white text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-sm dark:border-cyan-500/40 dark:bg-slate-900 dark:text-cyan-200">
                       {index + 1}
@@ -366,16 +366,20 @@ export default function ServerNotesSection() {
             <Card
               className={`${panelSurfaceClass} flex h-full flex-col lg:col-span-4 xl:col-span-4`}
             >
-              <CardHeader className="space-y-2 border-b border-white/70 px-6 py-5 dark:border-cyan-500/25">
-                <Badge
-                  variant="outline"
-                  className="w-fit rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.35em] text-muted-foreground"
-                >
-                  Step 1
-                </Badge>
-                <CardTitle className="text-base">Configuration</CardTitle>
+              <CardHeader className="border-b border-white/70 px-5 py-4 dark:border-cyan-500/25">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant="outline"
+                      className="rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.35em] text-muted-foreground"
+                    >
+                      Step 1
+                    </Badge>
+                    <CardTitle className="text-sm font-semibold">Configuration</CardTitle>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent className="flex-1 space-y-4 px-6 pb-6 pt-4 lg:max-h-[calc(100vh-260px)] lg:overflow-y-auto">
+              <CardContent className="flex-1 space-y-4 px-5 pb-5 pt-4 lg:max-h-[calc(100vh-248px)] lg:overflow-y-auto">
                 <ServerNotesConfig
                   config={currentNote}
                   onUpdate={handleUpdate}
@@ -386,16 +390,20 @@ export default function ServerNotesSection() {
             <Card
               className={`${panelSurfaceClass} flex h-full flex-col lg:col-span-4 xl:col-span-4`}
             >
-              <CardHeader className="space-y-2 border-b border-white/70 px-6 py-5 dark:border-cyan-500/25">
-                <Badge
-                  variant="outline"
-                  className="w-fit rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.35em] text-muted-foreground"
-                >
-                  Step 2
-                </Badge>
-                <CardTitle className="text-base">Recipe Selection</CardTitle>
+              <CardHeader className="border-b border-white/70 px-5 py-4 dark:border-cyan-500/25">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant="outline"
+                      className="rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.35em] text-muted-foreground"
+                    >
+                      Step 2
+                    </Badge>
+                    <CardTitle className="text-sm font-semibold">Recipe Selection</CardTitle>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent className="flex-1 space-y-4 px-6 pb-6 pt-4 lg:max-h-[calc(100vh-260px)] lg:overflow-y-auto">
+              <CardContent className="flex-1 space-y-4 px-5 pb-5 pt-4 lg:max-h-[calc(100vh-248px)] lg:overflow-y-auto">
                 <RecipeSelection
                   availableRecipes={recipes}
                   selectedRecipes={sortedSelected}
@@ -407,16 +415,20 @@ export default function ServerNotesSection() {
             <Card
               className={`${panelSurfaceClass} flex h-full flex-col lg:col-span-4 xl:col-span-4`}
             >
-              <CardHeader className="space-y-2 border-b border-white/70 px-6 py-5 dark:border-cyan-500/25">
-                <Badge
-                  variant="outline"
-                  className="w-fit rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.35em] text-muted-foreground"
-                >
-                  Step 3
-                </Badge>
-                <CardTitle className="text-base">Preview & Generate</CardTitle>
+              <CardHeader className="border-b border-white/70 px-5 py-4 dark:border-cyan-500/25">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant="outline"
+                      className="rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.35em] text-muted-foreground"
+                    >
+                      Step 3
+                    </Badge>
+                    <CardTitle className="text-sm font-semibold">Preview &amp; Generate</CardTitle>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent className="flex flex-1 flex-col space-y-4 px-6 pb-6 pt-4">
+              <CardContent className="flex flex-1 flex-col space-y-4 px-5 pb-5 pt-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
                     <span>Language</span>
