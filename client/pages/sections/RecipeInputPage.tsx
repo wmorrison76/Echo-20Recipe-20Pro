@@ -128,6 +128,91 @@ const normalizeOptionalString = (value: unknown): string | null => {
   return normalized.length ? normalized : null;
 };
 
+type RDLabProjectSession = {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  layout: [number, number, number];
+  snapshot: RDLabSnapshot;
+  vision?: string;
+  textureFocus?: string;
+  flavorNotes?: string;
+  launchTarget?: string;
+};
+
+const RDLAB_SESSIONS_STORAGE_KEY = "recipe:rnd:sessions:v1";
+const RDLAB_ACTIVE_SESSION_KEY = "recipe:rnd:active-session";
+const RDLAB_SAVE_HINT_KEY = "recipe:rnd:save-hint-count";
+const AUTO_SAVE_DELAY_MS = 1100;
+
+const sanitizeProjectSession = (value: unknown): RDLabProjectSession | null => {
+  if (!value || typeof value !== "object") return null;
+  const record = value as Record<string, unknown>;
+  const id = typeof record.id === "string" && record.id.trim().length ? record.id : null;
+  if (!id) return null;
+  const name =
+    typeof record.name === "string" && record.name.trim().length
+      ? record.name.trim()
+      : "Untitled Lab";
+
+  const snapshotRaw = (record.snapshot ?? {}) as Record<string, unknown>;
+  const snapshot: RDLabSnapshot = {
+    experiments: Array.isArray(snapshotRaw.experiments)
+      ? (snapshotRaw.experiments as RDLabSnapshot["experiments"])
+      : [],
+    focusExperimentId:
+      typeof snapshotRaw.focusExperimentId === "string"
+        ? snapshotRaw.focusExperimentId
+        : "",
+    searchQuery:
+      typeof snapshotRaw.searchQuery === "string" ? snapshotRaw.searchQuery : "",
+  };
+
+  const fallbackTimestamp = new Date().toISOString();
+
+  return {
+    id,
+    name,
+    createdAt:
+      typeof record.createdAt === "string" && record.createdAt.length
+        ? record.createdAt
+        : fallbackTimestamp,
+    updatedAt:
+      typeof record.updatedAt === "string" && record.updatedAt.length
+        ? record.updatedAt
+        : fallbackTimestamp,
+    layout: sanitizeRndLayout(record.layout),
+    snapshot,
+    vision: typeof record.vision === "string" ? record.vision : undefined,
+    textureFocus: typeof record.textureFocus === "string" ? record.textureFocus : undefined,
+    flavorNotes: typeof record.flavorNotes === "string" ? record.flavorNotes : undefined,
+    launchTarget: typeof record.launchTarget === "string" ? record.launchTarget : undefined,
+  };
+};
+
+const generateSessionId = () => {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return `rd-${crypto.randomUUID()}`;
+  }
+  return `rd-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+};
+
+const formatProjectTimestamp = (iso: string) => {
+  if (!iso) return "";
+  try {
+    return new Intl.DateTimeFormat(undefined, {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(new Date(iso));
+  } catch {
+    return iso;
+  }
+};
+
 const ensureIngredientRowId = (
   row: IngredientRow | null | undefined,
 ): IngredientRow => {
