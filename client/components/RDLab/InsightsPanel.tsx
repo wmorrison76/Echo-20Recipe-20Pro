@@ -81,6 +81,29 @@ export function InsightsPanel() {
         </ul>
       </section>
 
+      <section className="rounded-2xl border border-white/20 bg-gradient-to-br from-white/70 via-white/35 to-white/10 p-4 text-sm text-slate-700 shadow-sm backdrop-blur dark:border-cyan-500/25 dark:from-slate-950/70 dark:via-slate-900/55 dark:to-cyan-950/40 dark:text-cyan-100">
+        <header className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-600 dark:text-cyan-200/70">
+          Future of food radar
+        </header>
+        <div className="mt-3 space-y-3">
+          {futureFoodDrivers.map((driver) => (
+            <article
+              key={driver.id}
+              className="rounded-xl border border-white/30 bg-white/60 p-3 shadow-inner dark:border-cyan-500/20 dark:bg-slate-950/60"
+            >
+              <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-slate-500 dark:text-cyan-200/70">
+                <span>{driver.theme}</span>
+                <span>{driver.signal}</span>
+              </div>
+              <p className="mt-2 text-xs leading-relaxed text-slate-600 dark:text-cyan-200/80">{driver.insight}</p>
+              <div className="mt-2 rounded-lg border border-white/30 bg-white/70 px-3 py-2 text-[11px] uppercase tracking-[0.3em] text-slate-500 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-200/70">
+                {driver.action}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className="rounded-2xl border border-white/20 bg-gradient-to-br from-white/80 via-white/40 to-white/20 p-4 text-sm text-slate-700 shadow-sm backdrop-blur dark:border-cyan-500/25 dark:from-slate-950/70 dark:via-slate-900/55 dark:to-cyan-950/40 dark:text-cyan-100">
         <header className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-600 dark:text-cyan-200/70">
           Lab soundstage
