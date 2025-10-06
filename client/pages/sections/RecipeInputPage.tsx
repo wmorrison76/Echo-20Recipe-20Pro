@@ -1071,15 +1071,6 @@ const RecipeInputPage = () => {
         className: toolbarClass,
         title: "R&D Labs",
       },
-      {
-        id: "recipe-tools",
-        label: t("recipe.actions.recipeTools", "Recipe Tools"),
-        ariaLabel: t("recipe.actions.recipeTools", "Recipe Tools"),
-        icon: Settings,
-        onClick: handleToggleTools,
-        className: toolbarClass,
-        title: t("recipe.actions.recipeTools", "Recipe Tools"),
-      },
     ];
     setToolbar({
       title: t("nav.addRecipe", "Add Recipe"),
