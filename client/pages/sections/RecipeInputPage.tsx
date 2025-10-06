@@ -2713,7 +2713,7 @@ const RecipeInputPage = () => {
                       <PanelGroup
                         direction="horizontal"
                         onLayout={handleRndLayoutChange}
-                        className="flex h-full items-stretch gap-3"
+                        className="flex h-full min-h-0 items-stretch gap-3"
                       >
                         <Panel
                           minSize={20}
