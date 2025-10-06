@@ -2309,7 +2309,7 @@ const RecipeInputPage = () => {
                           {t("recipe.tools.yield", "Yield Lab")}
                         </button>
                       </div>
-                      <div className="flex flex-wrap items-center gap-1">
+                      <div className="flex flex-wrap items-center justify-center gap-1">
                         <input
                           type="number"
                           value={yieldQty}
