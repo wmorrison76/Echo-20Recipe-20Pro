@@ -3797,7 +3797,7 @@ function RDLabsPortal({
                   >
                     R&amp;D Labs
                   </h2>
-                  <div className="flex flex-wrap items-center gap-4 text-[10px] uppercase tracking-[0.45em] text-cyan-100/70">
+                  <div className="flex flex-wrap items-center gap-3 text-[10px] uppercase tracking-[0.45em] text-cyan-100/70">
                     <span className="chalk-breath">Texture</span>
                     <span className="chalk-breath">Flavor</span>
                     <span className="chalk-breath">Future</span>
