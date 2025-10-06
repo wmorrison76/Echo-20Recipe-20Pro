@@ -340,7 +340,43 @@ const YieldLabForm: React.FC<YieldLabFormProps> = ({
       inputUnit: displayUnit(inputUnit),
       outputQty: measuredQty,
       outputUnit: displayUnit(measuredUnit),
-      yieldPercent: computedYield,
+      yieldPercent: yieldToPersist,
+      itemType,
+      readyMadeId:
+        itemType === "readyMade"
+          ? readyMadeId || selectedReadyMade?.id || undefined
+          : undefined,
+      readyMadeName:
+        itemType === "readyMade"
+          ? selectedReadyMade?.name || focusIngredient
+          : undefined,
+      outputPortions:
+        itemType === "readyMade"
+          ? outputPortions || forecastPortions || undefined
+          : undefined,
+      portionSize:
+        itemType === "readyMade"
+          ? portionSize || selectedReadyMade?.portionSize || undefined
+          : undefined,
+      portionUnit:
+        itemType === "readyMade"
+          ? (portionUnit.trim() ||
+              selectedReadyMade?.portionUnit ||
+              displayUnit(measuredUnit || inputUnit))
+          : undefined,
+      batchSize: itemType === "readyMade" ? inputQty : undefined,
+      batchUnit:
+        itemType === "readyMade" ? displayUnit(inputUnit) : undefined,
+      forecastPortions:
+        itemType === "readyMade"
+          ? forecastPortions || outputPortions || undefined
+          : undefined,
+      shrinkageBufferPercent:
+        itemType === "readyMade" ? bufferPercent : undefined,
+      leadTimeDays: itemType === "readyMade" ? leadTimeDays : undefined,
+      demandHistory: itemType === "readyMade" ? readyMadeHistory : undefined,
+      procurementPlan:
+        itemType === "readyMade" ? procurementPreview : null,
     });
     setFormError(null);
     onClose();
