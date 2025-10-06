@@ -320,6 +320,94 @@ export function DiscoveryPanel() {
           ))}
         </div>
       </div>
+
+      <div className="space-y-3 rounded-2xl border border-white/15 bg-white/6 p-4 text-xs leading-relaxed text-slate-600 backdrop-blur dark:border-cyan-500/25 dark:bg-slate-950/60 dark:text-cyan-100/80">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-700 dark:text-cyan-200">
+          Flavor Constellation Library
+        </div>
+        <div className="space-y-3">
+          {flavorConstellationLibrary.map((constellation) => (
+            <div key={constellation.id} className="rounded-xl border border-white/20 bg-white/30 p-3 dark:border-cyan-500/20 dark:bg-cyan-500/5">
+              <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
+                <span>{constellation.name}</span>
+                <span>{constellation.futureAngle}</span>
+              </div>
+              <div className="mt-2 text-[12px] font-semibold uppercase tracking-[0.35em] text-slate-600 dark:text-cyan-100">
+                Texture hook
+              </div>
+              <p className="text-[12px] text-slate-600 dark:text-cyan-100/80">{constellation.textureHook}</p>
+              <div className="mt-2 text-[12px] font-semibold uppercase tracking-[0.35em] text-slate-600 dark:text-cyan-200/80">
+                Flavor drivers
+              </div>
+              <ul className="mt-1 space-y-1 text-[12px] text-slate-600 dark:text-cyan-100/80">
+                {constellation.flavorDrivers.map((driver) => (
+                  <li key={driver}>{driver}</li>
+                ))}
+              </ul>
+              <div className="mt-2 text-[12px] font-semibold uppercase tracking-[0.35em] text-slate-600 dark:text-cyan-200/80">
+                Balancing notes
+              </div>
+              <ul className="mt-1 space-y-1 text-[12px] text-slate-600 dark:text-cyan-100/80">
+                {constellation.balancingNotes.map((note) => (
+                  <li key={note}>{note}</li>
+                ))}
+              </ul>
+              <div className="mt-2 text-[11px] uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
+                Builds
+              </div>
+              <div className="text-[11px] text-slate-500 dark:text-cyan-200/80">
+                {constellation.applications.join(" · ")}
+              </div>
+              <div className="mt-3 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() =>
+                    pushDraftLine(
+                      setDraftFlavorConstellations,
+                      `${constellation.name}: ${constellation.flavorDrivers.join(" + ")} | ${constellation.textureHook}`
+                    )
+                  }
+                  className="rounded-full border border-white/30 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-500 transition hover:border-rose-400 hover:text-slate-800 dark:border-cyan-500/20 dark:text-cyan-200/80 dark:hover:border-cyan-400 dark:hover:text-cyan-50"
+                >
+                  Add flavor constellation
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-3 rounded-2xl border border-white/15 bg-white/6 p-4 text-xs leading-relaxed text-slate-600 backdrop-blur dark:border-cyan-500/25 dark:bg-slate-950/60 dark:text-cyan-100/80">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-700 dark:text-cyan-200">
+          Future of Food Drivers
+        </div>
+        <div className="space-y-3">
+          {futureFoodDrivers.map((driver) => (
+            <div key={driver.id} className="rounded-xl border border-white/20 bg-white/30 p-3 dark:border-cyan-500/20 dark:bg-cyan-500/5">
+              <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
+                <span>{driver.theme}</span>
+                <span>{driver.signal}</span>
+              </div>
+              <div className="mt-2 text-[12px] text-slate-600 dark:text-cyan-100/80">
+                {driver.insight}
+              </div>
+              <div className="mt-1 text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
+                Action
+              </div>
+              <div className="text-[11px] text-slate-500 dark:text-cyan-200/80">{driver.action}</div>
+              <div className="mt-3 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => pushDraftLine(setDraftFutureAngles, `${driver.theme}: ${driver.action}`)}
+                  className="rounded-full border border-white/30 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-500 transition hover:border-emerald-400 hover:text-slate-800 dark:border-cyan-500/20 dark:text-cyan-200/80 dark:hover:border-cyan-400 dark:hover:text-cyan-50"
+                >
+                  Add future angle
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
