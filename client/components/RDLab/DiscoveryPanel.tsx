@@ -1,6 +1,7 @@
 import { FormEvent, useMemo, useState } from "react";
 
 import { textureAtlas } from "@/data/textureReference";
+import { flavorConstellationLibrary, futureFoodDrivers } from "@/data/flavorMatrix";
 import { useRDLabStore } from "@/stores/rdLabStore";
 import { cn } from "@/lib/utils";
 
