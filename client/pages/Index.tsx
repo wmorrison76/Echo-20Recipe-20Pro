@@ -133,17 +133,17 @@ function IndexContent() {
               <SaasRoadmapSection />
             </TabsContent>
             <TabsContent value="inventory">
-              <div className="container mx-auto space-y-4 px-4 py-4">
+              <div className="container mx-auto space-y-3 px-3 py-3">
                 <InventorySuppliesWorkspace />
               </div>
             </TabsContent>
             <TabsContent value="nutrition">
-              <div className="container mx-auto space-y-4 px-4 py-4">
+              <div className="container mx-auto space-y-3 px-3 py-3">
                 <NutritionAllergensWorkspace />
               </div>
             </TabsContent>
             <TabsContent value="haccp">
-              <div className="container mx-auto space-y-4 px-4 py-4">
+              <div className="container mx-auto space-y-3 px-3 py-3">
                 <HaccpComplianceWorkspace />
               </div>
             </TabsContent>
