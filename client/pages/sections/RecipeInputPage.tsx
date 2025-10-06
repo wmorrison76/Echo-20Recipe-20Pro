@@ -74,6 +74,8 @@ import {
   createDividerRow,
   generateIngredientRowId,
 } from "@/types/ingredients";
+import { useSupplierQuotes } from "@/hooks/use-supplier-quotes";
+import type { SupplierQuote } from "@/lib/supplier-pricing";
 
 const normalizeString = (value: unknown): string =>
   typeof value === "string" ? value : value == null ? "" : String(value);
@@ -3227,7 +3229,7 @@ const RecipeInputPage = () => {
                   "⅞": "7/8",
                 };
                 s = s.replace(
-                  /[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g,
+                  /[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜��⅞]/g,
                   (ch) => fracMap[ch] || ch,
                 );
                 const m = s.match(
