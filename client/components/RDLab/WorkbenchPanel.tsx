@@ -71,7 +71,7 @@ export function WorkbenchPanel() {
   }
 
   return (
-    <div className="flex h-full flex-col gap-5">
+    <div className="flex h-full min-h-0 flex-col gap-5 overflow-y-auto pr-1">
       <div className="rounded-2xl border border-white/15 bg-gradient-to-br from-white/60 via-white/30 to-white/10 p-6 backdrop-blur dark:border-cyan-500/25 dark:from-slate-950/80 dark:via-slate-900/50 dark:to-cyan-950/30">
         <div className="flex items-center justify-between">
           <div className="space-y-2">
