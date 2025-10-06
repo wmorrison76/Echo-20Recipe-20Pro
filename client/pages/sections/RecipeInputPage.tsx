@@ -2508,7 +2508,7 @@ const RecipeInputPage = () => {
                         </div>
                       ) : null;
                     })()}
-                    <div className="grid grid-cols-8 gap-1">
+                    <div className="grid grid-cols-8 gap-0.5">
                       {taxonomy.cuisine && (
                         <div className="col-span-2">
                           <div className="font-semibold">
