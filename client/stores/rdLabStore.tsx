@@ -62,6 +62,9 @@ type RDLabState = {
   appendVariable: (id: string, variable: string) => void;
   appendTestStep: (id: string, step: string) => void;
   appendSensoryTarget: (id: string, target: string) => void;
+  appendTextureObjective: (id: string, objective: string) => void;
+  appendFlavorConstellation: (id: string, constellation: string) => void;
+  appendFutureFoodAngle: (id: string, angle: string) => void;
 };
 
 const experimentsSeed: LabExperiment[] = [
