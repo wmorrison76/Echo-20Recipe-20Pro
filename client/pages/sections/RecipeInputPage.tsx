@@ -2282,7 +2282,7 @@ const RecipeInputPage = () => {
                       </span>
                     </div>
 
-                    <div className="col-span-2 flex flex-col gap-0.5 md:col-span-3">
+                    <div className="col-span-2 flex flex-col items-center gap-0.5 md:col-span-3">
                       <span className={infoLabelClass}>
                         {t("recipe.labels.recipeAccess", "RECIPE ACCESS")}
                       </span>
