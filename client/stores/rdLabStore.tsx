@@ -145,6 +145,18 @@ const experimentsSeed: LabExperiment[] = [
       "High-speed data logger",
     ],
     launchWindow: "Welcome toast revamp",
+    textureObjectives: [
+      "Membranes stay intact for 90-minute tray pass",
+      "Sparkle perception sustained across 6 tasters",
+    ],
+    flavorConstellations: [
+      "Carbonated yuzu pearl × aged daikon broth × electric daisy tincture",
+      "Finger lime oil layered with kombu vapor for mineral lift",
+    ],
+    futureFoodAngles: [
+      "Position sparkling solids as non-alcoholic celebration ritual",
+      "Refillable CO₂ capsules to eliminate single-use siphon chargers",
+    ],
   },
   {
     id: "exp-satin-03",
