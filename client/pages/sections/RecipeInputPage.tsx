@@ -2690,6 +2690,8 @@ const RecipeInputPage = () => {
 
               <Dialog open={isRndLabsOpen} onOpenChange={setIsRndLabsOpen}>
                 <DialogContent
+                  onPointerDownOutside={(event) => event.preventDefault()}
+                  onInteractOutside={(event) => event.preventDefault()}
                   className={`chalkboard-labs relative z-[90] flex h-[85vh] w-full max-w-[min(1200px,95vw)] flex-col overflow-hidden border p-0 text-slate-100 shadow-[0_40px_120px_-60px_rgba(15,23,42,0.65)] ${
                     isDarkMode
                       ? "border-cyan-500/25 text-cyan-100/90"
@@ -3353,7 +3355,7 @@ const RecipeInputPage = () => {
                   "⅐": "1/7",
                   "⅑": "1/9",
                   "⅒": "1/10",
-                  "��": "1/3",
+                  "⅓": "1/3",
                   "��": "2/3",
                   "⅕": "1/5",
                   "⅖": "2/5",
