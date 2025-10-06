@@ -18,15 +18,6 @@ import { currencySymbol, type Recipe } from "@shared/recipes";
 import type { ServerNoteRecipe } from "@shared/server-notes";
 import { silverwareOptions } from "@shared/server-notes";
 
-type MenuCategoryKey = (typeof MENU_CATEGORIES)[number]["key"];
-
-type PreparedMenuItem = {
-  recipe: Recipe;
-  menuName: string;
-  menuPrice: string | null;
-  category: MenuCategoryKey | null;
-};
-
 export type RecipeSelectionProps = {
   availableRecipes: Recipe[];
   selectedRecipes: ServerNoteRecipe[];
@@ -70,6 +61,15 @@ const MENU_CATEGORIES = [
   { key: "mains", label: "Mains" },
   { key: "dessert", label: "Dessert" },
 ] as const;
+
+type MenuCategoryKey = (typeof MENU_CATEGORIES)[number]["key"];
+
+type PreparedMenuItem = {
+  recipe: Recipe;
+  menuName: string;
+  menuPrice: string | null;
+  category: MenuCategoryKey | null;
+};
 
 const OTHER_LABEL = "Other Items";
 
