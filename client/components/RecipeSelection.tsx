@@ -26,6 +26,62 @@ export type RecipeSelectionProps = {
   onRecipesChange: (recipes: ServerNoteRecipe[]) => void;
 };
 
+const NUMERIC_KEYS = [
+  "menuPrice",
+  "menu_price",
+  "price",
+  "menuItemPrice",
+  "menu_item_price",
+  "sellingPrice",
+  "selling_price",
+];
+
+const NAME_KEYS = [
+  "menuName",
+  "menu_item_name",
+  "menuItemName",
+  "menu_title",
+  "menuTitle",
+];
+
+const parseNumeric = (value: unknown): number | null => {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const cleaned = value.replace(/[^0-9.,-]/g, "");
+    const normalized = cleaned.replace(/,(?=\d{3}\b)/g, "").replace(/,/g, "");
+    const numeric = Number.parseFloat(normalized);
+    return Number.isFinite(numeric) ? numeric : null;
+  }
+  return null;
+};
+
+const resolveMenuName = (recipe: Recipe): string => {
+  const extra = (recipe.extra ?? {}) as Record<string, unknown>;
+  for (const key of NAME_KEYS) {
+    const raw = extra[key];
+    if (typeof raw === "string" && raw.trim()) {
+      return raw.trim();
+    }
+  }
+  return recipe.title;
+};
+
+const resolveMenuPrice = (recipe: Recipe): string | null => {
+  const extra = (recipe.extra ?? {}) as Record<string, unknown>;
+  let price: number | null = null;
+  for (const key of NUMERIC_KEYS) {
+    price = parseNumeric(extra[key]);
+    if (price !== null) break;
+  }
+  if (price === null) return null;
+  const currencyRaw = extra.currency || extra.currencyCode || extra.currency_code;
+  const currency =
+    typeof currencyRaw === "string" && currencyRaw.trim().length
+      ? currencyRaw.trim().toUpperCase()
+      : "USD";
+  return `${currencySymbol(currency)}${price.toFixed(2)}`;
+};
+
 export function RecipeSelection({
   availableRecipes,
   selectedRecipes,
