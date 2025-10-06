@@ -170,7 +170,7 @@ export function TeamWorkflowPanel({ className, ingredients, onCaptureVersion }: 
             </Button>
           </div>
           <Separator />
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {groupedTasks.map((group) => (
               <div key={group.status} className="space-y-3">
                 <div className="flex items-center justify-between">
