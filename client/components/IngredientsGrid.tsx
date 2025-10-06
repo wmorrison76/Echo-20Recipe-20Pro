@@ -38,7 +38,7 @@ const inputTone = (
   alignRight?: boolean,
   disabled?: boolean,
 ) =>
-  `w-full rounded-lg border px-3 py-2 text-sm ${alignRight ? "text-right" : ""} ${
+  `w-full rounded-lg border px-2.5 py-1.5 text-sm ${alignRight ? "text-right" : ""} ${
     isDark
       ? "border-cyan-500/30 bg-slate-900/70 text-cyan-100 placeholder-cyan-400/50 focus:ring-cyan-400/60 focus:ring-offset-slate-950"
       : "border-slate-200 bg-white text-slate-900 placeholder-slate-400 focus:ring-sky-300/60 focus:ring-offset-white"
