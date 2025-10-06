@@ -493,7 +493,7 @@ export default function TopTabs() {
 
               <div
                 className={cn(
-                  "flex items-center justify-between rounded-md bg-white/60 px-3 py-2 text-sm font-medium text-foreground shadow-sm transition-all duration-700 dark:bg-slate-900/70",
+                  "flex items-center justify-between rounded-md bg-white/60 px-2.5 py-1.5 text-sm font-medium text-foreground shadow-sm transition-all duration-700 dark:bg-slate-900/70",
                   collapsed && "flex-col gap-2 px-2 py-2",
                 )}
               >
