@@ -31,9 +31,6 @@ import SubRecipePicker, {
   type SubRecipeOption,
 } from "@/components/SubRecipePicker";
 import YieldLabForm from "@/components/YieldLabForm";
-import { YieldTrackingPanel } from "@/components/YieldTrackingPanel";
-import { TeamWorkflowPanel } from "@/components/TeamWorkflowPanel";
-import { CompetitiveAnalysisPanel } from "@/components/CompetitiveAnalysisPanel";
 import { useYieldStore } from "@/context/YieldContext";
 import { usePageToolbar } from "@/context/PageToolbarContext";
 import { useCollaboration } from "@/context/CollaborationContext";
