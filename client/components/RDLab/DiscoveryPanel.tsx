@@ -48,6 +48,13 @@ export function DiscoveryPanel() {
   const [draftFlavorConstellations, setDraftFlavorConstellations] = useState("");
   const [draftFutureAngles, setDraftFutureAngles] = useState("");
 
+  const pushDraftLine = useCallback((setter: Dispatch<SetStateAction<string>>, value: string) => {
+    setter((prev) => {
+      const trimmed = prev.trim();
+      return trimmed.length ? `${trimmed}\n${value}` : value;
+    });
+  }, []);
+
   const splitList = (value: string) =>
     value
       .split(/[\n,]/)
