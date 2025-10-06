@@ -204,6 +204,83 @@ export default function ServerNotesSection() {
     persistSettings(currentNote);
   }, [currentNote.companyName, currentNote.outletName, currentNote.logos]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (pendingSelectionSessionRef.current === noteSession) return;
+
+    let ids: string[] = [];
+    try {
+      const raw = window.sessionStorage.getItem(PENDING_SELECTION_KEY);
+      if (!raw) {
+        pendingSelectionSessionRef.current = noteSession;
+        return;
+      }
+      const parsed = JSON.parse(raw);
+      if (parsed && Array.isArray(parsed.ids)) {
+        ids = parsed.ids.filter((value: unknown): value is string =>
+          typeof value === "string" && value.length,
+        );
+      }
+    } catch (error) {
+      console.warn("Failed to read pending recipe selection", error);
+      pendingSelectionSessionRef.current = noteSession;
+      return;
+    }
+
+    if (!ids.length) {
+      pendingSelectionSessionRef.current = noteSession;
+      return;
+    }
+
+    const available = new Map<string, (typeof recipes)[number]>();
+    for (const id of ids) {
+      const recipe = recipes.find((entry) => entry.id === id);
+      if (recipe) available.set(id, recipe);
+    }
+
+    if (available.size === 0) {
+      return;
+    }
+
+    let addedCount = 0;
+    setCurrentNote((prev) => {
+      const existingIds = new Set(prev.selectedRecipes.map((entry) => entry.recipe.id));
+      const baseOrder = prev.selectedRecipes.length;
+      const additions: ServerNoteRecipe[] = [];
+
+      ids.forEach((id) => {
+        const recipe = available.get(id);
+        if (!recipe || existingIds.has(id)) return;
+        additions.push({
+          recipe,
+          order: baseOrder + additions.length,
+        });
+      });
+
+      if (!additions.length) {
+        return prev;
+      }
+
+      addedCount = additions.length;
+      return {
+        ...prev,
+        selectedRecipes: [...prev.selectedRecipes, ...additions],
+        updatedAt: new Date().toISOString(),
+      };
+    });
+
+    if (available.size === ids.length) {
+      pendingSelectionSessionRef.current = noteSession;
+    }
+
+    if (addedCount > 0) {
+      toast({
+        title: "Recipes added",
+        description: `${addedCount} recipe${addedCount === 1 ? "" : "s"} carried over from Recipe Drop.`,
+      });
+    }
+  }, [recipes, noteSession, toast]);
+
   const sortedSelected = useMemo(
     () =>
       [...currentNote.selectedRecipes].sort(
