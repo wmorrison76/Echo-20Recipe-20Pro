@@ -3939,7 +3939,7 @@ function RDLabsPortal({
                   {autoSaveState === "saved" && lastSavedAt ? (
                     <div
                       key={savePulseKey}
-                      className="flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-500/15 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-cyan-100 shadow-[0_25px_60px_-40px_rgba(56,189,248,0.75)] animate-rd-save-pulse"
+                      className="flex items-center gap-1.5 rounded-full border border-cyan-400/40 bg-cyan-500/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.3em] text-cyan-100 shadow-[0_25px_60px_-40px_rgba(56,189,248,0.75)] animate-rd-save-pulse"
                     >
                       <span className="h-2 w-2 rounded-full bg-emerald-300" />
                       ({projectName}) Last saved {formatProjectTimestamp(lastSavedAt)}
