@@ -196,6 +196,79 @@ const YieldLabForm: React.FC<YieldLabFormProps> = ({
     normalizedMeasuredUnit,
   ]);
 
+  const readyMadeHistory = useMemo<DemandSample[]>(() => {
+    if (!readyMadeId) return [];
+    return mergedHistory
+      .filter(
+        (record) =>
+          record.itemType === "readyMade" &&
+          record.readyMadeId === readyMadeId &&
+          (record.forecastPortions || record.outputPortions),
+      )
+      .map((record) => ({
+        date: new Date(record.recordedAt).toISOString().slice(0, 10),
+        portions: record.forecastPortions ?? record.outputPortions ?? 0,
+      }))
+      .filter((sample) => sample.portions > 0);
+  }, [mergedHistory, readyMadeId]);
+
+  const effectiveYield = useMemo(() => {
+    if (computedYield != null) return computedYield;
+    if (!readyMadeId) return selectedReadyMade?.defaultYieldPercent ?? null;
+    const history = mergedHistory
+      .filter(
+        (record) =>
+          record.itemType === "readyMade" &&
+          record.readyMadeId === readyMadeId &&
+          record.yieldPercent != null,
+      )
+      .map((record) => record.yieldPercent as number);
+    if (history.length === 0) return selectedReadyMade?.defaultYieldPercent ?? null;
+    return history.reduce((acc, value) => acc + value, 0) / history.length;
+  }, [computedYield, mergedHistory, readyMadeId, selectedReadyMade]);
+
+  const procurementPreview = useMemo(() => {
+    if (itemType !== "readyMade") return null;
+    if (effectiveYield == null || effectiveYield <= 0) return null;
+    const targetPortionCount = Math.max(forecastPortions, outputPortions);
+    if (!Number.isFinite(targetPortionCount) || targetPortionCount <= 0) return null;
+    const resolvedPortionSize =
+      portionSize > 0
+        ? portionSize
+        : selectedReadyMade?.portionSize ?? 0;
+    const resolvedPortionUnit =
+      portionUnit.trim() ||
+      selectedReadyMade?.portionUnit ||
+      measuredUnit ||
+      inputUnit;
+    if (!Number.isFinite(resolvedPortionSize) || resolvedPortionSize <= 0) return null;
+    return calculateProcurementPlan({
+      targetPortions: targetPortionCount,
+      portionSize: resolvedPortionSize,
+      portionUnit: resolvedPortionUnit,
+      expectedYieldPercent: effectiveYield,
+      inputUnit: displayUnit(inputUnit),
+      shrinkageBufferPercent: bufferPercent,
+      leadTimeDays,
+      standardBatchQty: selectedReadyMade?.standardBatchQty,
+      standardBatchUnit: selectedReadyMade?.standardBatchUnit,
+      demandHistory: readyMadeHistory,
+    });
+  }, [
+    itemType,
+    effectiveYield,
+    forecastPortions,
+    outputPortions,
+    portionSize,
+    portionUnit,
+    measuredUnit,
+    inputUnit,
+    bufferPercent,
+    leadTimeDays,
+    selectedReadyMade,
+    readyMadeHistory,
+  ]);
+
   const yieldDisplay = computedYield == null ? "—" : formatYieldPercent(computedYield);
 
   const handleClearFilter = () => setMethod("");
