@@ -302,6 +302,20 @@ export function DiscoveryPanel() {
                   {texture.platingNotes}
                 </div>
               ) : null}
+              <div className="mt-3 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() =>
+                    pushDraftLine(
+                      setDraftTextureObjectives,
+                      `${texture.family}: ${texture.descriptors.join(" / ")} finish`
+                    )
+                  }
+                  className="rounded-full border border-white/30 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-500 transition hover:border-sky-400 hover:text-slate-800 dark:border-cyan-500/20 dark:text-cyan-200/80 dark:hover:border-cyan-400 dark:hover:text-cyan-50"
+                >
+                  Add texture cue
+                </button>
+              </div>
             </div>
           ))}
         </div>
