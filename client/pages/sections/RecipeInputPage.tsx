@@ -293,7 +293,10 @@ const RecipeInputPage = () => {
 
   useEffect(() => {
     if (!isRndLabsOpen) return;
-    setRndLayout((prev) => sanitizeRndLayout(prev));
+    setRndLayout((prev) => {
+      const next = sanitizeRndLayout(prev);
+      return prev.every((value, index) => value === next[index]) ? prev : next;
+    });
   }, [isRndLabsOpen]);
 
   const accentMuted = isDarkMode ? "text-cyan-200/80" : "text-slate-200/80";
@@ -1596,7 +1599,7 @@ const RecipeInputPage = () => {
           /^(?:\d{2,3})$/.test(t.replace(/[^0-9]/g, ""))
         ) {
           const f = Math.round((num * 9) / 5 + 32);
-          return `${f}°F`;
+          return `${f}��F`;
         }
       }
       return t;
