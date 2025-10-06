@@ -294,7 +294,7 @@ export function TeamWorkflowPanel({ className, ingredients, onCaptureVersion }: 
             </Button>
           </div>
           <Separator />
-          <ScrollArea className="max-h-[24rem] space-y-3">
+          <ScrollArea className="max-h-[24rem] w-full space-y-3">
             {collaboration.feedback.length === 0 ? (
               <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
                 No feedback threads yet.
