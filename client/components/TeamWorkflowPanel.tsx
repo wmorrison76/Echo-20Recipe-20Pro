@@ -245,7 +245,7 @@ export function TeamWorkflowPanel({ className, ingredients, onCaptureVersion }: 
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid gap-3 sm:grid-cols-[minmax(16rem,1fr),minmax(12rem,0.6fr),minmax(12rem,0.6fr)]">
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(16rem,1fr),minmax(12rem,0.6fr),minmax(12rem,0.6fr)]">
             <Input
               value={threadForm.topic}
               onChange={(event) => setThreadForm((prev) => ({ ...prev, topic: event.target.value }))}
