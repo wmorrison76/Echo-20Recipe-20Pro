@@ -143,6 +143,14 @@ function readFromStorage(): ChefYieldRecord[] {
               .filter((sample: DemandSample) => sample.date.length >= 8)
           : undefined,
         procurementPlan: entry.procurementPlan ?? null,
+        inputUnit:
+          typeof entry.inputUnit === "string"
+            ? String(entry.inputUnit).trim().toUpperCase()
+            : "",
+        outputUnit:
+          typeof entry.outputUnit === "string"
+            ? String(entry.outputUnit).trim().toUpperCase()
+            : "",
         recordedAt: Number(entry.recordedAt ?? Date.now()),
         yieldPercent: clampPercent(entry.yieldPercent),
       }))
