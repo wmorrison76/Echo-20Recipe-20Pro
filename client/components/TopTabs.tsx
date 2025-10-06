@@ -511,7 +511,7 @@ export default function TopTabs() {
             <button
               type="button"
               onClick={() => setCollapsedManual((prev) => !prev)}
-              className="absolute right-[-18px] top-1/2 z-10 -translate-y-1/2 select-none rounded-full border border-gray-300 bg-background px-2 py-3 shadow transition duration-300 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-slate-700 dark:bg-slate-900/70 dark:hover:bg-slate-900"
+              className="absolute right-[-18px] top-1/2 z-10 -translate-y-1/2 select-none rounded-full border border-gray-300 bg-background px-1.5 py-2.5 shadow transition duration-300 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-slate-700 dark:bg-slate-900/70 dark:hover:bg-slate-900"
               aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
               aria-pressed={!collapsed}
               aria-expanded={!collapsed}
