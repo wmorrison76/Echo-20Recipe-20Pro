@@ -995,15 +995,6 @@ const RecipeInputPage = () => {
   useEffect(() => {
     const toolbarItems: PageToolbarItem[] = [
       {
-        id: "toggle-tools",
-        label: t("recipe.actions.toggleTools", "Toggle Tools"),
-        ariaLabel: t("recipe.actions.toggleTools", "Toggle Tools"),
-        icon: Menu,
-        onClick: handleToggleTools,
-        className: toolbarClass,
-        title: t("recipe.actions.toggleTools", "Toggle Tools"),
-      },
-      {
         id: "scale",
         label: t("recipe.actions.scale", "Scale Recipe"),
         ariaLabel: t("recipe.actions.scale", "Scale Recipe"),
