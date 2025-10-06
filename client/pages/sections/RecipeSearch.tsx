@@ -380,6 +380,13 @@ const [scanOpen, setScanOpen] = useState(false);
     );
   }, [collections]);
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const goToCookbookBuilder = useCallback(() => {
+    const next = new URLSearchParams(searchParams);
+    next.set("tab", "server-notes");
+    setSearchParams(next, { replace: false });
+  }, [searchParams, setSearchParams]);
+
   const importBookPdf = async (file: File) => {
   if (!file) return;
   const isPdf =
