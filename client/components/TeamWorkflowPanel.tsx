@@ -289,11 +289,12 @@ export function TeamWorkflowPanel({ className, ingredients, onCaptureVersion }: 
             placeholder="What needs review?"
             rows={3}
           />
-          <div className="flex justify-end">
+          <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
             <Button
               type="button"
               onClick={handleCreateThread}
               disabled={!threadForm.topic.trim() || !threadForm.message.trim()}
+              className="w-full sm:w-auto"
             >
               Start thread
             </Button>
