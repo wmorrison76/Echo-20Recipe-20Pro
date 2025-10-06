@@ -603,7 +603,7 @@ const RecipeInputPage = () => {
       setSelectedAllergens(detectAllergensFromIngredients(ingredients));
   }, [ingredients]);
 
-  const inputClass = `border p-3 rounded-lg text-sm transition-all focus:shadow-md focus:ring-2 ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30 shadow-none" : "bg-white border-gray-300 text-black focus:ring-blue-400/30 focus:border-blue-500 shadow-lg"}`;
+  const inputClass = `border p-2.5 rounded-lg text-sm transition-all focus:shadow-md focus:ring-2 ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30 shadow-none" : "bg-white border-gray-300 text-black focus:ring-blue-400/30 focus:border-blue-500 shadow-lg"}`;
   const infoInputClass = useMemo(
     () =>
       `rounded-lg border px-2 py-1 text-xs font-semibold tracking-wide transition-colors focus:outline-none focus:ring-1 ${
