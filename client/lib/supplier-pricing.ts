@@ -104,8 +104,8 @@ function buildQuote(
   let estimatedCost: number | null = null;
   if (requestedQtyInfo && requestedQtyInfo.dimension === packBase.dimension) {
     estimatedCost = pricePerBaseUnit * requestedQtyInfo.value;
-  } else if (unitCost != null && requestedQtyInfo) {
-    estimatedCost = unitCost * (requestedQtyInfo.value / requestedUnitInfo!.value);
+  } else if (unitCost != null && requestedQtyInfo && requestedUnitInfo) {
+    estimatedCost = unitCost * (requestedQtyInfo.value / requestedUnitInfo.value);
   }
 
   const descriptorMatches = countDescriptorOverlap(ingredientTokens, item.descriptors);
