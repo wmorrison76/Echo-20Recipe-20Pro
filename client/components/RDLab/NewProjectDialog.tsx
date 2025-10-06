@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 
 import {
   Dialog,
@@ -45,7 +45,7 @@ export function NewProjectDialog({ open, onOpenChange, onSubmit }: NewProjectDia
     setName((prev) => prev || "Untitled Lab");
   }, [open]);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmedName = name.trim();
     if (!trimmedName) return;
