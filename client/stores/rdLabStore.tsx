@@ -418,6 +418,9 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
       appendVariable,
       appendTestStep,
       appendSensoryTarget,
+      appendTextureObjective,
+      appendFlavorConstellation,
+      appendFutureFoodAngle,
     }),
     [
       experiments,
@@ -430,6 +433,9 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
       appendVariable,
       appendTestStep,
       appendSensoryTarget,
+      appendTextureObjective,
+      appendFlavorConstellation,
+      appendFutureFoodAngle,
     ],
   );
 
