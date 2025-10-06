@@ -2689,22 +2689,35 @@ const RecipeInputPage = () => {
               </div>
 
               <Dialog open={isRndLabsOpen} onOpenChange={setIsRndLabsOpen}>
-                <DialogContent className="max-w-[min(1200px,95vw)] w-full h-[85vh] overflow-hidden border border-white/10 bg-white/95 p-0 text-slate-900 shadow-[0_40px_120px_-60px_rgba(15,23,42,0.65)] dark:border-cyan-500/20 dark:bg-slate-950/95 dark:text-cyan-100">
-                  <div className="flex h-full min-h-0 flex-col">
-                    <DialogHeader className="flex flex-row items-center justify-between border-b px-6 py-4 dark:border-cyan-500/20">
-                      <DialogTitle className="text-lg font-semibold uppercase tracking-[0.35em]">
-                        R&D Labs
-                      </DialogTitle>
+                <DialogContent
+                  className={`chalkboard-labs relative w-full max-w-[min(1200px,95vw)] h-[85vh] overflow-hidden border px-0 text-slate-100 shadow-[0_40px_120px_-60px_rgba(15,23,42,0.65)] ${
+                    isDarkMode
+                      ? "border-cyan-500/25 text-cyan-100/90"
+                      : "border-slate-700/35 text-slate-100"
+                  }`}
+                >
+                  <div className="relative z-10 flex h-full min-h-0 flex-col">
+                    <DialogHeader className="relative z-10 flex flex-row items-center justify-between border-b border-white/10 bg-black/25 px-6 py-4 backdrop-blur-sm">
+                      <div className="space-y-1">
+                        <DialogTitle className="text-lg font-semibold uppercase tracking-[0.35em] text-cyan-100/90">
+                          R&D Labs
+                        </DialogTitle>
+                        <div className="hidden gap-4 text-[10px] uppercase tracking-[0.45em] text-cyan-100/70 sm:flex">
+                          <span className="chalk-breath">Texture</span>
+                          <span className="chalk-breath">Flavor</span>
+                          <span className="chalk-breath">Future</span>
+                        </div>
+                      </div>
                       <button
                         type="button"
                         onClick={() => setIsRndLabsOpen(false)}
-                        className="rounded-full border border-transparent bg-slate-900/5 p-2 text-slate-500 transition hover:bg-slate-900/10 hover:text-slate-800 dark:bg-cyan-500/10 dark:text-cyan-200 dark:hover:bg-cyan-500/20"
+                        className="rounded-full border border-white/20 bg-white/5 p-2 text-cyan-100 transition hover:bg-white/10 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/70"
                         aria-label="Close R&D Labs"
                       >
                         <X className="h-4 w-4" aria-hidden />
                       </button>
                     </DialogHeader>
-                    <div className="flex flex-1 min-h-0 flex-col gap-4 px-6 py-4">
+                    <div className="relative z-10 flex flex-1 min-h-0 flex-col gap-4 px-6 py-4">
                       <p className={`text-sm ${accentMuted}`}>
                         Drag the dividers to resize each workspace. Use these
                         surfaces for experiments, documentation, or automation
@@ -2713,7 +2726,7 @@ const RecipeInputPage = () => {
                       <PanelGroup
                         direction="horizontal"
                         onLayout={handleRndLayoutChange}
-                        className="flex h-full min-h-0 items-stretch gap-3"
+                        className="relative z-10 flex h-full min-h-0 items-stretch gap-3"
                       >
                         <Panel
                           minSize={20}
@@ -2722,6 +2735,7 @@ const RecipeInputPage = () => {
                           className="flex min-h-0"
                         >
                           <section
+                            data-chalk-label="INSPIRE"
                             className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[0]}`}
                           >
                             <header className={rndPanelHeadingClasses}>
