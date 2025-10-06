@@ -2376,7 +2376,7 @@ const RecipeInputPage = () => {
                     data-echo-key="section:add:allergens"
                   >
                     <div
-                      className={`font-semibold text-xs mb-2 ${isDarkMode ? "text-cyan-300" : "text-gray-700"}`}
+                      className={`font-semibold text-xs mb-1.5 ${isDarkMode ? "text-cyan-300" : "text-gray-700"}`}
                     >
                       {t("recipe.labels.allergens", "ALLERGENS")}
                     </div>
