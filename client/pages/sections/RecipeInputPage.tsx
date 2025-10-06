@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { createPortal } from "react-dom";
 import RightSidebar from "./RightSidebar";
 import { useAppData } from "@/context/AppDataContext";
 import ImageEditorModal from "./ImageEditorModal";
@@ -1599,7 +1600,7 @@ const RecipeInputPage = () => {
           /^(?:\d{2,3})$/.test(t.replace(/[^0-9]/g, ""))
         ) {
           const f = Math.round((num * 9) / 5 + 32);
-          return `${f}��F`;
+          return `${f}°F`;
         }
       }
       return t;
