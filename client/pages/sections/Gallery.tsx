@@ -508,7 +508,10 @@ export default function GallerySection() {
             {lookbooks.map((b) => (
               <div
                 key={b.id}
-                className="rounded border px-3 py-2 text-sm flex items-center justify-between gap-2 min-w-[260px] flex-auto no-callout"
+                className={cn(
+                  "flex min-w-[260px] flex-auto items-center justify-between gap-2 rounded-2xl border px-4 py-3 text-sm no-callout backdrop-blur-lg",
+                  subtleSurface,
+                )}
               >
                 <div className="flex items-center gap-2">
                   <button
