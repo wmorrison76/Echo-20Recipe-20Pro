@@ -64,6 +64,27 @@ export function WorkbenchPanel() {
     setDraftSensory("");
   };
 
+  const handleTextureSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!experiment || !draftTextureObjective.trim()) return;
+    appendTextureObjective(experiment.id, draftTextureObjective);
+    setDraftTextureObjective("");
+  };
+
+  const handleFlavorSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!experiment || !draftFlavorConstellation.trim()) return;
+    appendFlavorConstellation(experiment.id, draftFlavorConstellation);
+    setDraftFlavorConstellation("");
+  };
+
+  const handleFutureAngleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!experiment || !draftFutureAngle.trim()) return;
+    appendFutureFoodAngle(experiment.id, draftFutureAngle);
+    setDraftFutureAngle("");
+  };
+
   const isVariableDisabled = !draftVariable.trim();
   const isTestStepDisabled = !draftTestStep.trim();
   const isSensoryDisabled = !draftSensory.trim();
