@@ -596,7 +596,8 @@ export default function TopTabs() {
               </li>
               <li>
                 Use tags to group photos and create Look Books. Open a Look Book
-                for a flipbook with click, swipe or arrow-key navigation.
+                for an immersive showcase with storyboard navigation and quick
+                action controls.
               </li>
             </ul>
             <p className="text-muted-foreground">
