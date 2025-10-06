@@ -21,6 +21,7 @@ const matrixLabels: Record<LanguageCode, {
   present: string;
   absent: string;
   noData: string;
+  noAllergensRow: string;
   print: string;
 }> = {
   "en-US": {
