@@ -193,7 +193,7 @@ function TabLink({
       aria-label={label}
       className={cn(
         "group flex w-full items-center rounded-md text-sm font-medium transition-all duration-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-        collapsed ? "justify-center gap-0 px-2 py-2" : "gap-2 px-3 py-2",
+        collapsed ? "justify-center gap-0 px-1.5 py-1.5" : "gap-1.5 px-2.5 py-1.5",
         isActive
           ? "bg-primary text-primary-foreground shadow"
           : "text-foreground/75 hover:bg-muted hover:text-foreground",
