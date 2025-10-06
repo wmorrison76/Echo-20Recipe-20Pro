@@ -302,6 +302,129 @@ export function WorkbenchPanel() {
               </div>
             </div>
           </section>
+
+          <section className="rounded-2xl border border-white/15 bg-white/60 p-4 shadow-inner dark:border-cyan-500/25 dark:bg-slate-950/70">
+            <header className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
+              Texture blueprint
+            </header>
+            <ul className="mt-2 space-y-2 text-sm text-slate-600 dark:text-cyan-100/80">
+              {experiment.textureObjectives.length ? (
+                experiment.textureObjectives.map((objective) => (
+                  <li key={objective} className="rounded-lg border border-white/25 bg-white/60 px-3 py-2 text-xs uppercase tracking-[0.3em] text-slate-500 shadow-sm dark:border-cyan-500/20 dark:bg-slate-950/50 dark:text-cyan-200/80">
+                    {objective}
+                  </li>
+                ))
+              ) : (
+                <li className="italic text-slate-400 dark:text-cyan-300/60">
+                  Define the sensory checkpoints you will measure.
+                </li>
+              )}
+            </ul>
+            <form onSubmit={handleTextureSubmit} className="mt-3 space-y-2 text-xs">
+              <textarea
+                value={draftTextureObjective}
+                onChange={(event) => setDraftTextureObjective(event.target.value)}
+                rows={2}
+                placeholder="e.g. Custard wobble holds at 1 Hz after 24h"
+                className="w-full rounded-lg border border-white/40 bg-white/80 px-3 py-2 text-slate-700 outline-none transition focus:border-emerald-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/25 dark:bg-slate-950/70 dark:text-cyan-100"
+              />
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={isTextureDisabled}
+                  className={`rounded-full px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.3em] transition ${
+                    isTextureDisabled
+                      ? "cursor-not-allowed border border-white/40 bg-white/40 text-slate-400 dark:border-cyan-500/20 dark:bg-slate-950/60"
+                      : "border border-emerald-400/40 bg-emerald-500/80 text-white hover:bg-emerald-500 dark:border-emerald-400/50 dark:bg-emerald-500/80"
+                  }`}
+                >
+                  Pin objective
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section className="rounded-2xl border border-white/15 bg-white/60 p-4 shadow-inner dark:border-cyan-500/25 dark:bg-slate-950/70">
+            <header className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
+              Flavor architecture
+            </header>
+            <ul className="mt-2 space-y-2 text-sm text-slate-600 dark:text-cyan-100/80">
+              {experiment.flavorConstellations.length ? (
+                experiment.flavorConstellations.map((constellation) => (
+                  <li key={constellation} className="rounded-lg border border-white/25 bg-white/60 px-3 py-2 text-xs uppercase tracking-[0.3em] text-slate-500 shadow-sm dark:border-cyan-500/20 dark:bg-slate-950/50 dark:text-cyan-200/80">
+                    {constellation}
+                  </li>
+                ))
+              ) : (
+                <li className="italic text-slate-400 dark:text-cyan-300/60">
+                  Map the base, amplifier, and balancing elements.
+                </li>
+              )}
+            </ul>
+            <form onSubmit={handleFlavorSubmit} className="mt-3 space-y-2 text-xs">
+              <textarea
+                value={draftFlavorConstellation}
+                onChange={(event) => setDraftFlavorConstellation(event.target.value)}
+                rows={2}
+                placeholder="e.g. Miso caramel × burnt citrus oil × spruce tip salt"
+                className="w-full rounded-lg border border-white/40 bg-white/80 px-3 py-2 text-slate-700 outline-none transition focus:border-rose-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/25 dark:bg-slate-950/70 dark:text-cyan-100"
+              />
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={isFlavorDisabled}
+                  className={`rounded-full px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.3em] transition ${
+                    isFlavorDisabled
+                      ? "cursor-not-allowed border border-white/40 bg-white/40 text-slate-400 dark:border-cyan-500/20 dark:bg-slate-950/60"
+                      : "border border-rose-400/40 bg-rose-500/80 text-white hover:bg-rose-500 dark:border-rose-400/40 dark:bg-rose-500/80"
+                  }`}
+                >
+                  Log constellation
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section className="rounded-2xl border border-white/15 bg-white/60 p-4 shadow-inner dark:border-cyan-500/25 dark:bg-slate-950/70">
+            <header className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
+              Future-of-food hypotheses
+            </header>
+            <ul className="mt-2 space-y-2 text-sm text-slate-600 dark:text-cyan-100/80">
+              {experiment.futureFoodAngles.length ? (
+                experiment.futureFoodAngles.map((angle) => (
+                  <li key={angle} className="rounded-lg border border-white/25 bg-white/60 px-3 py-2 text-xs uppercase tracking-[0.3em] text-slate-500 shadow-sm dark:border-cyan-500/20 dark:bg-slate-950/50 dark:text-cyan-200/80">
+                    {angle}
+                  </li>
+                ))
+              ) : (
+                <li className="italic text-slate-400 dark:text-cyan-300/60">
+                  Describe the climate, nutrition, or supply impact goals.
+                </li>
+              )}
+            </ul>
+            <form onSubmit={handleFutureAngleSubmit} className="mt-3 space-y-2 text-xs">
+              <textarea
+                value={draftFutureAngle}
+                onChange={(event) => setDraftFutureAngle(event.target.value)}
+                rows={2}
+                placeholder="e.g. Upcycle koji whey into sparkling dessert bases"
+                className="w-full rounded-lg border border-white/40 bg-white/80 px-3 py-2 text-slate-700 outline-none transition focus:border-indigo-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/25 dark:bg-slate-950/70 dark:text-cyan-100"
+              />
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={isFutureAngleDisabled}
+                  className={`rounded-full px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.3em] transition ${
+                    isFutureAngleDisabled
+                      ? "cursor-not-allowed border border-white/40 bg-white/40 text-slate-400 dark:border-cyan-500/20 dark:bg-slate-950/60"
+                      : "border border-indigo-400/40 bg-indigo-500/80 text-white hover:bg-indigo-500 dark:border-indigo-400/40 dark:bg-indigo-500/80"
+                  }`}
+                >
+                  Capture angle
+                </button>
+              </div>
+            </form>
+          </section>
         </div>
       </div>
 
