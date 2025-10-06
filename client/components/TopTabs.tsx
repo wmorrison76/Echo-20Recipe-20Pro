@@ -460,7 +460,7 @@ export default function TopTabs() {
                 }}
                 className={cn(
                   "flex w-full items-center rounded-md bg-white/70 px-2.5 py-1.5 font-medium text-foreground shadow-sm transition duration-300 hover:bg-white dark:bg-slate-900/80 dark:hover:bg-slate-900",
-                  collapsed ? "justify-center px-2" : "justify-between",
+                  collapsed ? "justify-center px-1.5" : "justify-between",
                 )}
               >
                 <DissolvingText
@@ -478,7 +478,7 @@ export default function TopTabs() {
                 onClick={() => setShowHelp(true)}
                 className={cn(
                   "flex w-full items-center rounded-md px-3 py-2 font-medium text-foreground transition duration-300 hover:bg-white/70 dark:hover:bg-slate-900/70",
-                  collapsed ? "justify-center px-2" : "justify-between",
+                  collapsed ? "justify-center px-1.5" : "justify-between",
                 )}
               >
                 <DissolvingText
