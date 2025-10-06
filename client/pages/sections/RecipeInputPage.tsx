@@ -2259,11 +2259,11 @@ const RecipeInputPage = () => {
 
                 <div className="mt-5">
                   <div
-                    className={`grid auto-rows-auto grid-cols-8 gap-3 text-[10px] sm:text-[11px] leading-tight ${
+                    className={`grid grid-cols-4 md:grid-cols-12 gap-2 text-[10px] sm:text-[11px] leading-tight ${
                       isDarkMode ? "text-cyan-200" : "text-slate-700"
                     }`}
                   >
-                    <div className="col-span-2 flex flex-col gap-1">
+                    <div className="col-span-2 flex flex-col gap-1 md:col-span-2">
                       <span className={infoLabelClass}>{t("recipe.labels.cookTime", "COOK TIME")}</span>
                       <div className="flex items-center gap-1">
                         <input
@@ -2281,7 +2281,7 @@ const RecipeInputPage = () => {
                       </div>
                     </div>
 
-                    <div className="col-span-2 flex flex-col gap-1">
+                    <div className="col-span-2 flex flex-col gap-1 md:col-span-2">
                       <span className={infoLabelClass}>{t("recipe.labels.cookTemp", "COOK TEMP")}</span>
                       <input
                         value={cookTemp}
@@ -2295,7 +2295,7 @@ const RecipeInputPage = () => {
                       />
                     </div>
 
-                    <div className="col-span-2 flex flex-col gap-1">
+                    <div className="col-span-2 flex flex-col gap-1 md:col-span-2">
                       <span className={infoLabelClass}>{t("recipe.labels.prepTime", "PREP TIME")}</span>
                       <div className="flex items-center gap-1">
                         <input
@@ -2312,14 +2312,34 @@ const RecipeInputPage = () => {
                       </div>
                     </div>
 
-                    <div className="col-span-1 flex flex-col gap-1">
+                    <div className="col-span-2 flex flex-col gap-1 md:col-span-2">
                       <span className={infoLabelClass}>FULL RECIPE</span>
                       <span className={infoValuePillClass}>
                         {`${getCurrencySymbol(currentCurrency)}${calculateTotalCost().toFixed(2)}`}
                       </span>
                     </div>
 
-                    <div className="col-span-1 flex flex-col gap-1">
+                    <div className="col-span-2 flex flex-col gap-1 md:col-span-2">
+                      <span className={infoLabelClass}>
+                        {t("recipe.labels.portionCost", "PORTION COST")}
+                      </span>
+                      <span className={infoValuePillClass}>
+                        {`${getCurrencySymbol(currentCurrency)}${calculatePortionCost().toFixed(2)}`}
+                      </span>
+                    </div>
+
+                    <div className="col-span-2 flex flex-col gap-1 md:col-span-2">
+                      <span className={infoLabelClass}>{t("recipe.labels.recipeType", "RECIPE")}</span>
+                      <span className={infoValuePillClass}>
+                        {selectedRecipeType.includes("Full Recipe")
+                          ? t("recipe.labels.full", "FULL")
+                          : selectedRecipeType.includes("Sub Recipe")
+                            ? t("recipe.labels.sub", "SUB")
+                            : t("recipe.labels.unspecified", "UNSPECIFIED")}
+                      </span>
+                    </div>
+
+                    <div className="col-span-2 flex flex-col gap-1 md:col-span-3">
                       <span className={infoLabelClass}>
                         {t("recipe.labels.recipeAccess", "RECIPE ACCESS")}
                       </span>
@@ -2330,7 +2350,7 @@ const RecipeInputPage = () => {
                       </span>
                     </div>
 
-                    <div className="col-span-3 flex flex-col gap-1">
+                    <div className="col-span-4 flex flex-col gap-1 md:col-span-5">
                       <div className="flex items-center justify-between gap-2">
                         <span className={infoLabelClass}>YIELD</span>
                         <button
@@ -2368,7 +2388,7 @@ const RecipeInputPage = () => {
                       </div>
                     </div>
 
-                    <div className="col-span-3 flex flex-col gap-1">
+                    <div className="col-span-4 flex flex-col gap-1 md:col-span-4">
                       <span className={infoLabelClass}>{t("recipe.labels.portion", "PORTION")}</span>
                       <div className="flex items-center gap-1">
                         <input
@@ -2385,26 +2405,6 @@ const RecipeInputPage = () => {
                           className={`${infoInputClass} w-14 flex-1 text-center uppercase`}
                         />
                       </div>
-                    </div>
-
-                    <div className="col-span-1 flex flex-col gap-1">
-                      <span className={infoLabelClass}>
-                        {t("recipe.labels.portionCost", "PORTION COST")}
-                      </span>
-                      <span className={infoValuePillClass}>
-                        {`${getCurrencySymbol(currentCurrency)}${calculatePortionCost().toFixed(2)}`}
-                      </span>
-                    </div>
-
-                    <div className="col-span-1 flex flex-col gap-1">
-                      <span className={infoLabelClass}>{t("recipe.labels.recipeType", "RECIPE")}</span>
-                      <span className={infoValuePillClass}>
-                        {selectedRecipeType.includes("Full Recipe")
-                          ? t("recipe.labels.full", "FULL")
-                          : selectedRecipeType.includes("Sub Recipe")
-                            ? t("recipe.labels.sub", "SUB")
-                            : t("recipe.labels.unspecified", "UNSPECIFIED")}
-                      </span>
                     </div>
                   </div>
                 </div>
