@@ -174,6 +174,7 @@ const RecipeInputPage = () => {
   const [ingredients, setIngredients] = useState<IngredientRow[]>([
     createIngredientRow(),
   ]);
+  const supplierQuotes = useSupplierQuotes(ingredients);
   const historyRef = useRef<any[]>([]);
   const futureRef = useRef<any[]>([]);
   const [directions, setDirections] = useState("1. ");
@@ -3229,7 +3230,7 @@ const RecipeInputPage = () => {
                   "⅞": "7/8",
                 };
                 s = s.replace(
-                  /[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜��⅞]/g,
+                  /[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g,
                   (ch) => fracMap[ch] || ch,
                 );
                 const m = s.match(
