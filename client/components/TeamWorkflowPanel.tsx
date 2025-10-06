@@ -374,7 +374,7 @@ export function TeamWorkflowPanel({ className, ingredients, onCaptureVersion }: 
                           placeholder="Add update"
                         />
                       </div>
-                      <div className="flex justify-end">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
                         <Button
                           type="button"
                           size="sm"
@@ -390,6 +390,7 @@ export function TeamWorkflowPanel({ className, ingredients, onCaptureVersion }: 
                               [thread.id]: { author: "", message: "" },
                             }));
                           }}
+                          className="w-full sm:w-auto"
                         >
                           Reply
                         </Button>
