@@ -99,7 +99,7 @@ function IndexContent() {
                           title={item.title || item.label}
                         >
                           {item.icon ? (
-                            <item.icon className="h-5 w-5" aria-hidden />
+                            <item.icon className="h-4 w-4" aria-hidden />
                           ) : null}
                           <span className="sr-only">{item.label}</span>
                         </button>
