@@ -1914,7 +1914,7 @@ const RecipeInputPage = () => {
       "⅝": "5/8",
       "⅞": "7/8",
     };
-    let t = s.trim().replace(/[¼��¾⅓⅔⅛⅜⅝���]/g, (ch) => map[ch] || ch);
+    let t = s.trim().replace(/[¼��¾⅓⅔⅛⅜⅝����]/g, (ch) => map[ch] || ch);
     t = t.replace(/^(?:\s*)\/(\d+)/, "1/$1");
     t = t.replace(/(\d)(\s*)(\d\/\d)/, "$1 $3");
     const m = t.match(
@@ -2470,7 +2470,7 @@ const RecipeInputPage = () => {
                     {t("recipe.labels.modifiers", "Modifiers")}
                   </div>
                   <div
-                    className={`${isDarkMode ? "bg-blue-900/20 border-blue-400/30" : "bg-blue-50 border-blue-200"} border rounded-lg p-1.5 text-xs`}
+                    className={`${isDarkMode ? "bg-blue-900/20 border-blue-400/30" : "bg-blue-50 border-blue-200"} border rounded-lg p-1 text-xs`}
                   >
                     {(() => {
                       const diet = new Set(taxonomy.diets);
