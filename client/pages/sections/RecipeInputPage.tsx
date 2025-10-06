@@ -254,25 +254,14 @@ const RecipeInputPage = () => {
     "recipe",
   );
   const [rndLayout, setRndLayout] = useState<[number, number, number]>(() => {
-    if (typeof window === "undefined") return [32, 36, 32];
+    if (typeof window === "undefined") return DEFAULT_RND_LAYOUT;
     try {
       const stored = window.localStorage.getItem("recipe:rnd-layout");
       if (stored) {
-        const parsed = JSON.parse(stored);
-        if (
-          Array.isArray(parsed) &&
-          parsed.length === 3 &&
-          parsed.every((value) => Number.isFinite(Number(value)))
-        ) {
-          return parsed.map((value) => Number(value)) as [
-            number,
-            number,
-            number,
-          ];
-        }
+        return sanitizeRndLayout(JSON.parse(stored));
       }
     } catch {}
-    return [32, 36, 32];
+    return DEFAULT_RND_LAYOUT;
   });
   useEffect(() => {
     if (typeof window === "undefined") return;
