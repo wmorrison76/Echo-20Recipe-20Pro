@@ -126,7 +126,7 @@ export function TeamWorkflowPanel({ className, ingredients, onCaptureVersion }: 
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid gap-3 sm:grid-cols-[minmax(16rem,1fr),repeat(3,minmax(10rem,1fr))]">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-[minmax(16rem,1fr),repeat(3,minmax(10rem,1fr))]">
             <Input
               value={taskForm.title}
               onChange={(event) => setTaskForm((prev) => ({ ...prev, title: event.target.value }))}
