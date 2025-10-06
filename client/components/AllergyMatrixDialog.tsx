@@ -86,7 +86,8 @@ const matrixLabels: Record<LanguageCode, {
     recipe: "Rezept",
     present: "Ja",
     absent: "Nein",
-    noData: "Keine Allergene für diese Rezepte gefunden.",
+    noData: "Keine Rezepte ausgewählt.",
+    noAllergensRow: "Keine Allergene markiert",
     print: "Matrix drucken",
   },
 };
