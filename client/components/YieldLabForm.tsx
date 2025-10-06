@@ -72,6 +72,16 @@ const YieldLabForm: React.FC<YieldLabFormProps> = ({
     displayUnit(defaultInputUnit || inputUnit || "G"),
   );
   const [notes, setNotes] = useState<string>("");
+  const [itemType, setItemType] = useState<"ingredient" | "readyMade">("ingredient");
+  const [readyMadeId, setReadyMadeId] = useState<string>("");
+  const [outputPortions, setOutputPortions] = useState<number>(0);
+  const [portionSize, setPortionSize] = useState<number>(0);
+  const [portionUnit, setPortionUnit] = useState<string>(
+    displayUnit(defaultInputUnit || inputUnit || "G"),
+  );
+  const [forecastPortions, setForecastPortions] = useState<number>(0);
+  const [bufferPercent, setBufferPercent] = useState<number>(8);
+  const [leadTimeDays, setLeadTimeDays] = useState<number>(2);
   const [formError, setFormError] = useState<string | null>(null);
 
   useEffect(() => {
