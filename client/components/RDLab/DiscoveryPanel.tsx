@@ -84,6 +84,9 @@ export function DiscoveryPanel() {
     setDraftEquipment("");
     setDraftTags("");
     setDraftLaunchWindow("");
+    setDraftTextureObjectives("");
+    setDraftFlavorConstellations("");
+    setDraftFutureAngles("");
   };
 
   const isCreateDisabled = !draftTitle.trim() || !draftHypothesis.trim();
