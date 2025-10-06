@@ -442,7 +442,11 @@ export default function GallerySection() {
         </div>
       </div>
 
-      {status && <div className="rounded-md border p-3 text-sm">{status}</div>}
+      {status && (
+        <div className={cn("rounded-[20px] border px-4 py-3 text-sm", subtleSurface)}>
+          {status}
+        </div>
+      )}
 
       <div className="rounded-2xl border p-4">
         <div className="flex flex-wrap items-center gap-2">
