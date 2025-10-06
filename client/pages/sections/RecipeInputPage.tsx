@@ -2473,7 +2473,7 @@ const RecipeInputPage = () => {
                     {t("recipe.labels.modifiers", "Modifiers")}
                   </div>
                   <div
-                    className={`${isDarkMode ? "bg-blue-900/20 border-blue-400/30" : "bg-blue-50 border-blue-200"} border rounded-lg p-2 text-xs`}
+                    className={`${isDarkMode ? "bg-blue-900/20 border-blue-400/30" : "bg-blue-50 border-blue-200"} border rounded-lg p-1.5 text-xs`}
                   >
                     {(() => {
                       const diet = new Set(taxonomy.diets);
