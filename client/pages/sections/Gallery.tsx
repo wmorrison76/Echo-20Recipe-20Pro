@@ -381,14 +381,17 @@ export default function GallerySection() {
         </div>
       </div>
 
-      <div className="rounded-xl border p-3 space-y-2 bg-white/95 dark:bg-zinc-900 shadow-sm ring-1 ring-black/5 dark:ring-sky-500/15">
-        <div className="text-sm font-medium">Add from URL(s)</div>
-        <div className="flex flex-col md:flex-row gap-2 items-stretch md:items-center">
+      <div className={cn("rounded-[28px] border p-6 space-y-3 backdrop-blur-xl", cardSurface)}>
+        <div className="text-sm font-semibold tracking-tight">Add from URL(s)</div>
+        <div className="flex flex-col items-stretch gap-3 md:flex-row md:items-center">
           <textarea
             value={urlText}
             onChange={(e) => setUrlText(e.target.value)}
-            placeholder="Paste one or more direct image URLs (one per line)"
-            className="flex-1 min-h-[60px] rounded-md border bg-background px-3 py-2 text-sm font-mono"
+            placeholder="Paste image URLs — one per line"
+            className={cn(
+              "flex-1 min-h-[90px] rounded-2xl border px-4 py-3 text-sm font-mono shadow-inner",
+              lucccaMode ? "bg-slate-900/70" : "bg-white/80",
+            )}
           />
           <Button
             disabled={urlLoading || !urlText.trim()}
@@ -432,6 +435,7 @@ export default function GallerySection() {
                 setUrlLoading(false);
               }
             }}
+            className="rounded-full px-6"
           >
             {urlLoading ? "Adding..." : "Add"}
           </Button>
