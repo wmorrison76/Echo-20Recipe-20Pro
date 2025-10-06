@@ -39,6 +39,9 @@ type NewExperimentInput = {
   sensoryTargets?: string[];
   testPlan?: string[];
   equipment?: string[];
+  textureObjectives?: string[];
+  flavorConstellations?: string[];
+  futureFoodAngles?: string[];
   notes?: string;
   status?: ExperimentStatus;
   launchWindow?: string;
