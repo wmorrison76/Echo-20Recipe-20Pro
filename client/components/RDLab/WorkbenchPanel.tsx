@@ -34,6 +34,9 @@ export function WorkbenchPanel() {
   const [draftVariable, setDraftVariable] = useState("");
   const [draftTestStep, setDraftTestStep] = useState("");
   const [draftSensory, setDraftSensory] = useState("");
+  const [draftTextureObjective, setDraftTextureObjective] = useState("");
+  const [draftFlavorConstellation, setDraftFlavorConstellation] = useState("");
+  const [draftFutureAngle, setDraftFutureAngle] = useState("");
 
   const handleStatusChange = (event: ChangeEvent<HTMLSelectElement>) => {
     if (!experiment) return;
