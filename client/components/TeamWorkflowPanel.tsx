@@ -164,8 +164,13 @@ export function TeamWorkflowPanel({ className, ingredients, onCaptureVersion }: 
               </SelectContent>
             </Select>
           </div>
-          <div className="flex justify-end">
-            <Button type="button" onClick={handleAddTask} disabled={!taskForm.title.trim()}>
+          <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+            <Button
+              type="button"
+              onClick={handleAddTask}
+              disabled={!taskForm.title.trim()}
+              className="w-full sm:w-auto"
+            >
               Add task
             </Button>
           </div>
