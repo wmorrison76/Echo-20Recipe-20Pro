@@ -1489,7 +1489,14 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             return false;
           }
         })();
-        let ocrBudget = 24; // cap OCR pages for performance
+        let ocrBudget = Math.min(48, Math.max(24, Math.ceil(doc.numPages * 0.25)));
+        let tesseractModule: any | null = null;
+        const getTesseract = async () => {
+          if (!tesseractModule) {
+            tesseractModule = await import("https://esm.sh/tesseract.js@5.1.1");
+          }
+          return tesseractModule;
+        };
         for (let p = 1; p <= doc.numPages; p++) {
           const page = await doc.getPage(p);
           const extracted = await extractPageText(page);
