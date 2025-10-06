@@ -175,63 +175,48 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    let seeded = false;
-    try {
-      seeded = localStorage.getItem("gallery:seeded:food:v1") === "1";
-    } catch {}
-
-    const onlyOldDemo =
+    const onlyLegacyDemo =
       images.length > 0 &&
       images.every(
-        (i) =>
-          (i.tags || []).includes("demo") && !(i.tags || []).includes("food"),
+        (image) =>
+          (image.tags || []).includes("demo") &&
+          !(image.tags || []).includes("food"),
       );
-    if (images.length > 0 && !onlyOldDemo) return;
 
-    if (seeded || typeof fetch !== "function") {
-      if (images.length === 0 && !seeded) {
-        setImages([
-          {
-            id: uid(),
-            name: "luccca-demo.svg",
-            dataUrl: FALLBACK_GALLERY_IMAGE.dataUrl,
-            createdAt: Date.now(),
-            tags: ["demo", "fallback"],
-            favorite: false,
-            order: 0,
-            type: FALLBACK_GALLERY_IMAGE.mime,
-          },
-        ]);
-        try {
-          localStorage.setItem("gallery:seeded:food:v1", "1");
-        } catch {}
-      }
+    if (images.length > 0 && !onlyLegacyDemo) {
       return;
     }
 
-    (async () => {
-      try {
-        const next: GalleryImage[] = DEMO_PLACEHOLDERS.map((item, index) => ({
-          id: uid(),
-          name: item.name,
-          dataUrl: item.dataUrl,
-          createdAt: Date.now(),
-          tags: item.tags,
-          favorite: false,
-          order: index,
-          type: item.mime,
-        }));
-        if (!mountedRef.current) return;
-        if (onlyOldDemo) setImages([]);
-        if (images.length === 0 || onlyOldDemo) {
-          if (next.length) setImages(next);
-          try {
-            localStorage.setItem("gallery:seeded:food:v1", "1");
-          } catch {}
-        }
-      } catch {}
-    })();
-  }, [images.length]);
+    const timestamp = Date.now();
+    const placeholders: GalleryImage[] = DEMO_PLACEHOLDERS.map((item, index) => ({
+      id: uid(),
+      name: item.name,
+      dataUrl: item.dataUrl,
+      createdAt: timestamp + index,
+      tags: item.tags,
+      favorite: false,
+      order: index,
+      type: item.mime,
+    }));
+
+    if (!placeholders.length) {
+      placeholders.push({
+        id: uid(),
+        name: "luccca-demo.svg",
+        dataUrl: FALLBACK_GALLERY_IMAGE.dataUrl,
+        createdAt: timestamp,
+        tags: ["demo", "fallback"],
+        favorite: false,
+        order: 0,
+        type: FALLBACK_GALLERY_IMAGE.mime,
+      });
+    }
+
+    setImages(placeholders);
+    try {
+      localStorage.setItem("gallery:seeded:food:v1", "1");
+    } catch {}
+  }, [images]);
 
   useEffect(() => {
     writeLS(LS_RECIPES, recipes);
