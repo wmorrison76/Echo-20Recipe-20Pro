@@ -3458,4 +3458,599 @@ const RecipeInputPage = () => {
   );
 };
 
+type RDLabsPortalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  isDarkMode: boolean;
+  layout: [number, number, number];
+  onLayoutChange: (next: number[]) => void;
+  applyLayout: (next: [number, number, number]) => void;
+  defaultLayout: [number, number, number];
+};
+
+function RDLabsPortal({
+  isOpen,
+  onClose,
+  isDarkMode,
+  layout,
+  onLayoutChange,
+  applyLayout,
+  defaultLayout,
+}: RDLabsPortalProps) {
+  const {
+    experiments,
+    focusExperimentId,
+    searchQuery,
+    backlog,
+    insights,
+    serializeState,
+    hydrateState,
+  } = useRDLabStore();
+
+  const isBrowser = typeof window !== "undefined";
+
+  const [sessions, setSessions] = useState<RDLabProjectSession[]>([]);
+  const [activeSessionId, setActiveSessionIdState] = useState<string>("");
+  const [sessionsLoaded, setSessionsLoaded] = useState(false);
+  const [autoSaveState, setAutoSaveState] = useState<"idle" | "saving" | "saved">("idle");
+  const [lastSavedAt, setLastSavedAt] = useState<string>("");
+  const [savePulseKey, setSavePulseKey] = useState(0);
+  const [newProjectOpen, setNewProjectOpen] = useState(false);
+  const [hintCount, setHintCount] = useState(0);
+  const [hintVisible, setHintVisible] = useState(false);
+  const hintTimeoutRef = useRef<number | null>(null);
+
+  const accentMuted = isDarkMode ? "text-cyan-200/80" : "text-slate-200/80";
+  const rndPanelBaseClasses =
+    "chalk-panel relative flex h-full min-h-0 flex-col overflow-hidden rounded-3xl border p-5 shadow-[inset_0_1px_0_rgba(15,23,42,0.08)] backdrop-blur-lg transition-colors duration-300";
+  const rndPanelToneClasses = isDarkMode
+    ? "border-cyan-400/30 text-cyan-100/90"
+    : "border-slate-200/40 text-slate-100";
+  const rndPanelThemes = useMemo(
+    () =>
+      isDarkMode
+        ? [
+            "bg-gradient-to-br from-slate-950/85 via-slate-900/65 to-teal-900/45 shadow-[0_0_42px_rgba(56,189,248,0.15)]",
+            "bg-gradient-to-br from-slate-950/80 via-cyan-900/55 to-slate-950/45 shadow-[0_0_40px_rgba(56,189,248,0.12)]",
+            "bg-gradient-to-br from-slate-950/78 via-slate-900/55 to-indigo-900/45 shadow-[0_0_38px_rgba(99,102,241,0.18)]",
+          ]
+        : [
+            "bg-gradient-to-br from-slate-900/80 via-slate-800/55 to-teal-900/40 shadow-[0_0_36px_rgba(15,118,110,0.24)]",
+            "bg-gradient-to-br from-slate-900/75 via-teal-800/50 to-slate-900/40 shadow-[0_0_32px_rgba(34,197,94,0.18)]",
+            "bg-gradient-to-br from-slate-900/78 via-indigo-800/50 to-slate-900/40 shadow-[0_0_34px_rgba(79,70,229,0.18)]",
+          ],
+    [isDarkMode],
+  );
+  const rndPanelHeadingClasses =
+    "text-[11px] font-semibold uppercase tracking-[0.35em] text-cyan-100/80 drop-shadow-[0_0_6px_rgba(56,189,248,0.35)]";
+  const rndHandleClasses = isDarkMode
+    ? "group relative flex w-8 items-center justify-center rounded-full border border-cyan-400/30 bg-white/10 text-cyan-100 transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+    : "group relative flex w-8 items-center justify-center rounded-full border border-slate-600/40 bg-white/10 text-slate-100 transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-100/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900";
+
+  const setActiveSession = useCallback(
+    (id: string) => {
+      setActiveSessionIdState(id);
+      if (isBrowser) {
+        try {
+          window.localStorage.setItem(RDLAB_ACTIVE_SESSION_KEY, id);
+        } catch {
+          /* ignore storage errors */
+        }
+      }
+    },
+    [isBrowser],
+  );
+
+  const persistSessions = useCallback(
+    (next: RDLabProjectSession[]) => {
+      if (!isBrowser) return;
+      try {
+        window.localStorage.setItem(RDLAB_SESSIONS_STORAGE_KEY, JSON.stringify(next));
+      } catch {
+        /* ignore storage errors */
+      }
+    },
+    [isBrowser],
+  );
+
+  const updateSessions = useCallback(
+    (updater: (prev: RDLabProjectSession[]) => RDLabProjectSession[]) => {
+      setSessions((prev) => {
+        const next = updater(prev);
+        if (!Object.is(next, prev)) {
+          persistSessions(next);
+        }
+        return next;
+      });
+    },
+    [persistSessions],
+  );
+
+  const triggerHint = useCallback(() => {
+    if (!isBrowser || !isOpen) return;
+    setHintCount((prev) => {
+      if (prev >= 5) return prev;
+      const next = prev + 1;
+      try {
+        window.localStorage.setItem(RDLAB_SAVE_HINT_KEY, String(next));
+      } catch {
+        /* ignore storage errors */
+      }
+      setHintVisible(true);
+      if (hintTimeoutRef.current) {
+        window.clearTimeout(hintTimeoutRef.current);
+      }
+      hintTimeoutRef.current = window.setTimeout(() => {
+        setHintVisible(false);
+        hintTimeoutRef.current = null;
+      }, 3600);
+      return next;
+    });
+  }, [isBrowser, isOpen]);
+
+  useEffect(() => {
+    if (isOpen) return;
+    setHintVisible(false);
+    if (hintTimeoutRef.current) {
+      window.clearTimeout(hintTimeoutRef.current);
+      hintTimeoutRef.current = null;
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    return () => {
+      if (hintTimeoutRef.current) {
+        window.clearTimeout(hintTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen || !isBrowser || sessionsLoaded) return;
+
+    let storedSessions: RDLabProjectSession[] = [];
+    try {
+      const raw = window.localStorage.getItem(RDLAB_SESSIONS_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          storedSessions = parsed
+            .map((session) => sanitizeProjectSession(session))
+            .filter((session): session is RDLabProjectSession => session != null);
+        }
+      }
+    } catch {
+      storedSessions = [];
+    }
+
+    if (!storedSessions.length) {
+      const now = new Date().toISOString();
+      const snapshot = serializeState();
+      const defaultSession: RDLabProjectSession = {
+        id: "rd-preloaded",
+        name: "Preloaded Lab",
+        createdAt: now,
+        updatedAt: now,
+        layout: sanitizeRndLayout(layout),
+        snapshot,
+        vision:
+          "Preserve the seeded experimentation environment with its original texture, flavor, and future-of-food scaffolding.",
+        textureFocus: "Smoked custards, carbonated citrus pearls, velvet emulsions",
+        flavorNotes: "Koji smoke layered with maple brine and electric citrus aromatics.",
+        launchTarget: "Evergreen innovation baseline",
+      };
+      storedSessions = [defaultSession];
+      persistSessions(storedSessions);
+      try {
+        window.localStorage.setItem(RDLAB_ACTIVE_SESSION_KEY, defaultSession.id);
+      } catch {
+        /* ignore */
+      }
+    }
+
+    const storedActiveId = (() => {
+      try {
+        return window.localStorage.getItem(RDLAB_ACTIVE_SESSION_KEY);
+      } catch {
+        return null;
+      }
+    })();
+
+    const activeId = storedSessions.some((session) => session.id === storedActiveId)
+      ? (storedActiveId as string)
+      : storedSessions[0]?.id ?? "";
+
+    const activeSession =
+      storedSessions.find((session) => session.id === activeId) ?? storedSessions[0];
+
+    if (activeId) {
+      setActiveSession(activeId);
+    }
+    setSessions(storedSessions);
+    if (activeSession) {
+      hydrateState(activeSession.snapshot);
+      applyLayout(sanitizeRndLayout(activeSession.layout));
+      setLastSavedAt(activeSession.updatedAt);
+    }
+
+    const storedHint = (() => {
+      try {
+        return Number(window.localStorage.getItem(RDLAB_SAVE_HINT_KEY) ?? "0");
+      } catch {
+        return 0;
+      }
+    })();
+    setHintCount(Number.isFinite(storedHint) ? storedHint : 0);
+
+    setSessionsLoaded(true);
+  }, [
+    isOpen,
+    isBrowser,
+    sessionsLoaded,
+    serializeState,
+    hydrateState,
+    applyLayout,
+    layout,
+    persistSessions,
+    setActiveSession,
+  ]);
+
+  const activeSession = useMemo(
+    () => sessions.find((session) => session.id === activeSessionId) ?? null,
+    [sessions, activeSessionId],
+  );
+
+  const projectName = activeSession?.name ?? "Untitled Lab";
+
+  const focusExperiment = useMemo(
+    () => experiments.find((item) => item.id === focusExperimentId) ?? experiments[0],
+    [experiments, focusExperimentId],
+  );
+
+  const discoveryQueue = useMemo(() => {
+    if (!experiments.length) return [];
+    const currentId = focusExperiment?.id ?? focusExperimentId;
+    const queue = experiments.filter((exp) => exp.id !== currentId);
+    const source = queue.length ? queue : experiments;
+    return source.slice(0, 4);
+  }, [experiments, focusExperiment?.id, focusExperimentId]);
+
+  const performSave = useCallback(
+    (reason: "auto" | "manual") => {
+      if (!sessionsLoaded || !activeSessionId) return null;
+      const timestamp = new Date().toISOString();
+      const snapshot = serializeState();
+      let didPersist = false;
+
+      updateSessions((prev) => {
+        let mutated = false;
+        const mapped = prev.map((session) => {
+          if (session.id !== activeSessionId) return session;
+          mutated = true;
+          return {
+            ...session,
+            snapshot,
+            layout: sanitizeRndLayout(layout),
+            updatedAt: timestamp,
+          };
+        });
+
+        if (!mutated) {
+          return prev;
+        }
+
+        didPersist = true;
+        const sorted = [...mapped].sort(
+          (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+        );
+        return sorted;
+      });
+
+      if (!didPersist) {
+        if (reason === "manual") {
+          setAutoSaveState("idle");
+        }
+        return null;
+      }
+
+      setLastSavedAt(timestamp);
+      setAutoSaveState("saved");
+      setSavePulseKey((key) => key + 1);
+      triggerHint();
+      return timestamp;
+    },
+    [sessionsLoaded, activeSessionId, serializeState, updateSessions, layout, triggerHint],
+  );
+
+  const handleSessionChange = useCallback(
+    (nextId: string) => {
+      if (!nextId || nextId === activeSessionId) return;
+      performSave("manual");
+      const target = sessions.find((session) => session.id === nextId);
+      if (!target) return;
+      hydrateState(target.snapshot);
+      applyLayout(sanitizeRndLayout(target.layout));
+      setActiveSession(nextId);
+      setLastSavedAt(target.updatedAt);
+      setAutoSaveState("idle");
+      setSavePulseKey((key) => key + 1);
+      setHintVisible(false);
+    },
+    [activeSessionId, sessions, performSave, hydrateState, applyLayout, setActiveSession],
+  );
+
+  const handleProjectCreate = useCallback(
+    (payload: {
+      name: string;
+      vision: string;
+      textureFocus: string;
+      flavorNotes: string;
+      launchTarget: string;
+    }) => {
+      const timestamp = new Date().toISOString();
+      const id = generateSessionId();
+      const snapshot: RDLabSnapshot = {
+        experiments: [],
+        focusExperimentId: "",
+        searchQuery: "",
+      };
+      hydrateState(snapshot);
+      applyLayout(sanitizeRndLayout(defaultLayout));
+      const session: RDLabProjectSession = {
+        id,
+        name: payload.name.trim(),
+        createdAt: timestamp,
+        updatedAt: timestamp,
+        layout: sanitizeRndLayout(defaultLayout),
+        snapshot,
+        vision: payload.vision,
+        textureFocus: payload.textureFocus,
+        flavorNotes: payload.flavorNotes,
+        launchTarget: payload.launchTarget,
+      };
+      updateSessions((prev) => {
+        const filtered = prev.filter((item) => item.id !== id);
+        return [session, ...filtered];
+      });
+      setActiveSession(id);
+      setSessionsLoaded(true);
+      setLastSavedAt(timestamp);
+      setAutoSaveState("saved");
+      setSavePulseKey((key) => key + 1);
+      triggerHint();
+      setNewProjectOpen(false);
+    },
+    [hydrateState, applyLayout, defaultLayout, updateSessions, setActiveSession, triggerHint],
+  );
+
+  useEffect(() => {
+    if (!isOpen || !sessionsLoaded || !activeSessionId) return;
+    setAutoSaveState("saving");
+    const handle = window.setTimeout(() => {
+      performSave("auto");
+    }, AUTO_SAVE_DELAY_MS);
+    return () => window.clearTimeout(handle);
+  }, [
+    isOpen,
+    sessionsLoaded,
+    activeSessionId,
+    experiments,
+    focusExperimentId,
+    searchQuery,
+    layout,
+    performSave,
+  ]);
+
+  useEffect(() => {
+    if (!isBrowser) return;
+    if (autoSaveState !== "saved") return;
+    const timeout = window.setTimeout(() => setAutoSaveState("idle"), 2400);
+    return () => window.clearTimeout(timeout);
+  }, [autoSaveState, isBrowser]);
+
+  if (!isOpen || typeof document === "undefined") {
+    return null;
+  }
+
+  const selectValue = activeSessionId || "";
+  const hasSessions = sessions.length > 0;
+
+  const handleOverlayClose = () => {
+    performSave("manual");
+    onClose();
+  };
+
+  const handleSaveAndClose = () => {
+    performSave("manual");
+    onClose();
+  };
+
+  return createPortal(
+    <>
+      <div className="fixed inset-0 z-[110] flex items-center justify-center px-4 py-6">
+        <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-2xl" onClick={handleOverlayClose} />
+        <div className="relative z-10 flex w-full max-w-[min(1240px,95vw)] flex-col">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="rd-labs-title"
+            className={`chalkboard-labs relative flex max-h-[90vh] min-h-[540px] w-full flex-col overflow-hidden rounded-3xl border bg-[#070d16]/95 text-slate-100 shadow-[0_40px_120px_-60px_rgba(15,23,42,0.65)] ${
+              isDarkMode
+                ? "border-cyan-500/25 text-cyan-100/90"
+                : "border-slate-700/35 text-slate-100"
+            }`}
+          >
+            <div className="relative z-10 flex h-full min-h-0 flex-col">
+              <header className="relative z-10 flex shrink-0 items-start justify-between gap-4 border-b border-white/10 bg-black/40 px-6 py-4 backdrop-blur-sm">
+                <div className="space-y-2">
+                  <h2
+                    id="rd-labs-title"
+                    className="text-lg font-semibold uppercase tracking-[0.35em] text-cyan-100/90"
+                  >
+                    R&amp;D Labs
+                  </h2>
+                  <div className="flex flex-wrap items-center gap-4 text-[10px] uppercase tracking-[0.45em] text-cyan-100/70">
+                    <span className="chalk-breath">Texture</span>
+                    <span className="chalk-breath">Flavor</span>
+                    <span className="chalk-breath">Future</span>
+                    <span className="text-cyan-100/60">
+                      Active project • {projectName}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-col items-end gap-3">
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={handleSaveAndClose}
+                      className="inline-flex h-9 items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-100 transition hover:border-white/40 hover:bg-white/15 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/70"
+                    >
+                      Save and Close
+                    </button>
+                    {hintVisible ? (
+                      <div className="pointer-events-none absolute right-full top-1/2 mr-3 -translate-y-1/2 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-cyan-100 shadow-[0_12px_30px_-18px_rgba(56,189,248,0.65)] dark:border-cyan-500/30 dark:bg-cyan-500/10">
+                        Saving will lock in the last state.
+                      </div>
+                    ) : null}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setNewProjectOpen(true)}
+                    className="inline-flex h-9 items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-500/20 px-4 text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-100 transition hover:border-cyan-300/50 hover:bg-cyan-500/30 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60"
+                  >
+                    New Project
+                  </button>
+                  <div className="w-[220px]">
+                    <Select
+                      value={selectValue}
+                      onValueChange={handleSessionChange}
+                      disabled={!hasSessions || !selectValue}
+                    >
+                      <SelectTrigger className="h-9 rounded-full border border-white/25 bg-white/10 text-[11px] font-semibold uppercase tracking-[0.28em] text-cyan-100 backdrop-blur transition hover:border-white/40 focus:ring-0 focus:ring-offset-0">
+                        <SelectValue placeholder="Reopen a saved session" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-900/95 text-cyan-100 backdrop-blur-md">
+                        {sessions.map((session) => (
+                          <SelectItem key={session.id} value={session.id}>
+                            <div className="flex flex-col gap-1">
+                              <span className="text-sm font-medium">{session.name}</span>
+                              <span className="text-xs opacity-70">
+                                {formatProjectTimestamp(session.updatedAt)}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </header>
+              <div className="relative z-10 flex flex-1 min-h-0 overflow-hidden">
+                <div className="flex flex-1 min-h-0 flex-col gap-4 px-6 pb-6 pt-5">
+                  <p className={`max-w-3xl text-sm leading-relaxed ${accentMuted}`}>
+                    Drag the dividers to resize each workspace. Use these surfaces for experiments, documentation, and automation flows. Layout widths persist so your lab reopens exactly how you left it.
+                  </p>
+                  <PanelGroup
+                    key={layout.join("-")}
+                    direction="horizontal"
+                    onLayout={onLayoutChange}
+                    className="relative z-10 flex h-full min-h-0 items-stretch gap-3"
+                  >
+                    <Panel minSize={20} order={1} defaultSize={layout[0]} className="flex min-h-0">
+                      <section
+                        data-chalk-label="INSPIRE"
+                        className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[0]}`}
+                      >
+                        <header className={rndPanelHeadingClasses}>Discovery runway</header>
+                        <p className={`mt-2 text-xs leading-relaxed ${accentMuted}`}>
+                          Stage inspiration, competitive research, and sourcing notes here.
+                        </p>
+                        <div className="mt-4 flex-1 min-h-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-3 shadow-inner shadow-cyan-500/5">
+                          <DiscoveryPanel />
+                        </div>
+                      </section>
+                    </Panel>
+                    <PanelResizeHandle className={rndHandleClasses}>
+                      <span className="pointer-events-none h-10 w-0.5 rounded-full bg-white/60 opacity-80 transition group-hover:bg-cyan-200/80" />
+                    </PanelResizeHandle>
+                    <Panel minSize={26} order={2} defaultSize={layout[1]} className="flex min-h-0">
+                      <section
+                        data-chalk-label="FORMULATE"
+                        className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[1]}`}
+                      >
+                        <header className={rndPanelHeadingClasses}>Workbench</header>
+                        <p className={`mt-2 text-xs leading-relaxed ${accentMuted}`}>
+                          Reserve this lane for formulations, live tests, or shared prototypes.
+                        </p>
+                        <div className="mt-4 flex-1 min-h-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-3 shadow-inner shadow-cyan-500/5">
+                          <WorkbenchPanel />
+                        </div>
+                      </section>
+                    </Panel>
+                    <PanelResizeHandle className={rndHandleClasses}>
+                      <span className="pointer-events-none h-10 w-0.5 rounded-full bg-white/60 opacity-80 transition group-hover:bg-cyan-200/80" />
+                    </PanelResizeHandle>
+                    <Panel minSize={20} order={3} defaultSize={layout[2]} className="flex min-h-0">
+                      <section
+                        data-chalk-label="SYNTHESIZE"
+                        className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[2]}`}
+                      >
+                        <header className={rndPanelHeadingClasses}>Insight stack</header>
+                        <p className={`mt-2 text-xs leading-relaxed ${accentMuted}`}>
+                          Pin KPIs, AI summaries, or vendor comparisons for rapid decisions.
+                        </p>
+                        <div className="mt-4 flex-1 min-h-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-3 shadow-inner shadow-cyan-500/5">
+                          <InsightsPanel />
+                        </div>
+                      </section>
+                    </Panel>
+                  </PanelGroup>
+                </div>
+                <RDLabSessionSidebar
+                  isDarkMode={isDarkMode}
+                  projectName={projectName}
+                  createdAt={activeSession?.createdAt ?? lastSavedAt}
+                  updatedAt={activeSession?.updatedAt ?? lastSavedAt}
+                  vision={activeSession?.vision}
+                  textureFocus={activeSession?.textureFocus}
+                  flavorNotes={activeSession?.flavorNotes}
+                  launchTarget={activeSession?.launchTarget}
+                  focusExperiment={focusExperiment}
+                  experimentsCount={experiments.length}
+                  discoveryQueue={discoveryQueue}
+                  backlog={backlog}
+                  insights={insights}
+                />
+                <div className="pointer-events-none absolute bottom-6 right-6 flex flex-col items-end gap-2">
+                  {autoSaveState === "saving" ? (
+                    <div className="flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-500/10 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.3em] text-cyan-100 shadow-[0_18px_48px_-36px_rgba(56,189,248,0.55)]">
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-cyan-300" />
+                      Saving {projectName}…
+                    </div>
+                  ) : null}
+                  {autoSaveState === "saved" && lastSavedAt ? (
+                    <div
+                      key={savePulseKey}
+                      className="flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-500/15 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.3em] text-cyan-100 shadow-[0_25px_60px_-40px_rgba(56,189,248,0.75)] animate-rd-save-pulse"
+                    >
+                      <span className="h-2 w-2 rounded-full bg-emerald-300" />
+                      ({projectName}) Last saved {formatProjectTimestamp(lastSavedAt)}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <NewProjectDialog
+        open={newProjectOpen}
+        onOpenChange={setNewProjectOpen}
+        onSubmit={handleProjectCreate}
+      />
+    </>,
+    document.body,
+  );
+}
+
 export default RecipeInputPage;
