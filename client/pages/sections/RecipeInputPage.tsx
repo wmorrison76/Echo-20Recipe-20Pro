@@ -2627,7 +2627,7 @@ const RecipeInputPage = () => {
                       {taxonomy.diets.length > 0 && (
                         <div className="col-span-4">
                           <div className="font-semibold">Diets</div>
-                          <div className="flex flex-wrap gap-1">
+                          <div className="flex flex-wrap gap-0.5">
                             {[...taxonomy.diets].sort().map((v) => (
                               <span
                                 key={v}
