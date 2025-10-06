@@ -298,7 +298,7 @@ const RecipeInputPage = () => {
     [isDarkMode],
   );
   const rndPanelHeadingClasses =
-    "text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-600 dark:text-cyan-200/70";
+    "text-[11px] font-semibold uppercase tracking-[0.35em] text-cyan-100/80 drop-shadow-[0_0_6px_rgba(56,189,248,0.35)]";
   const rndHandleClasses = isDarkMode
     ? "group relative flex w-8 items-center justify-center rounded-full border border-cyan-500/20 bg-cyan-500/10 transition hover:bg-cyan-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
     : "group relative flex w-8 items-center justify-center rounded-full border border-slate-200 bg-white/80 transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white";
