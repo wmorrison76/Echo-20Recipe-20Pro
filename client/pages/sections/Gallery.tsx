@@ -4,6 +4,7 @@ import { Dropzone } from "@/components/Dropzone";
 import { Button } from "@/components/ui/button";
 import "../../luccca-lookbook.css";
 import { useAppData } from "@/context/AppDataContext";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
