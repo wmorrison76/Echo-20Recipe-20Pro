@@ -286,14 +286,14 @@ const RecipeInputPage = () => {
     () =>
       isDarkMode
         ? [
-            "bg-gradient-to-br from-cyan-900/60 via-slate-950/50 to-slate-900/30",
-            "bg-gradient-to-br from-slate-950/80 via-cyan-900/40 to-slate-950/30",
-            "bg-gradient-to-br from-slate-950/70 via-slate-900/45 to-cyan-900/35",
+            "bg-gradient-to-br from-slate-950/85 via-slate-900/65 to-teal-900/45 shadow-[0_0_42px_rgba(56,189,248,0.15)]",
+            "bg-gradient-to-br from-slate-950/80 via-cyan-900/55 to-slate-950/45 shadow-[0_0_40px_rgba(56,189,248,0.12)]",
+            "bg-gradient-to-br from-slate-950/78 via-slate-900/55 to-indigo-900/45 shadow-[0_0_38px_rgba(99,102,241,0.18)]",
           ]
         : [
-            "bg-gradient-to-br from-sky-100/70 via-white/85 to-white/45",
-            "bg-gradient-to-br from-white/90 via-slate-50/80 to-sky-100/50",
-            "bg-gradient-to-br from-white/85 via-slate-50/75 to-indigo-100/45",
+            "bg-gradient-to-br from-slate-900/80 via-slate-800/55 to-teal-900/40 shadow-[0_0_36px_rgba(15,118,110,0.24)]",
+            "bg-gradient-to-br from-slate-900/75 via-teal-800/50 to-slate-900/40 shadow-[0_0_32px_rgba(34,197,94,0.18)]",
+            "bg-gradient-to-br from-slate-900/78 via-indigo-800/50 to-slate-900/40 shadow-[0_0_34px_rgba(79,70,229,0.18)]",
           ],
     [isDarkMode],
   );
