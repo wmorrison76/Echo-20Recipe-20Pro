@@ -3929,7 +3929,7 @@ function RDLabsPortal({
                   backlog={backlog}
                   insights={insights}
                 />
-                <div className="pointer-events-none absolute bottom-6 right-6 flex flex-col items-end gap-2">
+                <div className="pointer-events-none absolute bottom-4 right-4 flex flex-col items-end gap-1.5">
                   {autoSaveState === "saving" ? (
                     <div className="flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-500/10 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.3em] text-cyan-100 shadow-[0_18px_48px_-36px_rgba(56,189,248,0.55)]">
                       <span className="h-2 w-2 animate-pulse rounded-full bg-cyan-300" />
