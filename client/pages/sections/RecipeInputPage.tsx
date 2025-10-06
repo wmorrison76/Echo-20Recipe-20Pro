@@ -275,11 +275,7 @@ const RecipeInputPage = () => {
   const handleRndLayoutChange = useCallback((nextLayout: number[]) => {
     if (!Array.isArray(nextLayout) || nextLayout.length !== 3) return;
     setRndLayout((prev) => {
-      const next = nextLayout.map((value) => Number(value)) as [
-        number,
-        number,
-        number,
-      ];
+      const next = sanitizeRndLayout(nextLayout);
       return prev.every((value, index) => value === next[index]) ? prev : next;
     });
   }, []);
@@ -3409,7 +3405,7 @@ const RecipeInputPage = () => {
                 setChefNotes(
                   (prev) =>
                     (prev ? prev + "\n" : "") +
-                    "Note: This recipe references a sub‑recipe (e.g., buttercream). Import or add the sub‑recipe and link it here.",
+                    "Note: This recipe references a sub‑recipe (e.g., buttercream). Import or add the sub���recipe and link it here.",
                 );
               }
             }
