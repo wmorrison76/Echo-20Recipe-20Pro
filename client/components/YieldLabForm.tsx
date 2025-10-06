@@ -92,6 +92,11 @@ const YieldLabForm: React.FC<YieldLabFormProps> = ({
   const [leadTimeDays, setLeadTimeDays] = useState<number>(2);
   const [formError, setFormError] = useState<string | null>(null);
 
+  const selectedReadyMade = useMemo(
+    () => (readyMadeId ? getReadyMadeItem(readyMadeId) : undefined),
+    [readyMadeId],
+  );
+
   useEffect(() => {
     if (item && item.trim()) {
       setIngredientName(item.trim());
@@ -175,11 +180,6 @@ const YieldLabForm: React.FC<YieldLabFormProps> = ({
     }
     return Array.from(registry);
   }, [methodOptions, mergedHistory]);
-
-  const selectedReadyMade = useMemo(
-    () => (readyMadeId ? getReadyMadeItem(readyMadeId) : undefined),
-    [readyMadeId],
-  );
 
   const computedYield = useMemo(() => {
     if (!Number.isFinite(inputQty) || inputQty <= 0) return null;
