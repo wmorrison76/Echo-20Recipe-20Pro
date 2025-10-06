@@ -85,6 +85,9 @@ export function InsightsPanel() {
         <header className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-600 dark:text-cyan-200/70">
           Future of food radar
         </header>
+        <div className="mt-2 flex flex-wrap gap-3 text-[10px] uppercase tracking-[0.35em] text-cyan-100/70">
+          <span className="chalk-breath">{futureFoodDrivers.length} drivers tracked</span>
+        </div>
         <div className="mt-3 space-y-3">
           {futureFoodDrivers.map((driver) => (
             <article
