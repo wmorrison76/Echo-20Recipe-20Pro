@@ -52,7 +52,7 @@ type YieldTrackingPanelProps = {
 
 export function YieldTrackingPanel({ className }: YieldTrackingPanelProps) {
   const analytics = useYieldAnalytics();
-  const { records } = useYieldStore();
+  const { records, addRecord } = useYieldStore();
   const [showReadyMadeOnly, setShowReadyMadeOnly] = useState<boolean>(true);
   const [selectedReadyMadeId, setSelectedReadyMadeId] = useState<string>(
     READY_MADE_ITEMS[0]?.id ?? "",
@@ -416,14 +416,11 @@ export function YieldTrackingPanel({ className }: YieldTrackingPanelProps) {
               type="button"
               onClick={() => {
                 if (!selectedReadyMade || !procurementPlan) return;
-                const { addRecord } = useYieldStore();
                 addRecord({
                   ingredientName: selectedReadyMade.name,
                   inputQty: selectedReadyMade.standardBatchQty,
                   inputUnit: selectedReadyMade.standardBatchUnit,
-                  outputQty:
-                    (procurementPlan.expectedPortionsCovered * portionSize) /
-                    (selectedReadyMade.portionSize || portionSize || 1),
+                  outputQty: procurementPlan.expectedPortionsCovered * portionSize,
                   outputUnit: portionUnit,
                   yieldPercent: readyMadeYield,
                   itemType: "readyMade",
