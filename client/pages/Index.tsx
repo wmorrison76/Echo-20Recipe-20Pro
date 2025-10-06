@@ -111,7 +111,7 @@ function IndexContent() {
             </AnimatePresence>
           </div>
         </header>
-        <main className="w-full py-4">
+        <main className="w-full py-3">
           <Tabs
             value={active}
             onValueChange={(v) => {
