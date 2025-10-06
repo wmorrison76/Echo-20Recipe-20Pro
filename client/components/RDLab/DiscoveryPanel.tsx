@@ -80,7 +80,7 @@ export function DiscoveryPanel() {
   const isCreateDisabled = !draftTitle.trim() || !draftHypothesis.trim();
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-5">
+    <div className="flex h-full min-h-0 flex-col gap-5 overflow-y-auto pr-1">
       <div className="rounded-2xl border border-white/20 bg-white/6 p-4 backdrop-blur md:bg-white/10 dark:border-cyan-500/25 dark:bg-cyan-500/5">
         <div className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-600 dark:text-cyan-200/80">
           Discovery Queue
