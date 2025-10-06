@@ -93,13 +93,17 @@ const sanitizeRndLayout = (candidate: unknown): [number, number, number] => {
     if (!Number.isFinite(numeric)) {
       return DEFAULT_RND_LAYOUT[index];
     }
-    return Math.max(MIN_RND_LAYOUT[index], numeric);
+    const upperBound = 80;
+    return Math.max(
+      MIN_RND_LAYOUT[index],
+      Math.min(upperBound, numeric),
+    );
   }) as [number, number, number];
 
   const minimumTotal = MIN_RND_LAYOUT.reduce((total, value) => total + value, 0);
   const sum = sanitized.reduce((total, value) => total + value, 0);
 
-  if (sum <= minimumTotal) {
+  if (sum < minimumTotal) {
     return DEFAULT_RND_LAYOUT;
   }
 
