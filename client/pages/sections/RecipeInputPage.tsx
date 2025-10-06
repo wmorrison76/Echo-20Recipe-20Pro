@@ -2789,6 +2789,7 @@ const RecipeInputPage = () => {
                           className="flex min-h-0"
                         >
                           <section
+                            data-chalk-label="SYNTHESIZE"
                             className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[2]}`}
                           >
                             <header className={rndPanelHeadingClasses}>
