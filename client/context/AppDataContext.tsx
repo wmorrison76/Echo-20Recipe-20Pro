@@ -1534,7 +1534,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           break;
         }
       }
-      if (!title) title = lines[0];
+      if (!title && fallbackTitle) title = fallbackTitle;
+      if (!title && lines.length) title = lines[0];
       title = title.replace(/\s+/g, " ").trim();
 
       const meta = parseMeta(lines.join("\n"));
