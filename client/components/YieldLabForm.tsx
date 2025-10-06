@@ -445,6 +445,147 @@ const YieldLabForm: React.FC<YieldLabFormProps> = ({
         </label>
       </div>
 
+      <div className="rounded-lg border border-dashed bg-background/30 p-3">
+        <label className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <input
+            type="checkbox"
+            checked={itemType === "readyMade"}
+            onChange={(event) =>
+              setItemType(event.target.checked ? "readyMade" : "ingredient")
+            }
+            className="h-4 w-4 rounded border-muted-foreground"
+          />
+          Link yield to ready-made catalog item
+        </label>
+        {itemType === "readyMade" && (
+          <>
+            <div className="mt-3 grid gap-3 md:grid-cols-[minmax(16rem,1fr),minmax(12rem,0.8fr),minmax(10rem,0.6fr)]">
+              <label className="grid gap-1">
+                <span className="text-xs text-muted-foreground">Catalog item</span>
+                <select
+                  value={readyMadeId}
+                  onChange={(event) => setReadyMadeId(event.target.value)}
+                  className={inputClass}
+                >
+                  <option value="">Select ready-made</option>
+                  {READY_MADE_ITEMS.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="grid gap-1">
+                <span className="text-xs text-muted-foreground">Forecast portions</span>
+                <input
+                  type="number"
+                  min={0}
+                  value={forecastPortions}
+                  onChange={(event) => setForecastPortions(Number(event.target.value))}
+                  className={inputClass}
+                />
+              </label>
+              <label className="grid gap-1">
+                <span className="text-xs text-muted-foreground">Buffer %</span>
+                <input
+                  type="number"
+                  min={0}
+                  value={bufferPercent}
+                  onChange={(event) => setBufferPercent(Number(event.target.value))}
+                  className={inputClass}
+                />
+              </label>
+            </div>
+            <div className="mt-3 grid gap-3 md:grid-cols-[repeat(4,minmax(8rem,1fr))]">
+              <label className="grid gap-1">
+                <span className="text-xs text-muted-foreground">Measured portions</span>
+                <input
+                  type="number"
+                  min={0}
+                  value={outputPortions}
+                  onChange={(event) => setOutputPortions(Number(event.target.value))}
+                  className={inputClass}
+                />
+              </label>
+              <label className="grid gap-1">
+                <span className="text-xs text-muted-foreground">Portion size</span>
+                <input
+                  type="number"
+                  min={0}
+                  value={portionSize}
+                  onChange={(event) => setPortionSize(Number(event.target.value))}
+                  className={inputClass}
+                />
+              </label>
+              <label className="grid gap-1">
+                <span className="text-xs text-muted-foreground">Portion unit</span>
+                <input
+                  value={portionUnit}
+                  onChange={(event) => setPortionUnit(event.target.value.toUpperCase())}
+                  className={inputClass}
+                />
+              </label>
+              <label className="grid gap-1">
+                <span className="text-xs text-muted-foreground">Lead time (days)</span>
+                <input
+                  type="number"
+                  min={0}
+                  value={leadTimeDays}
+                  onChange={(event) => setLeadTimeDays(Number(event.target.value))}
+                  className={inputClass}
+                />
+              </label>
+              <div className="grid gap-1">
+                <span className="text-xs text-muted-foreground">Effective yield</span>
+                <div className="rounded-md border bg-background px-2 py-2 text-sm font-semibold">
+                  {effectiveYield != null ? `${formatYieldPercent(effectiveYield)}%` : "—"}
+                </div>
+              </div>
+            </div>
+            {selectedReadyMade?.description && (
+              <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+                {selectedReadyMade.description}
+              </p>
+            )}
+            {procurementPreview && (
+              <div className="mt-3 grid gap-2 rounded-md border bg-background/40 p-3 text-xs">
+                <div className="flex items-center justify-between">
+                  <span>Recommended input</span>
+                  <span className="font-semibold">
+                    {formatNumber(procurementPreview.recommendedInputQty, 2)}
+                    {` ${procurementPreview.recommendedInputUnit}`}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Portions covered</span>
+                  <span className="font-semibold">
+                    {formatNumber(procurementPreview.expectedPortionsCovered)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Coverage window</span>
+                  <span className="font-semibold">
+                    {formatNumber(procurementPreview.coverageDays, 1)} days
+                  </span>
+                </div>
+                <div>
+                  Next availability {procurementPreview.nextAvailabilityDate || "—"}; review on
+                  {" "}
+                  {procurementPreview.reviewDate || "—"}.
+                </div>
+                {procurementPreview.warnings.length > 0 && (
+                  <ul className="list-disc space-y-1 pl-4 text-[11px] text-amber-600">
+                    {procurementPreview.warnings.map((warning) => (
+                      <li key={warning}>{warning}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
       <div className="grid gap-4 md:grid-cols-[minmax(12rem,1fr),minmax(12rem,1fr),minmax(10rem,0.8fr)]">
         <label className="grid gap-1">
           <span className="text-xs text-muted-foreground">Tester</span>
