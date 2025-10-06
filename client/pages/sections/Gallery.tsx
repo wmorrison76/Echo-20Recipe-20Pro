@@ -469,12 +469,16 @@ export default function GallerySection() {
               setActiveLookBookId(id);
               setOpenLookBook(true);
             }}
+            className="rounded-full px-5"
           >
             Create
           </Button>
           {selected.length > 0 && (
             <select
-              className="rounded-md border bg-background px-2 py-1 text-sm"
+              className={cn(
+                "rounded-full border px-3 py-2 text-sm shadow-inner",
+                lucccaMode ? "bg-slate-900/70" : "bg-white/85",
+              )}
               value={activeLookBookId || ""}
               onChange={(e) => setActiveLookBookId(e.target.value || null)}
             >
@@ -493,6 +497,7 @@ export default function GallerySection() {
                 addImagesToLookBook(activeLookBookId, selected);
                 setSelected([]);
               }}
+              className="rounded-full px-5"
             >
               Add selected to Look Book
             </Button>
