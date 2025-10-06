@@ -3906,7 +3906,7 @@ function RDLabsPortal({
                     </span>
                   </div>
                 </div>
-                <div className="flex flex-col items-end gap-3">
+                <div className="flex flex-wrap items-center justify-end gap-3 text-right">
                   <div className="relative">
                     <button
                       type="button"
