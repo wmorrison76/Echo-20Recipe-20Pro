@@ -366,7 +366,7 @@ export default function ServerNotesSection() {
 
           <section
             key={noteSession}
-            className="grid items-stretch gap-6 lg:grid-cols-12"
+            className="grid items-stretch gap-5 lg:grid-cols-12"
           >
             <Card
               className={`${panelSurfaceClass} flex h-full flex-col lg:col-span-4 xl:col-span-4`}
