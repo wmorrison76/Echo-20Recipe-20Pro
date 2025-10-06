@@ -129,54 +129,56 @@ export function CompetitiveAnalysisPanel({ className }: CompetitiveAnalysisPanel
         </CardHeader>
         <CardContent className="overflow-hidden">
           <ScrollArea className="max-h-[420px]">
-            <table className="min-w-full border-separate border-spacing-y-2 text-sm">
-              <thead className="text-xs uppercase tracking-wide text-muted-foreground">
-                <tr>
-                  <th className="rounded-l-lg bg-muted/60 px-4 py-3 text-left font-medium">Capability</th>
-                  <th className="bg-muted/60 px-4 py-3 text-left font-medium">Echo Recipe Pro</th>
-                  {COMPETITORS.map((competitor, idx) => (
-                    <th
-                      key={competitor.id}
-                      className={cn(
-                        "bg-muted/60 px-4 py-3 text-left font-medium",
-                        idx === COMPETITORS.length - 1 && "rounded-r-lg",
-                      )}
-                    >
-                      {competitor.name}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {FEATURE_COMPARISON.map((feature) => (
-                  <tr key={feature.key} className="align-top">
-                    <td className="w-52 rounded-l-lg bg-background/70 px-4 py-3">
-                      <div className="font-semibold">{feature.label}</div>
-                      <div className="text-xs text-muted-foreground leading-relaxed">
-                        {feature.description}
-                      </div>
-                    </td>
-                    <td className="bg-background/70 px-4 py-3">
-                      <StanceChip stance={feature.echoRecipePro.stance}>
-                        {feature.echoRecipePro.proofPoints[0]}
-                      </StanceChip>
-                    </td>
-                    {COMPETITORS.map((competitor, idx) => {
-                      const competitorScore = feature.competitors[competitor.id];
-                      const cellClasses = cn(
-                        "bg-background/70 px-4 py-3",
-                        idx === COMPETITORS.length - 1 && "rounded-r-lg",
-                      );
-                      return (
-                        <td key={competitor.id} className={cellClasses}>
-                          <StanceChip stance={competitorScore.stance}>{competitorScore.notes}</StanceChip>
-                        </td>
-                      );
-                    })}
+            <div className="w-full overflow-x-auto">
+              <table className="w-full min-w-[700px] border-separate border-spacing-y-2 text-sm">
+                <thead className="text-xs uppercase tracking-wide text-muted-foreground">
+                  <tr>
+                    <th className="rounded-l-lg bg-muted/60 px-4 py-3 text-left font-medium">Capability</th>
+                    <th className="bg-muted/60 px-4 py-3 text-left font-medium">Echo Recipe Pro</th>
+                    {COMPETITORS.map((competitor, idx) => (
+                      <th
+                        key={competitor.id}
+                        className={cn(
+                          "bg-muted/60 px-4 py-3 text-left font-medium",
+                          idx === COMPETITORS.length - 1 && "rounded-r-lg",
+                        )}
+                      >
+                        {competitor.name}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {FEATURE_COMPARISON.map((feature) => (
+                    <tr key={feature.key} className="align-top">
+                      <td className="w-52 rounded-l-lg bg-background/70 px-4 py-3">
+                        <div className="font-semibold">{feature.label}</div>
+                        <div className="text-xs text-muted-foreground leading-relaxed">
+                          {feature.description}
+                        </div>
+                      </td>
+                      <td className="bg-background/70 px-4 py-3">
+                        <StanceChip stance={feature.echoRecipePro.stance}>
+                          {feature.echoRecipePro.proofPoints[0]}
+                        </StanceChip>
+                      </td>
+                      {COMPETITORS.map((competitor, idx) => {
+                        const competitorScore = feature.competitors[competitor.id];
+                        const cellClasses = cn(
+                          "bg-background/70 px-4 py-3",
+                          idx === COMPETITORS.length - 1 && "rounded-r-lg",
+                        );
+                        return (
+                          <td key={competitor.id} className={cellClasses}>
+                            <StanceChip stance={competitorScore.stance}>{competitorScore.notes}</StanceChip>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </ScrollArea>
         </CardContent>
       </Card>
