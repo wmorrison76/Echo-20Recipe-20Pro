@@ -298,20 +298,25 @@ export default function ServerNotesSection() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-7xl px-6 py-12 sm:px-8 lg:px-12">
-        <div className="space-y-8">
-          <header className="flex flex-wrap items-center justify-between gap-3 border-b pb-4">
-            <div className="flex items-center gap-3">
-              <ClipboardList className="h-6 w-6 text-primary" />
-              <div>
-                <h1 className="text-xl font-semibold">Server Notes</h1>
-                <p className="text-sm text-muted-foreground">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="space-y-6">
+          <header className="flex flex-wrap items-center justify-between gap-2 border-b pb-3">
+            <div className="flex items-center gap-2.5">
+              <ClipboardList className="h-5 w-5 text-primary" />
+              <div className="leading-tight">
+                <h1 className="text-lg font-semibold">Server Notes</h1>
+                <p className="text-[13px] text-muted-foreground">
                   Connect recipes, layouts, and service notes into shareable
                   documents.
                 </p>
               </div>
             </div>
-            <Button variant="outline" onClick={createNewNote} className="gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={createNewNote}
+              className="gap-1.5"
+            >
               <Plus className="h-4 w-4" /> New Document
             </Button>
           </header>
