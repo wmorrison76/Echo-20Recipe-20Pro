@@ -214,24 +214,41 @@ export default function GallerySection() {
       )}
       data-echo-key="page:recipes:gallery"
     >
-      <div className="grid gap-3 md:grid-cols-2 items-start">
-        <Dropzone multiple onFiles={onFiles}>
-          <div className="flex flex-col items-center justify-center gap-2 text-sm py-3">
-            <UploadCloud className="h-5 w-5 text-muted-foreground" />
-            <div className="text-foreground font-medium">
-              Drag & drop images (any format)
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
+        <Dropzone
+          multiple
+          onFiles={onFiles}
+          className="group relative min-h-[240px] overflow-hidden rounded-[32px] border-none bg-transparent p-0"
+        >
+          <div
+            className={cn(
+              "flex h-full w-full flex-col items-center justify-center gap-4 rounded-[32px] border px-10 py-12 text-center backdrop-blur-xl transition-all duration-300",
+              toolbarSurface,
+              lucccaMode
+                ? "hover:shadow-[0_30px_80px_rgba(14,165,233,0.32)]"
+                : "hover:shadow-[0_30px_80px_rgba(15,23,42,0.18)]",
+            )}
+          >
+            <UploadCloud className="h-10 w-10 opacity-80" />
+            <div className="space-y-1">
+              <div className="text-lg font-semibold tracking-tight">
+                Drag & drop images
+              </div>
+              <p className="text-sm font-medium opacity-70">
+                or click to choose files · categorize on import
+              </p>
             </div>
-            <div className="text-muted-foreground">
-              or click to select • You can categorize on import
+            <div className="rounded-full border border-white/40 px-4 py-1 text-[12px] font-medium uppercase tracking-[0.28em] opacity-70">
+              Supports RAW · HEIC · JPG · PNG
             </div>
           </div>
         </Dropzone>
 
-        <div className="rounded-xl border p-3 space-y-2 bg-white/95 dark:bg-zinc-900 shadow-sm ring-1 ring-black/5 dark:ring-sky-500/15">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-muted-foreground flex items-center gap-2">
+        <div className={cn("rounded-[28px] border p-6 space-y-3 backdrop-blur-xl", toolbarSurface)}>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-sm opacity-80">
               <span>Images in gallery</span>
-              <span className="text-base font-semibold tabular-nums min-w-[5ch] text-right">
+              <span className="min-w-[5ch] text-right text-lg font-semibold tabular-nums">
                 {images.length}
               </span>
             </div>
@@ -241,22 +258,23 @@ export default function GallerySection() {
               onClick={() => {
                 void exportAllZip();
               }}
+              className="gap-2 rounded-full px-4"
             >
-              <Download className="w-4 h-4 mr-1" />
-              Export all (ZIP)
+              <Download className="h-4 w-4" />
+              Export ZIP
             </Button>
           </div>
-          <div className="flex flex-wrap gap-1.5 items-center">
+          <div className="flex flex-wrap items-center gap-2.5">
             <div
-              className="relative flex-1 min-w-[220px]"
+              className="relative flex-1 min-w-[240px]"
               data-echo-key="filter:gallery:tags"
             >
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-50" />
               <input
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
                 placeholder="Search or filter by tag"
-                className="w-full rounded-md border bg-background pl-8 pr-2 py-1.5 text-sm"
+                className="w-full rounded-full border border-transparent bg-white/80 pl-9 pr-3 py-2 text-sm shadow-inner focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-200"
               />
             </div>
             <input
@@ -277,17 +295,19 @@ export default function GallerySection() {
               onClick={() => (window as any).__gallery_upload_input?.click()}
               variant="default"
               data-echo-key="cta:gallery:upload"
+              className="rounded-full px-4"
             >
               Upload images
             </Button>
             <Button
               variant="secondary"
               onClick={() => linkImagesToRecipesByFilename()}
+              className="rounded-full px-4"
             >
               Link to recipes
             </Button>
             <select
-              className="rounded-md border bg-background px-2 py-1 text-xs"
+              className="rounded-full border border-transparent bg-white/80 px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none"
               value={sort}
               onChange={(e) => setSort(e.target.value as any)}
               title="Sort"
@@ -298,7 +318,7 @@ export default function GallerySection() {
               <option value="rated">Rated</option>
             </select>
             <select
-              className="rounded-md border bg-background px-2 py-1 text-xs"
+              className="rounded-full border border-transparent bg-white/80 px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none"
               value={viewMode}
               onChange={(e) => setViewMode(e.target.value as any)}
               title="Layout"
@@ -307,7 +327,7 @@ export default function GallerySection() {
               <option value="grid">Grid</option>
             </select>
             <select
-              className="rounded-md border bg-background px-2 py-1 text-xs"
+              className="rounded-full border border-transparent bg-white/80 px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none"
               value={thumbSize}
               onChange={(e) => setThumbSize(e.target.value as any)}
               title="Thumbnail size"
@@ -316,16 +336,16 @@ export default function GallerySection() {
               <option value="m">Medium</option>
               <option value="l">Large</option>
             </select>
-            <label className="text-xs ml-1 mr-2 flex items-center gap-1">
+            <label className="ml-1 mr-2 flex items-center gap-2 rounded-full border border-transparent bg-white/60 px-3 py-2 text-xs shadow-inner">
               <input
                 type="checkbox"
                 checked={lucccaMode}
                 onChange={(e) => setLucccaMode(e.target.checked)}
-              />{" "}
+              />
               LUCCCA
             </label>
             <select
-              className="rounded-md border bg-background px-2 py-1 text-xs"
+              className="rounded-full border border-transparent bg-white/80 px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
@@ -340,14 +360,12 @@ export default function GallerySection() {
             </select>
           </div>
           {selected.length > 0 && (
-            <div className="text-xs flex items-center gap-2">
-              <span className="text-muted-foreground">
-                {selected.length} selected
-              </span>
+            <div className="flex items-center gap-2 rounded-2xl border border-white/40 bg-white/60 px-3 py-2 text-xs shadow-inner">
+              <span className="opacity-70">{selected.length} selected</span>
               <input
                 id="bulk-tags"
                 placeholder="add tags (comma)"
-                className="rounded-md border bg-background px-2 py-1 text-xs"
+                className="flex-1 rounded-full border border-transparent bg-white/90 px-3 py-1 text-xs shadow-inner focus:border-sky-300 focus:outline-none"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     addTagsToSelected((e.target as HTMLInputElement).value);
@@ -355,8 +373,8 @@ export default function GallerySection() {
                   }
                 }}
               />
-              <Button size="sm" onClick={() => setSelected([])}>
-                Clear selection
+              <Button size="sm" onClick={() => setSelected([])} className="rounded-full px-3">
+                Clear
               </Button>
             </div>
           )}
