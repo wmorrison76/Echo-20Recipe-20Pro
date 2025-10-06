@@ -14,6 +14,7 @@ type CostRecipeResult = {
     percentage: number;
   }>;
   currency: string;
+  targetFoodCostPct: number;
 };
 
 type TriagedInvoice = {
