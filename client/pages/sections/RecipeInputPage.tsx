@@ -622,7 +622,7 @@ const RecipeInputPage = () => {
   );
   const infoValuePillClass = useMemo(
     () =>
-      `inline-flex items-center justify-center gap-1 rounded-lg border px-2 py-0.5 text-[11px] font-semibold leading-tight ${
+      `inline-flex w-full items-center justify-center gap-1 rounded-lg border px-2 py-0.5 text-[11px] font-semibold leading-tight ${
         isDarkMode
           ? "border-cyan-400/40 bg-black/40 text-cyan-100"
           : "border-slate-300 bg-white text-slate-800"
@@ -3241,7 +3241,7 @@ const RecipeInputPage = () => {
                   "⅒": "1/10",
                   "⅓": "1/3",
                   "��": "2/3",
-                  "��": "1/5",
+                  "⅕": "1/5",
                   "⅖": "2/5",
                   "⅗": "3/5",
                   "⅘": "4/5",
