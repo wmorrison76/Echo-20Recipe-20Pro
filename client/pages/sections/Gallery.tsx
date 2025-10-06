@@ -208,7 +208,10 @@ export default function GallerySection() {
 
   return (
     <div
-      className={`mx-auto max-w-[1200px] px-4 md:px-6 py-4 space-y-4 ${lucccaMode ? "luccca-theme" : ""}`}
+      className={cn(
+        "mx-auto max-w-[1380px] space-y-6 px-4 py-8 sm:px-6 lg:px-12",
+        lucccaMode ? "luccca-theme" : "text-slate-900",
+      )}
       data-echo-key="page:recipes:gallery"
     >
       <div className="grid gap-3 md:grid-cols-2 items-start">
