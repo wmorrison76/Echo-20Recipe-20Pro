@@ -606,7 +606,7 @@ const RecipeInputPage = () => {
   const inputClass = `border p-2.5 rounded-lg text-sm transition-all focus:shadow-md focus:ring-2 ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300 focus:ring-cyan-400/30 shadow-none" : "bg-white border-gray-300 text-black focus:ring-blue-400/30 focus:border-blue-500 shadow-lg"}`;
   const infoInputClass = useMemo(
     () =>
-      `rounded-lg border px-2 py-1 text-xs font-semibold tracking-wide transition-colors focus:outline-none focus:ring-1 ${
+      `rounded-lg border px-1.5 py-0.5 text-xs font-semibold tracking-wide transition-colors focus:outline-none focus:ring-1 ${
         isDarkMode
           ? "bg-black/40 border-cyan-500/40 text-cyan-200 focus:border-cyan-300 focus:ring-cyan-400/40"
           : "bg-white border-slate-300 text-slate-800 focus:border-slate-500 focus:ring-slate-300/70"
