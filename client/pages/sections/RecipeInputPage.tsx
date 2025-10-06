@@ -102,6 +102,9 @@ const ensureIngredientRowId = (
     yield: normalizeString(raw.yield ?? source.yield),
     cost: normalizeString(raw.cost ?? source.cost),
     costPerUnit: null,
+    supplierId: normalizeOptionalString(raw.supplierId ?? source.supplierId),
+    supplierName: normalizeOptionalString(raw.supplierName ?? source.supplierName),
+    supplierSku: normalizeOptionalString(raw.supplierSku ?? source.supplierSku),
   };
 
   if (base.type !== "divider") {
