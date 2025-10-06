@@ -203,7 +203,7 @@ export function DiscoveryPanel() {
             />
           </div>
           <div className="flex items-center justify-between gap-3 text-[11px] uppercase tracking-[0.3em] text-slate-500 dark:text-cyan-200/70">
-            <span>Splits lists by comma or new line.</span>
+            <span>Use quick adds below or split entries with commas or new lines.</span>
             <button
               type="submit"
               disabled={isCreateDisabled}
