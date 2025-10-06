@@ -78,6 +78,11 @@ import {
 const normalizeString = (value: unknown): string =>
   typeof value === "string" ? value : value == null ? "" : String(value);
 
+const normalizeOptionalString = (value: unknown): string | null => {
+  const normalized = normalizeString(value).trim();
+  return normalized.length ? normalized : null;
+};
+
 const ensureIngredientRowId = (
   row: IngredientRow | null | undefined,
 ): IngredientRow => {
