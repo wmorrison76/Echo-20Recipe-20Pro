@@ -2462,7 +2462,7 @@ const RecipeInputPage = () => {
             <div className="mt-1 flex flex-col gap-3">
               <div className="w-full">
                 <div
-                  className={`border rounded-xl p-3 shadow-lg ${isDarkMode ? "bg-blue-900/20 border-blue-400/30 shadow-blue-400/20" : "bg-blue-50 border-blue-200 shadow-gray-300/60"}`}
+                  className={`w-full border rounded-xl p-2.5 shadow-lg ${isDarkMode ? "bg-blue-900/20 border-blue-400/30 shadow-blue-400/20" : "bg-blue-50 border-blue-200 shadow-gray-300/60"}`}
                 >
                   <div
                     className={`font-semibold text-sm mb-2 ${isDarkMode ? "text-blue-400" : "text-blue-700"}`}
