@@ -3873,7 +3873,7 @@ function RDLabsPortal({
                         <p className={`mt-2 text-xs leading-relaxed ${accentMuted}`}>
                           Stage inspiration, competitive research, and sourcing notes here.
                         </p>
-                        <div className="mt-4 flex-1 min-h-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-3 shadow-inner shadow-cyan-500/5">
+                        <div className="mt-3 flex-1 min-h-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-2.5 shadow-inner shadow-cyan-500/5">
                           <DiscoveryPanel />
                         </div>
                       </section>
@@ -3890,7 +3890,7 @@ function RDLabsPortal({
                         <p className={`mt-2 text-xs leading-relaxed ${accentMuted}`}>
                           Reserve this lane for formulations, live tests, or shared prototypes.
                         </p>
-                        <div className="mt-4 flex-1 min-h-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-3 shadow-inner shadow-cyan-500/5">
+                        <div className="mt-3 flex-1 min-h-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-2.5 shadow-inner shadow-cyan-500/5">
                           <WorkbenchPanel />
                         </div>
                       </section>
@@ -3907,7 +3907,7 @@ function RDLabsPortal({
                         <p className={`mt-2 text-xs leading-relaxed ${accentMuted}`}>
                           Pin KPIs, AI summaries, or vendor comparisons for rapid decisions.
                         </p>
-                        <div className="mt-4 flex-1 min-h-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-3 shadow-inner shadow-cyan-500/5">
+                        <div className="mt-3 flex-1 min-h-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-2.5 shadow-inner shadow-cyan-500/5">
                           <InsightsPanel />
                         </div>
                       </section>
