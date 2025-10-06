@@ -1732,69 +1732,23 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
                 : doc.numPages;
             const textRaw = pageTexts.slice(start - 1, end).join("\n");
             const text = textRaw.split(/\n/).map(normLine).join("\n");
-            const lines = text.split(/\n/).map(normLine).filter(Boolean);
-            const lower = lines.map((l) => l.toLowerCase());
-            const find = (labels: string[]) =>
-              lower.findIndex((l) => labels.some((x) => l.startsWith(x)));
-            let ingIdx = find(["ingredients", "ingredient"]);
-            let instIdx = find([
-              "instructions",
-              "directions",
-              "method",
-              "steps",
-              "preparation",
-              "procedure",
-            ]);
-            if (ingIdx < 0) {
-              const qtyRe =
-                /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
-              for (let j = 0; j < Math.min(lines.length, 80); j++) {
-                if (qtyRe.test(lines[j]) || /^[��\-*]\s+/.test(lines[j])) {
-                  ingIdx = j - 1;
-                  break;
-                }
-              }
+            const structured = deriveStructuredRecipe(text);
+            if (!structured) continue;
+            const {
+              title: derivedTitle,
+              ingredients,
+              instructions,
+              meta,
+            } = structured;
+            const ingredientCount = ingredients?.length ?? 0;
+            const instructionCount = instructions?.length ?? 0;
+            if (ingredientCount < 2 && instructionCount < 3) continue;
+
+            let title = derivedTitle;
+            if (!title || title.length < 3) {
+              title = `${bookTag} p.${start}`;
             }
-            if (instIdx < 0 && ingIdx >= 0) {
-              for (let j = ingIdx + 1; j < Math.min(lines.length, 200); j++) {
-                if (
-                  /^(instructions|directions|method|steps|preparation|procedure)\b/i.test(
-                    lines[j],
-                  ) ||
-                  /^\d+\.|^Step\s*\d+/i.test(lines[j])
-                ) {
-                  instIdx = j;
-                  break;
-                }
-              }
-            }
-            const getRange = (s: number, e: number) =>
-              lines.slice(s + 1, e > s ? e : undefined).filter(Boolean);
-            const ingredients =
-              ingIdx >= 0
-                ? getRange(ingIdx, instIdx >= 0 ? instIdx : lines.length)
-                : undefined;
-            const instructions =
-              instIdx >= 0 ? getRange(instIdx, lines.length) : undefined;
-            const meta = parseMeta(text);
-            // Title: prefer heading near top or before ingredients
-            let title = "";
-            for (
-              let k = Math.max(0, ingIdx - 6);
-              k < Math.min(lines.length, Math.max(ingIdx, 8));
-              k++
-            ) {
-              const L = lines[k] || "";
-              if (
-                /^[A-Z][A-Za-z0-9\-\'\s]{2,80}$/.test(L) ||
-                /^([A-Z]\s+){2,}[A-Z][\s:]*$/.test(L)
-              ) {
-                title = L.replace(/\s+/g, " ").trim();
-                break;
-              }
-            }
-            if (!title) title = lines[0] || `${bookTag} p.${start}`;
-            // Render preview image for first page of section
+
             let imgData: string | undefined;
             try {
               const page = await doc.getPage(start);
@@ -1808,29 +1762,24 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
                 imgData = canvas.toDataURL("image/jpeg", 0.85);
               }
             } catch {}
-            // Only keep if it still looks like a recipe
-            if (
-              (ingredients && ingredients.length >= 2) ||
-              (instructions && instructions.length >= 3)
-            ) {
-              collected.push({
-                id: uid(),
-                createdAt: Date.now(),
-                title,
-                ingredients,
-                instructions,
-                tags: [bookTag],
-                imageDataUrls: imgData ? [imgData] : undefined,
-                sourceFile: f.name,
-                extra: {
-                  page: start,
-                  endPage: end,
-                  ...meta,
-                  source: "pdf-markers",
-                },
-              });
-              titles.push(title);
-            }
+
+            collected.push({
+              id: uid(),
+              createdAt: Date.now(),
+              title,
+              ingredients,
+              instructions,
+              tags: [bookTag],
+              imageDataUrls: imgData ? [imgData] : undefined,
+              sourceFile: f.name,
+              extra: {
+                page: start,
+                endPage: end,
+                ...meta,
+                source: "pdf-markers",
+              },
+            });
+            titles.push(title);
           }
         }
 
