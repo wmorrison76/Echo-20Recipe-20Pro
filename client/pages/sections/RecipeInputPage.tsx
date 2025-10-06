@@ -83,8 +83,6 @@ import {
   createDividerRow,
   generateIngredientRowId,
 } from "@/types/ingredients";
-import { useSupplierQuotes } from "@/hooks/use-supplier-quotes";
-import type { SupplierQuote } from "@/lib/supplier-pricing";
 
 const DEFAULT_RND_LAYOUT: [number, number, number] = [32, 36, 32];
 const MIN_RND_LAYOUT: [number, number, number] = [20, 26, 20];
