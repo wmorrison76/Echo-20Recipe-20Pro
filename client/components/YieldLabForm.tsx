@@ -40,6 +40,14 @@ const cardClass = "rounded-lg border bg-background/40 p-3";
 
 const displayUnit = (value: string) => normalizeUnitToken(value).toUpperCase();
 
+const formatNumber = (value: number, digits = 0): string => {
+  if (!Number.isFinite(value)) return "—";
+  return value.toLocaleString(undefined, {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  });
+};
+
 const YieldLabForm: React.FC<YieldLabFormProps> = ({
   defaultInputQty,
   defaultInputUnit,
