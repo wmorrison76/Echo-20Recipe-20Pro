@@ -795,7 +795,7 @@ const RecipeInputPage = () => {
       if (r.qty && r.unit) return r;
       const txt = String(r.item || "");
       if (!txt) return r;
-      if (!/^(\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|\s*\/\d+|.*,)/i.test(txt)) return r;
+      if (!/^(\s*[0-9¼½¾⅓⅔��⅜⅝⅞]|\s*\/\d+|.*,)/i.test(txt)) return r;
       const p = parseIngredientInline(txt.replace(/^\s*\/(\d+)/, "1/$1"));
       if (!p) return r;
       return {
@@ -2597,7 +2597,7 @@ const RecipeInputPage = () => {
                           <div className="font-semibold">
                             {t("recipe.labels.componentsLabel", "Components")}
                           </div>
-                          <div className="flex flex-wrap gap-1">
+                          <div className="flex flex-wrap gap-0.5">
                             {[...taxonomy.components].sort().map((v) => (
                               <span
                                 key={v}
