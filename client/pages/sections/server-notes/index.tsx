@@ -38,6 +38,7 @@ import {
 
 const SAVED_NOTES_KEY = "serverNotes:saved";
 const SETTINGS_KEY = "serverNotes:settings";
+const PENDING_SELECTION_KEY = "serverNotes:presetSelection";
 
 const WALKTHROUGH_STEPS: Array<{
   title: string;
