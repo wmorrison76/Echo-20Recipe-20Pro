@@ -13,10 +13,19 @@ import NutritionLabel from "./NutritionLabel";
 import LanguageMenu from "@/components/LanguageMenu";
 import { useTranslation } from "@/context/LanguageContext";
 import { defaultSelection, TaxonomySelection } from "@/lib/taxonomy";
-import { RDLabProvider } from "@/stores/rdLabStore";
+import { RDLabProvider, type RDLabSnapshot, useRDLabStore } from "@/stores/rdLabStore";
 import { DiscoveryPanel } from "@/components/RDLab/DiscoveryPanel";
 import { WorkbenchPanel } from "@/components/RDLab/WorkbenchPanel";
 import { InsightsPanel } from "@/components/RDLab/InsightsPanel";
+import { RDLabSessionSidebar } from "@/components/RDLab/RDLabSessionSidebar";
+import { NewProjectDialog } from "@/components/RDLab/NewProjectDialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import IngredientsGrid from "@/components/IngredientsGrid";
 import SubRecipePicker, {
   type SubRecipeOption,
