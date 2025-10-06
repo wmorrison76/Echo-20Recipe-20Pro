@@ -42,6 +42,9 @@ export function DiscoveryPanel() {
   const [draftEquipment, setDraftEquipment] = useState("");
   const [draftTags, setDraftTags] = useState("");
   const [draftLaunchWindow, setDraftLaunchWindow] = useState("");
+  const [draftTextureObjectives, setDraftTextureObjectives] = useState("");
+  const [draftFlavorConstellations, setDraftFlavorConstellations] = useState("");
+  const [draftFutureAngles, setDraftFutureAngles] = useState("");
 
   const splitList = (value: string) =>
     value
