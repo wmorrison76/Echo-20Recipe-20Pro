@@ -22,6 +22,9 @@ export function WorkbenchPanel() {
     appendVariable,
     appendTestStep,
     appendSensoryTarget,
+    appendTextureObjective,
+    appendFlavorConstellation,
+    appendFutureFoodAngle,
   } = useRDLabStore();
   const experiment = useMemo(
     () => experiments.find((item) => item.id === focusExperimentId) ?? experiments[0],
