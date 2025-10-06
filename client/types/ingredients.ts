@@ -12,6 +12,9 @@ export type IngredientRow = {
   cost: string;
   subId: string;
   costPerUnit: number | null;
+  supplierId: string | null;
+  supplierName: string | null;
+  supplierSku: string | null;
 };
 
 export type IngredientYieldInsight = {
@@ -45,6 +48,9 @@ export const createIngredientRow = (
   cost: overrides.cost ?? "",
   subId: overrides.subId ?? generateIngredientRowId(),
   costPerUnit: overrides.costPerUnit ?? null,
+  supplierId: overrides.supplierId ?? null,
+  supplierName: overrides.supplierName ?? null,
+  supplierSku: overrides.supplierSku ?? null,
 });
 
 export const createDividerRow = (label = "Step Break"): IngredientRow =>
@@ -57,4 +63,7 @@ export const createDividerRow = (label = "Step Break"): IngredientRow =>
     yield: "",
     cost: "",
     costPerUnit: null,
+    supplierId: null,
+    supplierName: null,
+    supplierSku: null,
   });
