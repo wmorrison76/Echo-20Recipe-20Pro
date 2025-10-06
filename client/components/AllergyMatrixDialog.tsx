@@ -176,6 +176,7 @@ export function AllergyMatrixDialog({
   );
   const [open, setOpen] = useState(false);
   const allergens = useMemo(() => collectUniqueAllergens(recipes), [recipes]);
+  const hasAllergens = allergens.length > 0;
   const sortedRecipes = useMemo(
     () => [...recipes].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
     [recipes],
