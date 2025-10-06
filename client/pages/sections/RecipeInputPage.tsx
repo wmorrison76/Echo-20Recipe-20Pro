@@ -611,7 +611,7 @@ const RecipeInputPage = () => {
   );
   const infoLabelClass = useMemo(
     () =>
-      `font-bold uppercase tracking-[0.22em] text-[10px] ${
+      `font-bold uppercase tracking-[0.22em] text-[10px] text-center ${
         isDarkMode ? "text-cyan-300" : "text-slate-700"
       }`,
     [isDarkMode],
@@ -3241,7 +3241,7 @@ const RecipeInputPage = () => {
                   "⅒": "1/10",
                   "⅓": "1/3",
                   "��": "2/3",
-                  "⅕": "1/5",
+                  "��": "1/5",
                   "⅖": "2/5",
                   "⅗": "3/5",
                   "⅘": "4/5",
