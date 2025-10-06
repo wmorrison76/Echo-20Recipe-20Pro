@@ -41,7 +41,7 @@ function IndexContent() {
         }}
       >
         <TopTabs />
-        <header className="flex flex-wrap items-center justify-between gap-4 pr-4 pt-4 pb-2 pl-2 sm:flex-nowrap sm:pl-3">
+        <header className="flex flex-wrap items-center justify-between gap-3 pr-3 pt-3 pb-1.5 pl-2 sm:flex-nowrap sm:pl-2.5">
           <div className="flex items-center gap-3">
             <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/60 bg-white/80 text-xs font-semibold uppercase tracking-[0.35em] text-slate-700 shadow-sm backdrop-blur-sm dark:border-cyan-500/40 dark:bg-cyan-500/15 dark:text-cyan-200">
               ER
