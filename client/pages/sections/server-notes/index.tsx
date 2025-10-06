@@ -344,9 +344,9 @@ export default function ServerNotesSection() {
                 return (
                   <div
                     key={step.title}
-                    className="flex items-start gap-3 rounded-2xl border border-white/60 bg-white/70 p-3.5 shadow-sm backdrop-blur-sm transition-colors dark:border-cyan-500/30 dark:bg-slate-950/60"
+                    className="flex items-start gap-2.5 rounded-2xl border border-white/60 bg-white/70 p-3 shadow-sm backdrop-blur-sm transition-colors dark:border-cyan-500/30 dark:bg-slate-950/60"
                   >
-                    <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-white/80 bg-white text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-sm dark:border-cyan-500/40 dark:bg-slate-900 dark:text-cyan-200">
+                    <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-white/80 bg-white text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-sm dark:border-cyan-500/40 dark:bg-slate-900 dark:text-cyan-200">
                       {index + 1}
                     </span>
                     <div className="space-y-1">
@@ -511,7 +511,7 @@ export default function ServerNotesSection() {
                   <CardContent className="flex flex-1 flex-col justify-between space-y-4 px-6 pb-6 pt-4 text-sm">
                     <div className="space-y-1 text-muted-foreground">
                       <div>
-                        <strong>Company:</strong> {note.companyName || "—"}
+                        <strong>Company:</strong> {note.companyName || "��"}
                       </div>
                       {note.outletName && (
                         <div>
