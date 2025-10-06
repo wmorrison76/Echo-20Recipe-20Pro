@@ -112,6 +112,11 @@ export function DiscoveryPanel() {
           placeholder="Search textures, owners, status"
           className="mt-3 w-full rounded-xl border border-white/30 bg-white/40 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none ring-0 transition focus:border-sky-500 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-900/40 dark:text-cyan-100 dark:focus:border-cyan-400"
         />
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-[10px] uppercase tracking-[0.35em] text-cyan-100/70">
+          <span className="chalk-breath">Textures {textureAtlas.length}</span>
+          <span className="chalk-breath">Constellations {flavorConstellationLibrary.length}</span>
+          <span className="chalk-breath">Drivers {futureFoodDrivers.length}</span>
+        </div>
       </div>
 
       <div className="rounded-2xl border border-white/20 bg-white/8 p-4 backdrop-blur md:bg-white/14 dark:border-cyan-500/25 dark:bg-cyan-500/10">
