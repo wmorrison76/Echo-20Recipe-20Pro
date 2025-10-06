@@ -268,7 +268,7 @@ const RecipeInputPage = () => {
     try {
       window.localStorage.setItem(
         "recipe:rnd-layout",
-        JSON.stringify(rndLayout),
+        JSON.stringify(sanitizeRndLayout(rndLayout)),
       );
     } catch {}
   }, [rndLayout]);
