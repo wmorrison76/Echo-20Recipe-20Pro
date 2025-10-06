@@ -472,10 +472,21 @@ export function RecipeSelection({
                     )}
                   </div>
                   <div className="flex w-full flex-1 flex-col items-center gap-2">
-                    <div className="space-y-1">
-                      <h4 className="text-[13px] font-semibold">
-                        {recipe.title}
-                      </h4>
+                    <div className="space-y-1 text-center">
+                      <div className="flex flex-wrap items-center justify-center gap-1 text-[13px] font-semibold">
+                        <span className="line-clamp-2 max-w-[220px]">{menuName}</span>
+                        {menuPrice && (
+                          <span className="text-[12px] font-medium text-primary/80">
+                            {menuPrice}
+                          </span>
+                        )}
+                        <span
+                          className={`inline-flex h-[9px] w-[9px] rounded-[2px] shadow-sm ${
+                            isSelected ? "bg-primary" : "bg-muted-foreground/50"
+                          }`}
+                          aria-hidden
+                        />
+                      </div>
                       <p className="line-clamp-3 text-[11px] text-muted-foreground">
                         {recipe.description}
                       </p>
