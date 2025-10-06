@@ -2136,11 +2136,11 @@ const RecipeInputPage = () => {
           <div className="w-full px-4 sm:px-6 space-y-6 pb-8">
             {/* Removed old hamburger toggle button */}
             <div
-              className="flex items-start gap-3"
+              className="flex flex-wrap items-start gap-3"
               data-echo-key="section:add:basics"
             >
               <div
-                className={`w-2/3 border p-4 rounded-xl shadow-lg ${isDarkMode ? "border-cyan-400/30 bg-black/50 shadow-cyan-400/20" : "border-gray-200 bg-white shadow-gray-200/50"} backdrop-blur-sm`}
+                className={`flex-1 min-w-0 border p-4 rounded-xl shadow-lg ${isDarkMode ? "border-cyan-400/30 bg-black/50 shadow-cyan-400/20" : "border-gray-200 bg-white shadow-gray-200/50"} backdrop-blur-sm`}
               >
                 <input
                   type="text"
@@ -2343,7 +2343,7 @@ const RecipeInputPage = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex w-full flex-col gap-4 sm:w-72 lg:w-80">
+              <div className="flex w-full flex-col gap-4 sm:w-72 lg:w-80 xl:flex-shrink-0">
                 <div
                   className={`border rounded-xl flex flex-col justify-end shadow-lg backdrop-blur-sm ${isDarkMode ? "bg-black/50 border-cyan-400/30 shadow-[0_0_24px_rgba(34,211,238,0.25)]" : "bg-white border-gray-200 shadow-gray-200/50"}`}
                   style={{ minHeight: "3rem" }}
