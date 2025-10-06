@@ -148,6 +148,11 @@ export function WorkbenchPanel() {
             </button>
           </div>
         </div>
+        <div className="mt-4 flex flex-wrap gap-3 text-[10px] uppercase tracking-[0.35em] text-cyan-200/80">
+          <span className="chalk-breath">{experiment.textureObjectives.length} texture cues</span>
+          <span className="chalk-breath">{experiment.flavorConstellations.length} flavor maps</span>
+          <span className="chalk-breath">{experiment.futureFoodAngles.length} future bets</span>
+        </div>
         <div className="mt-6 rounded-2xl border border-white/20 bg-white/50 p-4 text-sm text-slate-700 shadow-inner dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100">
           <div className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
             Experiment context
