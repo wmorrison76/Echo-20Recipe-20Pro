@@ -2206,7 +2206,7 @@ const RecipeInputPage = () => {
                       isDarkMode ? "text-cyan-200" : "text-slate-700"
                     }`}
                   >
-                    <div className="col-span-2 flex flex-col gap-0.5 md:col-span-2">
+                    <div className="col-span-2 flex flex-col items-center gap-0.5 md:col-span-2">
                       <span className={infoLabelClass}>{t("recipe.labels.cookTime", "COOK TIME")}</span>
                       <div className="flex items-center justify-center gap-1">
                         <input
@@ -2224,7 +2224,7 @@ const RecipeInputPage = () => {
                       </div>
                     </div>
 
-                    <div className="col-span-2 flex flex-col gap-0.5 md:col-span-2">
+                    <div className="col-span-2 flex flex-col items-center gap-0.5 md:col-span-2">
                       <span className={infoLabelClass}>{t("recipe.labels.cookTemp", "COOK TEMP")}</span>
                       <input
                         value={cookTemp}
@@ -2238,7 +2238,7 @@ const RecipeInputPage = () => {
                       />
                     </div>
 
-                    <div className="col-span-2 flex flex-col gap-0.5 md:col-span-2">
+                    <div className="col-span-2 flex flex-col items-center gap-0.5 md:col-span-2">
                       <span className={infoLabelClass}>{t("recipe.labels.prepTime", "PREP TIME")}</span>
                       <div className="flex items-center justify-center gap-1">
                         <input
@@ -2255,14 +2255,14 @@ const RecipeInputPage = () => {
                       </div>
                     </div>
 
-                    <div className="col-span-2 flex flex-col gap-0.5 md:col-span-2">
+                    <div className="col-span-2 flex flex-col items-center gap-0.5 md:col-span-2">
                       <span className={infoLabelClass}>FULL RECIPE</span>
                       <span className={infoValuePillClass}>
                         {`${getCurrencySymbol(currentCurrency)}${calculateTotalCost().toFixed(2)}`}
                       </span>
                     </div>
 
-                    <div className="col-span-2 flex flex-col gap-0.5 md:col-span-2">
+                    <div className="col-span-2 flex flex-col items-center gap-0.5 md:col-span-2">
                       <span className={infoLabelClass}>
                         {t("recipe.labels.portionCost", "PORTION COST")}
                       </span>
@@ -2271,7 +2271,7 @@ const RecipeInputPage = () => {
                       </span>
                     </div>
 
-                    <div className="col-span-2 flex flex-col gap-0.5 md:col-span-2">
+                    <div className="col-span-2 flex flex-col items-center gap-0.5 md:col-span-2">
                       <span className={infoLabelClass}>{t("recipe.labels.recipeType", "RECIPE")}</span>
                       <span className={infoValuePillClass}>
                         {selectedRecipeType.includes("Full Recipe")
