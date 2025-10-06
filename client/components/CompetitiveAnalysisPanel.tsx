@@ -62,9 +62,9 @@ export function CompetitiveAnalysisPanel({ className }: CompetitiveAnalysisPanel
             onValueChange={(value) => setActiveFeatureKey(value as FeatureComparison["key"])}
             className="w-full"
           >
-            <TabsList className="w-full flex-wrap justify-start overflow-x-auto">
+            <TabsList className="w-full flex-wrap justify-start gap-1 overflow-x-auto">
               {FEATURE_COMPARISON.map((feature) => (
-                <TabsTrigger key={feature.key} value={feature.key} className="text-xs">
+                <TabsTrigger key={feature.key} value={feature.key} className="text-xs whitespace-nowrap">
                   {feature.label}
                 </TabsTrigger>
               ))}
