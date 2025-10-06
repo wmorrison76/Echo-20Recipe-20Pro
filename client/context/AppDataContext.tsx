@@ -1175,6 +1175,128 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       } catch {}
     };
 
+    const mergeHyphenatedLines = (lines: string[]) => {
+      const merged: string[] = [];
+      for (let i = 0; i < lines.length; i++) {
+        const current = lines[i];
+        if (
+          /[A-Za-z]-$/.test(current) &&
+          i + 1 < lines.length &&
+          /^[a-z]/.test(lines[i + 1])
+        ) {
+          merged.push(current.replace(/-$/, "") + lines[i + 1].replace(/^\s+/, ""));
+          i++;
+          continue;
+        }
+        merged.push(current);
+      }
+      return merged;
+    };
+
+    const extractPageText = async (page: any) => {
+      const textContent = await page.getTextContent({ disableCombineTextItems: true });
+      const items = (textContent.items || []) as any[];
+      if (!items.length) return { text: "", lines: [] as string[], charCount: 0 };
+      type Row = {
+        y: number;
+        items: {
+          x: number;
+          xEnd: number;
+          width: number;
+          height: number;
+          str: string;
+        }[];
+      };
+      const rowMap = new Map<number, Row>();
+      const yTolerance = 3;
+      for (const raw of items) {
+        const str = typeof raw.str === "string" ? raw.str : "";
+        if (!str.trim()) continue;
+        const transform = Array.isArray(raw.transform) ? raw.transform : [0, 0, 0, 0, raw.x || 0, raw.y || 0];
+        const x = typeof transform[4] === "number" ? transform[4] : 0;
+        const y = typeof transform[5] === "number" ? transform[5] : 0;
+        const widthCandidate =
+          typeof raw.width === "number"
+            ? raw.width
+            : typeof transform[0] === "number"
+            ? Math.abs(transform[0])
+            : str.length * 4;
+        const heightCandidate =
+          typeof raw.height === "number"
+            ? raw.height
+            : typeof transform[3] === "number"
+            ? Math.abs(transform[3])
+            : 0;
+        const key = Math.round(y / yTolerance) * yTolerance;
+        let row = rowMap.get(key);
+        if (!row) {
+          row = { y, items: [] };
+          rowMap.set(key, row);
+        }
+        row.items.push({
+          x,
+          xEnd: x + widthCandidate,
+          width: widthCandidate,
+          height: heightCandidate,
+          str,
+        });
+      }
+      const rows = Array.from(rowMap.values()).sort((a, b) => b.y - a.y);
+      const structured: { text: string; x: number; y: number }[] = [];
+      const newColumnGap = 48;
+      const wordGap = 4;
+      for (const row of rows) {
+        const sortedItems = row.items.sort((a, b) => a.x - b.x);
+        let buffer = "";
+        let bufferStart = sortedItems[0]?.x ?? 0;
+        let bufferEnd = sortedItems[0]?.xEnd ?? bufferStart;
+        const segments: { text: string; x: number; y: number }[] = [];
+        for (let i = 0; i < sortedItems.length; i++) {
+          const current = sortedItems[i];
+          const text = current.str.replace(/\s+/g, " ").trim();
+          if (!text) continue;
+          if (!buffer) {
+            buffer = text;
+            bufferStart = current.x;
+            bufferEnd = current.xEnd;
+            continue;
+          }
+          const gap = current.x - bufferEnd;
+          if (gap > newColumnGap) {
+            if (buffer.trim()) {
+              segments.push({ text: buffer.trim(), x: bufferStart, y: row.y });
+            }
+            buffer = text;
+            bufferStart = current.x;
+            bufferEnd = current.xEnd;
+            continue;
+          }
+          if (gap > wordGap && !buffer.endsWith(" ")) buffer += " ";
+          buffer += text;
+          bufferEnd = Math.max(bufferEnd, current.xEnd);
+        }
+        if (buffer.trim()) {
+          segments.push({ text: buffer.trim(), x: bufferStart, y: row.y });
+        }
+        for (const segment of segments) {
+          structured.push(segment);
+        }
+      }
+      structured.sort((a, b) => {
+        if (Math.abs(a.y - b.y) <= 4) {
+          return a.x - b.x;
+        }
+        return b.y - a.y;
+      });
+      const rawLines = structured
+        .map((entry) => entry.text.replace(/\s+/g, " ").trim())
+        .filter(Boolean);
+      const lines = mergeHyphenatedLines(rawLines);
+      const text = lines.join("\n");
+      const charCount = lines.reduce((acc, line) => acc + line.length, 0);
+      return { text, lines, charCount };
+    };
+
     for (const f of files) {
       if (!f.name.toLowerCase().endsWith("pdf")) {
         errors.push({ file: f.name, error: "Unsupported PDF type" });
