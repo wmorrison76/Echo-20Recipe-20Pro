@@ -2214,7 +2214,7 @@ const RecipeInputPage = () => {
                   data-echo-key="field:add:description"
                 />
 
-                <div className="mt-5">
+                <div className="mt-4">
                   <div
                     className={`grid grid-cols-4 md:grid-cols-12 gap-2 text-[10px] sm:text-[11px] leading-tight ${
                       isDarkMode ? "text-cyan-200" : "text-slate-700"
