@@ -190,7 +190,7 @@ export function CompetitiveAnalysisPanel({ className }: CompetitiveAnalysisPanel
             Condensed positioning intel to support enablement decks and objection handling.
           </CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-2">
+        <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {COMPETITORS.map((competitor) => (
             <div key={competitor.id} className="rounded-xl border bg-muted/30 p-4">
               <div className="flex items-start justify-between gap-2">
