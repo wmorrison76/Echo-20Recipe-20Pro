@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useState } from "react";
 import { GlassWater, Loader2, Sparkles } from "lucide-react";
 
 import { PanelFrame } from "@/components/panels/PanelFrame";
@@ -32,7 +33,7 @@ export function WinePairingPanel() {
       setSuggestions(wines);
       toast({
         title: "Pairings refreshed",
-        description: `${wines.length} wines mapped to the tasting.",
+        description: `${wines.length} wines mapped to the tasting.`,
       });
       await audit.log({
         action: "PANEL_ACTION",
