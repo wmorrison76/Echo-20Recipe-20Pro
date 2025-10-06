@@ -538,6 +538,7 @@ export default function GallerySection() {
                     }}
                     aria-label="Rename"
                     title="Rename"
+                    className="h-9 w-9 rounded-full"
                   >
                     <Pencil />
                   </Button>
@@ -547,6 +548,7 @@ export default function GallerySection() {
                     onClick={() => deleteLookBook(b.id)}
                     aria-label="Delete"
                     title="Delete"
+                    className="h-9 w-9 rounded-full"
                   >
                     <Trash />
                   </Button>
