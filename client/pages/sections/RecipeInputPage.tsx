@@ -635,6 +635,52 @@ const RecipeInputPage = () => {
     taxonomy,
     image,
   });
+
+  useEffect(() => {
+    const fingerprint = JSON.stringify({
+      recipeName,
+      ingredients,
+      directions,
+      yieldQty,
+      yieldUnit,
+    });
+    if (autoSnapshotFingerprintRef.current === fingerprint) return;
+    autoSnapshotFingerprintRef.current = fingerprint;
+
+    if (autoSnapshotTimerRef.current) {
+      clearTimeout(autoSnapshotTimerRef.current);
+    }
+
+    autoSnapshotTimerRef.current = setTimeout(() => {
+      const payload = serialize();
+      const activeIngredients = ingredients.filter((row) => row.type !== "divider").length;
+      const summaryParts = [recipeName.trim() || "Untitled recipe"];
+      summaryParts.push(`${activeIngredients} ingredient${activeIngredients === 1 ? "" : "s"}`);
+      if (yieldQty) summaryParts.push(`yield ${yieldQty} ${yieldUnit || ""}`.trim());
+      collaboration.recordVersionSnapshot({
+        summary: summaryParts.join(" · "),
+        payload,
+        auto: true,
+        createdBy: "Auto capture",
+      });
+      autoSnapshotTimerRef.current = null;
+    }, 90000);
+
+    return () => {
+      if (autoSnapshotTimerRef.current) {
+        clearTimeout(autoSnapshotTimerRef.current);
+        autoSnapshotTimerRef.current = null;
+      }
+    };
+  }, [
+    recipeName,
+    ingredients,
+    directions,
+    yieldQty,
+    yieldUnit,
+    collaboration,
+  ]);
+
   const restore = (s: any) => {
     if (!s) return;
     setRecipeName(s.recipeName || "");
