@@ -309,10 +309,9 @@ export default function ServerNotesSection() {
             <div className="flex items-center gap-2.5">
               <ClipboardList className="h-5 w-5 text-primary" />
               <div className="leading-tight">
-                <h1 className="text-lg font-semibold">Server Notes</h1>
+                <h1 className="text-lg font-semibold">{t("serverNotes.heading")}</h1>
                 <p className="text-[13px] text-muted-foreground">
-                  Connect recipes, layouts, and service notes into shareable
-                  documents.
+                  {t("serverNotes.subtitle")}
                 </p>
               </div>
             </div>
@@ -322,7 +321,7 @@ export default function ServerNotesSection() {
               onClick={createNewNote}
               className="gap-1.5"
             >
-              <Plus className="h-4 w-4" /> New Document
+              <Plus className="h-4 w-4" /> {t("serverNotes.actions.newDocument")}
             </Button>
           </header>
 
