@@ -1345,6 +1345,22 @@ export default function GallerySection() {
         })}
         className={lucccaMode ? "luccca-theme" : ""}
       />
+
+      <GalleryOverlay
+        open={overlayOpen}
+        onClose={() => setOverlayOpen(false)}
+        image={activeImage}
+        adjustments={activeAdjustment}
+        activeTool={activeTool}
+        onSelectTool={setActiveTool}
+        layers={layerList}
+        visibleLayers={visibleLayers}
+        onToggleLayer={toggleLayerVisibility}
+        onResetAdjustments={resetAdjustments}
+        onQuickAction={handleQuickAction}
+        activeQuickAction={activeQuickAction}
+        onSave={() => setStatus("Overlay changes saved.")}
+      />
     </div>
   );
 }
