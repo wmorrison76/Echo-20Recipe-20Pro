@@ -220,6 +220,7 @@ export default function GallerySection() {
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [urlText, setUrlText] = useState("");
   const [urlLoading, setUrlLoading] = useState(false);
+  const [lookbookNameDraft, setLookbookNameDraft] = useState("");
 
   const uploadInputRef = useRef<HTMLInputElement | null>(null);
 
