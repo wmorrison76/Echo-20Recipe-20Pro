@@ -340,16 +340,16 @@ export function GalleryOverlay({
 
             <OverlayPanel title="Quick actions">
               <div className="grid gap-2 text-[11px] uppercase tracking-[0.3em] text-slate-300">
-                {TOOL_GRID.slice(0, 4).map((tool) => (
+                {OVERLAY_QUICK_ACTIONS.map((action) => (
                   <button
-                    key={tool.key}
-                    onClick={() => onQuickAction({ key: tool.key, label: tool.label })}
+                    key={action.key}
+                    onClick={() => onQuickAction(action)}
                     className={cn(
                       "rounded-2xl border border-slate-700/60 bg-black/30 px-3 py-2 text-left transition",
-                      activeQuickAction === tool.key && "border-sky-400 bg-sky-500/15 text-sky-100",
+                      activeQuickAction === action.key && "border-sky-400 bg-sky-500/15 text-sky-100",
                     )}
                   >
-                    {tool.label}
+                    {action.label}
                   </button>
                 ))}
               </div>
