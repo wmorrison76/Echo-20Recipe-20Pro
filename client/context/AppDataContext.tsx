@@ -330,6 +330,123 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       reader.readAsDataURL(blob);
     });
 
+  const createTileBoard = useCallback(
+    (input: { name: string; description?: string; category?: TileBoard["category"]; imageIds?: string[] }) => {
+      const id = uid();
+      const now = Date.now();
+      const board: TileBoard = {
+        id,
+        name: input.name,
+        description: input.description,
+        category: input.category ?? "custom",
+        createdAt: now,
+        updatedAt: now,
+        tiles: (input.imageIds ?? []).slice(0, 8).map((imageId, index) => {
+          const image = images.find((item) => item.id === imageId) ?? null;
+          return {
+            id: uid(),
+            title: image?.name ?? `Tile ${index + 1}`,
+            subtitle: image ? "Generated from gallery" : undefined,
+            imageId: image?.id ?? null,
+            tags: [input.name.toLowerCase().replace(/\s+/g, "-")],
+            layout: index % 3 === 0 ? "portrait" : "landscape",
+            accent: index % 2 === 0 ? "#38bdf8" : "#f97316",
+            createdAt: now + index,
+          } satisfies TileBoardTile;
+        }),
+      } satisfies TileBoard;
+      setTileBoards((prev) => [...prev, board]);
+      return id;
+    },
+    [images],
+  );
+
+  const updateTileBoard = useCallback(
+    (id: string, patch: Partial<Omit<TileBoard, "id" | "createdAt" | "tiles">>) => {
+      setTileBoards((prev) =>
+        prev.map((board) =>
+          board.id === id
+            ? {
+                ...board,
+                ...patch,
+                updatedAt: Date.now(),
+              }
+            : board,
+        ),
+      );
+    },
+    [],
+  );
+
+  const deleteTileBoard = useCallback((id: string) => {
+    setTileBoards((prev) => prev.filter((board) => board.id !== id));
+  }, []);
+
+  const addTileToBoard = useCallback(
+    (boardId: string, tile: Omit<TileBoardTile, "id" | "createdAt"> & { id?: string }) => {
+      const now = Date.now();
+      const tileId = tile.id ?? uid();
+      setTileBoards((prev) =>
+        prev.map((board) =>
+          board.id === boardId
+            ? {
+                ...board,
+                updatedAt: now,
+                tiles: [
+                  ...board.tiles,
+                  {
+                    ...tile,
+                    id: tileId,
+                    createdAt: now,
+                  },
+                ],
+              }
+            : board,
+        ),
+      );
+      return tileId;
+    },
+    [],
+  );
+
+  const updateTileInBoard = useCallback(
+    (boardId: string, tileId: string, patch: Partial<TileBoardTile>) => {
+      setTileBoards((prev) =>
+        prev.map((board) =>
+          board.id === boardId
+            ? {
+                ...board,
+                updatedAt: Date.now(),
+                tiles: board.tiles.map((tile) =>
+                  tile.id === tileId
+                    ? {
+                        ...tile,
+                        ...patch,
+                      }
+                    : tile,
+                ),
+              }
+            : board,
+        ),
+      );
+    },
+    [],
+  );
+
+  const removeTileFromBoard = useCallback((boardId: string, tileId: string) => {
+    setTileBoards((prev) =>
+      prev.map((board) =>
+        board.id === boardId
+          ? {
+              ...board,
+              updatedAt: Date.now(),
+              tiles: board.tiles.filter((tile) => tile.id !== tileId),
+            }
+          : board,
+      ),
+    );
+  }, []);
+
   const addImages = useCallback(
     async (files: File[], opts?: { tags?: string[] }) => {
       let added = 0;
