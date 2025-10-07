@@ -14,21 +14,35 @@ import {
 } from "@/components/ui/dialog";
 import { GalleryLightbox } from "@/components/GalleryLightbox";
 import { LookBookShowcase } from "@/components/LookBookShowcase";
+import type { LucideIcon } from "lucide-react";
 import {
   Clock,
   Download,
+  Droplet,
+  Eraser,
   Folder,
   Image as ImageIcon,
+  LassoSelect,
+  Layers,
   LayoutGrid,
   Link2,
   ListFilter,
+  Move,
+  Paintbrush,
+  PenTool,
+  Pipette,
   Plus,
+  Scan,
+  Scissors,
   Search,
   SlidersHorizontal,
+  Sparkles,
+  Stamp,
   Star,
   Tag,
   Trash2,
   UploadCloud,
+  Wand2,
 } from "lucide-react";
 
 const gridTemplates: Record<"s" | "m" | "l", string> = {
