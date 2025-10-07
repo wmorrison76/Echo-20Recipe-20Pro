@@ -987,6 +987,33 @@ export default function GallerySection() {
         >
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(125,211,252,0.14),_transparent_70%)]" />
           <div className="relative flex h-full flex-col">
+            <div className="pointer-events-auto absolute left-0 right-0 top-0 z-30 flex justify-center px-5 pt-4">
+              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-black/45 px-4 py-2 text-[11px] uppercase tracking-[0.35em] text-slate-200">
+                <button
+                  onClick={() => setGalleryView("grid")}
+                  className={cn(
+                    "rounded-full px-3 py-1 transition",
+                    galleryView === "grid"
+                      ? "bg-sky-500 text-black"
+                      : "bg-transparent text-slate-200 hover:text-sky-200",
+                  )}
+                >
+                  Photo grid
+                </button>
+                <button
+                  onClick={() => setGalleryView("tiles")}
+                  className={cn(
+                    "rounded-full px-3 py-1 transition",
+                    galleryView === "tiles"
+                      ? "bg-sky-500 text-black"
+                      : "bg-transparent text-slate-200 hover:text-sky-200",
+                  )}
+                >
+                  Tile boards
+                </button>
+              </div>
+            </div>
+
             {galleryView === "grid" && selectedIds.length > 0 && (
               <div className="pointer-events-none absolute bottom-6 left-1/2 z-30 -translate-x-1/2 px-3">
                 <GalleryBulkActions
@@ -1374,7 +1401,7 @@ export default function GallerySection() {
             tags,
             description:
               tags.length > 0
-                ? `Highlights ${tags.slice(0, 3).join(" �� ")}${tags.length > 3 ? " +" : ""}`
+                ? `Highlights ${tags.slice(0, 3).join(" · ")}${tags.length > 3 ? " +" : ""}`
                 : undefined,
           };
         })}
