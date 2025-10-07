@@ -1615,9 +1615,10 @@ function createLucccaDishTable(
   borderHex: string,
   textHex: string,
   font: string,
+  labels: { qty: string; component: string; notes: string },
 ): Table {
   const headerRow = new TableRow({
-    children: ["Qty", "Component", "Notes"].map((title) =>
+    children: [labels.qty, labels.component, labels.notes].map((title) =>
       new TableCell({
         shading: { fill: headerHex, color: "FFFFFF" },
         children: [
