@@ -1033,17 +1033,76 @@ export default function GallerySection() {
             </div>
 
             <div className="relative flex-1 overflow-hidden pt-8 lg:pt-16">
-              <GalleryGrid
-                images={filtered}
-                thumbSize={thumbSize}
-                activeId={activeId}
-                selectedIds={selectedIds}
-                onSelect={handleSelectCard}
-                onOpenLightbox={handleOpenLightbox}
-                onDelete={handleDeleteImage}
-                gridTemplates={gridTemplates}
-                onRestoreDemo={restoreDemo}
-              />
+              {galleryView === "grid" ? (
+                <GalleryGrid
+                  images={filtered}
+                  thumbSize={thumbSize}
+                  activeId={activeId}
+                  selectedIds={selectedIds}
+                  onSelect={handleSelectCard}
+                  onOpenLightbox={handleOpenLightbox}
+                  onDelete={handleDeleteImage}
+                  gridTemplates={gridTemplates}
+                  onRestoreDemo={restoreDemo}
+                />
+              ) : (
+                <div className="flex h-full flex-col overflow-hidden">
+                  <GalleryTileBoards
+                    boards={tileBoards}
+                    images={images}
+                    selectedImageIds={selectedIds}
+                    activeBoardId={activeTileBoardId}
+                    onSelectBoard={(id) => setActiveTileBoardId(id)}
+                    onCreateBoard={(name) => {
+                      const newId = createTileBoard({
+                        name,
+                        category: "custom",
+                        imageIds: selectedIds,
+                      });
+                      setActiveTileBoardId(newId);
+                      setStatus(`Tile board "${name}" created.`);
+                    }}
+                    onRenameBoard={(id, name) => {
+                      updateTileBoard(id, { name });
+                      setStatus(`Board renamed to ${name}.`);
+                    }}
+                    onDeleteBoard={(id) => {
+                      deleteTileBoard(id);
+                      setActiveTileBoardId((prev) =>
+                        prev === id
+                          ? tileBoards.filter((board) => board.id !== id)[0]?.id ?? null
+                          : prev,
+                      );
+                      setStatus("Board removed.");
+                    }}
+                    onAddTiles={(boardId, imageIds) => {
+                      if (!imageIds.length) return;
+                      const unique = Array.from(new Set(imageIds));
+                      unique.forEach((imageId, index) => {
+                        const image = images.find((item) => item.id === imageId) ?? null;
+                        addTileToBoard(boardId, {
+                          title: image?.name ?? `Tile ${index + 1}`,
+                          subtitle: image ? "Imported from gallery" : undefined,
+                          imageId: image?.id ?? null,
+                          tags: image?.tags ?? [],
+                          layout: index % 2 === 0 ? "landscape" : "portrait",
+                          accent: ["#38bdf8", "#f472b6", "#a855f7", "#facc15"][index % 4],
+                        });
+                      });
+                      setStatus(`Added ${unique.length} tile${unique.length === 1 ? "" : "s"} to board.`);
+                      setSelectedIds([]);
+                    }}
+                    onUpdateTile={(boardId, tileId, patch) => {
+                      updateTileInBoard(boardId, tileId, patch);
+                      setStatus("Tile updated.");
+                    }}
+                    onRemoveTile={(boardId, tileId) => {
+                      removeTileFromBoard(boardId, tileId);
+                      setStatus("Tile removed.");
+                    }}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </Dropzone>
