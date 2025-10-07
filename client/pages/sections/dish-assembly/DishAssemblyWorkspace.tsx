@@ -35,7 +35,6 @@ import {
   generateServiceware,
   mergePosMappings,
   parsePriceString,
-  parseQuantityValue,
   summarizeRecipe,
 } from "./utils";
 import DishComponentsTable from "./components/DishComponentsTable";
