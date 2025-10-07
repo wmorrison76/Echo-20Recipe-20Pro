@@ -987,7 +987,7 @@ export default function GallerySection() {
         >
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(125,211,252,0.14),_transparent_70%)]" />
           <div className="relative flex h-full flex-col">
-            {selectedIds.length > 0 && (
+            {galleryView === "grid" && selectedIds.length > 0 && (
               <div className="pointer-events-none absolute bottom-6 left-1/2 z-30 -translate-x-1/2 px-3">
                 <GalleryBulkActions
                   count={selectedIds.length}
@@ -1374,7 +1374,7 @@ export default function GallerySection() {
             tags,
             description:
               tags.length > 0
-                ? `Highlights ${tags.slice(0, 3).join(" · ")}${tags.length > 3 ? " +" : ""}`
+                ? `Highlights ${tags.slice(0, 3).join(" �� ")}${tags.length > 3 ? " +" : ""}`
                 : undefined,
           };
         })}
