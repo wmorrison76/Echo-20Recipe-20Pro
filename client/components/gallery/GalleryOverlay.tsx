@@ -16,7 +16,6 @@ import {
   Lasso,
   Maximize2,
   Minus,
-  MousePointerSquare,
   Move,
   PaintBucket,
   Pencil,
