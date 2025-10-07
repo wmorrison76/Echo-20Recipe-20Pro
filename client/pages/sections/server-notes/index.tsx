@@ -519,7 +519,7 @@ export default function ServerNotesSection() {
                   <CardContent className="flex flex-1 flex-col justify-between space-y-4 px-6 pb-6 pt-4 text-sm">
                     <div className="space-y-1 text-muted-foreground">
                       <div>
-                        <strong>Company:</strong> {note.companyName || "—"}
+                        <strong>{t("serverNotes.saved.labels.company")}</strong> {note.companyName || "—"}
                       </div>
                       {note.outletName && (
                         <div>
