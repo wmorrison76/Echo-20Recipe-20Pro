@@ -192,6 +192,7 @@ export function GalleryOverlay({
                 <button
                   className="rounded-full border border-slate-600/60 bg-black/40 p-2 text-slate-200 transition hover:border-sky-400/40 hover:text-sky-200"
                   onClick={() => setGridSize((size) => Math.max(8, size - 4))}
+                  aria-label="Decrease grid size"
                 >
                   <Minus className="h-4 w-4" />
                 </button>
@@ -201,6 +202,7 @@ export function GalleryOverlay({
                 <button
                   className="rounded-full border border-slate-600/60 bg-black/40 p-2 text-slate-200 transition hover:border-sky-400/40 hover:text-sky-200"
                   onClick={() => setGridSize((size) => Math.min(96, size + 4))}
+                  aria-label="Increase grid size"
                 >
                   <Plus className="h-4 w-4" />
                 </button>
@@ -209,6 +211,7 @@ export function GalleryOverlay({
                 <button
                   className="rounded-full border border-slate-600/60 bg-black/40 p-2 text-slate-200 transition hover:border-sky-400/40 hover:text-sky-200"
                   onClick={() => setZoom((value) => Math.max(25, value - 10))}
+                  aria-label="Zoom out"
                 >
                   <ZoomOut className="h-4 w-4" />
                 </button>
@@ -218,14 +221,36 @@ export function GalleryOverlay({
                 <button
                   className="rounded-full border border-slate-600/60 bg-black/40 p-2 text-slate-200 transition hover:border-sky-400/40 hover:text-sky-200"
                   onClick={() => setZoom((value) => Math.min(400, value + 10))}
+                  aria-label="Zoom in"
                 >
                   <ZoomIn className="h-4 w-4" />
                 </button>
               </div>
               <div className="flex items-center gap-2 text-[10px]">
-                <Move className="h-4 w-4" />
-                <Maximize2 className="h-4 w-4" />
-                <Ruler className="h-4 w-4" />
+                <button
+                  className="rounded-full border border-slate-600/60 bg-black/40 p-2 text-slate-200 transition hover:border-sky-400/40 hover:text-sky-200"
+                  onClick={() => setZoom(100)}
+                  aria-label="Reset view"
+                >
+                  <Move className="h-4 w-4" />
+                </button>
+                <button
+                  className="rounded-full border border-slate-600/60 bg-black/40 p-2 text-slate-200 transition hover:border-sky-400/40 hover:text-sky-200"
+                  onClick={() => setZoom(150)}
+                  aria-label="Fit to screen"
+                >
+                  <Maximize2 className="h-4 w-4" />
+                </button>
+                <button
+                  className={cn(
+                    "rounded-full border border-slate-600/60 bg-black/40 p-2 text-slate-200 transition hover:border-sky-400/40 hover:text-sky-200",
+                    showRulers && "border-sky-400/60 text-sky-100",
+                  )}
+                  onClick={() => setShowRulers((prev) => !prev)}
+                  aria-label="Toggle rulers"
+                >
+                  <Ruler className="h-4 w-4" />
+                </button>
               </div>
             </div>
 
