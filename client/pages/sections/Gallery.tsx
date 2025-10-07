@@ -237,6 +237,76 @@ export default function GallerySection() {
       )}
       data-echo-key="page:recipes:gallery"
     >
+      <div
+        className={cn(
+          "overflow-hidden rounded-[36px] border px-8 py-8 sm:px-10 sm:py-10 backdrop-blur-xl",
+          toolbarSurface,
+        )}
+      >
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-xl space-y-4">
+            <span
+              className={cn(
+                "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.32em]",
+                lucccaMode ? "border-white/20 text-slate-200" : "border-slate-200/80 text-slate-500",
+              )}
+            >
+              Gallery Studio
+            </span>
+            <div className="space-y-3">
+              <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+                Chef-grade photo library
+              </h1>
+              <p
+                className={cn(
+                  "text-sm leading-relaxed",
+                  lucccaMode ? "text-slate-200/80" : "text-slate-600",
+                )}
+              >
+                Stage hero dishes, enrich them with tags, and promote favourites into look books and
+                menu cards.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <Button onClick={handleUploadClick} className="rounded-full px-5">
+                Upload images
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => restoreDemo()}
+                className={cn(
+                  "rounded-full px-5",
+                  lucccaMode ? "text-slate-200 hover:text-white" : "text-slate-600",
+                )}
+              >
+                Restore demo set
+              </Button>
+            </div>
+          </div>
+          <div className="grid w-full max-w-md grid-cols-2 gap-3">
+            <div className={cn("rounded-2xl border px-4 py-3", subtleSurface)}>
+              <div className="text-xs uppercase tracking-[0.28em] opacity-60">Total photos</div>
+              <div className="text-2xl font-semibold">{images.length}</div>
+            </div>
+            <div className={cn("rounded-2xl border px-4 py-3", subtleSurface)}>
+              <div className="text-xs uppercase tracking-[0.28em] opacity-60">Favorites</div>
+              <div className="text-2xl font-semibold">{favoriteCount}</div>
+            </div>
+            <div className={cn("rounded-2xl border px-4 py-3", subtleSurface)}>
+              <div className="text-xs uppercase tracking-[0.28em] opacity-60">Look Books</div>
+              <div className="text-2xl font-semibold">{lookbooks.length}</div>
+            </div>
+            <div className={cn("col-span-2 rounded-2xl border px-4 py-3", subtleSurface)}>
+              <div className="text-xs uppercase tracking-[0.28em] opacity-60">Library health</div>
+              <div className="flex items-baseline justify-between gap-4">
+                <span className="text-2xl font-semibold">{uniqueTagCount}</span>
+                <span className="text-xs opacity-70">{lastAddedLabel}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
         <Dropzone
           multiple
