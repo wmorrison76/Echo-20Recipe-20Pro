@@ -229,8 +229,8 @@ export default function GallerySection() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [filter, setFilter] = useState("");
   const [sort, setSort] = useState<SortMode>("newest");
-  const [thumbSize, setThumbSize] = useState<"s" | "m" | "l">("m");
-  const [lucccaMode, setLucccaMode] = useState(true);
+  const [thumbSize, setThumbSize] = useState<"s" | "m" | "l">("s");
+  const lucccaMode = true;
   const [libraryFilter, setLibraryFilter] = useState<LibraryFilter>("all");
   const [activeLookBookId, setActiveLookBookId] = useState<string | null>(null);
   const [openLookBook, setOpenLookBook] = useState(false);
