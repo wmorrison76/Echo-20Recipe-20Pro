@@ -1121,7 +1121,7 @@ async function createStandardDoc(
       }
 
       if (entry.wineSelection) {
-        children.push(heading("Wine Pairing", HeadingLevel.HEADING_3));
+        children.push(heading(docStrings.sectionWinePairing, HeadingLevel.HEADING_3));
         children.push(paragraph(entry.wineSelection));
       }
 
