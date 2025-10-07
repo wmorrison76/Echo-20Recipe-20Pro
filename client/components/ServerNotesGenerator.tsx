@@ -1680,9 +1680,15 @@ function createLucccaAllergenTable(
   headerHex: string,
   textHex: string,
   font: string,
+  labels: { item: string; allergy: string; modify: string; alternative: string },
 ): Table {
   const headerRow = new TableRow({
-    children: ["Item Name", "Allergy", "Modify", "Alternative"].map((title) =>
+    children: [
+      labels.item,
+      labels.allergy,
+      labels.modify,
+      labels.alternative,
+    ].map((title) =>
       new TableCell({
         shading: { fill: headerHex, color: "FFFFFF" },
         children: [
