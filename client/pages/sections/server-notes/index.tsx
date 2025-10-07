@@ -41,26 +41,23 @@ const SETTINGS_KEY = "serverNotes:settings";
 const PENDING_SELECTION_KEY = "serverNotes:presetSelection";
 
 const WALKTHROUGH_STEPS: Array<{
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
   icon: LucideIcon;
 }> = [
   {
-    title: "Configure your briefing",
-    description:
-      "Choose layout, colors, and company details so the document matches your brand.",
+    titleKey: "serverNotes.steps.configure.title",
+    descriptionKey: "serverNotes.steps.configure.description",
     icon: Sparkles,
   },
   {
-    title: "Select featured recipes",
-    description:
-      "Search, tag, and drag recipes into the briefing to build the agenda for service.",
+    titleKey: "serverNotes.steps.select.title",
+    descriptionKey: "serverNotes.steps.select.description",
     icon: ListChecks,
   },
   {
-    title: "Preview & generate",
-    description:
-      "Review the layout, adjust orientation, then export or save a reusable document.",
+    titleKey: "serverNotes.steps.preview.title",
+    descriptionKey: "serverNotes.steps.preview.description",
     icon: FileCheck2,
   },
 ];
