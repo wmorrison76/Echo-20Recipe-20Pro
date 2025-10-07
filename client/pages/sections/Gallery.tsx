@@ -245,18 +245,26 @@ function GalleryCard({
           <span className="pointer-events-none absolute left-3 top-3 z-20 flex h-2.5 w-2.5 items-center justify-center rounded-full border border-white/50 bg-sky-400/80 shadow-[0_0_8px_rgba(56,189,248,0.9)]" />
         )}
         <div className="absolute right-3 top-3 z-20 flex gap-2 opacity-0 transition group-hover:opacity-100">
-          <button
-            type="button"
+          <span
+            role="button"
+            tabIndex={0}
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
               onDelete();
             }}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur transition hover:bg-red-600/80"
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                event.stopPropagation();
+                onDelete();
+              }
+            }}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur transition hover:bg-red-600/80 focus:outline-none focus:ring-2 focus:ring-red-400/70"
             aria-label="Delete"
           >
             <Trash2 className="h-4 w-4" />
-          </button>
+          </span>
         </div>
       </div>
       <div className="flex flex-1 flex-col gap-3 px-4 pb-4 pt-3">
