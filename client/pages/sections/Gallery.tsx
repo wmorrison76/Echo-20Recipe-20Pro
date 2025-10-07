@@ -51,7 +51,7 @@ type GalleryCardProps = {
   active: boolean;
   selected: boolean;
   thumbSize: "s" | "m" | "l";
-  onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick: (event: MouseEvent<HTMLButtonElement>) => void;
   onDoubleClick: () => void;
   onToggleFavorite: () => void;
   onDelete: () => void;
