@@ -187,9 +187,10 @@ export default function ServerNotesSection() {
     setCurrentNote(note);
     persistSettings(note);
     setNoteSession((value) => value + 1);
+    const noteTitle = note.title || t("common.untitled");
     toast({
-      title: "Loaded",
-      description: `"${note.title || "Untitled"}" ready for editing.`,
+      title: t("serverNotes.toast.loaded.title"),
+      description: t("serverNotes.toast.loaded.description", undefined, { title: noteTitle }),
     });
   };
 
