@@ -548,6 +548,12 @@ type LucccaPreparedEntry = {
 
 const ALLERGEN_PATTERN = /gluten|dairy|milk|nut|peanut|tree nut|shellfish|fish|soy|egg|sesame|wheat/i;
 
+const colorToHex = (value: string | undefined, fallback = "000000"): string => {
+  if (!value) return fallback;
+  const hex = value.replace("#", "").trim();
+  return hex.length ? hex : fallback;
+};
+
 const escapeHtml = (value: string): string =>
   value
     .replace(/&/g, "&amp;")
