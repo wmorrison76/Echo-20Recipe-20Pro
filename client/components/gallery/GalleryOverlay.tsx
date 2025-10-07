@@ -255,25 +255,36 @@ export function GalleryOverlay({
             </div>
 
             <div className="relative flex-1 overflow-auto">
-              <div
-                className="relative mx-auto my-10 flex min-h-[480px] min-w-[480px] items-center justify-center rounded-[32px] bg-[linear-gradient(0deg,transparent_calc(100%_-_1px),rgba(148,163,184,0.2)_calc(100%_-_1px)),linear-gradient(90deg,transparent_calc(100%_-_1px),rgba(148,163,184,0.2)_calc(100%_-_1px))] bg-[length:clamp(16px,_calc(var(--grid-size)*1px),64px)_clamp(16px,_calc(var(--grid-size)*1px),64px)]"
-                style={{
-                  "--grid-size": gridSize,
-                  transform: `scale(${zoom / 100})`,
-                  transformOrigin: "top left",
-                }}
-              >
-                {image ? (
-                  <img
-                    src={image.dataUrl || image.blobUrl}
-                    alt={image.name}
-                    className="max-h-[70vh] max-w-[70vw] rounded-3xl border border-white/10 shadow-[0_45px_80px_rgba(14,165,233,0.35)]"
-                  />
-                ) : (
-                  <div className="rounded-3xl border border-dashed border-slate-600/60 bg-black/40 px-12 py-16 text-center text-xs uppercase tracking-[0.35em] text-slate-400">
-                    No image selected
+              {showRulers && (
+                <>
+                  <div className="pointer-events-none sticky top-0 z-20 h-8 w-full bg-[repeating-linear-gradient(to_right,rgba(148,163,184,0.45),rgba(148,163,184,0.45)_1px,transparent_1px,transparent_24px)] opacity-70" />
+                  <div className="pointer-events-none absolute bottom-0 top-0 left-0 z-10 w-8 bg-[repeating-linear-gradient(to_bottom,rgba(148,163,184,0.45),rgba(148,163,184,0.45)_1px,transparent_1px,transparent_24px)] opacity-70" />
+                </>
+              )}
+              <div className="relative h-full w-full">
+                <div className="absolute inset-0 flex items-center justify-center p-10">
+                  <div
+                    className="relative flex h-full w-full min-h-[520px] min-w-[520px] items-center justify-center rounded-[32px]"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(0deg, transparent calc(100% - 1px), rgba(148,163,184,0.25) calc(100% - 1px)), linear-gradient(90deg, transparent calc(100% - 1px), rgba(148,163,184,0.25) calc(100% - 1px))",
+                      backgroundSize: `${gridSize}px ${gridSize}px`,
+                    }}
+                  >
+                    {image ? (
+                      <img
+                        src={image.dataUrl || image.blobUrl}
+                        alt={image.name}
+                        className="max-h-[70vh] max-w-[70vw] rounded-3xl border border-white/10 shadow-[0_45px_80px_rgba(14,165,233,0.35)]"
+                        style={{ transform: `scale(${zoom / 100})`, transformOrigin: "center center" }}
+                      />
+                    ) : (
+                      <div className="rounded-3xl border border-dashed border-slate-600/60 bg-black/40 px-12 py-16 text-center text-xs uppercase tracking-[0.35em] text-slate-400">
+                        No image selected
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
             </div>
 
