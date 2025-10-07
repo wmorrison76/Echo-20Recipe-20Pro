@@ -1003,7 +1003,7 @@ export default function GallerySection() {
         >
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(125,211,252,0.14),_transparent_70%)]" />
           <div className="relative flex h-full flex-col">
-            <div className="absolute left-0 right-0 top-0 z-30 flex flex-col items-center gap-3 px-5 pt-4">
+            <div className="pointer-events-none absolute left-0 right-0 top-0 z-30 flex flex-col items-center gap-3 px-5 pt-4">
               <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-white/10 bg-black/45 px-4 py-2 text-[11px] uppercase tracking-[0.35em] text-slate-200">
                 <button
                   onClick={() => setGalleryView("grid")}
