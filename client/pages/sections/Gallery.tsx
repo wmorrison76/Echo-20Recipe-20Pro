@@ -320,6 +320,9 @@ export default function GallerySection() {
   const [lookbookNameDraft, setLookbookNameDraft] = useState("");
   const [sidebarDropActive, setSidebarDropActive] = useState(false);
   const [adjustments, setAdjustments] = useState<Record<string, AdjustmentState>>({});
+  const [activeTool, setActiveTool] = useState<string>(CREATIVE_TOOLS[0].key);
+  const [activeQuickAction, setActiveQuickAction] = useState<string | null>(null);
+  const [visibleLayers, setVisibleLayers] = useState<Record<string, boolean>>({});
 
   const uploadInputRef = useRef<HTMLInputElement | null>(null);
 
