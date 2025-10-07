@@ -303,7 +303,7 @@ export default function ServerNotesSection() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-[1600px] px-4 py-8 sm:px-6 lg:px-10 xl:px-14">
         <div className="space-y-6">
           <header className="flex flex-wrap items-center justify-between gap-2 border-b pb-3">
             <div className="flex items-center gap-2.5">
@@ -325,7 +325,7 @@ export default function ServerNotesSection() {
             </Button>
           </header>
 
-          <div className={`${panelSurfaceClass} p-4 sm:p-5`}>
+          <div className={`${panelSurfaceClass} p-4 sm:p-5 xl:p-6`}>
             <div className="flex flex-wrap items-center justify-between gap-2.5">
               <div className="leading-tight">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-muted-foreground">
@@ -342,7 +342,7 @@ export default function ServerNotesSection() {
                 {t("serverNotes.helper.badge")}
               </Badge>
             </div>
-            <div className="mt-3 grid gap-3 md:grid-cols-3">
+            <div className="mt-3 grid gap-3 md:grid-cols-3 xl:gap-4 2xl:gap-6">
               {WALKTHROUGH_STEPS.map((step, index) => {
                 const Icon = step.icon;
                 return (
@@ -370,7 +370,7 @@ export default function ServerNotesSection() {
 
           <section
             key={noteSession}
-            className="grid items-stretch gap-5 lg:grid-cols-12"
+            className="grid items-stretch gap-5 lg:grid-cols-12 xl:gap-6 2xl:gap-8"
           >
             <Card
               className={`${panelSurfaceClass} flex h-full flex-col lg:col-span-4 xl:col-span-4`}
@@ -496,7 +496,7 @@ export default function ServerNotesSection() {
                 <Badge variant="secondary">{savedNotes.length}</Badge>
               )}
             </div>
-            <div className="grid items-stretch gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid items-stretch gap-6 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
               {savedNotes.map((note) => (
                 <Card
                   key={note.id}
