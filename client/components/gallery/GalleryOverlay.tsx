@@ -1,0 +1,333 @@
+import { useMemo, useState } from "react";
+import type { GalleryImage } from "@/context/AppDataContext";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  ChevronDown,
+  Maximize2,
+  Minus,
+  Move,
+  Plus,
+  Ruler,
+  X,
+  ZoomIn,
+  ZoomOut,
+} from "lucide-react";
+
+export type GalleryOverlayProps = {
+  open: boolean;
+  onClose: () => void;
+  onSave: () => void;
+  image: GalleryImage | null;
+  adjustments: {
+    exposure: number;
+    contrast: number;
+    warmth: number;
+    saturation: number;
+    focus: number;
+  };
+  activeTool: string;
+  onSelectTool: (tool: string) => void;
+  layers: { key: string; name: string; meta: string; locked?: boolean }[];
+  visibleLayers: Record<string, boolean>;
+  onToggleLayer: (key: string) => void;
+  onResetAdjustments: () => void;
+  onQuickAction: (action: { key: string; label: string }) => void;
+  activeQuickAction: string | null;
+};
+
+const TOOL_GRID = [
+  { key: "marquee", label: "Marquee" },
+  { key: "lasso", label: "Lasso" },
+  { key: "crop", label: "Crop" },
+  { key: "heal", label: "Heal brush" },
+  { key: "clone", label: "Clone stamp" },
+  { key: "erase", label: "Eraser" },
+  { key: "blur", label: "Blur" },
+  { key: "path", label: "Path select" },
+  { key: "pen", label: "Pen" },
+  { key: "annotate", label: "Annotation" },
+  { key: "hand", label: "Hand" },
+  { key: "color", label: "Color pick" },
+  { key: "move", label: "Move" },
+  { key: "magic", label: "Magic wand" },
+  { key: "slice", label: "Slice" },
+  { key: "pencil", label: "Pencil" },
+  { key: "history", label: "History brush" },
+  { key: "paint", label: "Paint bucket" },
+  { key: "dodge", label: "Dodge" },
+  { key: "type", label: "Type" },
+  { key: "shape", label: "Custom shape" },
+  { key: "eyedropper", label: "Eye dropper" },
+  { key: "zoom", label: "Zoom" },
+];
+
+const QUICK_PRESETS = [
+  { key: "remove-bg", label: "Remove background" },
+  { key: "auto-color", label: "Auto color" },
+  { key: "hyper-real", label: "Hyper realistic" },
+  { key: "bw", label: "Black & white" },
+];
+
+export function GalleryOverlay({
+  open,
+  onClose,
+  onSave,
+  image,
+  adjustments,
+  activeTool,
+  onSelectTool,
+  layers,
+  visibleLayers,
+  onToggleLayer,
+  onResetAdjustments,
+  onQuickAction,
+  activeQuickAction,
+}: GalleryOverlayProps) {
+  const [zoom, setZoom] = useState(100);
+  const [gridSize, setGridSize] = useState(32);
+
+  const layerMeta = useMemo(
+    () =>
+      layers.map((layer, index) => ({
+        ...layer,
+        order: index,
+      })),
+    [layers],
+  );
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-gradient-to-br from-black/70 via-slate-900/65 to-slate-950/80 backdrop-blur-lg">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(51,133,255,0.25),_transparent_60%)] opacity-50" />
+
+      <div className="relative z-[210] mx-auto flex h-[92vh] w-[92vw] flex-col overflow-hidden rounded-[36px] border border-slate-700/60 bg-slate-950/95 shadow-[0_40px_160px_rgba(15,23,42,0.55)]">
+        <header className="flex items-center justify-between border-b border-slate-700/60 bg-slate-900/80 px-8 py-4 text-xs uppercase tracking-[0.35em] text-slate-200">
+          <div className="flex items-center gap-4">
+            <span>Studio overlay</span>
+            <span className="rounded-full border border-slate-500/50 bg-black/30 px-3 py-1 text-[11px] text-slate-300">
+              {image?.name ?? "No image"}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              className="rounded-full bg-sky-500 px-5 text-black hover:bg-sky-400"
+              onClick={onSave}
+            >
+              Save
+            </Button>
+            <Button
+              size="sm"
+              variant="secondary"
+              className="rounded-full px-4"
+              onClick={onClose}
+            >
+              Close
+            </Button>
+          </div>
+        </header>
+
+        <div className="flex flex-1 gap-4 overflow-hidden px-6 py-6">
+          <aside className="flex w-[120px] flex-col gap-3 rounded-3xl border border-slate-700/60 bg-black/35 p-4">
+            <div className="text-[10px] uppercase tracking-[0.35em] text-slate-300">Tools</div>
+            <div className="grid grid-cols-2 gap-2">
+              {TOOL_GRID.map((tool) => (
+                <button
+                  key={tool.key}
+                  onClick={() => onSelectTool(tool.key)}
+                  className={cn(
+                    "flex aspect-square items-center justify-center rounded-xl border text-[10px] uppercase tracking-[0.3em] transition",
+                    activeTool === tool.key
+                      ? "border-sky-400 bg-sky-500/20 text-sky-100"
+                      : "border-slate-700/60 bg-black/30 text-slate-300 hover:border-sky-400/40 hover:bg-sky-500/10",
+                  )}
+                >
+                  {tool.label.slice(0, 2)}
+                </button>
+              ))}
+            </div>
+          </aside>
+
+          <main className="relative flex min-w-0 flex-1 flex-col overflow-hidden rounded-3xl border border-slate-700/60 bg-slate-900/80">
+            <div className="flex items-center justify-between border-b border-slate-700/60 bg-black/30 px-5 py-3 text-[11px] uppercase tracking-[0.3em] text-slate-300">
+              <div className="flex items-center gap-3">
+                <button
+                  className="rounded-full border border-slate-600/60 bg-black/40 p-2 text-slate-200 transition hover:border-sky-400/40 hover:text-sky-200"
+                  onClick={() => setGridSize((size) => Math.max(8, size - 4))}
+                >
+                  <Minus className="h-4 w-4" />
+                </button>
+                <span className="rounded-full border border-slate-600/60 bg-black/30 px-3 py-1 text-[10px]">
+                  Grid {gridSize}px
+                </span>
+                <button
+                  className="rounded-full border border-slate-600/60 bg-black/40 p-2 text-slate-200 transition hover:border-sky-400/40 hover:text-sky-200"
+                  onClick={() => setGridSize((size) => Math.min(96, size + 4))}
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  className="rounded-full border border-slate-600/60 bg-black/40 p-2 text-slate-200 transition hover:border-sky-400/40 hover:text-sky-200"
+                  onClick={() => setZoom((value) => Math.max(25, value - 10))}
+                >
+                  <ZoomOut className="h-4 w-4" />
+                </button>
+                <span className="rounded-full border border-slate-600/60 bg-black/30 px-3 py-1 text-[10px]">
+                  {zoom}%
+                </span>
+                <button
+                  className="rounded-full border border-slate-600/60 bg-black/40 p-2 text-slate-200 transition hover:border-sky-400/40 hover:text-sky-200"
+                  onClick={() => setZoom((value) => Math.min(400, value + 10))}
+                >
+                  <ZoomIn className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="flex items-center gap-2 text-[10px]">
+                <Move className="h-4 w-4" />
+                <Maximize2 className="h-4 w-4" />
+                <Ruler className="h-4 w-4" />
+              </div>
+            </div>
+
+            <div className="relative flex-1 overflow-auto">
+              <div
+                className="relative mx-auto my-10 flex min-h-[480px] min-w-[480px] items-center justify-center rounded-[32px] bg-[linear-gradient(0deg,transparent_calc(100%_-_1px),rgba(148,163,184,0.2)_calc(100%_-_1px)),linear-gradient(90deg,transparent_calc(100%_-_1px),rgba(148,163,184,0.2)_calc(100%_-_1px))] bg-[length:clamp(16px,_calc(var(--grid-size)*1px),64px)_clamp(16px,_calc(var(--grid-size)*1px),64px)]"
+                style={{
+                  "--grid-size": gridSize,
+                  transform: `scale(${zoom / 100})`,
+                  transformOrigin: "top left",
+                }}
+              >
+                {image ? (
+                  <img
+                    src={image.dataUrl || image.blobUrl}
+                    alt={image.name}
+                    className="max-h-[70vh] max-w-[70vw] rounded-3xl border border-white/10 shadow-[0_45px_80px_rgba(14,165,233,0.35)]"
+                  />
+                ) : (
+                  <div className="rounded-3xl border border-dashed border-slate-600/60 bg-black/40 px-12 py-16 text-center text-xs uppercase tracking-[0.35em] text-slate-400">
+                    No image selected
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <footer className="flex items-center justify-between border-t border-slate-700/60 bg-black/30 px-5 py-3 text-[10px] uppercase tracking-[0.3em] text-slate-300">
+              <span>Metadata · AI warm-up ready</span>
+              <span className="rounded-full border border-slate-600/60 bg-black/30 px-3 py-1 text-[10px]">
+                Exposure {adjustments.exposure} · Contrast {adjustments.contrast}
+              </span>
+            </footer>
+          </main>
+
+          <aside className="flex w-[260px] flex-col gap-3 rounded-3xl border border-slate-700/60 bg-black/35 p-4">
+            <OverlayPanel title="Color adjustments" defaultOpen>
+              <div className="grid gap-3 text-[11px] uppercase tracking-[0.3em] text-slate-300">
+                <span>Exposure {adjustments.exposure}</span>
+                <span>Contrast {adjustments.contrast}</span>
+                <span>Warmth {adjustments.warmth}</span>
+                <span>Saturation {adjustments.saturation}</span>
+                <span>Focus {adjustments.focus}</span>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="mt-3 rounded-full px-4"
+                onClick={onResetAdjustments}
+              >
+                Reset adjustments
+              </Button>
+            </OverlayPanel>
+
+            <OverlayPanel title="Layers">
+              <div className="space-y-2">
+                {layerMeta.map((layer) => (
+                  <div
+                    key={layer.key}
+                    className="flex items-center justify-between gap-2 rounded-2xl border border-slate-700/60 bg-black/30 px-3 py-2 text-[11px] uppercase tracking-[0.3em] text-slate-200"
+                  >
+                    <span>{layer.name}</span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        className="rounded-full border border-slate-600/60 bg-black/40 px-2 text-[10px] transition hover:border-sky-400/40"
+                        onClick={() => onToggleLayer(layer.key)}
+                      >
+                        {visibleLayers[layer.key] ?? true ? "Hide" : "Show"}
+                      </button>
+                      {layer.locked ? <span className="text-[10px] text-slate-400">Locked</span> : null}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </OverlayPanel>
+
+            <OverlayPanel title="Quick actions">
+              <div className="grid gap-2 text-[11px] uppercase tracking-[0.3em] text-slate-300">
+                {TOOL_GRID.slice(0, 4).map((tool) => (
+                  <button
+                    key={tool.key}
+                    onClick={() => onQuickAction({ key: tool.key, label: tool.label })}
+                    className={cn(
+                      "rounded-2xl border border-slate-700/60 bg-black/30 px-3 py-2 text-left transition",
+                      activeQuickAction === tool.key && "border-sky-400 bg-sky-500/15 text-sky-100",
+                    )}
+                  >
+                    {tool.label}
+                  </button>
+                ))}
+              </div>
+            </OverlayPanel>
+
+            <OverlayPanel title="Presets">
+              <div className="grid gap-2 text-[11px] uppercase tracking-[0.3em] text-slate-300">
+                {QUICK_PRESETS.map((preset) => (
+                  <button
+                    key={preset.key}
+                    onClick={() => onQuickAction(preset)}
+                    className={cn(
+                      "rounded-2xl border border-slate-700/60 bg-black/30 px-3 py-2 text-left transition",
+                      activeQuickAction === preset.key && "border-sky-400 bg-sky-500/15 text-sky-100",
+                    )}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+            </OverlayPanel>
+          </aside>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type OverlayPanelProps = {
+  title: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+};
+
+function OverlayPanel({ title, defaultOpen = false, children }: OverlayPanelProps) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="rounded-2xl border border-slate-700/60 bg-black/30 p-3">
+      <button
+        className="flex w-full items-center justify-between text-[11px] uppercase tracking-[0.35em] text-slate-200"
+        onClick={() => setOpen((prev) => !prev)}
+      >
+        <span>{title}</span>
+        <ChevronDown
+          className={cn(
+            "h-4 w-4 transition-transform",
+            open ? "rotate-0" : "-rotate-90",
+          )}
+        />
+      </button>
+      {open && <div className="mt-3 space-y-3 text-slate-100">{children}</div>}
+    </div>
+  );
+}
