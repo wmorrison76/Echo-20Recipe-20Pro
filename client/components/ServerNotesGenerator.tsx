@@ -1136,7 +1136,7 @@ async function createStandardDoc(
       }
 
       if (entry.silverwareRequired?.length) {
-        children.push(heading("Required Silverware", HeadingLevel.HEADING_3));
+        children.push(heading(docStrings.sectionRequiredSilverware, HeadingLevel.HEADING_3));
         entry.silverwareRequired.forEach((item) =>
           children.push(paragraph(`• ${item}`)),
         );
