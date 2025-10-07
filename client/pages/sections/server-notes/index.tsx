@@ -277,8 +277,11 @@ export default function ServerNotesSection() {
 
     if (addedCount > 0) {
       toast({
-        title: "Recipes added",
-        description: `${addedCount} recipe${addedCount === 1 ? "" : "s"} carried over from Recipe Drop.`,
+        title: t("serverNotes.toast.recipesAdded.title"),
+        description:
+          addedCount === 1
+            ? t("serverNotes.toast.recipesAdded.one")
+            : t("serverNotes.toast.recipesAdded.other", undefined, { count: addedCount }),
       });
     }
   }, [recipes, noteSession, toast]);
