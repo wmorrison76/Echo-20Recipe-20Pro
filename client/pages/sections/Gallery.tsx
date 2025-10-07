@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { KeyboardEvent, MouseEvent, ReactNode, SVGProps } from "react";
+import type { DragEvent, KeyboardEvent, MouseEvent, ReactNode, SVGProps } from "react";
 import { Dropzone } from "@/components/Dropzone";
 import { Button } from "@/components/ui/button";
 import "../../luccca-lookbook.css";
@@ -31,12 +31,42 @@ import {
 } from "lucide-react";
 
 const gridTemplates: Record<"s" | "m" | "l", string> = {
-  s: "grid-cols-[repeat(auto-fill,minmax(110px,1fr))]",
-  m: "grid-cols-[repeat(auto-fill,minmax(160px,1fr))]",
-  l: "grid-cols-[repeat(auto-fill,minmax(220px,1fr))]",
+  s: "grid-cols-[repeat(auto-fill,minmax(120px,1fr))]",
+  m: "grid-cols-[repeat(auto-fill,minmax(180px,1fr))]",
+  l: "grid-cols-[repeat(auto-fill,minmax(240px,1fr))]",
 };
 
 const RECENT_DAYS = 30;
+
+const DEFAULT_ADJUSTMENT: AdjustmentState = {
+  exposure: 0,
+  contrast: 0,
+  warmth: 0,
+  saturation: 0,
+  focus: 0,
+};
+
+const ADJUSTMENT_CONTROLS: {
+  key: keyof AdjustmentState;
+  label: string;
+  min: number;
+  max: number;
+  step?: number;
+}[] = [
+  { key: "exposure", label: "Exposure", min: -60, max: 60 },
+  { key: "contrast", label: "Contrast", min: -50, max: 60 },
+  { key: "saturation", label: "Saturation", min: -60, max: 60 },
+  { key: "warmth", label: "Warmth", min: -90, max: 90, step: 1 },
+  { key: "focus", label: "Focus", min: -40, max: 40 },
+];
+
+type AdjustmentState = {
+  exposure: number;
+  contrast: number;
+  warmth: number;
+  saturation: number;
+  focus: number;
+};
 
 type SortMode = "newest" | "oldest" | "favorites" | "name";
 type LibraryFilter = "all" | "favorites" | "recent" | "lookbook";
@@ -53,8 +83,13 @@ type GalleryCardProps = {
   thumbSize: "s" | "m" | "l";
   onClick: (event: MouseEvent<HTMLButtonElement>) => void;
   onDoubleClick: () => void;
-  onToggleFavorite: () => void;
   onDelete: () => void;
+};
+
+type TagCluster = {
+  tag: string;
+  count: number;
+  freshnessLabel: string;
 };
 
 function GalleryCard({
@@ -69,7 +104,6 @@ function GalleryCard({
   thumbSize,
   onClick,
   onDoubleClick,
-  onToggleFavorite,
   onDelete,
 }: GalleryCardProps) {
   return (
@@ -77,14 +111,14 @@ function GalleryCard({
       onClick={onClick}
       onDoubleClick={onDoubleClick}
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-2xl border text-left transition",
+        "group relative flex flex-col overflow-hidden rounded-3xl border text-left transition duration-300",
         active
-          ? "ring-2 ring-sky-400 shadow-[0_25px_60px_rgba(14,165,233,0.25)]"
-          : "ring-1 ring-transparent shadow-[0_18px_40px_rgba(15,23,42,0.18)]",
+          ? "ring-2 ring-sky-400 shadow-[0_35px_70px_rgba(14,165,233,0.35)]"
+          : "ring-1 ring-transparent shadow-[0_22px_60px_rgba(15,23,42,0.22)]",
         selected && !active && "ring-2 ring-sky-300",
-        unsupported ? "bg-slate-900/40" : "bg-slate-900/20",
+        unsupported ? "bg-slate-900/45" : "bg-slate-900/30",
       )}
-      data-echo-key="card:gallery:item"
+      data-echo-key={`card:gallery:item:${id}`}
     >
       <div className="relative">
         {unsupported ? (
@@ -97,11 +131,11 @@ function GalleryCard({
             alt={name}
             loading="lazy"
             className={cn(
-              "w-full object-cover transition duration-300 group-hover:scale-[1.03]",
+              "w-full object-cover transition duration-500 group-hover:scale-[1.05]",
               thumbSize === "s"
                 ? "aspect-square"
                 : thumbSize === "l"
-                  ? "aspect-[3/2]"
+                  ? "aspect-[5/4]"
                   : "aspect-[4/3]",
             )}
             onError={(event) => {
@@ -112,33 +146,15 @@ function GalleryCard({
             }}
           />
         )}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/45 opacity-0 transition group-hover:opacity-100" />
-        <div className="absolute left-3 top-3 z-20 flex items-center gap-2">
-          {selected && (
-            <span className="rounded-full border border-white/40 bg-sky-500/80 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur">
-              Selected
-            </span>
-          )}
-          {active && !selected && (
-            <span className="rounded-full bg-sky-500/80 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur">
-              Active
-            </span>
-          )}
-        </div>
-        <div className="absolute right-3 top-3 z-20 flex gap-2">
-          <button
-            type="button"
-            onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              onToggleFavorite();
-            }}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black/80"
-            aria-label="Toggle favorite"
-          >
-            <Star className={cn("h-4 w-4", favorite ? "fill-yellow-300 text-yellow-300" : "text-white")}
-            />
-          </button>
+        {favorite && (
+          <div className="pointer-events-none absolute right-3 bottom-3 z-20 flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-[10px] uppercase tracking-[0.3em] text-amber-200">
+            <Star className="h-3 w-3 fill-amber-300 text-amber-300" /> Fav
+          </div>
+        )}
+        {selected && (
+          <span className="pointer-events-none absolute left-3 top-3 z-20 flex h-2.5 w-2.5 items-center justify-center rounded-full border border-white/50 bg-sky-400/80 shadow-[0_0_8px_rgba(56,189,248,0.9)]" />
+        )}
+        <div className="absolute right-3 top-3 z-20 flex gap-2 opacity-0 transition group-hover:opacity-100">
           <button
             type="button"
             onClick={(event) => {
@@ -146,31 +162,27 @@ function GalleryCard({
               event.stopPropagation();
               onDelete();
             }}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-red-600/80"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur transition hover:bg-red-600/80"
             aria-label="Delete"
           >
             <Trash2 className="h-4 w-4" />
           </button>
         </div>
       </div>
-      <div className="flex flex-1 flex-col gap-2 p-4">
-        <div className="text-sm font-semibold leading-tight text-slate-100">
-          {name}
-        </div>
+      <div className="flex flex-1 flex-col gap-3 px-4 pb-4 pt-3">
+        <div className="text-sm font-semibold leading-tight text-slate-100 line-clamp-2">{name}</div>
         {tags.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.25em] text-sky-100/90">
             {tags.slice(0, 3).map((tag) => (
               <span
                 key={tag}
-                className="rounded-full border border-sky-400/60 bg-sky-400/10 px-2 py-0.5 text-[11px] uppercase tracking-[0.25em] text-sky-200"
+                className="rounded-full border border-sky-400/50 bg-sky-500/15 px-2 py-0.5"
               >
                 {tag}
               </span>
             ))}
             {tags.length > 3 && (
-              <span className="rounded-full bg-black/40 px-2 py-0.5 text-[11px] uppercase tracking-[0.25em] text-slate-200">
-                +{tags.length - 3}
-              </span>
+              <span className="rounded-full bg-black/40 px-2 py-0.5">+{tags.length - 3}</span>
             )}
           </div>
         )}
@@ -217,6 +229,8 @@ export default function GallerySection() {
   const [urlText, setUrlText] = useState("");
   const [urlLoading, setUrlLoading] = useState(false);
   const [lookbookNameDraft, setLookbookNameDraft] = useState("");
+  const [sidebarDropActive, setSidebarDropActive] = useState(false);
+  const [adjustments, setAdjustments] = useState<Record<string, AdjustmentState>>({});
 
   const uploadInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -244,6 +258,52 @@ export default function GallerySection() {
     () => lookbooks.find((book) => book.id === activeLookBookId) ?? null,
     [lookbooks, activeLookBookId],
   );
+
+  const tagClusters = useMemo<TagCluster[]>(() => {
+    if (!images.length) return [];
+    const stats = new Map<string, { count: number; lastSeen: number }>();
+    const fallbackTag = "Untagged";
+
+    images.forEach((img) => {
+      const createdAt = typeof img.createdAt === "number" ? img.createdAt : 0;
+      const tags = img.tags && img.tags.length > 0 ? img.tags : [fallbackTag];
+      tags.forEach((raw) => {
+        const tag = raw.trim() || fallbackTag;
+        const current = stats.get(tag) ?? { count: 0, lastSeen: 0 };
+        stats.set(tag, {
+          count: current.count + 1,
+          lastSeen: Math.max(current.lastSeen, createdAt),
+        });
+      });
+    });
+
+    const now = Date.now();
+
+    return Array.from(stats.entries())
+      .sort((a, b) => {
+        if (b[1].count !== a[1].count) return b[1].count - a[1].count;
+        return b[1].lastSeen - a[1].lastSeen;
+      })
+      .slice(0, 6)
+      .map(([tag, meta]) => {
+        const days = meta.lastSeen ? Math.floor((now - meta.lastSeen) / (1000 * 60 * 60 * 24)) : null;
+        let freshnessLabel = "Archive";
+        if (days === null) {
+          freshnessLabel = "Untimed";
+        } else if (days <= 2) {
+          freshnessLabel = "Fresh";
+        } else if (days <= 7) {
+          freshnessLabel = "This week";
+        } else if (days <= 30) {
+          freshnessLabel = "Recent";
+        }
+        return {
+          tag,
+          count: meta.count,
+          freshnessLabel,
+        };
+      });
+  }, [images]);
 
   const filtered = useMemo(() => {
     let base = images.slice();
@@ -326,6 +386,38 @@ export default function GallerySection() {
     }
   }, [activeImage?.id]);
 
+  const activeAdjustment = useMemo<AdjustmentState>(() => {
+    if (!activeId) return { ...DEFAULT_ADJUSTMENT };
+    const stored = adjustments[activeId] ?? DEFAULT_ADJUSTMENT;
+    return {
+      exposure: stored.exposure ?? 0,
+      contrast: stored.contrast ?? 0,
+      warmth: stored.warmth ?? 0,
+      saturation: stored.saturation ?? 0,
+      focus: stored.focus ?? 0,
+    };
+  }, [activeId, adjustments]);
+
+  const inspectorImageStyle = useMemo(() => {
+    const { exposure, contrast, warmth, saturation, focus } = activeAdjustment;
+    const filterParts = [
+      `brightness(${(1 + exposure / 80).toFixed(3)})`,
+      `contrast(${(1 + contrast / 80 + Math.max(focus, 0) / 140).toFixed(3)})`,
+      `saturate(${(1 + saturation / 80).toFixed(3)})`,
+      `hue-rotate(${warmth}deg)`,
+    ];
+    if (focus < 0) {
+      filterParts.push(`blur(${(Math.abs(focus) / 14).toFixed(2)}px)`);
+    }
+    const boxShadow = focus > 10
+      ? `0 28px 60px rgba(14,165,233,${Math.min(0.45, 0.2 + focus / 120).toFixed(2)})`
+      : "0 26px 60px rgba(15,23,42,0.3)";
+    return {
+      filter: filterParts.join(" "),
+      boxShadow,
+    } as const;
+  }, [activeAdjustment]);
+
   const handleFiles = (files: File[]) => {
     if (!files.length) return;
     setImportTags("");
@@ -374,7 +466,7 @@ export default function GallerySection() {
     }
   };
 
-  const handleToggleFavorite = (id: string) => {
+  const toggleFavorite = (id: string) => {
     const current = images.find((img) => img.id === id);
     if (!current) return;
     updateImage(id, { favorite: !current.favorite });
@@ -460,18 +552,64 @@ export default function GallerySection() {
     }
   };
 
+  const updateAdjustment = (key: keyof AdjustmentState, value: number) => {
+    if (!activeId) return;
+    setAdjustments((prev) => {
+      const existing = prev[activeId] ?? DEFAULT_ADJUSTMENT;
+      const next = { ...existing, [key]: value };
+      return { ...prev, [activeId]: next };
+    });
+  };
+
+  const resetAdjustments = () => {
+    if (!activeId) return;
+    setAdjustments((prev) => {
+      const next = { ...prev };
+      delete next[activeId];
+      return next;
+    });
+  };
+
+  const handleBulkFavorite = (favorite: boolean) => {
+    if (!selectedIds.length) return;
+    selectedIds.forEach((id) => {
+      const current = images.find((img) => img.id === id);
+      if (current && current.favorite !== favorite) {
+        updateImage(id, { favorite });
+      }
+    });
+    setStatus(
+      favorite
+        ? `Marked ${selectedIds.length} image${selectedIds.length === 1 ? "" : "s"} as favorite.`
+        : `Removed favorite from ${selectedIds.length} image${selectedIds.length === 1 ? "" : "s"}.`,
+    );
+    if (!favorite) {
+      setSelectedIds([]);
+    }
+  };
+
+  const handleSidebarDrop = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const files = Array.from(event.dataTransfer?.files || []).filter((file) =>
+      file.type.startsWith("image/"),
+    );
+    if (files.length) {
+      handleFiles(files);
+    }
+  };
+
   const shellClass = lucccaMode
-    ? "luccca-theme border-slate-800/70 bg-slate-950/92 text-slate-100 shadow-[0_60px_160px_rgba(14,165,233,0.4)]"
-    : "border-slate-200/70 bg-white/96 text-slate-900 shadow-[0_65px_160px_rgba(15,23,42,0.12)]";
+    ? "luccca-theme border-slate-800/70 bg-slate-950/92 text-slate-100 shadow-[0_90px_200px_rgba(14,165,233,0.4)]"
+    : "border-slate-200/70 bg-white/96 text-slate-900 shadow-[0_90px_200px_rgba(15,23,42,0.12)]";
 
   const navSurface = lucccaMode
     ? "border-slate-700/60 bg-slate-900/75"
     : "border-slate-200 bg-white";
   const mainSurface = lucccaMode
-    ? "border-slate-700/60 bg-slate-900/65"
+    ? "border-slate-700/60 bg-slate-900/70"
     : "border-slate-200/70 bg-white/95";
   const detailSurface = lucccaMode
-    ? "border-slate-700/60 bg-slate-900/70"
+    ? "border-slate-700/60 bg-slate-900/75"
     : "border-slate-200/70 bg-white";
   const subtleSurface = lucccaMode
     ? "border-slate-700/50 bg-slate-900/60 text-slate-200"
@@ -480,25 +618,26 @@ export default function GallerySection() {
   return (
     <div
       className={cn(
-        "relative mx-auto max-w-[1500px] space-y-6 rounded-[48px] border px-4 py-6 sm:px-8 lg:px-10 lg:py-10",
+        "relative mx-auto max-w-[1640px] space-y-5 rounded-[48px] border px-4 py-6 sm:px-8 lg:px-10 lg:py-9",
         shellClass,
       )}
       data-echo-key="page:recipes:gallery"
     >
-      <div className="grid gap-6 xl:h-[760px] xl:grid-cols-[240px_minmax(0,1fr)_320px]">
-        <aside className={cn("flex h-full flex-col gap-6 rounded-[32px] border p-6", navSurface)}>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold tracking-tight">Library</h2>
-              <label className="flex items-center gap-2 text-xs uppercase tracking-[0.3em]">
-                <input
-                  type="checkbox"
-                  checked={lucccaMode}
-                  onChange={(event) => setLucccaMode(event.target.checked)}
-                />
-                LUCCCA
-              </label>
-            </div>
+      <div className="grid gap-6 xl:h-[780px] xl:grid-cols-[220px_minmax(0,1fr)_300px]">
+        <aside className={cn("flex h-full flex-col overflow-hidden rounded-[32px] border p-5", navSurface)}>
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-lg font-semibold tracking-tight">Library</h2>
+            <label className="flex items-center gap-2 rounded-full bg-black/20 px-3 py-1 text-[11px] uppercase tracking-[0.3em]">
+              <input
+                type="checkbox"
+                checked={lucccaMode}
+                onChange={(event) => setLucccaMode(event.target.checked)}
+              />
+              LUCCCA
+            </label>
+          </div>
+
+          <div className="mt-5 flex-1 overflow-y-auto space-y-6 pr-1">
             <div className="grid gap-3 text-sm">
               <LibraryItem
                 icon={<ImageIcon className="h-4 w-4" />}
@@ -531,290 +670,232 @@ export default function GallerySection() {
                 }}
               />
             </div>
-          </div>
 
-          <div className="space-y-3">
-            <div className="flex items-center justify-between text-sm font-semibold uppercase tracking-[0.3em] opacity-70">
-              <span>Look Books</span>
-              <button
-                className="flex h-7 w-7 items-center justify-center rounded-full border border-white/20 text-white hover:bg-white/10"
-                onClick={() => {
-                  restoreDemo();
-                  setStatus("Demo gallery restored.");
-                }}
-                title="Restore demo set"
-              >
-                <RefreshGlyph />
-              </button>
-            </div>
-            <div className="space-y-2">
-              {lookbooks.map((book) => (
-                <LibraryItem
-                  key={book.id}
-                  icon={<Folder className="h-4 w-4" />}
-                  label={book.name}
-                  count={book.imageIds.length}
-                  active={libraryFilter === "lookbook" && activeLookBookId === book.id}
+            <AutoCategoryList
+              clusters={tagClusters}
+              onSelect={(tag) => {
+                setFilter(tag);
+                setLibraryFilter("all");
+                setActiveLookBookId(null);
+              }}
+            />
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.3em] opacity-70">
+                <span>Look Books</span>
+                <button
+                  className="flex h-7 w-7 items-center justify-center rounded-full border border-white/20 text-white transition hover:bg-white/10"
                   onClick={() => {
-                    setLibraryFilter("lookbook");
-                    setActiveLookBookId(book.id);
+                    restoreDemo();
+                    setStatus("Demo gallery restored.");
                   }}
-                  action={
-                    <div className="flex items-center gap-1">
-                      <button
-                        className="rounded-full p-1 text-xs opacity-70 transition hover:opacity-100"
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          const name = prompt("Rename Look Book", book.name)?.trim();
-                          if (name) updateLookBook(book.id, { name });
-                        }}
-                        title="Rename"
-                      >
-                        ✎
-                      </button>
-                      <button
-                        className="rounded-full p-1 text-xs opacity-70 transition hover:text-red-400 hover:opacity-100"
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          if (confirm("Delete this look book?")) deleteLookBook(book.id);
-                        }}
-                        title="Delete"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  }
-                />
-              ))}
-              {lookbooks.length === 0 && (
-                <div className="rounded-2xl border border-dashed border-white/20 px-3 py-4 text-xs opacity-70">
-                  No look books yet.
-                </div>
-              )}
-            </div>
-            <div className="space-y-2 rounded-2xl border border-white/20 p-3">
-              <div className="text-xs font-semibold uppercase tracking-[0.3em] opacity-70">
-                New look book
+                  title="Restore demo set"
+                >
+                  <RefreshGlyph />
+                </button>
               </div>
-              <div className="flex items-center gap-2">
-                <input
-                  value={lookbookNameDraft}
-                  placeholder="Name"
-                  className="flex-1 rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-sm"
-                  onChange={(event) => setLookbookNameDraft(event.target.value)}
-                />
-                <Button
-                  size="sm"
-                  className="rounded-full px-4"
-                  onClick={() => {
-                    const name = lookbookNameDraft.trim();
-                    if (!name) return;
-                    const id = addLookBook(name, selectedIds);
-                    setLookbookNameDraft("");
-                    setSelectedIds([]);
-                    setActiveLookBookId(id);
+              <div className="space-y-2">
+                {lookbooks.map((book) => (
+                  <LibraryItem
+                    key={book.id}
+                    icon={<Folder className="h-4 w-4" />}
+                    label={book.name}
+                    count={book.imageIds.length}
+                    active={libraryFilter === "lookbook" && activeLookBookId === book.id}
+                    onClick={() => {
+                      setLibraryFilter("lookbook");
+                      setActiveLookBookId(book.id);
+                    }}
+                    action={
+                      <div className="flex items-center gap-1">
+                        <button
+                          className="rounded-full p-1 text-xs opacity-70 transition hover:opacity-100"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            const name = prompt("Rename Look Book", book.name)?.trim();
+                            if (name) updateLookBook(book.id, { name });
+                          }}
+                          title="Rename"
+                        >
+                          ✎
+                        </button>
+                        <button
+                          className="rounded-full p-1 text-xs opacity-70 transition hover:text-red-400 hover:opacity-100"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            if (confirm("Delete this look book?")) deleteLookBook(book.id);
+                          }}
+                          title="Delete"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    }
+                  />
+                ))}
+                {lookbooks.length === 0 && (
+                  <div className="rounded-2xl border border-dashed border-white/20 px-3 py-4 text-xs opacity-70">
+                    No look books yet.
+                  </div>
+                )}
+              </div>
+              <FlipbookPreview
+                onOpen={() => {
+                  if (activeLookBook) {
+                    setOpenLookBook(true);
+                  } else if (lookbooks.length > 0) {
+                    setActiveLookBookId(lookbooks[0].id);
                     setLibraryFilter("lookbook");
                     setOpenLookBook(true);
-                    setStatus(`Look book "${name}" created.`);
-                  }}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
+                  } else {
+                    setStatus("Create a look book to preview flip motion.");
+                  }
+                }}
+              />
+              <div className="space-y-2 rounded-2xl border border-white/20 p-3">
+                <div className="text-xs font-semibold uppercase tracking-[0.3em] opacity-70">
+                  New look book
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    value={lookbookNameDraft}
+                    placeholder="Name"
+                    className="flex-1 rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-sm"
+                    onChange={(event) => setLookbookNameDraft(event.target.value)}
+                  />
+                  <Button
+                    size="sm"
+                    className="rounded-full px-4"
+                    onClick={() => {
+                      const name = lookbookNameDraft.trim();
+                      if (!name) return;
+                      const id = addLookBook(name, selectedIds);
+                      setLookbookNameDraft("");
+                      setSelectedIds([]);
+                      setActiveLookBookId(id);
+                      setLibraryFilter("lookbook");
+                      setOpenLookBook(true);
+                      setStatus(`Look book "${name}" created.`);
+                    }}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="text-[11px] opacity-70">
+                  Use current selection to seed the collection automatically.
+                </div>
               </div>
-              <div className="text-[11px] opacity-70">
-                Use current selection to seed the collection automatically.
-              </div>
+            </div>
+
+            <div
+              className={cn(
+                "rounded-2xl border border-dashed px-3 py-4 text-xs transition",
+                sidebarDropActive
+                  ? "border-sky-400/80 bg-sky-500/10 text-sky-200"
+                  : "border-white/25 bg-white/5 opacity-80",
+              )}
+              onDragEnter={(event) => {
+                event.preventDefault();
+                setSidebarDropActive(true);
+              }}
+              onDragOver={(event) => {
+                event.preventDefault();
+              }}
+              onDragLeave={(event) => {
+                event.preventDefault();
+                setSidebarDropActive(false);
+              }}
+              onDrop={(event) => {
+                handleSidebarDrop(event);
+                setSidebarDropActive(false);
+              }}
+            >
+              Drop images here to auto tag with AI clusters.
             </div>
           </div>
 
-          <div className="mt-auto space-y-3 text-xs opacity-70">
-            <p>
-              {selectedIds.length > 0
-                ? `${selectedIds.length} image${selectedIds.length === 1 ? "" : "s"} selected`
-                : "Select images to manage tags and look books."}
-            </p>
-            {activeLookBook && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full justify-start rounded-full px-4"
-                onClick={() => setOpenLookBook(true)}
-              >
-                Open “{activeLookBook.name}” showcase
-              </Button>
-            )}
+          <div className="pt-5 text-xs opacity-70">
+            {selectedIds.length > 0
+              ? `${selectedIds.length} image${selectedIds.length === 1 ? "" : "s"} selected`
+              : "Select images to manage metadata and collections."}
           </div>
         </aside>
 
         <Dropzone
           multiple
           onFiles={handleFiles}
-          className={cn("flex h-full flex-col gap-4 overflow-hidden rounded-[32px] border bg-black/15 p-5", mainSurface)}
+          className={cn(
+            "relative overflow-hidden rounded-[32px] border",
+            mainSurface,
+          )}
         >
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative min-w-[220px] flex-1">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-60" />
-              <input
-                value={filter}
-                onChange={(event) => setFilter(event.target.value)}
-                placeholder="Search by name or tag"
-                className="w-full rounded-full border border-transparent bg-black/15 pl-9 pr-3 py-2 text-sm text-slate-100 placeholder:text-slate-400 focus:border-sky-400 focus:outline-none"
-              />
-            </div>
-            <div className="flex items-center gap-2 text-xs">
-              <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/25 px-3 py-1.5">
-                <SlidersHorizontal className="h-3.5 w-3.5" />
-                <select
-                  value={sort}
-                  onChange={(event) => setSort(event.target.value as SortMode)}
-                  className="bg-transparent text-xs focus:outline-none"
-                >
-                  <option value="newest">Newest</option>
-                  <option value="oldest">Oldest</option>
-                  <option value="favorites">Favorites</option>
-                  <option value="name">Name</option>
-                </select>
-              </div>
-              <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/25 px-3 py-1.5">
-                <LayoutGrid className="h-3.5 w-3.5" />
-                <select
-                  value={thumbSize}
-                  onChange={(event) => setThumbSize(event.target.value as "s" | "m" | "l")}
-                  className="bg-transparent text-xs focus:outline-none"
-                >
-                  <option value="s">Small</option>
-                  <option value="m">Medium</option>
-                  <option value="l">Large</option>
-                </select>
-              </div>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <input
-                ref={uploadInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={(event) => {
-                  const files = Array.from(event.target.files || []);
-                  if (files.length) handleFiles(files);
-                  if (uploadInputRef.current) uploadInputRef.current.value = "";
-                }}
-              />
-              <Button onClick={handleUploadClick} className="rounded-full px-4">
-                <UploadCloud className="mr-2 h-4 w-4" /> Upload
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(125,211,252,0.16),_transparent_65%)]" />
+          <div className="relative flex h-full flex-col">
+            <div className="pointer-events-none absolute left-0 right-0 top-0 z-30 flex justify-center px-6 pt-6">
+              <GalleryToolbar
+                filter={filter}
+                onFilterChange={setFilter}
+                sort={sort}
+                onSortChange={setSort}
+                thumbSize={thumbSize}
+                onThumbSizeChange={setThumbSize}
+                onUpload={handleUploadClick}
+                onExport={() => {
                   setStatus("Exporting ZIP...");
                   void exportAllZip().then(() => setStatus("Export complete."));
                 }}
-                className="rounded-full px-4"
-              >
-                <Download className="mr-2 h-4 w-4" /> Export ZIP
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => {
+                onLink={() => {
                   linkImagesToRecipesByFilename();
                   setStatus("Linked images to recipes by filename.");
                 }}
-                className="rounded-full px-4"
-              >
-                <Link2 className="mr-2 h-4 w-4" /> Link recipes
-              </Button>
-            </div>
-          </div>
-
-          {selectedIds.length > 0 && (
-            <div className={cn("flex flex-wrap items-center gap-3 rounded-2xl border px-4 py-3 text-xs", subtleSurface)}>
-              <span>{selectedIds.length} selected</span>
-              <input
-                value={bulkTagDraft}
-                onChange={(event) => setBulkTagDraft(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    event.preventDefault();
-                    handleBulkTagSubmit();
-                  }
-                }}
-                placeholder="Add tags (comma separated)"
-                className="flex-1 rounded-full border border-transparent bg-black/15 px-3 py-1 text-xs focus:border-sky-400 focus:outline-none"
               />
-              <Button size="sm" className="rounded-full px-4" onClick={handleBulkTagSubmit}>
-                Apply tags
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="rounded-full px-4"
-                onClick={() => setSelectedIds([])}
-              >
-                Clear
-              </Button>
             </div>
-          )}
 
-          <div className="flex items-center justify-between rounded-2xl border border-dashed border-white/20 bg-black/20 px-4 py-2 text-xs text-slate-200">
-            <div className="flex items-center gap-2">
-              <UploadCloud className="h-4 w-4 opacity-70" />
-              <span>Drop files anywhere inside this workspace to import.</span>
-            </div>
-            <span className="hidden text-[10px] uppercase tracking-[0.3em] opacity-60 sm:block">
-              RAW · HEIC · JPG · PNG
-            </span>
-          </div>
-
-          <div className="relative flex-1 overflow-hidden rounded-[28px] border border-white/10 bg-black/20">
-            {filtered.length > 0 ? (
-              <div className="h-full overflow-y-auto p-4">
-                <div
-                  className={cn("grid gap-4", gridTemplates[thumbSize])}
-                  data-echo-key="section:gallery:grid"
-                >
-                  {filtered.map((image) => (
-                    <GalleryCard
-                      key={image.id}
-                      id={image.id}
-                      name={image.name}
-                      src={image.dataUrl || image.blobUrl}
-                      tags={image.tags || []}
-                      favorite={image.favorite}
-                      unsupported={image.unsupported}
-                      active={activeId === image.id}
-                      selected={selectedIds.includes(image.id)}
-                      thumbSize={thumbSize}
-                      onClick={(event) => handleSelectCard(event, image.id)}
-                      onDoubleClick={() => handleOpenLightbox(image.id)}
-                      onToggleFavorite={() => handleToggleFavorite(image.id)}
-                      onDelete={() => handleDeleteImage(image.id)}
-                    />
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="flex h-full flex-col items-center justify-center gap-4 text-sm text-slate-200">
-                <div className="text-base font-semibold">No images match the current filters.</div>
-                <Button className="rounded-full px-4" onClick={() => restoreDemo()}>
-                  Restore demo gallery
-                </Button>
+            {selectedIds.length > 0 && (
+              <div className="pointer-events-none absolute bottom-6 left-1/2 z-30 -translate-x-1/2 px-3">
+                <GalleryBulkActions
+                  count={selectedIds.length}
+                  bulkTagDraft={bulkTagDraft}
+                  onBulkTagChange={setBulkTagDraft}
+                  onApplyTags={handleBulkTagSubmit}
+                  onClear={() => setSelectedIds([])}
+                  onFavorite={() => handleBulkFavorite(true)}
+                  onUnfavorite={() => handleBulkFavorite(false)}
+                />
               </div>
             )}
+
+            <div className="pointer-events-none absolute bottom-6 left-6 z-30 hidden max-w-[320px] md:block">
+              <GalleryDropHint />
+            </div>
+
+            <div className="relative flex-1 overflow-hidden pt-24">
+              <GalleryGrid
+                images={filtered}
+                thumbSize={thumbSize}
+                activeId={activeId}
+                selectedIds={selectedIds}
+                onSelect={handleSelectCard}
+                onOpenLightbox={handleOpenLightbox}
+                onDelete={handleDeleteImage}
+                gridTemplates={gridTemplates}
+                onRestoreDemo={restoreDemo}
+              />
+            </div>
           </div>
         </Dropzone>
 
-        <aside className={cn("flex flex-col gap-5 rounded-[32px] border p-6", detailSurface)}>
+        <aside className={cn("flex h-full flex-col gap-5 overflow-hidden rounded-[32px] border p-6", detailSurface)}>
           <div className="flex items-center justify-between text-sm font-semibold uppercase tracking-[0.3em] opacity-70">
-            <span>Inspector</span>
+            <span>Photo studio</span>
             <ListFilter className="h-4 w-4" />
           </div>
 
           {activeImage ? (
-            <div className="space-y-4">
-              <div className="overflow-hidden rounded-2xl border border-white/10">
+            <div className="flex-1 space-y-5 overflow-y-auto pr-1">
+              <div className="overflow-hidden rounded-3xl border border-white/10 bg-black/40">
                 {activeImage.unsupported ? (
-                  <div className="flex aspect-[4/3] items-center justify-center bg-slate-900/60 text-xs uppercase tracking-[0.3em] text-slate-300">
+                  <div className="flex aspect-[4/3] items-center justify-center text-xs uppercase tracking-[0.3em] text-slate-300">
                     No preview available
                   </div>
                 ) : (
@@ -822,8 +903,25 @@ export default function GallerySection() {
                     src={activeImage.dataUrl || activeImage.blobUrl}
                     alt={activeImage.name}
                     className="w-full object-cover"
+                    style={inspectorImageStyle}
                   />
                 )}
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">{activeImage.name}</div>
+                <Button
+                  size="sm"
+                  variant={activeImage.favorite ? "default" : "ghost"}
+                  className={cn(
+                    "rounded-full px-4",
+                    activeImage.favorite ? "bg-amber-400 text-black" : "text-slate-200",
+                  )}
+                  onClick={() => toggleFavorite(activeImage.id)}
+                >
+                  <Star className="mr-1.5 h-4 w-4" />
+                  {activeImage.favorite ? "Favorited" : "Favorite"}
+                </Button>
               </div>
 
               <div className="space-y-2">
@@ -831,7 +929,7 @@ export default function GallerySection() {
                 <input
                   value={nameDraft}
                   onChange={(event) => setNameDraft(event.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm"
+                  className="w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm focus:border-sky-400 focus:outline-none"
                 />
               </div>
 
@@ -840,12 +938,48 @@ export default function GallerySection() {
                 <textarea
                   value={tagDraft}
                   onChange={(event) => setTagDraft(event.target.value)}
-                  className="h-20 w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm"
+                  className="h-20 w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm focus:border-sky-400 focus:outline-none"
                   placeholder="comma separated"
                 />
                 <Button size="sm" className="rounded-full px-4" onClick={handleSaveMetadata}>
                   Save metadata
                 </Button>
+              </div>
+
+              <div className="space-y-3 rounded-3xl border border-white/10 bg-black/30 p-4">
+                <div className="text-xs uppercase tracking-[0.3em] opacity-60">Adjustments</div>
+                <div className="space-y-3">
+                  {ADJUSTMENT_CONTROLS.map((control) => (
+                    <div key={control.key} className="space-y-1.5">
+                      <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] opacity-60">
+                        <span>{control.label}</span>
+                        <span>{activeAdjustment[control.key]}</span>
+                      </div>
+                      <input
+                        type="range"
+                        min={control.min}
+                        max={control.max}
+                        step={control.step ?? 1}
+                        value={activeAdjustment[control.key]}
+                        onChange={(event) => updateAdjustment(control.key, Number(event.target.value))}
+                        className="h-1 w-full cursor-pointer appearance-none rounded-full bg-white/20"
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <Button variant="ghost" size="sm" className="rounded-full px-3" onClick={resetAdjustments}>
+                    Reset
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="rounded-full px-3"
+                    onClick={() => handleOpenLightbox(activeImage.id)}
+                  >
+                    View live
+                  </Button>
+                </div>
               </div>
 
               <div className="space-y-3">
@@ -885,7 +1019,7 @@ export default function GallerySection() {
                   value={urlText}
                   onChange={(event) => setUrlText(event.target.value)}
                   placeholder="https://example.com/photo.jpg"
-                  className="h-24 w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-xs"
+                  className="h-24 w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-xs focus:border-sky-400 focus:outline-none"
                 />
                 <Button
                   size="sm"
@@ -908,7 +1042,7 @@ export default function GallerySection() {
             </div>
           ) : (
             <div className="flex flex-1 flex-col items-center justify-center gap-4 text-sm text-slate-200">
-              <div className="text-base font-semibold">Select an image to edit details.</div>
+              <div className="text-base font-semibold">Select an image to begin editing.</div>
             </div>
           )}
         </aside>
@@ -917,6 +1051,19 @@ export default function GallerySection() {
       {status && (
         <div className={cn("rounded-[24px] border px-4 py-3 text-sm", subtleSurface)}>{status}</div>
       )}
+
+      <input
+        ref={uploadInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        className="hidden"
+        onChange={(event) => {
+          const files = Array.from(event.target.files || []);
+          if (files.length) handleFiles(files);
+          if (uploadInputRef.current) uploadInputRef.current.value = "";
+        }}
+      />
 
       <Dialog open={showTagDialog} onOpenChange={setShowTagDialog}>
         <DialogContent>
@@ -953,7 +1100,7 @@ export default function GallerySection() {
         index={lightboxIndex}
         onPrev={() => setLightboxIndex((index) => (index - 1 + filtered.length) % filtered.length)}
         onNext={() => setLightboxIndex((index) => (index + 1) % filtered.length)}
-        onToggleFavorite={handleToggleFavorite}
+        onToggleFavorite={toggleFavorite}
         className={lucccaMode ? "luccca-theme lightbox-overlay" : ""}
       />
 
@@ -1007,12 +1154,12 @@ function LibraryItem({ icon, label, count, active, onClick, action }: LibraryIte
       className={cn(
         "flex w-full items-center justify-between gap-3 rounded-2xl border px-3 py-2 text-left text-sm transition",
         active
-          ? "border-sky-400/60 bg-sky-500/10 text-sky-100 shadow-[0_18px_40px_rgba(14,165,233,0.25)]"
-          : "border-white/10 bg-white/5 text-slate-200 hover:border-sky-300/40 hover:bg-sky-500/10",
+          ? "border-sky-400/60 bg-sky-500/10 text-sky-100 shadow-[0_20px_46px_rgba(14,165,233,0.35)]"
+          : "border-white/12 bg-white/5 text-slate-200 hover:border-sky-300/40 hover:bg-sky-500/10",
       )}
     >
       <div className="flex items-center gap-2">
-        <span className="rounded-full bg-black/40 p-1">{icon}</span>
+        <span className="rounded-full bg-black/35 p-1 text-slate-100">{icon}</span>
         <span>{label}</span>
       </div>
       <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em]">
@@ -1020,6 +1167,297 @@ function LibraryItem({ icon, label, count, active, onClick, action }: LibraryIte
         {action}
       </div>
     </div>
+  );
+}
+
+type GalleryToolbarProps = {
+  filter: string;
+  onFilterChange: (value: string) => void;
+  sort: SortMode;
+  onSortChange: (mode: SortMode) => void;
+  thumbSize: "s" | "m" | "l";
+  onThumbSizeChange: (size: "s" | "m" | "l") => void;
+  onUpload: () => void;
+  onExport: () => void;
+  onLink: () => void;
+};
+
+function GalleryToolbar({
+  filter,
+  onFilterChange,
+  sort,
+  onSortChange,
+  thumbSize,
+  onThumbSizeChange,
+  onUpload,
+  onExport,
+  onLink,
+}: GalleryToolbarProps) {
+  return (
+    <div className="pointer-events-auto flex w-full max-w-3xl flex-col gap-3 rounded-full bg-black/40 px-5 py-4 backdrop-blur-lg">
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative min-w-[200px] flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-60" />
+          <input
+            value={filter}
+            onChange={(event) => onFilterChange(event.target.value)}
+            placeholder="Search by name or tag"
+            className="w-full rounded-full border border-transparent bg-black/25 pl-10 pr-3 py-2 text-sm text-slate-100 placeholder:text-slate-400 focus:border-sky-400 focus:outline-none"
+          />
+        </div>
+        <div className="flex items-center gap-2 text-xs">
+          <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/25 px-3 py-1.5">
+            <SlidersHorizontal className="h-3.5 w-3.5" />
+            <select
+              value={sort}
+              onChange={(event) => onSortChange(event.target.value as SortMode)}
+              className="bg-transparent text-xs focus:outline-none"
+            >
+              <option value="newest">Newest</option>
+              <option value="oldest">Oldest</option>
+              <option value="favorites">Favorites</option>
+              <option value="name">Name</option>
+            </select>
+          </div>
+          <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/25 px-3 py-1.5">
+            <LayoutGrid className="h-3.5 w-3.5" />
+            <select
+              value={thumbSize}
+              onChange={(event) => onThumbSizeChange(event.target.value as "s" | "m" | "l")}
+              className="bg-transparent text-xs focus:outline-none"
+            >
+              <option value="s">Small</option>
+              <option value="m">Medium</option>
+              <option value="l">Large</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        <Button onClick={onUpload} className="rounded-full px-4">
+          <UploadCloud className="mr-2 h-4 w-4" /> Upload
+        </Button>
+        <Button variant="outline" onClick={onExport} className="rounded-full px-4">
+          <Download className="mr-2 h-4 w-4" /> Export ZIP
+        </Button>
+        <Button
+          variant="secondary"
+          onClick={onLink}
+          className="rounded-full px-4"
+        >
+          <Link2 className="mr-2 h-4 w-4" /> Link recipes
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+type GalleryBulkActionsProps = {
+  count: number;
+  bulkTagDraft: string;
+  onBulkTagChange: (value: string) => void;
+  onApplyTags: () => void;
+  onClear: () => void;
+  onFavorite: () => void;
+  onUnfavorite: () => void;
+};
+
+function GalleryBulkActions({
+  count,
+  bulkTagDraft,
+  onBulkTagChange,
+  onApplyTags,
+  onClear,
+  onFavorite,
+  onUnfavorite,
+}: GalleryBulkActionsProps) {
+  return (
+    <div className="pointer-events-auto flex max-w-2xl flex-wrap items-center gap-3 rounded-full border border-white/12 bg-black/65 px-5 py-3 text-xs shadow-[0_20px_60px_rgba(15,23,42,0.45)] backdrop-blur-lg">
+      <span className="font-semibold uppercase tracking-[0.3em] text-slate-200">{count} selected</span>
+      <input
+        value={bulkTagDraft}
+        onChange={(event) => onBulkTagChange(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            onApplyTags();
+          }
+        }}
+        placeholder="Add tags (comma separated)"
+        className="flex-1 rounded-full border border-transparent bg-black/30 px-3 py-1 text-xs text-slate-100 placeholder:text-slate-400 focus:border-sky-400 focus:outline-none"
+      />
+      <Button size="sm" className="rounded-full px-4" onClick={onApplyTags}>
+        Apply tags
+      </Button>
+      <Button size="sm" variant="ghost" className="rounded-full px-4" onClick={onFavorite}>
+        Mark favorite
+      </Button>
+      <Button size="sm" variant="ghost" className="rounded-full px-4" onClick={onUnfavorite}>
+        Clear favorite
+      </Button>
+      <Button size="sm" variant="ghost" className="rounded-full px-4" onClick={onClear}>
+        Clear selection
+      </Button>
+    </div>
+  );
+}
+
+function GalleryDropHint() {
+  return (
+    <div className="pointer-events-none rounded-2xl border border-dashed border-white/15 bg-black/35 px-4 py-3 text-[11px] uppercase tracking-[0.3em] text-slate-200">
+      Drop anywhere in this live stage to import · RAW · HEIC · JPG · PNG
+    </div>
+  );
+}
+
+type GalleryGridProps = {
+  images: ReturnType<typeof useMemo>;
+  thumbSize: "s" | "m" | "l";
+  activeId: string | null;
+  selectedIds: string[];
+  onSelect: (event: MouseEvent<HTMLButtonElement>, id: string) => void;
+  onOpenLightbox: (id: string) => void;
+  onDelete: (id: string) => void;
+  gridTemplates: Record<"s" | "m" | "l", string>;
+  onRestoreDemo: () => void;
+};
+
+function GalleryGrid({
+  images,
+  thumbSize,
+  activeId,
+  selectedIds,
+  onSelect,
+  onOpenLightbox,
+  onDelete,
+  gridTemplates,
+  onRestoreDemo,
+}: GalleryGridProps) {
+  if (!images.length) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-4 text-sm text-slate-200">
+        <div className="text-base font-semibold">No images match the current filters.</div>
+        <Button className="rounded-full px-4" onClick={() => onRestoreDemo()}>
+          Restore demo gallery
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-full overflow-y-auto px-6 pb-10">
+      <div
+        className={cn(
+          "grid gap-5",
+          gridTemplates[thumbSize],
+        )}
+        data-echo-key="section:gallery:grid"
+      >
+        {images.map((image) => (
+          <GalleryCard
+            key={image.id}
+            id={image.id}
+            name={image.name}
+            src={image.dataUrl || image.blobUrl}
+            tags={image.tags || []}
+            favorite={image.favorite}
+            unsupported={image.unsupported}
+            active={activeId === image.id}
+            selected={selectedIds.includes(image.id)}
+            thumbSize={thumbSize}
+            onClick={(event) => onSelect(event, image.id)}
+            onDoubleClick={() => onOpenLightbox(image.id)}
+            onDelete={() => onDelete(image.id)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+type AutoCategoryListProps = {
+  clusters: TagCluster[];
+  onSelect: (tag: string) => void;
+};
+
+function AutoCategoryList({ clusters, onSelect }: AutoCategoryListProps) {
+  if (!clusters.length) {
+    return null;
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="text-xs font-semibold uppercase tracking-[0.3em] opacity-70">
+        AI catalogued themes
+      </div>
+      <div className="grid gap-2">
+        {clusters.map((cluster) => (
+          <button
+            key={cluster.tag}
+            onClick={() => onSelect(cluster.tag)}
+            className="flex items-center justify-between rounded-2xl border border-white/15 bg-white/5 px-3 py-2 text-left text-xs transition hover:border-sky-300/40 hover:bg-sky-500/10"
+          >
+            <span className="flex flex-col gap-1">
+              <span className="font-semibold uppercase tracking-[0.3em] text-slate-100">
+                {cluster.tag}
+              </span>
+              <span className="text-[10px] uppercase tracking-[0.3em] text-slate-400">
+                {cluster.freshnessLabel}
+              </span>
+            </span>
+            <span className="rounded-full bg-black/30 px-2 py-1 text-[10px] uppercase tracking-[0.3em] text-slate-200">
+              {cluster.count}
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+type FlipbookPreviewProps = {
+  onOpen: () => void;
+};
+
+function FlipbookPreview({ onOpen }: FlipbookPreviewProps) {
+  const [turning, setTurning] = useState(false);
+
+  return (
+    <button
+      className="group relative h-28 w-full overflow-hidden rounded-2xl border border-white/20 bg-black/35 text-left text-xs uppercase tracking-[0.3em] text-slate-200"
+      style={{ perspective: "1200px" }}
+      onClick={() => {
+        setTurning(true);
+        setTimeout(() => setTurning(false), 900);
+        onOpen();
+      }}
+      onMouseEnter={() => setTurning(true)}
+      onMouseLeave={() => setTurning(false)}
+      aria-label="Open flip book"
+    >
+      <div className="absolute inset-0 flex flex-col justify-center gap-1 p-4">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.35em]">Flip book</span>
+        <span className="text-[10px] text-slate-300">Pages animated with every turn</span>
+      </div>
+      <div
+        className="absolute inset-y-4 left-6 w-32 rounded-xl bg-gradient-to-br from-sky-400/60 via-sky-500/40 to-sky-300/30 shadow-[0_18px_40px_rgba(56,189,248,0.35)]"
+        style={{
+          transformStyle: "preserve-3d",
+          transform: turning ? "rotateY(-25deg)" : "rotateY(0deg)",
+          transformOrigin: "left center",
+          transition: "transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)",
+        }}
+      />
+      <div
+        className="absolute inset-y-6 left-10 w-28 rounded-xl border border-white/25 bg-white/10 shadow-[0_12px_30px_rgba(15,23,42,0.3)]"
+        style={{
+          transformStyle: "preserve-3d",
+          transform: turning ? "rotateY(-12deg) translateX(12px)" : "rotateY(0deg)",
+          transformOrigin: "left center",
+          transition: "transform 0.7s cubic-bezier(0.22, 1, 0.36, 1)",
+        }}
+      />
+    </button>
   );
 }
 
