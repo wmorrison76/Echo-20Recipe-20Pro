@@ -295,6 +295,7 @@ export default function GallerySection() {
   const {
     images,
     lookbooks,
+    tileBoards,
     addLookBook,
     addImagesToLookBook,
     removeImagesFromLookBook,
@@ -307,6 +308,12 @@ export default function GallerySection() {
     exportAllZip,
     restoreDemo,
     deleteImage,
+    createTileBoard,
+    updateTileBoard,
+    deleteTileBoard,
+    addTileToBoard,
+    updateTileInBoard,
+    removeTileFromBoard,
   } = useAppData();
 
   const [status, setStatus] = useState<string | null>(null);
