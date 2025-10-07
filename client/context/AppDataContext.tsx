@@ -265,6 +265,52 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   }, [tileBoards]);
 
   useEffect(() => {
+    if (tileBoards.length === 0 && images.length > 0) {
+      const now = Date.now();
+      const sample = images.slice(0, 4);
+      const defaults: TileBoard[] = [
+        {
+          id: uid(),
+          name: "Server Notes",
+          description: "Hero imagery for service clarifications",
+          category: "server-notes",
+          createdAt: now,
+          updatedAt: now,
+          tiles: sample.slice(0, 3).map((image, index) => ({
+            id: uid(),
+            title: image.name,
+            subtitle: "Service highlight",
+            imageId: image.id,
+            tags: ["server-notes"],
+            layout: index % 2 === 0 ? "landscape" : "portrait",
+            accent: "#38bdf8",
+            createdAt: now + index,
+          })),
+        },
+        {
+          id: uid(),
+          name: "Cook's Recipes",
+          description: "Production-ready plating references",
+          category: "cooks-recipes",
+          createdAt: now,
+          updatedAt: now,
+          tiles: sample.map((image, index) => ({
+            id: uid(),
+            title: image.name,
+            subtitle: "Batch prep",
+            imageId: image.id,
+            tags: ["cooks", "recipes"],
+            layout: "landscape",
+            accent: "#f59e0b",
+            createdAt: now + index,
+          })),
+        },
+      ];
+      setTileBoards(defaults);
+    }
+  }, [tileBoards.length, images]);
+
+  useEffect(() => {
     writeLS(LS_COLLECTIONS, collections);
   }, [collections]);
 
