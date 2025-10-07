@@ -1370,7 +1370,7 @@ async function createLucccaDoc(
       spacing: { after: 160 },
       children: [
         new TextRun({
-          text: note.title || "Service Briefing",
+          text: note.title?.trim() || docStrings.serviceBriefing,
           bold: true,
           size: 52,
           color: primaryHex,
