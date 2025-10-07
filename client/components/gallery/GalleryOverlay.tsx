@@ -2,14 +2,36 @@ import { useMemo, useState } from "react";
 import type { GalleryImage } from "@/context/AppDataContext";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import type { LucideIcon } from "lucide-react";
 import {
+  Bandage,
+  Blend,
   ChevronDown,
+  Clone,
+  Crop,
+  Droplet,
+  Eraser,
+  Hand,
+  History,
+  Lasso,
   Maximize2,
   Minus,
+  MousePointerSquare,
   Move,
+  PaintBucket,
+  Pencil,
+  PenTool,
+  Pipette,
   Plus,
+  Pointer,
+  RectangleHorizontal,
   Ruler,
-  X,
+  Scissors,
+  Shapes,
+  Sparkles,
+  Stamp,
+  Text,
+  Wand2,
   ZoomIn,
   ZoomOut,
 } from "lucide-react";
@@ -36,30 +58,43 @@ export type GalleryOverlayProps = {
   activeQuickAction: string | null;
 };
 
-const TOOL_GRID = [
-  { key: "marquee", label: "Marquee" },
-  { key: "lasso", label: "Lasso" },
-  { key: "crop", label: "Crop" },
-  { key: "heal", label: "Heal brush" },
-  { key: "clone", label: "Clone stamp" },
-  { key: "erase", label: "Eraser" },
-  { key: "blur", label: "Blur" },
-  { key: "path", label: "Path select" },
-  { key: "pen", label: "Pen" },
-  { key: "annotate", label: "Annotation" },
-  { key: "hand", label: "Hand" },
-  { key: "color", label: "Color pick" },
-  { key: "move", label: "Move" },
-  { key: "magic", label: "Magic wand" },
-  { key: "slice", label: "Slice" },
-  { key: "pencil", label: "Pencil" },
-  { key: "history", label: "History brush" },
-  { key: "paint", label: "Paint bucket" },
-  { key: "dodge", label: "Dodge" },
-  { key: "type", label: "Type" },
-  { key: "shape", label: "Custom shape" },
-  { key: "eyedropper", label: "Eye dropper" },
-  { key: "zoom", label: "Zoom" },
+type ToolSpec = {
+  key: string;
+  label: string;
+  icon: LucideIcon;
+};
+
+const TOOL_GRID: ToolSpec[] = [
+  { key: "marquee", label: "Marquee", icon: RectangleHorizontal },
+  { key: "lasso", label: "Lasso", icon: Lasso },
+  { key: "crop", label: "Crop", icon: Crop },
+  { key: "heal", label: "Heal brush", icon: Bandage },
+  { key: "clone", label: "Clone stamp", icon: Stamp },
+  { key: "erase", label: "Eraser", icon: Eraser },
+  { key: "blur", label: "Blur", icon: Droplet },
+  { key: "path", label: "Path select", icon: Pointer },
+  { key: "pen", label: "Pen", icon: PenTool },
+  { key: "annotate", label: "Annotation", icon: Pencil },
+  { key: "hand", label: "Hand", icon: Hand },
+  { key: "color", label: "Color pick", icon: Pipette },
+  { key: "move", label: "Move", icon: Move },
+  { key: "magic", label: "Magic wand", icon: Wand2 },
+  { key: "slice", label: "Slice", icon: Scissors },
+  { key: "pencil", label: "Pencil", icon: Pencil },
+  { key: "history", label: "History brush", icon: History },
+  { key: "paint", label: "Paint bucket", icon: PaintBucket },
+  { key: "dodge", label: "Dodge", icon: Sparkles },
+  { key: "type", label: "Type", icon: Text },
+  { key: "shape", label: "Custom shape", icon: Shapes },
+  { key: "eyedropper", label: "Eye dropper", icon: Pipette },
+  { key: "zoom", label: "Zoom", icon: ZoomIn },
+];
+
+const OVERLAY_QUICK_ACTIONS = [
+  { key: "blend", label: "Blend layers" },
+  { key: "sharpen", label: "Sharpen focus" },
+  { key: "retouch", label: "Retouch skin" },
+  { key: "highlight", label: "Lift highlights" },
 ];
 
 const QUICK_PRESETS = [
