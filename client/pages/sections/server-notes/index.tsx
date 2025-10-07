@@ -220,7 +220,7 @@ export default function ServerNotesSection() {
       const parsed = JSON.parse(raw);
       if (parsed && Array.isArray(parsed.ids)) {
         ids = parsed.ids.filter((value: unknown): value is string =>
-          typeof value === "string" && value.length,
+          typeof value === "string" && value.length > 0,
         );
       }
     } catch (error) {
