@@ -209,12 +209,19 @@ export default function GallerySection() {
   return (
     <div
       className={cn(
-        "mx-auto max-w-[1380px] space-y-6 px-4 py-8 sm:px-6 lg:px-12",
-        lucccaMode ? "luccca-theme" : "text-slate-900",
+        "relative mx-auto max-w-[1380px] space-y-6 overflow-hidden rounded-[40px] border px-4 py-10 sm:px-8 lg:px-14",
+        "before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.12),transparent_60%)] before:opacity-70",
+        lucccaMode
+          ? "luccca-theme border-slate-800/70 bg-slate-950/85 text-slate-100 shadow-[0_50px_140px_rgba(14,165,233,0.28)]"
+          : "border-slate-200/80 bg-gradient-to-br from-white via-slate-50/95 to-slate-100 text-slate-900 shadow-[0_55px_150px_rgba(15,23,42,0.16)]",
       )}
       data-echo-key="page:recipes:gallery"
     >
-      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
+      <div className="absolute inset-0 pointer-events-none mix-blend-soft-light" aria-hidden>
+        <div className="absolute left-1/3 top-0 h-80 w-80 rounded-full bg-sky-200/25 blur-3xl" />
+        <div className="absolute right-[-4rem] top-24 h-72 w-72 rounded-full bg-pink-200/30 blur-[120px]" />
+      </div>
+      <div className="relative space-y-6">
         <Dropzone
           multiple
           onFiles={onFiles}
