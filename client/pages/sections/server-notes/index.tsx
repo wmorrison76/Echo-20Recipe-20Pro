@@ -196,7 +196,10 @@ export default function ServerNotesSection() {
 
   const deleteNote = (noteId: string) => {
     setSavedNotes((prev) => prev.filter((note) => note.id !== noteId));
-    toast({ title: "Deleted", description: "Server notes removed." });
+    toast({
+      title: t("serverNotes.toast.deleted.title"),
+      description: t("serverNotes.toast.deleted.description"),
+    });
   };
 
   useEffect(() => {
