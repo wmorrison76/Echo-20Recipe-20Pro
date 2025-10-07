@@ -157,8 +157,8 @@ export default function ServerNotesSection() {
     }
     setNoteSession((value) => value + 1);
     toast({
-      title: "New document ready",
-      description: "Start drafting a fresh server notes briefing.",
+      title: t("serverNotes.toast.new.title"),
+      description: t("serverNotes.toast.new.description"),
     });
   };
 
