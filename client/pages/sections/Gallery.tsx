@@ -1033,24 +1033,6 @@ export default function GallerySection() {
 
           {activeImage ? (
             <div className="flex-1 space-y-4 overflow-y-auto pr-1">
-              <div className="rounded-3xl border border-white/12 bg-black/35 p-4 shadow-[0_18px_46px_rgba(14,165,233,0.28)]">
-                <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.35em] text-slate-300">
-                  <span>Creative tools</span>
-                  <span className="text-slate-100">Active · {activeToolLabel}</span>
-                </div>
-                <div className="mt-3 grid grid-cols-2 gap-2">
-                  {CREATIVE_TOOLS.map((tool) => (
-                    <ToolButton
-                      key={tool.key}
-                      label={tool.label}
-                      icon={tool.icon}
-                      active={activeTool === tool.key}
-                      onClick={() => setActiveTool(tool.key)}
-                    />
-                  ))}
-                </div>
-              </div>
-
               <div className="overflow-hidden rounded-3xl border border-white/10 bg-black/40">
                 {activeImage.unsupported ? (
                   <div className="flex aspect-[4/3] items-center justify-center text-xs uppercase tracking-[0.3em] text-slate-300">
@@ -1086,24 +1068,7 @@ export default function GallerySection() {
                 </div>
               </div>
 
-              <div className="rounded-3xl border border-white/10 bg-black/30 p-4">
-                <div className="text-[11px] uppercase tracking-[0.35em] text-slate-300">Quick actions</div>
-                <div className="mt-3 grid grid-cols-2 gap-2">
-                  {QUICK_ACTIONS.map((action) => (
-                    <QuickActionCard
-                      key={action.key}
-                      label={action.label}
-                      description={action.description}
-                      icon={action.icon}
-                      active={activeQuickAction === action.key}
-                      onClick={() => handleQuickAction(action)}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-3 rounded-3xl border border-white/10 bg-black/30 p-4">
-                <div className="text-[11px] uppercase tracking-[0.35em] text-slate-300">Adjustments</div>
+              <ControlSection title="Adjustments" defaultOpen>
                 <div className="space-y-3">
                   {ADJUSTMENT_CONTROLS.map((control) => (
                     <div key={control.key} className="space-y-1.5">
@@ -1123,7 +1088,7 @@ export default function GallerySection() {
                     </div>
                   ))}
                 </div>
-                <div className="flex items-center justify-between text-xs">
+                <div className="mt-3 flex items-center justify-between text-xs">
                   <Button variant="ghost" size="sm" className="rounded-full px-3" onClick={resetAdjustments}>
                     Reset
                   </Button>
@@ -1136,11 +1101,42 @@ export default function GallerySection() {
                     View live
                   </Button>
                 </div>
-              </div>
+              </ControlSection>
 
-              <div className="space-y-2 rounded-3xl border border-white/10 bg-black/25 p-4">
-                <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.35em] text-slate-300">
-                  <span>Layers</span>
+              <ControlSection title="Creative tools">
+                <div className="grid grid-cols-2 gap-2">
+                  {CREATIVE_TOOLS.map((tool) => (
+                    <ToolButton
+                      key={tool.key}
+                      label={tool.label}
+                      icon={tool.icon}
+                      active={activeTool === tool.key}
+                      onClick={() => setActiveTool(tool.key)}
+                    />
+                  ))}
+                </div>
+                <div className="mt-3 text-[11px] uppercase tracking-[0.3em] text-slate-300">
+                  Active · {activeToolLabel}
+                </div>
+              </ControlSection>
+
+              <ControlSection title="Quick actions">
+                <div className="grid grid-cols-2 gap-2">
+                  {QUICK_ACTIONS.map((action) => (
+                    <QuickActionCard
+                      key={action.key}
+                      label={action.label}
+                      description={action.description}
+                      icon={action.icon}
+                      active={activeQuickAction === action.key}
+                      onClick={() => handleQuickAction(action)}
+                    />
+                  ))}
+                </div>
+              </ControlSection>
+
+              <ControlSection title="Layers">
+                <div className="mb-3 flex justify-end">
                   <Button
                     size="sm"
                     variant="ghost"
@@ -1160,9 +1156,9 @@ export default function GallerySection() {
                     />
                   ))}
                 </div>
-              </div>
+              </ControlSection>
 
-              <div className="rounded-3xl border border-white/12 bg-black/30 p-4">
+              <ControlSection title="Metadata">
                 <div className="grid gap-3">
                   <div className="space-y-2">
                     <label className="text-[11px] uppercase tracking-[0.35em] text-slate-300">Filename</label>
@@ -1198,10 +1194,9 @@ export default function GallerySection() {
                     Reset fields
                   </button>
                 </div>
-              </div>
+              </ControlSection>
 
-              <div className="space-y-3">
-                <div className="text-[11px] uppercase tracking-[0.35em] text-slate-300">Look book membership</div>
+              <ControlSection title="Look books">
                 <div className="space-y-2">
                   {lookbooks.length === 0 && (
                     <div className="rounded-xl border border-dashed border-white/20 px-3 py-3 text-xs opacity-70">
@@ -1229,15 +1224,14 @@ export default function GallerySection() {
                     );
                   })}
                 </div>
-              </div>
+              </ControlSection>
 
-              <div className="rounded-3xl border border-white/10 bg-black/25 p-4">
-                <div className="text-[11px] uppercase tracking-[0.35em] text-slate-300">Add from URLs</div>
+              <ControlSection title="Import by URL">
                 <textarea
                   value={urlText}
                   onChange={(event) => setUrlText(event.target.value)}
                   placeholder="https://example.com/photo.jpg"
-                  className="mt-2 h-24 w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-xs focus:border-sky-400 focus:outline-none"
+                  className="mt-1 h-24 w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-xs focus:border-sky-400 focus:outline-none"
                 />
                 <Button
                   size="sm"
@@ -1247,7 +1241,7 @@ export default function GallerySection() {
                 >
                   {urlLoading ? "Fetching…" : "Add images"}
                 </Button>
-              </div>
+              </ControlSection>
 
               <div className="space-y-1 text-xs text-slate-300">
                 <div className="flex items-center gap-2">
