@@ -229,6 +229,16 @@ export function ServerNotesGenerator({
           {generatedDocument ? (
             <Button
               variant="outline"
+              onClick={openDocumentEditor}
+              className="flex items-center gap-2"
+            >
+              <Pencil className="h-4 w-4" />
+              Open Editor
+            </Button>
+          ) : null}
+          {generatedDocument ? (
+            <Button
+              variant="outline"
               onClick={printDocument}
               className="flex items-center gap-2"
             >
