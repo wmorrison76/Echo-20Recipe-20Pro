@@ -14,6 +14,7 @@ import { extractRecipeAllergens } from "@/lib/allergens";
 
 const cookbookLabels: Record<LanguageCode, {
   cookbookTitle: string;
+  subtitle: string;
   preparedFor: string;
   generatedOn: string;
   index: string;
@@ -30,9 +31,11 @@ const cookbookLabels: Record<LanguageCode, {
   generate: string;
   print: string;
   download: string;
+  empty: string;
 }> = {
   "en-US": {
     cookbookTitle: "Cook's Recipe Book",
+    subtitle: "Build a printable package with title page, index, and full recipes.",
     preparedFor: "Prepared for",
     generatedOn: "Generated on",
     index: "Index",
@@ -49,9 +52,11 @@ const cookbookLabels: Record<LanguageCode, {
     generate: "Generate Cookbook",
     print: "Print Cookbook",
     download: "Download HTML",
+    empty: "Add recipes to Step 2 to enable the cookbook export.",
   },
   "fr-FR": {
     cookbookTitle: "Carnet de Recettes",
+    subtitle: "Créez un dossier imprimable avec page de titre, index et recettes complètes.",
     preparedFor: "Préparé pour",
     generatedOn: "Généré le",
     index: "Index",
@@ -68,9 +73,11 @@ const cookbookLabels: Record<LanguageCode, {
     generate: "Générer le carnet",
     print: "Imprimer le carnet",
     download: "Télécharger HTML",
+    empty: "Ajoutez des recettes à l’étape 2 pour activer l’export du carnet.",
   },
   "it-IT": {
     cookbookTitle: "Ricettario della Cucina",
+    subtitle: "Crea un pacchetto stampabile con copertina, indice e ricette complete.",
     preparedFor: "Preparato per",
     generatedOn: "Generato il",
     index: "Indice",
@@ -87,9 +94,11 @@ const cookbookLabels: Record<LanguageCode, {
     generate: "Genera ricettario",
     print: "Stampa ricettario",
     download: "Scarica HTML",
+    empty: "Aggiungi ricette al passaggio 2 per abilitare l’esportazione del ricettario.",
   },
   "es-ES": {
     cookbookTitle: "Libro de Recetas",
+    subtitle: "Crea un paquete imprimible con portada, índice y recetas completas.",
     preparedFor: "Preparado para",
     generatedOn: "Generado el",
     index: "Índice",
@@ -106,9 +115,11 @@ const cookbookLabels: Record<LanguageCode, {
     generate: "Generar libro",
     print: "Imprimir libro",
     download: "Descargar HTML",
+    empty: "Agrega recetas al paso 2 para habilitar la exportación del libro.",
   },
   "pt-BR": {
     cookbookTitle: "Livro de Receitas",
+    subtitle: "Crie um pacote imprimível com capa, índice e receitas completas.",
     preparedFor: "Preparado para",
     generatedOn: "Gerado em",
     index: "Índice",
@@ -125,9 +136,11 @@ const cookbookLabels: Record<LanguageCode, {
     generate: "Gerar livro",
     print: "Imprimir livro",
     download: "Baixar HTML",
+    empty: "Adicione receitas à etapa 2 para habilitar a exportação do livro.",
   },
   "de-DE": {
     cookbookTitle: "Rezeptbuch",
+    subtitle: "Erstelle ein druckbares Paket mit Titelseite, Index und vollständigen Rezepten.",
     preparedFor: "Erstellt für",
     generatedOn: "Erstellt am",
     index: "Inhaltsverzeichnis",
@@ -144,6 +157,7 @@ const cookbookLabels: Record<LanguageCode, {
     generate: "Rezeptbuch erstellen",
     print: "Rezeptbuch drucken",
     download: "HTML herunterladen",
+    empty: "Füge Rezepte in Schritt 2 hinzu, um den Rezeptbuch-Export zu aktivieren.",
   },
 };
 
@@ -370,7 +384,7 @@ export function CooksRecipeBookGenerator({
             {labels.cookbookTitle}
           </h3>
           <p className="text-xs text-muted-foreground">
-            Build a printable package with title page, index, and full recipes.
+            {labels.subtitle}
           </p>
         </div>
         <Select value={language} onValueChange={(value) => onLanguageChange(value as LanguageCode)}>
@@ -416,7 +430,7 @@ export function CooksRecipeBookGenerator({
       </div>
       {recipes.length === 0 && (
         <p className="text-xs text-muted-foreground">
-          Add recipes to Step 2 to enable the cook book export.
+          {labels.empty}
         </p>
       )}
     </div>
