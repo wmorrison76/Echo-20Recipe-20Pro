@@ -23,37 +23,36 @@ const PosMappingSection: React.FC<PosMappingSectionProps> = ({
   menuPrice,
   menuTitle,
 }) => {
-  const ensureStatus = useCallback((entry: PosMapping): PosMapping => {
-    const status = entry.itemCode && entry.price ? "ready" : "draft";
-    return { ...entry, status };
-  }, []);
-
   const updateMapping = useCallback(
     (key: PosMapping["key"], patch: Partial<PosMapping>) => {
       onChange(
-        mappings.map((entry) =>
-          entry.key === key
-            ? ensureStatus({ ...entry, ...patch })
-            : entry,
-        ),
+        mappings.map((entry) => {
+          if (entry.key !== key) return entry;
+          const merged: PosMapping = { ...entry, ...patch };
+          if (patch.status) return merged;
+          const status = merged.itemCode && merged.price ? "ready" : "draft";
+          return { ...merged, status };
+        }),
       );
     },
-    [ensureStatus, mappings, onChange],
+    [mappings, onChange],
   );
 
   const handleAutoPopulate = useCallback(() => {
     onChange(
-      mappings.map((entry) =>
-        ensureStatus({
+      mappings.map((entry) => {
+        const next: PosMapping = {
           ...entry,
           itemCode: buildPosCode(menuTitle || "Dish", entry.systemName),
           autoCode: true,
           price: menuPrice || entry.price,
           autoPrice: Boolean(menuPrice) || entry.autoPrice,
-        }),
-      ),
+        };
+        const status = next.itemCode && next.price ? "ready" : "draft";
+        return { ...next, status };
+      }),
     );
-  }, [ensureStatus, mappings, menuPrice, menuTitle, onChange]);
+  }, [mappings, menuPrice, menuTitle, onChange]);
 
   return (
     <Card className="border-primary/30 bg-background/95 shadow-lg">
