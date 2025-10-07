@@ -1522,7 +1522,7 @@ async function createLucccaDoc(
 
     children.push(
       ...createLucccaSectionParagraphs(
-        "Menu Description",
+        docStrings.sectionMenuDescription,
         prepared.description,
         textHex,
         secondaryHex,
@@ -1531,7 +1531,7 @@ async function createLucccaDoc(
     );
     children.push(
       ...createLucccaSectionParagraphs(
-        "Server Notes",
+        docStrings.sectionServerNotes,
         prepared.serverNotes,
         textHex,
         secondaryHex,
@@ -1540,7 +1540,7 @@ async function createLucccaDoc(
     );
     children.push(
       ...createLucccaSectionParagraphs(
-        "Serviceware",
+        docStrings.sectionServiceware,
         prepared.serviceware,
         textHex,
         secondaryHex,
@@ -1549,13 +1549,66 @@ async function createLucccaDoc(
     );
 
     children.push(
-      createLucccaDishTable(prepared, primaryHex, secondaryHex, textHex, font),
+      new Paragraph({
+        spacing: { before: 160, after: 80 },
+        children: [
+          new TextRun({
+            text: docStrings.sectionDishComponents,
+            bold: true,
+            color: primaryHex,
+            font,
+          }),
+        ],
+      }),
     );
     children.push(
-      createLucccaAllergenTable(prepared, primaryHex, textHex, font),
+      createLucccaDishTable(prepared, primaryHex, secondaryHex, textHex, font, {
+        qty: docStrings.tableQty,
+        component: docStrings.tableComponent,
+        notes: docStrings.tableNotes,
+      }),
     );
     children.push(
-      createLucccaBeverageTable(prepared, primaryHex, textHex, font),
+      new Paragraph({
+        spacing: { before: 160, after: 80 },
+        children: [
+          new TextRun({
+            text: docStrings.sectionAllergens,
+            bold: true,
+            color: primaryHex,
+            font,
+          }),
+        ],
+      }),
+    );
+    children.push(
+      createLucccaAllergenTable(prepared, primaryHex, textHex, font, {
+        item: docStrings.tableItem,
+        allergy: docStrings.tableAllergy,
+        modify: docStrings.tableModify,
+        alternative: docStrings.tableAlternative,
+      }),
+    );
+    children.push(
+      new Paragraph({
+        spacing: { before: 160, after: 80 },
+        children: [
+          new TextRun({
+            text: docStrings.sectionBeverages,
+            bold: true,
+            color: primaryHex,
+            font,
+          }),
+        ],
+      }),
+    );
+    children.push(
+      createLucccaBeverageTable(prepared, primaryHex, textHex, font, {
+        item: docStrings.tableItem,
+        year: docStrings.tableYear,
+        location: docStrings.tableLocation,
+        country: docStrings.tableCountry,
+      }),
     );
 
     sections.push({
