@@ -1199,7 +1199,7 @@ async function createStandardDoc(
         }
 
         if (note.layout.indexCardLayout.contentPriority !== "ingredients") {
-          cells.push(heading("Steps", HeadingLevel.HEADING_3));
+          cells.push(heading(docStrings.sectionSteps, HeadingLevel.HEADING_3));
           item.recipe.instructions
             ?.slice(0, 6)
             .forEach((step, indexStep) =>
