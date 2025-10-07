@@ -25,7 +25,7 @@ import {
   WidthType,
   convertInchesToTwip,
 } from "docx";
-import type { ISectionOptions } from "docx";
+import type { IImageOptions, ISectionOptions } from "docx";
 
 export type ServerNotesGeneratorProps = {
   serverNote: ServerNote;
