@@ -329,17 +329,17 @@ export default function ServerNotesSection() {
             <div className="flex flex-wrap items-center justify-between gap-2.5">
               <div className="leading-tight">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-muted-foreground">
-                  Guided helper
+                  {t("serverNotes.helper.label")}
                 </p>
                 <h2 className="text-base font-semibold text-foreground">
-                  Walk me through creating a document
+                  {t("serverNotes.helper.title")}
                 </h2>
               </div>
               <Badge
                 variant="secondary"
                 className="rounded-full px-2.5 py-0.5 text-[11px] uppercase tracking-[0.25em]"
               >
-                Follow the steps
+                {t("serverNotes.helper.badge")}
               </Badge>
             </div>
             <div className="mt-3 grid gap-3 md:grid-cols-3">
