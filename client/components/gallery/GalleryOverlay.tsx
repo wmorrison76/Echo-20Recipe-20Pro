@@ -269,6 +269,8 @@ export function GalleryOverlay({
                       backgroundImage:
                         "linear-gradient(0deg, transparent calc(100% - 1px), rgba(148,163,184,0.25) calc(100% - 1px)), linear-gradient(90deg, transparent calc(100% - 1px), rgba(148,163,184,0.25) calc(100% - 1px))",
                       backgroundSize: `${gridSize}px ${gridSize}px`,
+                      transform: `scale(${zoom / 100})`,
+                      transformOrigin: "center center",
                     }}
                   >
                     {image ? (
@@ -276,7 +278,6 @@ export function GalleryOverlay({
                         src={image.dataUrl || image.blobUrl}
                         alt={image.name}
                         className="max-h-[70vh] max-w-[70vw] rounded-3xl border border-white/10 shadow-[0_45px_80px_rgba(14,165,233,0.35)]"
-                        style={{ transform: `scale(${zoom / 100})`, transformOrigin: "center center" }}
                       />
                     ) : (
                       <div className="rounded-3xl border border-dashed border-slate-600/60 bg-black/40 px-12 py-16 text-center text-xs uppercase tracking-[0.35em] text-slate-400">
