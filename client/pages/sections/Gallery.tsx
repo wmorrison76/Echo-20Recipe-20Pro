@@ -1015,6 +1015,36 @@ export default function GallerySection() {
         </Dropzone>
 
         <aside className={cn("flex h-full flex-col gap-5 overflow-hidden rounded-[32px] border p-6", detailSurface)}>
+          <div
+            className={cn(
+              "rounded-3xl border border-dashed px-4 py-3 text-[11px] uppercase tracking-[0.35em] transition",
+              inspectorDropActive
+                ? "border-sky-400/80 bg-sky-500/15 text-sky-100"
+                : "border-white/15 bg-black/25 text-slate-300",
+            )}
+            onDragEnter={(event) => {
+              event.preventDefault();
+              setInspectorDropActive(true);
+            }}
+            onDragOver={(event) => {
+              event.preventDefault();
+            }}
+            onDragLeave={(event) => {
+              event.preventDefault();
+              setInspectorDropActive(false);
+            }}
+            onDrop={(event) => {
+              event.preventDefault();
+              const files = Array.from(event.dataTransfer?.files || []).filter((file) =>
+                file.type.startsWith("image/"),
+              );
+              if (files.length) handleFiles(files);
+              setInspectorDropActive(false);
+            }}
+          >
+            Drop photos to edit instantly
+          </div>
+
           <div className="flex items-center justify-between text-sm font-semibold uppercase tracking-[0.3em] opacity-70">
             <span>Photo studio</span>
             <ListFilter className="h-4 w-4" />
