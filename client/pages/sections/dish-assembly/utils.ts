@@ -100,7 +100,7 @@ const normalizeText = (value: unknown): string =>
 
 export const summarizeRecipe = (recipe: Recipe): RecipeSummary => {
   const extra = (recipe.extra ?? {}) as Record<string, unknown>;
-  const serverNotes = (extra.serverNotes ?? {}) as Record<string, unknown>;
+  const serverNotes = (extra.serverNotes ?? null) as any;
   const tags = Array.isArray(recipe.tags)
     ? recipe.tags.map((tag) => String(tag)).filter(Boolean)
     : [];
