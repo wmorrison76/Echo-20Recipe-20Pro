@@ -986,12 +986,12 @@ export default function GallerySection() {
 }
 
 type LibraryItemProps = {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
   count: number;
   active: boolean;
   onClick: () => void;
-  action?: React.ReactNode;
+  action?: ReactNode;
 };
 
 function LibraryItem({ icon, label, count, active, onClick, action }: LibraryItemProps) {
