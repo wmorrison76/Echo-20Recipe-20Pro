@@ -1505,10 +1505,10 @@ async function createLucccaDoc(
     if (prepared.imageSrc) {
       const imageData = await loadImageBuffer(prepared.imageSrc);
       if (imageData) {
-        const imageOptions: IImageOptions = {
+        const imageOptions = {
           data: imageData,
           transformation: { width: 400, height: 260 },
-        };
+        } as unknown as IImageOptions;
         children.push(
           new Paragraph({
             alignment: AlignmentType.CENTER,
