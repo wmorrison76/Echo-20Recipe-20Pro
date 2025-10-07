@@ -1159,10 +1159,10 @@ function LibraryItem({ icon, label, count, active, onClick, action }: LibraryIte
       onClick={onClick}
       onKeyDown={handleKeyDown}
       className={cn(
-        "flex w-full items-center justify-between gap-3 rounded-2xl border px-3 py-2 text-left text-sm transition",
+        "flex w-full items-center justify-between gap-2 rounded-2xl border px-3 py-1.5 text-left text-xs transition",
         active
-          ? "border-sky-400/60 bg-sky-500/10 text-sky-100 shadow-[0_20px_46px_rgba(14,165,233,0.35)]"
-          : "border-white/12 bg-white/5 text-slate-200 hover:border-sky-300/40 hover:bg-sky-500/10",
+          ? "border-sky-400/60 bg-sky-500/15 text-sky-100 shadow-[0_18px_40px_rgba(14,165,233,0.32)]"
+          : "border-white/10 bg-white/5 text-slate-200 hover:border-sky-300/40 hover:bg-sky-500/10",
       )}
     >
       <div className="flex items-center gap-2">
