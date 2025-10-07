@@ -384,7 +384,7 @@ export default function ServerNotesSection() {
                     >
                       {`${t("serverNotes.steps.step")} 1`}
                     </Badge>
-                    <CardTitle className="text-sm font-semibold">Configuration</CardTitle>
+                    <CardTitle className="text-sm font-semibold">{t("serverNotes.panels.configuration")}</CardTitle>
                   </div>
                 </div>
               </CardHeader>
