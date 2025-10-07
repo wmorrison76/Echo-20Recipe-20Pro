@@ -32,7 +32,6 @@ import {
   PenTool,
   Pipette,
   Plus,
-  Scan,
   Scissors,
   Search,
   SlidersHorizontal,
