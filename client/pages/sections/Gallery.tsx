@@ -45,9 +45,9 @@ import {
 } from "lucide-react";
 
 const gridTemplates: Record<"s" | "m" | "l", string> = {
-  s: "grid-cols-[repeat(auto-fill,minmax(120px,1fr))]",
-  m: "grid-cols-[repeat(auto-fill,minmax(180px,1fr))]",
-  l: "grid-cols-[repeat(auto-fill,minmax(240px,1fr))]",
+  s: "grid-cols-[repeat(auto-fill,minmax(150px,1fr))]",
+  m: "grid-cols-[repeat(auto-fill,minmax(200px,1fr))]",
+  l: "grid-cols-[repeat(auto-fill,minmax(260px,1fr))]",
 };
 
 const RECENT_DAYS = 30;
