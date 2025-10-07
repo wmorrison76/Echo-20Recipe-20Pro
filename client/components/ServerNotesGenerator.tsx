@@ -667,7 +667,6 @@ function prepareLucccaEntries(note: ServerNote): LucccaPreparedEntry[] {
       beverages: paddedBeverages,
       imageSrc:
         entry.recipe.imageDataUrls?.[0] ||
-        (entry.recipe as any).imageDataUrl ||
         entry.recipe.image ||
         undefined,
     } satisfies LucccaPreparedEntry;
