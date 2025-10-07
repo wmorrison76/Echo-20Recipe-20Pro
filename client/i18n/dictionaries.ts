@@ -517,6 +517,7 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "recipe.directions.spellcheck.dual": "Inglese e francese",
     "nav.recipes": "RICETTE",
     "nav.addRecipe": "AGGIUNGI RICETTA",
+    "nav.dishAssembly": "ASSEMBLAGGIO PIATTO",
     "nav.serverNotes": "NOTE DI SERVIZIO",
     "nav.production": "PRODUZIONE",
     "nav.saas": "SaaS",
