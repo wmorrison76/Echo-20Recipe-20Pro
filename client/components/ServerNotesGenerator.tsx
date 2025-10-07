@@ -1736,20 +1736,22 @@ function createLucccaBeverageTable(
   headerHex: string,
   textHex: string,
   font: string,
+  labels: { item: string; year: string; location: string; country: string },
 ): Table {
   const headerRow = new TableRow({
-    children: ["Item Name", "Year", "Location", "Country"].map((title) =>
-      new TableCell({
-        shading: { fill: headerHex, color: "FFFFFF" },
-        children: [
-          new Paragraph({
-            alignment: AlignmentType.CENTER,
-            children: [
-              new TextRun({ text: title, bold: true, color: "FFFFFF", font }),
-            ],
-          }),
-        ],
-      }),
+    children: [labels.item, labels.year, labels.location, labels.country].map(
+      (title) =>
+        new TableCell({
+          shading: { fill: headerHex, color: "FFFFFF" },
+          children: [
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                new TextRun({ text: title, bold: true, color: "FFFFFF", font }),
+              ],
+            }),
+          ],
+        }),
     ),
   });
 
@@ -1784,6 +1786,79 @@ function createLucccaBeverageTable(
     width: { size: 100, type: WidthType.PERCENTAGE },
     rows: [headerRow, ...rows],
   });
+}
+
+type ServerNotesDocStrings = {
+  titleFallback: string;
+  serviceBriefing: string;
+  distributionDate: string;
+  menuOverview: string;
+  distributionNotes: string;
+  sectionMenuDescription: string;
+  sectionServerNotes: string;
+  sectionServiceware: string;
+  sectionIngredients: string;
+  sectionPreparation: string;
+  sectionSteps: string;
+  sectionWinePairing: string;
+  sectionSellingPoints: string;
+  sectionServiceInstructions: string;
+  sectionRequiredSilverware: string;
+  sectionWine: string;
+  sectionSelling: string;
+  sectionDishComponents: string;
+  sectionAllergens: string;
+  sectionBeverages: string;
+  tableQty: string;
+  tableComponent: string;
+  tableNotes: string;
+  tableItem: string;
+  tableAllergy: string;
+  tableModify: string;
+  tableAlternative: string;
+  tableYear: string;
+  tableLocation: string;
+  tableCountry: string;
+};
+
+function getServerNotesDocStrings(language: LanguageCode): ServerNotesDocStrings {
+  const fallbackDictionary = dictionaries[defaultLanguage];
+  const dictionary = dictionaries[language] ?? fallbackDictionary;
+  const t = (key: string, fallback: string) =>
+    dictionary[key] ?? fallbackDictionary[key] ?? fallback;
+
+  return {
+    titleFallback: t("serverNotes.doc.titleFallback", "Server Notes"),
+    serviceBriefing: t("serverNotes.doc.serviceBriefing", "Service Briefing"),
+    distributionDate: t("serverNotes.doc.distributionDate", "Distribution Date"),
+    menuOverview: t("serverNotes.doc.menuOverview", "Menu Overview"),
+    distributionNotes: t("serverNotes.doc.distributionNotes", "Distribution Notes"),
+    sectionMenuDescription: t("serverNotes.doc.section.menuDescription", "Menu Description"),
+    sectionServerNotes: t("serverNotes.doc.section.serverNotes", "Server Notes"),
+    sectionServiceware: t("serverNotes.doc.section.serviceware", "Serviceware"),
+    sectionIngredients: t("serverNotes.doc.section.ingredients", "Ingredients"),
+    sectionPreparation: t("serverNotes.doc.section.preparation", "Preparation"),
+    sectionSteps: t("serverNotes.doc.section.steps", "Steps"),
+    sectionWinePairing: t("serverNotes.doc.section.winePairing", "Wine Pairing"),
+    sectionSellingPoints: t("serverNotes.doc.section.sellingPoints", "Selling Points"),
+    sectionServiceInstructions: t("serverNotes.doc.section.serviceInstructions", "Service Instructions"),
+    sectionRequiredSilverware: t("serverNotes.doc.section.requiredSilverware", "Required Silverware"),
+    sectionWine: t("serverNotes.doc.section.wine", "Wine"),
+    sectionSelling: t("serverNotes.doc.section.selling", "Selling"),
+    sectionDishComponents: t("serverNotes.doc.section.dishComponents", "Dish Components"),
+    sectionAllergens: t("serverNotes.doc.section.allergens", "Allergens"),
+    sectionBeverages: t("serverNotes.doc.section.beverages", "Wine & Beverage Pairings"),
+    tableQty: t("serverNotes.doc.table.qty", "Qty"),
+    tableComponent: t("serverNotes.doc.table.component", "Component"),
+    tableNotes: t("serverNotes.doc.table.notes", "Notes"),
+    tableItem: t("serverNotes.doc.table.item", "Item Name"),
+    tableAllergy: t("serverNotes.doc.table.allergy", "Allergy"),
+    tableModify: t("serverNotes.doc.table.modify", "Modify"),
+    tableAlternative: t("serverNotes.doc.table.alternative", "Alternative"),
+    tableYear: t("serverNotes.doc.table.year", "Year"),
+    tableLocation: t("serverNotes.doc.table.location", "Location"),
+    tableCountry: t("serverNotes.doc.table.country", "Country"),
+  };
 }
 
 async function loadImageBuffer(src?: string): Promise<Uint8Array | null> {
