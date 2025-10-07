@@ -66,6 +66,7 @@ export default function ServerNotesSection() {
   const { recipes } = useAppData();
   const { toast } = useToast();
   const { language, setLanguage, options: languageOptions } = useLanguage();
+  const { t } = useTranslation();
 
   const template = useMemo(
     () => createEmptyServerNote(layoutPresets[0]!, colorSchemes[0]!),
