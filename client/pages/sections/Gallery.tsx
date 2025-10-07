@@ -74,7 +74,6 @@ function GalleryCard({
 }: GalleryCardProps) {
   return (
     <button
-      key={id}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
       className={cn(
