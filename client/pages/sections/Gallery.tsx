@@ -870,7 +870,7 @@ export default function GallerySection() {
               <GalleryDropHint />
             </div>
 
-            <div className="relative flex-1 overflow-hidden pt-16 lg:pt-22">
+            <div className="relative flex-1 overflow-hidden pt-16 lg:pt-24">
               <GalleryGrid
                 images={filtered}
                 thumbSize={thumbSize}
