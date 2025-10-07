@@ -323,6 +323,7 @@ export default function GallerySection() {
   const [activeTool, setActiveTool] = useState<string>(CREATIVE_TOOLS[0].key);
   const [activeQuickAction, setActiveQuickAction] = useState<string | null>(null);
   const [visibleLayers, setVisibleLayers] = useState<Record<string, boolean>>({});
+  const [inspectorDropActive, setInspectorDropActive] = useState(false);
 
   const uploadInputRef = useRef<HTMLInputElement | null>(null);
 
