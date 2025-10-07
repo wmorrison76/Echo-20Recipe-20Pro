@@ -1667,6 +1667,33 @@ function LayerListItem({ layer, visible, onToggle }: LayerListItemProps) {
   );
 }
 
+type ControlSectionProps = {
+  title: string;
+  defaultOpen?: boolean;
+  children: ReactNode;
+};
+
+function ControlSection({ title, defaultOpen = false, children }: ControlSectionProps) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="rounded-3xl border border-white/12 bg-black/30 p-4">
+      <button
+        className="flex w-full items-center justify-between text-[11px] uppercase tracking-[0.35em] text-slate-200"
+        onClick={() => setOpen((prev) => !prev)}
+      >
+        <span>{title}</span>
+        <ChevronDown
+          className={cn(
+            "h-4 w-4 transition-transform",
+            open ? "rotate-0" : "-rotate-90",
+          )}
+        />
+      </button>
+      {open && <div className="mt-3 space-y-3 text-slate-100">{children}</div>}
+    </div>
+  );
+}
+
 type AutoCategoryListProps = {
   clusters: TagCluster[];
   onSelect: (tag: string) => void;
