@@ -16,6 +16,7 @@ import { GalleryLightbox } from "@/components/GalleryLightbox";
 import { LookBookShowcase } from "@/components/LookBookShowcase";
 import type { LucideIcon } from "lucide-react";
 import {
+  ChevronDown,
   Clock,
   Download,
   Droplet,
