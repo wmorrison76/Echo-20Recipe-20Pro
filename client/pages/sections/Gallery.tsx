@@ -993,9 +993,19 @@ type LibraryItemProps = {
 };
 
 function LibraryItem({ icon, label, count, active, onClick, action }: LibraryItemProps) {
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onClick();
+    }
+  };
+
   return (
-    <button
+    <div
+      role="button"
+      tabIndex={0}
       onClick={onClick}
+      onKeyDown={handleKeyDown}
       className={cn(
         "flex w-full items-center justify-between gap-3 rounded-2xl border px-3 py-2 text-left text-sm transition",
         active
@@ -1003,15 +1013,15 @@ function LibraryItem({ icon, label, count, active, onClick, action }: LibraryIte
           : "border-white/10 bg-white/5 text-slate-200 hover:border-sky-300/40 hover:bg-sky-500/10",
       )}
     >
-      <span className="flex items-center gap-2">
+      <div className="flex items-center gap-2">
         <span className="rounded-full bg-black/40 p-1">{icon}</span>
-        {label}
-      </span>
-      <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em]">
-        {count}
+        <span>{label}</span>
+      </div>
+      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em]">
+        <span>{count}</span>
         {action}
-      </span>
-    </button>
+      </div>
+    </div>
   );
 }
 
