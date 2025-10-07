@@ -891,3 +891,13 @@ async function createStandardDoc(
   });
   return Packer.toBlob(doc);
 }
+
+async function createDocx(
+  note: ServerNote,
+  language: LanguageCode = defaultLanguage,
+): Promise<Blob> {
+  if (note.layout.id === "luccca-briefing") {
+    return createLucccaDoc(note, language);
+  }
+  return createStandardDoc(note, language);
+}
