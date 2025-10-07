@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import type { Recipe } from "@shared/recipes";
 import { useAppData } from "@/context/AppDataContext";
 import { usePageToolbar } from "@/context/PageToolbarContext";
 import { Button } from "@/components/ui/button";
