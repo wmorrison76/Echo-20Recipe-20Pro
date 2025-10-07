@@ -1049,39 +1049,250 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const htmlToRecipes = (html: string, source: string): Recipe[] => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, "text/html");
-    const nodes = Array.from(doc.body.children);
 
-    const titleTags = new Set(["H1", "H2"]);
-    const sections: { title: string; elements: Element[] }[] = [];
-    let current: { title: string; elements: Element[] } | null = null;
+    const normalize = (text: string) => text.replace(/\s+/g, " ").trim();
 
-    for (const el of nodes) {
-      if (titleTags.has(el.tagName)) {
-        const title = (el.textContent || "").trim();
-        if (title) {
-          if (current) sections.push(current);
-          current = { title, elements: [] };
-          continue;
+    const createParagraph = (text: string) => {
+      const paragraph = doc.createElement("p");
+      paragraph.textContent = text;
+      return paragraph;
+    };
+
+    const headingPattern = /^H[1-6]$/;
+    const containerTags = new Set([
+      "DIV",
+      "SECTION",
+      "ARTICLE",
+      "MAIN",
+      "HEADER",
+      "FOOTER",
+      "ASIDE",
+    ]);
+    const blocks: Element[] = [];
+
+    const walk = (element: Element) => {
+      const tag = element.tagName;
+      if (
+        headingPattern.test(tag) ||
+        tag === "P" ||
+        tag === "UL" ||
+        tag === "OL" ||
+        tag === "TABLE" ||
+        tag === "DL" ||
+        tag === "BLOCKQUOTE"
+      ) {
+        blocks.push(element);
+        return;
+      }
+      if (containerTags.has(tag)) {
+        const children = Array.from(element.children);
+        if (!children.length) {
+          const text = normalize(element.textContent || "");
+          if (text) blocks.push(createParagraph(text));
+          return;
+        }
+        for (const child of children) walk(child);
+        return;
+      }
+      if (tag === "BR" || tag === "HR") {
+        blocks.push(element);
+        return;
+      }
+      const text = normalize(element.textContent || "");
+      if (!text) return;
+      if (
+        tag === "SPAN" ||
+        tag === "FONT" ||
+        tag === "EM" ||
+        tag === "STRONG" ||
+        tag === "B" ||
+        tag === "I"
+      ) {
+        blocks.push(createParagraph(text));
+      } else {
+        blocks.push(element);
+      }
+    };
+
+    Array.from(doc.body.children).forEach(walk);
+    if (!blocks.length) {
+      blocks.push(...Array.from(doc.body.children));
+    }
+
+    const computeUppercaseRatio = (text: string) => {
+      const letters = text.replace(/[^A-Za-z]/g, "");
+      if (!letters.length) return 0;
+      const uppercase = text.replace(/[^A-Z]/g, "");
+      return uppercase.length / letters.length;
+    };
+
+    const hasSignificantBold = (element: Element) => {
+      const total = normalize(element.textContent || "").replace(/\s/g, "").length;
+      if (!total) return false;
+      const boldNodes = Array.from(element.querySelectorAll("strong, b"));
+      if (!boldNodes.length) return false;
+      const boldLength = boldNodes
+        .map((node) => normalize(node.textContent || "").replace(/\s/g, "").length)
+        .reduce((acc, len) => acc + len, 0);
+      return boldLength >= total * 0.6;
+    };
+
+    const titleStopwords = [
+      "ingredient",
+      "ingredients",
+      "instructions",
+      "instruction",
+      "method",
+      "methods",
+      "directions",
+      "direction",
+      "procedure",
+      "procedures",
+      "component",
+      "components",
+      "mise en place",
+      "mise-en-place",
+      "garnish",
+      "garnishes",
+      "allergens",
+      "allergen",
+      "menu description",
+      "menu descriptions",
+      "beverage pairing",
+      "beverage pairings",
+      "pairing",
+      "pairings",
+      "notes",
+      "chef notes",
+      "production notes",
+      "prep",
+      "prep list",
+      "prep time",
+      "cook time",
+      "total time",
+      "bake time",
+      "yield",
+      "yields",
+      "serves",
+      "makes",
+      "portion",
+      "portions",
+      "storage",
+      "equipment",
+      "tools",
+      "assembly",
+      "service",
+      "finish",
+      "finishing",
+      "allergy",
+      "allergies",
+    ];
+
+    const isStopwordTitle = (text: string) => {
+      const lower = text.toLowerCase();
+      return titleStopwords.some((word) => {
+        if (word.includes(" ")) return lower.includes(word);
+        return lower === word || lower.startsWith(`${word}:`);
+      });
+    };
+
+    const isLikelyTitleText = (text: string) => {
+      const norm = normalize(text);
+      if (!norm) return false;
+      if (norm.length > 140) return false;
+      if (isStopwordTitle(norm)) return false;
+      if (/^\d+(?:\.\d+)*$/.test(norm)) return false;
+      const words = norm.split(/\s+/);
+      if (words.length === 1 && words[0].length <= 2) return false;
+      if (words.length > 20) return false;
+      const uppercaseRatio = computeUppercaseRatio(norm);
+      const hasTitleCaseWords =
+        words.filter((w) => /^[A-Z][a-z]{2,}/.test(w)).length >= Math.min(words.length, 2);
+      const hasAllCaps = uppercaseRatio >= 0.6 && words.some((w) => w.length > 3);
+      if (hasAllCaps) return true;
+      if (hasTitleCaseWords && norm.length <= 80) return true;
+      if (uppercaseRatio >= 0.45 && norm.length <= 60 && words.length >= 2) return true;
+      return false;
+    };
+
+    type Section = { title: string; elements: Element[] };
+    const sections: Section[] = [];
+    const baseName = source.replace(/\.[^.]+$/, "");
+    let current: Section | null = null;
+
+    const ensureSection = (title: string) => {
+      if (current) sections.push(current);
+      current = { title, elements: [] };
+    };
+
+    const createCarryParagraphs = (lines: string[]) => {
+      const text = lines.join(" ").trim();
+      if (!text) return [];
+      return [createParagraph(text)];
+    };
+
+    for (let i = 0; i < blocks.length; i++) {
+      const el = blocks[i];
+      const tag = el.tagName;
+      const text = normalize(el.textContent || "");
+      if (!text) continue;
+
+      let detectedTitle: { title: string; carry?: Element[] } | null = null;
+
+      if (/^H[1-4]$/.test(tag)) {
+        if (isLikelyTitleText(text)) detectedTitle = { title: text };
+      } else if (tag === "P" || tag === "BLOCKQUOTE" || tag === "SPAN" || tag === "DIV") {
+        const lines = (el.textContent || "")
+          .split(/\r?\n+/)
+          .map((line) => normalize(line))
+          .filter(Boolean);
+        if (lines.length) {
+          const candidate = lines[0];
+          if (isLikelyTitleText(candidate)) {
+            const uppercaseRatio = computeUppercaseRatio(candidate);
+            const bold = hasSignificantBold(el);
+            const contextHasKeyword = blocks
+              .slice(i + 1, i + 4)
+              .some((next) => {
+                const t = normalize(next.textContent || "").toLowerCase();
+                return /ingredient|instruction|direction|method|component|mise en place|yield|menu description|beverage|allergen/.test(
+                  t,
+                );
+              });
+            if (
+              bold ||
+              uppercaseRatio >= 0.5 ||
+              (contextHasKeyword && (uppercaseRatio >= 0.35 || candidate.split(/\s+/).length >= 2))
+            ) {
+              const carry = createCarryParagraphs(lines.slice(1));
+              detectedTitle = { title: candidate, carry };
+            }
+          }
         }
       }
-      if (current) current.elements.push(el);
-    }
-    if (current) sections.push(current);
 
-    const baseName = source.replace(/\.[^.]+$/, "");
+      if (detectedTitle) {
+        ensureSection(detectedTitle.title);
+        if (detectedTitle.carry?.length) {
+          current?.elements.push(...detectedTitle.carry);
+        }
+        continue;
+      }
+
+      if (!current) ensureSection(baseName || "Untitled");
+      current.elements.push(el);
+    }
+
+    if (current) sections.push(current);
     if (!sections.length) {
-      const title =
-        (
-          doc.querySelector("h1,h2,h3")?.textContent ||
-          baseName ||
-          "Untitled"
-        ).trim() || "Untitled";
-      sections.push({ title, elements: Array.from(doc.body.children) });
+      const fallbackTitle =
+        (doc.querySelector("h1,h2,h3,h4")?.textContent || baseName || "Untitled").trim() ||
+        "Untitled";
+      sections.push({ title: fallbackTitle, elements: Array.from(doc.body.children) });
     } else {
-      // Normalize empty or generic titles
-      for (const s of sections) {
-        const t = (s.title || "").trim();
-        if (!t || /^untitled$/i.test(t)) s.title = baseName || "Untitled";
+      for (const section of sections) {
+        const normTitle = normalize(section.title);
+        section.title = normTitle && !/^untitled$/i.test(normTitle) ? normTitle : baseName || "Untitled";
       }
     }
 
@@ -1128,7 +1339,6 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       let ingredients = ingIdx >= 0 ? extractListAfter(ingIdx, els) : [];
       let instructions = instIdx >= 0 ? extractListAfter(instIdx, els) : [];
 
-      // Fallbacks: detect ingredients by quantity patterns; detect numbered steps
       if (!ingredients.length) {
         ingredients = texts.filter((t) => qtyRe.test(t.trim()));
       }
@@ -1146,7 +1356,6 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         instructions = texts.slice(start, start + 20).filter(Boolean);
       }
 
-      // Repair: move quantity-like lines from instructions back to ingredients
       if (instructions.length) {
         const rest: string[] = [];
         for (const line of instructions) {
@@ -1160,7 +1369,6 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         instructions = rest;
       }
 
-      // Deduplicate and tidy
       const uniq = (arr: string[]) =>
         Array.from(new Set(arr.map((s) => s.replace(/\s+/g, " ").trim())));
       ingredients = uniq(ingredients).filter(Boolean);
