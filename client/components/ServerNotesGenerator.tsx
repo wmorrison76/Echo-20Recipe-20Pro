@@ -1004,9 +1004,10 @@ async function createStandardDoc(
     );
   }
 
+  const fallbackTitle = note.title?.trim() || docStrings.titleFallback;
   headerChildren.push(
     new Paragraph({
-      text: note.title || "Server Notes",
+      text: fallbackTitle,
       heading: HeadingLevel.HEADING_1,
       alignment: AlignmentType.CENTER,
       children: [new TextRun({ font })],
@@ -1014,7 +1015,7 @@ async function createStandardDoc(
   );
   headerChildren.push(
     paragraph(
-      `Distribution Date: ${new Date(note.distributionDate).toLocaleDateString()}`,
+      `${docStrings.distributionDate}: ${new Date(note.distributionDate).toLocaleDateString(language)}`,
       {
         align: AlignmentType.CENTER,
         color: note.colorScheme.secondary,
