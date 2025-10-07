@@ -70,6 +70,13 @@ const navItems: NavItemConfig[] = [
     shortcut: { key: "Digit2", display: "2" },
   },
   {
+    to: "/?tab=dish-assembly",
+    labelKey: "nav.dishAssembly",
+    fallback: "DISH ASSEMBLY",
+    icon: UtensilsCrossed,
+    shortcut: { key: "KeyD", display: "D" },
+  },
+  {
     to: "/?tab=server-notes",
     labelKey: "nav.serverNotes",
     fallback: "SERVER NOTES",
