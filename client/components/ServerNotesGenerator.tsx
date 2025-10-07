@@ -513,7 +513,7 @@ function createDocumentHtml(
 </html>`;
 }
 
-async function createDocx(
+async function createStandardDoc(
   note: ServerNote,
   language: LanguageCode = defaultLanguage,
 ): Promise<Blob> {
