@@ -15,6 +15,7 @@ import {
 import { GalleryLightbox } from "@/components/GalleryLightbox";
 import { LookBookShowcase } from "@/components/LookBookShowcase";
 import { GalleryOverlay } from "@/components/gallery/GalleryOverlay";
+import { GalleryTileBoards } from "@/components/gallery/GalleryTileBoards";
 import type { LucideIcon } from "lucide-react";
 import {
   ChevronDown,
