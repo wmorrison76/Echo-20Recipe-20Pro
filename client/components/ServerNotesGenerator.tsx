@@ -117,6 +117,22 @@ export function ServerNotesGenerator({
     win.print();
   };
 
+  const openDocumentEditor = () => {
+    if (!generatedDocument) {
+      toast({
+        title: "Generate document first",
+        description: "Build the document before opening the editor.",
+        variant: "destructive",
+      });
+      return;
+    }
+    const win = window.open("", "_blank");
+    if (!win) return;
+    win.document.write(generatedDocument);
+    win.document.close();
+    win.focus();
+  };
+
   const downloadDocument = () => {
     if (!generatedDocxUrl) {
       toast({
