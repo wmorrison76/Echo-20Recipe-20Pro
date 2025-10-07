@@ -1386,7 +1386,7 @@ async function createLucccaDoc(
       spacing: { after: 320 },
       children: [
         new TextRun({
-          text: `Distribution Date: ${new Date(note.distributionDate).toLocaleDateString()}`,
+          text: `${docStrings.distributionDate}: ${formattedDistributionDate}`,
           color: secondaryHex,
           font,
         }),
