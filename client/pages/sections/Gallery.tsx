@@ -1112,6 +1112,17 @@ export default function GallerySection() {
                 </div>
               </ControlSection>
 
+              <div className="flex justify-end">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="rounded-full px-4"
+                  onClick={() => setOverlayOpen(true)}
+                >
+                  Launch studio overlay
+                </Button>
+              </div>
+
               <ControlSection title="Creative tools">
                 <div className="grid grid-cols-2 gap-2">
                   {CREATIVE_TOOLS.map((tool) => (
