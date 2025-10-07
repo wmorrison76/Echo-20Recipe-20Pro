@@ -333,6 +333,7 @@ export default function GallerySection() {
   const [activeQuickAction, setActiveQuickAction] = useState<string | null>(null);
   const [visibleLayers, setVisibleLayers] = useState<Record<string, boolean>>({});
   const [inspectorDropActive, setInspectorDropActive] = useState(false);
+  const [overlayOpen, setOverlayOpen] = useState(false);
 
   const uploadInputRef = useRef<HTMLInputElement | null>(null);
 
