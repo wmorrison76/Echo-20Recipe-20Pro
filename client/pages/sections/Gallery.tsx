@@ -528,7 +528,7 @@ export default function GallerySection() {
     }));
   };
 
-  const handleQuickAction = (action: QuickActionConfig) => {
+  const handleQuickAction = (action: QuickActionConfig | { key: string; label: string }) => {
     setActiveQuickAction(action.key);
     setStatus(`${action.label} staged. Fine tune with creative tools.`);
   };
