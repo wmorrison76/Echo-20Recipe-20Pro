@@ -1176,7 +1176,12 @@ export default function GallerySection() {
                   </Button>
                   <button
                     className="text-[11px] uppercase tracking-[0.35em] text-slate-400 transition hover:text-slate-200"
-                    onClick={() => setStatus("Metadata changes reset.")}
+                    onClick={() => {
+                      if (!activeImage) return;
+                      setNameDraft(activeImage.name);
+                      setTagDraft((activeImage.tags || []).join(", "));
+                      setStatus("Metadata fields reverted.");
+                    }}
                   >
                     Reset fields
                   </button>
