@@ -649,7 +649,7 @@ export default function GallerySection() {
         <Dropzone
           multiple
           onFiles={handleFiles}
-          className={cn("flex min-h-[620px] flex-col gap-4 rounded-[32px] border bg-black/15 p-5", mainSurface)}
+          className={cn("flex h-full flex-col gap-4 overflow-hidden rounded-[32px] border bg-black/15 p-5", mainSurface)}
         >
           <div className="flex flex-wrap items-center gap-3">
             <div className="relative min-w-[220px] flex-1">
