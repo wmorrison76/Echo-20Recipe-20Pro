@@ -186,6 +186,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [lookbooks, setLookbooks] = useState<LookBook[]>([]);
+  const [tileBoards, setTileBoards] = useState<TileBoard[]>([]);
   const [collections, setCollections] = useState<RecipeCollection[]>([]);
   const mountedRef = useRef(true);
   useEffect(() => {
@@ -199,6 +200,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     setRecipes(storedRecipes.length ? storedRecipes : mockRecipes);
     setImages(readLS<GalleryImage[]>(LS_IMAGES, []));
     setLookbooks(readLS<LookBook[]>(LS_LOOKBOOKS, []));
+    setTileBoards(readLS<TileBoard[]>(LS_TILE_BOARDS, []));
     setCollections(readLS<RecipeCollection[]>(LS_COLLECTIONS, []));
   }, []);
 
@@ -257,6 +259,10 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     writeLS(LS_LOOKBOOKS, lookbooks);
   }, [lookbooks]);
+
+  useEffect(() => {
+    writeLS(LS_TILE_BOARDS, tileBoards);
+  }, [tileBoards]);
 
   useEffect(() => {
     writeLS(LS_COLLECTIONS, collections);
