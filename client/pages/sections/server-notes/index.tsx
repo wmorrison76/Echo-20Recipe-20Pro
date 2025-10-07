@@ -408,7 +408,7 @@ export default function ServerNotesSection() {
                     >
                       {`${t("serverNotes.steps.step")} 2`}
                     </Badge>
-                    <CardTitle className="text-sm font-semibold">Recipe Selection</CardTitle>
+                    <CardTitle className="text-sm font-semibold">{t("serverNotes.panels.recipes")}</CardTitle>
                   </div>
                 </div>
               </CardHeader>
