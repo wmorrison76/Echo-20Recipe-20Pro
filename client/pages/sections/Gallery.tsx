@@ -260,7 +260,7 @@ function GalleryCard({
                 onDelete();
               }
             }}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur transition hover:bg-red-600/80 focus:outline-none focus:ring-2 focus:ring-red-400/70"
+            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-black/70 text-white backdrop-blur transition hover:bg-red-600/80 focus:outline-none focus:ring-2 focus:ring-red-400/70"
             aria-label="Delete"
           >
             <Trash2 className="h-4 w-4" />
