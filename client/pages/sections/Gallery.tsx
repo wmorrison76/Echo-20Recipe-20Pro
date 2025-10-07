@@ -109,6 +109,78 @@ type TagCluster = {
   freshnessLabel: string;
 };
 
+type ToolConfig = {
+  key: string;
+  label: string;
+  icon: LucideIcon;
+};
+
+type QuickActionConfig = {
+  key: string;
+  label: string;
+  description: string;
+  icon: LucideIcon;
+};
+
+type LayerInfo = {
+  key: string;
+  name: string;
+  meta: string;
+  locked?: boolean;
+};
+
+const CREATIVE_TOOLS: ToolConfig[] = [
+  { key: "select", label: "Select", icon: Move },
+  { key: "lasso", label: "Lasso", icon: LassoSelect },
+  { key: "brush", label: "Brush", icon: Paintbrush },
+  { key: "pen", label: "Pen", icon: PenTool },
+  { key: "smudge", label: "Smudge", icon: Droplet },
+  { key: "stamp", label: "Stamp", icon: Stamp },
+  { key: "picker", label: "Color pick", icon: Pipette },
+  { key: "erase", label: "Erase", icon: Eraser },
+  { key: "cut", label: "Cut", icon: Scissors },
+  { key: "magic", label: "Magic", icon: Wand2 },
+];
+
+const QUICK_ACTIONS: QuickActionConfig[] = [
+  {
+    key: "remove-bg",
+    label: "Remove background",
+    description: "Isolate subject automatically",
+    icon: Sparkles,
+  },
+  {
+    key: "resize",
+    label: "Resize & crop",
+    description: "Canvas, ratio and framing",
+    icon: Move,
+  },
+  {
+    key: "color",
+    label: "Color grade",
+    description: "Balance warmth and tone",
+    icon: Droplet,
+  },
+  {
+    key: "layers",
+    label: "Merge layers",
+    description: "Combine selected elements",
+    icon: Layers,
+  },
+  {
+    key: "heal",
+    label: "Repair details",
+    description: "Smudge & clone stamping",
+    icon: Stamp,
+  },
+  {
+    key: "composite",
+    label: "Add overlay",
+    description: "Blend another photo",
+    icon: Folder,
+  },
+];
+
 function GalleryCard({
   id,
   name,
