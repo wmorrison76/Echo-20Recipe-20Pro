@@ -274,7 +274,12 @@ export default function GallerySection() {
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
                 placeholder="Search or filter by tag"
-                className="w-full rounded-full border border-transparent bg-white/80 pl-9 pr-3 py-2 text-sm shadow-inner focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-200"
+                className={cn(
+                  "w-full rounded-full border border-transparent pl-9 pr-3 py-2 text-sm shadow-inner focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-200",
+                  lucccaMode
+                    ? "bg-slate-900/70 text-slate-100 placeholder:text-slate-400"
+                    : "bg-white/80",
+                )}
               />
             </div>
             <input
@@ -307,7 +312,10 @@ export default function GallerySection() {
               Link to recipes
             </Button>
             <select
-              className="rounded-full border border-transparent bg-white/80 px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none"
+              className={cn(
+                "rounded-full border border-transparent px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none",
+                lucccaMode ? "bg-slate-900/70 text-slate-100" : "bg-white/80",
+              )}
               value={sort}
               onChange={(e) => setSort(e.target.value as any)}
               title="Sort"
@@ -318,7 +326,10 @@ export default function GallerySection() {
               <option value="rated">Rated</option>
             </select>
             <select
-              className="rounded-full border border-transparent bg-white/80 px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none"
+              className={cn(
+                "rounded-full border border-transparent px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none",
+                lucccaMode ? "bg-slate-900/70 text-slate-100" : "bg-white/80",
+              )}
               value={viewMode}
               onChange={(e) => setViewMode(e.target.value as any)}
               title="Layout"
@@ -327,7 +338,10 @@ export default function GallerySection() {
               <option value="grid">Grid</option>
             </select>
             <select
-              className="rounded-full border border-transparent bg-white/80 px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none"
+              className={cn(
+                "rounded-full border border-transparent px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none",
+                lucccaMode ? "bg-slate-900/70 text-slate-100" : "bg-white/80",
+              )}
               value={thumbSize}
               onChange={(e) => setThumbSize(e.target.value as any)}
               title="Thumbnail size"
@@ -336,7 +350,12 @@ export default function GallerySection() {
               <option value="m">Medium</option>
               <option value="l">Large</option>
             </select>
-            <label className="ml-1 mr-2 flex items-center gap-2 rounded-full border border-transparent bg-white/60 px-3 py-2 text-xs shadow-inner">
+            <label
+              className={cn(
+                "ml-1 mr-2 flex items-center gap-2 rounded-full border border-transparent px-3 py-2 text-xs shadow-inner",
+                lucccaMode ? "bg-slate-900/70" : "bg-white/60",
+              )}
+            >
               <input
                 type="checkbox"
                 checked={lucccaMode}
@@ -345,7 +364,10 @@ export default function GallerySection() {
               LUCCCA
             </label>
             <select
-              className="rounded-full border border-transparent bg-white/80 px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none"
+              className={cn(
+                "rounded-full border border-transparent px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none",
+                lucccaMode ? "bg-slate-900/70 text-slate-100" : "bg-white/80",
+              )}
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
@@ -360,12 +382,20 @@ export default function GallerySection() {
             </select>
           </div>
           {selected.length > 0 && (
-            <div className="flex items-center gap-2 rounded-2xl border border-white/40 bg-white/60 px-3 py-2 text-xs shadow-inner">
+            <div
+              className={cn(
+                "flex items-center gap-2 rounded-2xl border px-3 py-2 text-xs shadow-inner",
+                lucccaMode ? "border-white/10 bg-slate-900/70" : "border-white/40 bg-white/60",
+              )}
+            >
               <span className="opacity-70">{selected.length} selected</span>
               <input
                 id="bulk-tags"
                 placeholder="add tags (comma)"
-                className="flex-1 rounded-full border border-transparent bg-white/90 px-3 py-1 text-xs shadow-inner focus:border-sky-300 focus:outline-none"
+                className={cn(
+                  "flex-1 rounded-full border border-transparent px-3 py-1 text-xs shadow-inner focus:border-sky-300 focus:outline-none",
+                  lucccaMode ? "bg-slate-900/60 text-slate-100" : "bg-white/90",
+                )}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     addTagsToSelected((e.target as HTMLInputElement).value);
