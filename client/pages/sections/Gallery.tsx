@@ -649,7 +649,7 @@ export default function GallerySection() {
         <Dropzone
           multiple
           onFiles={handleFiles}
-          className={cn("flex flex-col gap-5 rounded-[32px] border p-6", mainSurface)}
+          className={cn("flex min-h-[620px] flex-col gap-4 rounded-[32px] border bg-black/15 p-5", mainSurface)}
         >
           <div className="flex flex-wrap items-center gap-3">
             <div className="relative min-w-[220px] flex-1">
@@ -658,11 +658,11 @@ export default function GallerySection() {
                 value={filter}
                 onChange={(event) => setFilter(event.target.value)}
                 placeholder="Search by name or tag"
-                className="w-full rounded-full border border-transparent bg-black/10 pl-9 pr-3 py-2 text-sm text-slate-100 placeholder:text-slate-400 focus:border-sky-400 focus:outline-none"
+                className="w-full rounded-full border border-transparent bg-black/15 pl-9 pr-3 py-2 text-sm text-slate-100 placeholder:text-slate-400 focus:border-sky-400 focus:outline-none"
               />
             </div>
             <div className="flex items-center gap-2 text-xs">
-              <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/20 px-3 py-1.5">
+              <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/25 px-3 py-1.5">
                 <SlidersHorizontal className="h-3.5 w-3.5" />
                 <select
                   value={sort}
@@ -675,7 +675,7 @@ export default function GallerySection() {
                   <option value="name">Name</option>
                 </select>
               </div>
-              <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/20 px-3 py-1.5">
+              <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/25 px-3 py-1.5">
                 <LayoutGrid className="h-3.5 w-3.5" />
                 <select
                   value={thumbSize}
@@ -740,7 +740,7 @@ export default function GallerySection() {
                   }
                 }}
                 placeholder="Add tags (comma separated)"
-                className="flex-1 rounded-full border border-transparent bg-black/10 px-3 py-1 text-xs focus:border-sky-400 focus:outline-none"
+                className="flex-1 rounded-full border border-transparent bg-black/15 px-3 py-1 text-xs focus:border-sky-400 focus:outline-none"
               />
               <Button size="sm" className="rounded-full px-4" onClick={handleBulkTagSubmit}>
                 Apply tags
@@ -756,43 +756,42 @@ export default function GallerySection() {
             </div>
           )}
 
-          <div className={cn("rounded-[28px] border bg-black/10 p-6", subtleSurface)}>
-            <div className="flex flex-col items-center justify-center gap-3 text-center text-sm text-slate-200">
-              <UploadCloud className="h-10 w-10 opacity-70" />
-              <div className="text-base font-semibold">Drag files anywhere in this panel</div>
-              <p className="max-w-xl text-xs uppercase tracking-[0.3em] opacity-70">
-                Supported RAW · HEIC · JPG · PNG
-              </p>
+          <div className="flex items-center justify-between rounded-2xl border border-dashed border-white/20 bg-black/20 px-4 py-2 text-xs text-slate-200">
+            <div className="flex items-center gap-2">
+              <UploadCloud className="h-4 w-4 opacity-70" />
+              <span>Drop files anywhere inside this workspace to import.</span>
             </div>
+            <span className="hidden text-[10px] uppercase tracking-[0.3em] opacity-60 sm:block">
+              RAW · HEIC · JPG �� PNG
+            </span>
           </div>
 
-          <div className="flex-1 overflow-hidden rounded-[28px] border bg-black/10 p-4">
+          <div className="relative flex-1 overflow-hidden rounded-[28px] border border-white/10 bg-black/20">
             {filtered.length > 0 ? (
-              <div
-                className={cn(
-                  "grid gap-4",
-                  gridTemplates[thumbSize],
-                )}
-                data-echo-key="section:gallery:grid"
-              >
-                {filtered.map((image) => (
-                  <GalleryCard
-                    key={image.id}
-                    id={image.id}
-                    name={image.name}
-                    src={image.dataUrl || image.blobUrl}
-                    tags={image.tags || []}
-                    favorite={image.favorite}
-                    unsupported={image.unsupported}
-                    active={activeId === image.id}
-                    selected={selectedIds.includes(image.id)}
-                    thumbSize={thumbSize}
-                    onClick={(event) => handleSelectCard(event, image.id)}
-                    onDoubleClick={() => handleOpenLightbox(image.id)}
-                    onToggleFavorite={() => handleToggleFavorite(image.id)}
-                    onDelete={() => handleDeleteImage(image.id)}
-                  />
-                ))}
+              <div className="h-full overflow-y-auto p-4">
+                <div
+                  className={cn("grid gap-4", gridTemplates[thumbSize])}
+                  data-echo-key="section:gallery:grid"
+                >
+                  {filtered.map((image) => (
+                    <GalleryCard
+                      key={image.id}
+                      id={image.id}
+                      name={image.name}
+                      src={image.dataUrl || image.blobUrl}
+                      tags={image.tags || []}
+                      favorite={image.favorite}
+                      unsupported={image.unsupported}
+                      active={activeId === image.id}
+                      selected={selectedIds.includes(image.id)}
+                      thumbSize={thumbSize}
+                      onClick={(event) => handleSelectCard(event, image.id)}
+                      onDoubleClick={() => handleOpenLightbox(image.id)}
+                      onToggleFavorite={() => handleToggleFavorite(image.id)}
+                      onDelete={() => handleDeleteImage(image.id)}
+                    />
+                  ))}
+                </div>
               </div>
             ) : (
               <div className="flex h-full flex-col items-center justify-center gap-4 text-sm text-slate-200">
