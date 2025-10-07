@@ -385,7 +385,7 @@ export default function GallerySection() {
               ref={(el) => ((window as any).__gallery_upload_input = el)}
             />
             <Button
-              onClick={() => (window as any).__gallery_upload_input?.click()}
+              onClick={handleUploadClick}
               variant="default"
               data-echo-key="cta:gallery:upload"
               className="rounded-full px-4"
