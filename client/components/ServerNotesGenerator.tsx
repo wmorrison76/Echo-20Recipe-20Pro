@@ -1208,7 +1208,7 @@ async function createStandardDoc(
         }
 
         if (item.wineSelection) {
-          cells.push(heading("Wine", HeadingLevel.HEADING_3));
+          cells.push(heading(docStrings.sectionWine, HeadingLevel.HEADING_3));
           cells.push(paragraph(item.wineSelection));
         }
 
