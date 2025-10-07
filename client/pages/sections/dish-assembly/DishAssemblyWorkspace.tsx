@@ -136,6 +136,7 @@ const DishAssemblyWorkspace: React.FC = () => {
         rows.map((row) => (row.id === rowId ? { ...row, ...patch } : row)),
       );
     },
+    [],
   );
 
   const handleAssignRecipe = useCallback(
