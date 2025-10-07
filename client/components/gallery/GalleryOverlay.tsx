@@ -121,6 +121,7 @@ export function GalleryOverlay({
 }: GalleryOverlayProps) {
   const [zoom, setZoom] = useState(100);
   const [gridSize, setGridSize] = useState(32);
+  const [showRulers, setShowRulers] = useState(true);
 
   const layerMeta = useMemo(
     () =>
