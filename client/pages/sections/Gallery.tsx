@@ -114,14 +114,11 @@ function GalleryCard({
         )}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/45 opacity-0 transition group-hover:opacity-100" />
         <div className="absolute left-3 top-3 z-20 flex items-center gap-2">
-          <span
-            className={cn(
-              "rounded-full border border-white/40 bg-black/50 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur",
-              selected && "bg-sky-500/80",
-            )}
-          >
-            {selected ? "Selected" : ""}
-          </span>
+          {selected && (
+            <span className="rounded-full border border-white/40 bg-sky-500/80 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur">
+              Selected
+            </span>
+          )}
           {active && !selected && (
             <span className="rounded-full bg-sky-500/80 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur">
               Active
