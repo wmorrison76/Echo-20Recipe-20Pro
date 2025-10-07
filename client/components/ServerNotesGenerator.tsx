@@ -1399,7 +1399,7 @@ async function createLucccaDoc(
       spacing: { after: 120 },
       children: [
         new TextRun({
-          text: "Menu Overview",
+          text: docStrings.menuOverview,
           bold: true,
           size: 32,
           color: primaryHex,
