@@ -1325,6 +1325,9 @@ async function createLucccaDoc(
   const sections: ISectionOptions[] = [];
 
   const coverChildren: Paragraph[] = [];
+  const formattedDistributionDate = new Date(note.distributionDate).toLocaleDateString(
+    language,
+  );
 
   if (note.companyName) {
     coverChildren.push(
