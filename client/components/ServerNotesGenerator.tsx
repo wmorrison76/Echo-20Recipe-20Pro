@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { RecipeExport, IngredientRow } from "@shared/recipes";
 import type { ServerNote, ServerNoteRecipe } from "@shared/server-notes";
 import { defaultLanguage, type LanguageCode } from "@/i18n/config";
+import { dictionaries } from "@/i18n/dictionaries";
 import { resolveMenuName, resolveMenuPrice } from "@/lib/menu-metadata";
 import {
   AlignmentType,
