@@ -347,7 +347,7 @@ export default function ServerNotesSection() {
                 const Icon = step.icon;
                 return (
                   <div
-                    key={step.title}
+                    key={step.titleKey}
                     className="flex items-start gap-2.5 rounded-2xl border border-white/60 bg-white/70 p-3 shadow-sm backdrop-blur-sm transition-colors dark:border-cyan-500/30 dark:bg-slate-950/60"
                   >
                     <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-white/80 bg-white text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-sm dark:border-cyan-500/40 dark:bg-slate-900 dark:text-cyan-200">
@@ -534,7 +534,7 @@ export default function ServerNotesSection() {
                         <strong>{t("serverNotes.saved.labels.layout")}</strong> {note.layout.name}
                       </div>
                       <div>
-                        <strong>Updated:</strong>{" "}
+                        <strong>{t("serverNotes.saved.labels.updated")}</strong>{" "}
                         {new Date(note.updatedAt).toLocaleDateString()}
                       </div>
                     </div>
@@ -544,7 +544,7 @@ export default function ServerNotesSection() {
                         className="flex-1"
                         onClick={() => loadSavedNote(note)}
                       >
-                        Load & Edit
+                        {t("serverNotes.saved.actions.loadEdit")}
                       </Button>
                       {note.docxDataUrl && (
                         <Button
@@ -559,7 +559,7 @@ export default function ServerNotesSection() {
                             document.body.removeChild(link);
                           }}
                         >
-                          Download
+                          {t("serverNotes.saved.actions.download")}
                         </Button>
                       )}
                       <Button
@@ -568,7 +568,7 @@ export default function ServerNotesSection() {
                         onClick={() => deleteNote(note.id)}
                         className="text-red-600"
                       >
-                        Delete
+                        {t("serverNotes.saved.actions.delete")}
                       </Button>
                     </div>
                   </CardContent>
@@ -576,8 +576,7 @@ export default function ServerNotesSection() {
               ))}
               {savedNotes.length === 0 && (
                 <div className="col-span-full rounded-3xl border border-dashed border-white/70 bg-white/40 py-12 text-center text-sm text-muted-foreground shadow-inner backdrop-blur-sm dark:border-cyan-500/25 dark:bg-slate-950/40">
-                  No saved documents yet. Generate and save a briefing to build
-                  your library.
+                  {t("serverNotes.saved.empty")}
                 </div>
               )}
             </div>
