@@ -14,9 +14,17 @@ import {
   Wine,
   Utensils,
 } from "lucide-react";
-import { currencySymbol, type Recipe } from "@shared/recipes";
+import type { Recipe } from "@shared/recipes";
 import type { ServerNoteRecipe } from "@shared/server-notes";
 import { silverwareOptions } from "@shared/server-notes";
+import {
+  MENU_CATEGORIES,
+  type MenuCategoryKey,
+  getCategoryLabel,
+  resolveMenuCategoryKey,
+  resolveMenuName,
+  resolveMenuPrice,
+} from "@/lib/menu-metadata";
 
 export type RecipeSelectionProps = {
   availableRecipes: Recipe[];
