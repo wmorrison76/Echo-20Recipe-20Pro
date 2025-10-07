@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { GalleryLightbox } from "@/components/GalleryLightbox";
 import { LookBookShowcase } from "@/components/LookBookShowcase";
+import { GalleryOverlay } from "@/components/gallery/GalleryOverlay";
 import type { LucideIcon } from "lucide-react";
 import {
   ChevronDown,
