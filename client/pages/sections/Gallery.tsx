@@ -357,7 +357,7 @@ export default function GallerySection() {
     uploadInputRef.current?.click();
   };
 
-  const handleSelectCard = (event: React.MouseEvent<HTMLButtonElement>, id: string) => {
+  const handleSelectCard = (event: MouseEvent<HTMLButtonElement>, id: string) => {
     const multi = event.metaKey || event.ctrlKey;
     setActiveId(id);
     if (multi) {
