@@ -440,7 +440,7 @@ export default function ServerNotesSection() {
               <CardContent className="flex flex-1 flex-col space-y-3.5 px-4 pb-4 pt-3">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
-                    <span>Language</span>
+                    <span>{t("serverNotes.preview.languageLabel")}</span>
                     <Select
                       value={language}
                       onValueChange={(value) => setLanguage(value as LanguageCode)}
