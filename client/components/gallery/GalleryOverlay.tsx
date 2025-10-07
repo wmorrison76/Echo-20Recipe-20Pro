@@ -255,12 +255,17 @@ export function GalleryOverlay({
             <div className="relative flex-1 overflow-auto">
               {showRulers && (
                 <>
-                  <div className="pointer-events-none sticky top-0 z-20 h-8 w-full bg-[repeating-linear-gradient(to_right,rgba(148,163,184,0.45),rgba(148,163,184,0.45)_1px,transparent_1px,transparent_24px)] opacity-70" />
-                  <div className="pointer-events-none absolute bottom-0 top-0 left-0 z-10 w-8 bg-[repeating-linear-gradient(to_bottom,rgba(148,163,184,0.45),rgba(148,163,184,0.45)_1px,transparent_1px,transparent_24px)] opacity-70" />
+                  <div className="pointer-events-none absolute left-0 right-0 top-0 z-20 h-8 bg-[repeating-linear-gradient(to_right,rgba(148,163,184,0.45),rgba(148,163,184,0.45)_1px,transparent_1px,transparent_24px)] opacity-70" />
+                  <div className="pointer-events-none absolute bottom-0 top-0 left-0 z-20 w-8 bg-[repeating-linear-gradient(to_bottom,rgba(148,163,184,0.45),rgba(148,163,184,0.45)_1px,transparent_1px,transparent_24px)] opacity-70" />
                 </>
               )}
               <div className="relative h-full w-full">
-                <div className="absolute inset-0 flex items-center justify-center p-10">
+                <div
+                  className={cn(
+                    "absolute inset-0 flex items-center justify-center",
+                    showRulers ? "pl-16 pt-16 pr-10 pb-10" : "p-10",
+                  )}
+                >
                   <div
                     className="relative flex h-full w-full min-h-[520px] min-w-[520px] items-center justify-center rounded-[32px]"
                     style={{
