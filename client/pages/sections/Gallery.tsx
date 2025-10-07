@@ -599,26 +599,24 @@ export default function GallerySection() {
               </div>
               <div className="flex items-center gap-2">
                 <input
-                  value={tagDraftForLookbookName(activeLookBookId, lookbooks)}
+                  value={lookbookNameDraft}
                   placeholder="Name"
                   className="flex-1 rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-sm"
-                  onChange={(event) => {
-                    const value = event.target.value;
-                    setActiveLookBookInput(value);
-                  }}
+                  onChange={(event) => setLookbookNameDraft(event.target.value)}
                 />
                 <Button
                   size="sm"
                   className="rounded-full px-4"
                   onClick={() => {
-                    const name = activeLookBookInput.trim();
+                    const name = lookbookNameDraft.trim();
                     if (!name) return;
                     const id = addLookBook(name, selectedIds);
-                    setActiveLookBookInput("");
+                    setLookbookNameDraft("");
                     setSelectedIds([]);
                     setActiveLookBookId(id);
                     setLibraryFilter("lookbook");
                     setOpenLookBook(true);
+                    setStatus(`Look book "${name}" created.`);
                   }}
                 >
                   <Plus className="h-4 w-4" />
