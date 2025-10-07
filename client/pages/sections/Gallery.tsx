@@ -715,6 +715,22 @@ export default function GallerySection() {
     }
   };
 
+  const handleExportAll = async () => {
+    setStatus("Preparing export...");
+    try {
+      await exportAllZip();
+      setStatus("Export ready. ZIP download started.");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : null;
+      setStatus(message ? `Export failed: ${message}` : "Export failed.");
+    }
+  };
+
+  const handleLinkRecipes = () => {
+    linkImagesToRecipesByFilename();
+    setStatus("Linked images to recipes by filename.");
+  };
+
   const updateAdjustment = (key: keyof AdjustmentState, value: number) => {
     if (!activeId) return;
     setAdjustments((prev) => {
@@ -987,8 +1003,8 @@ export default function GallerySection() {
         >
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(125,211,252,0.14),_transparent_70%)]" />
           <div className="relative flex h-full flex-col">
-            <div className="pointer-events-auto absolute left-0 right-0 top-0 z-30 flex justify-center px-5 pt-4">
-              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-black/45 px-4 py-2 text-[11px] uppercase tracking-[0.35em] text-slate-200">
+            <div className="absolute left-0 right-0 top-0 z-30 flex flex-col items-center gap-3 px-5 pt-4">
+              <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-white/10 bg-black/45 px-4 py-2 text-[11px] uppercase tracking-[0.35em] text-slate-200">
                 <button
                   onClick={() => setGalleryView("grid")}
                   className={cn(
@@ -1012,6 +1028,19 @@ export default function GallerySection() {
                   Tile boards
                 </button>
               </div>
+              {galleryView === "grid" && (
+                <GalleryToolbar
+                  filter={filter}
+                  onFilterChange={setFilter}
+                  sort={sort}
+                  onSortChange={setSort}
+                  thumbSize={thumbSize}
+                  onThumbSizeChange={setThumbSize}
+                  onUpload={handleUploadClick}
+                  onExport={handleExportAll}
+                  onLink={handleLinkRecipes}
+                />
+              )}
             </div>
 
             {galleryView === "grid" && selectedIds.length > 0 && (
@@ -1032,7 +1061,12 @@ export default function GallerySection() {
               <GalleryDropHint />
             </div>
 
-            <div className="relative flex-1 overflow-hidden pt-8 lg:pt-16">
+            <div
+              className={cn(
+                "relative flex-1 overflow-hidden",
+                galleryView === "grid" ? "pt-44" : "pt-28",
+              )}
+            >
               {galleryView === "grid" ? (
                 <GalleryGrid
                   images={filtered}
