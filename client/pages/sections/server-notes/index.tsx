@@ -433,7 +433,7 @@ export default function ServerNotesSection() {
                     >
                       {`${t("serverNotes.steps.step")} 3`}
                     </Badge>
-                    <CardTitle className="text-sm font-semibold">Preview &amp; Generate</CardTitle>
+                    <CardTitle className="text-sm font-semibold">{t("serverNotes.panels.preview")}</CardTitle>
                   </div>
                 </div>
               </CardHeader>
