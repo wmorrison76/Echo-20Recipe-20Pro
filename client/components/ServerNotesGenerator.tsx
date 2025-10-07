@@ -1090,7 +1090,7 @@ async function createStandardDoc(
           children: [
             new TableCell({
               children: [
-                heading("Ingredients", HeadingLevel.HEADING_3),
+                heading(docStrings.sectionIngredients, HeadingLevel.HEADING_3),
                 ...ingredientParagraphs,
               ],
             }),
@@ -1110,7 +1110,7 @@ async function createStandardDoc(
           }),
         );
       } else {
-        children.push(heading("Ingredients", HeadingLevel.HEADING_3));
+        children.push(heading(docStrings.sectionIngredients, HeadingLevel.HEADING_3));
         entry.recipe.ingredients?.forEach((ing) =>
           children.push(paragraph(`• ${ing}`)),
         );
@@ -1192,7 +1192,7 @@ async function createStandardDoc(
         }
 
         if (note.layout.indexCardLayout.contentPriority !== "instructions") {
-          cells.push(heading("Ingredients", HeadingLevel.HEADING_3));
+          cells.push(heading(docStrings.sectionIngredients, HeadingLevel.HEADING_3));
           item.recipe.ingredients
             ?.slice(0, 8)
             .forEach((ing) => cells.push(paragraph(`• ${ing}`)));
