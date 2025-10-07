@@ -12,6 +12,7 @@ import {
   Document as DocxDocument,
   HeadingLevel,
   HeightRule,
+  ImageRun,
   PageOrientation,
   Packer,
   Paragraph,
@@ -22,6 +23,7 @@ import {
   WidthType,
   convertInchesToTwip,
 } from "docx";
+import type { ISectionOptions } from "docx";
 
 export type ServerNotesGeneratorProps = {
   serverNote: ServerNote;
