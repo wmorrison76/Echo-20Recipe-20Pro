@@ -148,6 +148,9 @@ function IndexContent() {
                 <HaccpComplianceWorkspace />
               </div>
             </TabsContent>
+            <TabsContent value="dish-assembly">
+              <DishAssemblySection />
+            </TabsContent>
             <TabsContent value="server-notes">
               <ServerNotesSection />
             </TabsContent>
