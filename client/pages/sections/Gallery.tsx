@@ -80,13 +80,13 @@ export default function GallerySection() {
 
   const toolbarSurface = lucccaMode
     ? "border-slate-700/80 bg-slate-900/70 text-slate-100 shadow-[0_28px_80px_rgba(14,165,233,0.28)]"
-    : "border-slate-200/70 bg-white/85 text-slate-900 shadow-[0_32px_90px_rgba(15,23,42,0.12)]";
+    : "border-slate-100/70 bg-white/95 text-slate-900 shadow-[0_26px_80px_rgba(15,23,42,0.08)]";
   const cardSurface = lucccaMode
     ? "border-slate-700/60 bg-slate-900/60 text-slate-100 shadow-[0_24px_70px_rgba(14,165,233,0.24)]"
-    : "border-slate-200/60 bg-white/90 text-slate-900 shadow-[0_26px_70px_rgba(15,23,42,0.1)]";
+    : "border-slate-100/60 bg-white/98 text-slate-900 shadow-[0_24px_70px_rgba(15,23,42,0.06)]";
   const subtleSurface = lucccaMode
     ? "border-slate-700/50 bg-slate-900/55 text-slate-100"
-    : "border-slate-200/50 bg-white/80 text-slate-800";
+    : "border-slate-100/60 bg-white/85 text-slate-700";
 
   const filtered = useMemo(() => {
     const q = filter.trim().toLowerCase();
