@@ -1,4 +1,3 @@
-import { useEffect, useMemo, useRef, useState } from "react";
 import type React from "react";
 import { Dropzone } from "@/components/Dropzone";
 import { Button } from "@/components/ui/button";
@@ -119,9 +118,6 @@ export default function GallerySection() {
     await doImport(files, tags);
     (window as any).__pending_files = undefined;
   };
-
-  // Removed remote Unsplash seeding to avoid network dependency and ensure predictable demo content.
-  // The AppDataProvider now seeds lightweight demo images that persist better.
 
   const toggleSelect = (id: string) => {
     setSelected((prev) =>
@@ -609,206 +605,206 @@ export default function GallerySection() {
           data-echo-key="section:gallery:grid"
         >
           {filtered.map((img) => {
-            const isSelected = selected.includes(img.id);
-            const displayTags = (img.tags || []).slice(0, 3);
-            const overflowCount = Math.max((img.tags || []).length - displayTags.length, 0);
+                const isSelected = selected.includes(img.id);
+                const displayTags = (img.tags || []).slice(0, 3);
+                const overflowCount = Math.max((img.tags || []).length - displayTags.length, 0);
 
-            return (
-              <div
-                key={img.id}
-                className={cn(
-                  "group relative mb-6 break-inside-avoid overflow-hidden rounded-[24px] backdrop-blur-xl transition-all duration-500",
-                  lucccaMode
-                    ? "ring-1 ring-slate-700/60 bg-slate-950/60 shadow-[0_24px_60px_rgba(14,165,233,0.24)]"
-                    : "ring-1 ring-white/70 bg-white/95 shadow-[0_24px_60px_rgba(15,23,42,0.14)]",
-                  isSelected &&
-                    (lucccaMode
-                      ? "ring-2 ring-sky-400 shadow-[0_32px_80px_rgba(14,165,233,0.32)]"
-                      : "ring-2 ring-sky-400 shadow-[0_32px_80px_rgba(56,189,248,0.22)]"),
-                )}
-                draggable
-                onDragStart={() => onDragStart(img.id)}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={() => onDropOver(img.id)}
-                data-echo-key="card:gallery:item"
-              >
-                <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/20" />
-                </div>
-
-                <button
-                  className="absolute right-3 top-3 z-30 flex h-8 w-8 items-center justify-center rounded-full bg-black/45 text-white opacity-0 transition duration-200 group-hover:opacity-100"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFavorite(img.id);
-                  }}
-                  aria-label="Toggle favorite"
-                  data-echo-key="cta:gallery:fav"
-                >
-                  <Star
-                    className={cn(
-                      "h-4 w-4",
-                      img.favorite ? "fill-yellow-300 text-yellow-300" : "text-white",
-                    )}
-                  />
-                </button>
-
-                <label className="absolute left-3 top-3 z-30 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="peer sr-only"
-                    checked={isSelected}
-                    onChange={() => toggleSelect(img.id)}
-                  />
-                  <span
-                    className={cn(
-                      "flex h-7 w-7 items-center justify-center rounded-full border text-[11px] font-semibold transition-all",
-                      isSelected
-                        ? "border-sky-400 bg-sky-500 text-white shadow-[0_15px_30px_rgba(14,165,233,0.35)]"
-                        : "border-white/70 bg-white/70 text-transparent backdrop-blur peer-focus-visible:ring-2 peer-focus-visible:ring-sky-300",
-                    )}
-                  >
-                    ✓
-                  </span>
-                </label>
-
-                <button
-                  onClick={() => openLightboxAt(img.id)}
-                  className="block w-full overflow-hidden"
-                  data-echo-key="cta:gallery:open"
-                >
-                  {img.unsupported ? (
-                    <div className="flex h-48 w-full items-center justify-center bg-slate-200 text-xs uppercase tracking-[0.3em] text-slate-500">
-                      Unsupported preview
-                    </div>
-                  ) : (
-                    <img
-                      src={img.dataUrl || img.blobUrl}
-                      alt={img.name}
-                      loading="lazy"
-                      className={cn(
-                        "w-full object-cover transition duration-500 ease-out group-hover:scale-[1.03]",
-                        viewMode === "grid"
-                          ? thumbSize === "s"
-                            ? "aspect-[4/3]"
-                            : thumbSize === "l"
-                              ? "aspect-[3/2]"
-                              : "aspect-[5/4]"
-                          : "h-auto",
-                      )}
-                      onError={(e) => {
-                        const el = e.currentTarget;
-                        el.onerror = null;
-                        el.src = "/placeholder.svg";
-                        el.classList.add("opacity-70");
-                      }}
-                    />
-                  )}
-                </button>
-
-                <button
-                  className="absolute bottom-3 right-3 z-30 flex h-8 w-8 items-center justify-center rounded-full bg-black/45 text-white opacity-0 transition duration-200 group-hover:opacity-100 hover:bg-black/60"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (confirm("Delete this image?")) deleteImage(img.id);
-                  }}
-                  aria-label="Delete image"
-                  title="Delete image"
-                >
-                  <Trash className="h-4 w-4" />
-                </button>
-
-                {editingId === img.id ? (
+                return (
                   <div
+                    key={img.id}
                     className={cn(
-                      "absolute inset-x-0 bottom-0 z-40 space-y-2 border-t px-4 py-4 backdrop-blur-xl",
+                      "group relative mb-6 break-inside-avoid overflow-hidden rounded-[24px] backdrop-blur-xl transition-all duration-500",
                       lucccaMode
-                        ? "border-white/10 bg-slate-950/90"
-                        : "border-slate-200/60 bg-white/95",
+                        ? "ring-1 ring-slate-700/60 bg-slate-950/60 shadow-[0_24px_60px_rgba(14,165,233,0.24)]"
+                        : "ring-1 ring-white/70 bg-white/95 shadow-[0_24px_60px_rgba(15,23,42,0.14)]",
+                      isSelected &&
+                        (lucccaMode
+                          ? "ring-2 ring-sky-400 shadow-[0_32px_80px_rgba(14,165,233,0.32)]"
+                          : "ring-2 ring-sky-400 shadow-[0_32px_80px_rgba(56,189,248,0.22)]"),
                     )}
+                    draggable
+                    onDragStart={() => onDragStart(img.id)}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={() => onDropOver(img.id)}
+                    data-echo-key="card:gallery:item"
                   >
-                    <input
-                      autoFocus
-                      value={editName}
-                      onChange={(e) => setEditName(e.target.value)}
-                      onKeyDown={onEditKeyDown}
-                      placeholder="Image name"
-                      className={cn(
-                        "w-full rounded-full border px-3 py-2 text-sm shadow-inner",
-                        lucccaMode ? "bg-slate-900/70" : "bg-white/85",
-                      )}
-                    />
-                    <input
-                      value={editTags}
-                      onChange={(e) => setEditTags(e.target.value)}
-                      onKeyDown={onEditKeyDown}
-                      placeholder="categories (comma separated)"
-                      className={cn(
-                        "w-full rounded-full border px-3 py-2 text-sm shadow-inner",
-                        lucccaMode ? "bg-slate-900/70" : "bg-white/85",
-                      )}
-                    />
-                    <div className="flex gap-2">
-                      <Button size="sm" onClick={saveEdit} className="rounded-full px-4">
-                        Save
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={cancelEdit}
-                        className="rounded-full px-4"
-                      >
-                        Cancel
-                      </Button>
+                    <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/20" />
                     </div>
-                  </div>
-                ) : (
-                  <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col gap-1 bg-gradient-to-t from-black/80 via-black/10 to-transparent p-4 text-white">
+
                     <button
-                      className="truncate text-left text-sm font-medium underline-offset-4 hover:underline"
-                      onClick={() => beginEdit(img.id)}
-                      title="Rename & categorize"
+                      className="absolute right-3 top-3 z-30 flex h-8 w-8 items-center justify-center rounded-full bg-black/45 text-white opacity-0 transition duration-200 group-hover:opacity-100"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavorite(img.id);
+                      }}
+                      aria-label="Toggle favorite"
+                      data-echo-key="cta:gallery:fav"
                     >
-                      {img.name}
+                      <Star
+                        className={cn(
+                          "h-4 w-4",
+                          img.favorite ? "fill-yellow-300 text-yellow-300" : "text-white",
+                        )}
+                      />
                     </button>
-                    <div className="flex flex-wrap gap-1 text-[11px]">
-                      {displayTags.length > 0 ? (
-                        <>
-                          {displayTags.map((t) => (
-                            <button
-                              key={t}
-                              className="pointer-events-auto rounded-full bg-white/30 px-2 py-0.5 text-white/90 backdrop-blur"
-                              onClick={() => beginEdit(img.id)}
-                              title="Edit categories"
-                            >
-                              {t}
-                            </button>
-                          ))}
-                          {overflowCount > 0 && (
+
+                    <label className="absolute left-3 top-3 z-30 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        className="peer sr-only"
+                        checked={isSelected}
+                        onChange={() => toggleSelect(img.id)}
+                      />
+                      <span
+                        className={cn(
+                          "flex h-7 w-7 items-center justify-center rounded-full border text-[11px] font-semibold transition-all",
+                          isSelected
+                            ? "border-sky-400 bg-sky-500 text-white shadow-[0_15px_30px_rgba(14,165,233,0.35)]"
+                            : "border-white/70 bg-white/70 text-transparent backdrop-blur peer-focus-visible:ring-2 peer-focus-visible:ring-sky-300",
+                        )}
+                      >
+                        ✓
+                      </span>
+                    </label>
+
+                    <button
+                      onClick={() => openLightboxAt(img.id)}
+                      className="block w-full overflow-hidden"
+                      data-echo-key="cta:gallery:open"
+                    >
+                      {img.unsupported ? (
+                        <div className="flex h-48 w-full items-center justify-center bg-slate-200 text-xs uppercase tracking-[0.3em] text-slate-500">
+                          Unsupported preview
+                        </div>
+                      ) : (
+                        <img
+                          src={img.dataUrl || img.blobUrl}
+                          alt={img.name}
+                          loading="lazy"
+                          className={cn(
+                            "w-full object-cover transition duration-500 ease-out group-hover:scale-[1.03]",
+                            viewMode === "grid"
+                              ? thumbSize === "s"
+                                ? "aspect-[4/3]"
+                                : thumbSize === "l"
+                                  ? "aspect-[3/2]"
+                                  : "aspect-[5/4]"
+                              : "h-auto",
+                          )}
+                          onError={(e) => {
+                            const el = e.currentTarget;
+                            el.onerror = null;
+                            el.src = "/placeholder.svg";
+                            el.classList.add("opacity-70");
+                          }}
+                        />
+                      )}
+                    </button>
+
+                    <button
+                      className="absolute bottom-3 right-3 z-30 flex h-8 w-8 items-center justify-center rounded-full bg-black/45 text-white opacity-0 transition duration-200 group-hover:opacity-100 hover:bg-black/60"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm("Delete this image?")) deleteImage(img.id);
+                      }}
+                      aria-label="Delete image"
+                      title="Delete image"
+                    >
+                      <Trash className="h-4 w-4" />
+                    </button>
+
+                    {editingId === img.id ? (
+                      <div
+                        className={cn(
+                          "absolute inset-x-0 bottom-0 z-40 space-y-2 border-t px-4 py-4 backdrop-blur-xl",
+                          lucccaMode
+                            ? "border-white/10 bg-slate-950/90"
+                            : "border-slate-200/60 bg-white/95",
+                        )}
+                      >
+                        <input
+                          autoFocus
+                          value={editName}
+                          onChange={(e) => setEditName(e.target.value)}
+                          onKeyDown={onEditKeyDown}
+                          placeholder="Image name"
+                          className={cn(
+                            "w-full rounded-full border px-3 py-2 text-sm shadow-inner",
+                            lucccaMode ? "bg-slate-900/70" : "bg-white/85",
+                          )}
+                        />
+                        <input
+                          value={editTags}
+                          onChange={(e) => setEditTags(e.target.value)}
+                          onKeyDown={onEditKeyDown}
+                          placeholder="categories (comma separated)"
+                          className={cn(
+                            "w-full rounded-full border px-3 py-2 text-sm shadow-inner",
+                            lucccaMode ? "bg-slate-900/70" : "bg-white/85",
+                          )}
+                        />
+                        <div className="flex gap-2">
+                          <Button size="sm" onClick={saveEdit} className="rounded-full px-4">
+                            Save
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={cancelEdit}
+                            className="rounded-full px-4"
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col gap-1 bg-gradient-to-t from-black/80 via-black/10 to-transparent p-4 text-white">
+                        <button
+                          className="truncate text-left text-sm font-medium underline-offset-4 hover:underline"
+                          onClick={() => beginEdit(img.id)}
+                          title="Rename & categorize"
+                        >
+                          {img.name}
+                        </button>
+                        <div className="flex flex-wrap gap-1 text-[11px]">
+                          {displayTags.length > 0 ? (
+                            <>
+                              {displayTags.map((t) => (
+                                <button
+                                  key={t}
+                                  className="pointer-events-auto rounded-full bg-white/30 px-2 py-0.5 text-white/90 backdrop-blur"
+                                  onClick={() => beginEdit(img.id)}
+                                  title="Edit categories"
+                                >
+                                  {t}
+                                </button>
+                              ))}
+                              {overflowCount > 0 && (
+                                <button
+                                  className="pointer-events-auto rounded-full bg-white/20 px-2 py-0.5 text-white/80 backdrop-blur"
+                                  onClick={() => beginEdit(img.id)}
+                                  title="Edit categories"
+                                >
+                                  +{overflowCount}
+                                </button>
+                              )}
+                            </>
+                          ) : (
                             <button
                               className="pointer-events-auto rounded-full bg-white/20 px-2 py-0.5 text-white/80 backdrop-blur"
                               onClick={() => beginEdit(img.id)}
-                              title="Edit categories"
+                              title="Add categories"
                             >
-                              +{overflowCount}
+                              + categorize
                             </button>
                           )}
-                        </>
-                      ) : (
-                        <button
-                          className="pointer-events-auto rounded-full bg-white/20 px-2 py-0.5 text-white/80 backdrop-blur"
-                          onClick={() => beginEdit(img.id)}
-                          title="Add categories"
-                        >
-                          + categorize
-                        </button>
-                      )}
-                    </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            );
-          })}
+                );
+              })}
         </div>
       ) : (
         <div className={cn("rounded-[28px] border p-8 text-center text-sm", cardSurface)}>
@@ -885,6 +881,7 @@ export default function GallerySection() {
         })}
         className={lucccaMode ? "luccca-theme" : ""}
       />
+      </div>
     </div>
   );
 }
