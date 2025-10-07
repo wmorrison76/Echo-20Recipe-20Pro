@@ -353,7 +353,7 @@ export default function GallerySection() {
             <label
               className={cn(
                 "ml-1 mr-2 flex items-center gap-2 rounded-full border border-transparent px-3 py-2 text-xs shadow-inner",
-                lucccaMode ? "bg-slate-900/70" : "bg-white/60",
+                lucccaMode ? "bg-slate-900/70 text-slate-100" : "bg-white/60 text-slate-700",
               )}
             >
               <input
@@ -385,7 +385,9 @@ export default function GallerySection() {
             <div
               className={cn(
                 "flex items-center gap-2 rounded-2xl border px-3 py-2 text-xs shadow-inner",
-                lucccaMode ? "border-white/10 bg-slate-900/70" : "border-white/40 bg-white/60",
+                lucccaMode
+                  ? "border-white/10 bg-slate-900/70 text-slate-100"
+                  : "border-white/40 bg-white/60 text-slate-700",
               )}
             >
               <span className="opacity-70">{selected.length} selected</span>
