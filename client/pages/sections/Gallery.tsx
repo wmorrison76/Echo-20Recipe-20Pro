@@ -1,4 +1,5 @@
-import type React from "react";
+import { useMemo, useRef, useState } from "react";
+import type { KeyboardEvent } from "react";
 import { Dropzone } from "@/components/Dropzone";
 import { Button } from "@/components/ui/button";
 import "../../luccca-lookbook.css";
@@ -190,7 +191,7 @@ export default function GallerySection() {
     if (d && d !== overId) reorderImages(d, overId);
   };
 
-  const onEditKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const onEditKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
       saveEdit();
