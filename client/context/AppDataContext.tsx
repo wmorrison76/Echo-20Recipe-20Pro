@@ -36,13 +36,40 @@ export type LookBook = {
   createdAt: number;
 };
 
+export type TileBoardTile = {
+  id: string;
+  title: string;
+  subtitle?: string;
+  imageId: string | null;
+  tags: string[];
+  layout: "landscape" | "portrait" | "square";
+  accent?: string;
+  createdAt: number;
+};
+
+export type TileBoard = {
+  id: string;
+  name: string;
+  description?: string;
+  category: "server-notes" | "cooks-recipes" | "custom";
+  tiles: TileBoardTile[];
+  createdAt: number;
+  updatedAt: number;
+};
 
 type AppData = {
   recipes: Recipe[];
   images: GalleryImage[];
   lookbooks: LookBook[];
+  tileBoards: TileBoard[];
   addImages: (files: File[], opts?: { tags?: string[] }) => Promise<number>;
   restoreDemo: () => void;
+  createTileBoard: (input: { name: string; description?: string; category?: TileBoard["category"]; imageIds?: string[] }) => string;
+  updateTileBoard: (id: string, patch: Partial<Omit<TileBoard, "id" | "createdAt" | "tiles">>) => void;
+  deleteTileBoard: (id: string) => void;
+  addTileToBoard: (boardId: string, tile: Omit<TileBoardTile, "id" | "createdAt"> & { id?: string }) => string;
+  updateTileInBoard: (boardId: string, tileId: string, patch: Partial<TileBoardTile>) => void;
+  removeTileFromBoard: (boardId: string, tileId: string) => void;
   addDemoImages: () => Promise<number>;
   addStockFoodPhotos: () => Promise<number>;
   addRecipe: (recipe: Omit<Recipe, "id" | "createdAt">) => string;
