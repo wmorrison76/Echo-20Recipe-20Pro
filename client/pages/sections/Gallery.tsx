@@ -478,6 +478,49 @@ export default function GallerySection() {
     }
   }, [activeImage?.id]);
 
+  const layerList = useMemo<LayerInfo[]>(() => {
+    if (!activeImage) return [];
+    const tags = activeImage.tags || [];
+    const overlays = tags.slice(0, 2).map((tag, index) => ({
+      key: `tag-${index}`,
+      name: `${tag} overlay`,
+      meta: "Tag layer",
+    }));
+    return [
+      { key: "base", name: activeImage.name, meta: "Raster", locked: true },
+      ...overlays,
+      { key: "color-grade", name: "Color grade", meta: "Adjustment" },
+      { key: "retouch", name: "Retouch", meta: "Stamp blend" },
+    ];
+  }, [activeImage]);
+
+  const activeToolLabel = useMemo(
+    () => CREATIVE_TOOLS.find((tool) => tool.key === activeTool)?.label ?? "Select",
+    [activeTool],
+  );
+
+  useEffect(() => {
+    setVisibleLayers((prev) => {
+      const next: Record<string, boolean> = {};
+      layerList.forEach((layer) => {
+        next[layer.key] = prev[layer.key] ?? true;
+      });
+      return next;
+    });
+  }, [layerList]);
+
+  const toggleLayerVisibility = (layerKey: string) => {
+    setVisibleLayers((prev) => ({
+      ...prev,
+      [layerKey]: !(prev[layerKey] ?? true),
+    }));
+  };
+
+  const handleQuickAction = (action: QuickActionConfig) => {
+    setActiveQuickAction(action.key);
+    setStatus(`${action.label} staged. Fine tune with creative tools.`);
+  };
+
   const activeAdjustment = useMemo<AdjustmentState>(() => {
     if (!activeId) return { ...DEFAULT_ADJUSTMENT };
     const stored = adjustments[activeId] ?? DEFAULT_ADJUSTMENT;
