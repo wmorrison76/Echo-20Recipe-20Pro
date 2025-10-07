@@ -1039,13 +1039,3 @@ function RefreshGlyph(props: RefreshGlyphProps) {
     </svg>
   );
 }
-
-function tagDraftForLookbookName(activeLookBookId: string | null, lookbooks: typeof useAppData extends () => infer Data ? Data extends { lookbooks: infer LB } ? LB : never : never) {
-  return "";
-}
-
-let activeLookBookInput = "";
-
-function setActiveLookBookInput(value: string) {
-  activeLookBookInput = value;
-}
