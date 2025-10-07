@@ -1786,7 +1786,7 @@ function createLucccaBeverageTable(
   });
 }
 
-async function loadImageBuffer(src?: string): Promise<ArrayBuffer | null> {
+async function loadImageBuffer(src?: string): Promise<Uint8Array | null> {
   if (!src) return null;
   try {
     if (src.startsWith("data:")) {
@@ -1798,12 +1798,12 @@ async function loadImageBuffer(src?: string): Promise<ArrayBuffer | null> {
       for (let index = 0; index < length; index += 1) {
         bytes[index] = binary.charCodeAt(index);
       }
-      return bytes.buffer;
+      return bytes;
     }
     const response = await fetch(src);
     if (!response.ok) return null;
-    const blob = await response.blob();
-    return await blob.arrayBuffer();
+    const buffer = await response.arrayBuffer();
+    return new Uint8Array(buffer);
   } catch (error) {
     console.warn("Failed to load image for DOCX", error);
     return null;
