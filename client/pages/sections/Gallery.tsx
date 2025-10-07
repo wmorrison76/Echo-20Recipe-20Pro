@@ -55,6 +55,29 @@ export default function GallerySection() {
   const [urlText, setUrlText] = useState("");
   const [urlLoading, setUrlLoading] = useState(false);
 
+  const favoriteCount = useMemo(
+    () => images.filter((img) => img.favorite).length,
+    [images],
+  );
+  const uniqueTagCount = useMemo(() => {
+    const tags = new Set<string>();
+    images.forEach((img) => (img.tags || []).forEach((tag) => tags.add(tag)));
+    return tags.size;
+  }, [images]);
+  const lastAddedLabel = useMemo(() => {
+    if (!images.length) return "No uploads yet";
+    const latest = images.reduce(
+      (max, img) => Math.max(max, typeof img.createdAt === "number" ? img.createdAt : 0),
+      0,
+    );
+    return `Updated ${new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(
+      new Date(latest),
+    )}`;
+  }, [images]);
+  const handleUploadClick = () => {
+    (window as any).__gallery_upload_input?.click();
+  };
+
   const toolbarSurface = lucccaMode
     ? "border-slate-700/80 bg-slate-900/70 text-slate-100 shadow-[0_28px_80px_rgba(14,165,233,0.28)]"
     : "border-slate-200/70 bg-white/85 text-slate-900 shadow-[0_32px_90px_rgba(15,23,42,0.12)]";
