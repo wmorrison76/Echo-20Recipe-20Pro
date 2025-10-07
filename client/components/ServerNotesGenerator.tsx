@@ -4,8 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import type { RecipeExport, IngredientRow } from "@shared/recipes";
 import type { ServerNote, ServerNoteRecipe } from "@shared/server-notes";
 import { defaultLanguage, type LanguageCode } from "@/i18n/config";
+import { resolveMenuName, resolveMenuPrice } from "@/lib/menu-metadata";
 import {
   AlignmentType,
   BorderStyle,
