@@ -6,6 +6,7 @@ import InventorySuppliesWorkspace from "./sections/saas/InventorySuppliesWorkspa
 import NutritionAllergensWorkspace from "./sections/saas/NutritionAllergensWorkspace";
 import HaccpComplianceWorkspace from "./sections/saas/HaccpComplianceWorkspace";
 import ServerNotesSection from "./sections/server-notes";
+import DishAssemblySection from "./sections/dish-assembly";
 import ProductionSection from "./sections/Production";
 import TopTabs from "@/components/TopTabs";
 import SubtleBottomGlow from "@/components/SubtleBottomGlow";
