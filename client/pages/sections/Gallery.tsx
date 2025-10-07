@@ -960,26 +960,6 @@ export default function GallerySection() {
         >
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(125,211,252,0.14),_transparent_70%)]" />
           <div className="relative flex h-full flex-col">
-            <div className="pointer-events-none absolute left-0 right-0 top-0 z-30 flex justify-center px-5 pt-4">
-              <GalleryToolbar
-                filter={filter}
-                onFilterChange={setFilter}
-                sort={sort}
-                onSortChange={setSort}
-                thumbSize={thumbSize}
-                onThumbSizeChange={setThumbSize}
-                onUpload={handleUploadClick}
-                onExport={() => {
-                  setStatus("Exporting ZIP...");
-                  void exportAllZip().then(() => setStatus("Export complete."));
-                }}
-                onLink={() => {
-                  linkImagesToRecipesByFilename();
-                  setStatus("Linked images to recipes by filename.");
-                }}
-              />
-            </div>
-
             {selectedIds.length > 0 && (
               <div className="pointer-events-none absolute bottom-6 left-1/2 z-30 -translate-x-1/2 px-3">
                 <GalleryBulkActions
@@ -998,7 +978,7 @@ export default function GallerySection() {
               <GalleryDropHint />
             </div>
 
-            <div className="relative flex-1 overflow-hidden pt-16 lg:pt-24">
+            <div className="relative flex-1 overflow-hidden pt-8 lg:pt-16">
               <GalleryGrid
                 images={filtered}
                 thumbSize={thumbSize}
