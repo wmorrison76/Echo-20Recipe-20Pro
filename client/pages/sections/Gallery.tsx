@@ -226,7 +226,7 @@ export default function GallerySection() {
 
   const shellClass = lucccaMode
     ? "luccca-theme border-slate-800/70 bg-slate-950/90 text-slate-100 shadow-[0_40px_140px_rgba(14,165,233,0.35)]"
-    : "border-slate-200/80 bg-gradient-to-br from-white via-slate-50/95 to-slate-100 text-slate-900 shadow-[0_45px_150px_rgba(15,23,42,0.16)]";
+    : "border-white/70 bg-white/95 text-slate-900 shadow-[0_55px_160px_rgba(15,23,42,0.12)] backdrop-blur-xl";
 
   return (
     <div
