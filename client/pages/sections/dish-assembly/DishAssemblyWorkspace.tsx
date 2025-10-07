@@ -88,7 +88,7 @@ const DishAssemblyWorkspace: React.FC = () => {
   const [allergenRows, setAllergenRows] = useState<AllergenRow[]>([]);
   const [pairingRows, setPairingRows] = useState<PairingRow[]>([]);
   const [posMappings, setPosMappings] = useState<PosMapping[]>(
-    defaultPosMappings,
+    () => defaultPosMappings(),
   );
   const [activeComponentId, setActiveComponentId] = useState<string | null>(
     null,
