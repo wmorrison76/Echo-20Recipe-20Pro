@@ -1430,7 +1430,7 @@ async function createLucccaDoc(
         spacing: { before: 160, after: 80 },
         children: [
           new TextRun({
-            text: "Distribution Notes",
+            text: docStrings.distributionNotes,
             bold: true,
             color: primaryHex,
             font,
