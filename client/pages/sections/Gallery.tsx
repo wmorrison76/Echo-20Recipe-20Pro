@@ -343,6 +343,8 @@ export default function GallerySection() {
   const [visibleLayers, setVisibleLayers] = useState<Record<string, boolean>>({});
   const [inspectorDropActive, setInspectorDropActive] = useState(false);
   const [overlayOpen, setOverlayOpen] = useState(false);
+  const [galleryView, setGalleryView] = useState<"grid" | "tiles">("grid");
+  const [activeTileBoardId, setActiveTileBoardId] = useState<string | null>(null);
 
   const uploadInputRef = useRef<HTMLInputElement | null>(null);
 
