@@ -513,6 +513,386 @@ function createDocumentHtml(
 </html>`;
 }
 
+type LucccaDishRow = {
+  qty: string;
+  component: string;
+  notes: string;
+};
+
+type LucccaAllergenRow = {
+  item: string;
+  allergen: string;
+  modify: string;
+  alternative: string;
+};
+
+type LucccaBeverageRow = {
+  item: string;
+  year: string;
+  location: string;
+  country: string;
+};
+
+type LucccaPreparedEntry = {
+  entry: ServerNoteRecipe;
+  menuName: string;
+  menuPrice: string | null;
+  description: string;
+  serverNotes: string;
+  serviceware: string;
+  dishComponents: LucccaDishRow[];
+  allergens: LucccaAllergenRow[];
+  beverages: LucccaBeverageRow[];
+  imageSrc?: string;
+};
+
+const ALLERGEN_PATTERN = /gluten|dairy|milk|nut|peanut|tree nut|shellfish|fish|soy|egg|sesame|wheat/i;
+
+const escapeHtml = (value: string): string =>
+  value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
+const formatMultilineHtml = (value: string): string =>
+  escapeHtml(value).replace(/\r?\n/g, "<br />");
+
+const ensureRowCount = <T,>(rows: T[], min: number, filler: () => T): T[] => {
+  const copy = [...rows];
+  while (copy.length < min) {
+    copy.push(filler());
+  }
+  return copy;
+};
+
+const splitLines = (value: string): string[] =>
+  value
+    .split(/\r?\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+function prepareLucccaEntries(note: ServerNote): LucccaPreparedEntry[] {
+  return note.selectedRecipes.map((entry) => {
+    const extra = (entry.recipe.extra ?? {}) as { serverNotes?: RecipeExport };
+    const exportData = extra.serverNotes ?? null;
+    const ingredients = (exportData?.ingredients ?? []) as IngredientRow[];
+
+    const dishComponents = ingredients.map((row) => ({
+      qty: [row.qty, row.unit].filter(Boolean).join(" ").trim(),
+      component: row.item ?? "",
+      notes: [row.prep, row.yield].filter(Boolean).join(" ").trim(),
+    }));
+
+    if (!dishComponents.length && entry.recipe.ingredients?.length) {
+      dishComponents.push(
+        ...entry.recipe.ingredients.map((item) => ({
+          qty: "",
+          component: item,
+          notes: "",
+        })),
+      );
+    }
+
+    const paddedComponents = ensureRowCount(dishComponents, 12, () => ({
+      qty: "",
+      component: "",
+      notes: "",
+    }));
+
+    const allergenSource =
+      exportData?.allergens?.length
+        ? exportData.allergens
+        : entry.recipe.tags?.filter((tag) => ALLERGEN_PATTERN.test(tag)) ?? [];
+
+    const allergenRows = allergenSource.length
+      ? allergenSource.map((label) => ({
+          item: entry.recipe.title,
+          allergen: label,
+          modify: "",
+          alternative: "",
+        }))
+      : [
+          {
+            item: entry.recipe.title,
+            allergen: "",
+            modify: "",
+            alternative: "",
+          },
+        ];
+
+    const paddedAllergens = ensureRowCount(allergenRows, 6, () => ({
+      item: "",
+      allergen: "",
+      modify: "",
+      alternative: "",
+    }));
+
+    const beverageLines = entry.wineSelection ? splitLines(entry.wineSelection) : [];
+    const beverageRows = beverageLines.map((line) => {
+      const parts = line.split("|").map((part) => part.trim());
+      return {
+        item: parts[0] || line,
+        year: parts[1] || "",
+        location: parts[2] || "",
+        country: parts[3] || "",
+      } satisfies LucccaBeverageRow;
+    });
+
+    const paddedBeverages = ensureRowCount(beverageRows, 5, () => ({
+      item: "",
+      year: "",
+      location: "",
+      country: "",
+    }));
+
+    const servicewareParts: string[] = [];
+    if (entry.serviceInstructions?.trim()) {
+      servicewareParts.push(entry.serviceInstructions.trim());
+    }
+    if (entry.silverwareRequired?.length) {
+      servicewareParts.push(`Utensils: ${entry.silverwareRequired.join(", ")}`);
+    }
+
+    return {
+      entry,
+      menuName: resolveMenuName(entry.recipe),
+      menuPrice: resolveMenuPrice(entry.recipe),
+      description: entry.recipe.description?.trim() || "",
+      serverNotes: entry.sellingNotes?.trim() || "",
+      serviceware: servicewareParts.join("\n"),
+      dishComponents: paddedComponents,
+      allergens: paddedAllergens,
+      beverages: paddedBeverages,
+      imageSrc:
+        entry.recipe.imageDataUrls?.[0] ||
+        (entry.recipe as any).imageDataUrl ||
+        entry.recipe.image ||
+        undefined,
+    } satisfies LucccaPreparedEntry;
+  });
+}
+
+function createLucccaHtml(note: ServerNote, lang: LanguageCode): string {
+  const entries = prepareLucccaEntries(note);
+  const { colorScheme } = note;
+  const coverItems = entries
+    .map(
+      (item, index) =>
+        `<li><span class="index-number">${index + 1}.</span><span contenteditable="true">${escapeHtml(item.menuName)}</span></li>`,
+    )
+    .join("");
+
+  const logos = (note.logos || [])
+    .slice(0, 2)
+    .map((logo) => `<img src="${logo}" alt="Logo" />`)
+    .join("");
+
+  const cover = `<div class="page cover">
+    <header class="cover-header">
+      <div class="cover-meta" style="border-color: ${colorScheme.primary};">
+        ${note.companyName ? `<h1 contenteditable="true">${escapeHtml(note.companyName)}</h1>` : ""}
+        ${note.outletName ? `<h2 contenteditable="true">${escapeHtml(note.outletName)}</h2>` : ""}
+        <p class="cover-title" contenteditable="true">${escapeHtml(note.title || "Service Briefing")}</p>
+        <p class="cover-date" contenteditable="true">${escapeHtml(
+          new Date(note.distributionDate).toLocaleDateString(),
+        )}</p>
+      </div>
+      ${logos ? `<div class="cover-logos">${logos}</div>` : ""}
+    </header>
+    <section class="cover-body">
+      <h3>Menu Overview</h3>
+      <ul class="cover-list">
+        ${coverItems || '<li contenteditable="true">Add menu items</li>'}
+      </ul>
+      ${
+        note.distributionNotes
+          ? `<div class="cover-notes"><h4>Distribution Notes</h4><p contenteditable="true">${formatMultilineHtml(
+              note.distributionNotes,
+            )}</p></div>`
+          : '<div class="cover-notes"><h4>Distribution Notes</h4><p contenteditable="true">Add notes</p></div>'
+      }
+    </section>
+  </div>`;
+
+  const recipePages = entries
+    .map((prepared, index) => {
+      const image = prepared.imageSrc
+        ? `<img src="${prepared.imageSrc}" alt="${escapeHtml(prepared.menuName)}" />`
+        : '<div class="image-placeholder" contenteditable="true">Add Image</div>';
+
+      const dishRows = prepared.dishComponents
+        .map(
+          (row) => `
+            <tr>
+              <td contenteditable="true">${escapeHtml(row.qty)}</td>
+              <td contenteditable="true">${escapeHtml(row.component)}</td>
+              <td contenteditable="true">${escapeHtml(row.notes)}</td>
+            </tr>
+          `,
+        )
+        .join("");
+
+      const allergenRows = prepared.allergens
+        .map(
+          (row) => `
+            <tr>
+              <td contenteditable="true">${escapeHtml(row.item)}</td>
+              <td contenteditable="true">${escapeHtml(row.allergen)}</td>
+              <td contenteditable="true">${escapeHtml(row.modify)}</td>
+              <td contenteditable="true">${escapeHtml(row.alternative)}</td>
+            </tr>
+          `,
+        )
+        .join("");
+
+      const beverageRows = prepared.beverages
+        .map(
+          (row) => `
+            <tr>
+              <td contenteditable="true">${escapeHtml(row.item)}</td>
+              <td contenteditable="true">${escapeHtml(row.year)}</td>
+              <td contenteditable="true">${escapeHtml(row.location)}</td>
+              <td contenteditable="true">${escapeHtml(row.country)}</td>
+            </tr>
+          `,
+        )
+        .join("");
+
+      return `<div class="page recipe">
+        <header class="recipe-header" style="background: ${colorScheme.primary}; color: ${colorScheme.background};">
+          <div class="header-title" contenteditable="true">${escapeHtml(prepared.menuName)}</div>
+          <div class="header-price" contenteditable="true">${prepared.menuPrice ? escapeHtml(prepared.menuPrice) : ""}</div>
+        </header>
+        <main class="recipe-body">
+          <div class="left-column">
+            <div class="hero-image">${image}</div>
+            <table class="components-table">
+              <thead style="background: ${colorScheme.secondary}; color: ${colorScheme.background};">
+                <tr>
+                  <th>Qty</th>
+                  <th>Component</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${dishRows}
+              </tbody>
+            </table>
+          </div>
+          <div class="right-column">
+            <section>
+              <h4>Menu Description</h4>
+              <div class="editable" contenteditable="true">${
+                prepared.description ? formatMultilineHtml(prepared.description) : "Add description"
+              }</div>
+            </section>
+            <section>
+              <h4>Server Notes</h4>
+              <div class="editable" contenteditable="true">${
+                prepared.serverNotes ? formatMultilineHtml(prepared.serverNotes) : "Add notes"
+              }</div>
+            </section>
+            <section>
+              <h4>Serviceware</h4>
+              <div class="editable" contenteditable="true">${
+                prepared.serviceware ? formatMultilineHtml(prepared.serviceware) : "Add utensils needed"
+              }</div>
+            </section>
+          </div>
+        </main>
+        <section class="full-width">
+          <h4 style="background: ${colorScheme.accent};">Allergens</h4>
+          <table class="allergen-table">
+            <thead>
+              <tr>
+                <th>Item Name</th>
+                <th>Allergy</th>
+                <th>Modify</th>
+                <th>Alternative</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${allergenRows}
+            </tbody>
+          </table>
+        </section>
+        <section class="full-width">
+          <h4 style="background: ${colorScheme.accent};">Wine & Beverage Pairings</h4>
+          <table class="beverage-table">
+            <thead>
+              <tr>
+                <th>Item Name</th>
+                <th>Year</th>
+                <th>Location</th>
+                <th>Country</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${beverageRows}
+            </tbody>
+          </table>
+        </section>
+        <footer class="footer-meta">
+          <span>Page ${index + 2}</span>
+          <span contenteditable="true">${escapeHtml(note.companyName || "")}</span>
+        </footer>
+      </div>`;
+    })
+    .join("");
+
+  return `<!DOCTYPE html>
+<html lang="${lang}">
+<head>
+  <meta charset="utf-8" />
+  <title>${escapeHtml(note.title || "Server Notes")}</title>
+  <style>
+    @page { size: letter; margin: 0.5in; }
+    body { margin: 0; font-family: 'Arial', 'Helvetica', sans-serif; background: #0f172a; }
+    .page { width: 7.5in; min-height: 10in; margin: 0.5in auto; background: #ffffff; padding: 0.6in; box-shadow: 0 20px 60px rgba(15, 23, 42, 0.35); box-sizing: border-box; position: relative; }
+    .page:not(:last-child) { page-break-after: always; }
+    [contenteditable="true"] { outline: none; }
+    [contenteditable="true"]:hover { box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.4); }
+    [contenteditable="true"]:focus { box-shadow: inset 0 0 0 2px rgba(59, 130, 246, 0.7); }
+    .cover { display: flex; flex-direction: column; gap: 24px; }
+    .cover-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+    .cover-meta { border-left: 4px solid; padding-left: 18px; }
+    .cover-meta h1 { margin: 0; font-size: 28px; }
+    .cover-meta h2 { margin: 4px 0 12px; font-size: 18px; color: #475569; }
+    .cover-title { font-size: 22px; font-weight: 600; margin: 0 0 6px; }
+    .cover-date { margin: 0; color: #64748b; }
+    .cover-logos img { max-height: 64px; margin-left: 12px; }
+    .cover-body h3 { margin: 0 0 12px; font-size: 18px; }
+    .cover-list { list-style: none; padding: 0; margin: 0 0 16px; }
+    .cover-list li { display: flex; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(148, 163, 184, 0.35); }
+    .cover-list .index-number { font-weight: 600; color: ${colorScheme.primary}; }
+    .cover-notes h4 { margin: 0 0 6px; font-size: 16px; }
+    .cover-notes p { margin: 0; line-height: 1.4; }
+    .recipe-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-radius: 12px; font-size: 20px; font-weight: 700; margin-bottom: 20px; color: ${colorScheme.background}; }
+    .recipe-body { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .left-column { display: flex; flex-direction: column; gap: 16px; }
+    .hero-image { border: 1px solid rgba(148, 163, 184, 0.4); border-radius: 12px; padding: 6px; min-height: 200px; display: flex; align-items: center; justify-content: center; background: #f8fafc; }
+    .hero-image img { width: 100%; border-radius: 10px; object-fit: cover; }
+    .image-placeholder { width: 100%; text-align: center; color: #64748b; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid rgba(148, 163, 184, 0.45); padding: 6px 8px; font-size: 12px; }
+    th { text-transform: uppercase; letter-spacing: 0.04em; font-size: 11px; }
+    .components-table thead { color: ${colorScheme.background}; }
+    .right-column section { margin-bottom: 16px; }
+    .right-column h4, .full-width h4 { margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; padding: 6px 10px; border-radius: 6px; background: rgba(148, 163, 184, 0.18); display: inline-block; }
+    .editable { min-height: 70px; border: 1px dashed rgba(148, 163, 184, 0.45); border-radius: 8px; padding: 8px 10px; line-height: 1.45; font-size: 13px; }
+    .full-width { margin-top: 20px; }
+    .footer-meta { display: flex; justify-content: space-between; margin-top: 24px; font-size: 11px; color: #94a3b8; }
+  </style>
+</head>
+<body>
+  ${cover}
+  ${recipePages}
+</body>
+</html>`;
+}
+
 async function createStandardDoc(
   note: ServerNote,
   language: LanguageCode = defaultLanguage,
