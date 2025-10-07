@@ -490,7 +490,7 @@ export default function ServerNotesSection() {
             <div className="mb-3 flex items-center gap-2 text-muted-foreground">
               <History className="h-4 w-4" />
               <span className="text-sm font-medium text-foreground">
-                Saved Documents
+                {t("serverNotes.saved.heading")}
               </span>
               {savedNotes.length > 0 && (
                 <Badge variant="secondary">{savedNotes.length}</Badge>
