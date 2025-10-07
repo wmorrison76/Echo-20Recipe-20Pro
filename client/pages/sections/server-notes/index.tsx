@@ -523,7 +523,7 @@ export default function ServerNotesSection() {
                       </div>
                       {note.outletName && (
                         <div>
-                          <strong>Outlet:</strong> {note.outletName}
+                          <strong>{t("serverNotes.saved.labels.outlet")}</strong> {note.outletName}
                         </div>
                       )}
                       <div>
