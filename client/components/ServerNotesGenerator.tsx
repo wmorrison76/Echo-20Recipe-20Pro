@@ -903,6 +903,7 @@ async function createStandardDoc(
   note: ServerNote,
   language: LanguageCode = defaultLanguage,
 ): Promise<Blob> {
+  const docStrings = getServerNotesDocStrings(language);
   const standard = note.pageFormat === "standard";
   const cardsPerPage = standard
     ? 1
