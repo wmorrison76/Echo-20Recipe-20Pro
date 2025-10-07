@@ -651,7 +651,7 @@ export default function GallerySection() {
           onFiles={handleFiles}
           className={cn("flex h-full flex-col gap-4 overflow-hidden rounded-[32px] border bg-black/15 p-5", mainSurface)}
         >
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2">
             <div className="relative min-w-[220px] flex-1">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-60" />
               <input
