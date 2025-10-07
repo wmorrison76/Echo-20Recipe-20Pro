@@ -485,8 +485,8 @@ export default function GallerySection() {
       )}
       data-echo-key="page:recipes:gallery"
     >
-      <div className="grid gap-6 xl:grid-cols-[260px_minmax(0,1fr)_340px]">
-        <aside className={cn("flex flex-col gap-6 rounded-[32px] border p-6", navSurface)}>
+      <div className="grid gap-6 xl:h-[760px] xl:grid-cols-[240px_minmax(0,1fr)_320px]">
+        <aside className={cn("flex h-full flex-col gap-6 rounded-[32px] border p-6", navSurface)}>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold tracking-tight">Library</h2>
@@ -762,7 +762,7 @@ export default function GallerySection() {
               <span>Drop files anywhere inside this workspace to import.</span>
             </div>
             <span className="hidden text-[10px] uppercase tracking-[0.3em] opacity-60 sm:block">
-              RAW · HEIC · JPG �� PNG
+              RAW · HEIC · JPG · PNG
             </span>
           </div>
 
