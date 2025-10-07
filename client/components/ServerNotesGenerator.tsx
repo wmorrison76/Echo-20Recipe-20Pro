@@ -1213,7 +1213,7 @@ async function createStandardDoc(
         }
 
         if (item.sellingNotes) {
-          cells.push(heading("Selling", HeadingLevel.HEADING_3));
+          cells.push(heading(docStrings.sectionSelling, HeadingLevel.HEADING_3));
           cells.push(paragraph(item.sellingNotes));
         }
 
