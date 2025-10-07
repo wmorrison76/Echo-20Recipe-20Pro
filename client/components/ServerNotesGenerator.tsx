@@ -1096,7 +1096,7 @@ async function createStandardDoc(
             }),
             new TableCell({
               children: [
-                heading("Preparation", HeadingLevel.HEADING_3),
+                heading(docStrings.sectionPreparation, HeadingLevel.HEADING_3),
                 ...instructionParagraphs,
               ],
             }),
@@ -1114,7 +1114,7 @@ async function createStandardDoc(
         entry.recipe.ingredients?.forEach((ing) =>
           children.push(paragraph(`• ${ing}`)),
         );
-        children.push(heading("Preparation", HeadingLevel.HEADING_3));
+        children.push(heading(docStrings.sectionPreparation, HeadingLevel.HEADING_3));
         entry.recipe.instructions?.forEach((step, idx) =>
           children.push(paragraph(`${idx + 1}. ${step}`)),
         );
