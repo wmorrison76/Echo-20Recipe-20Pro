@@ -382,7 +382,7 @@ export default function ServerNotesSection() {
                       variant="outline"
                       className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.35em] text-muted-foreground"
                     >
-                      Step 1
+                      {`${t("serverNotes.steps.step")} 1`}
                     </Badge>
                     <CardTitle className="text-sm font-semibold">Configuration</CardTitle>
                   </div>
