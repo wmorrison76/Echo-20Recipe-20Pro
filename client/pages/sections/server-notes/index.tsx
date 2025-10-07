@@ -531,7 +531,7 @@ export default function ServerNotesSection() {
                         {new Date(note.distributionDate).toLocaleDateString()}
                       </div>
                       <div>
-                        <strong>Layout:</strong> {note.layout.name}
+                        <strong>{t("serverNotes.saved.labels.layout")}</strong> {note.layout.name}
                       </div>
                       <div>
                         <strong>Updated:</strong>{" "}
