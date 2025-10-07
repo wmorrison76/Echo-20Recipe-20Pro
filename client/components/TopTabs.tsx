@@ -201,7 +201,9 @@ function TabLink({
       aria-label={label}
       className={cn(
         "group flex w-full items-center rounded-md text-sm font-medium transition-all duration-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-        collapsed ? "justify-center gap-0 px-1.5 py-1.5" : "gap-1.5 px-2.5 py-1.5",
+        collapsed
+          ? "justify-center gap-0 px-1.5 py-1.5"
+          : "gap-1.5 px-2.5 py-1.5",
         isActive
           ? "bg-primary text-primary-foreground shadow"
           : "text-foreground/75 hover:bg-muted hover:text-foreground",
@@ -410,17 +412,17 @@ export default function TopTabs() {
         <aside
           ref={asideRef}
           className={cn(
-        "pointer-events-auto fixed left-0 top-24 z-[3200] flex flex-col overflow-hidden rounded-3xl border border-white/60 bg-white/40 shadow-[0_32px_65px_-18px_rgba(15,23,42,0.45)] backdrop-blur-2xl transition-all duration-700 dark:border-cyan-500/25 dark:bg-slate-950/70 dark:shadow-[0_0_70px_rgba(56,189,248,0.65)] sm:top-28",
-        collapsed ? "w-14 space-y-2 p-2" : "w-60 space-y-3.5 p-4",
-      )}
-    >
-      <div className="relative flex h-full flex-col">
-        <div
-          className={cn(
-            "flex items-center gap-2 transition-all duration-500",
-            collapsed ? "justify-center gap-1" : "justify-start",
+            "pointer-events-auto fixed left-0 top-24 z-[3200] flex flex-col overflow-hidden rounded-3xl border border-white/60 bg-white/40 shadow-[0_32px_65px_-18px_rgba(15,23,42,0.45)] backdrop-blur-2xl transition-all duration-700 dark:border-cyan-500/25 dark:bg-slate-950/70 dark:shadow-[0_0_70px_rgba(56,189,248,0.65)] sm:top-28",
+            collapsed ? "w-14 space-y-2 p-2" : "w-60 space-y-3.5 p-4",
           )}
         >
+          <div className="relative flex h-full flex-col">
+            <div
+              className={cn(
+                "flex items-center gap-2 transition-all duration-500",
+                collapsed ? "justify-center gap-1" : "justify-start",
+              )}
+            >
               {!collapsed ? (
                 <span className="rounded-full border border-white/60 bg-white/70 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.35em] text-slate-600 shadow-sm dark:border-cyan-500/40 dark:bg-slate-900/70 dark:text-cyan-200">
                   Navigation
@@ -520,7 +522,9 @@ export default function TopTabs() {
               type="button"
               onClick={() => setCollapsedManual((prev) => !prev)}
               className="absolute right-[-18px] top-1/2 z-10 -translate-y-1/2 select-none rounded-full border border-gray-300 bg-background px-1.5 py-2.5 shadow transition duration-300 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-slate-700 dark:bg-slate-900/70 dark:hover:bg-slate-900"
-              aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
+              aria-label={
+                collapsed ? "Expand navigation" : "Collapse navigation"
+              }
               aria-pressed={!collapsed}
               aria-expanded={!collapsed}
               title={`${collapsed ? "Expand navigation" : "Collapse navigation"} (${navToggleShortcut})`}
@@ -529,19 +533,25 @@ export default function TopTabs() {
                 <span
                   className={cn(
                     "block h-4 w-0.5 rounded-full bg-gray-400 transition-all duration-300 dark:bg-slate-500",
-                    collapsed ? "translate-y-0 rotate-0" : "-translate-y-[3px] rotate-45",
+                    collapsed
+                      ? "translate-y-0 rotate-0"
+                      : "-translate-y-[3px] rotate-45",
                   )}
                 />
                 <span
                   className={cn(
                     "block h-4 w-0.5 rounded-full bg-gray-400 transition-all duration-300 dark:bg-slate-500",
-                    collapsed ? "opacity-100 scale-y-100" : "opacity-0 scale-y-0",
+                    collapsed
+                      ? "opacity-100 scale-y-100"
+                      : "opacity-0 scale-y-0",
                   )}
                 />
                 <span
                   className={cn(
                     "block h-4 w-0.5 rounded-full bg-gray-400 transition-all duration-300 dark:bg-slate-500",
-                    collapsed ? "translate-y-0 rotate-0" : "translate-y-[3px] -rotate-45",
+                    collapsed
+                      ? "translate-y-0 rotate-0"
+                      : "translate-y-[3px] -rotate-45",
                   )}
                 />
               </div>

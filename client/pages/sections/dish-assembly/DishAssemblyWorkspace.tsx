@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import type { Recipe } from "@shared/recipes";
 import { useAppData } from "@/context/AppDataContext";
@@ -76,9 +82,8 @@ const DishAssemblyWorkspace: React.FC = () => {
     return map;
   }, [recipes]);
 
-  const [componentRows, setComponentRows] = useState<DishComponentRow[]>(
-    createInitialRows,
-  );
+  const [componentRows, setComponentRows] =
+    useState<DishComponentRow[]>(createInitialRows);
   const [menuTitle, setMenuTitle] = useState("");
   const [menuPrice, setMenuPrice] = useState("");
   const [menuDescription, setMenuDescription] = useState("");
@@ -86,8 +91,8 @@ const DishAssemblyWorkspace: React.FC = () => {
   const [serviceware, setServiceware] = useState("");
   const [allergenRows, setAllergenRows] = useState<AllergenRow[]>([]);
   const [pairingRows, setPairingRows] = useState<PairingRow[]>([]);
-  const [posMappings, setPosMappings] = useState<PosMapping[]>(
-    () => defaultPosMappings(),
+  const [posMappings, setPosMappings] = useState<PosMapping[]>(() =>
+    defaultPosMappings(),
   );
   const [activeComponentId, setActiveComponentId] = useState<string | null>(
     null,
@@ -110,10 +115,7 @@ const DishAssemblyWorkspace: React.FC = () => {
     [componentRows, recipeSummaries],
   );
 
-  const priceNumber = useMemo(
-    () => parsePriceString(menuPrice),
-    [menuPrice],
-  );
+  const priceNumber = useMemo(() => parsePriceString(menuPrice), [menuPrice]);
 
   const foodCostPct = useMemo(() => {
     if (!priceNumber || priceNumber <= 0) return null;
@@ -145,10 +147,16 @@ const DishAssemblyWorkspace: React.FC = () => {
         rows.map((row) => {
           if (row.id !== rowId) return row;
           if (!recipeId) {
-            return { ...row, recipeId: null, label: row.label, notes: row.notes };
+            return {
+              ...row,
+              recipeId: null,
+              label: row.label,
+              notes: row.notes,
+            };
           }
           const summary = recipeSummaries.get(recipeId);
-          const baselineLabel = summary?.menuName || summary?.title || row.label;
+          const baselineLabel =
+            summary?.menuName || summary?.title || row.label;
           return {
             ...row,
             recipeId,
@@ -187,8 +195,10 @@ const DishAssemblyWorkspace: React.FC = () => {
     const ware = generateServiceware(componentRows, summaryMap);
     const allergens = generateAllergenRows(componentRows, summaryMap);
     const pairings = generatePairings(summaryMap, componentRows);
-    const { totalCost: cost, currency: detectedCurrency } =
-      computeDishCost(componentRows, summaryMap);
+    const { totalCost: cost, currency: detectedCurrency } = computeDishCost(
+      componentRows,
+      summaryMap,
+    );
     const targetPrice = cost > 0 ? cost * 3.25 : null;
     const formattedPrice = targetPrice
       ? formatCurrencyValue(targetPrice, detectedCurrency)
@@ -203,7 +213,9 @@ const DishAssemblyWorkspace: React.FC = () => {
     if (formattedPrice) {
       setMenuPrice(formattedPrice);
     }
-    setPosMappings((current) => mergePosMappings(current, generatedTitle, formattedPrice));
+    setPosMappings((current) =>
+      mergePosMappings(current, generatedTitle, formattedPrice),
+    );
 
     toast({
       title: "Dish assembly drafted",
@@ -275,12 +287,9 @@ const DishAssemblyWorkspace: React.FC = () => {
     return recipeSummaries.get(row.recipeId) ?? null;
   }, [activeComponentId, componentRows, recipeSummaries]);
 
-  const focusRecipe = useCallback(
-    (rowId: string) => {
-      setActiveComponentId(rowId);
-    },
-    [],
-  );
+  const focusRecipe = useCallback((rowId: string) => {
+    setActiveComponentId(rowId);
+  }, []);
 
   const navigateToRecipeSearch = useCallback(
     (recipeId: string) => {
@@ -333,7 +342,9 @@ const DishAssemblyWorkspace: React.FC = () => {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => setImageRotationIndex((index) => index + 1)}
+                      onClick={() =>
+                        setImageRotationIndex((index) => index + 1)
+                      }
                       disabled={componentRows.every((row) => !row.recipeId)}
                     >
                       Cycle selections
@@ -364,15 +375,27 @@ const DishAssemblyWorkspace: React.FC = () => {
                     <Input
                       value={menuPrice}
                       onChange={(event) => setMenuPrice(event.target.value)}
-                      placeholder={formatCurrencyValue(totalCost * 3.25, currency)}
+                      placeholder={formatCurrencyValue(
+                        totalCost * 3.25,
+                        currency,
+                      )}
                       className="rounded-xl border-primary/40 bg-background/80 text-lg font-semibold"
                     />
                   </label>
                   <div className="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                    <Badge variant="outline" className="border-primary/40 text-primary">
-                      Food Cost {foodCostPct != null ? `${Math.round(foodCostPct * 100)}%` : "—"}
+                    <Badge
+                      variant="outline"
+                      className="border-primary/40 text-primary"
+                    >
+                      Food Cost{" "}
+                      {foodCostPct != null
+                        ? `${Math.round(foodCostPct * 100)}%`
+                        : "—"}
                     </Badge>
-                    <Badge variant="outline" className="border-primary/40 text-primary">
+                    <Badge
+                      variant="outline"
+                      className="border-primary/40 text-primary"
+                    >
                       {menuEngineering.classification}
                     </Badge>
                   </div>
@@ -475,7 +498,11 @@ const DishAssemblyWorkspace: React.FC = () => {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => setAllergenRows(generateAllergenRows(componentRows, recipeSummaries))}
+                      onClick={() =>
+                        setAllergenRows(
+                          generateAllergenRows(componentRows, recipeSummaries),
+                        )
+                      }
                       className="h-7 text-xs uppercase tracking-[0.28em]"
                     >
                       Refresh
@@ -507,7 +534,9 @@ const DishAssemblyWorkspace: React.FC = () => {
                               key={row.id}
                               className="border-t border-border/60 text-[12px]"
                             >
-                              <td className="px-3 py-2 font-medium">{row.itemName}</td>
+                              <td className="px-3 py-2 font-medium">
+                                {row.itemName}
+                              </td>
                               <td className="px-3 py-2">{row.allergen}</td>
                               <td className="px-3 py-2 text-xs text-muted-foreground">
                                 {row.modify}
@@ -528,7 +557,11 @@ const DishAssemblyWorkspace: React.FC = () => {
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => setPairingRows(generatePairings(recipeSummaries, componentRows))}
+                      onClick={() =>
+                        setPairingRows(
+                          generatePairings(recipeSummaries, componentRows),
+                        )
+                      }
                       className="h-7 text-xs uppercase tracking-[0.28em]"
                     >
                       Refresh
@@ -560,7 +593,9 @@ const DishAssemblyWorkspace: React.FC = () => {
                               key={row.id}
                               className="border-t border-border/60 text-[12px]"
                             >
-                              <td className="px-3 py-2 font-medium">{row.itemName}</td>
+                              <td className="px-3 py-2 font-medium">
+                                {row.itemName}
+                              </td>
                               <td className="px-3 py-2">{row.year || "NV"}</td>
                               <td className="px-3 py-2">{row.location}</td>
                               <td className="px-3 py-2">{row.country}</td>

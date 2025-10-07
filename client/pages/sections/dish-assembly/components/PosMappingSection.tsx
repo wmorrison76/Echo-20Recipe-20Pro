@@ -3,11 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import {
-  POS_SYSTEM_DEFINITIONS,
-  PosMapping,
-  buildPosCode,
-} from "../utils";
+import { POS_SYSTEM_DEFINITIONS, PosMapping, buildPosCode } from "../utils";
 import { Sparkles, CheckCircle2 } from "lucide-react";
 
 type PosMappingSectionProps = {
@@ -78,16 +74,17 @@ const PosMappingSection: React.FC<PosMappingSectionProps> = ({
         </div>
         <div className="space-y-3">
           {POS_SYSTEM_DEFINITIONS.map((definition) => {
-            const entry =
-              mappings.find((mapping) => mapping.key === definition.key) ?? {
-                key: definition.key,
-                systemName: definition.name,
-                itemCode: "",
-                price: "",
-                autoCode: true,
-                autoPrice: true,
-                status: "draft" as PosMapping["status"],
-              };
+            const entry = mappings.find(
+              (mapping) => mapping.key === definition.key,
+            ) ?? {
+              key: definition.key,
+              systemName: definition.name,
+              itemCode: "",
+              price: "",
+              autoCode: true,
+              autoPrice: true,
+              status: "draft" as PosMapping["status"],
+            };
             const badgeVariant =
               entry.status === "synced"
                 ? "default"
@@ -103,7 +100,10 @@ const PosMappingSection: React.FC<PosMappingSectionProps> = ({
                   <span className="text-sm font-semibold tracking-[0.22em] text-foreground">
                     {definition.name}
                   </span>
-                  <Badge variant={badgeVariant} className="w-fit uppercase tracking-[0.3em]">
+                  <Badge
+                    variant={badgeVariant}
+                    className="w-fit uppercase tracking-[0.3em]"
+                  >
                     {entry.status}
                   </Badge>
                 </div>

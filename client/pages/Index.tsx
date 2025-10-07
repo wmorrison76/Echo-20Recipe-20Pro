@@ -13,7 +13,10 @@ import SubtleBottomGlow from "@/components/SubtleBottomGlow";
 import TronBackdrop from "@/components/TronBackdrop";
 import CornerBrand from "@/components/CornerBrand";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { PageToolbarProvider, usePageToolbar } from "@/context/PageToolbarContext";
+import {
+  PageToolbarProvider,
+  usePageToolbar,
+} from "@/context/PageToolbarContext";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
 
@@ -31,7 +34,10 @@ function IndexContent() {
   const {
     config: { items: toolbarItems, title: toolbarTitle },
   } = usePageToolbar();
-  const toolbarTransition = { duration: 0.375, ease: [0.4, 0, 0.2, 1] } as const;
+  const toolbarTransition = {
+    duration: 0.375,
+    ease: [0.4, 0, 0.2, 1],
+  } as const;
 
   return (
     <TronBackdrop>

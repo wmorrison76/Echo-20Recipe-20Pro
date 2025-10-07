@@ -1,5 +1,14 @@
 import { useState } from "react";
-import { FileText, Download, Save, Eye, Clock, ChefHat, Languages, Pencil } from "lucide-react";
+import {
+  FileText,
+  Download,
+  Save,
+  Eye,
+  Clock,
+  ChefHat,
+  Languages,
+  Pencil,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -547,7 +556,8 @@ type LucccaPreparedEntry = {
   imageSrc?: string;
 };
 
-const ALLERGEN_PATTERN = /gluten|dairy|milk|nut|peanut|tree nut|shellfish|fish|soy|egg|sesame|wheat/i;
+const ALLERGEN_PATTERN =
+  /gluten|dairy|milk|nut|peanut|tree nut|shellfish|fish|soy|egg|sesame|wheat/i;
 
 const colorToHex = (value: string | undefined, fallback = "000000"): string => {
   if (!value) return fallback;
@@ -608,10 +618,9 @@ function prepareLucccaEntries(note: ServerNote): LucccaPreparedEntry[] {
       notes: "",
     }));
 
-    const allergenSource =
-      exportData?.allergens?.length
-        ? exportData.allergens
-        : entry.recipe.tags?.filter((tag) => ALLERGEN_PATTERN.test(tag)) ?? [];
+    const allergenSource = exportData?.allergens?.length
+      ? exportData.allergens
+      : (entry.recipe.tags?.filter((tag) => ALLERGEN_PATTERN.test(tag)) ?? []);
 
     const allergenRows = allergenSource.length
       ? allergenSource.map((label) => ({
@@ -636,7 +645,9 @@ function prepareLucccaEntries(note: ServerNote): LucccaPreparedEntry[] {
       alternative: "",
     }));
 
-    const beverageLines = entry.wineSelection ? splitLines(entry.wineSelection) : [];
+    const beverageLines = entry.wineSelection
+      ? splitLines(entry.wineSelection)
+      : [];
     const beverageRows = beverageLines.map((line) => {
       const parts = line.split("|").map((part) => part.trim());
       return {
@@ -673,9 +684,7 @@ function prepareLucccaEntries(note: ServerNote): LucccaPreparedEntry[] {
       allergens: paddedAllergens,
       beverages: paddedBeverages,
       imageSrc:
-        entry.recipe.imageDataUrls?.[0] ||
-        entry.recipe.image ||
-        undefined,
+        entry.recipe.imageDataUrls?.[0] || entry.recipe.image || undefined,
     } satisfies LucccaPreparedEntry;
   });
 }
@@ -791,19 +800,25 @@ function createLucccaHtml(note: ServerNote, lang: LanguageCode): string {
             <section>
               <h4>Menu Description</h4>
               <div class="editable" contenteditable="true">${
-                prepared.description ? formatMultilineHtml(prepared.description) : "Add description"
+                prepared.description
+                  ? formatMultilineHtml(prepared.description)
+                  : "Add description"
               }</div>
             </section>
             <section>
               <h4>Server Notes</h4>
               <div class="editable" contenteditable="true">${
-                prepared.serverNotes ? formatMultilineHtml(prepared.serverNotes) : "Add notes"
+                prepared.serverNotes
+                  ? formatMultilineHtml(prepared.serverNotes)
+                  : "Add notes"
               }</div>
             </section>
             <section>
               <h4>Serviceware</h4>
               <div class="editable" contenteditable="true">${
-                prepared.serviceware ? formatMultilineHtml(prepared.serviceware) : "Add utensils needed"
+                prepared.serviceware
+                  ? formatMultilineHtml(prepared.serviceware)
+                  : "Add utensils needed"
               }</div>
             </section>
           </div>
@@ -1110,33 +1125,48 @@ async function createStandardDoc(
           }),
         );
       } else {
-        children.push(heading(docStrings.sectionIngredients, HeadingLevel.HEADING_3));
+        children.push(
+          heading(docStrings.sectionIngredients, HeadingLevel.HEADING_3),
+        );
         entry.recipe.ingredients?.forEach((ing) =>
           children.push(paragraph(`• ${ing}`)),
         );
-        children.push(heading(docStrings.sectionPreparation, HeadingLevel.HEADING_3));
+        children.push(
+          heading(docStrings.sectionPreparation, HeadingLevel.HEADING_3),
+        );
         entry.recipe.instructions?.forEach((step, idx) =>
           children.push(paragraph(`${idx + 1}. ${step}`)),
         );
       }
 
       if (entry.wineSelection) {
-        children.push(heading(docStrings.sectionWinePairing, HeadingLevel.HEADING_3));
+        children.push(
+          heading(docStrings.sectionWinePairing, HeadingLevel.HEADING_3),
+        );
         children.push(paragraph(entry.wineSelection));
       }
 
       if (entry.sellingNotes) {
-        children.push(heading(docStrings.sectionSellingPoints, HeadingLevel.HEADING_3));
+        children.push(
+          heading(docStrings.sectionSellingPoints, HeadingLevel.HEADING_3),
+        );
         children.push(paragraph(entry.sellingNotes));
       }
 
       if (entry.serviceInstructions) {
-        children.push(heading(docStrings.sectionServiceInstructions, HeadingLevel.HEADING_3));
+        children.push(
+          heading(
+            docStrings.sectionServiceInstructions,
+            HeadingLevel.HEADING_3,
+          ),
+        );
         children.push(paragraph(entry.serviceInstructions));
       }
 
       if (entry.silverwareRequired?.length) {
-        children.push(heading(docStrings.sectionRequiredSilverware, HeadingLevel.HEADING_3));
+        children.push(
+          heading(docStrings.sectionRequiredSilverware, HeadingLevel.HEADING_3),
+        );
         entry.silverwareRequired.forEach((item) =>
           children.push(paragraph(`• ${item}`)),
         );
@@ -1192,7 +1222,9 @@ async function createStandardDoc(
         }
 
         if (note.layout.indexCardLayout.contentPriority !== "instructions") {
-          cells.push(heading(docStrings.sectionIngredients, HeadingLevel.HEADING_3));
+          cells.push(
+            heading(docStrings.sectionIngredients, HeadingLevel.HEADING_3),
+          );
           item.recipe.ingredients
             ?.slice(0, 8)
             .forEach((ing) => cells.push(paragraph(`• ${ing}`)));
@@ -1213,7 +1245,9 @@ async function createStandardDoc(
         }
 
         if (item.sellingNotes) {
-          cells.push(heading(docStrings.sectionSelling, HeadingLevel.HEADING_3));
+          cells.push(
+            heading(docStrings.sectionSelling, HeadingLevel.HEADING_3),
+          );
           cells.push(paragraph(item.sellingNotes));
         }
 
@@ -1327,9 +1361,9 @@ async function createLucccaDoc(
   const sections: ISectionOptions[] = [];
 
   const coverChildren: Paragraph[] = [];
-  const formattedDistributionDate = new Date(note.distributionDate).toLocaleDateString(
-    language,
-  );
+  const formattedDistributionDate = new Date(
+    note.distributionDate,
+  ).toLocaleDateString(language);
 
   if (note.companyName) {
     coverChildren.push(
@@ -1467,7 +1501,11 @@ async function createLucccaDoc(
               new TableCell({
                 width: { size: 75, type: WidthType.PERCENTAGE },
                 borders: {
-                  bottom: { style: BorderStyle.SINGLE, size: 12, color: primaryHex },
+                  bottom: {
+                    style: BorderStyle.SINGLE,
+                    size: 12,
+                    color: primaryHex,
+                  },
                 },
                 children: [
                   new Paragraph({
@@ -1486,7 +1524,11 @@ async function createLucccaDoc(
               new TableCell({
                 width: { size: 25, type: WidthType.PERCENTAGE },
                 borders: {
-                  bottom: { style: BorderStyle.SINGLE, size: 12, color: primaryHex },
+                  bottom: {
+                    style: BorderStyle.SINGLE,
+                    size: 12,
+                    color: primaryHex,
+                  },
                 },
                 children: [
                   new Paragraph({
@@ -1677,47 +1719,55 @@ function createLucccaDishTable(
   labels: { qty: string; component: string; notes: string },
 ): Table {
   const headerRow = new TableRow({
-    children: [labels.qty, labels.component, labels.notes].map((title) =>
-      new TableCell({
-        shading: { fill: headerHex, color: "FFFFFF" },
+    children: [labels.qty, labels.component, labels.notes].map(
+      (title) =>
+        new TableCell({
+          shading: { fill: headerHex, color: "FFFFFF" },
+          children: [
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                new TextRun({ text: title, bold: true, color: "FFFFFF", font }),
+              ],
+            }),
+          ],
+        }),
+    ),
+  });
+
+  const rows = prepared.dishComponents.map(
+    (row) =>
+      new TableRow({
         children: [
-          new Paragraph({
-            alignment: AlignmentType.CENTER,
+          new TableCell({
             children: [
-              new TextRun({ text: title, bold: true, color: "FFFFFF", font }),
+              new Paragraph({
+                children: [
+                  new TextRun({ text: row.qty, color: textHex, font }),
+                ],
+              }),
+            ],
+          }),
+          new TableCell({
+            children: [
+              new Paragraph({
+                children: [
+                  new TextRun({ text: row.component, color: textHex, font }),
+                ],
+              }),
+            ],
+          }),
+          new TableCell({
+            children: [
+              new Paragraph({
+                children: [
+                  new TextRun({ text: row.notes, color: textHex, font }),
+                ],
+              }),
             ],
           }),
         ],
       }),
-    ),
-  });
-
-  const rows = prepared.dishComponents.map((row) =>
-    new TableRow({
-      children: [
-        new TableCell({
-          children: [
-            new Paragraph({
-              children: [new TextRun({ text: row.qty, color: textHex, font })],
-            }),
-          ],
-        }),
-        new TableCell({
-          children: [
-            new Paragraph({
-              children: [new TextRun({ text: row.component, color: textHex, font })],
-            }),
-          ],
-        }),
-        new TableCell({
-          children: [
-            new Paragraph({
-              children: [new TextRun({ text: row.notes, color: textHex, font })],
-            }),
-          ],
-        }),
-      ],
-    }),
   );
 
   return new Table({
@@ -1727,7 +1777,11 @@ function createLucccaDishTable(
       bottom: { style: BorderStyle.SINGLE, size: 4, color: borderHex },
       left: { style: BorderStyle.SINGLE, size: 4, color: borderHex },
       right: { style: BorderStyle.SINGLE, size: 4, color: borderHex },
-      insideHorizontal: { style: BorderStyle.SINGLE, size: 2, color: borderHex },
+      insideHorizontal: {
+        style: BorderStyle.SINGLE,
+        size: 2,
+        color: borderHex,
+      },
       insideVertical: { style: BorderStyle.SINGLE, size: 2, color: borderHex },
     },
     rows: [headerRow, ...rows],
@@ -1739,7 +1793,12 @@ function createLucccaAllergenTable(
   headerHex: string,
   textHex: string,
   font: string,
-  labels: { item: string; allergy: string; modify: string; alternative: string },
+  labels: {
+    item: string;
+    allergy: string;
+    modify: string;
+    alternative: string;
+  },
 ): Table {
   const headerRow = new TableRow({
     children: [
@@ -1747,48 +1806,64 @@ function createLucccaAllergenTable(
       labels.allergy,
       labels.modify,
       labels.alternative,
-    ].map((title) =>
-      new TableCell({
-        shading: { fill: headerHex, color: "FFFFFF" },
+    ].map(
+      (title) =>
+        new TableCell({
+          shading: { fill: headerHex, color: "FFFFFF" },
+          children: [
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              children: [
+                new TextRun({ text: title, bold: true, color: "FFFFFF", font }),
+              ],
+            }),
+          ],
+        }),
+    ),
+  });
+
+  const rows = prepared.allergens.map(
+    (row) =>
+      new TableRow({
         children: [
-          new Paragraph({
-            alignment: AlignmentType.CENTER,
+          new TableCell({
             children: [
-              new TextRun({ text: title, bold: true, color: "FFFFFF", font }),
+              new Paragraph({
+                children: [
+                  new TextRun({ text: row.item, color: textHex, font }),
+                ],
+              }),
+            ],
+          }),
+          new TableCell({
+            children: [
+              new Paragraph({
+                children: [
+                  new TextRun({ text: row.allergen, color: textHex, font }),
+                ],
+              }),
+            ],
+          }),
+          new TableCell({
+            children: [
+              new Paragraph({
+                children: [
+                  new TextRun({ text: row.modify, color: textHex, font }),
+                ],
+              }),
+            ],
+          }),
+          new TableCell({
+            children: [
+              new Paragraph({
+                children: [
+                  new TextRun({ text: row.alternative, color: textHex, font }),
+                ],
+              }),
             ],
           }),
         ],
       }),
-    ),
-  });
-
-  const rows = prepared.allergens.map((row) =>
-    new TableRow({
-      children: [
-        new TableCell({
-          children: [
-            new Paragraph({ children: [new TextRun({ text: row.item, color: textHex, font })] }),
-          ],
-        }),
-        new TableCell({
-          children: [
-            new Paragraph({ children: [new TextRun({ text: row.allergen, color: textHex, font })] }),
-          ],
-        }),
-        new TableCell({
-          children: [
-            new Paragraph({ children: [new TextRun({ text: row.modify, color: textHex, font })] }),
-          ],
-        }),
-        new TableCell({
-          children: [
-            new Paragraph({
-              children: [new TextRun({ text: row.alternative, color: textHex, font })],
-            }),
-          ],
-        }),
-      ],
-    }),
   );
 
   return new Table({
@@ -1821,31 +1896,48 @@ function createLucccaBeverageTable(
     ),
   });
 
-  const rows = prepared.beverages.map((row) =>
-    new TableRow({
-      children: [
-        new TableCell({
-          children: [
-            new Paragraph({ children: [new TextRun({ text: row.item, color: textHex, font })] }),
-          ],
-        }),
-        new TableCell({
-          children: [
-            new Paragraph({ children: [new TextRun({ text: row.year, color: textHex, font })] }),
-          ],
-        }),
-        new TableCell({
-          children: [
-            new Paragraph({ children: [new TextRun({ text: row.location, color: textHex, font })] }),
-          ],
-        }),
-        new TableCell({
-          children: [
-            new Paragraph({ children: [new TextRun({ text: row.country, color: textHex, font })] }),
-          ],
-        }),
-      ],
-    }),
+  const rows = prepared.beverages.map(
+    (row) =>
+      new TableRow({
+        children: [
+          new TableCell({
+            children: [
+              new Paragraph({
+                children: [
+                  new TextRun({ text: row.item, color: textHex, font }),
+                ],
+              }),
+            ],
+          }),
+          new TableCell({
+            children: [
+              new Paragraph({
+                children: [
+                  new TextRun({ text: row.year, color: textHex, font }),
+                ],
+              }),
+            ],
+          }),
+          new TableCell({
+            children: [
+              new Paragraph({
+                children: [
+                  new TextRun({ text: row.location, color: textHex, font }),
+                ],
+              }),
+            ],
+          }),
+          new TableCell({
+            children: [
+              new Paragraph({
+                children: [
+                  new TextRun({ text: row.country, color: textHex, font }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      }),
   );
 
   return new Table({
@@ -1887,7 +1979,9 @@ type ServerNotesDocStrings = {
   tableCountry: string;
 };
 
-function getServerNotesDocStrings(language: LanguageCode): ServerNotesDocStrings {
+function getServerNotesDocStrings(
+  language: LanguageCode,
+): ServerNotesDocStrings {
   const fallbackDictionary = dictionaries[defaultLanguage];
   const dictionary = dictionaries[language] ?? fallbackDictionary;
   const t = (key: string, fallback: string) =>
@@ -1896,24 +1990,54 @@ function getServerNotesDocStrings(language: LanguageCode): ServerNotesDocStrings
   return {
     titleFallback: t("serverNotes.doc.titleFallback", "Server Notes"),
     serviceBriefing: t("serverNotes.doc.serviceBriefing", "Service Briefing"),
-    distributionDate: t("serverNotes.doc.distributionDate", "Distribution Date"),
+    distributionDate: t(
+      "serverNotes.doc.distributionDate",
+      "Distribution Date",
+    ),
     menuOverview: t("serverNotes.doc.menuOverview", "Menu Overview"),
-    distributionNotes: t("serverNotes.doc.distributionNotes", "Distribution Notes"),
-    sectionMenuDescription: t("serverNotes.doc.section.menuDescription", "Menu Description"),
-    sectionServerNotes: t("serverNotes.doc.section.serverNotes", "Server Notes"),
+    distributionNotes: t(
+      "serverNotes.doc.distributionNotes",
+      "Distribution Notes",
+    ),
+    sectionMenuDescription: t(
+      "serverNotes.doc.section.menuDescription",
+      "Menu Description",
+    ),
+    sectionServerNotes: t(
+      "serverNotes.doc.section.serverNotes",
+      "Server Notes",
+    ),
     sectionServiceware: t("serverNotes.doc.section.serviceware", "Serviceware"),
     sectionIngredients: t("serverNotes.doc.section.ingredients", "Ingredients"),
     sectionPreparation: t("serverNotes.doc.section.preparation", "Preparation"),
     sectionSteps: t("serverNotes.doc.section.steps", "Steps"),
-    sectionWinePairing: t("serverNotes.doc.section.winePairing", "Wine Pairing"),
-    sectionSellingPoints: t("serverNotes.doc.section.sellingPoints", "Selling Points"),
-    sectionServiceInstructions: t("serverNotes.doc.section.serviceInstructions", "Service Instructions"),
-    sectionRequiredSilverware: t("serverNotes.doc.section.requiredSilverware", "Required Silverware"),
+    sectionWinePairing: t(
+      "serverNotes.doc.section.winePairing",
+      "Wine Pairing",
+    ),
+    sectionSellingPoints: t(
+      "serverNotes.doc.section.sellingPoints",
+      "Selling Points",
+    ),
+    sectionServiceInstructions: t(
+      "serverNotes.doc.section.serviceInstructions",
+      "Service Instructions",
+    ),
+    sectionRequiredSilverware: t(
+      "serverNotes.doc.section.requiredSilverware",
+      "Required Silverware",
+    ),
     sectionWine: t("serverNotes.doc.section.wine", "Wine"),
     sectionSelling: t("serverNotes.doc.section.selling", "Selling"),
-    sectionDishComponents: t("serverNotes.doc.section.dishComponents", "Dish Components"),
+    sectionDishComponents: t(
+      "serverNotes.doc.section.dishComponents",
+      "Dish Components",
+    ),
     sectionAllergens: t("serverNotes.doc.section.allergens", "Allergens"),
-    sectionBeverages: t("serverNotes.doc.section.beverages", "Wine & Beverage Pairings"),
+    sectionBeverages: t(
+      "serverNotes.doc.section.beverages",
+      "Wine & Beverage Pairings",
+    ),
     tableQty: t("serverNotes.doc.table.qty", "Qty"),
     tableComponent: t("serverNotes.doc.table.component", "Component"),
     tableNotes: t("serverNotes.doc.table.notes", "Notes"),

@@ -5,11 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import {
-  DishComponentRow,
-  RecipeSummary,
-  formatCurrencyValue,
-} from "../utils";
+import { DishComponentRow, RecipeSummary, formatCurrencyValue } from "../utils";
 import { ArrowRight } from "lucide-react";
 
 type RecipePreviewPanelProps = {
@@ -51,7 +47,9 @@ const RecipePreviewPanel: React.FC<RecipePreviewPanelProps> = ({
   const activeEntry = useMemo(() => {
     if (!entries.length) return null;
     if (!activeComponentId) return entries[0]!;
-    return entries.find((entry) => entry.row.id === activeComponentId) ?? entries[0]!;
+    return (
+      entries.find((entry) => entry.row.id === activeComponentId) ?? entries[0]!
+    );
   }, [activeComponentId, entries]);
 
   return (
@@ -80,8 +78,12 @@ const RecipePreviewPanel: React.FC<RecipePreviewPanelProps> = ({
                     {row.label || summary.menuName || summary.title}
                   </span>
                   <div className="flex flex-wrap gap-1 text-[10px] uppercase tracking-[0.32em] text-muted-foreground">
-                    {summary.course ? <Badge variant="outline">{summary.course}</Badge> : null}
-                    {summary.cuisine ? <Badge variant="outline">{summary.cuisine}</Badge> : null}
+                    {summary.course ? (
+                      <Badge variant="outline">{summary.course}</Badge>
+                    ) : null}
+                    {summary.cuisine ? (
+                      <Badge variant="outline">{summary.cuisine}</Badge>
+                    ) : null}
                     {summary.allergens.slice(0, 2).map((tag) => (
                       <Badge key={tag} variant="outline">
                         {tag}
@@ -102,7 +104,9 @@ const RecipePreviewPanel: React.FC<RecipePreviewPanelProps> = ({
                     Component detail
                   </div>
                   <h3 className="text-lg font-semibold tracking-[0.08em]">
-                    {activeEntry.row.label || activeEntry.summary.menuName || activeEntry.summary.title}
+                    {activeEntry.row.label ||
+                      activeEntry.summary.menuName ||
+                      activeEntry.summary.title}
                   </h3>
                 </div>
                 <Button
@@ -124,7 +128,11 @@ const RecipePreviewPanel: React.FC<RecipePreviewPanelProps> = ({
                 ) : null}
                 {activeEntry.summary.costPerPortion != null ? (
                   <Badge variant="outline">
-                    Cost {formatCurrencyValue(activeEntry.summary.costPerPortion, activeEntry.summary.currency)}
+                    Cost{" "}
+                    {formatCurrencyValue(
+                      activeEntry.summary.costPerPortion,
+                      activeEntry.summary.currency,
+                    )}
                   </Badge>
                 ) : null}
               </div>
@@ -145,7 +153,11 @@ const RecipePreviewPanel: React.FC<RecipePreviewPanelProps> = ({
                         <span className="mt-0.5 h-1.5 w-1.5 flex-none rounded-full bg-primary/60" />
                         <span>{line}</span>
                       </li>
-                    )) ?? <li className="text-xs text-muted-foreground">No ingredient list captured.</li>}
+                    )) ?? (
+                      <li className="text-xs text-muted-foreground">
+                        No ingredient list captured.
+                      </li>
+                    )}
                   </ul>
                 </ScrollArea>
               </div>
@@ -158,7 +170,9 @@ const RecipePreviewPanel: React.FC<RecipePreviewPanelProps> = ({
                     {activeEntry.recipe.instructions?.length ? (
                       activeEntry.recipe.instructions.map((step, index) => (
                         <li key={index} className="flex gap-2">
-                          <span className="font-semibold text-primary">{index + 1}.</span>
+                          <span className="font-semibold text-primary">
+                            {index + 1}.
+                          </span>
                           <span>{step}</span>
                         </li>
                       ))

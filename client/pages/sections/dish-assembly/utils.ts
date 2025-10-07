@@ -72,7 +72,11 @@ export const POS_SYSTEM_DEFINITIONS: Array<{
   { key: "aloha", name: "NCR Aloha / Voyix", short: "Aloha" },
   { key: "toast", name: "Toast", short: "Toast" },
   { key: "square", name: "Square for Restaurants", short: "Square" },
-  { key: "lightspeed", name: "Lightspeed Restaurant (K-Series)", short: "Lightspeed" },
+  {
+    key: "lightspeed",
+    name: "Lightspeed Restaurant (K-Series)",
+    short: "Lightspeed",
+  },
   { key: "spoton", name: "SpotOn Restaurant", short: "SpotOn" },
 ];
 
@@ -96,7 +100,11 @@ const numberFromUnknown = (value: unknown): number | null => {
 };
 
 const normalizeText = (value: unknown): string =>
-  typeof value === "string" ? value.trim() : value == null ? "" : String(value).trim();
+  typeof value === "string"
+    ? value.trim()
+    : value == null
+      ? ""
+      : String(value).trim();
 
 export const summarizeRecipe = (recipe: Recipe): RecipeSummary => {
   const extra = (recipe.extra ?? {}) as Record<string, unknown>;
@@ -144,7 +152,9 @@ export const summarizeRecipe = (recipe: Recipe): RecipeSummary => {
   }
 
   const rating = typeof recipe.rating === "number" ? recipe.rating : null;
-  const popularityHint = numberFromUnknown(extra.salesVelocity ?? extra.popularityScore);
+  const popularityHint = numberFromUnknown(
+    extra.salesVelocity ?? extra.popularityScore,
+  );
 
   const image =
     recipe.imageDataUrls?.[0] ??
@@ -282,8 +292,10 @@ export const generateServerNotes = (
   if (!lines.length) {
     return "Confirm expo understands build, allergen alerts, and cadence for fire to table.";
   }
-  lines.push("• Call out premium ingredients and prep story when presenting." );
-  lines.push("• Remind team to align phrasing with menu description for upsell consistency.");
+  lines.push("• Call out premium ingredients and prep story when presenting.");
+  lines.push(
+    "• Remind team to align phrasing with menu description for upsell consistency.",
+  );
   return lines.join("\n");
 };
 
@@ -404,7 +416,8 @@ export const generatePairings = (
     const summary = summaries.get(row.recipeId);
     if (!summary) continue;
     const cuisineKey = summary.cuisine?.toLowerCase() ?? "";
-    const candidates = cuisinePairings[cuisineKey as keyof typeof cuisinePairings];
+    const candidates =
+      cuisinePairings[cuisineKey as keyof typeof cuisinePairings];
     if (candidates && candidates.length) {
       for (const candidate of candidates) {
         const key = `${candidate.itemName}:${candidate.location}:${candidate.country}`;
@@ -483,30 +496,37 @@ export const parsePriceString = (value: string): number | null => {
 export const classifyMenuEngineering = (
   foodCostPct: number | null,
   popularityScore: number,
-): { classification: "Star" | "Plowhorse" | "Puzzle" | "Dog"; narrative: string } => {
+): {
+  classification: "Star" | "Plowhorse" | "Puzzle" | "Dog";
+  narrative: string;
+} => {
   const pct = foodCostPct ?? 0.33;
   const popular = popularityScore >= 60;
   if (pct <= 0.3 && popular) {
     return {
       classification: "Star",
-      narrative: "High profitability & high demand. Feature in marketing and maintain plating standards.",
+      narrative:
+        "High profitability & high demand. Feature in marketing and maintain plating standards.",
     };
   }
   if (pct > 0.3 && popular) {
     return {
       classification: "Plowhorse",
-      narrative: "Guest favorite with thinner margins. Consider portion refinement or modest price move.",
+      narrative:
+        "Guest favorite with thinner margins. Consider portion refinement or modest price move.",
     };
   }
   if (pct <= 0.3) {
     return {
       classification: "Puzzle",
-      narrative: "Strong margin but trending lower demand. Coach team on storytelling and placement.",
+      narrative:
+        "Strong margin but trending lower demand. Coach team on storytelling and placement.",
     };
   }
   return {
     classification: "Dog",
-    narrative: "Low margin and low demand. Validate concept or reposition within the menu mix.",
+    narrative:
+      "Low margin and low demand. Validate concept or reposition within the menu mix.",
   };
 };
 

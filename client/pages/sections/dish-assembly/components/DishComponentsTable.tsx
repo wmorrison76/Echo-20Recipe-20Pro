@@ -110,9 +110,7 @@ const DishComponentsTable: React.FC<DishComponentsTableProps> = ({
                 <div className="space-y-2">
                   <Popover
                     open={openRowId === row.id}
-                    onOpenChange={(open) =>
-                      setOpenRowId(open ? row.id : null)
-                    }
+                    onOpenChange={(open) => setOpenRowId(open ? row.id : null)}
                   >
                     <PopoverTrigger asChild>
                       <Button
@@ -138,18 +136,26 @@ const DishComponentsTable: React.FC<DishComponentsTableProps> = ({
                               {options.map((option) => (
                                 <CommandItem
                                   key={option.id}
-                                  onSelect={() => handleSelect(row.id, option.id)}
+                                  onSelect={() =>
+                                    handleSelect(row.id, option.id)
+                                  }
                                 >
                                   <div className="flex flex-col gap-1">
                                     <div className="flex items-center gap-2 text-sm font-semibold">
                                       <span>{option.title}</span>
                                       {option.course ? (
-                                        <Badge variant="outline" className="px-1 text-[10px] uppercase tracking-[0.28em]">
+                                        <Badge
+                                          variant="outline"
+                                          className="px-1 text-[10px] uppercase tracking-[0.28em]"
+                                        >
                                           {option.course}
                                         </Badge>
                                       ) : null}
                                       {option.cuisine ? (
-                                        <Badge variant="outline" className="px-1 text-[10px] uppercase tracking-[0.28em]">
+                                        <Badge
+                                          variant="outline"
+                                          className="px-1 text-[10px] uppercase tracking-[0.28em]"
+                                        >
                                           {option.cuisine}
                                         </Badge>
                                       ) : null}
@@ -161,7 +167,11 @@ const DishComponentsTable: React.FC<DishComponentsTableProps> = ({
                                     </div>
                                     {option.cost != null ? (
                                       <span className="text-xs text-muted-foreground">
-                                        Cost per portion: {formatCurrencyValue(option.cost, option.currency)}
+                                        Cost per portion:{" "}
+                                        {formatCurrencyValue(
+                                          option.cost,
+                                          option.currency,
+                                        )}
                                       </span>
                                     ) : null}
                                   </div>
