@@ -69,6 +69,14 @@ const DishAssemblyWorkspace: React.FC = () => {
     return map;
   }, [recipes]);
 
+  const recipeMap = useMemo(() => {
+    const map = new Map<string, Recipe>();
+    for (const recipe of recipes) {
+      map.set(recipe.id, recipe);
+    }
+    return map;
+  }, [recipes]);
+
   const [componentRows, setComponentRows] = useState<DishComponentRow[]>(
     createInitialRows,
   );
