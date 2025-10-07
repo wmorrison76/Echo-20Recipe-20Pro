@@ -1038,7 +1038,14 @@ export default function GallerySection() {
 
           <div className="flex items-center justify-between text-sm font-semibold uppercase tracking-[0.3em] opacity-70">
             <span>Photo studio</span>
-            <ListFilter className="h-4 w-4" />
+            <Button
+              size="sm"
+              variant="ghost"
+              className="rounded-full px-3 text-xs uppercase tracking-[0.3em]"
+              onClick={() => setOverlayOpen(true)}
+            >
+              Open studio
+            </Button>
           </div>
 
           {activeImage ? (
