@@ -1025,7 +1025,7 @@ function LibraryItem({ icon, label, count, active, onClick, action }: LibraryIte
   );
 }
 
-type RefreshGlyphProps = React.SVGProps<SVGSVGElement>;
+type RefreshGlyphProps = SVGProps<SVGSVGElement>;
 
 function RefreshGlyph(props: RefreshGlyphProps) {
   return (
