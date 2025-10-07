@@ -174,13 +174,14 @@ export function GalleryOverlay({
                   key={tool.key}
                   onClick={() => onSelectTool(tool.key)}
                   className={cn(
-                    "flex aspect-square items-center justify-center rounded-xl border text-[10px] uppercase tracking-[0.3em] transition",
+                    "flex aspect-square items-center justify-center rounded-xl border text-slate-200 transition",
                     activeTool === tool.key
                       ? "border-sky-400 bg-sky-500/20 text-sky-100"
-                      : "border-slate-700/60 bg-black/30 text-slate-300 hover:border-sky-400/40 hover:bg-sky-500/10",
+                      : "border-slate-700/60 bg-black/30 hover:border-sky-400/40 hover:bg-sky-500/10",
                   )}
+                  aria-label={tool.label}
                 >
-                  {tool.label.slice(0, 2)}
+                  <tool.icon className="h-4 w-4" />
                 </button>
               ))}
             </div>
