@@ -327,16 +327,18 @@ export const generateAllergenRows = (
   return list;
 };
 
-const cuisinePairings: Record<string, { item: string; year: string; location: string; country: string }[]> = {
+const cuisinePairings: Record<string, PairingRow[]> = {
   french: [
     {
-      item: "Premier Cru Chardonnay",
+      id: createId(),
+      itemName: "Premier Cru Chardonnay",
       year: "2020",
       location: "Côte de Beaune",
       country: "France",
     },
     {
-      item: "Grand Cru Champagne",
+      id: createId(),
+      itemName: "Grand Cru Champagne",
       year: "NV",
       location: "Montagne de Reims",
       country: "France",
@@ -344,13 +346,15 @@ const cuisinePairings: Record<string, { item: string; year: string; location: st
   ],
   spanish: [
     {
-      item: "Ribera del Duero Crianza",
+      id: createId(),
+      itemName: "Ribera del Duero Crianza",
       year: "2019",
       location: "Castilla y León",
       country: "Spain",
     },
     {
-      item: "Txakolina",
+      id: createId(),
+      itemName: "Txakolina",
       year: "2022",
       location: "Getariako",
       country: "Spain",
@@ -358,13 +362,15 @@ const cuisinePairings: Record<string, { item: string; year: string; location: st
   ],
   italian: [
     {
-      item: "Barolo",
+      id: createId(),
+      itemName: "Barolo",
       year: "2018",
       location: "Piedmont",
       country: "Italy",
     },
     {
-      item: "Super Tuscan Blend",
+      id: createId(),
+      itemName: "Super Tuscan Blend",
       year: "2019",
       location: "Bolgheri",
       country: "Italy",
@@ -372,13 +378,15 @@ const cuisinePairings: Record<string, { item: string; year: string; location: st
   ],
   japanese: [
     {
-      item: "Junmai Daiginjo Sake",
+      id: createId(),
+      itemName: "Junmai Daiginjo Sake",
       year: "",
       location: "Niigata",
       country: "Japan",
     },
     {
-      item: "Yuzu Highball",
+      id: createId(),
+      itemName: "Yuzu Highball",
       year: "Signature",
       location: "Bar Program",
       country: "In-house",
@@ -399,9 +407,9 @@ export const generatePairings = (
     const candidates = cuisinePairings[cuisineKey as keyof typeof cuisinePairings];
     if (candidates && candidates.length) {
       for (const candidate of candidates) {
-        const id = `${candidate.item}:${candidate.location}`;
-        if (!set.has(id)) {
-          set.set(id, { id: createId(), ...candidate });
+        const key = `${candidate.itemName}:${candidate.location}:${candidate.country}`;
+        if (!set.has(key)) {
+          set.set(key, { ...candidate, id: createId() });
         }
       }
     }
@@ -409,14 +417,14 @@ export const generatePairings = (
   if (!set.size) {
     set.set("default-reserve", {
       id: createId(),
-      item: "Reserve Cabernet Blend",
+      itemName: "Reserve Cabernet Blend",
       year: "2019",
       location: "Napa Valley",
       country: "USA",
     });
     set.set("default-zero-proof", {
       id: createId(),
-      item: "Sparkling Verjus & Rosemary",
+      itemName: "Sparkling Verjus & Rosemary",
       year: "Signature",
       location: "House crafted",
       country: "USA",
