@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useAppData } from "@/context/AppDataContext";
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage, useTranslation } from "@/context/LanguageContext";
 import ServerNotesPreview from "@/components/ServerNotesPreview";
 import { ServerNotesConfig } from "@/components/ServerNotesConfig";
 import { RecipeSelection } from "@/components/RecipeSelection";
