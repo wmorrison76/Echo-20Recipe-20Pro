@@ -542,7 +542,10 @@ export default function GallerySection() {
               <span>Look Books</span>
               <button
                 className="flex h-7 w-7 items-center justify-center rounded-full border border-white/20 text-white hover:bg-white/10"
-                onClick={() => restoreDemo()}
+                onClick={() => {
+                  restoreDemo();
+                  setStatus("Demo gallery restored.");
+                }}
                 title="Restore demo set"
               >
                 <RefreshGlyph />
