@@ -1576,6 +1576,86 @@ function GalleryGrid({
   );
 }
 
+type ToolButtonProps = {
+  label: string;
+  icon: LucideIcon;
+  active: boolean;
+  onClick: () => void;
+};
+
+function ToolButton({ label, icon: Icon, active, onClick }: ToolButtonProps) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "flex items-center gap-2 rounded-2xl border px-3 py-2 text-left text-xs uppercase tracking-[0.3em] transition",
+        active
+          ? "border-sky-500/60 bg-sky-500/15 text-sky-100 shadow-[0_16px_36px_rgba(14,165,233,0.35)]"
+          : "border-white/12 bg-black/30 text-slate-200 hover:border-sky-400/40 hover:bg-sky-500/10",
+      )}
+    >
+      <Icon className="h-4 w-4" />
+      <span>{label}</span>
+    </button>
+  );
+}
+
+type QuickActionCardProps = {
+  label: string;
+  description: string;
+  icon: LucideIcon;
+  active: boolean;
+  onClick: () => void;
+};
+
+function QuickActionCard({ label, description, icon: Icon, active, onClick }: QuickActionCardProps) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "flex flex-col items-start gap-1 rounded-2xl border px-3 py-2 text-left transition",
+        active
+          ? "border-sky-500/60 bg-sky-500/15 text-sky-100 shadow-[0_16px_36px_rgba(14,165,233,0.35)]"
+          : "border-white/12 bg-black/25 text-slate-200 hover:border-sky-400/40 hover:bg-sky-500/10",
+      )}
+    >
+      <span className="flex items-center gap-2 text-xs uppercase tracking-[0.3em]">
+        <Icon className="h-3.5 w-3.5" /> {label}
+      </span>
+      <span className="text-[10px] uppercase tracking-[0.25em] text-slate-400">{description}</span>
+    </button>
+  );
+}
+
+type LayerListItemProps = {
+  layer: LayerInfo;
+  visible: boolean;
+  onToggle: () => void;
+};
+
+function LayerListItem({ layer, visible, onToggle }: LayerListItemProps) {
+  return (
+    <div className="flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-black/35 px-3 py-2 text-xs uppercase tracking-[0.3em] text-slate-200">
+      <button
+        onClick={onToggle}
+        className="rounded-full border border-white/20 bg-black/40 p-1 text-white transition hover:border-sky-400/50 hover:text-sky-200"
+        aria-label={visible ? "Hide layer" : "Show layer"}
+      >
+        {visible ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
+      </button>
+      <div className="flex flex-1 flex-col gap-0.5">
+        <span>{layer.name}</span>
+        <span className="text-[9px] text-slate-400">{layer.meta}</span>
+      </div>
+      {layer.locked ? (
+        <Lock className="h-3.5 w-3.5 text-slate-400" />
+      ) : (
+        <span className="rounded-full border border-white/10 px-2 py-0.5 text-[9px] text-slate-300">FX</span>
+      )}
+    </div>
+  );
+}
+
 type AutoCategoryListProps = {
   clusters: TagCluster[];
   onSelect: (tag: string) => void;
