@@ -624,7 +624,7 @@ export default function GallerySection() {
       )}
       data-echo-key="page:recipes:gallery"
     >
-      <div className="grid gap-5 lg:min-h-[calc(100vh-200px)] lg:grid-cols-[230px_minmax(0,1fr)_320px] xl:min-h-[calc(100vh-220px)]">
+      <div className="grid gap-5 lg:min-h-[calc(100vh-170px)] lg:grid-cols-[230px_minmax(0,1fr)_320px] xl:min-h-[calc(100vh-190px)]">
         <aside className={cn("flex h-full flex-col overflow-hidden rounded-[32px] border p-5", navSurface)}>
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-lg font-semibold tracking-tight">Library</h2>
@@ -832,7 +832,7 @@ export default function GallerySection() {
         >
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(125,211,252,0.14),_transparent_70%)]" />
           <div className="relative flex h-full flex-col">
-            <div className="pointer-events-none absolute left-0 right-0 top-0 z-30 flex justify-center px-6 pt-5">
+            <div className="pointer-events-none absolute left-0 right-0 top-0 z-30 flex justify-center px-5 pt-4">
               <GalleryToolbar
                 filter={filter}
                 onFilterChange={setFilter}
@@ -870,7 +870,7 @@ export default function GallerySection() {
               <GalleryDropHint />
             </div>
 
-            <div className="relative flex-1 overflow-hidden pt-20 lg:pt-24">
+            <div className="relative flex-1 overflow-hidden pt-16 lg:pt-22">
               <GalleryGrid
                 images={filtered}
                 thumbSize={thumbSize}
