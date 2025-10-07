@@ -1126,7 +1126,7 @@ async function createStandardDoc(
       }
 
       if (entry.sellingNotes) {
-        children.push(heading("Selling Points", HeadingLevel.HEADING_3));
+        children.push(heading(docStrings.sectionSellingPoints, HeadingLevel.HEADING_3));
         children.push(paragraph(entry.sellingNotes));
       }
 
