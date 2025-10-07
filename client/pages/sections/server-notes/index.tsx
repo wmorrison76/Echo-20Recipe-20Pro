@@ -505,7 +505,7 @@ export default function ServerNotesSection() {
                   <CardHeader className="border-b border-white/70 px-6 py-4 dark:border-cyan-500/25">
                     <CardTitle className="flex items-center justify-between text-base">
                       <span className="line-clamp-1">
-                        {note.title || "Untitled"}
+                        {note.title || t("common.untitled")}
                       </span>
                       <Badge variant="outline">
                         {note.selectedRecipes.length} recipes
