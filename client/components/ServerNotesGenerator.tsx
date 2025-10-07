@@ -1131,7 +1131,7 @@ async function createStandardDoc(
       }
 
       if (entry.serviceInstructions) {
-        children.push(heading("Service Instructions", HeadingLevel.HEADING_3));
+        children.push(heading(docStrings.sectionServiceInstructions, HeadingLevel.HEADING_3));
         children.push(paragraph(entry.serviceInstructions));
       }
 
