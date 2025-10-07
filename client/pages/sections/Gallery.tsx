@@ -619,12 +619,12 @@ export default function GallerySection() {
   return (
     <div
       className={cn(
-        "relative mx-auto max-w-[1640px] space-y-5 rounded-[48px] border px-4 py-6 sm:px-8 lg:px-10 lg:py-9",
+        "relative mx-auto max-w-[1640px] space-y-4 rounded-[48px] border px-4 py-5 sm:px-8 lg:px-10 lg:py-7",
         shellClass,
       )}
       data-echo-key="page:recipes:gallery"
     >
-      <div className="grid gap-6 xl:h-[780px] xl:grid-cols-[220px_minmax(0,1fr)_300px]">
+      <div className="grid gap-5 lg:min-h-[calc(100vh-200px)] lg:grid-cols-[230px_minmax(0,1fr)_320px] xl:min-h-[calc(100vh-220px)]">
         <aside className={cn("flex h-full flex-col overflow-hidden rounded-[32px] border p-5", navSurface)}>
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-lg font-semibold tracking-tight">Library</h2>
@@ -830,9 +830,9 @@ export default function GallerySection() {
             mainSurface,
           )}
         >
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(125,211,252,0.16),_transparent_65%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(125,211,252,0.14),_transparent_70%)]" />
           <div className="relative flex h-full flex-col">
-            <div className="pointer-events-none absolute left-0 right-0 top-0 z-30 flex justify-center px-6 pt-6">
+            <div className="pointer-events-none absolute left-0 right-0 top-0 z-30 flex justify-center px-6 pt-5">
               <GalleryToolbar
                 filter={filter}
                 onFilterChange={setFilter}
@@ -870,7 +870,7 @@ export default function GallerySection() {
               <GalleryDropHint />
             </div>
 
-            <div className="relative flex-1 overflow-hidden pt-24">
+            <div className="relative flex-1 overflow-hidden pt-20 lg:pt-24">
               <GalleryGrid
                 images={filtered}
                 thumbSize={thumbSize}
@@ -1195,7 +1195,7 @@ function GalleryToolbar({
   onLink,
 }: GalleryToolbarProps) {
   return (
-    <div className="pointer-events-auto flex w-full max-w-3xl flex-col gap-3 rounded-full bg-black/40 px-5 py-4 backdrop-blur-lg">
+    <div className="pointer-events-auto flex w-full max-w-3xl flex-col gap-3 rounded-full bg-black/45 px-5 py-3.5 backdrop-blur-lg">
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative min-w-[200px] flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-60" />
