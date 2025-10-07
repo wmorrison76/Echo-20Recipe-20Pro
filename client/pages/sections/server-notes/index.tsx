@@ -356,10 +356,10 @@ export default function ServerNotesSection() {
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                         <Icon className="h-4 w-4 text-primary" />
-                        <span>{step.title}</span>
+                        <span>{t(step.titleKey)}</span>
                       </div>
                       <p className="text-xs leading-relaxed text-muted-foreground">
-                        {step.description}
+                        {t(step.descriptionKey)}
                       </p>
                     </div>
                   </div>
