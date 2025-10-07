@@ -288,6 +288,10 @@ function createDocumentHtml(
   serverNote: ServerNote,
   lang: LanguageCode = defaultLanguage,
 ): string {
+  if (serverNote.layout.id === "luccca-briefing") {
+    return createLucccaHtml(serverNote, lang);
+  }
+
   const { colorScheme, orientation, pageFormat, cardsPerPage } = serverNote;
 
   if (pageFormat === "index-card") {
