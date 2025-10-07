@@ -1292,6 +1292,7 @@ async function createLucccaDoc(
   note: ServerNote,
   language: LanguageCode = defaultLanguage,
 ): Promise<Blob> {
+  const docStrings = getServerNotesDocStrings(language);
   const entries = prepareLucccaEntries(note);
   const pageSize = {
     width:
