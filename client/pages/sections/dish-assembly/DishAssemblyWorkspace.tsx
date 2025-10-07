@@ -578,6 +578,7 @@ const DishAssemblyWorkspace: React.FC = () => {
           <RecipePreviewPanel
             rows={componentRows}
             recipeSummaries={recipeSummaries}
+            recipeMap={recipeMap}
             activeComponentId={activeComponentId}
             onFocusRow={focusRecipe}
             onNavigateToRecipe={navigateToRecipeSearch}
