@@ -1393,26 +1393,22 @@ function AutoCategoryList({ clusters, onSelect }: AutoCategoryListProps) {
   }
 
   return (
-    <div className="space-y-2">
-      <div className="text-xs font-semibold uppercase tracking-[0.3em] opacity-70">
+    <div className="space-y-1.5">
+      <div className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-300">
         AI catalogued themes
       </div>
-      <div className="grid gap-2">
+      <div className="grid gap-1.5">
         {clusters.map((cluster) => (
           <button
             key={cluster.tag}
             onClick={() => onSelect(cluster.tag)}
-            className="flex items-center justify-between rounded-2xl border border-white/15 bg-white/5 px-3 py-2 text-left text-xs transition hover:border-sky-300/40 hover:bg-sky-500/10"
+            className="flex items-center justify-between rounded-2xl border border-white/12 bg-white/5 px-3 py-1.5 text-left text-[11px] uppercase tracking-[0.3em] text-slate-200 transition hover:border-sky-300/40 hover:bg-sky-500/10"
           >
-            <span className="flex flex-col gap-1">
-              <span className="font-semibold uppercase tracking-[0.3em] text-slate-100">
-                {cluster.tag}
-              </span>
-              <span className="text-[10px] uppercase tracking-[0.3em] text-slate-400">
-                {cluster.freshnessLabel}
-              </span>
+            <span className="flex flex-col gap-0.5 text-left">
+              <span className="text-slate-100">{cluster.tag}</span>
+              <span className="text-[9px] text-slate-400">{cluster.freshnessLabel}</span>
             </span>
-            <span className="rounded-full bg-black/30 px-2 py-1 text-[10px] uppercase tracking-[0.3em] text-slate-200">
+            <span className="rounded-full bg-black/25 px-2 py-0.5 text-[9px] font-semibold tracking-[0.35em] text-slate-200">
               {cluster.count}
             </span>
           </button>
