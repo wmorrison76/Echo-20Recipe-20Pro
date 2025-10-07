@@ -902,7 +902,25 @@ export default function GallerySection() {
           </div>
 
           {activeImage ? (
-            <div className="flex-1 space-y-5 overflow-y-auto pr-1">
+            <div className="flex-1 space-y-4 overflow-y-auto pr-1">
+              <div className="rounded-3xl border border-white/12 bg-black/35 p-4 shadow-[0_18px_46px_rgba(14,165,233,0.28)]">
+                <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.35em] text-slate-300">
+                  <span>Creative tools</span>
+                  <span className="text-slate-100">Active · {activeToolLabel}</span>
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  {CREATIVE_TOOLS.map((tool) => (
+                    <ToolButton
+                      key={tool.key}
+                      label={tool.label}
+                      icon={tool.icon}
+                      active={activeTool === tool.key}
+                      onClick={() => setActiveTool(tool.key)}
+                    />
+                  ))}
+                </div>
+              </div>
+
               <div className="overflow-hidden rounded-3xl border border-white/10 bg-black/40">
                 {activeImage.unsupported ? (
                   <div className="flex aspect-[4/3] items-center justify-center text-xs uppercase tracking-[0.3em] text-slate-300">
@@ -916,52 +934,50 @@ export default function GallerySection() {
                     style={inspectorImageStyle}
                   />
                 )}
+                <div className="flex items-center justify-between px-4 py-3">
+                  <div className="space-y-1">
+                    <div className="text-sm font-semibold text-slate-100">{activeImage.name}</div>
+                    <div className="text-[11px] uppercase tracking-[0.3em] text-slate-300">
+                      {(activeImage.tags || []).slice(0, 3).join(" · ") || "Untagged"}
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant={activeImage.favorite ? "default" : "ghost"}
+                    className={cn(
+                      "rounded-full px-4",
+                      activeImage.favorite ? "bg-amber-400 text-black" : "text-slate-200",
+                    )}
+                    onClick={() => toggleFavorite(activeImage.id)}
+                  >
+                    <Star className="mr-1.5 h-4 w-4" />
+                    {activeImage.favorite ? "Favorited" : "Favorite"}
+                  </Button>
+                </div>
               </div>
 
-              <div className="flex items-center justify-between">
-                <div className="text-sm font-semibold">{activeImage.name}</div>
-                <Button
-                  size="sm"
-                  variant={activeImage.favorite ? "default" : "ghost"}
-                  className={cn(
-                    "rounded-full px-4",
-                    activeImage.favorite ? "bg-amber-400 text-black" : "text-slate-200",
-                  )}
-                  onClick={() => toggleFavorite(activeImage.id)}
-                >
-                  <Star className="mr-1.5 h-4 w-4" />
-                  {activeImage.favorite ? "Favorited" : "Favorite"}
-                </Button>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs uppercase tracking-[0.3em] opacity-60">Filename</label>
-                <input
-                  value={nameDraft}
-                  onChange={(event) => setNameDraft(event.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm focus:border-sky-400 focus:outline-none"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-xs uppercase tracking-[0.3em] opacity-60">Tags</label>
-                <textarea
-                  value={tagDraft}
-                  onChange={(event) => setTagDraft(event.target.value)}
-                  className="h-20 w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm focus:border-sky-400 focus:outline-none"
-                  placeholder="comma separated"
-                />
-                <Button size="sm" className="rounded-full px-4" onClick={handleSaveMetadata}>
-                  Save metadata
-                </Button>
+              <div className="rounded-3xl border border-white/10 bg-black/30 p-4">
+                <div className="text-[11px] uppercase tracking-[0.35em] text-slate-300">Quick actions</div>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  {QUICK_ACTIONS.map((action) => (
+                    <QuickActionCard
+                      key={action.key}
+                      label={action.label}
+                      description={action.description}
+                      icon={action.icon}
+                      active={activeQuickAction === action.key}
+                      onClick={() => handleQuickAction(action)}
+                    />
+                  ))}
+                </div>
               </div>
 
               <div className="space-y-3 rounded-3xl border border-white/10 bg-black/30 p-4">
-                <div className="text-xs uppercase tracking-[0.3em] opacity-60">Adjustments</div>
+                <div className="text-[11px] uppercase tracking-[0.35em] text-slate-300">Adjustments</div>
                 <div className="space-y-3">
                   {ADJUSTMENT_CONTROLS.map((control) => (
                     <div key={control.key} className="space-y-1.5">
-                      <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] opacity-60">
+                      <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-slate-300">
                         <span>{control.label}</span>
                         <span>{activeAdjustment[control.key]}</span>
                       </div>
@@ -992,8 +1008,65 @@ export default function GallerySection() {
                 </div>
               </div>
 
+              <div className="space-y-2 rounded-3xl border border-white/10 bg-black/25 p-4">
+                <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.35em] text-slate-300">
+                  <span>Layers</span>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="rounded-full px-3"
+                    onClick={() => setStatus("New empty layer staged for compositing.")}
+                  >
+                    + Layer
+                  </Button>
+                </div>
+                <div className="space-y-1.5">
+                  {layerList.map((layer) => (
+                    <LayerListItem
+                      key={layer.key}
+                      layer={layer}
+                      visible={visibleLayers[layer.key] ?? true}
+                      onToggle={() => toggleLayerVisibility(layer.key)}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-white/12 bg-black/30 p-4">
+                <div className="grid gap-3">
+                  <div className="space-y-2">
+                    <label className="text-[11px] uppercase tracking-[0.35em] text-slate-300">Filename</label>
+                    <input
+                      value={nameDraft}
+                      onChange={(event) => setNameDraft(event.target.value)}
+                      className="w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm focus:border-sky-400 focus:outline-none"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[11px] uppercase tracking-[0.35em] text-slate-300">Tags</label>
+                    <textarea
+                      value={tagDraft}
+                      onChange={(event) => setTagDraft(event.target.value)}
+                      className="h-20 w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm focus:border-sky-400 focus:outline-none"
+                      placeholder="comma separated"
+                    />
+                  </div>
+                </div>
+                <div className="mt-3 flex justify-between text-xs text-slate-300">
+                  <Button size="sm" className="rounded-full px-4" onClick={handleSaveMetadata}>
+                    Save metadata
+                  </Button>
+                  <button
+                    className="text-[11px] uppercase tracking-[0.35em] text-slate-400 transition hover:text-slate-200"
+                    onClick={() => setStatus("Metadata changes reset.")}
+                  >
+                    Reset fields
+                  </button>
+                </div>
+              </div>
+
               <div className="space-y-3">
-                <div className="text-xs uppercase tracking-[0.3em] opacity-60">Look book membership</div>
+                <div className="text-[11px] uppercase tracking-[0.35em] text-slate-300">Look book membership</div>
                 <div className="space-y-2">
                   {lookbooks.length === 0 && (
                     <div className="rounded-xl border border-dashed border-white/20 px-3 py-3 text-xs opacity-70">
@@ -1023,25 +1096,25 @@ export default function GallerySection() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <div className="text-xs uppercase tracking-[0.3em] opacity-60">Add from URLs</div>
+              <div className="rounded-3xl border border-white/10 bg-black/25 p-4">
+                <div className="text-[11px] uppercase tracking-[0.35em] text-slate-300">Add from URLs</div>
                 <textarea
                   value={urlText}
                   onChange={(event) => setUrlText(event.target.value)}
                   placeholder="https://example.com/photo.jpg"
-                  className="h-24 w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-xs focus:border-sky-400 focus:outline-none"
+                  className="mt-2 h-24 w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-xs focus:border-sky-400 focus:outline-none"
                 />
                 <Button
                   size="sm"
                   disabled={urlLoading}
-                  className="rounded-full px-4"
+                  className="mt-3 rounded-full px-4"
                   onClick={handleAddImagesFromUrls}
                 >
                   {urlLoading ? "Fetching…" : "Add images"}
                 </Button>
               </div>
 
-              <div className="space-y-1 text-xs opacity-60">
+              <div className="space-y-1 text-xs text-slate-300">
                 <div className="flex items-center gap-2">
                   <Tag className="h-3.5 w-3.5" />
                   {(activeImage.tags || []).join(" · ") || "No tags yet"}
