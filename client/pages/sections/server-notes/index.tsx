@@ -508,7 +508,11 @@ export default function ServerNotesSection() {
                         {note.title || t("common.untitled")}
                       </span>
                       <Badge variant="outline">
-                        {note.selectedRecipes.length} recipes
+                        {note.selectedRecipes.length === 1
+                          ? t("serverNotes.saved.badge.recipes.one")
+                          : t("serverNotes.saved.badge.recipes.other", undefined, {
+                              count: note.selectedRecipes.length,
+                            })}
                       </Badge>
                     </CardTitle>
                   </CardHeader>
