@@ -485,6 +485,12 @@ export default function GallerySection() {
     }
   }, [filtered, activeId]);
 
+  useEffect(() => {
+    if (!activeTileBoardId && tileBoards.length > 0) {
+      setActiveTileBoardId(tileBoards[0].id);
+    }
+  }, [tileBoards, activeTileBoardId]);
+
   const activeImage = useMemo(
     () => images.find((img) => img.id === activeId) ?? null,
     [images, activeId],
