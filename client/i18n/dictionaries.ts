@@ -87,6 +87,7 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "recipe.directions.spellcheck.dual": "English & French",
     "nav.recipes": "RECIPES",
     "nav.addRecipe": "ADD RECIPE",
+    "nav.dishAssembly": "DISH ASSEMBLY",
     "nav.serverNotes": "SERVER NOTES",
     "nav.production": "PRODUCTION",
     "nav.saas": "SaaS",
@@ -272,7 +273,7 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "recipe.labels.componentsLabel": "Composants",
     "recipe.ingredients.title": "Ingrédients",
     "recipe.ingredients.subtitle":
-      "Suivez chaque composant avec quantité, unité, méthode, rendement % et coût pour aligner le calcul de recette et la documentation.",
+      "Suivez chaque composant avec quantit��, unité, méthode, rendement % et coût pour aligner le calcul de recette et la documentation.",
     "recipe.ingredients.activeItems": "Éléments actifs",
     "recipe.ingredients.totalCost": "Coût total",
     "recipe.ingredients.averageYield": "Rendement moyen",
