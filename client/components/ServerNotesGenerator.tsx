@@ -1286,3 +1286,526 @@ async function createDocx(
   }
   return createStandardDoc(note, language);
 }
+
+async function createLucccaDoc(
+  note: ServerNote,
+  language: LanguageCode = defaultLanguage,
+): Promise<Blob> {
+  const entries = prepareLucccaEntries(note);
+  const pageSize = {
+    width:
+      note.orientation === "horizontal"
+        ? convertInchesToTwip(11)
+        : convertInchesToTwip(8.5),
+    height:
+      note.orientation === "horizontal"
+        ? convertInchesToTwip(8.5)
+        : convertInchesToTwip(11),
+    orientation:
+      note.orientation === "horizontal"
+        ? PageOrientation.LANDSCAPE
+        : PageOrientation.PORTRAIT,
+  };
+  const margin = {
+    top: convertInchesToTwip(0.5),
+    right: convertInchesToTwip(0.5),
+    bottom: convertInchesToTwip(0.5),
+    left: convertInchesToTwip(0.5),
+  };
+  const font =
+    (note.layout.standardLayout.fontFamily || "Arial")
+      .split(",")[0]
+      ?.replace(/['"]/g, "")
+      .trim() || "Arial";
+  const primaryHex = colorToHex(note.colorScheme.primary, "1F2933");
+  const secondaryHex = colorToHex(note.colorScheme.secondary, "64748B");
+  const textHex = colorToHex(note.colorScheme.text, "111827");
+  const sections: ISectionOptions[] = [];
+
+  const coverChildren: Paragraph[] = [];
+
+  if (note.companyName) {
+    coverChildren.push(
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 200 },
+        children: [
+          new TextRun({
+            text: note.companyName,
+            bold: true,
+            size: 64,
+            color: primaryHex,
+            font,
+          }),
+        ],
+      }),
+    );
+  }
+
+  if (note.outletName) {
+    coverChildren.push(
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 160 },
+        children: [
+          new TextRun({
+            text: note.outletName,
+            size: 32,
+            color: secondaryHex,
+            font,
+          }),
+        ],
+      }),
+    );
+  }
+
+  coverChildren.push(
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 160 },
+      children: [
+        new TextRun({
+          text: note.title || "Service Briefing",
+          bold: true,
+          size: 52,
+          color: primaryHex,
+          font,
+        }),
+      ],
+    }),
+  );
+
+  coverChildren.push(
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 320 },
+      children: [
+        new TextRun({
+          text: `Distribution Date: ${new Date(note.distributionDate).toLocaleDateString()}`,
+          color: secondaryHex,
+          font,
+        }),
+      ],
+    }),
+  );
+
+  coverChildren.push(
+    new Paragraph({
+      spacing: { after: 120 },
+      children: [
+        new TextRun({
+          text: "Menu Overview",
+          bold: true,
+          size: 32,
+          color: primaryHex,
+          font,
+        }),
+      ],
+    }),
+  );
+
+  entries.forEach((entry, idx) => {
+    coverChildren.push(
+      new Paragraph({
+        spacing: { after: 80 },
+        children: [
+          new TextRun({
+            text: `${idx + 1}. ${entry.menuName}`,
+            color: textHex,
+            font,
+          }),
+        ],
+      }),
+    );
+  });
+
+  if (note.distributionNotes) {
+    coverChildren.push(
+      new Paragraph({
+        spacing: { before: 160, after: 80 },
+        children: [
+          new TextRun({
+            text: "Distribution Notes",
+            bold: true,
+            color: primaryHex,
+            font,
+          }),
+        ],
+      }),
+    );
+    splitLines(note.distributionNotes).forEach((line) =>
+      coverChildren.push(
+        new Paragraph({
+          spacing: { after: 80 },
+          children: [new TextRun({ text: line, color: textHex, font })],
+        }),
+      ),
+    );
+  }
+
+  sections.push({
+    properties: { page: { size: pageSize, margin } },
+    children: coverChildren,
+  });
+
+  for (const prepared of entries) {
+    const children: (Paragraph | Table)[] = [];
+
+    children.push(
+      new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        rows: [
+          new TableRow({
+            children: [
+              new TableCell({
+                width: { size: 75, type: WidthType.PERCENTAGE },
+                borders: {
+                  bottom: { style: BorderStyle.SINGLE, size: 12, color: primaryHex },
+                },
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({
+                        text: prepared.menuName,
+                        bold: true,
+                        size: 36,
+                        color: primaryHex,
+                        font,
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+              new TableCell({
+                width: { size: 25, type: WidthType.PERCENTAGE },
+                borders: {
+                  bottom: { style: BorderStyle.SINGLE, size: 12, color: primaryHex },
+                },
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.RIGHT,
+                    children: [
+                      new TextRun({
+                        text: prepared.menuPrice ?? "",
+                        bold: true,
+                        size: 32,
+                        color: primaryHex,
+                        font,
+                      }),
+                    ],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      }),
+    );
+
+    if (prepared.imageSrc) {
+      const imageData = await loadImageBuffer(prepared.imageSrc);
+      if (imageData) {
+        children.push(
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 200 },
+            children: [
+              new ImageRun({
+                data: imageData,
+                transformation: { width: 400, height: 260 },
+              }),
+            ],
+          }),
+        );
+      }
+    }
+
+    children.push(
+      ...createLucccaSectionParagraphs(
+        "Menu Description",
+        prepared.description,
+        textHex,
+        secondaryHex,
+        font,
+      ),
+    );
+    children.push(
+      ...createLucccaSectionParagraphs(
+        "Server Notes",
+        prepared.serverNotes,
+        textHex,
+        secondaryHex,
+        font,
+      ),
+    );
+    children.push(
+      ...createLucccaSectionParagraphs(
+        "Serviceware",
+        prepared.serviceware,
+        textHex,
+        secondaryHex,
+        font,
+      ),
+    );
+
+    children.push(
+      createLucccaDishTable(prepared, primaryHex, secondaryHex, textHex, font),
+    );
+    children.push(
+      createLucccaAllergenTable(prepared, primaryHex, textHex, font),
+    );
+    children.push(
+      createLucccaBeverageTable(prepared, primaryHex, textHex, font),
+    );
+
+    sections.push({
+      properties: { page: { size: pageSize, margin } },
+      children,
+    });
+  }
+
+  const doc = new DocxDocument({
+    sections,
+    creator: "Echo Recipe Pro",
+    description: `Language: ${language}`,
+  });
+
+  return Packer.toBlob(doc);
+}
+
+function createLucccaSectionParagraphs(
+  label: string,
+  content: string,
+  textHex: string,
+  headingHex: string,
+  font: string,
+): Paragraph[] {
+  const paragraphs: Paragraph[] = [
+    new Paragraph({
+      spacing: { before: 160, after: 80 },
+      children: [
+        new TextRun({ text: label, bold: true, color: headingHex, font }),
+      ],
+    }),
+  ];
+  const lines = splitLines(content);
+  if (lines.length === 0) {
+    paragraphs.push(
+      new Paragraph({
+        spacing: { after: 80 },
+        children: [new TextRun({ text: " ", color: textHex, font })],
+      }),
+    );
+  } else {
+    lines.forEach((line) =>
+      paragraphs.push(
+        new Paragraph({
+          spacing: { after: 80 },
+          children: [new TextRun({ text: line, color: textHex, font })],
+        }),
+      ),
+    );
+  }
+  return paragraphs;
+}
+
+function createLucccaDishTable(
+  prepared: LucccaPreparedEntry,
+  headerHex: string,
+  borderHex: string,
+  textHex: string,
+  font: string,
+): Table {
+  const headerRow = new TableRow({
+    children: ["Qty", "Component", "Notes"].map((title) =>
+      new TableCell({
+        shading: { fill: headerHex, color: "FFFFFF" },
+        children: [
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({ text: title, bold: true, color: "FFFFFF", font }),
+            ],
+          }),
+        ],
+      }),
+    ),
+  });
+
+  const rows = prepared.dishComponents.map((row) =>
+    new TableRow({
+      children: [
+        new TableCell({
+          children: [
+            new Paragraph({
+              children: [new TextRun({ text: row.qty, color: textHex, font })],
+            }),
+          ],
+        }),
+        new TableCell({
+          children: [
+            new Paragraph({
+              children: [new TextRun({ text: row.component, color: textHex, font })],
+            }),
+          ],
+        }),
+        new TableCell({
+          children: [
+            new Paragraph({
+              children: [new TextRun({ text: row.notes, color: textHex, font })],
+            }),
+          ],
+        }),
+      ],
+    }),
+  );
+
+  return new Table({
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    borders: {
+      top: { style: BorderStyle.SINGLE, size: 4, color: borderHex },
+      bottom: { style: BorderStyle.SINGLE, size: 4, color: borderHex },
+      left: { style: BorderStyle.SINGLE, size: 4, color: borderHex },
+      right: { style: BorderStyle.SINGLE, size: 4, color: borderHex },
+      insideHorizontal: { style: BorderStyle.SINGLE, size: 2, color: borderHex },
+      insideVertical: { style: BorderStyle.SINGLE, size: 2, color: borderHex },
+    },
+    rows: [headerRow, ...rows],
+  });
+}
+
+function createLucccaAllergenTable(
+  prepared: LucccaPreparedEntry,
+  headerHex: string,
+  textHex: string,
+  font: string,
+): Table {
+  const headerRow = new TableRow({
+    children: ["Item Name", "Allergy", "Modify", "Alternative"].map((title) =>
+      new TableCell({
+        shading: { fill: headerHex, color: "FFFFFF" },
+        children: [
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({ text: title, bold: true, color: "FFFFFF", font }),
+            ],
+          }),
+        ],
+      }),
+    ),
+  });
+
+  const rows = prepared.allergens.map((row) =>
+    new TableRow({
+      children: [
+        new TableCell({
+          children: [
+            new Paragraph({ children: [new TextRun({ text: row.item, color: textHex, font })] }),
+          ],
+        }),
+        new TableCell({
+          children: [
+            new Paragraph({ children: [new TextRun({ text: row.allergen, color: textHex, font })] }),
+          ],
+        }),
+        new TableCell({
+          children: [
+            new Paragraph({ children: [new TextRun({ text: row.modify, color: textHex, font })] }),
+          ],
+        }),
+        new TableCell({
+          children: [
+            new Paragraph({
+              children: [new TextRun({ text: row.alternative, color: textHex, font })],
+            }),
+          ],
+        }),
+      ],
+    }),
+  );
+
+  return new Table({
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    rows: [headerRow, ...rows],
+  });
+}
+
+function createLucccaBeverageTable(
+  prepared: LucccaPreparedEntry,
+  headerHex: string,
+  textHex: string,
+  font: string,
+): Table {
+  const headerRow = new TableRow({
+    children: ["Item Name", "Year", "Location", "Country"].map((title) =>
+      new TableCell({
+        shading: { fill: headerHex, color: "FFFFFF" },
+        children: [
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({ text: title, bold: true, color: "FFFFFF", font }),
+            ],
+          }),
+        ],
+      }),
+    ),
+  });
+
+  const rows = prepared.beverages.map((row) =>
+    new TableRow({
+      children: [
+        new TableCell({
+          children: [
+            new Paragraph({ children: [new TextRun({ text: row.item, color: textHex, font })] }),
+          ],
+        }),
+        new TableCell({
+          children: [
+            new Paragraph({ children: [new TextRun({ text: row.year, color: textHex, font })] }),
+          ],
+        }),
+        new TableCell({
+          children: [
+            new Paragraph({ children: [new TextRun({ text: row.location, color: textHex, font })] }),
+          ],
+        }),
+        new TableCell({
+          children: [
+            new Paragraph({ children: [new TextRun({ text: row.country, color: textHex, font })] }),
+          ],
+        }),
+      ],
+    }),
+  );
+
+  return new Table({
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    rows: [headerRow, ...rows],
+  });
+}
+
+async function loadImageBuffer(src?: string): Promise<ArrayBuffer | null> {
+  if (!src) return null;
+  try {
+    if (src.startsWith("data:")) {
+      const base64 = src.split(",")[1];
+      if (!base64) return null;
+      const binary = atob(base64);
+      const length = binary.length;
+      const bytes = new Uint8Array(length);
+      for (let index = 0; index < length; index += 1) {
+        bytes[index] = binary.charCodeAt(index);
+      }
+      return bytes.buffer;
+    }
+    const response = await fetch(src);
+    if (!response.ok) return null;
+    const blob = await response.blob();
+    return await blob.arrayBuffer();
+  } catch (error) {
+    console.warn("Failed to load image for DOCX", error);
+    return null;
+  }
+}
