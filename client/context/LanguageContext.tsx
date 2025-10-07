@@ -7,7 +7,7 @@ export type LanguageContextValue = {
   language: LanguageCode;
   setLanguage: (code: LanguageCode) => void;
   options: LanguageOption[];
-  t: (key: string, fallback?: string) => string;
+  t: (key: string, fallback?: string, values?: Record<string, string | number>) => string;
   dictionary: TranslationDictionary;
 };
 
@@ -46,13 +46,18 @@ export const LanguageProvider: React.FC<React.PropsWithChildren> = ({ children }
   const dictionary = useMemo(() => dictionaries[language] ?? dictionaries[defaultLanguage], [language]);
 
   const translate = useCallback(
-    (key: string, fallback?: string) => {
-      const current = dictionaries[language]?.[key];
-      if (current) return current;
-      const fallbackValue = dictionaries[defaultLanguage]?.[key];
-      if (fallbackValue) return fallbackValue;
-      if (fallback) return fallback;
-      return key;
+    (key: string, fallback?: string, values?: Record<string, string | number>) => {
+      let text = dictionaries[language]?.[key]
+        ?? dictionaries[defaultLanguage]?.[key]
+        ?? fallback
+        ?? key;
+      if (values) {
+        for (const [token, value] of Object.entries(values)) {
+          const pattern = new RegExp(`\\{${token}\\}`, "g");
+          text = text.replace(pattern, String(value));
+        }
+      }
+      return text;
     },
     [language],
   );
