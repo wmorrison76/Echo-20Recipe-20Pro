@@ -146,6 +146,30 @@ export const colorSchemes: ColorScheme[] = [
 
 export const layoutPresets: LayoutPreset[] = [
   {
+    id: "luccca-briefing",
+    name: "LUCCCA Service Sheet",
+    description:
+      "Service briefing modeled on the LUCCCA Word template with structured sections for dish components, serviceware, allergens, and beverage pairings.",
+    standardLayout: {
+      id: "standard-luccca",
+      name: "LUCCCA Service Sheet",
+      description:
+        "Two-column template with dedicated tables for dish components, serviceware, allergens, and beverage pairings.",
+      headerStyle: "left",
+      recipeLayout: "two-column",
+      includeImages: true,
+      includeNutrition: true,
+      fontFamily: "'Arial', 'Helvetica', sans-serif",
+      preferredOrientation: "vertical",
+    },
+    indexCardLayout: {
+      headerStyle: "centered",
+      contentPriority: "balanced",
+      includeImages: true,
+      fontSize: "regular",
+    },
+  },
+  {
     id: "brasserie-classic",
     name: "Brasserie Classic",
     description:
