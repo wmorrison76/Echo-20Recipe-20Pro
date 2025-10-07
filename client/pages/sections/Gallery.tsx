@@ -4,6 +4,7 @@ import { Dropzone } from "@/components/Dropzone";
 import { Button } from "@/components/ui/button";
 import "../../luccca-lookbook.css";
 import { useAppData } from "@/context/AppDataContext";
+import type { GalleryImage } from "@/context/AppDataContext";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -1311,7 +1312,7 @@ function GalleryDropHint() {
 }
 
 type GalleryGridProps = {
-  images: ReturnType<typeof useMemo>;
+  images: GalleryImage[];
   thumbSize: "s" | "m" | "l";
   activeId: string | null;
   selectedIds: string[];
