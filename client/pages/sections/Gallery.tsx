@@ -1,5 +1,4 @@
-import { useMemo, useRef, useState } from "react";
-import type { KeyboardEvent } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Dropzone } from "@/components/Dropzone";
 import { Button } from "@/components/ui/button";
 import "../../luccca-lookbook.css";
@@ -13,8 +12,175 @@ import {
 } from "@/components/ui/dialog";
 import { GalleryLightbox } from "@/components/GalleryLightbox";
 import { LookBookShowcase } from "@/components/LookBookShowcase";
-import { Download } from "lucide-react";
-import { Star, Search, UploadCloud, Pencil, Trash } from "lucide-react";
+import {
+  Clock,
+  Download,
+  Folder,
+  Image as ImageIcon,
+  LayoutGrid,
+  Link2,
+  ListFilter,
+  Plus,
+  Search,
+  SlidersHorizontal,
+  Star,
+  Tag,
+  Trash2,
+  UploadCloud,
+} from "lucide-react";
+
+const gridTemplates: Record<"s" | "m" | "l", string> = {
+  s: "grid-cols-[repeat(auto-fill,minmax(110px,1fr))]",
+  m: "grid-cols-[repeat(auto-fill,minmax(160px,1fr))]",
+  l: "grid-cols-[repeat(auto-fill,minmax(220px,1fr))]",
+};
+
+const RECENT_DAYS = 30;
+
+type SortMode = "newest" | "oldest" | "favorites" | "name";
+type LibraryFilter = "all" | "favorites" | "recent" | "lookbook";
+
+type GalleryCardProps = {
+  id: string;
+  name: string;
+  src?: string;
+  tags: string[];
+  favorite?: boolean;
+  unsupported?: boolean;
+  active: boolean;
+  selected: boolean;
+  thumbSize: "s" | "m" | "l";
+  onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onDoubleClick: () => void;
+  onToggleFavorite: () => void;
+  onDelete: () => void;
+};
+
+function GalleryCard({
+  id,
+  name,
+  src,
+  tags,
+  favorite,
+  unsupported,
+  active,
+  selected,
+  thumbSize,
+  onClick,
+  onDoubleClick,
+  onToggleFavorite,
+  onDelete,
+}: GalleryCardProps) {
+  return (
+    <button
+      key={id}
+      onClick={onClick}
+      onDoubleClick={onDoubleClick}
+      className={cn(
+        "group relative flex flex-col overflow-hidden rounded-2xl border text-left transition",
+        active
+          ? "ring-2 ring-sky-400 shadow-[0_25px_60px_rgba(14,165,233,0.25)]"
+          : "ring-1 ring-transparent shadow-[0_18px_40px_rgba(15,23,42,0.18)]",
+        selected && !active && "ring-2 ring-sky-300",
+        unsupported ? "bg-slate-900/40" : "bg-slate-900/20",
+      )}
+      data-echo-key="card:gallery:item"
+    >
+      <div className="relative">
+        {unsupported ? (
+          <div className="flex aspect-[4/3] w-full items-center justify-center bg-slate-800 text-xs uppercase tracking-[0.3em] text-slate-300">
+            No preview
+          </div>
+        ) : (
+          <img
+            src={src}
+            alt={name}
+            loading="lazy"
+            className={cn(
+              "w-full object-cover transition duration-300 group-hover:scale-[1.03]",
+              thumbSize === "s"
+                ? "aspect-square"
+                : thumbSize === "l"
+                  ? "aspect-[3/2]"
+                  : "aspect-[4/3]",
+            )}
+            onError={(event) => {
+              const el = event.currentTarget;
+              el.onerror = null;
+              el.src = "/placeholder.svg";
+              el.classList.add("opacity-70");
+            }}
+          />
+        )}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/45 opacity-0 transition group-hover:opacity-100" />
+        <div className="absolute left-3 top-3 z-20 flex items-center gap-2">
+          <span
+            className={cn(
+              "rounded-full border border-white/40 bg-black/50 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur",
+              selected && "bg-sky-500/80",
+            )}
+          >
+            {selected ? "Selected" : ""}
+          </span>
+          {active && !selected && (
+            <span className="rounded-full bg-sky-500/80 px-2 py-0.5 text-xs font-semibold text-white backdrop-blur">
+              Active
+            </span>
+          )}
+        </div>
+        <div className="absolute right-3 top-3 z-20 flex gap-2">
+          <button
+            type="button"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onToggleFavorite();
+            }}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-black/80"
+            aria-label="Toggle favorite"
+          >
+            <Star className={cn("h-4 w-4", favorite ? "fill-yellow-300 text-yellow-300" : "text-white")}
+            />
+          </button>
+          <button
+            type="button"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onDelete();
+            }}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-black/60 text-white transition hover:bg-red-600/80"
+            aria-label="Delete"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+      <div className="flex flex-1 flex-col gap-2 p-4">
+        <div className="text-sm font-semibold leading-tight text-slate-100">
+          {name}
+        </div>
+        {tags.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {tags.slice(0, 3).map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-sky-400/60 bg-sky-400/10 px-2 py-0.5 text-[11px] uppercase tracking-[0.25em] text-sky-200"
+              >
+                {tag}
+              </span>
+            ))}
+            {tags.length > 3 && (
+              <span className="rounded-full bg-black/40 px-2 py-0.5 text-[11px] uppercase tracking-[0.25em] text-slate-200">
+                +{tags.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    </button>
+  );
+}
 
 export default function GallerySection() {
   const {
@@ -22,882 +188,736 @@ export default function GallerySection() {
     lookbooks,
     addLookBook,
     addImagesToLookBook,
+    removeImagesFromLookBook,
     deleteLookBook,
     updateLookBook,
     addImages,
     linkImagesToRecipesByFilename,
     addTagsToImages,
-    reorderImages,
     updateImage,
     exportAllZip,
     restoreDemo,
     deleteImage,
   } = useAppData();
+
   const [status, setStatus] = useState<string | null>(null);
   const [showTagDialog, setShowTagDialog] = useState(false);
   const [importTags, setImportTags] = useState("");
-  const [selected, setSelected] = useState<string[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [filter, setFilter] = useState("");
+  const [sort, setSort] = useState<SortMode>("newest");
+  const [thumbSize, setThumbSize] = useState<"s" | "m" | "l">("m");
+  const [lucccaMode, setLucccaMode] = useState(true);
+  const [libraryFilter, setLibraryFilter] = useState<LibraryFilter>("all");
+  const [activeLookBookId, setActiveLookBookId] = useState<string | null>(null);
+  const [openLookBook, setOpenLookBook] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [nameDraft, setNameDraft] = useState("");
+  const [tagDraft, setTagDraft] = useState("");
+  const [bulkTagDraft, setBulkTagDraft] = useState("");
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  const [viewMode, setViewMode] = useState<"masonry" | "grid">("grid");
-  const [thumbSize, setThumbSize] = useState<"s" | "m" | "l">("m");
-  const [sort, setSort] = useState<"newest" | "popular" | "rated">("newest");
-  const [category, setCategory] = useState<string>("");
-  const [newLookBookName, setNewLookBookName] = useState("");
-  const [activeLookBookId, setActiveLookBookId] = useState<string | null>(null);
-  const [lucccaMode, setLucccaMode] = useState(false);
-  const [openLookBook, setOpenLookBook] = useState(false);
-  const dragId = useRef<string | null>(null);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editName, setEditName] = useState("");
-  const [editTags, setEditTags] = useState("");
   const [urlText, setUrlText] = useState("");
   const [urlLoading, setUrlLoading] = useState(false);
+
+  const uploadInputRef = useRef<HTMLInputElement | null>(null);
 
   const favoriteCount = useMemo(
     () => images.filter((img) => img.favorite).length,
     [images],
   );
-  const uniqueTagCount = useMemo(() => {
-    const tags = new Set<string>();
-    images.forEach((img) => (img.tags || []).forEach((tag) => tags.add(tag)));
-    return tags.size;
-  }, [images]);
-  const lastAddedLabel = useMemo(() => {
-    if (!images.length) return "No uploads yet";
-    const latest = images.reduce(
-      (max, img) => Math.max(max, typeof img.createdAt === "number" ? img.createdAt : 0),
-      0,
-    );
-    return `Updated ${new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(
-      new Date(latest),
-    )}`;
-  }, [images]);
-  const handleUploadClick = () => {
-    (window as any).__gallery_upload_input?.click();
-  };
 
-  const toolbarSurface = lucccaMode
-    ? "border-slate-700/80 bg-slate-900/70 text-slate-100 shadow-[0_28px_80px_rgba(14,165,233,0.28)]"
-    : "border-slate-100/70 bg-white/95 text-slate-900 shadow-[0_26px_80px_rgba(15,23,42,0.08)]";
-  const cardSurface = lucccaMode
-    ? "border-slate-700/60 bg-slate-900/60 text-slate-100 shadow-[0_24px_70px_rgba(14,165,233,0.24)]"
-    : "border-slate-100/60 bg-white/98 text-slate-900 shadow-[0_24px_70px_rgba(15,23,42,0.06)]";
-  const subtleSurface = lucccaMode
-    ? "border-slate-700/50 bg-slate-900/55 text-slate-100"
-    : "border-slate-100/60 bg-white/85 text-slate-700";
+  const recentThreshold = useMemo(
+    () => Date.now() - RECENT_DAYS * 24 * 60 * 60 * 1000,
+    [],
+  );
+
+  const recentCount = useMemo(
+    () =>
+      images.filter((img) =>
+        typeof img.createdAt === "number" && img.createdAt > 0
+          ? img.createdAt >= recentThreshold
+          : false,
+      ).length,
+    [images, recentThreshold],
+  );
+
+  const activeLookBook = useMemo(
+    () => lookbooks.find((book) => book.id === activeLookBookId) ?? null,
+    [lookbooks, activeLookBookId],
+  );
 
   const filtered = useMemo(() => {
-    const q = filter.trim().toLowerCase();
-    let base = q
-      ? images.filter(
-          (i) =>
-            (i.tags || []).some((t) => t.toLowerCase().includes(q)) ||
-            i.name.toLowerCase().includes(q),
-        )
-      : images.slice();
-    const cat = category.trim().toLowerCase();
-    base.sort((a, b) => {
-      const aMatch = cat
-        ? Number((a.tags || []).some((t) => t.toLowerCase().includes(cat)))
-        : 0;
-      const bMatch = cat
-        ? Number((b.tags || []).some((t) => t.toLowerCase().includes(cat)))
-        : 0;
-      if (aMatch !== bMatch) return bMatch - aMatch;
-      return a.order - b.order;
-    });
-    if (sort === "newest")
-      base = base.slice().sort((a, b) => b.createdAt - a.createdAt);
-    else if (sort === "rated")
-      base = base
-        .slice()
-        .sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0));
-    return base;
-  }, [images, filter, category, sort]);
+    let base = images.slice();
 
-  const onFiles = async (files: File[]) => {
+    if (libraryFilter === "favorites") {
+      base = base.filter((img) => img.favorite);
+    } else if (libraryFilter === "recent") {
+      base = base.filter((img) =>
+        typeof img.createdAt === "number" && img.createdAt >= recentThreshold,
+      );
+    } else if (libraryFilter === "lookbook" && activeLookBook) {
+      const set = new Set(activeLookBook.imageIds);
+      base = base.filter((img) => set.has(img.id));
+    }
+
+    if (filter.trim()) {
+      const query = filter.trim().toLowerCase();
+      base = base.filter((img) => {
+        const tagMatch = (img.tags || []).some((tag) => tag.toLowerCase().includes(query));
+        return img.name.toLowerCase().includes(query) || tagMatch;
+      });
+    }
+
+    const sorted = base.slice();
+    sorted.sort((a, b) => {
+      const aDate = typeof a.createdAt === "number" ? a.createdAt : 0;
+      const bDate = typeof b.createdAt === "number" ? b.createdAt : 0;
+      switch (sort) {
+        case "favorites":
+          if (Boolean(b.favorite) !== Boolean(a.favorite)) {
+            return Number(b.favorite) - Number(a.favorite);
+          }
+          return bDate - aDate;
+        case "oldest":
+          return aDate - bDate;
+        case "name":
+          return a.name.localeCompare(b.name);
+        case "newest":
+        default:
+          return bDate - aDate;
+      }
+    });
+
+    return sorted;
+  }, [
+    images,
+    libraryFilter,
+    activeLookBook,
+    filter,
+    sort,
+    recentThreshold,
+  ]);
+
+  useEffect(() => {
+    setSelectedIds((prev) => prev.filter((id) => filtered.some((img) => img.id === id)));
+  }, [filtered]);
+
+  useEffect(() => {
+    if (!filtered.length) {
+      setActiveId(null);
+      return;
+    }
+    if (!activeId || !filtered.some((img) => img.id === activeId)) {
+      setActiveId(filtered[0].id);
+    }
+  }, [filtered, activeId]);
+
+  const activeImage = useMemo(
+    () => images.find((img) => img.id === activeId) ?? null,
+    [images, activeId],
+  );
+
+  useEffect(() => {
+    if (activeImage) {
+      setNameDraft(activeImage.name);
+      setTagDraft((activeImage.tags || []).join(", "));
+    } else {
+      setNameDraft("");
+      setTagDraft("");
+    }
+  }, [activeImage?.id]);
+
+  const handleFiles = (files: File[]) => {
+    if (!files.length) return;
     setImportTags("");
     setShowTagDialog(true);
     (window as any).__pending_files = files;
   };
 
-  const doImport = async (files: File[], tags: string[]) => {
-    setStatus("Processing images...");
-    const added = await addImages(files, { tags });
-    setStatus(`Added ${added} file(s).`);
-    linkImagesToRecipesByFilename();
-  };
-
-  const confirmImport = async () => {
+  const handleConfirmImport = async () => {
     const files: File[] = (window as any).__pending_files || [];
-    setShowTagDialog(false);
+    if (!files.length) {
+      setShowTagDialog(false);
+      return;
+    }
     const tags = importTags
       .split(",")
-      .map((t) => t.trim())
+      .map((tag) => tag.trim())
       .filter(Boolean);
-    await doImport(files, tags);
+    setShowTagDialog(false);
+    setStatus("Processing images...");
+    const added = await addImages(files, { tags });
+    setStatus(`Added ${added} file${added === 1 ? "" : "s"}.`);
     (window as any).__pending_files = undefined;
   };
 
-  const toggleSelect = (id: string) => {
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
-    );
+  const handleUploadClick = () => {
+    uploadInputRef.current?.click();
   };
 
-  const addTagsToSelected = (tagsStr: string) => {
-    const tags = tagsStr
-      .split(",")
-      .map((t) => t.trim())
-      .filter(Boolean);
-    if (!tags.length || !selected.length) return;
-    addTagsToImages(selected, tags);
-    setSelected([]);
+  const handleSelectCard = (event: React.MouseEvent<HTMLButtonElement>, id: string) => {
+    const multi = event.metaKey || event.ctrlKey;
+    setActiveId(id);
+    if (multi) {
+      setSelectedIds((prev) =>
+        prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+      );
+    } else {
+      setSelectedIds([id]);
+    }
   };
 
-  const openLightboxAt = (id: string) => {
-    const list = filtered;
-    const idx = list.findIndex((i) => i.id === id);
-    if (idx >= 0) {
-      setLightboxIndex(idx);
+  const handleOpenLightbox = (id: string) => {
+    const index = filtered.findIndex((img) => img.id === id);
+    if (index >= 0) {
+      setLightboxIndex(index);
       setLightboxOpen(true);
     }
   };
 
-  const toggleFavorite = (id: string) => {
-    const item = images.find((i) => i.id === id);
-    if (!item) return;
-    updateImage(id, { favorite: !item.favorite });
+  const handleToggleFavorite = (id: string) => {
+    const current = images.find((img) => img.id === id);
+    if (!current) return;
+    updateImage(id, { favorite: !current.favorite });
   };
 
-  const beginEdit = (id: string) => {
-    const item = images.find((i) => i.id === id);
-    if (!item) return;
-    setEditingId(id);
-    setEditName(item.name);
-    setEditTags((item.tags || []).join(", "));
+  const handleDeleteImage = (id: string) => {
+    if (!confirm("Delete this image?")) return;
+    deleteImage(id);
+    setStatus("Image deleted.");
   };
 
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditName("");
-    setEditTags("");
-  };
-
-  const saveEdit = () => {
-    if (!editingId) return;
-    const name = editName.trim();
-    const tags = editTags
+  const handleBulkTagSubmit = () => {
+    const tags = bulkTagDraft
       .split(",")
-      .map((t) => t.trim())
+      .map((tag) => tag.trim())
       .filter(Boolean);
+    if (!tags.length || !selectedIds.length) return;
+    addTagsToImages(selectedIds, tags);
+    setBulkTagDraft("");
+    setStatus(`Tagged ${selectedIds.length} image${selectedIds.length === 1 ? "" : "s"}.`);
+    setSelectedIds([]);
+  };
+
+  const handleSaveMetadata = () => {
+    if (!activeImage) return;
+    const name = nameDraft.trim();
     if (!name) {
       setStatus("Name cannot be empty.");
       return;
     }
-    const clash = images.find((i) => i.name === name && i.id !== editingId);
-    if (clash) {
-      setStatus("Another image already has that name.");
+    const tags = tagDraft
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter(Boolean);
+    updateImage(activeImage.id, { name, tags });
+    setStatus("Image metadata updated.");
+  };
+
+  const handleToggleLookbookMembership = (lookbookId: string, enabled: boolean) => {
+    if (!activeImage) return;
+    if (enabled) {
+      addImagesToLookBook(lookbookId, [activeImage.id]);
+    } else {
+      removeImagesFromLookBook(lookbookId, [activeImage.id]);
+    }
+  };
+
+  const handleAddImagesFromUrls = async () => {
+    const urls = urlText
+      .split(/\s+/)
+      .map((value) => value.trim())
+      .filter((value) => /^https?:\/\//i.test(value));
+    if (!urls.length) {
+      setStatus("Enter valid http(s) image URLs.");
       return;
     }
-    updateImage(editingId, { name, tags });
-    setStatus(null);
-    cancelEdit();
-  };
-
-  const onDragStart = (id: string) => (dragId.current = id);
-  const onDropOver = (overId: string) => {
-    const d = dragId.current;
-    dragId.current = null;
-    if (d && d !== overId) reorderImages(d, overId);
-  };
-
-  const onEditKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      saveEdit();
-    } else if (e.key === "Escape") {
-      e.preventDefault();
-      cancelEdit();
+    setUrlLoading(true);
+    try {
+      const files: File[] = [];
+      for (const url of urls) {
+        try {
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const blob = await response.blob();
+          const filename =
+            url.split("?")[0].split("#")[0].split("/").pop() || `image-${Date.now()}.jpg`;
+          files.push(
+            new File([blob], filename.replace(/[^A-Za-z0-9_.-]/g, "_"), {
+              type: blob.type || "image/jpeg",
+            }),
+          );
+        } catch (error: any) {
+          setStatus(`Failed to fetch ${url}: ${error?.message ?? "error"}`);
+        }
+      }
+      if (files.length) {
+        const added = await addImages(files, { tags: [] });
+        setStatus(`Added ${added} image${added === 1 ? "" : "s"} from URLs.`);
+        setUrlText("");
+      }
+    } finally {
+      setUrlLoading(false);
     }
   };
 
   const shellClass = lucccaMode
-    ? "luccca-theme border-slate-800/70 bg-slate-950/90 text-slate-100 shadow-[0_40px_140px_rgba(14,165,233,0.35)]"
-    : "border-white/70 bg-white/95 text-slate-900 shadow-[0_55px_160px_rgba(15,23,42,0.12)] backdrop-blur-xl";
+    ? "luccca-theme border-slate-800/70 bg-slate-950/92 text-slate-100 shadow-[0_60px_160px_rgba(14,165,233,0.4)]"
+    : "border-slate-200/70 bg-white/96 text-slate-900 shadow-[0_65px_160px_rgba(15,23,42,0.12)]";
+
+  const navSurface = lucccaMode
+    ? "border-slate-700/60 bg-slate-900/75"
+    : "border-slate-200 bg-white";
+  const mainSurface = lucccaMode
+    ? "border-slate-700/60 bg-slate-900/65"
+    : "border-slate-200/70 bg-white/95";
+  const detailSurface = lucccaMode
+    ? "border-slate-700/60 bg-slate-900/70"
+    : "border-slate-200/70 bg-white";
+  const subtleSurface = lucccaMode
+    ? "border-slate-700/50 bg-slate-900/60 text-slate-200"
+    : "border-slate-200/60 bg-white/85 text-slate-700";
 
   return (
     <div
       className={cn(
-        "relative mx-auto max-w-[1400px] space-y-6 rounded-[42px] border px-4 py-10 sm:px-8 lg:px-14",
-        "transition-colors",
+        "relative mx-auto max-w-[1500px] space-y-6 rounded-[48px] border px-4 py-6 sm:px-8 lg:px-10 lg:py-10",
         shellClass,
       )}
       data-echo-key="page:recipes:gallery"
     >
-      <div
-        className={cn(
-          "overflow-hidden rounded-[36px] border px-8 py-8 sm:px-10 sm:py-10 backdrop-blur-xl",
-          toolbarSurface,
-        )}
-      >
-        <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-          <div className="max-w-xl space-y-4">
-            <span
-              className={cn(
-                "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.32em]",
-                lucccaMode ? "border-white/20 text-slate-200" : "border-slate-200/80 text-slate-500",
-              )}
-            >
-              Gallery Studio
-            </span>
-            <div className="space-y-3">
-              <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                Chef-grade photo library
-              </h1>
-              <p
-                className={cn(
-                  "text-sm leading-relaxed",
-                  lucccaMode ? "text-slate-200/80" : "text-slate-600",
-                )}
-              >
-                Stage hero dishes, enrich them with tags, and promote favourites into look books and
-                menu cards.
-              </p>
+      <div className="grid gap-6 xl:grid-cols-[260px_minmax(0,1fr)_340px]">
+        <aside className={cn("flex flex-col gap-6 rounded-[32px] border p-6", navSurface)}>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold tracking-tight">Library</h2>
+              <label className="flex items-center gap-2 text-xs uppercase tracking-[0.3em]">
+                <input
+                  type="checkbox"
+                  checked={lucccaMode}
+                  onChange={(event) => setLucccaMode(event.target.checked)}
+                />
+                LUCCCA
+              </label>
             </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <Button onClick={handleUploadClick} className="rounded-full px-5">
-                Upload images
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => restoreDemo()}
-                className={cn(
-                  "rounded-full px-5",
-                  lucccaMode ? "text-slate-200 hover:text-white" : "text-slate-600",
-                )}
-              >
-                Restore demo set
-              </Button>
+            <div className="grid gap-3 text-sm">
+              <LibraryItem
+                icon={<ImageIcon className="h-4 w-4" />}
+                label="All photos"
+                count={images.length}
+                active={libraryFilter === "all" && !activeLookBookId}
+                onClick={() => {
+                  setLibraryFilter("all");
+                  setActiveLookBookId(null);
+                }}
+              />
+              <LibraryItem
+                icon={<Star className="h-4 w-4" />}
+                label="Favorites"
+                count={favoriteCount}
+                active={libraryFilter === "favorites"}
+                onClick={() => {
+                  setLibraryFilter("favorites");
+                  setActiveLookBookId(null);
+                }}
+              />
+              <LibraryItem
+                icon={<Clock className="h-4 w-4" />}
+                label={`Last ${RECENT_DAYS} days`}
+                count={recentCount}
+                active={libraryFilter === "recent"}
+                onClick={() => {
+                  setLibraryFilter("recent");
+                  setActiveLookBookId(null);
+                }}
+              />
             </div>
           </div>
-          <div className="grid w-full max-w-md grid-cols-2 gap-3">
-            <div className={cn("rounded-2xl border px-4 py-3", subtleSurface)}>
-              <div className="text-xs uppercase tracking-[0.28em] opacity-60">Total photos</div>
-              <div className="text-2xl font-semibold">{images.length}</div>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between text-sm font-semibold uppercase tracking-[0.3em] opacity-70">
+              <span>Look Books</span>
+              <button
+                className="flex h-7 w-7 items-center justify-center rounded-full border border-white/20 text-white hover:bg-white/10"
+                onClick={() => restoreDemo()}
+                title="Restore demo set"
+              >
+                <RefreshGlyph />
+              </button>
             </div>
-            <div className={cn("rounded-2xl border px-4 py-3", subtleSurface)}>
-              <div className="text-xs uppercase tracking-[0.28em] opacity-60">Favorites</div>
-              <div className="text-2xl font-semibold">{favoriteCount}</div>
+            <div className="space-y-2">
+              {lookbooks.map((book) => (
+                <LibraryItem
+                  key={book.id}
+                  icon={<Folder className="h-4 w-4" />}
+                  label={book.name}
+                  count={book.imageIds.length}
+                  active={libraryFilter === "lookbook" && activeLookBookId === book.id}
+                  onClick={() => {
+                    setLibraryFilter("lookbook");
+                    setActiveLookBookId(book.id);
+                  }}
+                  action={
+                    <div className="flex items-center gap-1">
+                      <button
+                        className="rounded-full p-1 text-xs opacity-70 transition hover:opacity-100"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          const name = prompt("Rename Look Book", book.name)?.trim();
+                          if (name) updateLookBook(book.id, { name });
+                        }}
+                        title="Rename"
+                      >
+                        ✎
+                      </button>
+                      <button
+                        className="rounded-full p-1 text-xs opacity-70 transition hover:text-red-400 hover:opacity-100"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          if (confirm("Delete this look book?")) deleteLookBook(book.id);
+                        }}
+                        title="Delete"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  }
+                />
+              ))}
+              {lookbooks.length === 0 && (
+                <div className="rounded-2xl border border-dashed border-white/20 px-3 py-4 text-xs opacity-70">
+                  No look books yet.
+                </div>
+              )}
             </div>
-            <div className={cn("rounded-2xl border px-4 py-3", subtleSurface)}>
-              <div className="text-xs uppercase tracking-[0.28em] opacity-60">Look Books</div>
-              <div className="text-2xl font-semibold">{lookbooks.length}</div>
-            </div>
-            <div className={cn("col-span-2 rounded-2xl border px-4 py-3", subtleSurface)}>
-              <div className="text-xs uppercase tracking-[0.28em] opacity-60">Library health</div>
-              <div className="flex items-baseline justify-between gap-4">
-                <span className="text-2xl font-semibold">{uniqueTagCount}</span>
-                <span className="text-xs opacity-70">{lastAddedLabel}</span>
+            <div className="space-y-2 rounded-2xl border border-white/20 p-3">
+              <div className="text-xs font-semibold uppercase tracking-[0.3em] opacity-70">
+                New look book
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  value={tagDraftForLookbookName(activeLookBookId, lookbooks)}
+                  placeholder="Name"
+                  className="flex-1 rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-sm"
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    setActiveLookBookInput(value);
+                  }}
+                />
+                <Button
+                  size="sm"
+                  className="rounded-full px-4"
+                  onClick={() => {
+                    const name = activeLookBookInput.trim();
+                    if (!name) return;
+                    const id = addLookBook(name, selectedIds);
+                    setActiveLookBookInput("");
+                    setSelectedIds([]);
+                    setActiveLookBookId(id);
+                    setLibraryFilter("lookbook");
+                    setOpenLookBook(true);
+                  }}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="text-[11px] opacity-70">
+                Use current selection to seed the collection automatically.
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
+          <div className="mt-auto space-y-3 text-xs opacity-70">
+            <p>
+              {selectedIds.length > 0
+                ? `${selectedIds.length} image${selectedIds.length === 1 ? "" : "s"} selected`
+                : "Select images to manage tags and look books."}
+            </p>
+            {activeLookBook && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full justify-start rounded-full px-4"
+                onClick={() => setOpenLookBook(true)}
+              >
+                Open “{activeLookBook.name}” showcase
+              </Button>
+            )}
+          </div>
+        </aside>
+
         <Dropzone
           multiple
-          onFiles={onFiles}
-          className="group relative min-h-[240px] overflow-hidden rounded-[32px] border-none bg-transparent p-0"
+          onFiles={handleFiles}
+          className={cn("flex flex-col gap-5 rounded-[32px] border p-6", mainSurface)}
         >
-          <div
-            className={cn(
-              "flex h-full w-full flex-col items-center justify-center gap-4 rounded-[32px] border px-10 py-12 text-center backdrop-blur-xl transition-all duration-300",
-              toolbarSurface,
-              lucccaMode
-                ? "hover:shadow-[0_30px_90px_rgba(14,165,233,0.32)]"
-                : "hover:shadow-[0_30px_90px_rgba(15,23,42,0.18)]",
-            )}
-          >
-            <UploadCloud className="h-10 w-10 opacity-80" />
-            <div className="space-y-1">
-              <h2 className="text-lg font-semibold tracking-tight">Drag & drop images</h2>
-              <p className="text-sm font-medium opacity-70">
-                or click to choose files · categorize on import
-              </p>
-            </div>
-            <div className="rounded-full border border-white/40 px-4 py-1 text-[12px] font-medium uppercase tracking-[0.28em] opacity-70">
-              Supports RAW · HEIC · JPG · PNG
-            </div>
-          </div>
-        </Dropzone>
-
-        <div className={cn("rounded-[28px] border p-6 space-y-3 backdrop-blur-xl", toolbarSurface)}>
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2 text-sm opacity-80">
-              <span>Images in gallery</span>
-              <span className="min-w-[5ch] text-right text-lg font-semibold tabular-nums">
-                {images.length}
-              </span>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                void exportAllZip();
-              }}
-              className="gap-2 rounded-full px-4"
-            >
-              <Download className="h-4 w-4" />
-              Export ZIP
-            </Button>
-          </div>
-          <div className="flex flex-wrap items-center gap-2.5">
-            <div className="relative flex-1 min-w-[230px]" data-echo-key="filter:gallery:tags">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-50" />
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative min-w-[220px] flex-1">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-60" />
               <input
                 value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                placeholder="Search or filter by tag"
-                className={cn(
-                  "w-full rounded-full border border-transparent pl-9 pr-3 py-2 text-sm shadow-inner focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-200",
-                  lucccaMode
-                    ? "bg-slate-900/70 text-slate-100 placeholder:text-slate-400"
-                    : "bg-white/80",
-                )}
+                onChange={(event) => setFilter(event.target.value)}
+                placeholder="Search by name or tag"
+                className="w-full rounded-full border border-transparent bg-black/10 pl-9 pr-3 py-2 text-sm text-slate-100 placeholder:text-slate-400 focus:border-sky-400 focus:outline-none"
               />
             </div>
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              className="hidden"
-              onChange={(e) => {
-                const files = Array.from(e.target.files || []);
-                if (files.length) {
-                  onFiles(files);
-                }
-                (e.target as HTMLInputElement).value = "";
-              }}
-              ref={(el) => ((window as any).__gallery_upload_input = el)}
-            />
-            <Button
-              onClick={handleUploadClick}
-              variant="default"
-              data-echo-key="cta:gallery:upload"
-              className="rounded-full px-4"
-            >
-              Upload images
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => linkImagesToRecipesByFilename()}
-              className="rounded-full px-4"
-            >
-              Link to recipes
-            </Button>
-            <select
-              className={cn(
-                "rounded-full border border-transparent px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none",
-                lucccaMode ? "bg-slate-900/70 text-slate-100" : "bg-white/80",
-              )}
-              value={sort}
-              onChange={(e) => setSort(e.target.value as any)}
-              title="Sort"
-              data-echo-key="filter:gallery:sort"
-            >
-              <option value="newest">Newest</option>
-              <option value="popular">Popular</option>
-              <option value="rated">Rated</option>
-            </select>
-            <select
-              className={cn(
-                "rounded-full border border-transparent px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none",
-                lucccaMode ? "bg-slate-900/70 text-slate-100" : "bg-white/80",
-              )}
-              value={viewMode}
-              onChange={(e) => setViewMode(e.target.value as any)}
-              title="Layout"
-            >
-              <option value="masonry">Masonry</option>
-              <option value="grid">Grid</option>
-            </select>
-            <select
-              className={cn(
-                "rounded-full border border-transparent px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none",
-                lucccaMode ? "bg-slate-900/70 text-slate-100" : "bg-white/80",
-              )}
-              value={thumbSize}
-              onChange={(e) => setThumbSize(e.target.value as any)}
-              title="Thumbnail size"
-            >
-              <option value="s">Small</option>
-              <option value="m">Medium</option>
-              <option value="l">Large</option>
-            </select>
-            <label
-              className={cn(
-                "ml-1 mr-2 flex items-center gap-2 rounded-full border border-transparent px-3 py-2 text-xs shadow-inner",
-                lucccaMode ? "bg-slate-900/70 text-slate-100" : "bg-white/60 text-slate-700",
-              )}
-            >
+            <div className="flex items-center gap-2 text-xs">
+              <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/20 px-3 py-1.5">
+                <SlidersHorizontal className="h-3.5 w-3.5" />
+                <select
+                  value={sort}
+                  onChange={(event) => setSort(event.target.value as SortMode)}
+                  className="bg-transparent text-xs focus:outline-none"
+                >
+                  <option value="newest">Newest</option>
+                  <option value="oldest">Oldest</option>
+                  <option value="favorites">Favorites</option>
+                  <option value="name">Name</option>
+                </select>
+              </div>
+              <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/20 px-3 py-1.5">
+                <LayoutGrid className="h-3.5 w-3.5" />
+                <select
+                  value={thumbSize}
+                  onChange={(event) => setThumbSize(event.target.value as "s" | "m" | "l")}
+                  className="bg-transparent text-xs focus:outline-none"
+                >
+                  <option value="s">Small</option>
+                  <option value="m">Medium</option>
+                  <option value="l">Large</option>
+                </select>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
               <input
-                type="checkbox"
-                checked={lucccaMode}
-                onChange={(e) => setLucccaMode(e.target.checked)}
-              />
-              LUCCCA
-            </label>
-            <select
-              className={cn(
-                "rounded-full border border-transparent px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none",
-                lucccaMode ? "bg-slate-900/70 text-slate-100" : "bg-white/80",
-              )}
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-              <option value="">Category: All</option>
-              <option value="pastry">Pastry</option>
-              <option value="cake">Cakes</option>
-              <option value="bread">Breads</option>
-              <option value="dessert">Desserts</option>
-              <option value="savory">Savory</option>
-              <option value="drink">Drinks</option>
-              <option value="plating">Plating</option>
-            </select>
-          </div>
-          {selected.length > 0 && (
-            <div
-              className={cn(
-                "flex items-center gap-2 rounded-2xl border px-3 py-2 text-xs shadow-inner",
-                lucccaMode
-                  ? "border-white/10 bg-slate-900/70 text-slate-100"
-                  : "border-white/40 bg-white/60 text-slate-700",
-              )}
-            >
-              <span className="opacity-70">{selected.length} selected</span>
-              <input
-                id="bulk-tags"
-                placeholder="add tags (comma)"
-                className={cn(
-                  "flex-1 rounded-full border border-transparent px-3 py-1 text-xs shadow-inner focus:border-sky-300 focus:outline-none",
-                  lucccaMode ? "bg-slate-900/60 text-slate-100" : "bg-white/90",
-                )}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    addTagsToSelected((e.target as HTMLInputElement).value);
-                    (e.target as HTMLInputElement).value = "";
-                  }
+                ref={uploadInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(event) => {
+                  const files = Array.from(event.target.files || []);
+                  if (files.length) handleFiles(files);
+                  if (uploadInputRef.current) uploadInputRef.current.value = "";
                 }}
               />
-              <Button size="sm" onClick={() => setSelected([])} className="rounded-full px-3">
+              <Button onClick={handleUploadClick} className="rounded-full px-4">
+                <UploadCloud className="mr-2 h-4 w-4" /> Upload
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setStatus("Exporting ZIP...");
+                  void exportAllZip().then(() => setStatus("Export complete."));
+                }}
+                className="rounded-full px-4"
+              >
+                <Download className="mr-2 h-4 w-4" /> Export ZIP
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  linkImagesToRecipesByFilename();
+                  setStatus("Linked images to recipes by filename.");
+                }}
+                className="rounded-full px-4"
+              >
+                <Link2 className="mr-2 h-4 w-4" /> Link recipes
+              </Button>
+            </div>
+          </div>
+
+          {selectedIds.length > 0 && (
+            <div className={cn("flex flex-wrap items-center gap-3 rounded-2xl border px-4 py-3 text-xs", subtleSurface)}>
+              <span>{selectedIds.length} selected</span>
+              <input
+                value={bulkTagDraft}
+                onChange={(event) => setBulkTagDraft(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    handleBulkTagSubmit();
+                  }
+                }}
+                placeholder="Add tags (comma separated)"
+                className="flex-1 rounded-full border border-transparent bg-black/10 px-3 py-1 text-xs focus:border-sky-400 focus:outline-none"
+              />
+              <Button size="sm" className="rounded-full px-4" onClick={handleBulkTagSubmit}>
+                Apply tags
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="rounded-full px-4"
+                onClick={() => setSelectedIds([])}
+              >
                 Clear
               </Button>
             </div>
           )}
-        </div>
-      </div>
 
-      <div className={cn("rounded-[28px] border p-6 space-y-3 backdrop-blur-xl", cardSurface)}>
-        <div className="text-sm font-semibold tracking-tight">Add from URL(s)</div>
-        <div className="flex flex-col items-stretch gap-3 md:flex-row md:items-center">
-          <textarea
-            value={urlText}
-            onChange={(e) => setUrlText(e.target.value)}
-            placeholder="Paste image URLs — one per line"
-            className={cn(
-              "flex-1 min-h-[90px] rounded-2xl border px-4 py-3 text-sm font-mono shadow-inner",
-              lucccaMode ? "bg-slate-900/70" : "bg-white/80",
+          <div className={cn("rounded-[28px] border bg-black/10 p-6", subtleSurface)}>
+            <div className="flex flex-col items-center justify-center gap-3 text-center text-sm text-slate-200">
+              <UploadCloud className="h-10 w-10 opacity-70" />
+              <div className="text-base font-semibold">Drag files anywhere in this panel</div>
+              <p className="max-w-xl text-xs uppercase tracking-[0.3em] opacity-70">
+                Supported RAW · HEIC · JPG · PNG
+              </p>
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-hidden rounded-[28px] border bg-black/10 p-4">
+            {filtered.length > 0 ? (
+              <div
+                className={cn(
+                  "grid gap-4",
+                  gridTemplates[thumbSize],
+                )}
+                data-echo-key="section:gallery:grid"
+              >
+                {filtered.map((image) => (
+                  <GalleryCard
+                    key={image.id}
+                    id={image.id}
+                    name={image.name}
+                    src={image.dataUrl || image.blobUrl}
+                    tags={image.tags || []}
+                    favorite={image.favorite}
+                    unsupported={image.unsupported}
+                    active={activeId === image.id}
+                    selected={selectedIds.includes(image.id)}
+                    thumbSize={thumbSize}
+                    onClick={(event) => handleSelectCard(event, image.id)}
+                    onDoubleClick={() => handleOpenLightbox(image.id)}
+                    onToggleFavorite={() => handleToggleFavorite(image.id)}
+                    onDelete={() => handleDeleteImage(image.id)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex h-full flex-col items-center justify-center gap-4 text-sm text-slate-200">
+                <div className="text-base font-semibold">No images match the current filters.</div>
+                <Button className="rounded-full px-4" onClick={() => restoreDemo()}>
+                  Restore demo gallery
+                </Button>
+              </div>
             )}
-          />
-          <Button
-            disabled={urlLoading || !urlText.trim()}
-            onClick={async () => {
-              try {
-                setUrlLoading(true);
-                const urls = urlText
-                  .split(/\r?\n|,|\s+/)
-                  .map((s) => s.trim())
-                  .filter((u) => /^https?:\/\//i.test(u));
-                if (!urls.length) {
-                  setStatus("Enter valid http(s) image URLs");
-                  return;
-                }
-                const files: File[] = [];
-                for (const u of urls) {
-                  try {
-                    const res = await fetch(u);
-                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                    const blob = await res.blob();
-                    const name = (
-                      u.split("?")[0].split("#")[0].split("/").pop() ||
-                      `image-${Date.now()}.jpg`
-                    ).replace(/[^A-Za-z0-9_.-]/g, "_");
-                    files.push(
-                      new File([blob], name, {
-                        type: blob.type || "image/jpeg",
-                      }),
+          </div>
+        </Dropzone>
+
+        <aside className={cn("flex flex-col gap-5 rounded-[32px] border p-6", detailSurface)}>
+          <div className="flex items-center justify-between text-sm font-semibold uppercase tracking-[0.3em] opacity-70">
+            <span>Inspector</span>
+            <ListFilter className="h-4 w-4" />
+          </div>
+
+          {activeImage ? (
+            <div className="space-y-4">
+              <div className="overflow-hidden rounded-2xl border border-white/10">
+                {activeImage.unsupported ? (
+                  <div className="flex aspect-[4/3] items-center justify-center bg-slate-900/60 text-xs uppercase tracking-[0.3em] text-slate-300">
+                    No preview available
+                  </div>
+                ) : (
+                  <img
+                    src={activeImage.dataUrl || activeImage.blobUrl}
+                    alt={activeImage.name}
+                    className="w-full object-cover"
+                  />
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-[0.3em] opacity-60">Filename</label>
+                <input
+                  value={nameDraft}
+                  onChange={(event) => setNameDraft(event.target.value)}
+                  className="w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-[0.3em] opacity-60">Tags</label>
+                <textarea
+                  value={tagDraft}
+                  onChange={(event) => setTagDraft(event.target.value)}
+                  className="h-20 w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-sm"
+                  placeholder="comma separated"
+                />
+                <Button size="sm" className="rounded-full px-4" onClick={handleSaveMetadata}>
+                  Save metadata
+                </Button>
+              </div>
+
+              <div className="space-y-3">
+                <div className="text-xs uppercase tracking-[0.3em] opacity-60">Look book membership</div>
+                <div className="space-y-2">
+                  {lookbooks.length === 0 && (
+                    <div className="rounded-xl border border-dashed border-white/20 px-3 py-3 text-xs opacity-70">
+                      Create a look book on the left to organise hero dishes.
+                    </div>
+                  )}
+                  {lookbooks.map((book) => {
+                    const hasImage = book.imageIds.includes(activeImage.id);
+                    return (
+                      <label
+                        key={book.id}
+                        className="flex items-center justify-between rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-xs"
+                      >
+                        <span className="flex items-center gap-2">
+                          <Folder className="h-3.5 w-3.5" /> {book.name}
+                        </span>
+                        <input
+                          type="checkbox"
+                          checked={hasImage}
+                          onChange={(event) =>
+                            handleToggleLookbookMembership(book.id, event.target.checked)
+                          }
+                        />
+                      </label>
                     );
-                  } catch (e: any) {
-                    setStatus(`Failed to fetch ${u}: ${e?.message || "error"}`);
-                  }
-                }
-                if (files.length) {
-                  const added = await addImages(files, { tags: [] });
-                  setStatus(`Added ${added} image(s) from URL.`);
-                  linkImagesToRecipesByFilename();
-                  setUrlText("");
-                }
-              } finally {
-                setUrlLoading(false);
-              }
-            }}
-            className="rounded-full px-6"
-          >
-            {urlLoading ? "Adding..." : "Add"}
-          </Button>
-        </div>
+                  })}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="text-xs uppercase tracking-[0.3em] opacity-60">Add from URLs</div>
+                <textarea
+                  value={urlText}
+                  onChange={(event) => setUrlText(event.target.value)}
+                  placeholder="https://example.com/photo.jpg"
+                  className="h-24 w-full rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-xs"
+                />
+                <Button
+                  size="sm"
+                  disabled={urlLoading}
+                  className="rounded-full px-4"
+                  onClick={handleAddImagesFromUrls}
+                >
+                  {urlLoading ? "Fetching…" : "Add images"}
+                </Button>
+              </div>
+
+              <div className="space-y-1 text-xs opacity-60">
+                <div className="flex items-center gap-2">
+                  <Tag className="h-3.5 w-3.5" />
+                  {(activeImage.tags || []).join(" · ") || "No tags yet"}
+                </div>
+                <div>{new Date(Number(activeImage.createdAt || Date.now())).toLocaleString()}</div>
+                <div>{activeImage.type || "Unknown file type"}</div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-1 flex-col items-center justify-center gap-4 text-sm text-slate-200">
+              <div className="text-base font-semibold">Select an image to edit details.</div>
+            </div>
+          )}
+        </aside>
       </div>
 
       {status && (
-        <div className={cn("rounded-[20px] border px-4 py-3 text-sm", subtleSurface)}>
-          {status}
-        </div>
-      )}
-
-      <div className={cn("rounded-[28px] border p-6 backdrop-blur-xl", cardSurface)}>
-        <div className="flex flex-wrap items-center gap-3">
-          <input
-            value={newLookBookName}
-            onChange={(e) => setNewLookBookName(e.target.value)}
-            placeholder="New Look Book name"
-            className={cn(
-              "rounded-full border px-4 py-2 text-sm shadow-inner",
-              lucccaMode ? "bg-slate-900/70" : "bg-white/85",
-            )}
-          />
-          <Button
-            onClick={() => {
-              const name = newLookBookName.trim();
-              if (!name) return;
-              const id = addLookBook(name, selected.length ? selected : []);
-              if (selected.length) setSelected([]);
-              setNewLookBookName("");
-              setActiveLookBookId(id);
-              setOpenLookBook(true);
-            }}
-            className="rounded-full px-5"
-          >
-            Create
-          </Button>
-          {selected.length > 0 && (
-            <select
-              className={cn(
-                "rounded-full border px-3 py-2 text-sm shadow-inner",
-                lucccaMode ? "bg-slate-900/70" : "bg-white/85",
-              )}
-              value={activeLookBookId || ""}
-              onChange={(e) => setActiveLookBookId(e.target.value || null)}
-            >
-              <option value="">Select Look Book</option>
-              {lookbooks.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.name} ({b.imageIds.length})
-                </option>
-              ))}
-            </select>
-          )}
-          {selected.length > 0 && activeLookBookId && (
-            <Button
-              variant="secondary"
-              onClick={() => {
-                addImagesToLookBook(activeLookBookId, selected);
-                setSelected([]);
-              }}
-              className="rounded-full px-5"
-            >
-              Add selected to Look Book
-            </Button>
-          )}
-        </div>
-        {lookbooks.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-2">
-            {lookbooks.map((b) => (
-              <div
-                key={b.id}
-                className={cn(
-                  "flex min-w-[260px] flex-auto items-center justify-between gap-2 rounded-2xl border px-4 py-3 text-sm no-callout backdrop-blur-lg",
-                  subtleSurface,
-                )}
-              >
-                <div className="flex items-center gap-2">
-                  <button
-                    className="font-medium underline-offset-2 hover:underline"
-                    onClick={() => {
-                      setActiveLookBookId(b.id);
-                      setOpenLookBook(true);
-                    }}
-                    title="Open Look Book"
-                  >
-                    {b.name}
-                  </button>
-                  <span className="text-muted-foreground whitespace-nowrap">
-                    {b.imageIds.length} photos
-                  </span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => {
-                      const name = prompt("Rename Look Book", b.name) || b.name;
-                      updateLookBook(b.id, { name });
-                    }}
-                    aria-label="Rename"
-                    title="Rename"
-                    className="h-9 w-9 rounded-full"
-                  >
-                    <Pencil />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => deleteLookBook(b.id)}
-                    aria-label="Delete"
-                    title="Delete"
-                    className="h-9 w-9 rounded-full"
-                  >
-                    <Trash />
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {filtered.length > 0 ? (
-        <div
-          className={cn(
-            viewMode === "masonry"
-              ? "columns-2 gap-6 sm:columns-3 md:columns-4 lg:columns-5 xl:columns-6 2xl:columns-7"
-              : "grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6",
-            "pb-2",
-          )}
-          data-echo-key="section:gallery:grid"
-        >
-          {filtered.map((img) => {
-            const isSelected = selected.includes(img.id);
-            const displayTags = (img.tags || []).slice(0, 3);
-            const overflowCount = Math.max((img.tags || []).length - displayTags.length, 0);
-
-            return (
-              <div
-                key={img.id}
-                className={cn(
-                  "group relative mb-6 break-inside-avoid overflow-hidden rounded-[24px] backdrop-blur-xl transition-all duration-500",
-                  lucccaMode
-                    ? "ring-1 ring-slate-700/60 bg-slate-950/60 shadow-[0_24px_60px_rgba(14,165,233,0.24)]"
-                    : "ring-1 ring-white/70 bg-white/95 shadow-[0_24px_60px_rgba(15,23,42,0.14)]",
-                  isSelected &&
-                    (lucccaMode
-                      ? "ring-2 ring-sky-400 shadow-[0_32px_80px_rgba(14,165,233,0.32)]"
-                      : "ring-2 ring-sky-400 shadow-[0_32px_80px_rgba(56,189,248,0.22)]"),
-                )}
-                draggable
-                onDragStart={() => onDragStart(img.id)}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={() => onDropOver(img.id)}
-                data-echo-key="card:gallery:item"
-              >
-                <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/20" />
-                </div>
-
-                <button
-                  className="absolute right-3 top-3 z-30 flex h-8 w-8 items-center justify-center rounded-full bg-black/45 text-white opacity-0 transition duration-200 group-hover:opacity-100"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFavorite(img.id);
-                  }}
-                  aria-label="Toggle favorite"
-                  data-echo-key="cta:gallery:fav"
-                >
-                  <Star
-                    className={cn(
-                      "h-4 w-4",
-                      img.favorite ? "fill-yellow-300 text-yellow-300" : "text-white",
-                    )}
-                  />
-                </button>
-
-                <label className="absolute left-3 top-3 z-30 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="peer sr-only"
-                    checked={isSelected}
-                    onChange={() => toggleSelect(img.id)}
-                  />
-                  <span
-                    className={cn(
-                      "flex h-7 w-7 items-center justify-center rounded-full border text-[11px] font-semibold transition-all",
-                      isSelected
-                        ? "border-sky-400 bg-sky-500 text-white shadow-[0_15px_30px_rgba(14,165,233,0.35)]"
-                        : "border-white/70 bg-white/70 text-transparent backdrop-blur peer-focus-visible:ring-2 peer-focus-visible:ring-sky-300",
-                    )}
-                  >
-                    ✓
-                  </span>
-                </label>
-
-                <button
-                  onClick={() => openLightboxAt(img.id)}
-                  className="block w-full overflow-hidden"
-                  data-echo-key="cta:gallery:open"
-                >
-                  {img.unsupported ? (
-                    <div className="flex h-48 w-full items-center justify-center bg-slate-200 text-xs uppercase tracking-[0.3em] text-slate-500">
-                      Unsupported preview
-                    </div>
-                  ) : (
-                    <img
-                      src={img.dataUrl || img.blobUrl}
-                      alt={img.name}
-                      loading="lazy"
-                      className={cn(
-                        "w-full object-cover transition duration-500 ease-out group-hover:scale-[1.03]",
-                        viewMode === "grid"
-                          ? thumbSize === "s"
-                            ? "aspect-[4/3]"
-                            : thumbSize === "l"
-                              ? "aspect-[3/2]"
-                              : "aspect-[5/4]"
-                          : "h-auto",
-                      )}
-                      onError={(e) => {
-                        const el = e.currentTarget;
-                        el.onerror = null;
-                        el.src = "/placeholder.svg";
-                        el.classList.add("opacity-70");
-                      }}
-                    />
-                  )}
-                </button>
-
-                <button
-                  className="absolute bottom-3 right-3 z-30 flex h-8 w-8 items-center justify-center rounded-full bg-black/45 text-white opacity-0 transition duration-200 group-hover:opacity-100 hover:bg-black/60"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (confirm("Delete this image?")) deleteImage(img.id);
-                  }}
-                  aria-label="Delete image"
-                  title="Delete image"
-                >
-                  <Trash className="h-4 w-4" />
-                </button>
-
-                {editingId === img.id ? (
-                  <div
-                    className={cn(
-                      "absolute inset-x-0 bottom-0 z-40 space-y-2 border-t px-4 py-4 backdrop-blur-xl",
-                      lucccaMode
-                        ? "border-white/10 bg-slate-950/90"
-                        : "border-slate-200/60 bg-white/95",
-                    )}
-                  >
-                    <input
-                      autoFocus
-                      value={editName}
-                      onChange={(e) => setEditName(e.target.value)}
-                      onKeyDown={onEditKeyDown}
-                      placeholder="Image name"
-                      className={cn(
-                        "w-full rounded-full border px-3 py-2 text-sm shadow-inner",
-                        lucccaMode ? "bg-slate-900/70" : "bg-white/85",
-                      )}
-                    />
-                    <input
-                      value={editTags}
-                      onChange={(e) => setEditTags(e.target.value)}
-                      onKeyDown={onEditKeyDown}
-                      placeholder="categories (comma separated)"
-                      className={cn(
-                        "w-full rounded-full border px-3 py-2 text-sm shadow-inner",
-                        lucccaMode ? "bg-slate-900/70" : "bg-white/85",
-                      )}
-                    />
-                    <div className="flex gap-2">
-                      <Button size="sm" onClick={saveEdit} className="rounded-full px-4">
-                        Save
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        onClick={cancelEdit}
-                        className="rounded-full px-4"
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col gap-1 bg-gradient-to-t from-black/80 via-black/10 to-transparent p-4 text-white">
-                    <button
-                      className="truncate text-left text-sm font-medium underline-offset-4 hover:underline"
-                      onClick={() => beginEdit(img.id)}
-                      title="Rename & categorize"
-                    >
-                      {img.name}
-                    </button>
-                    <div className="flex flex-wrap gap-1 text-[11px]">
-                      {displayTags.length > 0 ? (
-                        <>
-                          {displayTags.map((t) => (
-                            <button
-                              key={t}
-                              className="pointer-events-auto rounded-full bg-white/30 px-2 py-0.5 text-white/90 backdrop-blur"
-                              onClick={() => beginEdit(img.id)}
-                              title="Edit categories"
-                            >
-                              {t}
-                            </button>
-                          ))}
-                          {overflowCount > 0 && (
-                            <button
-                              className="pointer-events-auto rounded-full bg-white/20 px-2 py-0.5 text-white/80 backdrop-blur"
-                              onClick={() => beginEdit(img.id)}
-                              title="Edit categories"
-                            >
-                              +{overflowCount}
-                            </button>
-                          )}
-                        </>
-                      ) : (
-                        <button
-                          className="pointer-events-auto rounded-full bg-white/20 px-2 py-0.5 text-white/80 backdrop-blur"
-                          onClick={() => beginEdit(img.id)}
-                          title="Add categories"
-                        >
-                          + categorize
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <div className={cn("rounded-[28px] border p-8 text-center text-sm", cardSurface)}>
-          <div className="mb-2 opacity-80">No images yet.</div>
-          <Button onClick={() => restoreDemo()} className="rounded-full px-5">
-            Restore demo images
-          </Button>
-        </div>
+        <div className={cn("rounded-[24px] border px-4 py-3 text-sm", subtleSurface)}>{status}</div>
       )}
 
       <Dialog open={showTagDialog} onOpenChange={setShowTagDialog}>
@@ -908,18 +928,15 @@ export default function GallerySection() {
           <div className="space-y-3">
             <input
               value={importTags}
-              onChange={(e) => setImportTags(e.target.value)}
-              placeholder="e.g. steak, plating, dessert"
+              onChange={(event) => setImportTags(event.target.value)}
+              placeholder="e.g. plating, dessert"
               className="w-full rounded-md border bg-background px-3 py-2"
             />
             <div className="flex justify-end gap-2">
-              <Button
-                variant="secondary"
-                onClick={() => setShowTagDialog(false)}
-              >
+              <Button variant="secondary" onClick={() => setShowTagDialog(false)}>
                 Cancel
               </Button>
-              <Button onClick={confirmImport}>Import</Button>
+              <Button onClick={handleConfirmImport}>Import</Button>
             </div>
           </div>
         </DialogContent>
@@ -928,30 +945,26 @@ export default function GallerySection() {
       <GalleryLightbox
         open={lightboxOpen}
         onClose={() => setLightboxOpen(false)}
-        images={filtered.map((i) => ({
-          id: i.id,
-          src: i.dataUrl || i.blobUrl,
-          name: i.name,
-          favorite: i.favorite,
-          unsupported: i.unsupported,
+        images={filtered.map((image) => ({
+          id: image.id,
+          src: image.dataUrl || image.blobUrl,
+          name: image.name,
+          favorite: image.favorite,
+          unsupported: image.unsupported,
         }))}
         index={lightboxIndex}
-        onPrev={() =>
-          setLightboxIndex((i) => (i - 1 + filtered.length) % filtered.length)
-        }
-        onNext={() => setLightboxIndex((i) => (i + 1) % filtered.length)}
-        onToggleFavorite={toggleFavorite}
+        onPrev={() => setLightboxIndex((index) => (index - 1 + filtered.length) % filtered.length)}
+        onNext={() => setLightboxIndex((index) => (index + 1) % filtered.length)}
+        onToggleFavorite={handleToggleFavorite}
         className={lucccaMode ? "luccca-theme lightbox-overlay" : ""}
       />
 
       <LookBookShowcase
         open={openLookBook}
         onClose={() => setOpenLookBook(false)}
-        title={lookbooks.find((b) => b.id === activeLookBookId)?.name}
-        images={(
-          lookbooks.find((b) => b.id === activeLookBookId)?.imageIds || []
-        ).map((id) => {
-          const img = images.find((i) => i.id === id);
+        title={activeLookBook?.name}
+        images={(activeLookBook?.imageIds || []).map((id) => {
+          const img = images.find((item) => item.id === id);
           const tags = img?.tags || [];
           return {
             id,
@@ -968,4 +981,71 @@ export default function GallerySection() {
       />
     </div>
   );
+}
+
+type LibraryItemProps = {
+  icon: React.ReactNode;
+  label: string;
+  count: number;
+  active: boolean;
+  onClick: () => void;
+  action?: React.ReactNode;
+};
+
+function LibraryItem({ icon, label, count, active, onClick, action }: LibraryItemProps) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "flex w-full items-center justify-between gap-3 rounded-2xl border px-3 py-2 text-left text-sm transition",
+        active
+          ? "border-sky-400/60 bg-sky-500/10 text-sky-100 shadow-[0_18px_40px_rgba(14,165,233,0.25)]"
+          : "border-white/10 bg-white/5 text-slate-200 hover:border-sky-300/40 hover:bg-sky-500/10",
+      )}
+    >
+      <span className="flex items-center gap-2">
+        <span className="rounded-full bg-black/40 p-1">{icon}</span>
+        {label}
+      </span>
+      <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em]">
+        {count}
+        {action}
+      </span>
+    </button>
+  );
+}
+
+type RefreshGlyphProps = React.SVGProps<SVGSVGElement>;
+
+function RefreshGlyph(props: RefreshGlyphProps) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-3.5 w-3.5" {...props}>
+      <path
+        d="M21 12a9 9 0 1 1-2.64-6.36"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M21 3v6h-6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function tagDraftForLookbookName(activeLookBookId: string | null, lookbooks: typeof useAppData extends () => infer Data ? Data extends { lookbooks: infer LB } ? LB : never : never) {
+  return "";
+}
+
+let activeLookBookInput = "";
+
+function setActiveLookBookInput(value: string) {
+  activeLookBookInput = value;
 }
