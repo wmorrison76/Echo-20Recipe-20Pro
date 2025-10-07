@@ -50,21 +50,21 @@ export default function GallerySection() {
   const [lucccaMode, setLucccaMode] = useState(false);
   const [openLookBook, setOpenLookBook] = useState(false);
   const dragId = useRef<string | null>(null);
-
-  const toolbarSurface = lucccaMode
-    ? "border-slate-700/80 bg-slate-900/70 text-slate-100 shadow-[0_26px_70px_rgba(14,165,233,0.28)]"
-    : "border-slate-200/70 bg-white/80 text-slate-900 shadow-[0_36px_90px_rgba(15,23,42,0.12)]";
-  const cardSurface = lucccaMode
-    ? "border-slate-700/60 bg-slate-900/60 text-slate-100 shadow-[0_24px_70px_rgba(14,165,233,0.24)]"
-    : "border-slate-200/60 bg-white/85 text-slate-900 shadow-[0_28px_80px_rgba(15,23,42,0.1)]";
-  const subtleSurface = lucccaMode
-    ? "border-slate-700/50 bg-slate-900/55 text-slate-100"
-    : "border-slate-200/50 bg-white/80 text-slate-800";
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [editTags, setEditTags] = useState("");
   const [urlText, setUrlText] = useState("");
   const [urlLoading, setUrlLoading] = useState(false);
+
+  const toolbarSurface = lucccaMode
+    ? "border-slate-700/80 bg-slate-900/70 text-slate-100 shadow-[0_28px_80px_rgba(14,165,233,0.28)]"
+    : "border-slate-200/70 bg-white/85 text-slate-900 shadow-[0_32px_90px_rgba(15,23,42,0.12)]";
+  const cardSurface = lucccaMode
+    ? "border-slate-700/60 bg-slate-900/60 text-slate-100 shadow-[0_24px_70px_rgba(14,165,233,0.24)]"
+    : "border-slate-200/60 bg-white/90 text-slate-900 shadow-[0_26px_70px_rgba(15,23,42,0.1)]";
+  const subtleSurface = lucccaMode
+    ? "border-slate-700/50 bg-slate-900/55 text-slate-100"
+    : "border-slate-200/50 bg-white/80 text-slate-800";
 
   const filtered = useMemo(() => {
     const q = filter.trim().toLowerCase();
@@ -202,212 +202,211 @@ export default function GallerySection() {
     }
   };
 
+  const shellClass = lucccaMode
+    ? "luccca-theme border-slate-800/70 bg-slate-950/90 text-slate-100 shadow-[0_40px_140px_rgba(14,165,233,0.35)]"
+    : "border-slate-200/80 bg-gradient-to-br from-white via-slate-50/95 to-slate-100 text-slate-900 shadow-[0_45px_150px_rgba(15,23,42,0.16)]";
+
   return (
     <div
       className={cn(
-        "relative mx-auto max-w-[1380px] space-y-6 overflow-hidden rounded-[40px] border px-4 py-10 sm:px-8 lg:px-14",
-        "before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.12),transparent_60%)] before:opacity-70",
-        lucccaMode
-          ? "luccca-theme border-slate-800/70 bg-slate-950/85 text-slate-100 shadow-[0_50px_140px_rgba(14,165,233,0.28)]"
-          : "border-slate-200/80 bg-gradient-to-br from-white via-slate-50/95 to-slate-100 text-slate-900 shadow-[0_55px_150px_rgba(15,23,42,0.16)]",
+        "relative mx-auto max-w-[1400px] space-y-6 rounded-[42px] border px-4 py-10 sm:px-8 lg:px-14",
+        "transition-colors",
+        shellClass,
       )}
       data-echo-key="page:recipes:gallery"
     >
-      <Dropzone
-        multiple
-        onFiles={onFiles}
-        className="group relative min-h-[240px] overflow-hidden rounded-[32px] border-none bg-transparent p-0"
-      >
-        <div
-          className={cn(
-            "flex h-full w-full flex-col items-center justify-center gap-4 rounded-[32px] border px-10 py-12 text-center backdrop-blur-xl transition-all duration-300",
-            toolbarSurface,
-            lucccaMode
-              ? "hover:shadow-[0_30px_80px_rgba(14,165,233,0.32)]"
-              : "hover:shadow-[0_30px_80px_rgba(15,23,42,0.18)]",
-          )}
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
+        <Dropzone
+          multiple
+          onFiles={onFiles}
+          className="group relative min-h-[240px] overflow-hidden rounded-[32px] border-none bg-transparent p-0"
         >
-          <UploadCloud className="h-10 w-10 opacity-80" />
-          <div className="space-y-1">
-            <div className="text-lg font-semibold tracking-tight">
-              Drag & drop images
-            </div>
-            <p className="text-sm font-medium opacity-70">
-              or click to choose files · categorize on import
-            </p>
-          </div>
-          <div className="rounded-full border border-white/40 px-4 py-1 text-[12px] font-medium uppercase tracking-[0.28em] opacity-70">
-            Supports RAW · HEIC · JPG · PNG
-          </div>
-        </div>
-      </Dropzone>
-
-      <div className={cn("rounded-[28px] border p-6 space-y-3 backdrop-blur-xl", toolbarSurface)}>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-sm opacity-80">
-            <span>Images in gallery</span>
-            <span className="min-w-[5ch] text-right text-lg font-semibold tabular-nums">
-              {images.length}
-            </span>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              void exportAllZip();
-            }}
-            className="gap-2 rounded-full px-4"
-          >
-            <Download className="h-4 w-4" />
-            Export ZIP
-          </Button>
-        </div>
-        <div className="flex flex-wrap items-center gap-2.5">
-          <div
-            className="relative flex-1 min-w-[240px]"
-            data-echo-key="filter:gallery:tags"
-          >
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-50" />
-            <input
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              placeholder="Search or filter by tag"
-              className={cn(
-                "w-full rounded-full border border-transparent pl-9 pr-3 py-2 text-sm shadow-inner focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-200",
-                lucccaMode
-                  ? "bg-slate-900/70 text-slate-100 placeholder:text-slate-400"
-                  : "bg-white/80",
-              )}
-            />
-          </div>
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            className="hidden"
-            onChange={(e) => {
-              const files = Array.from(e.target.files || []);
-              if (files.length) {
-                onFiles(files);
-              }
-              (e.target as HTMLInputElement).value = "";
-            }}
-            ref={(el) => ((window as any).__gallery_upload_input = el)}
-          />
-          <Button
-            onClick={() => (window as any).__gallery_upload_input?.click()}
-            variant="default"
-            data-echo-key="cta:gallery:upload"
-            className="rounded-full px-4"
-          >
-            Upload images
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() => linkImagesToRecipesByFilename()}
-            className="rounded-full px-4"
-          >
-            Link to recipes
-          </Button>
-          <select
-            className={cn(
-              "rounded-full border border-transparent px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none",
-              lucccaMode ? "bg-slate-900/70 text-slate-100" : "bg-white/80",
-            )}
-            value={sort}
-            onChange={(e) => setSort(e.target.value as any)}
-            title="Sort"
-            data-echo-key="filter:gallery:sort"
-          >
-            <option value="newest">Newest</option>
-            <option value="popular">Popular</option>
-            <option value="rated">Rated</option>
-          </select>
-          <select
-            className={cn(
-              "rounded-full border border-transparent px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none",
-              lucccaMode ? "bg-slate-900/70 text-slate-100" : "bg-white/80",
-            )}
-            value={viewMode}
-            onChange={(e) => setViewMode(e.target.value as any)}
-            title="Layout"
-          >
-            <option value="masonry">Masonry</option>
-            <option value="grid">Grid</option>
-          </select>
-          <select
-            className={cn(
-              "rounded-full border border-transparent px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none",
-              lucccaMode ? "bg-slate-900/70 text-slate-100" : "bg-white/80",
-            )}
-            value={thumbSize}
-            onChange={(e) => setThumbSize(e.target.value as any)}
-            title="Thumbnail size"
-          >
-            <option value="s">Small</option>
-            <option value="m">Medium</option>
-            <option value="l">Large</option>
-          </select>
-          <label
-            className={cn(
-              "ml-1 mr-2 flex items-center gap-2 rounded-full border border-transparent px-3 py-2 text-xs shadow-inner",
-              lucccaMode ? "bg-slate-900/70 text-slate-100" : "bg-white/60 text-slate-700",
-            )}
-          >
-            <input
-              type="checkbox"
-              checked={lucccaMode}
-              onChange={(e) => setLucccaMode(e.target.checked)}
-            />
-            LUCCCA
-          </label>
-          <select
-            className={cn(
-              "rounded-full border border-transparent px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none",
-              lucccaMode ? "bg-slate-900/70 text-slate-100" : "bg-white/80",
-            )}
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="">Category: All</option>
-            <option value="pastry">Pastry</option>
-            <option value="cake">Cakes</option>
-            <option value="bread">Breads</option>
-            <option value="dessert">Desserts</option>
-            <option value="savory">Savory</option>
-            <option value="drink">Drinks</option>
-            <option value="plating">Plating</option>
-          </select>
-        </div>
-        {selected.length > 0 && (
           <div
             className={cn(
-              "flex items-center gap-2 rounded-2xl border px-3 py-2 text-xs shadow-inner",
+              "flex h-full w-full flex-col items-center justify-center gap-4 rounded-[32px] border px-10 py-12 text-center backdrop-blur-xl transition-all duration-300",
+              toolbarSurface,
               lucccaMode
-                ? "border-white/10 bg-slate-900/70 text-slate-100"
-                : "border-white/40 bg-white/60 text-slate-700",
+                ? "hover:shadow-[0_30px_90px_rgba(14,165,233,0.32)]"
+                : "hover:shadow-[0_30px_90px_rgba(15,23,42,0.18)]",
             )}
           >
-            <span className="opacity-70">{selected.length} selected</span>
-            <input
-              id="bulk-tags"
-              placeholder="add tags (comma)"
-              className={cn(
-                "flex-1 rounded-full border border-transparent px-3 py-1 text-xs shadow-inner focus:border-sky-300 focus:outline-none",
-                lucccaMode ? "bg-slate-900/60 text-slate-100" : "bg-white/90",
-              )}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  addTagsToSelected((e.target as HTMLInputElement).value);
-                  (e.target as HTMLInputElement).value = "";
-                }
+            <UploadCloud className="h-10 w-10 opacity-80" />
+            <div className="space-y-1">
+              <h2 className="text-lg font-semibold tracking-tight">Drag & drop images</h2>
+              <p className="text-sm font-medium opacity-70">
+                or click to choose files · categorize on import
+              </p>
+            </div>
+            <div className="rounded-full border border-white/40 px-4 py-1 text-[12px] font-medium uppercase tracking-[0.28em] opacity-70">
+              Supports RAW · HEIC · JPG · PNG
+            </div>
+          </div>
+        </Dropzone>
+
+        <div className={cn("rounded-[28px] border p-6 space-y-3 backdrop-blur-xl", toolbarSurface)}>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-sm opacity-80">
+              <span>Images in gallery</span>
+              <span className="min-w-[5ch] text-right text-lg font-semibold tabular-nums">
+                {images.length}
+              </span>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                void exportAllZip();
               }}
-            />
-            <Button size="sm" onClick={() => setSelected([])} className="rounded-full px-3">
-              Clear
+              className="gap-2 rounded-full px-4"
+            >
+              <Download className="h-4 w-4" />
+              Export ZIP
             </Button>
           </div>
-        )}
+          <div className="flex flex-wrap items-center gap-2.5">
+            <div className="relative flex-1 min-w-[230px]" data-echo-key="filter:gallery:tags">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-50" />
+              <input
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                placeholder="Search or filter by tag"
+                className={cn(
+                  "w-full rounded-full border border-transparent pl-9 pr-3 py-2 text-sm shadow-inner focus:border-sky-300 focus:outline-none focus:ring-2 focus:ring-sky-200",
+                  lucccaMode
+                    ? "bg-slate-900/70 text-slate-100 placeholder:text-slate-400"
+                    : "bg-white/80",
+                )}
+              />
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={(e) => {
+                const files = Array.from(e.target.files || []);
+                if (files.length) {
+                  onFiles(files);
+                }
+                (e.target as HTMLInputElement).value = "";
+              }}
+              ref={(el) => ((window as any).__gallery_upload_input = el)}
+            />
+            <Button
+              onClick={() => (window as any).__gallery_upload_input?.click()}
+              variant="default"
+              data-echo-key="cta:gallery:upload"
+              className="rounded-full px-4"
+            >
+              Upload images
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => linkImagesToRecipesByFilename()}
+              className="rounded-full px-4"
+            >
+              Link to recipes
+            </Button>
+            <select
+              className={cn(
+                "rounded-full border border-transparent px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none",
+                lucccaMode ? "bg-slate-900/70 text-slate-100" : "bg-white/80",
+              )}
+              value={sort}
+              onChange={(e) => setSort(e.target.value as any)}
+              title="Sort"
+              data-echo-key="filter:gallery:sort"
+            >
+              <option value="newest">Newest</option>
+              <option value="popular">Popular</option>
+              <option value="rated">Rated</option>
+            </select>
+            <select
+              className={cn(
+                "rounded-full border border-transparent px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none",
+                lucccaMode ? "bg-slate-900/70 text-slate-100" : "bg-white/80",
+              )}
+              value={viewMode}
+              onChange={(e) => setViewMode(e.target.value as any)}
+              title="Layout"
+            >
+              <option value="masonry">Masonry</option>
+              <option value="grid">Grid</option>
+            </select>
+            <select
+              className={cn(
+                "rounded-full border border-transparent px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none",
+                lucccaMode ? "bg-slate-900/70 text-slate-100" : "bg-white/80",
+              )}
+              value={thumbSize}
+              onChange={(e) => setThumbSize(e.target.value as any)}
+              title="Thumbnail size"
+            >
+              <option value="s">Small</option>
+              <option value="m">Medium</option>
+              <option value="l">Large</option>
+            </select>
+            <label
+              className={cn(
+                "ml-1 mr-2 flex items-center gap-2 rounded-full border border-transparent px-3 py-2 text-xs shadow-inner",
+                lucccaMode ? "bg-slate-900/70 text-slate-100" : "bg-white/60 text-slate-700",
+              )}
+            >
+              <input
+                type="checkbox"
+                checked={lucccaMode}
+                onChange={(e) => setLucccaMode(e.target.checked)}
+              />
+              LUCCCA
+            </label>
+            <select
+              className={cn(
+                "rounded-full border border-transparent px-3 py-2 text-xs shadow-inner focus:border-sky-300 focus:outline-none",
+                lucccaMode ? "bg-slate-900/70 text-slate-100" : "bg-white/80",
+              )}
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="">Category: All</option>
+              <option value="pastry">Pastry</option>
+              <option value="cake">Cakes</option>
+              <option value="bread">Breads</option>
+              <option value="dessert">Desserts</option>
+              <option value="savory">Savory</option>
+              <option value="drink">Drinks</option>
+              <option value="plating">Plating</option>
+            </select>
+          </div>
+          {selected.length > 0 && (
+            <div
+              className={cn(
+                "flex items-center gap-2 rounded-2xl border px-3 py-2 text-xs shadow-inner",
+                lucccaMode
+                  ? "border-white/10 bg-slate-900/70 text-slate-100"
+                  : "border-white/40 bg-white/60 text-slate-700",
+              )}
+            >
+              <span className="opacity-70">{selected.length} selected</span>
+              <input
+                id="bulk-tags"
+                placeholder="add tags (comma)"
+                className={cn(
+                  "flex-1 rounded-full border border-transparent px-3 py-1 text-xs shadow-inner focus:border-sky-300 focus:outline-none",
+                  lucccaMode ? "bg-slate-900/60 text-slate-100" : "bg-white/90",
+                )}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    addTagsToSelected((e.target as HTMLInputElement).value);
+                    (e.target as HTMLInputElement).value = "";
+                  }
+                }}
+              />
+              <Button size="sm" onClick={() => setSelected([])} className="rounded-full px-3">
+                Clear
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className={cn("rounded-[28px] border p-6 space-y-3 backdrop-blur-xl", cardSurface)}>
@@ -848,7 +847,7 @@ export default function GallerySection() {
         onPrev={() =>
           setLightboxIndex((i) => (i - 1 + filtered.length) % filtered.length)
         }
-        onNext={() => setLightboxIndex((i) => (i + 1) % filtered length)}
+        onNext={() => setLightboxIndex((i) => (i + 1) % filtered.length)}
         onToggleFavorite={toggleFavorite}
         className={lucccaMode ? "luccca-theme lightbox-overlay" : ""}
       />
@@ -869,7 +868,7 @@ export default function GallerySection() {
             tags,
             description:
               tags.length > 0
-                ? `Highlights ${tags slice(0, 3).join(" · ")}${tags.length > 3 ? " +" : ""}`
+                ? `Highlights ${tags.slice(0, 3).join(" · ")}${tags.length > 3 ? " +" : ""}`
                 : undefined,
           };
         })}
