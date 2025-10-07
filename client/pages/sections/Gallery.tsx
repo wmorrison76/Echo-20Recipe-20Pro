@@ -24,14 +24,12 @@ export default function GallerySection() {
     deleteLookBook,
     updateLookBook,
     addImages,
-    clearImages,
     linkImagesToRecipesByFilename,
     addTagsToImages,
     reorderImages,
     updateImage,
     exportAllZip,
     restoreDemo,
-    addDemoImages,
     deleteImage,
   } = useAppData();
   const [status, setStatus] = useState<string | null>(null);
