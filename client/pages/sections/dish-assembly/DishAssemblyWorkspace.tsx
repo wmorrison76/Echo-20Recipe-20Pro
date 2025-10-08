@@ -103,6 +103,7 @@ const DishAssemblyWorkspace: React.FC = () => {
   const [posMappings, setPosMappings] = useState<PosMapping[]>(() =>
     defaultPosMappings(),
   );
+  const [posConnectOpen, setPosConnectOpen] = useState(false);
   const [activeComponentId, setActiveComponentId] = useState<string | null>(
     null,
   );
