@@ -514,7 +514,7 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "serverNotes.document.titleSuffix": "Notes de service",
     "serverNotes.document.distributionDate": "Date de distribution",
     "serverNotes.document.distributionDateFull":
-      "Date de distribution��: {date}",
+      "Date de distribution : {date}",
     "serverNotes.document.menuIndex": "Index du menu",
     "serverNotes.document.page": "Page {number}",
     "serverNotes.document.pageReference": "Page {page}",
@@ -1158,6 +1158,8 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "nav.nutritionAllergens": "Ernährung / Allergene",
     "nav.haccpCompliance": "HACCP / Konformität",
     "nav.gallery": "Galerie",
+    "dishAssembly.toasts.recipeImported": "Rezept bereitgestellt",
+    "dishAssembly.toasts.recipeImportedDetail": "{name} ist im Gerichtaufbau bereit.",
     "serverNotes.doc.titleFallback": "Servicenotizen",
     "serverNotes.doc.serviceBriefing": "Servicebriefing",
     "serverNotes.doc.distributionDate": "Verteildatum",
