@@ -164,7 +164,7 @@ const PurchasingReceivingWorkspace: React.FC = () => {
         const supplier = supplierIndex.get(supplierId);
         row = {
           supplierId,
-          supplierName: supplier?.name ?? "Unknown Supplier",
+          supplierName: supplier?.name ?? unknownSupplierLabel,
           queueValue: 0,
           pipelineValue: 0,
           avgLeadTime: 0,
