@@ -271,7 +271,7 @@ const DishAssemblyWorkspace: React.FC = () => {
           onClick: () => setPosConnectOpen(true),
           icon: Settings,
           className:
-            "rounded-full border border-primary/40 bg-background text-primary shadow-sm hover:bg-primary/15",
+            "rounded-full border border-primary/40 bg-background text-primary shadow-sm hover:bg-primary/10",
         },
         {
           id: "dish-assembly-reset",
