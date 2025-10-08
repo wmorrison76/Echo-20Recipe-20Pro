@@ -10,7 +10,7 @@ import {
   CommitteeCritique,
   DemandPlanItem,
 } from "./types";
-import { clamp, isoNow, safeDivide, sumBy, uniqueId } from "./utils";
+import { clamp, safeDivide, uniqueId } from "./utils";
 
 export async function riskAgent(
   proposal: CommitteeProposal,
