@@ -99,6 +99,8 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "nav.haccpCompliance": "HACCP/Compliance",
     "nav.gallery": "Gallery",
     "common.untitled": "Untitled",
+    "dishAssembly.actions.posConnect": "POS Connect",
+    "dishAssembly.actions.posConnectDescription": "Map dish codes and pricing across connected POS systems.",
     "dishAssembly.toasts.recipeImported": "Recipe queued",
     "dishAssembly.toasts.recipeImportedDetail": "{name} is ready in Dish Assembly.",
     "serverNotes.doc.titleFallback": "Server Notes",
