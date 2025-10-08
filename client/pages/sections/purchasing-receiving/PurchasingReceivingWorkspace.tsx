@@ -358,10 +358,14 @@ const PurchasingReceivingWorkspace: React.FC = () => {
         <Card className="backdrop-blur">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-              <Factory className="h-5 w-5" aria-hidden /> Purchase Queue
+              <Factory className="h-5 w-5" aria-hidden />
+              {t("purchRec.card.queue", "Purchase Queue")}
             </CardTitle>
             <CardDescription>
-              Prioritized supplier line items with calculated pack economics.
+              {t(
+                "purchRec.card.queueDescription",
+                "Prioritized supplier line items with calculated pack economics.",
+              )}
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
@@ -443,10 +447,14 @@ const PurchasingReceivingWorkspace: React.FC = () => {
         <Card className="backdrop-blur">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-              <RefreshCcw className="h-5 w-5" aria-hidden /> Supplier Coverage
+              <RefreshCcw className="h-5 w-5" aria-hidden />
+              {t("purchRec.card.coverage", "Supplier Coverage")}
             </CardTitle>
             <CardDescription>
-              Spend concentration, reliability, and inbound confirmations by partner.
+              {t(
+                "purchRec.card.coverageDescription",
+                "Spend concentration, reliability, and inbound confirmations by partner.",
+              )}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 pt-0">
@@ -507,10 +515,14 @@ const PurchasingReceivingWorkspace: React.FC = () => {
       <Card className="backdrop-blur">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-            <Truck className="h-5 w-5" aria-hidden /> Receiving Timeline
+            <Truck className="h-5 w-5" aria-hidden />
+            {t("purchRec.card.receiving", "Receiving Timeline")}
           </CardTitle>
           <CardDescription>
-            Scheduled ready-made items with projected landed cost per portion.
+            {t(
+              "purchRec.card.receivingDescription",
+              "Scheduled ready-made items with projected landed cost per portion.",
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-0">
