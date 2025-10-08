@@ -311,6 +311,8 @@ const RecipeInputPage = () => {
   const [directions, setDirections] = useState("1. ");
   const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
   const { addRecipe, updateRecipe, addImages, recipes } = useAppData();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const recipeIdRef = useRef<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     try {
@@ -1575,7 +1577,7 @@ const RecipeInputPage = () => {
         );
       } else {
         out = out.replace(
-          /(\d{2,3})\s*(?:°\s*)?(?:c|celsius|degc|degrees\s*c)\b/gi,
+          /(\d{2,3})\s*(?:��\s*)?(?:c|celsius|degc|degrees\s*c)\b/gi,
           (_m, a) => {
             const c = parseInt(a, 10);
             const f = Math.round((c * 9) / 5 + 32);
