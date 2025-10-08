@@ -438,9 +438,15 @@ const PurchasingReceivingWorkspace: React.FC = () => {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex flex-col items-end">
-                            <span>{row.leadTimeDays} d</span>
+                            <span>
+                              {t("purchRec.table.leadValue", "{days} d", {
+                                days: row.leadTimeDays,
+                              })}
+                            </span>
                             <span className="text-xs text-muted-foreground">
-                              Sustain {Math.round((row.sustainability ?? 0) * 100)}%
+                              {t("purchRec.table.sustain", "Sustain {percent}%", {
+                                percent: Math.round((row.sustainability ?? 0) * 100),
+                              })}
                             </span>
                           </div>
                         </TableCell>
