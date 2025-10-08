@@ -65,6 +65,7 @@ const createInitialRows = () =>
 const DishAssemblyWorkspace: React.FC = () => {
   const { recipes } = useAppData();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { setToolbar, resetToolbar } = usePageToolbar();
 
   const recipeSummaries = useMemo(() => {
