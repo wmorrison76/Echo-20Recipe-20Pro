@@ -529,7 +529,7 @@ export default function TopTabs() {
             <button
               type="button"
               onClick={() => setCollapsedManual((prev) => !prev)}
-              className="absolute right-[-18px] top-1/2 z-10 -translate-y-1/2 select-none rounded-full border border-gray-300 bg-background px-1.5 py-2.5 shadow transition duration-300 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-slate-700 dark:bg-slate-900/70 dark:hover:bg-slate-900"
+              className="group absolute right-[-18px] top-1/2 z-10 -translate-y-1/2 select-none rounded-full border border-primary/40 bg-primary/15 px-1.5 py-2.5 shadow transition duration-300 hover:bg-primary/25 hover:shadow-[0_0_20px_rgba(59,130,246,0.45)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background dark:border-cyan-400/60 dark:bg-cyan-500/15 dark:hover:bg-cyan-500/25 dark:hover:shadow-[0_0_24px_rgba(34,211,238,0.55)]"
               aria-label={
                 collapsed ? "Expand navigation" : "Collapse navigation"
               }
@@ -540,7 +540,7 @@ export default function TopTabs() {
               <div className="flex flex-col items-center gap-0.5">
                 <span
                   className={cn(
-                    "block h-4 w-0.5 rounded-full bg-gray-400 transition-all duration-300 dark:bg-slate-500",
+                    "block h-4 w-0.5 rounded-full bg-primary/80 transition-all duration-300 dark:bg-cyan-300",
                     collapsed
                       ? "translate-y-0 rotate-0"
                       : "-translate-y-[3px] rotate-45",
@@ -548,7 +548,7 @@ export default function TopTabs() {
                 />
                 <span
                   className={cn(
-                    "block h-4 w-0.5 rounded-full bg-gray-400 transition-all duration-300 dark:bg-slate-500",
+                    "block h-4 w-0.5 rounded-full bg-primary/80 transition-all duration-300 dark:bg-cyan-300",
                     collapsed
                       ? "opacity-100 scale-y-100"
                       : "opacity-0 scale-y-0",
@@ -556,7 +556,7 @@ export default function TopTabs() {
                 />
                 <span
                   className={cn(
-                    "block h-4 w-0.5 rounded-full bg-gray-400 transition-all duration-300 dark:bg-slate-500",
+                    "block h-4 w-0.5 rounded-full bg-primary/80 transition-all duration-300 dark:bg-cyan-300",
                     collapsed
                       ? "translate-y-0 rotate-0"
                       : "translate-y-[3px] -rotate-45",
