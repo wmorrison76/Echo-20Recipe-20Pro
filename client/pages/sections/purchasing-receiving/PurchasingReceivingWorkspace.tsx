@@ -373,12 +373,16 @@ const PurchasingReceivingWorkspace: React.FC = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Supplier</TableHead>
-                    <TableHead>SKU</TableHead>
-                    <TableHead>Item</TableHead>
-                    <TableHead>Pack / Price</TableHead>
-                    <TableHead className="text-right">Min Release</TableHead>
-                    <TableHead className="text-right">Lead</TableHead>
+                    <TableHead>{t("purchRec.table.supplier", "Supplier")}</TableHead>
+                    <TableHead>{t("purchRec.table.sku", "SKU")}</TableHead>
+                    <TableHead>{t("purchRec.table.item", "Item")}</TableHead>
+                    <TableHead>{t("purchRec.table.packPrice", "Pack / Price")}</TableHead>
+                    <TableHead className="text-right">
+                      {t("purchRec.table.minRelease", "Min Release")}
+                    </TableHead>
+                    <TableHead className="text-right">
+                      {t("purchRec.table.lead", "Lead")}
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
