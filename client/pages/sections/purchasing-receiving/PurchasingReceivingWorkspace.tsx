@@ -507,25 +507,29 @@ const PurchasingReceivingWorkspace: React.FC = () => {
                   <Separator className="my-2" />
                   <div className="space-y-1 text-sm">
                     <div className="flex items-center justify-between text-muted-foreground">
-                      <span>Queued</span>
+                      <span>{t("purchRec.coverage.queue", "Queued")}</span>
                       <span className="font-medium text-slate-700 dark:text-cyan-100">
                         {formatCurrency(row.queueValue, "USD")}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-muted-foreground">
-                      <span>Inbound</span>
+                      <span>{t("purchRec.coverage.inbound", "Inbound")}</span>
                       <span className="font-medium text-slate-700 dark:text-cyan-100">
                         {formatCurrency(row.pipelineValue, "USD")}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-muted-foreground">
-                      <span>Avg lead</span>
+                      <span>{t("purchRec.coverage.avgLead", "Avg lead")}</span>
                       <span className="font-medium text-slate-700 dark:text-cyan-100">
-                        {row.avgLeadTime.toFixed(1)} days
+                        {t(
+                          "purchRec.summary.leadValue",
+                          "{days} days",
+                          { days: row.avgLeadTime.toFixed(1) },
+                        )}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-muted-foreground">
-                      <span>Total exposure</span>
+                      <span>{t("purchRec.coverage.totalExposure", "Total exposure")}</span>
                       <span className="font-semibold text-slate-800 dark:text-cyan-50">
                         {formatCurrency(totalValue, "USD")}
                       </span>
