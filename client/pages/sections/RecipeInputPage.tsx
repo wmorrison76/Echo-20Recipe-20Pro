@@ -6,11 +6,13 @@ import React, {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { useNavigate } from "react-router-dom";
 import RightSidebar from "./RightSidebar";
 import { useAppData } from "@/context/AppDataContext";
 import ImageEditorModal from "./ImageEditorModal";
 import NutritionLabel from "./NutritionLabel";
 import LanguageMenu from "@/components/LanguageMenu";
+import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "@/context/LanguageContext";
 import { defaultSelection, TaxonomySelection } from "@/lib/taxonomy";
 import { RDLabProvider, type RDLabSnapshot, useRDLabStore } from "@/stores/rdLabStore";
@@ -61,10 +63,11 @@ import {
   FlaskConical,
   Atom,
   X,
+  ArrowUpRight,
 } from "lucide-react";
 import { parseCostValue, parseQuantity } from "@/lib/recipe-scaling";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import type { RecipeExport } from "@shared/recipes";
+import { normalizeRecipe, type RecipeExport } from "@shared/recipes";
 import {
   Dialog,
   DialogContent,
