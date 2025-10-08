@@ -3171,6 +3171,16 @@ const RecipeInputPage = () => {
                   Save
                 </button>
                 <button
+                  onClick={handleSendToDishAssembly}
+                  className="flex items-center gap-2 text-primary hover:text-primary/80"
+                >
+                  <ArrowUpRight className="h-4 w-4" />
+                  {t(
+                    "recipe.actions.sendToDishAssembly",
+                    "Send to Dish Assembly",
+                  )}
+                </button>
+                <button
                   onClick={exportCSV}
                   className="flex items-center gap-1 text-gray-700 hover:text-black"
                 >
@@ -3371,7 +3381,7 @@ const RecipeInputPage = () => {
                   "⅞": "7/8",
                 };
                 s = s.replace(
-                  /[��½¾⅐⅑��⅓⅔⅕⅖⅗��⅙⅚⅛⅜⅝⅞]/g,
+                  /[���½¾⅐⅑��⅓⅔⅕⅖⅗��⅙⅚⅛⅜⅝⅞]/g,
                   (ch) => fracMap[ch] || ch,
                 );
                 const m = s.match(
