@@ -291,6 +291,72 @@ const DishAssemblyWorkspace: React.FC = () => {
     setActiveComponentId(rowId);
   }, []);
 
+  useEffect(() => {
+    let incomingId: string | null = null;
+    try {
+      incomingId = sessionStorage.getItem("dishAssembly:incomingRecipeId");
+    } catch {
+      incomingId = null;
+    }
+    if (!incomingId) return;
+    const summary = recipeSummaries.get(incomingId);
+    if (!summary) return;
+
+    sessionStorage.removeItem("dishAssembly:incomingRecipeId");
+
+    let assignedRowId: string | null = null;
+    setComponentRows((rows) => {
+      const base = rows.length ? [...rows] : [createBlankRow()];
+      let index = base.findIndex((row) => !row.recipeId);
+      if (index === -1) {
+        base.push(createBlankRow());
+        index = base.length - 1;
+      } else {
+        base[index] = { ...base[index] };
+      }
+      const target = base[index];
+      const resolvedLabel = summary.menuName || summary.title || target.label;
+      const updated = {
+        ...target,
+        recipeId: incomingId,
+        label: resolvedLabel,
+      };
+      assignedRowId = updated.id;
+      base[index] = updated;
+      return base;
+    });
+
+    if (assignedRowId) {
+      setActiveComponentId(assignedRowId);
+    }
+
+    const resolvedName = summary.menuName || summary.title;
+    setMenuTitle((prev) => (prev.trim() ? prev : resolvedName || prev));
+    setMenuDescription((prev) =>
+      prev.trim() ? prev : summary.description || prev,
+    );
+
+    const priceDisplay =
+      summary.menuPrice != null
+        ? formatCurrencyValue(summary.menuPrice, summary.currency)
+        : "";
+    if (priceDisplay) {
+      setMenuPrice((prev) => (prev.trim() ? prev : priceDisplay));
+    }
+    setPosMappings((current) =>
+      mergePosMappings(current, resolvedName || summary.title, priceDisplay),
+    );
+
+    toast({
+      title: t("dishAssembly.toasts.recipeImported", "Recipe queued"),
+      description: t(
+        "dishAssembly.toasts.recipeImportedDetail",
+        "{name} is ready in Dish Assembly.",
+        { name: resolvedName || summary.title },
+      ),
+    });
+  }, [recipeSummaries, t]);
+
   const navigateToRecipeSearch = useCallback(
     (recipeId: string) => {
       sessionStorage.setItem("dishAssembly:focusRecipe", recipeId);
