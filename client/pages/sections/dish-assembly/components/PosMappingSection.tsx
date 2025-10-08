@@ -11,6 +11,7 @@ type PosMappingSectionProps = {
   onChange: (next: PosMapping[]) => void;
   menuPrice: string;
   menuTitle: string;
+  variant?: "card" | "plain";
 };
 
 const PosMappingSection: React.FC<PosMappingSectionProps> = ({
@@ -18,6 +19,7 @@ const PosMappingSection: React.FC<PosMappingSectionProps> = ({
   onChange,
   menuPrice,
   menuTitle,
+  variant = "card",
 }) => {
   const updateMapping = useCallback(
     (key: PosMapping["key"], patch: Partial<PosMapping>) => {
