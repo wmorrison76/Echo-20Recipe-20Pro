@@ -360,44 +360,46 @@ const DishAssemblyWorkspace: React.FC = () => {
                     />
                   </div>
                 </div>
-                <div className="grid gap-3">
-                  <label className="space-y-1 text-sm font-medium uppercase tracking-[0.28em] text-muted-foreground">
-                    Menu Item Name
-                    <Input
-                      value={menuTitle}
-                      onChange={(event) => setMenuTitle(event.target.value)}
-                      placeholder="Generated name"
-                      className="rounded-xl border-primary/40 bg-background/80 text-base font-semibold uppercase tracking-[0.35em]"
-                    />
-                  </label>
-                  <label className="space-y-1 text-sm font-medium uppercase tracking-[0.28em] text-muted-foreground">
-                    Sell Price
-                    <Input
-                      value={menuPrice}
-                      onChange={(event) => setMenuPrice(event.target.value)}
-                      placeholder={formatCurrencyValue(
-                        totalCost * 3.25,
-                        currency,
-                      )}
-                      className="rounded-xl border-primary/40 bg-background/80 text-lg font-semibold"
-                    />
-                  </label>
-                  <div className="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                    <Badge
-                      variant="outline"
-                      className="border-primary/40 text-primary"
-                    >
-                      Food Cost{" "}
-                      {foodCostPct != null
-                        ? `${Math.round(foodCostPct * 100)}%`
-                        : "—"}
-                    </Badge>
-                    <Badge
-                      variant="outline"
-                      className="border-primary/40 text-primary"
-                    >
-                      {menuEngineering.classification}
-                    </Badge>
+                <div className="space-y-3">
+                  <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-end md:gap-4">
+                    <label className="flex-1 min-w-[240px] space-y-1 text-sm font-medium uppercase tracking-[0.28em] text-muted-foreground">
+                      Menu Item Name
+                      <Input
+                        value={menuTitle}
+                        onChange={(event) => setMenuTitle(event.target.value)}
+                        placeholder="Generated name"
+                        className="rounded-xl border-primary/40 bg-background/80 text-base font-semibold uppercase tracking-[0.35em]"
+                      />
+                    </label>
+                    <label className="flex w-full min-w-[160px] flex-col space-y-1 text-sm font-medium uppercase tracking-[0.28em] text-muted-foreground md:w-48">
+                      Sell Price
+                      <Input
+                        value={menuPrice}
+                        onChange={(event) => setMenuPrice(event.target.value)}
+                        placeholder={formatCurrencyValue(
+                          totalCost * 3.25,
+                          currency,
+                        )}
+                        className="rounded-xl border-primary/40 bg-background/80 text-lg font-semibold"
+                      />
+                    </label>
+                    <div className="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-muted-foreground md:ml-auto">
+                      <Badge
+                        variant="outline"
+                        className="border-primary/40 text-primary"
+                      >
+                        Food Cost{" "}
+                        {foodCostPct != null
+                          ? `${Math.round(foodCostPct * 100)}%`
+                          : "—"}
+                      </Badge>
+                      <Badge
+                        variant="outline"
+                        className="border-primary/40 text-primary"
+                      >
+                        {menuEngineering.classification}
+                      </Badge>
+                    </div>
                   </div>
                 </div>
               </div>
