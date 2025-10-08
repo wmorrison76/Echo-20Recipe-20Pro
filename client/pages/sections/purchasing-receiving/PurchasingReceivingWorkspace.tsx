@@ -486,11 +486,22 @@ const PurchasingReceivingWorkspace: React.FC = () => {
                         {row.supplierName}
                       </div>
                       <div className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
-                        {row.catalogCount} skus · {row.receivingCount} inbound
+                        {t(
+                          "purchRec.coverage.badge",
+                          "{skus} skus · {inbound} inbound",
+                          {
+                            skus: row.catalogCount,
+                            inbound: row.receivingCount,
+                          },
+                        )}
                       </div>
                     </div>
                     <Badge variant="outline" className="font-mono text-[11px] uppercase">
-                      {Math.round((row.reliability ?? 0) * 100)}% on-time
+                      {t(
+                        "purchRec.coverage.onTime",
+                        "{percent}% on-time",
+                        { percent: Math.round((row.reliability ?? 0) * 100) },
+                      )}
                     </Badge>
                   </div>
                   <Separator className="my-2" />
