@@ -100,7 +100,7 @@ const PurchasingReceivingWorkspace: React.FC = () => {
         sustainability: supplier?.sustainabilityScore ?? null,
       } satisfies CatalogRow;
     }).sort((a, b) => a.leadTimeDays - b.leadTimeDays || a.supplierName.localeCompare(b.supplierName));
-  }, [supplierIndex]);
+  }, [supplierIndex, unknownSupplierLabel]);
 
   const receivingRows = useMemo<ReceivingRow[]>(() => {
     const catalogBySupplier = new Map<string, typeof SUPPLIER_CATALOG>();
@@ -153,7 +153,7 @@ const PurchasingReceivingWorkspace: React.FC = () => {
         estimatedPortionCost,
       } satisfies ReceivingRow;
     }).sort((a, b) => a.expectedDate.getTime() - b.expectedDate.getTime());
-  }, [supplierIndex]);
+  }, [supplierIndex, unknownSupplierLabel]);
 
   const supplierSpend = useMemo<SupplierSpendRow[]>(() => {
     const map = new Map<string, SupplierSpendRow>();
@@ -202,7 +202,7 @@ const PurchasingReceivingWorkspace: React.FC = () => {
         };
       })
       .sort((a, b) => b.queueValue + b.pipelineValue - (a.queueValue + a.pipelineValue));
-  }, [catalogRows, receivingRows, supplierIndex]);
+  }, [catalogRows, receivingRows, supplierIndex, unknownSupplierLabel]);
 
   const summary = useMemo(() => {
     const uniqueSuppliers = new Set(catalogRows.map((row) => row.supplierId));
