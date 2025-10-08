@@ -1038,6 +1038,8 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "nav.nutritionAllergens": "Nutrição / Alérgenos",
     "nav.haccpCompliance": "HACCP / Conformidade",
     "nav.gallery": "Galeria",
+    "dishAssembly.actions.posConnect": "POS Connect",
+    "dishAssembly.actions.posConnectDescription": "Mapeie códigos e preços do prato nos sistemas POS conectados.",
     "dishAssembly.toasts.recipeImported": "Receita na fila",
     "dishAssembly.toasts.recipeImportedDetail": "{name} está pronta na Montagem do Prato.",
     "serverNotes.doc.titleFallback": "Notas de serviço",
