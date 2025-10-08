@@ -55,7 +55,7 @@ export async function plannerAgent(
 }
 
 function buildDemandPlan(
-  item: DemandPlanItem,
+  item: DemandItem,
   catalog: SupplierOption[],
   inventory: InventorySnapshotItem | undefined,
   context: CommitteeContext,
