@@ -365,6 +365,8 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "nav.haccpCompliance": "HACCP / Conformité",
     "nav.gallery": "Galerie",
     "common.untitled": "Sans titre",
+    "dishAssembly.toasts.recipeImported": "Recette ajoutée",
+    "dishAssembly.toasts.recipeImportedDetail": "{name} est prête dans Assemblage Plat.",
     "serverNotes.doc.titleFallback": "Notes de service",
     "serverNotes.doc.serviceBriefing": "Briefing de service",
     "serverNotes.doc.distributionDate": "Date de diffusion",
