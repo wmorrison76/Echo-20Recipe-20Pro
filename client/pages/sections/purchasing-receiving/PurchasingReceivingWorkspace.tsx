@@ -140,7 +140,7 @@ const PurchasingReceivingWorkspace: React.FC = () => {
       return {
         id: item.id,
         supplierId: item.supplierId,
-        supplierName: supplier?.name ?? "Unknown Supplier",
+        supplierName: supplier?.name ?? unknownSupplierLabel,
         itemName: item.name,
         expectedDate: addDays(new Date(), item.leadTimeDays),
         leadTimeDays: item.leadTimeDays,
