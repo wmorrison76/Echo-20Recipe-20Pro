@@ -1084,6 +1084,7 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "recipe.actions.recipeTools": "Rezeptwerkzeuge",
     "recipe.actions.language": "Sprache ändern",
     "recipe.actions.finalize": "Abschließen & leeren",
+    "recipe.actions.sendToDishAssembly": "An Gerichtaufbau senden",
     "recipe.actions.help": "Hilfe & Tastenkürzel",
     "recipe.actions.theme": "Thema",
     "recipe.fields.recipeName": "REZEPTNAME",
