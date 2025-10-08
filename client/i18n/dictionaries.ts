@@ -639,6 +639,8 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "nav.haccpCompliance": "HACCP / Conformità",
     "nav.gallery": "Galleria",
     "common.untitled": "Senza titolo",
+    "dishAssembly.actions.posConnect": "POS Connect",
+    "dishAssembly.actions.posConnectDescription": "Mappa codici e prezzi del piatto nei sistemi POS collegati.",
     "dishAssembly.toasts.recipeImported": "Ricetta in coda",
     "dishAssembly.toasts.recipeImportedDetail": "{name} è pronta in Assemblaggio Piatto.",
     "serverNotes.doc.titleFallback": "Note di servizio",
