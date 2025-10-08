@@ -641,4 +641,8 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "serverNotes.document.silverware": "Argenterie requise",
     "serverNotes.document.imagePlaceholder": "[Image : {src}]",
   },
+  "it-IT": {},
+  "es-ES": {},
+  "pt-BR": {},
+  "de-DE": {},
 };
