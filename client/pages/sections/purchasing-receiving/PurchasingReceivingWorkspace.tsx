@@ -263,22 +263,22 @@ const PurchasingReceivingWorkspace: React.FC = () => {
 
   useEffect(() => {
     setToolbar({
-      title: "Purchasing & Receiving",
+      title: t("nav.purchasingReceiving", "Purch/Rec"),
       items: [
         {
           id: "refresh-pricing",
-          label: "Refresh Pricing",
-          ariaLabel: "Refresh supplier pricing",
-          title: "Refresh supplier pricing",
+          label: t("purchRec.toolbar.refresh", "Refresh Pricing"),
+          ariaLabel: t("purchRec.toolbar.refresh", "Refresh Pricing"),
+          title: t("purchRec.toolbar.refresh", "Refresh Pricing"),
           icon: RefreshCcw,
           onClick: handleRefreshPricing,
           className: toolbarButtonClass,
         },
         {
           id: "export-orders",
-          label: "Export Orders",
-          ariaLabel: "Export consolidated purchase orders",
-          title: "Export consolidated purchase orders",
+          label: t("purchRec.toolbar.export", "Export Orders"),
+          ariaLabel: t("purchRec.toolbar.export", "Export Orders"),
+          title: t("purchRec.toolbar.export", "Export Orders"),
           icon: Download,
           onClick: handleExportOrders,
           className: toolbarButtonClass,
@@ -288,7 +288,7 @@ const PurchasingReceivingWorkspace: React.FC = () => {
     return () => {
       resetToolbar();
     };
-  }, [handleRefreshPricing, handleExportOrders, resetToolbar, setToolbar]);
+  }, [handleExportOrders, handleRefreshPricing, resetToolbar, setToolbar, t]);
 
   const metricCards = useMemo(
     () => [
