@@ -214,7 +214,7 @@ function resolveStatus(
 function buildAuditEntry(
   proposal: CommitteeProposal,
   critiques: CommitteeCritique[],
-  metrics: ReturnType<typeof computeMetrics>,
+  metrics: CommitteeMetrics,
   status: CommitteeDecisionStatus,
 ): CommitteeRunAuditEntry {
   return {
