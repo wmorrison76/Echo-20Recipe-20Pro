@@ -741,6 +741,28 @@ const DishAssemblyWorkspace: React.FC = () => {
           </Card>
         </div>
       </div>
+      <Dialog open={posConnectOpen} onOpenChange={setPosConnectOpen}>
+        <DialogContent className="max-w-4xl border-primary/40 bg-background/95 shadow-xl">
+          <DialogHeader>
+            <DialogTitle>
+              {t("dishAssembly.actions.posConnect", "POS Connect")}
+            </DialogTitle>
+            <DialogDescription>
+              {t(
+                "dishAssembly.actions.posConnectDescription",
+                "Map dish codes and pricing across connected POS systems.",
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <PosMappingSection
+            mappings={posMappings}
+            onChange={setPosMappings}
+            menuPrice={menuPrice}
+            menuTitle={menuTitle}
+            variant="plain"
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
