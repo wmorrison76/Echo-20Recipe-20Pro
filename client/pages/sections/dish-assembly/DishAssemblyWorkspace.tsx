@@ -8,6 +8,7 @@ import React, {
 import { useNavigate } from "react-router-dom";
 import type { Recipe } from "@shared/recipes";
 import { useAppData } from "@/context/AppDataContext";
+import { useTranslation } from "@/context/LanguageContext";
 import { usePageToolbar } from "@/context/PageToolbarContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
