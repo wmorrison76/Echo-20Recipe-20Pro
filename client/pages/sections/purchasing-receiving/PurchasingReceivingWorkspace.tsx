@@ -87,7 +87,7 @@ const PurchasingReceivingWorkspace: React.FC = () => {
       const unitPrice = packSize ? item.pricePerPack / packSize : null;
       return {
         supplierId: item.supplierId,
-        supplierName: supplier?.name ?? "Unknown Supplier",
+        supplierName: supplier?.name ?? unknownSupplierLabel,
         sku: item.sku,
         ingredientName: item.ingredientName,
         packDisplay: `${item.packSize} ${item.packUnit}`,
