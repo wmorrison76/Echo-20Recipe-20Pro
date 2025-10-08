@@ -14,11 +14,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { usePageToolbar } from "@/context/PageToolbarContext";
+import { useTranslation } from "@/context/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import { READY_MADE_ITEMS } from "@/data/readyMadeItems";
 import { SUPPLIER_CATALOG, SUPPLIERS } from "@/data/suppliers";
 import { formatCurrency } from "@/pages/sections/saas/shared";
-import { cn } from "@/lib/utils";
 
 const toolbarButtonClass =
   "inline-flex h-9 items-center justify-center gap-2 rounded-full border border-white/70 bg-white/80 px-4 text-xs font-semibold uppercase tracking-[0.3em] text-slate-600 shadow-sm transition hover:bg-white dark:border-cyan-500/40 dark:bg-slate-900/60 dark:text-cyan-200 dark:hover:bg-slate-900";
