@@ -178,8 +178,8 @@ function recalcDemandSummaries(
 }
 
 function resolveStatus(
-  plannerMetrics: ReturnType<typeof computeMetrics>,
-  finalMetrics: ReturnType<typeof computeMetrics>,
+  plannerMetrics: CommitteeMetrics,
+  finalMetrics: CommitteeMetrics,
   critiques: CommitteeCritique[],
   hardConstraints: ReturnType<typeof evaluateHardConstraints>,
   context: CommitteeContext,
