@@ -13,6 +13,7 @@ import {
   createCommitteeContext,
   CommitteeDecision,
   CommitteeRunAuditEntry,
+  CommitteeMetrics,
 } from "./types";
 import { clamp, cloneDeep, isoNow } from "./utils";
 
