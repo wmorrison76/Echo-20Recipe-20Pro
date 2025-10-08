@@ -262,18 +262,30 @@ const DishAssemblyWorkspace: React.FC = () => {
             "rounded-full border border-primary/40 bg-primary/10 text-primary shadow-sm hover:bg-primary/20",
         },
         {
+          id: "dish-assembly-pos-connect",
+          label: t("dishAssembly.actions.posConnect", "POS Connect"),
+          ariaLabel: t(
+            "dishAssembly.actions.posConnect",
+            "POS Connect",
+          ),
+          onClick: () => setPosConnectOpen(true),
+          icon: Settings,
+          className:
+            "rounded-full border border-primary/40 bg-background text-primary shadow-sm hover:bg-primary/15",
+        },
+        {
           id: "dish-assembly-reset",
           label: "Reset",
           ariaLabel: "Reset dish assembly workspace",
           onClick: resetWorkspace,
           icon: RefreshCcw,
           className:
-            "rounded-full border border-destructive/30 bg-background text-destructive shadow-sm hover:bg-destructive/10",
+            "rounded-full border border-destructive/30 bg-background text-destructive化 shadow-sm hover:bg-destructive/10",
         },
       ],
     });
     return () => resetToolbar();
-  }, [handleAutoFill, resetToolbar, resetWorkspace, setToolbar]);
+  }, [handleAutoFill, resetToolbar, resetWorkspace, setToolbar, t]);
 
   const handleImageUpload = useCallback((file: File | null) => {
     if (!file) return;
