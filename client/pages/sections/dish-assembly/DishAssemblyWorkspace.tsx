@@ -280,7 +280,7 @@ const DishAssemblyWorkspace: React.FC = () => {
           onClick: resetWorkspace,
           icon: RefreshCcw,
           className:
-            "rounded-full border border-destructive/30 bg-background text-destructive化 shadow-sm hover:bg-destructive/10",
+            "rounded-full border border-destructive/30 bg-background text-destructive shadow-sm hover:bg-destructive/10",
         },
       ],
     });
