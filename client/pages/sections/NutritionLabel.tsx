@@ -1,5 +1,3 @@
-import React from "react";
-
 type MacroTotals = {
   calories: number;
   fat: number;
