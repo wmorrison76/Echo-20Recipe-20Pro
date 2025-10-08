@@ -1,18 +1,20 @@
 import { computeMetrics } from "./metrics";
 import {
   CartPlan,
+  CartTemplate,
   CommitteeContext,
   CommitteeInputs,
   CommitteeNote,
   CommitteePurchaseOrder,
   CommitteePurchaseOrderLine,
   CommitteeProposal,
+  DemandItem,
   DemandPlanItem,
   InventorySnapshotItem,
   PlannerAgentResult,
   SupplierOption,
 } from "./types";
-import { isoNow, sumBy, uniqueId, clamp, hoursBetween } from "./utils";
+import { clamp, isoNow, sumBy, uniqueId } from "./utils";
 
 export async function plannerAgent(
   inputs: CommitteeInputs,
