@@ -417,7 +417,8 @@ const PurchasingReceivingWorkspace: React.FC = () => {
                             <span>{row.ingredientName}</span>
                             {row.unitPrice != null ? (
                               <span className="text-xs text-muted-foreground">
-                                {formatCurrency(row.unitPrice, row.currency)} / unit
+                                {formatCurrency(row.unitPrice, row.currency)}{" "}
+                                {t("purchRec.table.unitSuffix", "/ unit")}
                               </span>
                             ) : null}
                           </div>
