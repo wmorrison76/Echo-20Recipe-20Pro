@@ -8,6 +8,7 @@ import HaccpComplianceWorkspace from "./sections/saas/HaccpComplianceWorkspace";
 import ServerNotesSection from "./sections/server-notes";
 import DishAssemblySection from "./sections/dish-assembly";
 import ProductionSection from "./sections/Production";
+import PurchasingReceivingSection from "./sections/purchasing-receiving";
 import TopTabs from "@/components/TopTabs";
 import SubtleBottomGlow from "@/components/SubtleBottomGlow";
 import TronBackdrop from "@/components/TronBackdrop";
@@ -162,6 +163,9 @@ function IndexContent() {
             </TabsContent>
             <TabsContent value="production">
               <ProductionSection />
+            </TabsContent>
+            <TabsContent value="purch-rec">
+              <PurchasingReceivingSection />
             </TabsContent>
           </Tabs>
         </main>
