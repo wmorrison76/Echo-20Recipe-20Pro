@@ -548,13 +548,6 @@ const DishAssemblyWorkspace: React.FC = () => {
             onRemoveRow={removeComponentRow}
             onFocusRow={focusRecipe}
           />
-
-          <PosMappingSection
-            mappings={posMappings}
-            onChange={setPosMappings}
-            menuPrice={menuPrice}
-            menuTitle={menuTitle}
-          />
         </div>
 
         <div className="space-y-6">
