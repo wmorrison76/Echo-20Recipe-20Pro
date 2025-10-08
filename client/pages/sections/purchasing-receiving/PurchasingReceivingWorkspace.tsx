@@ -67,8 +67,10 @@ type SupplierSpendRow = {
 };
 
 const PurchasingReceivingWorkspace: React.FC = () => {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const { setToolbar, resetToolbar } = usePageToolbar();
+  const unknownSupplierLabel = t("purchRec.unknownSupplier", "Unknown Supplier");
 
   const supplierIndex = useMemo(() => {
     const map = new Map<string, (typeof SUPPLIERS)[number]>();
