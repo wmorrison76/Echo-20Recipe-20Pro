@@ -1577,7 +1577,7 @@ const RecipeInputPage = () => {
         );
       } else {
         out = out.replace(
-          /(\d{2,3})\s*(?:��\s*)?(?:c|celsius|degc|degrees\s*c)\b/gi,
+          /(\d{2,3})\s*(?:°\s*)?(?:c|celsius|degc|degrees\s*c)\b/gi,
           (_m, a) => {
             const c = parseInt(a, 10);
             const f = Math.round((c * 9) / 5 + 32);
@@ -1827,6 +1827,119 @@ const RecipeInputPage = () => {
     const text = `${title}\n\nIngredients:\n${ing || "-"}\n\nDirections:\n${ins || "-"}\n\nLink: ${url}`;
     navigator.clipboard.writeText(text);
     alert(`${title} copied to clipboard`);
+  };
+
+  const persistRecipeForDishAssembly = () => {
+    const title = (recipeName || "").trim();
+    if (!title) {
+      toast({
+        title: t("recipe.validation.nameRequired", "Add a recipe name"),
+        description: t(
+          "recipe.validation.nameRequiredDetail",
+          "Enter a name before sending to Dish Assembly.",
+        ),
+      });
+      return null;
+    }
+
+    const ensuredRows = ensureIngredientRowIds(ingredients);
+    const ingLines = ensuredRows
+      .map((row) =>
+        [row.qty, row.unit, row.item, row.prep].filter(Boolean).join(" ").trim(),
+      )
+      .filter(Boolean);
+    const insLines = String(directions || "")
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+    const cover = image && image.startsWith("data:") ? [image] : undefined;
+    let description = "";
+    try {
+      description = localStorage.getItem("recipe:add:description") || "";
+    } catch {}
+
+    const recipeExport = normalizeRecipe({
+      recipeName: title,
+      ingredients: ensuredRows
+        .filter((row) => row.type !== "divider")
+        .map((row) => ({
+          qty: row.qty,
+          unit: row.unit,
+          item: row.item,
+          prep: row.prep,
+          yield: row.yield,
+          cost: row.cost,
+        })),
+      directions: directions || "",
+      selectedAllergens,
+      selectedNationality,
+      selectedCourses,
+      selectedRecipeType,
+      selectedPrepMethod,
+      selectedCookingEquipment,
+      image,
+      yieldQty,
+      yieldUnit,
+      portionCount,
+      portionUnit,
+      currentCurrency,
+      nutrition,
+      fullRecipeCost: calculateTotalCost(),
+      portionCost: calculatePortionCost(),
+      cookTime,
+      cookTemp,
+      access: selectedRecipeAccess,
+    });
+
+    const existingRecipe =
+      recipeIdRef.current != null
+        ? recipes.find((item) => item.id === recipeIdRef.current) ?? null
+        : null;
+    const baseExtra =
+      existingRecipe && existingRecipe.extra && typeof existingRecipe.extra === "object"
+        ? { ...(existingRecipe.extra as Record<string, unknown>) }
+        : {};
+
+    const extra: Record<string, unknown> = {
+      ...baseExtra,
+      source: "manual",
+      taxonomy,
+      chefNotes,
+      serverNotes: recipeExport,
+    };
+
+    if (!recipeIdRef.current) {
+      recipeIdRef.current = addRecipe({
+        title,
+        description,
+        ingredients: ingLines,
+        instructions: insLines,
+        imageDataUrls: cover,
+        tags: [],
+        extra,
+      });
+    } else {
+      updateRecipe(recipeIdRef.current, {
+        title,
+        description,
+        ingredients: ingLines,
+        instructions: insLines,
+        imageDataUrls: cover,
+        extra,
+      });
+    }
+
+    pushHistory({ ...serialize(), ts: Date.now() });
+    return recipeIdRef.current;
+  };
+
+  const handleSendToDishAssembly = () => {
+    const recipeId = persistRecipeForDishAssembly();
+    if (!recipeId) return;
+    try {
+      sessionStorage.setItem("dishAssembly:incomingRecipeId", recipeId);
+    } catch {}
+    navigate("/?tab=dish-assembly");
   };
 
   // Auto-calc batch yield from volume units if not set manually
