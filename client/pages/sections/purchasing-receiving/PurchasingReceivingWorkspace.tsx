@@ -543,6 +543,8 @@ const PurchasingReceivingWorkspace: React.FC = () => {
         </Card>
       </div>
 
+      <LineChecklistPanel />
+
       <Card className="backdrop-blur">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-lg font-semibold">
