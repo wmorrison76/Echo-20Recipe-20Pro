@@ -1030,6 +1030,8 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "nav.nutritionAllergens": "Nutrição / Alérgenos",
     "nav.haccpCompliance": "HACCP / Conformidade",
     "nav.gallery": "Galeria",
+    "dishAssembly.toasts.recipeImported": "Receita na fila",
+    "dishAssembly.toasts.recipeImportedDetail": "{name} está pronta na Montagem do Prato.",
     "serverNotes.doc.titleFallback": "Notas de serviço",
     "serverNotes.doc.serviceBriefing": "Briefing de serviço",
     "serverNotes.doc.distributionDate": "Data de distribuição",
