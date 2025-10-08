@@ -564,7 +564,11 @@ const PurchasingReceivingWorkspace: React.FC = () => {
               >
                 <div className="flex items-center justify-between text-xs uppercase tracking-[0.25em] text-muted-foreground">
                   <span>{format(row.expectedDate, "MMM d")}</span>
-                  <span>{row.leadTimeDays} day lead</span>
+                  <span>
+                    {t("purchRec.timeline.lead", "{days} day lead", {
+                      days: row.leadTimeDays,
+                    })}
+                  </span>
                 </div>
                 <h3 className="mt-2 text-base font-semibold text-slate-800 dark:text-cyan-100">
                   {row.itemName}
@@ -575,29 +579,29 @@ const PurchasingReceivingWorkspace: React.FC = () => {
                 <Separator className="my-3" />
                 <dl className="grid gap-2 text-sm text-muted-foreground">
                   <div className="flex items-center justify-between">
-                    <dt>Batch</dt>
+                    <dt>{t("purchRec.timeline.batch", "Batch")}</dt>
                     <dd className="font-medium text-slate-700 dark:text-cyan-100">
                       {row.standardBatch}
                     </dd>
                   </div>
                   <div className="flex items-center justify-between">
-                    <dt>Estimated cost</dt>
+                    <dt>{t("purchRec.timeline.cost", "Estimated cost")}</dt>
                     <dd className="font-medium text-slate-700 dark:text-cyan-100">
                       {row.estimatedCost != null
                         ? formatCurrency(row.estimatedCost, row.currency)
-                        : "Sync pricing"}
+                        : t("purchRec.timeline.sync", "Sync pricing")}
                     </dd>
                   </div>
                   <div className="flex items-center justify-between">
-                    <dt>Portion cost</dt>
+                    <dt>{t("purchRec.timeline.portionCost", "Portion cost")}</dt>
                     <dd className="font-medium text-slate-700 dark:text-cyan-100">
                       {row.estimatedPortionCost != null
                         ? formatCurrency(row.estimatedPortionCost, row.currency)
-                        : "Pending"}
+                        : t("purchRec.timeline.pending", "Pending")}
                     </dd>
                   </div>
                   <div className="flex items-center justify-between">
-                    <dt>Portion size</dt>
+                    <dt>{t("purchRec.timeline.portionSize", "Portion size")}</dt>
                     <dd className="font-medium text-slate-700 dark:text-cyan-100">
                       {row.portionSize} {row.portionUnit}
                     </dd>
