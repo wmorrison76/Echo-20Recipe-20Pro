@@ -20,6 +20,7 @@ import {
   Sparkles,
   Sprout,
   Save,
+  ShoppingCart,
   UtensilsCrossed,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -89,6 +90,13 @@ const navItems: NavItemConfig[] = [
     fallback: "PRODUCTION",
     icon: Factory,
     shortcut: { key: "Digit4", display: "4" },
+  },
+  {
+    to: "/?tab=purch-rec",
+    labelKey: "nav.purchasingReceiving",
+    fallback: "PURCH/REC",
+    icon: ShoppingCart,
+    shortcut: { key: "Digit0", display: "0" },
   },
   {
     to: "/?tab=saas",
