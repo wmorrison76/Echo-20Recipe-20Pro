@@ -340,13 +340,3 @@ function formatCurrency(value: number, currency = "USD"): string {
     return `${currency} ${value.toFixed(2)}`;
   }
 }
-
-// Re-exported types used internally without needing separate file
-export type CartTemplate = CommitteesCartTemplate;
-
-type CommitteesCartTemplate = {
-  id: string;
-  name: string;
-  capacity: number;
-  outletId?: string;
-};
