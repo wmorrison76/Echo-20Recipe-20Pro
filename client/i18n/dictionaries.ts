@@ -27,6 +27,8 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "recipe.actions.sendToDishAssembly": "Send to Dish Assembly",
     "recipe.actions.help": "Help & Shortcuts",
     "recipe.actions.theme": "Theme",
+    "recipe.validation.nameRequired": "Add a recipe name",
+    "recipe.validation.nameRequiredDetail": "Enter a name before sending to Dish Assembly.",
     "recipe.fields.recipeName": "RECIPE NAME",
     "recipe.fields.description": "Description",
     "recipe.labels.allergens": "ALLERGENS",
