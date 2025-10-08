@@ -177,12 +177,20 @@ export default function RecipeTemplate() {
   const displayQuantity = (value?: number) =>
     Number.isFinite(value) ? formatQuantity(value as number) : undefined;
 
-  const Nut = nutrition;
+  const Nut = nutrition as (NutritionAnalysis | null);
+  const labelPortion: MacroTotals | null = (() => {
+    if (!Nut) return null;
+    if (Nut.perServing && Number.isFinite(basePortionCount) && (basePortionCount ?? 0) > 0) {
+      return Nut.perServing;
+    }
+    return Nut.totals;
+  })();
   const cal =
-    Nut?.calories ?? (recipe as any)?.extra?.nutrition?.calories ?? "";
-  const fat = Nut?.totalNutrients?.FAT?.quantity ?? "";
-  const carbs = Nut?.totalNutrients?.CHOCDF?.quantity ?? "";
-  const protein = Nut?.totalNutrients?.PROCNT?.quantity ?? "";
+    labelPortion?.calories ?? (recipe as any)?.extra?.nutrition?.calories ?? "";
+  const fat = labelPortion?.fat ?? (recipe as any)?.extra?.nutrition?.fat ?? "";
+  const carbs = labelPortion?.carbs ?? (recipe as any)?.extra?.nutrition?.carbs ?? "";
+  const protein =
+    labelPortion?.protein ?? (recipe as any)?.extra?.nutrition?.protein ?? "";
 
   const sanitizeScale = (value: number) =>
     Number.isFinite(value) && value > 0 ? value : 1;
