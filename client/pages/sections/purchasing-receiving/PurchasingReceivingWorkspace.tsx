@@ -290,31 +290,49 @@ const PurchasingReceivingWorkspace: React.FC = () => {
     };
   }, [handleExportOrders, handleRefreshPricing, resetToolbar, setToolbar, t]);
 
-  const metricCards = useMemo(
-    () => [
+  const metricCards = useMemo(() => {
+    const reliabilityPercent = Math.round(summary.avgReliability * 100);
+    return [
       {
-        label: "Active Suppliers",
-        value: summary.uniqueSuppliers,
-        detail: `${summary.totalSkus} catalog SKUs`,
+        label: t("purchRec.summary.suppliers", "Active Suppliers"),
+        value: summary.uniqueSuppliers.toLocaleString(),
+        detail: t(
+          "purchRec.summary.suppliersDetail",
+          "{count} catalog SKUs",
+          { count: summary.totalSkus.toLocaleString() },
+        ),
       },
       {
-        label: "Queued Spend",
+        label: t("purchRec.summary.queue", "Queued Spend"),
         value: formatCurrency(summary.totalMinOrderValue, "USD"),
-        detail: "Minimum commitments awaiting release",
+        detail: t(
+          "purchRec.summary.queueDetail",
+          "Minimum commitments awaiting release",
+        ),
       },
       {
-        label: "Inbound Value",
+        label: t("purchRec.summary.inbound", "Inbound Value"),
         value: formatCurrency(summary.inboundValue, "USD"),
-        detail: "Receiving batches priced and scheduled",
+        detail: t(
+          "purchRec.summary.inboundDetail",
+          "Receiving batches priced and scheduled",
+        ),
       },
       {
-        label: "Avg Lead Time",
-        value: `${summary.avgLeadTime.toFixed(1)} days`,
-        detail: `Reliability ${(summary.avgReliability * 100).toFixed(0)}%`,
+        label: t("purchRec.summary.lead", "Avg Lead Time"),
+        value: t(
+          "purchRec.summary.leadValue",
+          "{days} days",
+          { days: Number.isFinite(summary.avgLeadTime) ? summary.avgLeadTime.toFixed(1) : "0" },
+        ),
+        detail: t(
+          "purchRec.summary.leadDetail",
+          "Reliability {percent}%",
+          { percent: reliabilityPercent },
+        ),
       },
-    ],
-    [summary],
-  );
+    ];
+  }, [summary, t]);
 
   return (
     <div className="container mx-auto space-y-4 px-3 py-3">
