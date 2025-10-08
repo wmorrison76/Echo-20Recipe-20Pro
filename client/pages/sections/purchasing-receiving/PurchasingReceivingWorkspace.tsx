@@ -399,7 +399,11 @@ const PurchasingReceivingWorkspace: React.FC = () => {
                           <div className="flex flex-col">
                             <span>{row.supplierName}</span>
                             <span className="text-xs text-muted-foreground">
-                              Reliability {(row.reliability ?? 0).toFixed(2)}
+                              {t(
+                                "purchRec.table.reliabilityScore",
+                                "Reliability {score}",
+                                { score: (row.reliability ?? 0).toFixed(2) },
+                              )}
                             </span>
                           </div>
                         </TableCell>
