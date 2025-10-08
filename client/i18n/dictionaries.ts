@@ -346,7 +346,7 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "recipe.labels.pastryLabel": "Pâtisserie",
     "recipe.labels.techniqueLabel": "Technique",
     "recipe.labels.componentsLabel": "Composants",
-    "recipe.ingredients.title»: "Ingrédients",
+    "recipe.ingredients.title": "Ingrédients",
     "recipe.ingredients.subtitle":
       "Suivez chaque composant avec quantité, unité, méthode, rendement % et coût pour aligner le calcul de recette et la documentation.",
     "recipe.ingredients.activeItems": "Éléments actifs",
@@ -544,7 +544,7 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
       "Impossible de créer le document, réessayez.",
     "serverNotes.generator.toast.saved.title": "Notes enregistrées",
     "serverNotes.generator.toast.saved.description":
-      '"{title}" enregistré.",
+      "\"{title}\" enregistré.",
     "serverNotes.generator.toast.noDocument.title": "Générez d'abord",
     "serverNotes.generator.toast.noDocument.description":
       "Créez le document avant l'impression ou le téléchargement.",
