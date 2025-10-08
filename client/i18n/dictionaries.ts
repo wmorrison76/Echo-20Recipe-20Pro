@@ -148,6 +148,7 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "purchRec.toast.exportTitle": "Export queued",
     "purchRec.toast.export":
       "{count} supplier packets totaling {value} ready for download.",
+    "purchRec.unknownSupplier": "Unknown Supplier",
     "common.untitled": "Untitled",
     "dishAssembly.actions.posConnect": "POS Connect",
     "dishAssembly.actions.posConnectDescription": "Map dish codes and pricing across connected POS systems.",
