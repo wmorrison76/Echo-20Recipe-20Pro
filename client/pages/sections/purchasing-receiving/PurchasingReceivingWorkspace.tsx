@@ -236,10 +236,13 @@ const PurchasingReceivingWorkspace: React.FC = () => {
 
   const handleRefreshPricing = useCallback(() => {
     toast({
-      title: "Pricing refreshed",
-      description: "Supplier catalog costs recalculated against live pack data.",
+      title: t("purchRec.toast.refreshTitle", "Pricing refreshed"),
+      description: t(
+        "purchRec.toast.refresh",
+        "Supplier catalog costs recalculated against live pack data.",
+      ),
     });
-  }, [toast]);
+  }, [t, toast]);
 
   const handleExportOrders = useCallback(() => {
     const totalSuppliers = supplierSpend.length;
@@ -247,11 +250,16 @@ const PurchasingReceivingWorkspace: React.FC = () => {
       (sum, row) => sum + row.queueValue + row.pipelineValue,
       0,
     );
+    const exportValueFormatted = formatCurrency(exportValue, "USD");
     toast({
-      title: "Export queued",
-      description: `${totalSuppliers} supplier packets totaling ${formatCurrency(exportValue, "USD")} ready for download.`,
+      title: t("purchRec.toast.exportTitle", "Export queued"),
+      description: t(
+        "purchRec.toast.export",
+        "{count} supplier packets totaling {value} ready for download.",
+        { count: totalSuppliers, value: exportValueFormatted },
+      ),
     });
-  }, [supplierSpend, toast]);
+  }, [supplierSpend, t, toast]);
 
   useEffect(() => {
     setToolbar({
