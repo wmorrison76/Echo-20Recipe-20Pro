@@ -514,7 +514,7 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "serverNotes.document.titleSuffix": "Notes de service",
     "serverNotes.document.distributionDate": "Date de distribution",
     "serverNotes.document.distributionDateFull":
-      "Date de distribution : {date}",
+      "Date de distribution��: {date}",
     "serverNotes.document.menuIndex": "Index du menu",
     "serverNotes.document.page": "Page {number}",
     "serverNotes.document.pageReference": "Page {page}",
@@ -1087,6 +1087,8 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "recipe.actions.sendToDishAssembly": "An Gerichtaufbau senden",
     "recipe.actions.help": "Hilfe & Tastenkürzel",
     "recipe.actions.theme": "Thema",
+    "recipe.validation.nameRequired": "Rezeptnamen hinzufügen",
+    "recipe.validation.nameRequiredDetail": "Geben Sie einen Namen ein, bevor Sie an Gerichtaufbau senden.",
     "recipe.fields.recipeName": "REZEPTNAME",
     "recipe.fields.description": "Beschreibung",
     "recipe.labels.allergens": "ALLERGENE",
