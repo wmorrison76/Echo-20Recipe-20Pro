@@ -19,6 +19,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import {
   AllergenRow,
@@ -47,7 +54,7 @@ import {
 import DishComponentsTable from "./components/DishComponentsTable";
 import PosMappingSection from "./components/PosMappingSection";
 import RecipePreviewPanel from "./components/RecipePreviewPanel";
-import { Sparkles, RefreshCcw, Upload, RotateCcw } from "lucide-react";
+import { Sparkles, RefreshCcw, Upload, RotateCcw, Settings } from "lucide-react";
 
 const INITIAL_COMPONENT_ROWS = 6;
 
