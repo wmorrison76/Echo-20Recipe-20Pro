@@ -7,9 +7,8 @@ import {
   CommitteeProposal,
   CommitteeIssue,
   HistoricalDemandSample,
-  DemandPlanItem,
 } from "./types";
-import { average, clamp, isoNow, percentile, uniqueId } from "./utils";
+import { average, clamp, percentile, uniqueId } from "./utils";
 
 export async function historyAgent(
   proposal: CommitteeProposal,
