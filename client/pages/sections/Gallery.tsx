@@ -765,6 +765,11 @@ export default function GallerySection() {
       delete next[activeId];
       return next;
     });
+    setPresetMap((prev) => {
+      const next = { ...prev };
+      delete next[activeId];
+      return next;
+    });
   };
 
   const handleBulkFavorite = (favorite: boolean) => {
