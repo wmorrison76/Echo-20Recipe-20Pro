@@ -165,8 +165,13 @@ const DishAssemblyWorkspace: React.FC = () => {
       if (!station) return;
       station.defaultPrinters.forEach((printerId) => set.add(printerId));
     });
-    return set;
+    return Array.from(set);
   }, [selectedStationIds, stations]);
+
+  const recommendedPrinterSet = useMemo(
+    () => new Set(recommendedPrinterIds),
+    [recommendedPrinterIds],
+  );
 
   const handleRowChange = useCallback(
     (rowId: string, patch: Partial<DishComponentRow>) => {
