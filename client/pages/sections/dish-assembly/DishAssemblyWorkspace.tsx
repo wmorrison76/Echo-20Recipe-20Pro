@@ -727,8 +727,11 @@ const DishAssemblyWorkspace: React.FC = () => {
                         >
                           <div className="flex flex-col text-left">
                             <span className="text-sm font-semibold">{printer.name}</span>
-                            <span className="text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
-                              {printer.technology} • {printer.recommendedUse}
+                            <span className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">
+                              {printer.technology}
+                            </span>
+                            <span className="text-[11px] leading-snug text-muted-foreground">
+                              {printer.recommendedUse}
                             </span>
                           </div>
                         </Button>
