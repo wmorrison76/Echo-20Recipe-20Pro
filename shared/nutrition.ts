@@ -305,6 +305,10 @@ export const UNIT_TO_GRAMS: Record<string, number> = {
   gallons: 3785.41,
   each: 0,
   ea: 0,
+  "ea.": 0,
+  pkg: 0,
+  package: 0,
+  pack: 0,
 };
 
 export const EACH_WEIGHT_G: Record<string, number> = {
