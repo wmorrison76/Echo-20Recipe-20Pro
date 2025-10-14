@@ -64,6 +64,7 @@ import {
   Atom,
   X,
   ArrowUpRight,
+  RotateCcw,
 } from "lucide-react";
 import { parseCostValue, parseQuantity } from "@/lib/recipe-scaling";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
