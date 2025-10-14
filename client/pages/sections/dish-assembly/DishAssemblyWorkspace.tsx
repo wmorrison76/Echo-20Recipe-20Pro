@@ -145,6 +145,29 @@ const DishAssemblyWorkspace: React.FC = () => {
     [foodCostPct, popularityScore],
   );
 
+  const stations = useMemo(() => listStations(), [listStations]);
+  const printers = useMemo(() => listPrinters(), [listPrinters]);
+
+  const selectedStationDetails = useMemo(
+    () => stations.filter((station) => selectedStationIds.includes(station.id)),
+    [stations, selectedStationIds],
+  );
+
+  const selectedPrinterDetails = useMemo(
+    () => printers.filter((printer) => selectedPrinterIds.includes(printer.id)),
+    [printers, selectedPrinterIds],
+  );
+
+  const recommendedPrinterIds = useMemo(() => {
+    const set = new Set<string>();
+    selectedStationIds.forEach((stationId) => {
+      const station = stations.find((item) => item.id === stationId);
+      if (!station) return;
+      station.defaultPrinters.forEach((printerId) => set.add(printerId));
+    });
+    return set;
+  }, [selectedStationIds, stations]);
+
   const handleRowChange = useCallback(
     (rowId: string, patch: Partial<DishComponentRow>) => {
       setComponentRows((rows) =>
