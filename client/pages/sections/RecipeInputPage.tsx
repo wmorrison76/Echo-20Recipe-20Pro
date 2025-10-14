@@ -580,6 +580,8 @@ const clearRecipeWorkspace = useCallback(() => {
   setSelectedCookingEquipment([]);
   setSelectedRecipeAccess([]);
   setTaxonomy({ ...defaultSelection });
+  setCurrentCurrency("USD");
+  setCurrentUnits("Imperial");
   setYieldQty(6);
   setYieldUnit("QTS");
   setPortionCount(6);
