@@ -335,6 +335,87 @@ const DishAssemblyWorkspace: React.FC = () => {
   const lastStationIndexRef = useRef<number | null>(null);
   const lastPrinterIndexRef = useRef<number | null>(null);
 
+  const handleStationToggle = useCallback(
+    (stationId: string, shiftKey: boolean) => {
+      const index = stations.findIndex((station) => station.id === stationId);
+      if (index === -1) return;
+      setSelectedStationIds((prev) => {
+        const nextSet = new Set(prev);
+        if (shiftKey && lastStationIndexRef.current != null) {
+          const lastIndex = lastStationIndexRef.current;
+          const start = Math.min(lastIndex, index);
+          const end = Math.max(lastIndex, index);
+          for (let i = start; i <= end; i += 1) {
+            const candidate = stations[i];
+            if (candidate) nextSet.add(candidate.id);
+          }
+        } else if (nextSet.has(stationId)) {
+          nextSet.delete(stationId);
+        } else {
+          nextSet.add(stationId);
+        }
+        lastStationIndexRef.current = index;
+        return stations
+          .filter((station) => nextSet.has(station.id))
+          .map((station) => station.id);
+      });
+    },
+    [stations],
+  );
+
+  const handlePrinterToggle = useCallback(
+    (printerId: string, shiftKey: boolean) => {
+      const index = printers.findIndex((printer) => printer.id === printerId);
+      if (index === -1) return;
+      setSelectedPrinterIds((prev) => {
+        const nextSet = new Set(prev);
+        if (shiftKey && lastPrinterIndexRef.current != null) {
+          const lastIndex = lastPrinterIndexRef.current;
+          const start = Math.min(lastIndex, index);
+          const end = Math.max(lastIndex, index);
+          for (let i = start; i <= end; i += 1) {
+            const candidate = printers[i];
+            if (candidate) nextSet.add(candidate.id);
+          }
+        } else if (nextSet.has(printerId)) {
+          nextSet.delete(printerId);
+        } else {
+          nextSet.add(printerId);
+        }
+        lastPrinterIndexRef.current = index;
+        return printers
+          .filter((printer) => nextSet.has(printer.id))
+          .map((printer) => printer.id);
+      });
+    },
+    [printers],
+  );
+
+  const handleClearStations = useCallback(() => {
+    setSelectedStationIds([]);
+    lastStationIndexRef.current = null;
+  }, []);
+
+  const handleClearPrinters = useCallback(() => {
+    setSelectedPrinterIds([]);
+    lastPrinterIndexRef.current = null;
+  }, []);
+
+  useEffect(() => {
+    if (!selectedStationIds.length) {
+      setSelectedPrinterIds([]);
+      lastPrinterIndexRef.current = null;
+      return;
+    }
+    setSelectedPrinterIds((prev) => {
+      if (prev.length) return prev;
+      const auto = recommendedPrinterIds.filter((id) =>
+        printers.some((printer) => printer.id === id),
+      );
+      return auto.length ? auto : prev;
+    });
+  }, [printers, recommendedPrinterIds, selectedStationIds.length]);
+
   const activeRecipe = useMemo(() => {
     if (!activeComponentId) return null;
     const row = componentRows.find((entry) => entry.id === activeComponentId);
