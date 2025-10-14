@@ -1231,48 +1231,6 @@ export default function GallerySection() {
   );
 }
 
-type LibraryItemProps = {
-  icon: ReactNode;
-  label: string;
-  count: number;
-  active: boolean;
-  onClick: () => void;
-  action?: ReactNode;
-};
-
-function LibraryItem({ icon, label, count, active, onClick, action }: LibraryItemProps) {
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      onClick();
-    }
-  };
-
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      onClick={onClick}
-      onKeyDown={handleKeyDown}
-      className={cn(
-        "flex w-full items-center justify-between gap-2 rounded-2xl border px-3 py-1.5 text-left text-xs transition",
-        active
-          ? "border-sky-400/60 bg-sky-500/15 text-sky-100 shadow-[0_18px_40px_rgba(14,165,233,0.32)]"
-          : "border-white/10 bg-white/5 text-slate-200 hover:border-sky-300/40 hover:bg-sky-500/10",
-      )}
-    >
-      <div className="flex items-center gap-2">
-        <span className="rounded-full bg-black/35 p-1 text-slate-100">{icon}</span>
-        <span>{label}</span>
-      </div>
-      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em]">
-        <span>{count}</span>
-        {action}
-      </div>
-    </div>
-  );
-}
-
 type GalleryToolbarProps = {
   filter: string;
   onFilterChange: (value: string) => void;
