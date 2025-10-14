@@ -291,6 +291,7 @@ export const UNIT_TO_GRAMS: Record<string, number> = {
   cups: 240,
   c: 240,
   pt: 473.176,
+  "pt.": 473.176,
   pint: 473.176,
   pints: 473.176,
   qt: 946.353,
