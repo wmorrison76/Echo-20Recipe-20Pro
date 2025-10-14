@@ -325,6 +325,8 @@ export async function handleNutritionAnalyze(req: Request, res: Response) {
           matchKey: null,
           confidence: match.confidence,
           grams,
+          rawGrams: gramsRaw,
+          yieldFactor,
           macros: ZERO_MACROS(),
         });
         unknown.push({
