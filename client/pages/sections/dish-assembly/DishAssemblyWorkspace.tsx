@@ -664,7 +664,7 @@ const DishAssemblyWorkspace: React.FC = () => {
                           <div className="flex flex-wrap items-center gap-2 font-semibold">
                             <span>{station.name}</span>
                             <Badge variant="outline" className="uppercase tracking-[0.35em]">
-                              {station.category.replace(/-/g, " ")}
+                              {station.category.replace(/-/g, " ").toUpperCase()}
                             </Badge>
                           </div>
                           <p className="text-xs text-muted-foreground">{station.description}</p>
