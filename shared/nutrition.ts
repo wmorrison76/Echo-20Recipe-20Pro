@@ -599,6 +599,8 @@ export const INGREDIENT_SYNONYMS: Array<[RegExp, string]> = [
   [/\bwhole milk\b|\bmilk\b/i, "milk_whole"],
   [/\b2% milk\b|\breduced fat milk\b/i, "milk_2_percent"],
   [/\bskim milk\b|\bfat free milk\b/i, "milk_skim"],
+  [/\bbuttermilk\b/i, "buttermilk"],
+  [/\bhalf[-\s]?and[-\s]?half\b/i, "half_and_half"],
   [/\bheavy cream\b|\bwhipping cream\b/i, "cream_heavy"],
   [/\bplain yogurt\b/i, "yogurt_plain"],
   [/\bsour cream\b/i, "sour_cream"],
