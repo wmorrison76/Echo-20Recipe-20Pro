@@ -632,7 +632,7 @@ const DishAssemblyWorkspace: React.FC = () => {
                   <div className="flex flex-wrap gap-2">
                     {stations.map((station) => {
                       const isSelected = selectedStationIds.includes(station.id);
-                      const categoryLabel = station.category.replace(/-/g, " ");
+                      const categoryLabel = station.category.replace(/-/g, " ").toUpperCase();
                       return (
                         <Button
                           key={station.id}
