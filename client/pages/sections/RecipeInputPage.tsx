@@ -610,6 +610,8 @@ const clearRecipeWorkspace = useCallback(() => {
   setSelectedCookingEquipment,
   setSelectedRecipeAccess,
   setTaxonomy,
+  setCurrentCurrency,
+  setCurrentUnits,
   setYieldQty,
   setYieldUnit,
   setPortionCount,
