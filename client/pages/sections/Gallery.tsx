@@ -690,6 +690,13 @@ export default function GallerySection() {
     setStatus("Image metadata updated.");
   };
 
+  const handleResetMetadata = () => {
+    if (!activeImage) return;
+    setNameDraft(activeImage.name);
+    setTagDraft((activeImage.tags || []).join(", "));
+    setStatus("Metadata fields reverted.");
+  };
+
   const handleToggleLookbookMembership = (lookbookId: string, enabled: boolean) => {
     if (!activeImage) return;
     if (enabled) {
