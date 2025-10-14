@@ -274,9 +274,13 @@ const DishAssemblyWorkspace: React.FC = () => {
     setAllergenRows([]);
     setPairingRows([]);
     setPosMappings(defaultPosMappings());
+    setSelectedStationIds([]);
+    setSelectedPrinterIds([]);
     setActiveComponentId(null);
     setCustomImage(null);
     setImageRotationIndex(0);
+    lastStationIndexRef.current = null;
+    lastPrinterIndexRef.current = null;
   }, []);
 
   useEffect(() => {
