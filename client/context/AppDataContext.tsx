@@ -57,6 +57,52 @@ export type TileBoard = {
   updatedAt: number;
 };
 
+export type DishWorkflowComponentSnapshot = {
+  componentId: string;
+  recipeId: string | null;
+  label: string;
+  quantity: string;
+  notes?: string;
+};
+
+export type DishWorkflowPosRoute = {
+  systemName: string;
+  itemCode: string;
+  price: string;
+  status: "draft" | "ready" | "synced";
+};
+
+export type DishWorkflowPlan = {
+  id: string;
+  name: string;
+  menuTitle: string;
+  menuDescription: string;
+  menuPrice: string;
+  serviceware: string;
+  serverNotes: string;
+  stationIds: string[];
+  printerIds: string[];
+  components: DishWorkflowComponentSnapshot[];
+  posRoutes: DishWorkflowPosRoute[];
+  heroImage?: string | null;
+  savedAt: number;
+  updatedAt: number;
+};
+
+export type InspectionReport = {
+  id: string;
+  name: string;
+  inspector?: string;
+  notes?: string;
+  tags: string[];
+  followUpDate?: string | null;
+  uploadedAt: number;
+  fileName: string;
+  mimeType: string;
+  size: number;
+  dataUrl: string;
+};
+
 type AppData = {
   recipes: Recipe[];
   images: GalleryImage[];
@@ -1727,7 +1773,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         /\b(?:cup|cups?|tsp|teaspoons?|tbsp|tablespoons?|grams?|gram|kg|kilograms?|g|ml|milliliters?|l|liters?|oz|ounces?|lb|lbs|pounds?|serves?|makes|yield|minutes?|minute|mins?|hours?|hour|°f|°c|step|steps?)\b/i;
       const tocPatterns = [
         /^.{3,160}?[.\s·•]{2,}\d{1,4}(?:\D.*)?$/i,
-        /^.{3,160}?\s[-–—]\s*\d{1,4}(?:\D.*)?$/i,
+        /^.{3,160}?\s[-–���]\s*\d{1,4}(?:\D.*)?$/i,
       ];
       const looksLikeIndexEntry = (line: string) => {
         if (line.length > 160) return false;
