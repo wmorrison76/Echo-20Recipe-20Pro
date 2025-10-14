@@ -407,7 +407,10 @@ const DishAssemblyWorkspace: React.FC = () => {
 
   useEffect(() => {
     if (!selectedStationIds.length) {
-      setSelectedPrinterIds([]);
+      setSelectedPrinterIds((prev) => {
+        if (!prev.length) return prev;
+        return [];
+      });
       lastPrinterIndexRef.current = null;
       return;
     }
