@@ -680,7 +680,7 @@ const handleClearForm = useCallback(() => {
   if (isFormPristine) return;
   const confirmMessage = t(
     "recipe.actions.clearConfirm",
-    "Clear all fields? This can’t be undone.",
+    "Clear all fields? This can��t be undone.",
   );
   if (!window.confirm(confirmMessage)) return;
   clearRecipeWorkspace();
@@ -1133,76 +1133,18 @@ const subRecipeOptions = useMemo<SubRecipeOption[]>(() => {
       if (t === "saveVersion") pushHistory({ ...serialize(), ts: Date.now() });
       if (t === "openYieldLab") setYieldOpen(true);
       if (t === "finalizeImport") {
-        try {
-          const title = (recipeName || "").trim() || "Untitled Recipe";
-          const ingLines = ingredients
-            .map((r) =>
-              [r.qty, r.unit, r.item, r.prep].filter(Boolean).join(" ").trim(),
-            )
-            .filter(Boolean);
-          const insLines = String(directions || "")
-            .split(/\r?\n/)
-            .map((s) => s.trim())
-            .filter(Boolean);
-          const cover =
-            image && image.startsWith("data:") ? [image] : undefined;
-          if (!recipeIdRef.current) {
-            recipeIdRef.current = addRecipe({
-              title,
-              ingredients: ingLines,
-              instructions: insLines,
-              imageDataUrls: cover,
-              tags: [],
-              extra: { source: "manual", taxonomy, published: true },
-            });
-          } else {
-            updateRecipe(recipeIdRef.current, {
-              title,
-              ingredients: ingLines,
-              instructions: insLines,
-              imageDataUrls: cover,
-              extra: { taxonomy, published: true },
-            });
-          }
-        } finally {
-          try {
-            localStorage.removeItem("recipe:draft");
-          } catch {}
-          try {
-            localStorage.removeItem("recipe:add:description");
-          } catch {}
-          try {
-            localStorage.removeItem("recipe:chef-notes");
-          } catch {}
-          recipeIdRef.current = null;
-          setRecipeName("");
-          setIngredients([createIngredientRow()]);
-          setDirections("1. ");
-          setImage(null);
-          setSelectedAllergens([]);
-          setSelectedNationality([]);
-          setSelectedCourses([]);
-          setSelectedRecipeType([]);
-          setSelectedPrepMethod([]);
-          setSelectedCookingEquipment([]);
-          setSelectedRecipeAccess([]);
-          setTaxonomy({ ...defaultSelection });
-          setYieldQty(6);
-          setYieldUnit("QTS");
-          setPortionCount(6);
-          setPortionUnit("OZ");
-          setCookTime("");
-          setCookTemp("");
-          setPrepTime("");
-          setNutrition(null);
-          setNutritionError(null);
-          setChefNotes("");
-        }
+        finalizeRecipe();
       }
     };
     window.addEventListener("recipe:action", onAction as any);
     return () => window.removeEventListener("recipe:action", onAction as any);
-  }, [ingredients, portionCount, currentUnits, currentCurrency]);
+  }, [
+    ingredients,
+    portionCount,
+    currentUnits,
+    currentCurrency,
+    finalizeRecipe,
+  ]);
   useEffect(() => {
     const toolbarItems: PageToolbarItem[] = [
       {
