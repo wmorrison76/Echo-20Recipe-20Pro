@@ -578,6 +578,11 @@ export default function GallerySection() {
     };
   }, [activeId, adjustments]);
 
+  const activePresetKey = activeId ? presetMap[activeId] ?? null : null;
+  const peerSelectionCount = activeId ? selectedIds.filter((id) => id !== activeId).length : selectedIds.length;
+  const isActiveInSelection = activeId ? selectedIds.includes(activeId) : false;
+  const canApplyAdjustmentsToSelection = peerSelectionCount > 0;
+
   const inspectorImageStyle = useMemo(() => {
     const { exposure, contrast, warmth, saturation, focus } = activeAdjustment;
     const filterParts = [
