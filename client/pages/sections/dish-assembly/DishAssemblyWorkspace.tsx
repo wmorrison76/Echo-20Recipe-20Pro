@@ -421,7 +421,7 @@ const DishAssemblyWorkspace: React.FC = () => {
       );
       return auto.length ? auto : prev;
     });
-  }, [printers, recommendedPrinterIds, selectedStationIds.length]);
+  }, [printers, recommendedPrinterIds, selectedStationIds]);
 
   const activeRecipe = useMemo(() => {
     if (!activeComponentId) return null;
