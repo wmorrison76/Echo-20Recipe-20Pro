@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { DragEvent, KeyboardEvent, MouseEvent, ReactNode, SVGProps } from "react";
+import type { MouseEvent } from "react";
 import { Dropzone } from "@/components/Dropzone";
 import { Button } from "@/components/ui/button";
 import "../../luccca-lookbook.css";
