@@ -755,6 +755,7 @@ export default function GallerySection() {
       const next = { ...existing, [key]: value };
       return { ...prev, [activeId]: next };
     });
+    setPresetMap((prev) => ({ ...prev, [activeId]: null }));
   };
 
   const resetAdjustments = () => {
