@@ -468,30 +468,6 @@ export default function TopTabs() {
             >
               <button
                 type="button"
-                title="Finalize & Clear"
-                onClick={() => {
-                  window.dispatchEvent(
-                    new CustomEvent("recipe:action", {
-                      detail: { type: "finalizeImport" },
-                    }),
-                  );
-                }}
-                className={cn(
-                  "flex w-full items-center rounded-md bg-white/70 px-2.5 py-1.5 font-medium text-foreground shadow-sm transition duration-300 hover:bg-white dark:bg-slate-900/80 dark:hover:bg-slate-900",
-                  collapsed ? "justify-center px-1.5" : "justify-between",
-                )}
-              >
-                <DissolvingText
-                  collapsed={collapsed}
-                  ariaHidden={collapsed}
-                  className="text-sm font-medium"
-                >
-                  {t("recipe.actions.finalize", "Finalize & Clear")}
-                </DissolvingText>
-                <Save className="h-4 w-4" aria-hidden />
-              </button>
-              <button
-                type="button"
                 title="Help & Shortcuts"
                 onClick={() => setShowHelp(true)}
                 className={cn(
