@@ -505,15 +505,44 @@ const isFormPristine = useMemo(() => {
   const hasImage = Boolean(image);
   const hasAllergens = selectedAllergens.length > 0;
   const hasNotes = chefNotes.trim().length > 0;
+  const hasMetaSelections =
+    selectedNationality.length > 0 ||
+    selectedCourses.length > 0 ||
+    selectedRecipeType.length > 0 ||
+    selectedPrepMethod.length > 0 ||
+    selectedCookingEquipment.length > 0 ||
+    selectedRecipeAccess.length > 0;
+  const hasTimingAdjustments =
+    cookTime.trim().length > 0 ||
+    cookTemp.trim().length > 0 ||
+    prepTime.trim().length > 0;
   return !(
     hasName ||
     hasIngredientContent ||
     hasDirections ||
     hasImage ||
     hasAllergens ||
-    hasNotes
+    hasNotes ||
+    hasMetaSelections ||
+    hasTimingAdjustments
   );
-}, [recipeName, ingredients, directions, image, selectedAllergens, chefNotes]);
+}, [
+  recipeName,
+  ingredients,
+  directions,
+  image,
+  selectedAllergens,
+  chefNotes,
+  selectedNationality,
+  selectedCourses,
+  selectedRecipeType,
+  selectedPrepMethod,
+  selectedCookingEquipment,
+  selectedRecipeAccess,
+  cookTime,
+  cookTemp,
+  prepTime,
+]);
 
 const clearRecipeWorkspace = useCallback(() => {
   try {
