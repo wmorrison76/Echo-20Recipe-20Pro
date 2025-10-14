@@ -1028,7 +1028,10 @@ export default function GallerySection() {
                   onOpenLightbox={handleOpenLightbox}
                   onDelete={handleDeleteImage}
                   gridTemplates={gridTemplates}
-                  onRestoreDemo={restoreDemo}
+                  onRestoreDemo={() => {
+                    restoreDemo();
+                    setStatus("Demo gallery restored.");
+                  }}
                 />
               ) : (
                 <div className="flex h-full flex-col overflow-hidden">
