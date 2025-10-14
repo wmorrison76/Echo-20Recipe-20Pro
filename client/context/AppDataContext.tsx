@@ -378,6 +378,14 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     writeLS(LS_COLLECTIONS, collections);
   }, [collections]);
 
+  useEffect(() => {
+    writeLS(LS_WORKFLOWS, workflows);
+  }, [workflows]);
+
+  useEffect(() => {
+    writeLS(LS_INSPECTIONS, inspections);
+  }, [inspections]);
+
   const dataUrlFromFile = (file: File): Promise<string> =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
