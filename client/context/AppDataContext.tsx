@@ -3084,6 +3084,17 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       removeRecipeFromCollection,
       setCollectionRecipes,
       getCollectionById,
+      workflows,
+      inspections,
+      addWorkflowPlan,
+      updateWorkflowPlan,
+      deleteWorkflowPlan,
+      addInspectionReport,
+      deleteInspectionReport,
+      getWorkflowById,
+      getInspectionById,
+      listStations,
+      listPrinters,
     ],
   );
 
