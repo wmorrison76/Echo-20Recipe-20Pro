@@ -349,6 +349,8 @@ export const DENSITY_CUP_G: Record<string, number> = {
   sugar_powdered: 120,
   honey: 340,
   maple_syrup: 320,
+  corn_syrup: 328,
+  molasses: 340,
   cocoa_powder: 85,
   chocolate_dark: 170,
   chocolate_milk: 154,
