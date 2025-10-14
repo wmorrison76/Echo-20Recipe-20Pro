@@ -264,6 +264,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     setLookbooks(readLS<LookBook[]>(LS_LOOKBOOKS, []));
     setTileBoards(readLS<TileBoard[]>(LS_TILE_BOARDS, []));
     setCollections(readLS<RecipeCollection[]>(LS_COLLECTIONS, []));
+    setWorkflows(readLS<DishWorkflowPlan[]>(LS_WORKFLOWS, []));
+    setInspections(readLS<InspectionReport[]>(LS_INSPECTIONS, []));
   }, []);
 
   useEffect(() => {
