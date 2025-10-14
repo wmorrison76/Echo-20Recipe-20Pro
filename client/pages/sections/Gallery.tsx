@@ -73,6 +73,32 @@ const ADJUSTMENT_CONTROLS: {
   { key: "focus", label: "Focus", min: -40, max: 40 },
 ];
 
+const ADJUSTMENT_PRESETS: {
+  key: string;
+  label: string;
+  description: string;
+  values: AdjustmentState;
+}[] = [
+  {
+    key: "studio",
+    label: "Studio glow",
+    description: "Soft brightness, lifted warmth",
+    values: { exposure: 18, contrast: 8, saturation: 12, warmth: 14, focus: 6 },
+  },
+  {
+    key: "natural",
+    label: "Natural light",
+    description: "Balanced tone and color",
+    values: { exposure: 6, contrast: 4, saturation: 5, warmth: -4, focus: 2 },
+  },
+  {
+    key: "noir",
+    label: "Noir high contrast",
+    description: "Dramatic monochrome punch",
+    values: { exposure: -8, contrast: 28, saturation: -50, warmth: 2, focus: 10 },
+  },
+];
+
 type AdjustmentState = {
   exposure: number;
   contrast: number;
