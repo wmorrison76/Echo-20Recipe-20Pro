@@ -870,6 +870,72 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     [collections],
   );
 
+  const addWorkflowPlan = useCallback((plan: DishWorkflowPlan) => {
+    setWorkflows((prev) => {
+      const timestamp = Date.now();
+      const normalized: DishWorkflowPlan = {
+        ...plan,
+        id: plan.id || uid(),
+        savedAt: plan.savedAt ?? timestamp,
+        updatedAt: timestamp,
+      };
+      const filtered = prev.filter((entry) => entry.id !== normalized.id);
+      return [...filtered, normalized].sort((a, b) => b.updatedAt - a.updatedAt);
+    });
+  }, []);
+
+  const updateWorkflowPlan = useCallback(
+    (id: string, patch: Partial<DishWorkflowPlan>) => {
+      setWorkflows((prev) =>
+        prev.map((plan) =>
+          plan.id === id
+            ? {
+                ...plan,
+                ...patch,
+                updatedAt: Date.now(),
+              }
+            : plan,
+        ),
+      );
+    },
+    [],
+  );
+
+  const deleteWorkflowPlan = useCallback((id: string) => {
+    setWorkflows((prev) => prev.filter((plan) => plan.id !== id));
+  }, []);
+
+  const addInspectionReport = useCallback((report: InspectionReport) => {
+    setInspections((prev) => {
+      const timestamp = report.uploadedAt ?? Date.now();
+      const normalized: InspectionReport = {
+        ...report,
+        id: report.id || uid(),
+        uploadedAt: timestamp,
+      };
+      const filtered = prev.filter((entry) => entry.id !== normalized.id);
+      return [...filtered, normalized].sort((a, b) => b.uploadedAt - a.uploadedAt);
+    });
+  }, []);
+
+  const deleteInspectionReport = useCallback((id: string) => {
+    setInspections((prev) => prev.filter((entry) => entry.id !== id));
+  }, []);
+
+  const getWorkflowById = useCallback(
+    (id: string) => workflows.find((plan) => plan.id === id),
+    [workflows],
+  );
+
+  const getInspectionById = useCallback(
+    (id: string) => inspections.find((item) => item.id === id),
+    [inspections],
+  );
+
+  const listStations = useCallback(() => KITCHEN_STATIONS, []);
+
+  const listPrinters = useCallback(() => CHIT_PRINTERS, []);
+
   const normalizeRecipe = (
     raw: any,
   ): Omit<Recipe, "id" | "createdAt"> | null => {
