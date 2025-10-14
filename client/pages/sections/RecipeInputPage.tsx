@@ -1012,7 +1012,7 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
       if (r.qty && r.unit) return r;
       const txt = String(r.item || "");
       if (!txt) return r;
-      if (!/^(\s*[0-9��½¾⅓⅔⅛⅜⅝⅞]|\s*\/\d+|.*,)/i.test(txt)) return r;
+      if (!/^(\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|\s*\/\d+|.*,)/i.test(txt)) return r;
       const p = parseIngredientInline(txt.replace(/^\s*\/(\d+)/, "1/$1"));
       if (!p) return r;
       return {
@@ -2438,6 +2438,44 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
         <div className="pt-4 h-full overflow-y-auto">
           <div className="w-full px-3 sm:px-4 space-y-3 pb-5">
             {/* Removed old hamburger toggle button */}
+            <div
+              className={`flex flex-wrap items-center justify-between gap-3 rounded-2xl border px-4 py-3 ${actionBarClasses}`}
+              data-echo-key="section:add:actions"
+            >
+              <div className="max-w-xl space-y-1">
+                <span
+                  className={`text-[11px] font-semibold uppercase tracking-[0.4em] ${actionCaptionTone}`}
+                >
+                  {t("recipe.actions.finalizeHeading", "Finalize workflow")}
+                </span>
+                <p className={`text-xs leading-relaxed ${actionDescriptionTone}`}>
+                  {t(
+                    "recipe.actions.finalizeHint",
+                    "Autosave is always on. Finalize stores this version and resets the workspace for your next dish.",
+                  )}
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  className={finalizeButtonClasses}
+                  onClick={finalizeRecipe}
+                  disabled={isFormPristine}
+                >
+                  <Save className="h-4 w-4" aria-hidden />
+                  {t("recipe.actions.finalize", "Finalize & Clear")}
+                </button>
+                <button
+                  type="button"
+                  className={clearButtonClasses}
+                  onClick={handleClearForm}
+                  disabled={isFormPristine}
+                >
+                  <RotateCcw className="h-4 w-4" aria-hidden />
+                  {t("recipe.actions.clearForm", "Clear Form")}
+                </button>
+              </div>
+            </div>
             <div
               className="flex flex-wrap items-start gap-2.5"
               data-echo-key="section:add:basics"
