@@ -876,16 +876,6 @@ export default function GallerySection() {
     }
   };
 
-  const handleSidebarDrop = (event: DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    const files = Array.from(event.dataTransfer?.files || []).filter((file) =>
-      file.type.startsWith("image/"),
-    );
-    if (files.length) {
-      handleFiles(files);
-    }
-  };
-
   const shellClass = lucccaMode
     ? "luccca-theme border-slate-800/70 bg-slate-950/92 text-slate-100 shadow-[0_90px_200px_rgba(14,165,233,0.4)]"
     : "border-slate-200/70 bg-white/96 text-slate-900 shadow-[0_90px_200px_rgba(15,23,42,0.12)]";
