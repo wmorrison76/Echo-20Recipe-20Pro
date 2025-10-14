@@ -71,7 +71,7 @@ const createInitialRows = () =>
   Array.from({ length: INITIAL_COMPONENT_ROWS }, () => createBlankRow());
 
 const DishAssemblyWorkspace: React.FC = () => {
-  const { recipes } = useAppData();
+  const { recipes, listStations, listPrinters } = useAppData();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { setToolbar, resetToolbar } = usePageToolbar();
