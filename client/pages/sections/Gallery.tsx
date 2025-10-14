@@ -15,36 +15,29 @@ import {
 import { GalleryLightbox } from "@/components/GalleryLightbox";
 import { LookBookShowcase } from "@/components/LookBookShowcase";
 import { GalleryOverlay } from "@/components/gallery/GalleryOverlay";
+import { GallerySidebar } from "@/components/gallery/GallerySidebar";
 import { GalleryTileBoards } from "@/components/gallery/GalleryTileBoards";
+import { PhotoStudioPanel } from "@/components/gallery/PhotoStudioPanel";
 import type { LucideIcon } from "lucide-react";
 import {
-  ChevronDown,
-  Clock,
   Download,
   Droplet,
   Eraser,
   Folder,
-  Image as ImageIcon,
   LassoSelect,
   Layers,
   LayoutGrid,
   Link2,
-  ListFilter,
   Move,
   Paintbrush,
   PenTool,
   Pipette,
-  Plus,
   Scissors,
   Search,
   SlidersHorizontal,
   Sparkles,
   Stamp,
   Star,
-  Eye,
-  EyeOff,
-  Lock,
-  Tag,
   Trash2,
   UploadCloud,
   Wand2,
