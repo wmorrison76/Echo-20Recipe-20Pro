@@ -46,6 +46,8 @@ type BreakdownRow = {
   matchKey: string | null;
   confidence: number;
   grams: number;
+  rawGrams: number;
+  yieldFactor: number;
   macros: MacroTotals;
 };
 
@@ -70,7 +72,7 @@ const unicodeFractions: Record<string, string> = {
   "⅙": "1/6",
   "⅚": "5/6",
   "⅛": "1/8",
-  "⅜": "3/8",
+  "��": "3/8",
   "⅝": "5/8",
   "⅞": "7/8",
 };
