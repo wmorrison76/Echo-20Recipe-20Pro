@@ -593,6 +593,7 @@ const clearRecipeWorkspace = useCallback(() => {
   setChefNotes,
   setYieldOpen,
   setIsRightSidebarCollapsed,
+  createIngredientRow,
 ]);
 
 const finalizeRecipe = useCallback(() => {
@@ -3577,7 +3578,7 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                   "⅞": "7/8",
                 };
                 s = s.replace(
-                  /[���½¾⅐⅑��⅓⅔⅕⅖⅗��⅙⅚⅛⅜⅝⅞]/g,
+                  /[�����¾⅐⅑��⅓⅔⅕⅖⅗��⅙⅚⅛⅜⅝⅞]/g,
                   (ch) => fracMap[ch] || ch,
                 );
                 const m = s.match(
