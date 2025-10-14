@@ -1255,19 +1255,19 @@ function GalleryToolbar({
   onLink,
 }: GalleryToolbarProps) {
   return (
-    <div className="pointer-events-auto flex w-full max-w-3xl flex-col gap-3 rounded-full bg-black/45 px-5 py-3.5 backdrop-blur-lg">
+    <div className="pointer-events-auto flex w-full max-w-3xl flex-col gap-4 rounded-[28px] border border-white/12 bg-[radial-gradient(circle_at_top,_rgba(14,23,42,0.95),_rgba(14,25,48,0.72))] px-6 py-4 shadow-[0_28px_80px_rgba(15,23,42,0.55)] backdrop-blur-xl">
       <div className="flex flex-wrap items-center gap-3">
-        <div className="relative min-w-[200px] flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-60" />
+        <div className="relative min-w-[220px] flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sky-200/70" />
           <input
             value={filter}
             onChange={(event) => onFilterChange(event.target.value)}
             placeholder="Search by name or tag"
-            className="w-full rounded-full border border-transparent bg-black/25 pl-10 pr-3 py-2 text-sm text-slate-100 placeholder:text-slate-400 focus:border-sky-400 focus:outline-none"
+            className="w-full rounded-full border border-white/15 bg-white/10 pl-10 pr-3 py-2 text-sm text-slate-100 placeholder:text-slate-300/80 focus:border-sky-400 focus:outline-none focus:ring-0"
           />
         </div>
         <div className="flex items-center gap-2 text-xs">
-          <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/25 px-3 py-1.5">
+          <div className="flex items-center gap-1 rounded-full border border-white/14 bg-black/30 px-3 py-1.5 shadow-[0_12px_30px_rgba(8,15,30,0.38)]">
             <SlidersHorizontal className="h-3.5 w-3.5" />
             <select
               value={sort}
@@ -1295,16 +1295,20 @@ function GalleryToolbar({
         </div>
       </div>
       <div className="flex flex-wrap items-center justify-end gap-2">
-        <Button onClick={onUpload} className="rounded-full px-4">
+        <Button onClick={onUpload} className="rounded-full bg-gradient-to-r from-sky-400 via-sky-500 to-sky-400 px-5 text-black shadow-[0_18px_36px_rgba(56,189,248,0.35)] hover:from-sky-300 hover:to-sky-400">
           <UploadCloud className="mr-2 h-4 w-4" /> Upload
         </Button>
-        <Button variant="outline" onClick={onExport} className="rounded-full px-4">
+        <Button
+          variant="outline"
+          onClick={onExport}
+          className="rounded-full border-white/30 bg-white/10 px-4 text-white hover:bg-white/20"
+        >
           <Download className="mr-2 h-4 w-4" /> Export ZIP
         </Button>
         <Button
           variant="secondary"
           onClick={onLink}
-          className="rounded-full px-4"
+          className="rounded-full bg-white/90 px-4 text-slate-900 shadow-[0_18px_36px_rgba(255,255,255,0.25)] hover:bg-white"
         >
           <Link2 className="mr-2 h-4 w-4" /> Link recipes
         </Button>
