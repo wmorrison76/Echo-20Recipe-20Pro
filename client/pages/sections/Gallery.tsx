@@ -902,195 +902,47 @@ export default function GallerySection() {
       data-echo-key="page:recipes:gallery"
     >
       <div className="grid gap-5 lg:min-h-[calc(100vh-170px)] lg:grid-cols-[230px_minmax(0,1fr)_320px] xl:min-h-[calc(100vh-190px)]">
-        <aside className={cn("flex h-full flex-col overflow-hidden rounded-[32px] border", navSurface)}>
-          <div className="flex flex-1 flex-col gap-4 px-5 pb-4 pt-5">
-            <div>
-              <h2 className="text-base font-semibold uppercase tracking-[0.3em] text-slate-100">Library</h2>
-              <p className="text-[11px] uppercase tracking-[0.35em] text-slate-400">Curate & explore</p>
-            </div>
-
-            <div className="grid gap-2 text-sm">
-              <LibraryItem
-                icon={<ImageIcon className="h-4 w-4" />}
-                label="All photos"
-                count={images.length}
-                active={libraryFilter === "all" && !activeLookBookId}
-                onClick={() => {
-                  setLibraryFilter("all");
-                  setActiveLookBookId(null);
-                }}
-              />
-              <LibraryItem
-                icon={<Star className="h-4 w-4" />}
-                label="Favorites"
-                count={favoriteCount}
-                active={libraryFilter === "favorites"}
-                onClick={() => {
-                  setLibraryFilter("favorites");
-                  setActiveLookBookId(null);
-                }}
-              />
-              <LibraryItem
-                icon={<Clock className="h-4 w-4" />}
-                label={`Last ${RECENT_DAYS} days`}
-                count={recentCount}
-                active={libraryFilter === "recent"}
-                onClick={() => {
-                  setLibraryFilter("recent");
-                  setActiveLookBookId(null);
-                }}
-              />
-            </div>
-
-            <AutoCategoryList
-              clusters={tagClusters}
-              onSelect={(tag) => {
-                setFilter(tag);
-                setLibraryFilter("all");
-                setActiveLookBookId(null);
-              }}
-            />
-
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-300">
-                <span>Look Books</span>
-                <button
-                  className="flex h-7 w-7 items-center justify-center rounded-full border border-white/10 text-white transition hover:bg-white/10"
-                  onClick={() => {
-                    restoreDemo();
-                    setStatus("Demo gallery restored.");
-                  }}
-                  title="Restore demo set"
-                >
-                  <RefreshGlyph />
-                </button>
-              </div>
-              <div className="space-y-1.5">
-                {lookbooks.map((book) => (
-                  <LibraryItem
-                    key={book.id}
-                    icon={<Folder className="h-4 w-4" />}
-                    label={book.name}
-                    count={book.imageIds.length}
-                    active={libraryFilter === "lookbook" && activeLookBookId === book.id}
-                    onClick={() => {
-                      setLibraryFilter("lookbook");
-                      setActiveLookBookId(book.id);
-                    }}
-                    action={
-                      <div className="flex items-center gap-1">
-                        <button
-                          className="rounded-full p-1 text-xs opacity-60 transition hover:opacity-100"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            const name = prompt("Rename Look Book", book.name)?.trim();
-                            if (name) updateLookBook(book.id, { name });
-                          }}
-                          title="Rename"
-                        >
-                          ✎
-                        </button>
-                        <button
-                          className="rounded-full p-1 text-xs opacity-60 transition hover:text-red-400 hover:opacity-100"
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            if (confirm("Delete this look book?")) deleteLookBook(book.id);
-                          }}
-                          title="Delete"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    }
-                  />
-                ))}
-                {lookbooks.length === 0 && (
-                  <div className="rounded-2xl border border-dashed border-white/20 px-3 py-3 text-xs opacity-70">
-                    No look books yet.
-                  </div>
-                )}
-              </div>
-              <FlipbookPreview
-                onOpen={() => {
-                  if (activeLookBook) {
-                    setOpenLookBook(true);
-                  } else if (lookbooks.length > 0) {
-                    setActiveLookBookId(lookbooks[0].id);
-                    setLibraryFilter("lookbook");
-                    setOpenLookBook(true);
-                  } else {
-                    setStatus("Create a look book to preview flip motion.");
-                  }
-                }}
-              />
-              <div className="space-y-2 rounded-2xl border border-white/12 p-3">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-300">
-                  New look book
-                </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    value={lookbookNameDraft}
-                    placeholder="Name"
-                    className="flex-1 rounded-full border border-white/10 bg-white/10 px-3 py-1.5 text-xs"
-                    onChange={(event) => setLookbookNameDraft(event.target.value)}
-                  />
-                  <Button
-                    size="sm"
-                    className="rounded-full px-3"
-                    onClick={() => {
-                      const name = lookbookNameDraft.trim();
-                      if (!name) return;
-                      const id = addLookBook(name, selectedIds);
-                      setLookbookNameDraft("");
-                      setSelectedIds([]);
-                      setActiveLookBookId(id);
-                      setLibraryFilter("lookbook");
-                      setOpenLookBook(true);
-                      setStatus(`Look book "${name}" created.`);
-                    }}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="text-[10px] uppercase tracking-[0.3em] text-slate-400">
-                  Use selected images to seed instantly.
-                </div>
-              </div>
-            </div>
-
-            <div
-              className={cn(
-                "rounded-2xl border border-dashed px-3 py-3 text-[11px] uppercase tracking-[0.3em] transition",
-                sidebarDropActive
-                  ? "border-sky-400/80 bg-sky-500/10 text-sky-200"
-                  : "border-white/20 bg-white/5 text-slate-200",
-              )}
-              onDragEnter={(event) => {
-                event.preventDefault();
-                setSidebarDropActive(true);
-              }}
-              onDragOver={(event) => {
-                event.preventDefault();
-              }}
-              onDragLeave={(event) => {
-                event.preventDefault();
-                setSidebarDropActive(false);
-              }}
-              onDrop={(event) => {
-                handleSidebarDrop(event);
-                setSidebarDropActive(false);
-              }}
-            >
-              Drop to auto-tag with AI themes.
-            </div>
-          </div>
-
-          <div className="border-t border-white/10 px-5 py-4 text-[11px] uppercase tracking-[0.3em] text-slate-400">
-            {selectedIds.length > 0
-              ? `${selectedIds.length} image${selectedIds.length === 1 ? "" : "s"} selected`
-              : "Select images to manage metadata."}
-          </div>
-        </aside>
+        <GallerySidebar
+          totalCount={images.length}
+          favoriteCount={favoriteCount}
+          recentCount={recentCount}
+          activeFilter={libraryFilter}
+          activeLookBookId={activeLookBookId}
+          tagClusters={tagClusters}
+          lookbooks={lookbooks}
+          selectedIdsCount={selectedIds.length}
+          surfaceClassName={navSurface}
+          onFilterChange={(value) => {
+            setLibraryFilter(value);
+            if (value !== "lookbook") {
+              setActiveLookBookId(null);
+            }
+            if (value !== "all") {
+              setFilter("");
+            }
+          }}
+          onLookbookChange={(id) => {
+            if (id) {
+              setActiveLookBookId(id);
+              setLibraryFilter("lookbook");
+            } else {
+              setActiveLookBookId(null);
+              setLibraryFilter("all");
+            }
+          }}
+          onTagSelect={(tag) => {
+            setFilter(tag);
+          }}
+          onRestoreDemo={() => {
+            restoreDemo();
+            setStatus("Demo gallery restored.");
+          }}
+          onCreateLookBook={handleCreateLookBook}
+          onPreviewLookbook={handlePreviewLookbook}
+          onRenameLookBook={handleRenameLookBook}
+          onDeleteLookBook={handleDeleteLookBook}
+          onDropFiles={handleFiles}
+        />
 
         <Dropzone
           multiple
