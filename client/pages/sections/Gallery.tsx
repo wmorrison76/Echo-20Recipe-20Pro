@@ -760,6 +760,48 @@ export default function GallerySection() {
     setStatus("Linked images to recipes by filename.");
   };
 
+  const handleCreateLookBook = (name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed) return false;
+    const id = addLookBook(trimmed, selectedIds);
+    setSelectedIds([]);
+    setActiveLookBookId(id);
+    setLibraryFilter("lookbook");
+    setOpenLookBook(true);
+    setStatus(`Look book "${trimmed}" created.`);
+    return true;
+  };
+
+  const handlePreviewLookbook = () => {
+    if (activeLookBook) {
+      setOpenLookBook(true);
+      return;
+    }
+    if (lookbooks.length > 0) {
+      setActiveLookBookId(lookbooks[0].id);
+      setLibraryFilter("lookbook");
+      setOpenLookBook(true);
+      return;
+    }
+    setStatus("Create a look book to preview flip motion.");
+  };
+
+  const handleRenameLookBook = (id: string, name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    updateLookBook(id, { name: trimmed });
+    setStatus(`Look book renamed to ${trimmed}.`);
+  };
+
+  const handleDeleteLookBook = (id: string) => {
+    deleteLookBook(id);
+    if (activeLookBookId === id) {
+      setActiveLookBookId(null);
+      setLibraryFilter("all");
+    }
+    setStatus("Look book removed.");
+  };
+
   const updateAdjustment = (key: keyof AdjustmentState, value: number) => {
     if (!activeId) return;
     setAdjustments((prev) => {
