@@ -27,6 +27,7 @@ type GallerySidebarProps = {
   tagClusters: TagCluster[];
   lookbooks: LookBook[];
   selectedIdsCount: number;
+  surfaceClassName: string;
   onFilterChange: (filter: LibraryFilter) => void;
   onLookbookChange: (id: string | null) => void;
   onTagSelect: (tag: string) => void;
@@ -47,6 +48,7 @@ export function GallerySidebar({
   tagClusters,
   lookbooks,
   selectedIdsCount,
+  surfaceClassName,
   onFilterChange,
   onLookbookChange,
   onTagSelect,
@@ -81,7 +83,7 @@ export function GallerySidebar({
   };
 
   return (
-    <aside className={cn("flex h-full flex-col overflow-hidden rounded-[32px] border", "border-slate-700/60 bg-slate-900/75")}
+    <aside className={cn("flex h-full flex-col overflow-hidden rounded-[32px] border", surfaceClassName)}
     >
       <div className="flex flex-1 flex-col gap-4 px-5 pb-4 pt-5">
         <div>
