@@ -740,12 +740,22 @@ const subRecipeOptions = useMemo<SubRecipeOption[]>(() => {
       return sum + (Number.isFinite(parsed) ? parsed : 0);
     }, 0);
   const calculatePortionCost = () => {
-    const t = calculateTotalCost();
-    const n = portionCount > 0 ? portionCount : 1;
-    return t / n;
-  };
+  const t = calculateTotalCost();
+  const n = portionCount > 0 ? portionCount : 1;
+  return t / n;
+};
 
-  const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
+const actionButtonBase =
+  "inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-60";
+const finalizeButtonClasses = `${actionButtonBase} ${isDarkMode ? "bg-cyan-500 text-slate-950 hover:bg-cyan-400 focus-visible:ring-cyan-300/60 focus-visible:ring-offset-slate-950" : "bg-slate-900 text-white hover:bg-slate-800 focus-visible:ring-slate-400 focus-visible:ring-offset-white"}`;
+const clearButtonClasses = `${actionButtonBase} ${isDarkMode ? "border border-cyan-400/60 text-cyan-200 hover:bg-cyan-500/10 focus-visible:ring-cyan-300/40 focus-visible:ring-offset-slate-950" : "border border-slate-400 text-slate-700 hover:bg-slate-900/5 focus-visible:ring-slate-400/50 focus-visible:ring-offset-white"}`;
+const actionBarClasses = isDarkMode
+  ? "border-cyan-400/40 bg-slate-950/60 shadow-[0_0_32px_rgba(56,189,248,0.15)]"
+  : "border-slate-200 bg-white/80 shadow-[0_20px_40px_-24px_rgba(15,23,42,0.25)]";
+const actionCaptionTone = isDarkMode ? "text-cyan-200/90" : "text-slate-600";
+const actionDescriptionTone = isDarkMode ? "text-cyan-200/70" : "text-slate-500";
+
+const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
     if (!selected.length) return;
     setIngredients((prev) => {
       const next = ensureIngredientRowIds(prev.slice());
@@ -1002,7 +1012,7 @@ const subRecipeOptions = useMemo<SubRecipeOption[]>(() => {
       if (r.qty && r.unit) return r;
       const txt = String(r.item || "");
       if (!txt) return r;
-      if (!/^(\s*[0-9¼½¾⅓⅔⅛⅜⅝⅞]|\s*\/\d+|.*,)/i.test(txt)) return r;
+      if (!/^(\s*[0-9��½¾⅓⅔⅛⅜⅝⅞]|\s*\/\d+|.*,)/i.test(txt)) return r;
       const p = parseIngredientInline(txt.replace(/^\s*\/(\d+)/, "1/$1"));
       if (!p) return r;
       return {
