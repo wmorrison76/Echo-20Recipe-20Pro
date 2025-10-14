@@ -579,6 +579,8 @@ export const INGREDIENT_SYNONYMS: Array<[RegExp, string]> = [
   [/\bpowdered sugar\b|\bconfectioners'? sugar\b/i, "sugar_powdered"],
   [/\bhoney\b/i, "honey"],
   [/\bmaple syrup\b/i, "maple_syrup"],
+  [/\bcorn syrup\b|\bglucose syrup\b/i, "corn_syrup"],
+  [/\bmolasses\b/i, "molasses"],
   [/\bunsweetened cocoa powder\b|\bcocoa powder\b\b/i, "cocoa_powder"],
   [/\bdark chocolate\b/i, "chocolate_dark"],
   [/\bmilk chocolate\b/i, "chocolate_milk"],
