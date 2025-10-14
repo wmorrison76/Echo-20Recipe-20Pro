@@ -681,7 +681,7 @@ const handleClearForm = useCallback(() => {
   if (isFormPristine) return;
   const confirmMessage = t(
     "recipe.actions.clearConfirm",
-    "Clear all fields? This can��t be undone.",
+    "Clear all fields? This can't be undone.",
   );
   if (!window.confirm(confirmMessage)) return;
   clearRecipeWorkspace();
@@ -3578,7 +3578,7 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                   "⅞": "7/8",
                 };
                 s = s.replace(
-                  /[�����¾⅐⅑��⅓⅔⅕⅖⅗��⅙⅚⅛⅜⅝⅞]/g,
+                  /[���½¾⅐⅑��⅓⅔⅕⅖⅗��⅙⅚⅛⅜⅝⅞]/g,
                   (ch) => fracMap[ch] || ch,
                 );
                 const m = s.match(
