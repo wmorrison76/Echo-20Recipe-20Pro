@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { DragEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { LookBook } from "@/context/AppDataContext";
@@ -71,7 +72,7 @@ export function GallerySidebar({
     }
   };
 
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     const files = Array.from(event.dataTransfer?.files || []).filter((file) =>
       file.type.startsWith("image/"),
