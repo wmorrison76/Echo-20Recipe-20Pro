@@ -488,7 +488,212 @@ const RecipeInputPage = () => {
   const [cookTemp, setCookTemp] = useState<string>("");
   const [prepTime, setPrepTime] = useState<string>("");
 
-  const subRecipeOptions = useMemo<SubRecipeOption[]>(() => {
+const isFormPristine = useMemo(() => {
+  const hasName = recipeName.trim().length > 0;
+  const hasIngredientContent = ingredients.some((row) => {
+    if (!row) return false;
+    if ((row as any).type === "divider") {
+      return Boolean(row.item?.trim());
+    }
+    return [row.item, row.qty, row.unit, row.prep, row.cost].some((value) =>
+      Boolean((value || "").toString().trim()),
+    );
+  });
+  const normalizedDirections = (directions || "").trim();
+  const hasDirections =
+    normalizedDirections.length > 0 && normalizedDirections !== "1.";
+  const hasImage = Boolean(image);
+  const hasAllergens = selectedAllergens.length > 0;
+  const hasNotes = chefNotes.trim().length > 0;
+  return !(
+    hasName ||
+    hasIngredientContent ||
+    hasDirections ||
+    hasImage ||
+    hasAllergens ||
+    hasNotes
+  );
+}, [recipeName, ingredients, directions, image, selectedAllergens, chefNotes]);
+
+const clearRecipeWorkspace = useCallback(() => {
+  try {
+    localStorage.removeItem("recipe:draft");
+  } catch {}
+  try {
+    localStorage.removeItem("recipe:add:description");
+  } catch {}
+  try {
+    localStorage.removeItem("recipe:chef-notes");
+  } catch {}
+  recipeIdRef.current = null;
+  historyRef.current = [];
+  futureRef.current = [];
+  if (autoSnapshotTimerRef.current) {
+    clearTimeout(autoSnapshotTimerRef.current);
+    autoSnapshotTimerRef.current = null;
+  }
+  autoSnapshotFingerprintRef.current = "";
+  allergenManualRef.current = false;
+  yieldManualRef.current = false;
+  if (stepImageInputRef.current) {
+    stepImageInputRef.current.value = "";
+  }
+  setRecipeName("");
+  setIngredients([createIngredientRow()]);
+  setDirections("1. ");
+  setImage(null);
+  setShowImagePopup(false);
+  setSelectedAllergens([]);
+  setSelectedNationality([]);
+  setSelectedCourses([]);
+  setSelectedRecipeType([]);
+  setSelectedPrepMethod([]);
+  setSelectedCookingEquipment([]);
+  setSelectedRecipeAccess([]);
+  setTaxonomy({ ...defaultSelection });
+  setYieldQty(6);
+  setYieldUnit("QTS");
+  setPortionCount(6);
+  setPortionUnit("OZ");
+  setCookTime("");
+  setCookTemp("");
+  setPrepTime("");
+  setNutrition(null);
+  setNutritionLoading(false);
+  setNutritionError(null);
+  setNutritionPerServing(true);
+  setChefNotes("");
+  setYieldOpen(false);
+  setIsRightSidebarCollapsed(false);
+}, [
+  setRecipeName,
+  setIngredients,
+  setDirections,
+  setImage,
+  setShowImagePopup,
+  setSelectedAllergens,
+  setSelectedNationality,
+  setSelectedCourses,
+  setSelectedRecipeType,
+  setSelectedPrepMethod,
+  setSelectedCookingEquipment,
+  setSelectedRecipeAccess,
+  setTaxonomy,
+  setYieldQty,
+  setYieldUnit,
+  setPortionCount,
+  setPortionUnit,
+  setCookTime,
+  setCookTemp,
+  setPrepTime,
+  setNutrition,
+  setNutritionLoading,
+  setNutritionError,
+  setNutritionPerServing,
+  setChefNotes,
+  setYieldOpen,
+  setIsRightSidebarCollapsed,
+]);
+
+const finalizeRecipe = useCallback(() => {
+  if (isFormPristine) {
+    toast({
+      title: t("recipe.actions.finalizeEmptyTitle", "Nothing to finalize"),
+      description: t(
+        "recipe.actions.finalizeEmptyDescription",
+        "Add details before finalizing the recipe.",
+      ),
+      variant: "destructive",
+    });
+    return;
+  }
+  let succeeded = false;
+  try {
+    const title = (recipeName || "").trim() || "Untitled Recipe";
+    const ingLines = ingredients
+      .map((r) =>
+        [r.qty, r.unit, r.item, r.prep].filter(Boolean).join(" ").trim(),
+      )
+      .filter(Boolean);
+    const insLines = String(directions || "")
+      .split(/\r?\n/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const cover = image && image.startsWith("data:") ? [image] : undefined;
+    if (!recipeIdRef.current) {
+      recipeIdRef.current = addRecipe({
+        title,
+        ingredients: ingLines,
+        instructions: insLines,
+        imageDataUrls: cover,
+        tags: [],
+        extra: { source: "manual", taxonomy, published: true },
+      });
+    } else {
+      updateRecipe(recipeIdRef.current, {
+        title,
+        ingredients: ingLines,
+        instructions: insLines,
+        imageDataUrls: cover,
+        extra: { taxonomy, published: true },
+      });
+    }
+    succeeded = true;
+    toast({
+      title: t("recipe.actions.finalizedTitle", "Recipe finalized"),
+      description: t(
+        "recipe.actions.finalizedDescription",
+        "Saved to your library and cleared for the next entry.",
+      ),
+    });
+  } catch (error: any) {
+    const message =
+      typeof error?.message === "string" && error.message.trim().length
+        ? error.message
+        : t("recipe.actions.finalizedErrorFallback", "Unexpected error");
+    console.error("Finalize recipe failed", error);
+    toast({
+      title: t("recipe.actions.finalizedError", "Unable to finalize recipe"),
+      description: message,
+      variant: "destructive",
+    });
+  } finally {
+    if (succeeded) {
+      clearRecipeWorkspace();
+    }
+  }
+}, [
+  addRecipe,
+  updateRecipe,
+  taxonomy,
+  recipeName,
+  ingredients,
+  directions,
+  image,
+  clearRecipeWorkspace,
+  toast,
+  t,
+  isFormPristine,
+]);
+
+const handleClearForm = useCallback(() => {
+  if (isFormPristine) return;
+  const confirmMessage = t(
+    "recipe.actions.clearConfirm",
+    "Clear all fields? This can’t be undone.",
+  );
+  if (!window.confirm(confirmMessage)) return;
+  clearRecipeWorkspace();
+  toast({
+    title: t("recipe.actions.clearedTitle", "Workspace cleared"),
+    description: t(
+      "recipe.actions.clearedDescription",
+      "Start fresh with a blank recipe draft.",
+    ),
+  });
+}, [clearRecipeWorkspace, isFormPristine, t, toast]);
+
+const subRecipeOptions = useMemo<SubRecipeOption[]>(() => {
     if (!recipes || recipes.length === 0) return [];
     return [...recipes]
       .map((recipe) => {
