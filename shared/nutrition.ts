@@ -663,6 +663,7 @@ export const INGREDIENT_SYNONYMS: Array<[RegExp, string]> = [
   [/\bgarlic\b/i, "garlic"],
   [/\bshallots?\b/i, "shallot"],
   [/\bleeks?\b/i, "leek"],
+  [/\bgreen onions?\b|\bscallions?\b|\bspring onions?\b/i, "scallion"],
   [/\bcelery\b/i, "celery"],
   [/\b(bell|sweet) peppers?\b/i, "bell_pepper"],
   [/\bjalape(n|ñ)o\b/i, "jalapeno"],
