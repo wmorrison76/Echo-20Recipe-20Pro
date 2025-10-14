@@ -48,6 +48,7 @@ export const NUTRITION_DATABASE: Record<string, NutritionProfile> = {
   chocolate_dark: makeProfile(546, 31, 19, 0, 61, 7, 48, 5, 20),
   chocolate_milk: makeProfile(535, 30.7, 18, 0.3, 58.4, 3.4, 52.8, 7.6, 79),
   vanilla_extract: makeProfile(288, 0.1, 0, 0, 12.7, 0, 12.7, 0, 9),
+  water: makeProfile(0, 0, 0, 0, 0, 0, 0, 0, 1),
   butter_unsalted: makeProfile(717, 81, 51, 3.3, 0.1, 0, 0.1, 0.9, 11),
   margarine: makeProfile(717, 80, 20, 3, 0.7, 0, 0.7, 0.2, 720),
   oil_olive: makeProfile(884, 100, 14, 0, 0, 0, 0, 0, 2),
