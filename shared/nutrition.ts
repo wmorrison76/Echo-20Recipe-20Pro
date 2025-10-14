@@ -10,6 +10,18 @@ export type NutritionProfile = {
   sodium: number;
 };
 
+export type NutritionDiagnostics = {
+  ingredients: number;
+  matched: number;
+  unknown: number;
+  lowConfidence: number;
+  averageConfidence: number;
+  totalWeight: number;
+  matchedWeight: number;
+  unmatchedWeight: number;
+  yieldAverage: number;
+};
+
 const makeProfile = (
   calories: number,
   fat: number,
