@@ -72,7 +72,7 @@ const unicodeFractions: Record<string, string> = {
   "⅙": "1/6",
   "⅚": "5/6",
   "⅛": "1/8",
-  "��": "3/8",
+  "⅜": "3/8",
   "⅝": "5/8",
   "⅞": "7/8",
 };
@@ -314,6 +314,8 @@ export async function handleNutritionAnalyze(req: Request, res: Response) {
           matchKey,
           confidence: match.confidence,
           grams,
+          rawGrams: gramsRaw,
+          yieldFactor,
           macros: roundTotals(macros),
         });
       } else {
