@@ -241,9 +241,11 @@ export const NUTRITION_DATABASE: Record<string, NutritionProfile> = {
 
 export const UNIT_TO_GRAMS: Record<string, number> = {
   g: 1,
+  "g.": 1,
   gram: 1,
   grams: 1,
   kg: 1000,
+  "kg.": 1000,
   kilogram: 1000,
   kilograms: 1000,
   oz: 28.3495,
