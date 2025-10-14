@@ -8,7 +8,7 @@ import {
   UNIT_TO_GRAMS,
   resolveIngredientKey,
   type NutritionProfile,
-} from "@shared/nutrition";
+} from "../../shared/nutrition";
 
 const TBSP_PER_CUP = 16;
 const TSP_PER_TBSP = 3;
