@@ -248,6 +248,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const [lookbooks, setLookbooks] = useState<LookBook[]>([]);
   const [tileBoards, setTileBoards] = useState<TileBoard[]>([]);
   const [collections, setCollections] = useState<RecipeCollection[]>([]);
+  const [workflows, setWorkflows] = useState<DishWorkflowPlan[]>([]);
+  const [inspections, setInspections] = useState<InspectionReport[]>([]);
   const mountedRef = useRef(true);
   useEffect(() => {
     return () => {
