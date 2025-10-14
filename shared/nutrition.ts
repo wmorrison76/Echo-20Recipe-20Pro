@@ -796,7 +796,7 @@ const ALL_KEYS = Object.keys(NUTRITION_DATABASE);
 const KEY_TOKEN_CACHE = new Map<string, string[]>();
 const NON_ALPHANUMERIC = /[^a-z0-9\s]/g;
 
-function normalizeIngredientForMatching(raw: string): string {
+export function normalizeIngredientForMatching(raw: string): string {
   if (!raw) return "";
   const ascii = raw
     .normalize("NFKD")
@@ -814,7 +814,7 @@ function normalizeIngredientForMatching(raw: string): string {
     .trim();
 }
 
-function tokenizeIngredient(normalized: string): string[] {
+export function tokenizeIngredient(normalized: string): string[] {
   if (!normalized) return [];
   const cleaned = normalized.replace(NON_ALPHANUMERIC, " ");
   const tokens = cleaned
