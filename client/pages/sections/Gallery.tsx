@@ -772,6 +772,38 @@ export default function GallerySection() {
     });
   };
 
+  const applyPresetToActive = (presetKey: string) => {
+    if (!activeId) return;
+    const preset = ADJUSTMENT_PRESETS.find((item) => item.key === presetKey);
+    if (!preset) return;
+    setAdjustments((prev) => ({ ...prev, [activeId]: { ...preset.values } }));
+    setPresetMap((prev) => ({ ...prev, [activeId]: presetKey }));
+    setStatus(`Preset "${preset.label}" applied.`);
+  };
+
+  const applyAdjustmentsToSelection = () => {
+    if (!activeId) return;
+    const peers = selectedIds.filter((id) => id !== activeId);
+    if (peers.length === 0) return;
+    const current = adjustments[activeId] ?? DEFAULT_ADJUSTMENT;
+    setAdjustments((prev) => {
+      const next = { ...prev };
+      peers.forEach((peer) => {
+        next[peer] = { ...current };
+      });
+      return next;
+    });
+    setPresetMap((prev) => {
+      const next = { ...prev };
+      const presetKey = prev[activeId] ?? null;
+      peers.forEach((peer) => {
+        next[peer] = presetKey;
+      });
+      return next;
+    });
+    setStatus(`Synced adjustments to ${peers.length} image${peers.length === 1 ? "" : "s"}.`);
+  };
+
   const handleBulkFavorite = (favorite: boolean) => {
     if (!selectedIds.length) return;
     selectedIds.forEach((id) => {
