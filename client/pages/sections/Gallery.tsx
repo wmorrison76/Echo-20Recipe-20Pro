@@ -354,13 +354,11 @@ export default function GallerySection() {
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [urlText, setUrlText] = useState("");
   const [urlLoading, setUrlLoading] = useState(false);
-  const [lookbookNameDraft, setLookbookNameDraft] = useState("");
-  const [sidebarDropActive, setSidebarDropActive] = useState(false);
   const [adjustments, setAdjustments] = useState<Record<string, AdjustmentState>>({});
+  const [presetMap, setPresetMap] = useState<Record<string, string | null>>({});
   const [activeTool, setActiveTool] = useState<string>(CREATIVE_TOOLS[0].key);
   const [activeQuickAction, setActiveQuickAction] = useState<string | null>(null);
   const [visibleLayers, setVisibleLayers] = useState<Record<string, boolean>>({});
-  const [inspectorDropActive, setInspectorDropActive] = useState(false);
   const [overlayOpen, setOverlayOpen] = useState(false);
   const [galleryView, setGalleryView] = useState<"grid" | "tiles">("grid");
   const [activeTileBoardId, setActiveTileBoardId] = useState<string | null>(null);
