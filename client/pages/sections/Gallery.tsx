@@ -1090,287 +1090,49 @@ export default function GallerySection() {
           </div>
         </Dropzone>
 
-        <aside className={cn("flex h-full flex-col gap-5 overflow-hidden rounded-[32px] border p-6", detailSurface)}>
-          <div
-            className={cn(
-              "rounded-3xl border border-dashed px-4 py-3 text-[11px] uppercase tracking-[0.35em] transition",
-              inspectorDropActive
-                ? "border-sky-400/80 bg-sky-500/15 text-sky-100"
-                : "border-white/15 bg-black/25 text-slate-300",
-            )}
-            onDragEnter={(event) => {
-              event.preventDefault();
-              setInspectorDropActive(true);
-            }}
-            onDragOver={(event) => {
-              event.preventDefault();
-            }}
-            onDragLeave={(event) => {
-              event.preventDefault();
-              setInspectorDropActive(false);
-            }}
-            onDrop={(event) => {
-              event.preventDefault();
-              const files = Array.from(event.dataTransfer?.files || []).filter((file) =>
-                file.type.startsWith("image/"),
-              );
-              if (files.length) handleFiles(files);
-              setInspectorDropActive(false);
-            }}
-          >
-            Drop photos to edit instantly
-          </div>
-
-          <div className="flex items-center justify-between text-sm font-semibold uppercase tracking-[0.3em] opacity-70">
-            <span>Photo studio</span>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="rounded-full px-3 text-xs uppercase tracking-[0.3em]"
-              onClick={() => setOverlayOpen(true)}
-            >
-              Open studio
-            </Button>
-          </div>
-
-          {activeImage ? (
-            <div className="flex-1 space-y-4 overflow-y-auto pr-1">
-              <div className="overflow-hidden rounded-3xl border border-white/10 bg-black/40">
-                {activeImage.unsupported ? (
-                  <div className="flex aspect-[4/3] items-center justify-center text-xs uppercase tracking-[0.3em] text-slate-300">
-                    No preview available
-                  </div>
-                ) : (
-                  <img
-                    src={activeImage.dataUrl || activeImage.blobUrl}
-                    alt={activeImage.name}
-                    className="w-full object-cover"
-                    style={inspectorImageStyle}
-                  />
-                )}
-                <div className="flex items-center justify-between px-4 py-3">
-                  <div className="space-y-1">
-                    <div className="text-sm font-semibold text-slate-100">{activeImage.name}</div>
-                    <div className="text-[11px] uppercase tracking-[0.3em] text-slate-300">
-                      {(activeImage.tags || []).slice(0, 3).join(" · ") || "Untagged"}
-                    </div>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant={activeImage.favorite ? "default" : "ghost"}
-                    className={cn(
-                      "rounded-full px-4",
-                      activeImage.favorite ? "bg-amber-400 text-black" : "text-slate-200",
-                    )}
-                    onClick={() => toggleFavorite(activeImage.id)}
-                  >
-                    <Star className="mr-1.5 h-4 w-4" />
-                    {activeImage.favorite ? "Favorited" : "Favorite"}
-                  </Button>
-                </div>
-              </div>
-
-              <ControlSection title="Adjustments" defaultOpen>
-                <div className="space-y-3">
-                  {ADJUSTMENT_CONTROLS.map((control) => (
-                    <div key={control.key} className="space-y-1.5">
-                      <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-slate-300">
-                        <span>{control.label}</span>
-                        <span>{activeAdjustment[control.key]}</span>
-                      </div>
-                      <input
-                        type="range"
-                        min={control.min}
-                        max={control.max}
-                        step={control.step ?? 1}
-                        value={activeAdjustment[control.key]}
-                        onChange={(event) => updateAdjustment(control.key, Number(event.target.value))}
-                        className="h-1 w-full cursor-pointer appearance-none rounded-full bg-white/20"
-                      />
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-3 flex items-center justify-between text-xs">
-                  <Button variant="ghost" size="sm" className="rounded-full px-3" onClick={resetAdjustments}>
-                    Reset
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="rounded-full px-3"
-                    onClick={() => handleOpenLightbox(activeImage.id)}
-                  >
-                    View live
-                  </Button>
-                </div>
-              </ControlSection>
-
-              <div className="flex justify-end">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="rounded-full px-4"
-                  onClick={() => setOverlayOpen(true)}
-                >
-                  Launch studio overlay
-                </Button>
-              </div>
-
-              <ControlSection title="Creative tools">
-                <div className="grid grid-cols-2 gap-2">
-                  {CREATIVE_TOOLS.map((tool) => (
-                    <ToolButton
-                      key={tool.key}
-                      label={tool.label}
-                      icon={tool.icon}
-                      active={activeTool === tool.key}
-                      onClick={() => setActiveTool(tool.key)}
-                    />
-                  ))}
-                </div>
-                <div className="mt-3 text-[11px] uppercase tracking-[0.3em] text-slate-300">
-                  Active · {activeToolLabel}
-                </div>
-              </ControlSection>
-
-              <ControlSection title="Quick actions">
-                <div className="grid grid-cols-2 gap-2">
-                  {QUICK_ACTIONS.map((action) => (
-                    <QuickActionCard
-                      key={action.key}
-                      label={action.label}
-                      description={action.description}
-                      icon={action.icon}
-                      active={activeQuickAction === action.key}
-                      onClick={() => handleQuickAction(action)}
-                    />
-                  ))}
-                </div>
-              </ControlSection>
-
-              <ControlSection title="Layers">
-                <div className="mb-3 flex justify-end">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="rounded-full px-3"
-                    onClick={() => setStatus("New empty layer staged for compositing.")}
-                  >
-                    + Layer
-                  </Button>
-                </div>
-                <div className="space-y-1.5">
-                  {layerList.map((layer) => (
-                    <LayerListItem
-                      key={layer.key}
-                      layer={layer}
-                      visible={visibleLayers[layer.key] ?? true}
-                      onToggle={() => toggleLayerVisibility(layer.key)}
-                    />
-                  ))}
-                </div>
-              </ControlSection>
-
-              <ControlSection title="Metadata">
-                <div className="grid gap-3">
-                  <div className="space-y-2">
-                    <label className="text-[11px] uppercase tracking-[0.35em] text-slate-300">Filename</label>
-                    <input
-                      value={nameDraft}
-                      onChange={(event) => setNameDraft(event.target.value)}
-                      className="w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm focus:border-sky-400 focus:outline-none"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[11px] uppercase tracking-[0.35em] text-slate-300">Tags</label>
-                    <textarea
-                      value={tagDraft}
-                      onChange={(event) => setTagDraft(event.target.value)}
-                      className="h-20 w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm focus:border-sky-400 focus:outline-none"
-                      placeholder="comma separated"
-                    />
-                  </div>
-                </div>
-                <div className="mt-3 flex justify-between text-xs text-slate-300">
-                  <Button size="sm" className="rounded-full px-4" onClick={handleSaveMetadata}>
-                    Save metadata
-                  </Button>
-                  <button
-                    className="text-[11px] uppercase tracking-[0.35em] text-slate-400 transition hover:text-slate-200"
-                    onClick={() => {
-                      if (!activeImage) return;
-                      setNameDraft(activeImage.name);
-                      setTagDraft((activeImage.tags || []).join(", "));
-                      setStatus("Metadata fields reverted.");
-                    }}
-                  >
-                    Reset fields
-                  </button>
-                </div>
-              </ControlSection>
-
-              <ControlSection title="Look books">
-                <div className="space-y-2">
-                  {lookbooks.length === 0 && (
-                    <div className="rounded-xl border border-dashed border-white/20 px-3 py-3 text-xs opacity-70">
-                      Create a look book on the left to organise hero dishes.
-                    </div>
-                  )}
-                  {lookbooks.map((book) => {
-                    const hasImage = book.imageIds.includes(activeImage.id);
-                    return (
-                      <label
-                        key={book.id}
-                        className="flex items-center justify-between rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-xs"
-                      >
-                        <span className="flex items-center gap-2">
-                          <Folder className="h-3.5 w-3.5" /> {book.name}
-                        </span>
-                        <input
-                          type="checkbox"
-                          checked={hasImage}
-                          onChange={(event) =>
-                            handleToggleLookbookMembership(book.id, event.target.checked)
-                          }
-                        />
-                      </label>
-                    );
-                  })}
-                </div>
-              </ControlSection>
-
-              <ControlSection title="Import by URL">
-                <textarea
-                  value={urlText}
-                  onChange={(event) => setUrlText(event.target.value)}
-                  placeholder="https://example.com/photo.jpg"
-                  className="mt-1 h-24 w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-xs focus:border-sky-400 focus:outline-none"
-                />
-                <Button
-                  size="sm"
-                  disabled={urlLoading}
-                  className="mt-3 rounded-full px-4"
-                  onClick={handleAddImagesFromUrls}
-                >
-                  {urlLoading ? "Fetching…" : "Add images"}
-                </Button>
-              </ControlSection>
-
-              <div className="space-y-1 text-xs text-slate-300">
-                <div className="flex items-center gap-2">
-                  <Tag className="h-3.5 w-3.5" />
-                  {(activeImage.tags || []).join(" · ") || "No tags yet"}
-                </div>
-                <div>{new Date(Number(activeImage.createdAt || Date.now())).toLocaleString()}</div>
-                <div>{activeImage.type || "Unknown file type"}</div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-1 flex-col items-center justify-center gap-4 text-sm text-slate-200">
-              <div className="text-base font-semibold">Select an image to begin editing.</div>
-            </div>
-          )}
-        </aside>
+        <PhotoStudioPanel
+          surfaceClassName={detailSurface}
+          activeImage={activeImage}
+          adjustments={activeAdjustment}
+          adjustmentControls={ADJUSTMENT_CONTROLS}
+          adjustmentPresets={ADJUSTMENT_PRESETS}
+          activePresetKey={activePresetKey}
+          onApplyPreset={applyPresetToActive}
+          onResetAdjustments={resetAdjustments}
+          onUpdateAdjustment={updateAdjustment}
+          onApplyAdjustmentsToSelection={applyAdjustmentsToSelection}
+          canApplyAdjustmentsToSelection={canApplyAdjustmentsToSelection}
+          selectionCount={selectedIds.length}
+          creativeTools={CREATIVE_TOOLS}
+          quickActions={QUICK_ACTIONS}
+          activeTool={activeTool}
+          activeToolLabel={activeToolLabel}
+          onSelectTool={setActiveTool}
+          activeQuickAction={activeQuickAction}
+          onQuickAction={handleQuickAction}
+          layerList={layerList}
+          visibleLayers={visibleLayers}
+          onToggleLayer={toggleLayerVisibility}
+          onToggleFavorite={toggleFavorite}
+          inspectorImageStyle={inspectorImageStyle}
+          onOpenLightbox={handleOpenLightbox}
+          onLaunchStudio={() => setOverlayOpen(true)}
+          nameDraft={nameDraft}
+          onNameDraftChange={setNameDraft}
+          tagDraft={tagDraft}
+          onTagDraftChange={setTagDraft}
+          onSaveMetadata={handleSaveMetadata}
+          onResetMetadata={handleResetMetadata}
+          lookbooks={lookbooks}
+          onToggleLookbook={handleToggleLookbookMembership}
+          onDropFiles={handleFiles}
+          urlText={urlText}
+          onUrlTextChange={setUrlText}
+          urlLoading={urlLoading}
+          onImportByUrl={handleAddImagesFromUrls}
+          selectedIdsCount={selectedIds.length}
+          isActiveInSelection={isActiveInSelection}
+        />
       </div>
 
       {status && (
