@@ -105,6 +105,8 @@ const DishAssemblyWorkspace: React.FC = () => {
     defaultPosMappings(),
   );
   const [posConnectOpen, setPosConnectOpen] = useState(false);
+  const [selectedStationIds, setSelectedStationIds] = useState<string[]>([]);
+  const [selectedPrinterIds, setSelectedPrinterIds] = useState<string[]>([]);
   const [activeComponentId, setActiveComponentId] = useState<string | null>(
     null,
   );
