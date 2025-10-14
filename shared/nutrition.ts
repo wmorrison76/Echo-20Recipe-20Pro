@@ -793,29 +793,101 @@ export type NutritionMatch = {
 
 const ALL_KEYS = Object.keys(NUTRITION_DATABASE);
 
+const KEY_TOKEN_CACHE = new Map<string, string[]>();
+const NON_ALPHANUMERIC = /[^a-z0-9\s]/g;
+
+function normalizeIngredientForMatching(raw: string): string {
+  if (!raw) return "";
+  const ascii = raw
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "");
+  return ascii
+    .toLowerCase()
+    .replace(/\([^)]*\)/g, " ")
+    .replace(/[%®™]/g, " ")
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/\bno\.\s*\d+\b/g, " ")
+    .replace(/\b\d+%/g, " ")
+    .replace(/\d+\s?(?:st|nd|rd|th)\b/g, " ")
+    .replace(/[-_/]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function tokenizeIngredient(normalized: string): string[] {
+  if (!normalized) return [];
+  const cleaned = normalized.replace(NON_ALPHANUMERIC, " ");
+  const tokens = cleaned
+    .split(/\s+/)
+    .map((token) => token.trim())
+    .filter((token) => token && !STOP_WORDS.has(token));
+  return Array.from(new Set(tokens));
+}
+
+function getKeyTokens(key: string): string[] {
+  const cached = KEY_TOKEN_CACHE.get(key);
+  if (cached) return cached;
+  const tokens = key.split(/[_\s]+/).filter(Boolean);
+  KEY_TOKEN_CACHE.set(key, tokens);
+  return tokens;
+}
+
+type TokenMatch = { key: string; score: number; confidence: number };
+
+function findBestTokenMatch(tokens: string[]): TokenMatch | null {
+  if (!tokens.length) return null;
+  const uniqueTokens = Array.from(new Set(tokens));
+  let best: TokenMatch | null = null;
+  for (const key of ALL_KEYS) {
+    const keyTokens = getKeyTokens(key);
+    let directMatches = 0;
+    let partialMatches = 0;
+    for (const token of uniqueTokens) {
+      if (keyTokens.includes(token)) {
+        directMatches++;
+      } else if (
+        keyTokens.some(
+          (keyToken) => keyToken.startsWith(token) || token.startsWith(keyToken),
+        )
+      ) {
+        partialMatches++;
+      }
+    }
+    if (!directMatches && partialMatches <= 1) continue;
+    const coverage = keyTokens.length ? directMatches / keyTokens.length : 0;
+    const tokenCoverage = uniqueTokens.length ? directMatches / uniqueTokens.length : 0;
+    const score = directMatches * 2 + partialMatches * 0.6 + coverage + tokenCoverage;
+    if (!best || score > best.score) {
+      const confidenceBase =
+        0.45 + coverage * 0.3 + tokenCoverage * 0.3 + (directMatches > 1 ? 0.12 : 0);
+      best = {
+        key,
+        score,
+        confidence: Number(Math.min(0.98, confidenceBase).toFixed(3)),
+      };
+    }
+  }
+  if (best && best.score >= 1.4) {
+    return best;
+  }
+  return null;
+}
+
 export function resolveIngredientKey(raw: string): NutritionMatch {
-  const normalized = raw.toLowerCase();
+  const normalized = normalizeIngredientForMatching(raw);
+  const textForRegex = normalized || raw.toLowerCase();
   for (const [pattern, key] of INGREDIENT_SYNONYMS) {
-    if (pattern.test(normalized)) {
+    if (pattern.test(textForRegex)) {
       return { key, normalized: key, confidence: 1 };
     }
   }
-  const stripped = normalized
-    .replace(/[^a-z0-9\s]/g, " ")
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((token) => token.trim());
-  const filtered = stripped.filter((token) => !STOP_WORDS.has(token));
-  if (filtered.length) {
-    for (const token of filtered) {
-      const exact = ALL_KEYS.find((k) => k === token || k.endsWith(`_${token}`));
-      if (exact) return { key: exact, normalized: exact, confidence: 0.7 };
-    }
-    for (const token of filtered) {
-      const partial = ALL_KEYS.find((k) => k.includes(token));
-      if (partial) return { key: partial, normalized: partial, confidence: 0.45 };
+  const tokens = tokenizeIngredient(textForRegex);
+  if (tokens.length) {
+    const best = findBestTokenMatch(tokens);
+    if (best) {
+      return { key: best.key, normalized: best.key, confidence: best.confidence };
     }
   }
-  const fallbackToken = stripped[0] ?? raw.trim().toLowerCase();
+  const fallbackToken = tokens[0] ?? (normalized || raw.trim().toLowerCase());
   return { key: null, normalized: fallbackToken, confidence: 0 };
 }
