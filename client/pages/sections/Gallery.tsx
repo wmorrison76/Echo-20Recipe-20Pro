@@ -701,8 +701,10 @@ export default function GallerySection() {
     if (!activeImage) return;
     if (enabled) {
       addImagesToLookBook(lookbookId, [activeImage.id]);
+      setStatus("Image added to look book.");
     } else {
       removeImagesFromLookBook(lookbookId, [activeImage.id]);
+      setStatus("Image removed from look book.");
     }
   };
 
