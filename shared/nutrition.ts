@@ -62,6 +62,8 @@ export const NUTRITION_DATABASE: Record<string, NutritionProfile> = {
   milk_whole: makeProfile(61, 3.3, 1.9, 0.1, 4.8, 0, 4.8, 3.2, 44),
   milk_2_percent: makeProfile(50, 2, 1.3, 0.1, 5, 0, 5, 3.4, 46),
   milk_skim: makeProfile(34, 0.1, 0.1, 0, 5, 0, 5, 3.4, 51),
+  buttermilk: makeProfile(40, 1, 0.6, 0, 4.8, 0, 4.8, 3.3, 52),
+  half_and_half: makeProfile(123, 10, 6.2, 0.4, 9.7, 0, 9.3, 3.5, 125),
   cream_heavy: makeProfile(340, 36, 23, 1.5, 2.8, 0, 2.8, 2.1, 40),
   yogurt_plain: makeProfile(59, 3.3, 2.1, 0.1, 4.7, 0, 4.7, 10, 36),
   sour_cream: makeProfile(214, 20, 12.4, 0.8, 4.6, 0, 3.4, 2.4, 52),
