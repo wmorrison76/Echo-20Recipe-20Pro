@@ -583,6 +583,7 @@ export const INGREDIENT_SYNONYMS: Array<[RegExp, string]> = [
   [/\bdark chocolate\b/i, "chocolate_dark"],
   [/\bmilk chocolate\b/i, "chocolate_milk"],
   [/\bvanilla extract\b/i, "vanilla_extract"],
+  [/\bwater\b|\bice water\b|\bfiltered water\b/i, "water"],
   [/\bunsalted butter\b|\bbutter\b/i, "butter_unsalted"],
   [/\bmargarine\b/i, "margarine"],
   [/\bextra virgin olive oil\b|\bolive oil\b/i, "oil_olive"],
