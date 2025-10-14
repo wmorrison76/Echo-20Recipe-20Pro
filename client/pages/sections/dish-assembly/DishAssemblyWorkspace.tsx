@@ -610,6 +610,142 @@ const DishAssemblyWorkspace: React.FC = () => {
                 </div>
               </div>
               <div className="space-y-4">
+                <div className="space-y-2 rounded-xl border border-primary/30 bg-background/80 p-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground">
+                      Station Routing
+                    </div>
+                    <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.28em] text-muted-foreground">
+                      <span className="hidden md:inline">Shift-click to multi-select</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleClearStations}
+                        disabled={!selectedStationIds.length}
+                        className="h-7 rounded-full px-3"
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {stations.map((station) => {
+                      const isSelected = selectedStationIds.includes(station.id);
+                      const categoryLabel = station.category.replace(/-/g, " ");
+                      return (
+                        <Button
+                          key={station.id}
+                          type="button"
+                          variant={isSelected ? "default" : "outline"}
+                          size="sm"
+                          onClick={(event) => handleStationToggle(station.id, event.shiftKey)}
+                          className={cn(
+                            "h-auto min-w-[140px] justify-start gap-2 rounded-full border-primary/30 px-3 py-2 text-left shadow-sm transition",
+                            isSelected
+                              ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                              : "bg-background/80 hover:bg-primary/10",
+                          )}
+                        >
+                          <div className="flex flex-col text-left">
+                            <span className="text-sm font-semibold">{station.name}</span>
+                            <span className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">
+                              {categoryLabel}
+                            </span>
+                          </div>
+                        </Button>
+                      );
+                    })}
+                  </div>
+                  {selectedStationDetails.length ? (
+                    <div className="space-y-3 rounded-xl border border-primary/20 bg-muted/20 p-3 text-sm">
+                      {selectedStationDetails.map((station) => (
+                        <div key={station.id} className="space-y-1">
+                          <div className="flex flex-wrap items-center gap-2 font-semibold">
+                            <span>{station.name}</span>
+                            <Badge variant="outline" className="uppercase tracking-[0.35em]">
+                              {station.category.replace(/-/g, " ")}
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground">{station.description}</p>
+                          {station.defaultPrinters.length ? (
+                            <div className="text-xs text-muted-foreground">
+                              Suggested printers:{" "}
+                              {station.defaultPrinters
+                                .map((printerId) =>
+                                  printers.find((printer) => printer.id === printerId)?.name,
+                                )
+                                .filter(Boolean)
+                                .join(", ")}
+                            </div>
+                          ) : null}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="rounded-xl border border-dashed border-primary/30 p-3 text-xs text-muted-foreground">
+                      Select at least one station to map the dish workflow.
+                    </div>
+                  )}
+                  <Separator className="bg-primary/20" />
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground">
+                      Chit Printers
+                    </div>
+                    <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.28em] text-muted-foreground">
+                      <span className="hidden md:inline">Shift-click to multi-select</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleClearPrinters}
+                        disabled={!selectedPrinterIds.length}
+                        className="h-7 rounded-full px-3"
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {printers.map((printer) => {
+                      const isSelected = selectedPrinterIds.includes(printer.id);
+                      const isRecommended = recommendedPrinterSet.has(printer.id);
+                      return (
+                        <Button
+                          key={printer.id}
+                          type="button"
+                          variant={isSelected ? "default" : "outline"}
+                          size="sm"
+                          onClick={(event) => handlePrinterToggle(printer.id, event.shiftKey)}
+                          className={cn(
+                            "h-auto min-w-[160px] justify-start gap-2 rounded-full border-primary/30 px-3 py-2 text-left shadow-sm transition",
+                            isSelected
+                              ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                              : "bg-background/80 hover:bg-primary/10",
+                            isRecommended && !isSelected && "border-dashed border-primary/60 text-primary",
+                          )}
+                        >
+                          <div className="flex flex-col text-left">
+                            <span className="text-sm font-semibold">{printer.name}</span>
+                            <span className="text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
+                              {printer.technology} • {printer.recommendedUse}
+                            </span>
+                          </div>
+                        </Button>
+                      );
+                    })}
+                  </div>
+                  {selectedPrinterDetails.length ? (
+                    <div className="rounded-xl border border-primary/20 bg-muted/20 p-3 text-xs text-muted-foreground">
+                      Assigned printers:{" "}
+                      {selectedPrinterDetails.map((printer) => printer.name).join(", ")}
+                    </div>
+                  ) : (
+                    <div className="rounded-xl border border-dashed border-primary/30 p-3 text-xs text-muted-foreground">
+                      Choose printers to capture routing instructions for POS setup.
+                    </div>
+                  )}
+                </div>
                 <div className="space-y-1">
                   <div className="text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground">
                     Menu Description
