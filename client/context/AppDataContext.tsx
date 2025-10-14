@@ -178,6 +178,8 @@ type AppData = {
   addImagesToLookBook: (id: string, imageIds: string[]) => void;
   removeImagesFromLookBook: (id: string, imageIds: string[]) => void;
   exportAllZip: (language?: LanguageCode) => Promise<void>;
+  workflows: DishWorkflowPlan[];
+  inspections: InspectionReport[];
   collections: RecipeCollection[];
   createCollection: (input: {
     name: string;
@@ -196,6 +198,15 @@ type AppData = {
   removeRecipeFromCollection: (collectionId: string, recipeId: string) => void;
   setCollectionRecipes: (collectionId: string, recipeIds: string[]) => void;
   getCollectionById: (id: string) => RecipeCollection | undefined;
+  addWorkflowPlan: (plan: DishWorkflowPlan) => void;
+  updateWorkflowPlan: (id: string, patch: Partial<DishWorkflowPlan>) => void;
+  deleteWorkflowPlan: (id: string) => void;
+  addInspectionReport: (report: InspectionReport) => void;
+  deleteInspectionReport: (id: string) => void;
+  getWorkflowById: (id: string) => DishWorkflowPlan | undefined;
+  getInspectionById: (id: string) => InspectionReport | undefined;
+  listStations: () => typeof KITCHEN_STATIONS;
+  listPrinters: () => typeof CHIT_PRINTERS;
 };
 
 const CTX = createContext<AppData | null>(null);
