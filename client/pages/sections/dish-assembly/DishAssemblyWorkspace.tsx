@@ -327,6 +327,8 @@ const DishAssemblyWorkspace: React.FC = () => {
   }, []);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const lastStationIndexRef = useRef<number | null>(null);
+  const lastPrinterIndexRef = useRef<number | null>(null);
 
   const activeRecipe = useMemo(() => {
     if (!activeComponentId) return null;
