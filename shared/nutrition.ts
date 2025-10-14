@@ -42,6 +42,8 @@ export const NUTRITION_DATABASE: Record<string, NutritionProfile> = {
   sugar_powdered: makeProfile(389, 0, 0, 0, 99.8, 0, 97.7, 0, 1),
   honey: makeProfile(304, 0, 0, 0, 82.4, 0.2, 82.1, 0.3, 4),
   maple_syrup: makeProfile(260, 0.1, 0, 0, 67, 0, 60.5, 0, 12),
+  corn_syrup: makeProfile(286, 0, 0, 0, 77, 0, 77, 0, 18),
+  molasses: makeProfile(290, 0.1, 0, 0, 74.7, 0, 74.7, 0, 37),
   cocoa_powder: makeProfile(228, 13.7, 8.1, 0, 57.9, 37, 1.8, 19.6, 21),
   chocolate_dark: makeProfile(546, 31, 19, 0, 61, 7, 48, 5, 20),
   chocolate_milk: makeProfile(535, 30.7, 18, 0.3, 58.4, 3.4, 52.8, 7.6, 79),
