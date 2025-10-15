@@ -550,7 +550,8 @@ const isFormPristine = useMemo(() => {
   prepTime,
 ]);
 
-const clearRecipeWorkspace = useCallback(() => {
+const clearRecipeWorkspace = useCallback(
+  (options?: { preserveSidebar?: boolean }) => {
   try {
     localStorage.removeItem("recipe:draft");
   } catch {}
