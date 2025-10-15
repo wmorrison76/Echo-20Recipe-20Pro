@@ -3583,20 +3583,73 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                 >
                   NUTRITION
                 </h3>
-                {nutrition && (
-                  <div className="flex gap-2 text-xs">
-                    <button
-                      onClick={() => setNutritionPerServing(true)}
-                      className={`${nutritionPerServing ? "bg-blue-600 text-white" : ""} px-2 py-1 rounded border`}
-                    >
-                      Per Serving
-                    </button>
-                    <button
-                      onClick={() => setNutritionPerServing(false)}
-                      className={`${!nutritionPerServing ? "bg-blue-600 text-white" : ""} px-2 py-1 rounded border`}
-                    >
-                      Whole Recipe
-                    </button>
+                {nutritionDisplay && (
+                  <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-1">
+                      <Button
+                        type="button"
+                        variant={nutritionPerServing ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setNutritionPerServing(true)}
+                        className="px-3 uppercase tracking-[0.18em]"
+                      >
+                        Per Serving
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={!nutritionPerServing ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setNutritionPerServing(false)}
+                        className="px-3 uppercase tracking-[0.18em]"
+                      >
+                        Whole Recipe
+                      </Button>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="uppercase tracking-[0.28em] text-muted-foreground">
+                        Servings
+                      </span>
+                      <div
+                        className={`flex items-center gap-1 rounded-lg border px-1 py-0.5 ${
+                          isDarkMode
+                            ? "border-cyan-500/40 bg-cyan-500/10"
+                            : "border-slate-300 bg-white/70"
+                        }`}
+                      >
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={() => setPortionCount(Math.max(1, servingsForLabel - 1))}
+                          aria-label="Decrease servings"
+                        >
+                          <Minus className="h-3.5 w-3.5" aria-hidden />
+                        </Button>
+                        <input
+                          type="number"
+                          min={1}
+                          value={servingsForLabel}
+                          onChange={(event) => {
+                            const next = Math.max(1, Number(event.target.value));
+                            setPortionCount(next);
+                          }}
+                          className={`w-16 border-0 bg-transparent text-center text-sm font-semibold outline-none ${
+                            isDarkMode ? "text-cyan-100" : "text-slate-800"
+                          }`}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={() => setPortionCount(Math.max(1, servingsForLabel + 1))}
+                          aria-label="Increase servings"
+                        >
+                          <Plus className="h-3.5 w-3.5" aria-hidden />
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
