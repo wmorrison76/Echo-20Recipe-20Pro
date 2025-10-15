@@ -6,6 +6,7 @@ import InventorySuppliesWorkspace from "./sections/saas/InventorySuppliesWorkspa
 import NutritionAllergensWorkspace from "./sections/saas/NutritionAllergensWorkspace";
 import HaccpComplianceWorkspace from "./sections/saas/HaccpComplianceWorkspace";
 import ServerNotesSection from "./sections/server-notes";
+import OperationsDocsSection from "./sections/operations-docs";
 import DishAssemblySection from "./sections/dish-assembly";
 import ProductionSection from "./sections/Production";
 import PurchasingReceivingSection from "./sections/purchasing-receiving";
@@ -160,6 +161,9 @@ function IndexContent() {
             </TabsContent>
             <TabsContent value="server-notes">
               <ServerNotesSection />
+            </TabsContent>
+            <TabsContent value="operations-docs">
+              <OperationsDocsSection />
             </TabsContent>
             <TabsContent value="production">
               <ProductionSection />
