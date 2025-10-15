@@ -1637,7 +1637,7 @@ export default function MenuDesignStudioSection() {
         setEditingDraft(null);
       }
     },
-    [elements, editingId],
+    [elements, editingId, setEditingDraft],
   );
 
   const handleApplyTemplate = useCallback(
