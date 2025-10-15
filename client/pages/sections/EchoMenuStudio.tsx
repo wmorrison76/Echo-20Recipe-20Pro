@@ -2673,3 +2673,528 @@ function DividerControls({ element, onChange }: DividerControlsProps) {
     </div>
   );
 }
+
+type FloatingToolbarPanelProps = {
+  containerRef: React.RefObject<HTMLDivElement>;
+  state: FloatingPanelState;
+  onStateChange: (changes: Partial<FloatingPanelState>) => void;
+  onTogglePin: () => void;
+  onAddHeading: () => void;
+  onAddBody: () => void;
+  onAddMenuItem: () => void;
+  onAddDivider: () => void;
+  onAddShape: (shape: "rectangle" | "ellipse") => void;
+  onAddImage: (url: string, label: string) => void;
+  canvasSettings: CanvasSettings;
+  onToggleGrid: () => void;
+  onToggleColumns: () => void;
+  onToggleMargins: () => void;
+  selectedElement: DesignerElement | null;
+  onAlignChange: (align: "left" | "center" | "right") => void;
+  onAdjustFontSize: (delta: number) => void;
+  onAdjustLetterSpacing: (delta: number) => void;
+  onAdjustLineHeight: (delta: number) => void;
+  onDuplicateSelected: () => void;
+  onDeleteSelected: () => void;
+};
+
+function FloatingToolbarPanel({
+  containerRef,
+  state,
+  onStateChange,
+  onTogglePin,
+  onAddHeading,
+  onAddBody,
+  onAddMenuItem,
+  onAddDivider,
+  onAddShape,
+  onAddImage,
+  canvasSettings,
+  onToggleGrid,
+  onToggleColumns,
+  onToggleMargins,
+  selectedElement,
+  onAlignChange,
+  onAdjustFontSize,
+  onAdjustLetterSpacing,
+  onAdjustLineHeight,
+  onDuplicateSelected,
+  onDeleteSelected,
+}: FloatingToolbarPanelProps) {
+  const dragData = useRef<{
+    startX: number;
+    startY: number;
+    originX: number;
+    originY: number;
+    bounds: DOMRect;
+  } | null>(null);
+
+  const handlePointerMove = useCallback(
+    (event: PointerEvent) => {
+      if (!dragData.current) return;
+      const { startX, startY, originX, originY, bounds } = dragData.current;
+      const deltaX = event.clientX - startX;
+      const deltaY = event.clientY - startY;
+      const maxX = Math.max(0, bounds.width - 220);
+      const maxY = Math.max(0, bounds.height - 180);
+      onStateChange({
+        x: clamp(originX + deltaX, 0, maxX),
+        y: clamp(originY + deltaY, 0, maxY),
+      });
+    },
+    [onStateChange],
+  );
+
+  const handlePointerUp = useCallback(() => {
+    dragData.current = null;
+    window.removeEventListener("pointermove", handlePointerMove);
+    window.removeEventListener("pointerup", handlePointerUp);
+  }, [handlePointerMove]);
+
+  const handlePointerDown = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if (state.pinned || event.button !== 0) return;
+      const container = containerRef.current;
+      if (!container) return;
+      const bounds = container.getBoundingClientRect();
+      dragData.current = {
+        startX: event.clientX,
+        startY: event.clientY,
+        originX: state.x,
+        originY: state.y,
+        bounds,
+      };
+      window.addEventListener("pointermove", handlePointerMove);
+      window.addEventListener("pointerup", handlePointerUp);
+      event.preventDefault();
+    },
+    [containerRef, handlePointerMove, handlePointerUp, state.pinned, state.x, state.y],
+  );
+
+  useEffect(() => {
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+    };
+  }, [handlePointerMove, handlePointerUp]);
+
+  const hasSelection = Boolean(selectedElement);
+  const canAdjustTypography =
+    hasSelection &&
+    selectedElement &&
+    ["heading", "subheading", "body", "menu-item"].includes(selectedElement.type);
+
+  return (
+    <div
+      className="pointer-events-auto absolute z-40 w-[260px] rounded-2xl border border-slate-200/70 bg-white/95 p-3 shadow-2xl backdrop-blur dark:border-slate-800/60 dark:bg-slate-900/80"
+      style={{ transform: `translate(${state.x}px, ${state.y}px)` }}
+    >
+      <div className="flex items-center justify-between">
+        <div
+          className={cn(
+            "flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-slate-200",
+            state.pinned ? "cursor-default" : "cursor-move",
+          )}
+          onPointerDown={handlePointerDown}
+        >
+          <Move className="h-3.5 w-3.5" aria-hidden />
+          Toolbox
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
+          onClick={onTogglePin}
+          title={state.pinned ? "Unpin toolbar" : "Pin toolbar"}
+          aria-label={state.pinned ? "Unpin toolbar" : "Pin toolbar"}
+        >
+          {state.pinned ? (
+            <Pin className="h-4 w-4" aria-hidden />
+          ) : (
+            <PinOff className="h-4 w-4" aria-hidden />
+          )}
+        </Button>
+      </div>
+
+      <div className="mt-3 space-y-3 text-xs">
+        <div className="space-y-2">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+            Quick add
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <Button variant="outline" size="sm" onClick={onAddHeading}>
+              <Type className="mr-2 h-3.5 w-3.5" aria-hidden />
+              Heading
+            </Button>
+            <Button variant="outline" size="sm" onClick={onAddBody}>
+              <Type className="mr-2 h-3.5 w-3.5" aria-hidden />
+              Body copy
+            </Button>
+            <Button variant="outline" size="sm" onClick={onAddMenuItem}>
+              <Ruler className="mr-2 h-3.5 w-3.5" aria-hidden />
+              Menu item
+            </Button>
+            <Button variant="outline" size="sm" onClick={onAddDivider}>
+              <LayoutGrid className="mr-2 h-3.5 w-3.5" aria-hidden />
+              Divider
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onAddShape("rectangle")}
+            >
+              <Square className="mr-2 h-3.5 w-3.5" aria-hidden />
+              Rectangle
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onAddShape("ellipse")}
+            >
+              <Circle className="mr-2 h-3.5 w-3.5" aria-hidden />
+              Ellipse
+            </Button>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+            Canvas helpers
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            <Button
+              variant={canvasSettings.showGrid ? "default" : "outline"}
+              size="icon"
+              className="h-9 w-full"
+              onClick={onToggleGrid}
+              title="Toggle grid"
+              aria-label="Toggle grid"
+            >
+              <Grid3X3 className="h-4 w-4" aria-hidden />
+            </Button>
+            <Button
+              variant={canvasSettings.showColumns ? "default" : "outline"}
+              size="icon"
+              className="h-9 w-full"
+              onClick={onToggleColumns}
+              title="Toggle columns"
+              aria-label="Toggle columns"
+            >
+              <LayoutGrid className="h-4 w-4" aria-hidden />
+            </Button>
+            <Button
+              variant={canvasSettings.showMargins ? "default" : "outline"}
+              size="icon"
+              className="h-9 w-full"
+              onClick={onToggleMargins}
+              title="Toggle margins"
+              aria-label="Toggle margins"
+            >
+              <Square className="h-4 w-4" aria-hidden />
+            </Button>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+            Typography
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-full"
+              disabled={!canAdjustTypography}
+              onClick={() => onAdjustFontSize(-2)}
+              title="Decrease font size"
+              aria-label="Decrease font size"
+            >
+              <Minus className="h-4 w-4" aria-hidden />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-full"
+              disabled={!canAdjustTypography}
+              onClick={() => onAdjustFontSize(2)}
+              title="Increase font size"
+              aria-label="Increase font size"
+            >
+              <Plus className="h-4 w-4" aria-hidden />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-full"
+              disabled={!canAdjustTypography}
+              onClick={() => onAdjustLetterSpacing(0.2)}
+              title="Loosen letter spacing"
+              aria-label="Loosen letter spacing"
+            >
+              <BetweenHorizontalStart className="h-4 w-4" aria-hidden />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-full"
+              disabled={!canAdjustTypography}
+              onClick={() => onAdjustLetterSpacing(-0.2)}
+              title="Tighten letter spacing"
+              aria-label="Tighten letter spacing"
+            >
+              <BetweenHorizontalStart className="h-4 w-4 rotate-180" aria-hidden />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-full"
+              disabled={!canAdjustTypography}
+              onClick={() => onAdjustLineHeight(0.1)}
+              title="Increase line height"
+              aria-label="Increase line height"
+            >
+              <BetweenVerticalStart className="h-4 w-4" aria-hidden />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-full"
+              disabled={!canAdjustTypography}
+              onClick={() => onAdjustLineHeight(-0.1)}
+              title="Decrease line height"
+              aria-label="Decrease line height"
+            >
+              <BetweenVerticalStart className="h-4 w-4 rotate-180" aria-hidden />
+            </Button>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            <Button
+              variant={selectedElement?.align === "left" ? "default" : "outline"}
+              size="icon"
+              className="h-9 w-full"
+              disabled={!canAdjustTypography}
+              onClick={() => onAlignChange("left")}
+              title="Align left"
+              aria-label="Align left"
+            >
+              <AlignLeft className="h-4 w-4" aria-hidden />
+            </Button>
+            <Button
+              variant={selectedElement?.align === "center" ? "default" : "outline"}
+              size="icon"
+              className="h-9 w-full"
+              disabled={!canAdjustTypography}
+              onClick={() => onAlignChange("center")}
+              title="Align center"
+              aria-label="Align center"
+            >
+              <AlignCenter className="h-4 w-4" aria-hidden />
+            </Button>
+            <Button
+              variant={selectedElement?.align === "right" ? "default" : "outline"}
+              size="icon"
+              className="h-9 w-full"
+              disabled={!canAdjustTypography}
+              onClick={() => onAlignChange("right")}
+              title="Align right"
+              aria-label="Align right"
+            >
+              <AlignRight className="h-4 w-4" aria-hidden />
+            </Button>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+            Selection
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!hasSelection}
+              onClick={onDuplicateSelected}
+            >
+              <Copy className="mr-2 h-3.5 w-3.5" aria-hidden />
+              Duplicate
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              disabled={!hasSelection}
+              onClick={onDeleteSelected}
+            >
+              <Trash2 className="mr-2 h-3.5 w-3.5" aria-hidden />
+              Delete
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type FloatingLayersPanelProps = {
+  containerRef: React.RefObject<HTMLDivElement>;
+  state: FloatingPanelState;
+  onStateChange: (changes: Partial<FloatingPanelState>) => void;
+  onTogglePin: () => void;
+  layers: DesignerElement[];
+  selectedId: string | null;
+  onSelectLayer: (id: string) => void;
+  onLayerShift: (id: string, direction: "forward" | "backward") => void;
+};
+
+function FloatingLayersPanel({
+  containerRef,
+  state,
+  onStateChange,
+  onTogglePin,
+  layers,
+  selectedId,
+  onSelectLayer,
+  onLayerShift,
+}: FloatingLayersPanelProps) {
+  const dragData = useRef<{
+    startX: number;
+    startY: number;
+    originX: number;
+    originY: number;
+    bounds: DOMRect;
+  } | null>(null);
+
+  const handlePointerMove = useCallback(
+    (event: PointerEvent) => {
+      if (!dragData.current) return;
+      const { startX, startY, originX, originY, bounds } = dragData.current;
+      const deltaX = event.clientX - startX;
+      const deltaY = event.clientY - startY;
+      const maxX = Math.max(0, bounds.width - 220);
+      const maxY = Math.max(0, bounds.height - 220);
+      onStateChange({
+        x: clamp(originX + deltaX, 0, maxX),
+        y: clamp(originY + deltaY, 0, maxY),
+      });
+    },
+    [onStateChange],
+  );
+
+  const handlePointerUp = useCallback(() => {
+    dragData.current = null;
+    window.removeEventListener("pointermove", handlePointerMove);
+    window.removeEventListener("pointerup", handlePointerUp);
+  }, [handlePointerMove]);
+
+  const handlePointerDown = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if (state.pinned || event.button !== 0) return;
+      const container = containerRef.current;
+      if (!container) return;
+      const bounds = container.getBoundingClientRect();
+      dragData.current = {
+        startX: event.clientX,
+        startY: event.clientY,
+        originX: state.x,
+        originY: state.y,
+        bounds,
+      };
+      window.addEventListener("pointermove", handlePointerMove);
+      window.addEventListener("pointerup", handlePointerUp);
+      event.preventDefault();
+    },
+    [containerRef, handlePointerMove, handlePointerUp, state.pinned, state.x, state.y],
+  );
+
+  useEffect(() => {
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+    };
+  }, [handlePointerMove, handlePointerUp]);
+
+  return (
+    <div
+      className="pointer-events-auto absolute z-30 w-[220px] rounded-2xl border border-slate-200/70 bg-white/95 p-3 shadow-2xl backdrop-blur dark:border-slate-800/60 dark:bg-slate-900/80"
+      style={{ transform: `translate(${state.x}px, ${state.y}px)` }}
+    >
+      <div className="flex items-center justify-between">
+        <div
+          className={cn(
+            "flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-slate-200",
+            state.pinned ? "cursor-default" : "cursor-move",
+          )}
+          onPointerDown={handlePointerDown}
+        >
+          <Layers className="h-3.5 w-3.5" aria-hidden />
+          Layers
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
+          onClick={onTogglePin}
+          title={state.pinned ? "Unpin layers" : "Pin layers"}
+          aria-label={state.pinned ? "Unpin layers" : "Pin layers"}
+        >
+          {state.pinned ? (
+            <Pin className="h-4 w-4" aria-hidden />
+          ) : (
+            <PinOff className="h-4 w-4" aria-hidden />
+          )}
+        </Button>
+      </div>
+
+      <ScrollArea className="mt-3 h-[200px] pr-2">
+        <div className="space-y-2 text-xs">
+          {layers.map((layer) => {
+            const active = layer.id === selectedId;
+            return (
+              <div
+                key={layer.id}
+                className={cn(
+                  "flex items-center justify-between rounded-xl border px-3 py-2 text-left transition",
+                  active
+                    ? "border-cyan-400 bg-cyan-500/10"
+                    : "border-slate-200 bg-white hover:border-cyan-400 dark:border-slate-800 dark:bg-slate-900/70",
+                )}
+              >
+                <button
+                  type="button"
+                  onClick={() => onSelectLayer(layer.id)}
+                  className="flex flex-1 flex-col text-left"
+                >
+                  <span className="text-xs font-semibold text-foreground">
+                    {layer.name}
+                  </span>
+                  <span className="text-[10px] uppercase tracking-[0.34em] text-muted-foreground">
+                    {layer.type}
+                  </span>
+                </button>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={() => onLayerShift(layer.id, "forward")}
+                    aria-label="Bring layer forward"
+                  >
+                    <ChevronUp className="h-3.5 w-3.5" aria-hidden />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={() => onLayerShift(layer.id, "backward")}
+                    aria-label="Send layer backward"
+                  >
+                    <ChevronDown className="h-3.5 w-3.5" aria-hidden />
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </ScrollArea>
+    </div>
+  );
+}
