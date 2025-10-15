@@ -1865,6 +1865,9 @@ export default function MenuDesignStudioSection() {
       ) {
         return;
       }
+      if (selectedElement.locked) {
+        return;
+      }
       const nextSize = clamp((selectedElement.fontSize ?? 16) + delta, 6, 240);
       updateElement(selectedElement.id, {
         fontSize: nextSize,
