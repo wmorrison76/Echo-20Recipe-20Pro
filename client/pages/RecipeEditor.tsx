@@ -524,10 +524,22 @@ export default function RecipeEditor() {
               <CardContent className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
                   <Labeled label="Recipe Name">
-                    <Input value={localTitle} onChange={(e) => setLocalTitle(e.target.value)} placeholder="House Burger" />
+                    <Input
+                      value={localTitle}
+                      onChange={(e) => setLocalTitle(e.target.value)}
+                      placeholder="House Burger"
+                      suggestionScope="recipes"
+                      minSuggestionQueryLength={1}
+                    />
                   </Labeled>
                   <Labeled label="Allergens">
-                    <Input value={allergens} onChange={(e) => handleAllergensInputChange(e.target.value)} placeholder="Gluten, Dairy" />
+                    <Input
+                      value={allergens}
+                      onChange={(e) => handleAllergensInputChange(e.target.value)}
+                      placeholder="Gluten, Dairy"
+                      suggestionScope="tags"
+                      minSuggestionQueryLength={1}
+                    />
                   </Labeled>
                   <Labeled label="Cook Time">
                     <Input value={cookTime} onChange={(e) => setCookTime(e.target.value)} placeholder="2:30" />
