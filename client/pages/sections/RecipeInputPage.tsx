@@ -3663,11 +3663,11 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
               {nutritionError && (
                 <div className="text-red-500 text-sm">{nutritionError}</div>
               )}
-              {nutrition && (
+              {nutritionDisplay && (
                 <div className="flex flex-col md:flex-row gap-3">
                   <NutritionLabel
-                    data={nutrition}
-                    servings={portionCount || 1}
+                    data={nutritionDisplay}
+                    servings={servingsForLabel}
                     perServing={nutritionPerServing}
                   />
                   <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-3 text-sm self-start">
@@ -3677,7 +3677,7 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                     </div>
                     <div>
                       <span className="font-semibold">Servings:</span>{" "}
-                      {portionCount}
+                      {servingsForLabel}
                     </div>
                     <div>
                       <span className="font-semibold">Unit:</span> {portionUnit}
