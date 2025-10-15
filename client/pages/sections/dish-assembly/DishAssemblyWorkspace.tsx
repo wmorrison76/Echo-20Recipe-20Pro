@@ -849,99 +849,19 @@ const DishAssemblyWorkspace: React.FC = () => {
                   <div className="text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
                     Shift-click to span selections across stations.
                   </div>
-                  <ScrollArea className="max-h-56 rounded-xl border border-primary/30">
-                    {filteredStations.length ? (
-                      <div className="grid gap-2 p-2 sm:grid-cols-2">
-                        {filteredStations.map((station) => {
-                          const isSelected = selectedStationIds.includes(station.id);
-                          const categoryLabel = station.category.replace(/-/g, " ").toUpperCase();
-                          return (
-                            <Button
-                              key={station.id}
-                              type="button"
-                              variant={isSelected ? "default" : "outline"}
-                              size="sm"
-                              onClick={(event) =>
-                                handleStationToggle(station.id, event.shiftKey)
-                              }
-                              className={cn(
-                                "h-auto justify-start gap-2 rounded-2xl border-primary/30 px-3 py-2 text-left shadow-sm transition",
-                                isSelected
-                                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                                  : "bg-background/80 hover:bg-primary/10",
-                              )}
-                            >
-                              <div className="flex flex-col text-left">
-                                <span className="text-sm font-semibold">
-                                  {station.name}
-                                </span>
-                                <span className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">
-                                  {categoryLabel}
-                                </span>
-                              </div>
-                            </Button>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <div className="px-3 py-6 text-center text-xs uppercase tracking-[0.32em] text-muted-foreground">
-                        No stations found
-                      </div>
-                    )}
+                  <ScrollArea className="max-h-48 rounded-xl border border-primary/30">
+                    <RoutingSelector
+                      options={stationOptions}
+                      selectedIds={selectedStationIds}
+                      onToggle={handleStationToggle}
+                      emptyMessage="No stations found"
+                      className="w-full p-2"
+                    />
                   </ScrollArea>
-                  {selectedStationDetails.length ? (
-                    <Collapsible
-                      open={stationsExpanded}
-                      onOpenChange={setStationsExpanded}
-                    >
-                      <CollapsibleTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="group h-8 gap-2 rounded-full px-3 text-xs uppercase tracking-[0.28em] text-muted-foreground"
-                        >
-                          <ChevronDown
-                            className={cn(
-                              "h-4 w-4 transition-transform duration-200",
-                              stationsExpanded ? "rotate-180" : "",
-                            )}
-                          />
-                          Station details
-                        </Button>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className="space-y-3 rounded-xl border border-primary/20 bg-muted/20 p-3 text-sm">
-                        {selectedStationDetails.map((station) => (
-                          <div key={station.id} className="space-y-1">
-                            <div className="flex flex-wrap items-center gap-2 font-semibold">
-                              <span>{station.name}</span>
-                              <Badge variant="outline" className="uppercase tracking-[0.35em]">
-                                {station.category.replace(/-/g, " ").toUpperCase()}
-                              </Badge>
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                              {station.description}
-                            </p>
-                            {station.defaultPrinters.length ? (
-                              <div className="text-[11px] text-muted-foreground">
-                                Suggested printers:{" "}
-                                {station.defaultPrinters
-                                  .map((printerId) =>
-                                    printers.find((printer) => printer.id === printerId)?.name,
-                                  )
-                                  .filter(Boolean)
-                                  .join(", ")}
-                              </div>
-                            ) : null}
-                          </div>
-                        ))}
-                      </CollapsibleContent>
-                    </Collapsible>
-                  ) : (
-                    <div className="rounded-xl border border-dashed border-primary/30 p-3 text-xs text-muted-foreground">
-                      Select stations to map the dish workflow.
-                    </div>
-                  )}
+                  <SelectedRoutingSummary
+                    items={stationSummaryItems}
+                    emptyMessage="Select stations to map the dish workflow."
+                  />
                 </TabsContent>
 
                 <TabsContent value="printers" className="space-y-3 pt-3">
