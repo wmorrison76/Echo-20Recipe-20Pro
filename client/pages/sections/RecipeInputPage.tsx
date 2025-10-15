@@ -650,6 +650,9 @@ useEffect(() => {
 }, []);
 
 const finalizeRecipe = useCallback(() => {
+  if (finalizeState === "saving") {
+    return;
+  }
   if (isFormPristine) {
     toast({
       title: t("recipe.actions.finalizeEmptyTitle", "Nothing to finalize"),
