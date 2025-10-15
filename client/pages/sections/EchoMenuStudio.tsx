@@ -809,17 +809,19 @@ export default function MenuDesignStudioSection() {
   const handlePositionChange = useCallback(
     (id: string, position: { x: number; y: number }) => {
       setElements((prev) =>
-        prev.map((element) =>
-          element.id === id
-            ? ({
-                ...element,
-                ...position,
-              } as DesignerElement)
-            : element,
-        ),
+        prev.map((element) => {
+          if (element.id !== id) return element;
+          const maxX = Math.max(0, pageSize.width - element.width);
+          const maxY = Math.max(0, pageSize.height - element.height);
+          return {
+            ...element,
+            x: clamp(position.x, 0, maxX),
+            y: clamp(position.y, 0, maxY),
+          } as DesignerElement;
+        }),
       );
     },
-    [],
+    [pageSize.height, pageSize.width],
   );
 
   const handleSelectLayer = useCallback((id: string) => {
