@@ -795,6 +795,28 @@ export default function MenuDesignStudioSection() {
   const workspaceRef = useRef<HTMLDivElement | null>(null);
   const { toast } = useToast();
 
+  const handleToolbarStateChange = useCallback(
+    (changes: Partial<FloatingPanelState>) => {
+      setFloatingToolbar((prev) => ({ ...prev, ...changes }));
+    },
+    [],
+  );
+
+  const handleLayersPanelStateChange = useCallback(
+    (changes: Partial<FloatingPanelState>) => {
+      setFloatingLayersPanel((prev) => ({ ...prev, ...changes }));
+    },
+    [],
+  );
+
+  const handleToolbarPinToggle = useCallback(() => {
+    setFloatingToolbar((prev) => ({ ...prev, pinned: !prev.pinned }));
+  }, []);
+
+  const handleLayersPinToggle = useCallback(() => {
+    setFloatingLayersPanel((prev) => ({ ...prev, pinned: !prev.pinned }));
+  }, []);
+
   const sortedLayers = useMemo(
     () =>
       [...elements].sort((a, b) => {
