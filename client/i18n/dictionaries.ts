@@ -24,6 +24,8 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "recipe.actions.recipeTools": "Recipe Tools",
     "recipe.actions.language": "Change Language",
     "recipe.actions.finalize": "Finalize & Clear",
+    "recipe.actions.finalizing": "Saving...",
+    "recipe.actions.finalizedCTA": "Saved",
     "recipe.actions.sendToDishAssembly": "Send to Dish Assembly",
     "recipe.actions.help": "Help & Shortcuts",
     "recipe.actions.theme": "Theme",
