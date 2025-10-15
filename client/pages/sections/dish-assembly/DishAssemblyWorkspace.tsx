@@ -545,7 +545,7 @@ const DishAssemblyWorkspace: React.FC = () => {
 
   return (
     <div className="mx-auto w-full max-w-[1420px] space-y-6 px-4 py-6 sm:px-6 lg:px-10">
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] xl:grid-cols-[minmax(0,1.25fr)_minmax(0,0.85fr)]">
         <div className="space-y-6">
           <Card className="overflow-hidden border-primary/30 bg-background/95 shadow-lg backdrop-blur">
             <div className="grid gap-4 p-4 md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
