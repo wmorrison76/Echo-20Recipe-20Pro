@@ -251,6 +251,34 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const [workflows, setWorkflows] = useState<DishWorkflowPlan[]>([]);
   const [inspections, setInspections] = useState<InspectionReport[]>([]);
   const mountedRef = useRef(true);
+
+  const appendRecipes = useCallback(
+    (incoming: Recipe[]) => {
+      if (!incoming.length) {
+        return { added: [] as Recipe[], duplicates: [] as Recipe[] };
+      }
+      const sanitizedIncoming = incoming.map((recipe) => sanitizeRecipeRecord(recipe));
+      const duplicates: Recipe[] = [];
+      const added: Recipe[] = [];
+      setRecipes((prev) => {
+        const dedupe = createRecipeDeduper(prev);
+        const accepted: Recipe[] = [];
+        sanitizedIncoming.forEach((candidate) => {
+          const result = dedupe(candidate);
+          if (result.accepted) {
+            accepted.push(result.recipe);
+            added.push(result.recipe);
+          } else {
+            duplicates.push(result.recipe);
+          }
+        });
+        if (!accepted.length) return prev;
+        return [...accepted, ...prev];
+      });
+      return { added, duplicates };
+    },
+    [],
+  );
   useEffect(() => {
     return () => {
       mountedRef.current = false;
