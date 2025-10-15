@@ -1533,6 +1533,27 @@ export default function MenuDesignStudioSection() {
     [pageSize.height, pageSize.width],
   );
 
+  const handleNudgeSelected = useCallback(
+    (deltaX: number, deltaY: number) => {
+      if (!selectedId) return;
+      if (editingId) return;
+      setElements((prev) =>
+        prev.map((element) => {
+          if (element.id !== selectedId) return element;
+          if (element.locked) return element;
+          const maxX = Math.max(0, pageSize.width - element.width);
+          const maxY = Math.max(0, pageSize.height - element.height);
+          return {
+            ...element,
+            x: clamp(element.x + deltaX, 0, maxX),
+            y: clamp(element.y + deltaY, 0, maxY),
+          } as DesignerElement;
+        }),
+      );
+    },
+    [editingId, pageSize.height, pageSize.width, selectedId],
+  );
+
   const handleSelectLayer = useCallback(
     (id: string) => {
       if (editingId && editingId !== id) {
