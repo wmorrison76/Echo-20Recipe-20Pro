@@ -479,7 +479,7 @@ const seasonalTemplate: MenuTemplate = {
       type: "menu-item",
       name: "Course Five",
       text: "Honey Pollen Pavlova",
-      description: "chamomile cream �� macerated berries · verbena ice",
+      description: "chamomile cream · macerated berries · verbena ice",
       price: 16,
       currency: "USD",
       x: 120,
@@ -3918,11 +3918,13 @@ function FloatingToolbarPanel({
                   </span>
                   <Input
                     value={selectedElement.text ?? ""}
-                    onChange={(event) =>
+                    disabled={selectionLocked}
+                    onChange={(event) => {
+                      if (selectionLocked) return;
                       onSelectionUpdate(selectedElement.id, {
                         text: event.target.value,
-                      })
-                    }
+                      });
+                    }}
                   />
                 </div>
                 <div className="space-y-1">
