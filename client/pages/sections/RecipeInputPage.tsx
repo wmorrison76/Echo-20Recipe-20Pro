@@ -2537,10 +2537,20 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                   type="button"
                   className={finalizeButtonClasses}
                   onClick={finalizeRecipe}
-                  disabled={isFormPristine}
+                  disabled={isFormPristine || finalizeState === "saving"}
                 >
-                  <Save className="h-4 w-4" aria-hidden />
-                  {t("recipe.actions.finalize", "Finalize & Clear")}
+                  {finalizeState === "success" ? (
+                    <Check className="h-4 w-4" aria-hidden />
+                  ) : finalizeState === "saving" ? (
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                  ) : (
+                    <Save className="h-4 w-4" aria-hidden />
+                  )}
+                  {finalizeState === "success"
+                    ? t("recipe.actions.finalizedCTA", "Saved")
+                    : finalizeState === "saving"
+                      ? t("recipe.actions.finalizing", "Saving...")
+                      : t("recipe.actions.finalize", "Finalize & Clear")}
                 </button>
                 <button
                   type="button"
