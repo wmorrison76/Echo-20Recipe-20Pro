@@ -552,91 +552,93 @@ const isFormPristine = useMemo(() => {
 
 const clearRecipeWorkspace = useCallback(
   (options?: { preserveSidebar?: boolean }) => {
-  try {
-    localStorage.removeItem("recipe:draft");
-  } catch {}
-  try {
-    localStorage.removeItem("recipe:add:description");
-  } catch {}
-  try {
-    localStorage.removeItem("recipe:chef-notes");
-  } catch {}
-  recipeIdRef.current = null;
-  historyRef.current = [];
-  futureRef.current = [];
-  if (autoSnapshotTimerRef.current) {
-    clearTimeout(autoSnapshotTimerRef.current);
-    autoSnapshotTimerRef.current = null;
-  }
-  autoSnapshotFingerprintRef.current = "";
-  allergenManualRef.current = false;
-  yieldManualRef.current = false;
-  if (stepImageInputRef.current) {
-    stepImageInputRef.current.value = "";
-  }
-  setRecipeName("");
-  setIngredients([createIngredientRow()]);
-  setDirections("1. ");
-  setImage(null);
-  setShowImagePopup(false);
-  setSelectedAllergens([]);
-  setSelectedNationality([]);
-  setSelectedCourses([]);
-  setSelectedRecipeType([]);
-  setSelectedPrepMethod([]);
-  setSelectedCookingEquipment([]);
-  setSelectedRecipeAccess([]);
-  setTaxonomy({ ...defaultSelection });
-  setCurrentCurrency("USD");
-  setCurrentUnits("Imperial");
-  setYieldQty(6);
-  setYieldUnit("QTS");
-  setPortionCount(6);
-  setPortionUnit("OZ");
-  setCookTime("");
-  setCookTemp("");
-  setPrepTime("");
-  setNutrition(null);
-  setNutritionLoading(false);
-  setNutritionError(null);
-  setNutritionPerServing(true);
-  setChefNotes("");
-  setYieldOpen(false);
-  if (!options?.preserveSidebar) {
-    setIsRightSidebarCollapsed(false);
-  }
-}, [
-  setRecipeName,
-  setIngredients,
-  setDirections,
-  setImage,
-  setShowImagePopup,
-  setSelectedAllergens,
-  setSelectedNationality,
-  setSelectedCourses,
-  setSelectedRecipeType,
-  setSelectedPrepMethod,
-  setSelectedCookingEquipment,
-  setSelectedRecipeAccess,
-  setTaxonomy,
-  setCurrentCurrency,
-  setCurrentUnits,
-  setYieldQty,
-  setYieldUnit,
-  setPortionCount,
-  setPortionUnit,
-  setCookTime,
-  setCookTemp,
-  setPrepTime,
-  setNutrition,
-  setNutritionLoading,
-  setNutritionError,
-  setNutritionPerServing,
-  setChefNotes,
-  setYieldOpen,
-  setIsRightSidebarCollapsed,
-  createIngredientRow,
-]);
+    try {
+      localStorage.removeItem("recipe:draft");
+    } catch {}
+    try {
+      localStorage.removeItem("recipe:add:description");
+    } catch {}
+    try {
+      localStorage.removeItem("recipe:chef-notes");
+    } catch {}
+    recipeIdRef.current = null;
+    historyRef.current = [];
+    futureRef.current = [];
+    if (autoSnapshotTimerRef.current) {
+      clearTimeout(autoSnapshotTimerRef.current);
+      autoSnapshotTimerRef.current = null;
+    }
+    autoSnapshotFingerprintRef.current = "";
+    allergenManualRef.current = false;
+    yieldManualRef.current = false;
+    if (stepImageInputRef.current) {
+      stepImageInputRef.current.value = "";
+    }
+    setRecipeName("");
+    setIngredients([createIngredientRow()]);
+    setDirections("1. ");
+    setImage(null);
+    setShowImagePopup(false);
+    setSelectedAllergens([]);
+    setSelectedNationality([]);
+    setSelectedCourses([]);
+    setSelectedRecipeType([]);
+    setSelectedPrepMethod([]);
+    setSelectedCookingEquipment([]);
+    setSelectedRecipeAccess([]);
+    setTaxonomy({ ...defaultSelection });
+    setCurrentCurrency("USD");
+    setCurrentUnits("Imperial");
+    setYieldQty(6);
+    setYieldUnit("QTS");
+    setPortionCount(6);
+    setPortionUnit("OZ");
+    setCookTime("");
+    setCookTemp("");
+    setPrepTime("");
+    setNutrition(null);
+    setNutritionLoading(false);
+    setNutritionError(null);
+    setNutritionPerServing(true);
+    setChefNotes("");
+    setYieldOpen(false);
+    if (!options?.preserveSidebar) {
+      setIsRightSidebarCollapsed(false);
+    }
+  },
+  [
+    setRecipeName,
+    setIngredients,
+    setDirections,
+    setImage,
+    setShowImagePopup,
+    setSelectedAllergens,
+    setSelectedNationality,
+    setSelectedCourses,
+    setSelectedRecipeType,
+    setSelectedPrepMethod,
+    setSelectedCookingEquipment,
+    setSelectedRecipeAccess,
+    setTaxonomy,
+    setCurrentCurrency,
+    setCurrentUnits,
+    setYieldQty,
+    setYieldUnit,
+    setPortionCount,
+    setPortionUnit,
+    setCookTime,
+    setCookTemp,
+    setPrepTime,
+    setNutrition,
+    setNutritionLoading,
+    setNutritionError,
+    setNutritionPerServing,
+    setChefNotes,
+    setYieldOpen,
+    setIsRightSidebarCollapsed,
+    createIngredientRow,
+  ],
+);
 
 const finalizeRecipe = useCallback(() => {
   if (isFormPristine) {
