@@ -2724,17 +2724,19 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (nextImages.length) setImages((prev) => [...nextImages, ...prev]);
-      if (nextRecipes.length) setRecipes((prev) => [...nextRecipes, ...prev]);
-      setTimeout(linkImagesToRecipesByFilename, 0);
+      const addedInfo = nextRecipes.length ? appendRecipes(nextRecipes) : { added: [] as Recipe[], duplicates: [] as Recipe[] };
+      if (addedInfo.added.length) {
+        setTimeout(linkImagesToRecipesByFilename, 0);
+      }
 
       return {
-        addedRecipes: nextRecipes.length,
+        addedRecipes: addedInfo.added.length,
         addedImages: nextImages.length,
         errors,
         titles,
       };
     },
-    [images, linkImagesToRecipesByFilename],
+    [appendRecipes, images, linkImagesToRecipesByFilename],
   );
 
   const updateRecipe = useCallback((id: string, patch: Partial<Recipe>) => {
