@@ -3072,7 +3072,8 @@ function FloatingToolbarPanel({
     startY: number;
     originX: number;
     originY: number;
-    bounds: DOMRect;
+    availableWidth: number;
+    availableHeight: number;
     panelWidth: number;
     panelHeight: number;
   } | null>(null);
@@ -3545,7 +3546,8 @@ function FloatingLayersPanel({
     startY: number;
     originX: number;
     originY: number;
-    bounds: DOMRect;
+    availableWidth: number;
+    availableHeight: number;
     panelWidth: number;
     panelHeight: number;
   } | null>(null);
