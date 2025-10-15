@@ -2967,7 +2967,7 @@ function FloatingToolbarPanel({
             ) : selectedElement.text != null ? (
               <Textarea
                 rows={Math.min(6, Math.max(3, Math.ceil((selectedElement.height || 60) / 60)))}
-                value={selectedElement.text}
+                value={selectedElement.text ?? ""}
                 onChange={(event) =>
                   onSelectionUpdate(selectedElement.id, {
                     text: event.target.value,
