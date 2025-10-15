@@ -3799,10 +3799,13 @@ function FloatingToolbarPanel({
   }, [bounds, containerRef, getAvailableSpace, onStateChange, state.x, state.y]);
 
   const hasSelection = Boolean(selectedElement);
+  const selectionLocked = Boolean(selectedElement?.locked);
   const canAdjustTypography =
     hasSelection &&
     selectedElement &&
+    !selectionLocked &&
     ["heading", "subheading", "body", "menu-item"].includes(selectedElement.type);
+  const canMutateSelection = hasSelection && !selectionLocked;
 
   return (
     <div
