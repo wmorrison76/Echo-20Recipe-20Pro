@@ -1889,6 +1889,9 @@ export default function MenuDesignStudioSection() {
       ) {
         return;
       }
+      if (selectedElement.locked) {
+        return;
+      }
       const current = selectedElement.letterSpacing ?? 0;
       updateElement(selectedElement.id, {
         letterSpacing: Number((current + delta).toFixed(2)),
