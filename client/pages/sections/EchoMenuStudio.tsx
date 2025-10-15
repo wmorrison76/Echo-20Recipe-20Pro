@@ -781,6 +781,18 @@ export default function MenuDesignStudioSection() {
     INITIAL_ELEMENTS[0]?.id ?? null,
   );
   const [pagePreset, setPagePreset] = useState<string>("letter");
+  const [floatingToolbar, setFloatingToolbar] = useState<FloatingPanelState>({
+    x: 24,
+    y: 32,
+    pinned: false,
+  });
+  const [floatingLayersPanel, setFloatingLayersPanel] =
+    useState<FloatingPanelState>({
+      x: 24,
+      y: 280,
+      pinned: false,
+    });
+  const workspaceRef = useRef<HTMLDivElement | null>(null);
   const { toast } = useToast();
 
   const sortedLayers = useMemo(
