@@ -10,6 +10,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   BookOpenCheck,
   Boxes,
+  ChefHat,
   ChevronLeft,
   ClipboardList,
   Factory,
@@ -79,6 +80,13 @@ const navItems: NavItemConfig[] = [
     shortcut: { key: "KeyD", display: "D" },
   },
   {
+    to: "/?tab=echo-menu",
+    labelKey: "nav.echoMenuStudio",
+    fallback: "ECHO MENU STUDIO",
+    icon: ChefHat,
+    shortcut: { key: "KeyM", display: "M" },
+  },
+  {
     to: "/?tab=server-notes",
     labelKey: "nav.serverNotes",
     fallback: "SERVER NOTES",
@@ -137,7 +145,7 @@ const navItems: NavItemConfig[] = [
   {
     to: "/?tab=gallery",
     labelKey: "nav.gallery",
-    fallback: "Gallery",
+    fallback: "GALLERY",
     icon: Images,
     shortcut: { key: "Digit9", display: "9" },
   },
