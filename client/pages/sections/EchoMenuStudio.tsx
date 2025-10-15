@@ -2149,6 +2149,7 @@ function DesignerCanvas({
                               letterSpacing: element.letterSpacing,
                               color: element.color ?? "#0f172a",
                               textAlign: element.align,
+                              whiteSpace: "pre-wrap",
                             }}
                             onChange={(event) => onEditingChange({ text: event.target.value })}
                             onPointerDown={(event) => event.stopPropagation()}
