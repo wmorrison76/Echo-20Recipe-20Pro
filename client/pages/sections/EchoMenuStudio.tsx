@@ -1679,6 +1679,13 @@ function DesignerCanvas({
   canvasSettings,
   pageSize,
   onPositionChange,
+  editingId,
+  editingValue,
+  onEditingChange,
+  onBeginEdit,
+  onCommitEdit,
+  onCancelEdit,
+  onCanvasPointerDown,
 }: DesignerCanvasProps) {
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<ElementDragState | null>(null);
