@@ -550,6 +550,44 @@ const isFormPristine = useMemo(() => {
   prepTime,
 ]);
 
+const servingsForLabel = useMemo(() => {
+  if (!Number.isFinite(portionCount)) {
+    return 1;
+  }
+  const normalized = Number(portionCount) || 1;
+  return normalized > 0 ? normalized : 1;
+}, [portionCount]);
+
+const nutritionDisplay = useMemo(() => {
+  if (!nutrition) return null;
+  const totals = nutrition.totals;
+  if (!totals) {
+    return { ...nutrition, yieldQty: servingsForLabel };
+  }
+  const factor = 1 / servingsForLabel;
+  const scaleValue = (value: number | undefined) => {
+    const numeric = Number(value ?? 0);
+    if (!Number.isFinite(numeric)) return 0;
+    return numeric * factor;
+  };
+  const scaledPerServing = {
+    calories: Math.round(scaleValue(totals.calories)),
+    fat: Number(scaleValue(totals.fat).toFixed(2)),
+    saturatedFat: Number(scaleValue(totals.saturatedFat).toFixed(2)),
+    transFat: Number(scaleValue(totals.transFat).toFixed(2)),
+    carbs: Number(scaleValue(totals.carbs).toFixed(2)),
+    fiber: Number(scaleValue(totals.fiber).toFixed(2)),
+    sugars: Number(scaleValue(totals.sugars).toFixed(2)),
+    protein: Number(scaleValue(totals.protein).toFixed(2)),
+    sodium: Math.round(scaleValue(totals.sodium)),
+  };
+  return {
+    ...nutrition,
+    perServing: scaledPerServing,
+    yieldQty: servingsForLabel,
+  };
+}, [nutrition, servingsForLabel]);
+
 const clearRecipeWorkspace = useCallback(
   (options?: { preserveSidebar?: boolean }) => {
     try {
@@ -3721,7 +3759,7 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                   "⅑": "1/9",
                   "⅒": "1/10",
                   "⅓": "1/3",
-                  "��": "2/3",
+                  "����": "2/3",
                   "⅕": "1/5",
                   "⅖": "2/5",
                   "⅗": "3/5",
