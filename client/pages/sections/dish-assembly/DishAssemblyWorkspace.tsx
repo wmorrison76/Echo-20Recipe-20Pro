@@ -661,6 +661,62 @@ const DishAssemblyWorkspace: React.FC = () => {
             </div>
           </Card>
 
+          <Card className="border-primary/30 bg-background/95 shadow-lg">
+            <CardHeader className="space-y-1">
+              <CardTitle className="text-sm font-semibold uppercase tracking-[0.35em] text-muted-foreground">
+                Narrative & Service Brief
+              </CardTitle>
+              <p className="text-xs uppercase tracking-[0.28em] text-muted-foreground">
+                Shape guest-facing language and expo reminders.
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-1">
+                <div className="text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground">
+                  Menu Description
+                </div>
+                <Textarea
+                  value={menuDescription}
+                  onChange={(event) => setMenuDescription(event.target.value)}
+                  rows={6}
+                  placeholder="Elegant marketing copy for the menu listing"
+                  className="h-auto min-h-[160px] rounded-xl border border-primary/30 bg-background/80"
+                />
+              </div>
+              <div className="space-y-1">
+                <div className="text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground">
+                  Server Notes
+                </div>
+                <Textarea
+                  value={serverNotes}
+                  onChange={(event) => setServerNotes(event.target.value)}
+                  rows={6}
+                  placeholder="Talking points, plating, or expo reminders"
+                  className="h-auto min-h-[160px] rounded-xl border border-primary/30 bg-background/80"
+                />
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  size="sm"
+                  className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
+                  onClick={handleAutoFill}
+                >
+                  <Sparkles className="mr-1.5 h-4 w-4" />
+                  Auto-fill narrative
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={resetWorkspace}
+                  className="rounded-full border-destructive/40 text-destructive hover:bg-destructive/10"
+                >
+                  <RefreshCcw className="mr-1.5 h-4 w-4" />
+                  Clear workspace
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
           <DishComponentsTable
             rows={componentRows}
             recipeSummaries={recipeSummaries}
