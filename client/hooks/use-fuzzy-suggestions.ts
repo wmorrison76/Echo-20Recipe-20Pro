@@ -88,7 +88,7 @@ export function useSuggestionBuckets(): SuggestionBuckets {
     }
 
     for (const lookbook of lookbooks) {
-      addValues(collectionSet, lookbook.name, lookbook.description);
+      addValues(collectionSet, lookbook.name);
     }
 
     for (const board of tileBoards) {
