@@ -3176,12 +3176,15 @@ function FloatingLayersPanel({
   onSelectLayer,
   onLayerShift,
 }: FloatingLayersPanelProps) {
+  const panelRef = useRef<HTMLDivElement | null>(null);
   const dragData = useRef<{
     startX: number;
     startY: number;
     originX: number;
     originY: number;
     bounds: DOMRect;
+    panelWidth: number;
+    panelHeight: number;
   } | null>(null);
 
   const handlePointerMove = useCallback(
