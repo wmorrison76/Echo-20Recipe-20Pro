@@ -2156,6 +2156,7 @@ export default function MenuDesignStudioSection() {
               selectedId={selectedId}
               onSelectLayer={handleSelectLayer}
               onLayerShift={handleLayerShift}
+              onToggleLock={handleToggleLayerLock}
             />
           </div>
         </div>
