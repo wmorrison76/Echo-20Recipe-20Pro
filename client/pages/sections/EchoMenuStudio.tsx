@@ -1937,6 +1937,9 @@ export default function MenuDesignStudioSection() {
       ) {
         return;
       }
+      if (selectedElement.locked) {
+        return;
+      }
       updateElement(selectedElement.id, { align });
     },
     [selectedElement, updateElement],
