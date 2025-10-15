@@ -2445,6 +2445,10 @@ function DesignerCanvas({
       }
       const canvas = canvasRef.current;
       if (!canvas) return;
+      if (element.locked) {
+        onSelect(element.id);
+        return;
+      }
       const rect = canvas.getBoundingClientRect();
       const zoom = canvasSettings.zoom || 1;
       const pointerX = (event.clientX - rect.left) / zoom;
