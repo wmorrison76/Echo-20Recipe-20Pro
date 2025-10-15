@@ -1454,9 +1454,7 @@ export default function MenuDesignStudioSection() {
           if (element.locked && !hasLockedChange) {
             return element;
           }
-          const nextLocked = hasLockedChange
-            ? Boolean((changes as Partial<DesignerElement>).locked)
-            : element.locked ?? false;
+          const nextLocked = hasLockedChange ? Boolean(changes.locked) : element.locked ?? false;
           return {
             ...element,
             ...changes,
