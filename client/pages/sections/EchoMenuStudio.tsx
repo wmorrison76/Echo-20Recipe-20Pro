@@ -2718,6 +2718,7 @@ function FloatingToolbarPanel({
   onAdjustLineHeight,
   onDuplicateSelected,
   onDeleteSelected,
+  onSelectionUpdate,
 }: FloatingToolbarPanelProps) {
   const dragData = useRef<{
     startX: number;
