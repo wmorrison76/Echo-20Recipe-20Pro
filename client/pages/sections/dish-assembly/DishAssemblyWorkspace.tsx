@@ -798,18 +798,6 @@ const DishAssemblyWorkspace: React.FC = () => {
                     </div>
                   )}
                 </div>
-                <div className="space-y-1">
-                  <div className="text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground">
-                    Server Notes
-                  </div>
-                  <Textarea
-                    value={serverNotes}
-                    onChange={(event) => setServerNotes(event.target.value)}
-                    rows={6}
-                    placeholder="Talking points, plating, or expo reminders"
-                    className="h-auto min-h-[160px] rounded-xl border border-primary/30 bg-background/80"
-                  />
-                </div>
                 <div className="flex flex-wrap gap-2">
                   <Button
                     size="sm"
