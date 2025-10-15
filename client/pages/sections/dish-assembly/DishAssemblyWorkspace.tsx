@@ -144,6 +144,17 @@ const DishAssemblyWorkspace: React.FC = () => {
     return Number((totalCost / priceNumber).toFixed(3));
   }, [priceNumber, totalCost]);
 
+  const grossMarginValue = useMemo(() => {
+    if (!priceNumber || priceNumber <= 0) return null;
+    return Number((priceNumber - totalCost).toFixed(2));
+  }, [priceNumber, totalCost]);
+
+  const grossMarginPct = useMemo(() => {
+    if (!priceNumber || priceNumber <= 0) return null;
+    const margin = priceNumber - totalCost;
+    return Number(((margin / priceNumber) * 100).toFixed(1));
+  }, [priceNumber, totalCost]);
+
   const popularityScore = useMemo(
     () => estimatePopularityScore(recipeSummaries, componentRows),
     [componentRows, recipeSummaries],
