@@ -1411,7 +1411,6 @@ export default function MenuDesignStudioSection() {
               onAddMenuItem={handleAddMenuItem}
               onAddDivider={handleAddDivider}
               onAddShape={handleAddShape}
-              onAddImage={handleAddImage}
               canvasSettings={canvasSettings}
               onToggleGrid={handleToggleGrid}
               onToggleColumns={handleToggleColumns}
