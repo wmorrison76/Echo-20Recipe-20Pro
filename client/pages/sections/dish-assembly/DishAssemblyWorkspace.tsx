@@ -798,25 +798,6 @@ const DishAssemblyWorkspace: React.FC = () => {
                     </div>
                   )}
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    size="sm"
-                    className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
-                    onClick={handleAutoFill}
-                  >
-                    <Sparkles className="mr-1.5 h-4 w-4" />
-                    Auto-fill narrative
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={resetWorkspace}
-                    className="rounded-full border-destructive/40 text-destructive hover:bg-destructive/10"
-                  >
-                    <RefreshCcw className="mr-1.5 h-4 w-4" />
-                    Clear workspace
-                  </Button>
-                </div>
               </div>
             </div>
           </Card>
