@@ -147,6 +147,46 @@ const TEXT_EDITABLE_TYPES: DesignerElementType[] = [
 const isTextEditableElement = (element: DesignerElement) =>
   TEXT_EDITABLE_TYPES.includes(element.type);
 
+const createDraftFromElement = (element: DesignerElement): Partial<DesignerElement> => {
+  if (element.type === "menu-item") {
+    return {
+      name: element.name ?? "",
+      text: element.text ?? "",
+      description: element.description ?? "",
+      price: element.price,
+      currency: element.currency ?? "USD",
+    };
+  }
+  return {
+    text: element.text ?? "",
+  };
+};
+
+const extractDraftChanges = (
+  element: DesignerElement,
+  draft: Partial<DesignerElement>,
+): Partial<DesignerElement> => {
+  const updates: Partial<DesignerElement> = {};
+  if ("text" in draft) {
+    updates.text = draft.text ?? "";
+  }
+  if (element.type === "menu-item") {
+    if ("name" in draft) {
+      updates.name = draft.name ?? element.name;
+    }
+    if ("description" in draft) {
+      updates.description = draft.description ?? "";
+    }
+    if ("price" in draft) {
+      updates.price = draft.price === undefined ? undefined : draft.price;
+    }
+    if ("currency" in draft) {
+      updates.currency = draft.currency ?? element.currency ?? "USD";
+    }
+  }
+  return updates;
+};
+
 type FloatingPanelState = {
   x: number;
   y: number;
