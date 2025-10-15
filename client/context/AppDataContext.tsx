@@ -277,7 +277,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       });
       return { added, duplicates };
     },
-    [],
+    [setRecipes],
   );
   useEffect(() => {
     return () => {
