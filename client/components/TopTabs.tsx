@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   ClipboardList,
   Factory,
+  FileText,
   HelpCircle,
   Images,
   PenSquare,
@@ -83,6 +84,13 @@ const navItems: NavItemConfig[] = [
     fallback: "SERVER NOTES",
     icon: ClipboardList,
     shortcut: { key: "Digit3", display: "3" },
+  },
+  {
+    to: "/?tab=operations-docs",
+    labelKey: "nav.operationsDocs",
+    fallback: "OPERATIONS DOCS",
+    icon: FileText,
+    shortcut: { key: "KeyO", display: "O" },
   },
   {
     to: "/?tab=production",
