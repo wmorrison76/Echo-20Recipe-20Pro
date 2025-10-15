@@ -602,7 +602,9 @@ const clearRecipeWorkspace = useCallback(
   setNutritionPerServing(true);
   setChefNotes("");
   setYieldOpen(false);
-  setIsRightSidebarCollapsed(false);
+  if (!options?.preserveSidebar) {
+    setIsRightSidebarCollapsed(false);
+  }
 }, [
   setRecipeName,
   setIngredients,
