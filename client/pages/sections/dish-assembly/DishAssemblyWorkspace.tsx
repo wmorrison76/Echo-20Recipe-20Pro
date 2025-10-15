@@ -77,7 +77,7 @@ const createInitialRows = () =>
   Array.from({ length: INITIAL_COMPONENT_ROWS }, () => createBlankRow());
 
 const DishAssemblyWorkspace: React.FC = () => {
-  const { recipes, listStations, listPrinters } = useAppData();
+  const { recipes, listStations, listPrinters, addImages } = useAppData();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { setToolbar, resetToolbar } = usePageToolbar();
@@ -415,18 +415,44 @@ const DishAssemblyWorkspace: React.FC = () => {
     return () => resetToolbar();
   }, [handleAutoFill, resetToolbar, resetWorkspace, setToolbar, t]);
 
-  const handleImageUpload = useCallback((file: File | null) => {
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result;
-      if (typeof result === "string") {
-        setCustomImage(result);
-        setImageRotationIndex(0);
+  const handleImageUpload = useCallback(
+    async (file: File | null) => {
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result;
+        if (typeof result === "string") {
+          setCustomImage(result);
+          setImageRotationIndex(0);
+        }
+      };
+      reader.readAsDataURL(file);
+
+      try {
+        const tags = ["dish-assembly", "upload"];
+        const added = await addImages([file], { tags });
+        if (added > 0) {
+          toast({
+            title: "Image stored",
+            description: "Uploaded dish imagery is now available in the gallery.",
+          });
+        } else {
+          toast({
+            title: "Image already saved",
+            description: "This filename already exists in the gallery library.",
+          });
+        }
+      } catch (error) {
+        toast({
+          title: "Upload failed",
+          description: error instanceof Error ? error.message : "Could not save image to gallery.",
+          variant: "destructive",
+        });
       }
-    };
-    reader.readAsDataURL(file);
-  }, []);
+    },
+    [addImages],
+  );
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const lastStationIndexRef = useRef<number | null>(null);
@@ -656,9 +682,11 @@ const DishAssemblyWorkspace: React.FC = () => {
                       type="file"
                       accept="image/*"
                       className="hidden"
-                      onChange={(event) =>
-                        handleImageUpload(event.target.files?.[0] ?? null)
-                      }
+                      onChange={(event) => {
+                        const file = event.target.files?.[0] ?? null;
+                        void handleImageUpload(file);
+                        event.target.value = "";
+                      }}
                     />
                   </div>
                 </div>
