@@ -947,6 +947,13 @@ export default function MenuDesignStudioSection() {
     }
   }, [editingId, handleCommitInlineEdit]);
 
+  const handleDeselect = useCallback(() => {
+    if (editingId) {
+      handleCommitInlineEdit();
+    }
+    setSelectedId(null);
+  }, [editingId, handleCommitInlineEdit]);
+
   const handlePositionChange = useCallback(
     (id: string, position: { x: number; y: number }) => {
       setElements((prev) =>
