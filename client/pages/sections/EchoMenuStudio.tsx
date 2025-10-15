@@ -3570,6 +3570,7 @@ function FloatingToolbarPanel({
 
 type FloatingLayersPanelProps = {
   containerRef: React.RefObject<HTMLDivElement>;
+  bounds?: "container" | "viewport";
   state: FloatingPanelState;
   onStateChange: (changes: Partial<FloatingPanelState>) => void;
   onTogglePin: () => void;
@@ -3581,6 +3582,7 @@ type FloatingLayersPanelProps = {
 
 function FloatingLayersPanel({
   containerRef,
+  bounds = "container",
   state,
   onStateChange,
   onTogglePin,
