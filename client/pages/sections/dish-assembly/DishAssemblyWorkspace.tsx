@@ -730,6 +730,286 @@ const DishAssemblyWorkspace: React.FC = () => {
 
         <div className="space-y-6">
           <Card className="border-primary/30 bg-background/95 shadow-lg">
+            <CardHeader className="space-y-1">
+              <CardTitle className="text-sm font-semibold uppercase tracking-[0.35em] text-muted-foreground">
+                Routing & Printers
+              </CardTitle>
+              <p className="text-xs uppercase tracking-[0.28em] text-muted-foreground">
+                Map the dish journey across stations and chit devices.
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.32em] text-muted-foreground">
+                <Badge variant="outline" className="border-primary/40 text-primary">
+                  {selectedStationIds.length} station{selectedStationIds.length === 1 ? "" : "s"}
+                </Badge>
+                <Badge variant="outline" className="border-primary/40 text-primary">
+                  {selectedPrinterIds.length} printer{selectedPrinterIds.length === 1 ? "" : "s"}
+                </Badge>
+              </div>
+              <Tabs
+                value={routingTab}
+                onValueChange={(value) =>
+                  setRoutingTab(value as "stations" | "printers")
+                }
+                className="w-full"
+              >
+                <TabsList className="grid w-full grid-cols-2 bg-background/80">
+                  <TabsTrigger value="stations">
+                    Stations
+                    <span className="ml-2 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold">
+                      {selectedStationIds.length}
+                    </span>
+                  </TabsTrigger>
+                  <TabsTrigger value="printers">
+                    Printers
+                    <span className="ml-2 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold">
+                      {selectedPrinterIds.length}
+                    </span>
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="stations" className="space-y-3 pt-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Input
+                      value={stationQuery}
+                      onChange={(event) => setStationQuery(event.target.value)}
+                      placeholder="Search stations"
+                      className="h-9 flex-1 rounded-full border-primary/30 bg-background/80 text-sm"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleClearStations}
+                      disabled={!selectedStationIds.length}
+                      className="h-8 rounded-full px-3"
+                    >
+                      Clear
+                    </Button>
+                  </div>
+                  <div className="text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
+                    Shift-click to span selections across stations.
+                  </div>
+                  <ScrollArea className="max-h-56 rounded-xl border border-primary/30">
+                    {filteredStations.length ? (
+                      <div className="grid gap-2 p-2 sm:grid-cols-2">
+                        {filteredStations.map((station) => {
+                          const isSelected = selectedStationIds.includes(station.id);
+                          const categoryLabel = station.category.replace(/-/g, " ").toUpperCase();
+                          return (
+                            <Button
+                              key={station.id}
+                              type="button"
+                              variant={isSelected ? "default" : "outline"}
+                              size="sm"
+                              onClick={(event) =>
+                                handleStationToggle(station.id, event.shiftKey)
+                              }
+                              className={cn(
+                                "h-auto justify-start gap-2 rounded-2xl border-primary/30 px-3 py-2 text-left shadow-sm transition",
+                                isSelected
+                                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                                  : "bg-background/80 hover:bg-primary/10",
+                              )}
+                            >
+                              <div className="flex flex-col text-left">
+                                <span className="text-sm font-semibold">
+                                  {station.name}
+                                </span>
+                                <span className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">
+                                  {categoryLabel}
+                                </span>
+                              </div>
+                            </Button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="px-3 py-6 text-center text-xs uppercase tracking-[0.32em] text-muted-foreground">
+                        No stations found
+                      </div>
+                    )}
+                  </ScrollArea>
+                  {selectedStationDetails.length ? (
+                    <Collapsible
+                      open={stationsExpanded}
+                      onOpenChange={setStationsExpanded}
+                    >
+                      <CollapsibleTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="group h-8 gap-2 rounded-full px-3 text-xs uppercase tracking-[0.28em] text-muted-foreground"
+                        >
+                          <ChevronDown
+                            className={cn(
+                              "h-4 w-4 transition-transform duration-200",
+                              stationsExpanded ? "rotate-180" : "",
+                            )}
+                          />
+                          Station details
+                        </Button>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="space-y-3 rounded-xl border border-primary/20 bg-muted/20 p-3 text-sm">
+                        {selectedStationDetails.map((station) => (
+                          <div key={station.id} className="space-y-1">
+                            <div className="flex flex-wrap items-center gap-2 font-semibold">
+                              <span>{station.name}</span>
+                              <Badge variant="outline" className="uppercase tracking-[0.35em]">
+                                {station.category.replace(/-/g, " ").toUpperCase()}
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              {station.description}
+                            </p>
+                            {station.defaultPrinters.length ? (
+                              <div className="text-[11px] text-muted-foreground">
+                                Suggested printers:{" "}
+                                {station.defaultPrinters
+                                  .map((printerId) =>
+                                    printers.find((printer) => printer.id === printerId)?.name,
+                                  )
+                                  .filter(Boolean)
+                                  .join(", ")}
+                              </div>
+                            ) : null}
+                          </div>
+                        ))}
+                      </CollapsibleContent>
+                    </Collapsible>
+                  ) : (
+                    <div className="rounded-xl border border-dashed border-primary/30 p-3 text-xs text-muted-foreground">
+                      Select stations to map the dish workflow.
+                    </div>
+                  )}
+                </TabsContent>
+
+                <TabsContent value="printers" className="space-y-3 pt-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Input
+                      value={printerQuery}
+                      onChange={(event) => setPrinterQuery(event.target.value)}
+                      placeholder="Search printers"
+                      className="h-9 flex-1 rounded-full border-primary/30 bg-background/80 text-sm"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleClearPrinters}
+                      disabled={!selectedPrinterIds.length}
+                      className="h-8 rounded-full px-3"
+                    >
+                      Clear
+                    </Button>
+                  </div>
+                  {recommendedPrinterIds.length ? (
+                    <div className="text-[10px] uppercase tracking-[0.28em] text-primary">
+                      Recommended from stations:{" "}
+                      {recommendedPrinterIds
+                        .map((id) => printers.find((printer) => printer.id === id)?.name ?? "")
+                        .filter(Boolean)
+                        .join(", ")}
+                    </div>
+                  ) : (
+                    <div className="text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
+                      Shift-click to capture multiple devices in sequence.
+                    </div>
+                  )}
+                  <ScrollArea className="max-h-56 rounded-xl border border-primary/30">
+                    {filteredPrinters.length ? (
+                      <div className="grid gap-2 p-2">
+                        {filteredPrinters.map((printer) => {
+                          const isSelected = selectedPrinterIds.includes(printer.id);
+                          const isRecommended = recommendedPrinterSet.has(printer.id);
+                          return (
+                            <Button
+                              key={printer.id}
+                              type="button"
+                              variant={isSelected ? "default" : "outline"}
+                              size="sm"
+                              onClick={(event) =>
+                                handlePrinterToggle(printer.id, event.shiftKey)
+                              }
+                              className={cn(
+                                "h-auto justify-start gap-2 rounded-2xl border-primary/30 px-3 py-2 text-left shadow-sm transition",
+                                isSelected
+                                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                                  : "bg-background/80 hover:bg-primary/10",
+                                isRecommended && !isSelected
+                                  ? "border-dashed border-primary/60 text-primary"
+                                  : "",
+                              )}
+                            >
+                              <div className="flex flex-col text-left">
+                                <span className="text-sm font-semibold">{printer.name}</span>
+                                <span className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">
+                                  {printer.technology}
+                                </span>
+                                <span className="text-[11px] leading-snug text-muted-foreground">
+                                  {printer.recommendedUse}
+                                </span>
+                              </div>
+                            </Button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="px-3 py-6 text-center text-xs uppercase tracking-[0.32em] text-muted-foreground">
+                        No printers found
+                      </div>
+                    )}
+                  </ScrollArea>
+                  {selectedPrinterDetails.length ? (
+                    <Collapsible
+                      open={printersExpanded}
+                      onOpenChange={setPrintersExpanded}
+                    >
+                      <CollapsibleTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="group h-8 gap-2 rounded-full px-3 text-xs uppercase tracking-[0.28em] text-muted-foreground"
+                        >
+                          <ChevronDown
+                            className={cn(
+                              "h-4 w-4 transition-transform duration-200",
+                              printersExpanded ? "rotate-180" : "",
+                            )}
+                          />
+                          Printer details
+                        </Button>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className="space-y-3 rounded-xl border border-primary/20 bg-muted/20 p-3 text-sm">
+                        {selectedPrinterDetails.map((printer) => (
+                          <div key={printer.id} className="space-y-1">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <span className="font-semibold">{printer.name}</span>
+                              <Badge variant="outline" className="uppercase tracking-[0.32em]">
+                                {printer.technology}
+                              </Badge>
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              {printer.description}
+                            </p>
+                          </div>
+                        ))}
+                      </CollapsibleContent>
+                    </Collapsible>
+                  ) : (
+                    <div className="rounded-xl border border-dashed border-primary/30 p-3 text-xs text-muted-foreground">
+                      Choose printers to capture routing instructions for POS setup.
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+
+          <Card className="border-primary/30 bg-background/95 shadow-lg">
             <CardHeader>
               <CardTitle className="text-sm font-semibold uppercase tracking-[0.35em] text-muted-foreground">
                 Serviceware & Allergens
