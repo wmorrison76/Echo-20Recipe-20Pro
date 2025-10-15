@@ -1640,11 +1640,13 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      if (collected.length) setRecipes((prev) => [...collected, ...prev]);
-      setTimeout(linkImagesToRecipesByFilename, 0);
-      return { added: collected.length, errors, titles };
+      const { added } = appendRecipes(collected);
+      if (added.length) {
+        setTimeout(linkImagesToRecipesByFilename, 0);
+      }
+      return { added: added.length, errors, titles };
     },
-    [linkImagesToRecipesByFilename],
+    [appendRecipes, linkImagesToRecipesByFilename],
   );
 
   const addRecipesFromPdfFiles = useCallback(async (files: File[]) => {
