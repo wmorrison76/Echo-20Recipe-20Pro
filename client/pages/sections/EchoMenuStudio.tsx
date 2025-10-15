@@ -2574,6 +2574,7 @@ function DesignerCanvas({
               ) : null}
               {sortedElements.map((element) => {
                 const isSelected = element.id === selectedId;
+                const isLocked = Boolean(element.locked);
                 const isEditable = isTextEditableElement(element);
                 const isEditing = Boolean(editingId && editingId === element.id && editingDraft);
                 const draft = isEditing && editingDraft ? editingDraft : null;
