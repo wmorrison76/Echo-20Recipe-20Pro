@@ -1046,6 +1046,8 @@ export default function MenuDesignStudioSection() {
 
   const handleApplyTemplate = useCallback(
     (template: MenuTemplate) => {
+      setEditingId(null);
+      setEditingDraft(null);
       const mappedElements = createElementsFromTemplate(template);
       setElements(mappedElements);
       setSelectedId(mappedElements[0]?.id ?? null);
