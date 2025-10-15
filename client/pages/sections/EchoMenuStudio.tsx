@@ -2607,7 +2607,9 @@ function DesignerCanvas({
                       isSelected
                         ? "ring-2 ring-cyan-500"
                         : "shadow-sm ring-1 ring-transparent",
+                      isLocked && !isSelected ? "ring-1 ring-amber-400/70" : undefined,
                     )}
+                    data-locked={isLocked || undefined}
                     style={{
                       left: element.x,
                       top: element.y,
@@ -2616,7 +2618,7 @@ function DesignerCanvas({
                       transform: `rotate(${element.rotation}deg)` as string,
                       opacity: element.opacity,
                       borderRadius: element.borderRadius,
-                      cursor: isEditing ? "text" : "move",
+                      cursor: isLocked ? "not-allowed" : isEditing ? "text" : "move",
                       zIndex: element.zIndex,
                     }}
                     onPointerDown={(event) => handleElementPointerDown(event, element)}
