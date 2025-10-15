@@ -2758,7 +2758,8 @@ function FloatingToolbarPanel({
     (event: React.PointerEvent<HTMLDivElement>) => {
       if (state.pinned || event.button !== 0) return;
       const container = containerRef.current;
-      if (!container) return;
+      const panel = panelRef.current;
+      if (!container || !panel) return;
       const bounds = container.getBoundingClientRect();
       dragData.current = {
         startX: event.clientX,
@@ -2766,6 +2767,8 @@ function FloatingToolbarPanel({
         originX: state.x,
         originY: state.y,
         bounds,
+        panelWidth: panel.offsetWidth,
+        panelHeight: panel.offsetHeight,
       };
       window.addEventListener("pointermove", handlePointerMove);
       window.addEventListener("pointerup", handlePointerUp);
@@ -3092,7 +3095,8 @@ function FloatingLayersPanel({
     (event: React.PointerEvent<HTMLDivElement>) => {
       if (state.pinned || event.button !== 0) return;
       const container = containerRef.current;
-      if (!container) return;
+      const panel = panelRef.current;
+      if (!container || !panel) return;
       const bounds = container.getBoundingClientRect();
       dragData.current = {
         startX: event.clientX,
@@ -3100,6 +3104,8 @@ function FloatingLayersPanel({
         originX: state.x,
         originY: state.y,
         bounds,
+        panelWidth: panel.offsetWidth,
+        panelHeight: panel.offsetHeight,
       };
       window.addEventListener("pointermove", handlePointerMove);
       window.addEventListener("pointerup", handlePointerUp);
