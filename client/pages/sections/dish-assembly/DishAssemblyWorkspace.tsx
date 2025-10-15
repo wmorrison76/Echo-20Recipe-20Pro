@@ -896,92 +896,19 @@ const DishAssemblyWorkspace: React.FC = () => {
                       Shift-click to capture multiple devices in sequence.
                     </div>
                   )}
-                  <ScrollArea className="max-h-56 rounded-xl border border-primary/30">
-                    {filteredPrinters.length ? (
-                      <div className="grid gap-2 p-2">
-                        {filteredPrinters.map((printer) => {
-                          const isSelected = selectedPrinterIds.includes(printer.id);
-                          const isRecommended = recommendedPrinterSet.has(printer.id);
-                          return (
-                            <Button
-                              key={printer.id}
-                              type="button"
-                              variant={isSelected ? "default" : "outline"}
-                              size="sm"
-                              onClick={(event) =>
-                                handlePrinterToggle(printer.id, event.shiftKey)
-                              }
-                              className={cn(
-                                "h-auto justify-start gap-2 rounded-2xl border-primary/30 px-3 py-2 text-left shadow-sm transition",
-                                isSelected
-                                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                                  : "bg-background/80 hover:bg-primary/10",
-                                isRecommended && !isSelected
-                                  ? "border-dashed border-primary/60 text-primary"
-                                  : "",
-                              )}
-                            >
-                              <div className="flex flex-col text-left">
-                                <span className="text-sm font-semibold">{printer.name}</span>
-                                <span className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">
-                                  {printer.technology}
-                                </span>
-                                <span className="text-[11px] leading-snug text-muted-foreground">
-                                  {printer.recommendedUse}
-                                </span>
-                              </div>
-                            </Button>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <div className="px-3 py-6 text-center text-xs uppercase tracking-[0.32em] text-muted-foreground">
-                        No printers found
-                      </div>
-                    )}
+                  <ScrollArea className="max-h-48 rounded-xl border border-primary/30">
+                    <RoutingSelector
+                      options={printerOptions}
+                      selectedIds={selectedPrinterIds}
+                      onToggle={handlePrinterToggle}
+                      emptyMessage="No printers found"
+                      className="w-full p-2"
+                    />
                   </ScrollArea>
-                  {selectedPrinterDetails.length ? (
-                    <Collapsible
-                      open={printersExpanded}
-                      onOpenChange={setPrintersExpanded}
-                    >
-                      <CollapsibleTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          className="group h-8 gap-2 rounded-full px-3 text-xs uppercase tracking-[0.28em] text-muted-foreground"
-                        >
-                          <ChevronDown
-                            className={cn(
-                              "h-4 w-4 transition-transform duration-200",
-                              printersExpanded ? "rotate-180" : "",
-                            )}
-                          />
-                          Printer details
-                        </Button>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className="space-y-3 rounded-xl border border-primary/20 bg-muted/20 p-3 text-sm">
-                        {selectedPrinterDetails.map((printer) => (
-                          <div key={printer.id} className="space-y-1">
-                            <div className="flex flex-wrap items-center justify-between gap-2">
-                              <span className="font-semibold">{printer.name}</span>
-                              <Badge variant="outline" className="uppercase tracking-[0.32em]">
-                                {printer.technology}
-                              </Badge>
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                              {printer.description}
-                            </p>
-                          </div>
-                        ))}
-                      </CollapsibleContent>
-                    </Collapsible>
-                  ) : (
-                    <div className="rounded-xl border border-dashed border-primary/30 p-3 text-xs text-muted-foreground">
-                      Choose printers to capture routing instructions for POS setup.
-                    </div>
-                  )}
+                  <SelectedRoutingSummary
+                    items={printerSummaryItems}
+                    emptyMessage="Choose printers to capture routing instructions for POS setup."
+                  />
                 </TabsContent>
               </Tabs>
             </CardContent>
