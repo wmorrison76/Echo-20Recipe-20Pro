@@ -33,7 +33,6 @@ import {
   PairingRow,
   PosMapping,
   RecipeSummary,
-  buildPosCode,
   classifyMenuEngineering,
   computeDishCost,
   createId,
