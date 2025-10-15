@@ -3643,6 +3643,7 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                         <input
                           type="number"
                           min={1}
+                          step="0.25"
                           value={servingsForLabel}
                           onChange={(event) => {
                             const next = Math.max(1, Number(event.target.value));
