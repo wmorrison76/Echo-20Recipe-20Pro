@@ -1616,6 +1616,28 @@ export default function MenuDesignStudioSection() {
     [editingId, handleCommitInlineEdit],
   );
 
+  const handleToggleLayerLock = useCallback(
+    (id: string) => {
+      const element = elements.find((item) => item.id === id);
+      const nextLocked = !(element?.locked ?? false);
+      setElements((prev) =>
+        prev.map((item) =>
+          item.id === id
+            ? ({
+                ...item,
+                locked: nextLocked,
+              } as DesignerElement)
+            : item,
+        ),
+      );
+      if (nextLocked && editingId === id) {
+        setEditingId(null);
+        setEditingDraft(null);
+      }
+    },
+    [elements, editingId],
+  );
+
   const handleApplyTemplate = useCallback(
     (template: MenuTemplate) => {
       setEditingId(null);
