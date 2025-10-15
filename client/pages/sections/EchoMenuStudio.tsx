@@ -1663,8 +1663,8 @@ type DesignerCanvasProps = {
   pageSize: PageSize;
   onPositionChange: (id: string, position: { x: number; y: number }) => void;
   editingId: string | null;
-  editingValue: string;
-  onEditingChange: (value: string) => void;
+  editingDraft: Partial<DesignerElement> | null;
+  onEditingChange: (changes: Partial<DesignerElement>) => void;
   onBeginEdit: (id: string) => void;
   onCommitEdit: () => void;
   onCancelEdit: () => void;
