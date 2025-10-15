@@ -3157,7 +3157,7 @@ function FloatingToolbarPanel({
       event.stopPropagation();
       event.preventDefault();
     },
-    [containerRef, handlePointerMove, handlePointerUp, state.pinned, state.x, state.y],
+    [getAvailableSpace, handlePointerMove, handlePointerUp, state.pinned, state.x, state.y],
   );
 
   useEffect(() => {
@@ -3641,7 +3641,7 @@ function FloatingLayersPanel({
       window.addEventListener("pointerup", handlePointerUp);
       event.preventDefault();
     },
-    [containerRef, handlePointerMove, handlePointerUp, state.pinned, state.x, state.y],
+    [getAvailableSpace, handlePointerMove, handlePointerUp, state.pinned, state.x, state.y],
   );
 
   useEffect(() => {
