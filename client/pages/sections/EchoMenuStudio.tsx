@@ -1028,6 +1028,9 @@ export default function MenuDesignStudioSection() {
 
   const handleLayerShift = useCallback(
     (id: string, direction: "forward" | "backward") => {
+      if (editingId) {
+        handleCommitInlineEdit();
+      }
       setElements((prev) => {
         if (prev.length < 2) return prev;
         const ordered = [...prev].sort((a, b) => a.zIndex - b.zIndex);
