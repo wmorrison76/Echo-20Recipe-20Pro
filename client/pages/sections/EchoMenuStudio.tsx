@@ -3723,8 +3723,15 @@ function FloatingLayersPanel({
   return (
     <div
       ref={panelRef}
-      className="pointer-events-auto absolute z-30 w-[220px] rounded-2xl border border-slate-200/70 bg-white/95 p-3 shadow-2xl backdrop-blur dark:border-slate-800/60 dark:bg-slate-900/80"
-      style={{ transform: `translate(${state.x}px, ${state.y}px)` }}
+      className={cn(
+        "pointer-events-auto z-30 w-[220px] rounded-2xl border border-slate-200/70 bg-white/95 p-3 shadow-2xl backdrop-blur dark:border-slate-800/60 dark:bg-slate-900/80",
+        bounds === "viewport" ? "fixed" : "absolute",
+      )}
+      style={{
+        top: bounds === "viewport" ? 0 : undefined,
+        left: bounds === "viewport" ? 0 : undefined,
+        transform: `translate(${state.x}px, ${state.y}px)`,
+      }}
     >
       <div className="flex items-center justify-between">
         <div
