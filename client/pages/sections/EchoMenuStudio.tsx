@@ -2505,7 +2505,7 @@ function DesignerCanvas({
   const handleElementDoubleClick = useCallback(
     (event: React.MouseEvent<HTMLDivElement>, element: DesignerElement) => {
       event.stopPropagation();
-      if (!isTextEditableElement(element)) return;
+      if (element.locked || !isTextEditableElement(element)) return;
       onSelect(element.id);
       onBeginEdit(element.id);
     },
