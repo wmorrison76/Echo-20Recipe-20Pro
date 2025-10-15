@@ -1696,12 +1696,11 @@ export default function MenuDesignStudioSection() {
         return;
       }
 
-      const selected = elements.find((item) => item.id === selectedId);
-      if (!selected) {
+      if (!selectedElement) {
         return;
       }
 
-      const isLocked = Boolean(selected.locked);
+      const isLocked = Boolean(selectedElement.locked);
 
       if ((event.key === "Delete" || event.key === "Backspace") && !isLocked) {
         event.preventDefault();
@@ -1739,12 +1738,12 @@ export default function MenuDesignStudioSection() {
     },
     [
       editingId,
-      elements,
       handleCancelInlineEdit,
       handleDeleteSelected,
       handleDuplicateSelected,
       handleDeselect,
       handleNudgeSelected,
+      selectedElement,
       selectedId,
     ],
   );
