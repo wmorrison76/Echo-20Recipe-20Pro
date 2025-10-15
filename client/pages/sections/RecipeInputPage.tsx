@@ -314,6 +314,9 @@ const RecipeInputPage = () => {
   const finalizeResetTimerRef = useRef<number | null>(null);
   const [directions, setDirections] = useState("1. ");
   const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
+  const [finalizeState, setFinalizeState] = useState<"idle" | "saving" | "success">(
+    "idle",
+  );
   const { addRecipe, updateRecipe, addImages, recipes } = useAppData();
   const navigate = useNavigate();
   const { toast } = useToast();
