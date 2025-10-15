@@ -150,6 +150,9 @@ const DishAssemblyWorkspace: React.FC = () => {
     () => classifyMenuEngineering(foodCostPct, popularityScore),
     [foodCostPct, popularityScore],
   );
+  const popularityDisplay = Number.isFinite(popularityScore)
+    ? Math.round(popularityScore)
+    : null;
 
   const stations = useMemo(() => listStations(), [listStations]);
   const printers = useMemo(() => listPrinters(), [listPrinters]);
