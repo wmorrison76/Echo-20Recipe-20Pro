@@ -1521,6 +1521,7 @@ export default function MenuDesignStudioSection() {
       setElements((prev) =>
         prev.map((element) => {
           if (element.id !== id) return element;
+          if (element.locked) return element;
           const maxX = Math.max(0, pageSize.width - element.width);
           const maxY = Math.max(0, pageSize.height - element.height);
           return {
