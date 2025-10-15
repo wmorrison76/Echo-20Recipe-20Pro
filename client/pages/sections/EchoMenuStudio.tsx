@@ -1422,6 +1422,7 @@ export default function MenuDesignStudioSection() {
               onAdjustLineHeight={handleAdjustLineHeight}
               onDuplicateSelected={handleDuplicateSelected}
               onDeleteSelected={handleDeleteSelected}
+              onSelectionUpdate={updateElement}
             />
             <FloatingLayersPanel
               containerRef={workspaceRef}
