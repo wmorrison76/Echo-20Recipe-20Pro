@@ -1354,6 +1354,7 @@ const createElementsFromTemplate = (template: MenuTemplate): DesignerElement[] =
     ...element,
     id: createId(),
     zIndex: element.zIndex ?? index + 1,
+    locked: element.locked ?? false,
   }));
 
 const INITIAL_CANVAS: CanvasSettings = {
