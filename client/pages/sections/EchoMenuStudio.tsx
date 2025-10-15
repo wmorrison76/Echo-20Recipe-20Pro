@@ -1661,6 +1661,99 @@ export default function MenuDesignStudioSection() {
     [elements, editingId, setEditingDraft],
   );
 
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      const activeElement = document.activeElement as HTMLElement | null;
+      if (activeElement) {
+        const tagName = activeElement.tagName.toLowerCase();
+        const isTextInput =
+          tagName === "input" ||
+          tagName === "textarea" ||
+          activeElement.isContentEditable ||
+          activeElement.getAttribute("role") === "textbox";
+        if (isTextInput) {
+          return;
+        }
+      }
+
+      if (editingId) {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          handleCancelInlineEdit();
+        }
+        return;
+      }
+
+      if (event.key === "Escape") {
+        if (selectedId) {
+          event.preventDefault();
+          handleDeselect();
+        }
+        return;
+      }
+
+      if (!selectedId) {
+        return;
+      }
+
+      const selected = elements.find((item) => item.id === selectedId);
+      if (!selected) {
+        return;
+      }
+
+      const isLocked = Boolean(selected.locked);
+
+      if ((event.key === "Delete" || event.key === "Backspace") && !isLocked) {
+        event.preventDefault();
+        handleDeleteSelected();
+        return;
+      }
+
+      if ((event.key === "d" || event.key === "D") && (event.metaKey || event.ctrlKey) && !isLocked) {
+        event.preventDefault();
+        handleDuplicateSelected();
+        return;
+      }
+
+      if (event.key.startsWith("Arrow")) {
+        event.preventDefault();
+        const step = event.shiftKey ? 10 : 1;
+        switch (event.key) {
+          case "ArrowUp":
+            handleNudgeSelected(0, -step);
+            break;
+          case "ArrowDown":
+            handleNudgeSelected(0, step);
+            break;
+          case "ArrowLeft":
+            handleNudgeSelected(-step, 0);
+            break;
+          case "ArrowRight":
+            handleNudgeSelected(step, 0);
+            break;
+          default:
+            break;
+        }
+        return;
+      }
+    },
+    [
+      editingId,
+      elements,
+      handleCancelInlineEdit,
+      handleDeleteSelected,
+      handleDuplicateSelected,
+      handleDeselect,
+      handleNudgeSelected,
+      selectedId,
+    ],
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
+
   const handleApplyTemplate = useCallback(
     (template: MenuTemplate) => {
       setEditingId(null);
