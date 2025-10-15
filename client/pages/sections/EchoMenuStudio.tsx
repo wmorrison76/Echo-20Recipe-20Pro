@@ -1119,6 +1119,108 @@ export default function MenuDesignStudioSection() {
     [selectedElement, updateElement],
   );
 
+  const handleToggleGrid = useCallback(() => {
+    setCanvasSettings((prev) => ({
+      ...prev,
+      showGrid: !prev.showGrid,
+    }));
+  }, []);
+
+  const handleToggleColumns = useCallback(() => {
+    setCanvasSettings((prev) => ({
+      ...prev,
+      showColumns: !prev.showColumns,
+    }));
+  }, []);
+
+  const handleToggleMargins = useCallback(() => {
+    setCanvasSettings((prev) => ({
+      ...prev,
+      showMargins: !prev.showMargins,
+    }));
+  }, []);
+
+  const handleAdjustFontSize = useCallback(
+    (delta: number) => {
+      if (!selectedElement) return;
+      if (
+        ![
+          "heading",
+          "subheading",
+          "body",
+          "menu-item",
+        ].includes(selectedElement.type)
+      ) {
+        return;
+      }
+      const nextSize = clamp((selectedElement.fontSize ?? 16) + delta, 6, 240);
+      updateElement(selectedElement.id, {
+        fontSize: nextSize,
+      });
+    },
+    [selectedElement, updateElement],
+  );
+
+  const handleAdjustLetterSpacing = useCallback(
+    (delta: number) => {
+      if (!selectedElement) return;
+      if (
+        ![
+          "heading",
+          "subheading",
+          "body",
+          "menu-item",
+        ].includes(selectedElement.type)
+      ) {
+        return;
+      }
+      const current = selectedElement.letterSpacing ?? 0;
+      updateElement(selectedElement.id, {
+        letterSpacing: Number((current + delta).toFixed(2)),
+      });
+    },
+    [selectedElement, updateElement],
+  );
+
+  const handleAdjustLineHeight = useCallback(
+    (delta: number) => {
+      if (!selectedElement) return;
+      if (
+        ![
+          "heading",
+          "subheading",
+          "body",
+          "menu-item",
+        ].includes(selectedElement.type)
+      ) {
+        return;
+      }
+      const current = selectedElement.lineHeight ?? 1.4;
+      updateElement(selectedElement.id, {
+        lineHeight: Number(clamp(current + delta, 0.6, 3).toFixed(2)),
+      });
+    },
+    [selectedElement, updateElement],
+  );
+
+  const handleAlignChange = useCallback(
+    (align: "left" | "center" | "right") => {
+      if (!selectedElement) return;
+      if (
+        ![
+          "heading",
+          "subheading",
+          "body",
+          "menu-item",
+        ].includes(selectedElement.type)
+      ) {
+        return;
+      }
+      updateElement(selectedElement.id, { align });
+    },
+    [selectedElement, updateElement],
+  );
+
   const handleExportLayout = useCallback(async () => {
     const payload = {
       name: documentName,
