@@ -1784,6 +1784,16 @@ function DesignerCanvas({
       }
     : {};
 
+  const handleElementDoubleClick = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>, element: DesignerElement) => {
+      event.stopPropagation();
+      if (!isTextEditableElement(element)) return;
+      onSelect(element.id);
+      onBeginEdit(element.id);
+    },
+    [onBeginEdit, onSelect],
+  );
+
   return (
     <div className="flex flex-1 flex-col">
       <div className="relative flex min-h-0 flex-1 overflow-auto rounded-3xl border border-slate-200 bg-slate-100/40 p-6 shadow-inner dark:border-slate-800/70 dark:bg-slate-950/40">
