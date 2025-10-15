@@ -27,7 +27,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "@/hooks/use-toast";
 import {
   AllergenRow,
@@ -56,7 +55,13 @@ import {
 import DishComponentsTable from "./components/DishComponentsTable";
 import PosMappingSection from "./components/PosMappingSection";
 import RecipePreviewPanel from "./components/RecipePreviewPanel";
-import { Sparkles, RefreshCcw, Upload, RotateCcw, Settings, ChevronDown } from "lucide-react";
+import {
+  RoutingSelector,
+  SelectedRoutingSummary,
+  type RoutingOption,
+  type RoutingSummaryItem,
+} from "./components/RoutingSelector";
+import { Sparkles, RefreshCcw, Upload, RotateCcw, Settings } from "lucide-react";
 
 const INITIAL_COMPONENT_ROWS = 6;
 
