@@ -613,6 +613,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       id: uid(),
       createdAt: Date.now(),
       ...recipe,
+      title: ((recipe.title ?? "") as string).trim() || "Untitled",
     } as Recipe;
     const sanitized = sanitizeRecipeRecord(candidate);
     const key = recipeTitleKey(sanitized.title);
