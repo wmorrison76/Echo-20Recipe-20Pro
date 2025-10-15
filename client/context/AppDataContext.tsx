@@ -2494,9 +2494,9 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    if (collected.length) setRecipes((prev) => [...collected, ...prev]);
-    return { added: collected.length, errors, titles };
-  }, []);
+    const { added } = appendRecipes(collected);
+    return { added: added.length, errors, titles };
+  }, [appendRecipes]);
 
   const addRecipesFromExcelFiles = useCallback(async (files: File[]) => {
     const errors: { file: string; error: string }[] = [];
