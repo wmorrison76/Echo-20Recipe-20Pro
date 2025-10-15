@@ -979,7 +979,11 @@ export default function MenuDesignStudioSection() {
     if (!selectedId) return;
     setElements((prev) => prev.filter((element) => element.id !== selectedId));
     setSelectedId((current) => (current === selectedId ? null : current));
-  }, [selectedId]);
+    if (editingId === selectedId) {
+      setEditingId(null);
+      setEditingDraft(null);
+    }
+  }, [editingId, selectedId]);
 
   const handleDuplicateSelected = useCallback(() => {
     if (!selectedId) return;
