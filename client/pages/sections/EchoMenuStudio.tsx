@@ -986,6 +986,9 @@ export default function MenuDesignStudioSection() {
   }, [editingId, selectedId]);
 
   const handleDuplicateSelected = useCallback(() => {
+    if (editingId) {
+      handleCommitInlineEdit();
+    }
     if (!selectedId) return;
     let createdId: string | null = null;
     setElements((prev) => {
