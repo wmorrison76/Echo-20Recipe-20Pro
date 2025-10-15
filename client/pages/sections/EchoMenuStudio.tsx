@@ -137,6 +137,12 @@ type ElementDragState = {
   height: number;
 };
 
+type FloatingPanelState = {
+  x: number;
+  y: number;
+  pinned: boolean;
+};
+
 const FONT_LIBRARY = [
   { label: "Playfair Display", value: "'Playfair Display', serif" },
   { label: "Cormorant Garamond", value: "'Cormorant Garamond', serif" },
