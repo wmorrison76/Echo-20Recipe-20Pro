@@ -1471,7 +1471,7 @@ export default function MenuDesignStudioSection() {
   const handleBeginInlineEdit = useCallback(
     (id: string) => {
       const element = elements.find((item) => item.id === id);
-      if (!element || !isTextEditableElement(element)) return;
+      if (!element || element.locked || !isTextEditableElement(element)) return;
       const draft = createDraftFromElement(element);
       setEditingId(id);
       setEditingDraft(draft);
