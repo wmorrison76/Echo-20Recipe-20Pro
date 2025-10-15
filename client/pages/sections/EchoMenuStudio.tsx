@@ -1446,14 +1446,23 @@ export default function MenuDesignStudioSection() {
   const updateElement = useCallback(
     (id: string, changes: Partial<DesignerElement>) => {
       setElements((prev) =>
-        prev.map((element) =>
-          element.id === id
-            ? ({
-                ...element,
-                ...changes,
-              } as DesignerElement)
-            : element,
-        ),
+        prev.map((element) => {
+          if (element.id !== id) {
+            return element;
+          }
+          const hasLockedChange = Object.prototype.hasOwnProperty.call(changes, "locked");
+          if (element.locked && !hasLockedChange) {
+            return element;
+          }
+          const nextLocked = hasLockedChange
+            ? Boolean((changes as Partial<DesignerElement>).locked)
+            : element.locked ?? false;
+          return {
+            ...element,
+            ...changes,
+            locked: nextLocked,
+          } as DesignerElement;
+        }),
       );
     },
     [],
