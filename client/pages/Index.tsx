@@ -8,6 +8,7 @@ import HaccpComplianceWorkspace from "./sections/saas/HaccpComplianceWorkspace";
 import ServerNotesSection from "./sections/server-notes";
 import OperationsDocsSection from "./sections/operations-docs";
 import DishAssemblySection from "./sections/dish-assembly";
+import EchoMenuStudioSection from "./sections/EchoMenuStudio";
 import ProductionSection from "./sections/Production";
 import PurchasingReceivingSection from "./sections/purchasing-receiving";
 import TopTabs from "@/components/TopTabs";
@@ -158,6 +159,9 @@ function IndexContent() {
             </TabsContent>
             <TabsContent value="dish-assembly">
               <DishAssemblySection />
+            </TabsContent>
+            <TabsContent value="echo-menu">
+              <EchoMenuStudioSection />
             </TabsContent>
             <TabsContent value="server-notes">
               <ServerNotesSection />
