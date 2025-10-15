@@ -1913,6 +1913,9 @@ export default function MenuDesignStudioSection() {
       ) {
         return;
       }
+      if (selectedElement.locked) {
+        return;
+      }
       const current = selectedElement.lineHeight ?? 1.4;
       updateElement(selectedElement.id, {
         lineHeight: Number(clamp(current + delta, 0.6, 3).toFixed(2)),
