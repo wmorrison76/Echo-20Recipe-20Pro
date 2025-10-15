@@ -106,6 +106,7 @@ const DishComponentsTable: React.FC<DishComponentsTableProps> = ({
                   }
                   placeholder="1 ea"
                   className="h-10 rounded-lg border-primary/30"
+                  enableSuggestions={false}
                 />
                 <div className="space-y-2">
                   <Popover
@@ -190,6 +191,8 @@ const DishComponentsTable: React.FC<DishComponentsTableProps> = ({
                     }
                     placeholder="Display name"
                     className="h-10 rounded-lg border-primary/20"
+                    suggestionScope={["recipes", "collections", "tags"]}
+                    minSuggestionQueryLength={1}
                   />
                 </div>
                 <Textarea
