@@ -2694,6 +2694,7 @@ type FloatingToolbarPanelProps = {
   onAdjustLineHeight: (delta: number) => void;
   onDuplicateSelected: () => void;
   onDeleteSelected: () => void;
+  onSelectionUpdate: (id: string, changes: Partial<DesignerElement>) => void;
 };
 
 function FloatingToolbarPanel({
