@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 import {
   Popover,
   PopoverContent,
@@ -49,6 +50,7 @@ type DishComponentsTableProps = {
   onAddRow: () => void;
   onRemoveRow: (rowId: string) => void;
   onFocusRow: (rowId: string) => void;
+  className?: string;
 };
 
 const DishComponentsTable: React.FC<DishComponentsTableProps> = ({
@@ -59,6 +61,7 @@ const DishComponentsTable: React.FC<DishComponentsTableProps> = ({
   onAddRow,
   onRemoveRow,
   onFocusRow,
+  className,
 }) => {
   const options = useRecipeOptions(recipeSummaries);
   const [openRowId, setOpenRowId] = useState<string | null>(null);
@@ -70,7 +73,7 @@ const DishComponentsTable: React.FC<DishComponentsTableProps> = ({
   };
 
   return (
-    <Card className="border-primary/30 bg-background/95 shadow-lg">
+    <Card className={cn("border-primary/30 bg-background/95 shadow-lg", className)}>
       <CardHeader>
         <CardTitle className="text-sm font-semibold uppercase tracking-[0.35em] text-muted-foreground">
           Dish Components
