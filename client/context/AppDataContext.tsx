@@ -259,7 +259,9 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const storedRecipes = readLS<Recipe[]>(LS_RECIPES, []);
-    setRecipes(storedRecipes.length ? storedRecipes : mockRecipes);
+    setRecipes(
+      sanitizeRecipeCollection(storedRecipes.length ? storedRecipes : mockRecipes),
+    );
     setImages(readLS<GalleryImage[]>(LS_IMAGES, []));
     setLookbooks(readLS<LookBook[]>(LS_LOOKBOOKS, []));
     setTileBoards(readLS<TileBoard[]>(LS_TILE_BOARDS, []));
