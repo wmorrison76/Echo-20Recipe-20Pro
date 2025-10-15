@@ -242,6 +242,142 @@ function writeLS<T>(key: string, value: T) {
   }
 }
 
+// --- Recipe normalization and deduplication helpers ---
+const TITLE_SMALL_WORDS = new Set([
+  "a",
+  "an",
+  "and",
+  "as",
+  "at",
+  "but",
+  "by",
+  "for",
+  "from",
+  "in",
+  "into",
+  "of",
+  "on",
+  "or",
+  "the",
+  "to",
+  "with",
+]);
+
+function normalizeSpaces(s: string) {
+  return s.replace(/\s+/g, " ").trim();
+}
+
+function isAllCapsWord(word: string) {
+  return /^\p{Lu}+$/u.test(word);
+}
+
+function formatSegment(seg: string) {
+  if (!seg) return seg;
+  const parts = seg.split(/([\s-\/]+)/g);
+  return parts
+    .map((p) => {
+      if (/^\s+$/.test(p) || /[-\/]/.test(p)) return p;
+      const lw = p.toLowerCase();
+      if (isAllCapsWord(p)) return p; // keep acronyms
+      if (TITLE_SMALL_WORDS.has(lw)) return lw;
+      return lw.charAt(0).toUpperCase() + lw.slice(1);
+    })
+    .join("");
+}
+
+function formatRecipeTitleCase(title: string) {
+  if (!title) return title;
+  title = normalizeSpaces(title.replace(/[__]+/g, " "));
+  // Split by colon to treat subtitle separately
+  const parts = title.split(":").map((p) => p.trim());
+  const main = parts[0]
+    .split(/\s+/)
+    .map((w, i) => {
+      const lw = w.toLowerCase();
+      if (i === 0) return formatSegment(w);
+      if (TITLE_SMALL_WORDS.has(lw)) return lw;
+      return formatSegment(w);
+    })
+    .join(" ");
+  if (parts.length > 1) return [main, ...parts.slice(1).map((p) => formatSegment(p))].join(": ");
+  return main;
+}
+
+function recipeTitleKey(title: string) {
+  return normalizeSpaces(String(title ?? "").toLowerCase());
+}
+
+function sanitizeRecipeRecord(recipe: Recipe): Recipe {
+  const id = recipe.id || uid();
+  const createdAt = recipe.createdAt || Date.now();
+  const title = formatRecipeTitleCase(String(recipe.title ?? "").trim() || "Untitled");
+  const ingredients = Array.isArray(recipe.ingredients)
+    ? recipe.ingredients.map((s) => String(s).trim()).filter(Boolean)
+    : recipe.ingredients;
+  const instructions = Array.isArray(recipe.instructions)
+    ? recipe.instructions.map((s) => String(s).trim()).filter(Boolean)
+    : recipe.instructions;
+  const tags = Array.isArray(recipe.tags)
+    ? Array.from(new Set(recipe.tags.map((t) => String(t).trim()).filter(Boolean)))
+    : recipe.tags;
+  const imageNames = Array.isArray(recipe.imageNames)
+    ? Array.from(new Set(recipe.imageNames.map((n) => String(n).trim()).filter(Boolean)))
+    : recipe.imageNames;
+
+  const sanitized: Recipe = {
+    ...recipe,
+    id,
+    createdAt,
+    title,
+    ingredients: ingredients && ingredients.length ? ingredients : undefined,
+    instructions: instructions && instructions.length ? instructions : undefined,
+    tags: tags && tags.length ? tags : undefined,
+    imageNames: imageNames && imageNames.length ? imageNames : undefined,
+  } as Recipe;
+
+  return sanitized;
+}
+
+function sanitizeRecipeCollection(list: Recipe[]): Recipe[] {
+  const seen = new Map<string, Recipe>();
+  for (const r of list) {
+    try {
+      const s = sanitizeRecipeRecord(r);
+      const key = recipeTitleKey(s.title);
+      if (!seen.has(key)) seen.set(key, s);
+      else {
+        // prefer the earlier createdAt (smaller) or keep existing, but merge extras
+        const existing = seen.get(key)!;
+        const keep = existing.createdAt <= s.createdAt ? existing : s;
+        const other = existing === keep ? s : existing;
+        seen.set(key, {
+          ...keep,
+          extra: { ...(keep.extra ?? {}), ...(other.extra ?? {}) },
+        });
+      }
+    } catch {
+      // ignore bad entries
+    }
+  }
+  return Array.from(seen.values()).sort((a, b) => b.createdAt - a.createdAt);
+}
+
+function createRecipeDeduper(current: Recipe[]) {
+  const keys = new Set(current.map((r) => recipeTitleKey(r.title)));
+  return (candidate: Recipe) => {
+    const sanitized = sanitizeRecipeRecord(candidate);
+    const key = recipeTitleKey(sanitized.title);
+    if (keys.has(key)) {
+      const existing = current.find((r) => recipeTitleKey(r.title) === key)!;
+      return { accepted: false, recipe: existing } as const;
+    }
+    keys.add(key);
+    return { accepted: true, recipe: sanitized } as const;
+  };
+}
+
+// --- end helpers ---
+
 export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [images, setImages] = useState<GalleryImage[]>([]);
