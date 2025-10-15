@@ -2683,7 +2683,6 @@ type FloatingToolbarPanelProps = {
   onAddMenuItem: () => void;
   onAddDivider: () => void;
   onAddShape: (shape: "rectangle" | "ellipse") => void;
-  onAddImage: (url: string, label: string) => void;
   canvasSettings: CanvasSettings;
   onToggleGrid: () => void;
   onToggleColumns: () => void;
@@ -2707,7 +2706,6 @@ function FloatingToolbarPanel({
   onAddMenuItem,
   onAddDivider,
   onAddShape,
-  onAddImage,
   canvasSettings,
   onToggleGrid,
   onToggleColumns,
