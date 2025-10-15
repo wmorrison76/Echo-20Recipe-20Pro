@@ -800,18 +800,6 @@ const DishAssemblyWorkspace: React.FC = () => {
                 </div>
                 <div className="space-y-1">
                   <div className="text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground">
-                    Menu Description
-                  </div>
-                  <Textarea
-                    value={menuDescription}
-                    onChange={(event) => setMenuDescription(event.target.value)}
-                    rows={6}
-                    placeholder="Elegant marketing copy for the menu listing"
-                    className="h-auto min-h-[160px] rounded-xl border border-primary/30 bg-background/80"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <div className="text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground">
                     Server Notes
                   </div>
                   <Textarea
