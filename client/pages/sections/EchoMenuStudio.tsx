@@ -1516,10 +1516,17 @@ export default function MenuDesignStudioSection() {
             elements={elements}
             selectedId={selectedId}
             onSelect={setSelectedId}
-            onDeselect={() => setSelectedId(null)}
+            onDeselect={handleDeselect}
             canvasSettings={canvasSettings}
             pageSize={pageSize}
             onPositionChange={handlePositionChange}
+            editingId={editingId}
+            editingDraft={editingDraft}
+            onEditingChange={handleInlineEditingChange}
+            onBeginEdit={handleBeginInlineEdit}
+            onCommitEdit={handleCommitInlineEdit}
+            onCancelEdit={handleCancelInlineEdit}
+            onCanvasPointerDown={handleCanvasPointerDownCommit}
           />
 
           <div className="pointer-events-none absolute inset-0">
