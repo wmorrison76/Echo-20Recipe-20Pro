@@ -817,6 +817,22 @@ const finalizeRecipe = useCallback(() => {
   t,
   isFormPristine,
   finalizeState,
+  yieldQty,
+  yieldUnit,
+  portionCount,
+  portionUnit,
+  cookTime,
+  cookTemp,
+  prepTime,
+  selectedRecipeAccess,
+  selectedAllergens,
+  selectedNationality,
+  selectedCourses,
+  selectedRecipeType,
+  selectedPrepMethod,
+  selectedCookingEquipment,
+  nutritionDisplay,
+  nutrition,
 ]);
 
 const handleClearForm = useCallback(() => {
@@ -3373,7 +3389,7 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                     const lineStart = before.lastIndexOf("\n") + 1;
                     const currentLine = before.slice(lineStart);
                     const m = currentLine.match(/^\s*(\d+)[\.)]?\s*/);
-                    const nextNum = m ? String(Number(m[1]) + 1) + ". " : "• ";
+                    const nextNum = m ? String(Number(m[1]) + 1) + ". " : "��� ";
                     const newText = before + "\n" + nextNum + after;
                     el.textContent = newText;
                     const newOffset = offset + 1 + nextNum.length;
