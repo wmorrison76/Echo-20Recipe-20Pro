@@ -3240,8 +3240,29 @@ function FloatingLayersPanel({
     };
   }, [handlePointerMove, handlePointerUp]);
 
+  useEffect(() => {
+    const container = containerRef.current;
+    const panel = panelRef.current;
+    if (!container || !panel || typeof ResizeObserver === "undefined") {
+      return;
+    }
+    const observer = new ResizeObserver(([entry]) => {
+      if (!entry) return;
+      const maxX = Math.max(0, entry.contentRect.width - panel.offsetWidth);
+      const maxY = Math.max(0, entry.contentRect.height - panel.offsetHeight);
+      const nextX = clamp(state.x, 0, maxX);
+      const nextY = clamp(state.y, 0, maxY);
+      if (nextX !== state.x || nextY !== state.y) {
+        onStateChange({ x: nextX, y: nextY });
+      }
+    });
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [containerRef, onStateChange, state.x, state.y]);
+
   return (
     <div
+      ref={panelRef}
       className="pointer-events-auto absolute z-30 w-[220px] rounded-2xl border border-slate-200/70 bg-white/95 p-3 shadow-2xl backdrop-blur dark:border-slate-800/60 dark:bg-slate-900/80"
       style={{ transform: `translate(${state.x}px, ${state.y}px)` }}
     >
