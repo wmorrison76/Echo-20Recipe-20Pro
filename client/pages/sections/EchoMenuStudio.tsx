@@ -1680,7 +1680,7 @@ function DesignerCanvas({
   pageSize,
   onPositionChange,
   editingId,
-  editingValue,
+  editingDraft,
   onEditingChange,
   onBeginEdit,
   onCommitEdit,
