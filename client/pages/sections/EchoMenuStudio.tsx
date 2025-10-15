@@ -1051,7 +1051,7 @@ export default function MenuDesignStudioSection() {
         }));
       });
     },
-    [],
+    [editingId, handleCommitInlineEdit],
   );
 
   const handleApplyTemplate = useCallback(
