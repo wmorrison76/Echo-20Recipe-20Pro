@@ -3225,7 +3225,7 @@ function FloatingToolbarPanel({
       style={{
         top: bounds === "viewport" ? 0 : undefined,
         left: bounds === "viewport" ? 0 : undefined,
-        transform: `translate(${state.x}px, ${state.y}px)` as string,
+        transform: `translate(${state.x}px, ${state.y}px)`,
         touchAction: state.pinned ? "auto" : "none",
       }}
       onPointerDownCapture={beginDrag}
