@@ -211,6 +211,61 @@ const DishAssemblyWorkspace: React.FC = () => {
     });
   }, [printerQuery, printers]);
 
+  const stationOptions = useMemo<RoutingOption[]>(() => {
+    return filteredStations.map((station) => {
+      const suggestedPrinters = station.defaultPrinters
+        .map((printerId) => printers.find((printer) => printer.id === printerId)?.name)
+        .filter((name): name is string => Boolean(name));
+      return {
+        id: station.id,
+        label: station.name,
+        tag: station.category.replace(/-/g, " ").toUpperCase(),
+        description: station.description,
+        meta: suggestedPrinters.length
+          ? `Suggested printers: ${suggestedPrinters.join(", ")}`
+          : undefined,
+      } satisfies RoutingOption;
+    });
+  }, [filteredStations, printers]);
+
+  const printerOptions = useMemo<RoutingOption[]>(() => {
+    return filteredPrinters.map((printer) => ({
+      id: printer.id,
+      label: printer.name,
+      tag: printer.technology.toUpperCase(),
+      description: printer.description,
+      meta: printer.recommendedUse,
+      recommended: recommendedPrinterSet.has(printer.id),
+    } satisfies RoutingOption));
+  }, [filteredPrinters, recommendedPrinterSet]);
+
+  const stationSummaryItems = useMemo<RoutingSummaryItem[]>(() => {
+    return selectedStationDetails.map((station) => {
+      const suggestedPrinters = station.defaultPrinters
+        .map((printerId) => printers.find((printer) => printer.id === printerId)?.name)
+        .filter((name): name is string => Boolean(name));
+      return {
+        id: station.id,
+        label: station.name,
+        tag: station.category.replace(/-/g, " ").toUpperCase(),
+        description: station.description,
+        meta: suggestedPrinters.length
+          ? `Suggested printers: ${suggestedPrinters.join(", ")}`
+          : undefined,
+      } satisfies RoutingSummaryItem;
+    });
+  }, [printers, selectedStationDetails]);
+
+  const printerSummaryItems = useMemo<RoutingSummaryItem[]>(() => {
+    return selectedPrinterDetails.map((printer) => ({
+      id: printer.id,
+      label: printer.name,
+      tag: printer.technology.toUpperCase(),
+      description: printer.description,
+      meta: printer.recommendedUse,
+    } satisfies RoutingSummaryItem));
+  }, [selectedPrinterDetails]);
+
   const handleRowChange = useCallback(
     (rowId: string, patch: Partial<DishComponentRow>) => {
       setComponentRows((rows) =>
