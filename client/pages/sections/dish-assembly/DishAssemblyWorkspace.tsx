@@ -604,7 +604,7 @@ const DishAssemblyWorkspace: React.FC = () => {
                     />
                   </div>
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-end md:gap-4">
                     <label className="flex-1 min-w-[240px] space-y-1 text-sm font-medium uppercase tracking-[0.28em] text-muted-foreground">
                       Menu Item Name
@@ -627,22 +627,33 @@ const DishAssemblyWorkspace: React.FC = () => {
                         className="rounded-xl border-primary/40 bg-background/80 text-lg font-semibold"
                       />
                     </label>
-                    <div className="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-muted-foreground md:ml-auto">
-                      <Badge
-                        variant="outline"
-                        className="border-primary/40 text-primary"
-                      >
-                        Food Cost{" "}
+                  </div>
+                  <div className="grid gap-2 sm:grid-cols-3">
+                    <div className="rounded-xl border border-primary/30 bg-background/80 px-3 py-3 text-center shadow-sm">
+                      <div className="text-[10px] font-semibold uppercase tracking-[0.32em] text-muted-foreground">
+                        Food Cost
+                      </div>
+                      <div className="text-base font-semibold text-primary">
                         {foodCostPct != null
                           ? `${Math.round(foodCostPct * 100)}%`
                           : "—"}
-                      </Badge>
-                      <Badge
-                        variant="outline"
-                        className="border-primary/40 text-primary"
-                      >
+                      </div>
+                    </div>
+                    <div className="rounded-xl border border-primary/30 bg-background/80 px-3 py-3 text-center shadow-sm">
+                      <div className="text-[10px] font-semibold uppercase tracking-[0.32em] text-muted-foreground">
+                        Menu Engineering
+                      </div>
+                      <div className="text-base font-semibold text-primary">
                         {menuEngineering.classification}
-                      </Badge>
+                      </div>
+                    </div>
+                    <div className="rounded-xl border border-primary/30 bg-background/80 px-3 py-3 text-center shadow-sm">
+                      <div className="text-[10px] font-semibold uppercase tracking-[0.32em] text-muted-foreground">
+                        Popularity
+                      </div>
+                      <div className="text-base font-semibold text-primary">
+                        {popularityDisplay != null ? `${popularityDisplay}%` : "—"}
+                      </div>
                     </div>
                   </div>
                 </div>
