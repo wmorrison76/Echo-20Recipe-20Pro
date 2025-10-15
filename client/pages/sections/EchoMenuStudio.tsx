@@ -906,6 +906,47 @@ export default function MenuDesignStudioSection() {
     [],
   );
 
+  const handleBeginInlineEdit = useCallback(
+    (id: string) => {
+      const element = elements.find((item) => item.id === id);
+      if (!element || !isTextEditableElement(element)) return;
+      const draft = createDraftFromElement(element);
+      setEditingId(id);
+      setEditingDraft(draft);
+      setSelectedId(id);
+    },
+    [elements],
+  );
+
+  const handleInlineEditingChange = useCallback((changes: Partial<DesignerElement>) => {
+    setEditingDraft((prev) => ({ ...(prev ?? {}), ...changes }));
+  }, []);
+
+  const handleCommitInlineEdit = useCallback(() => {
+    if (!editingId || !editingDraft) return;
+    const element = elements.find((item) => item.id === editingId);
+    if (!element) {
+      setEditingId(null);
+      setEditingDraft(null);
+      return;
+    }
+    const updates = extractDraftChanges(element, editingDraft);
+    updateElement(editingId, updates);
+    setEditingId(null);
+    setEditingDraft(null);
+  }, [editingDraft, editingId, elements, updateElement]);
+
+  const handleCancelInlineEdit = useCallback(() => {
+    setEditingId(null);
+    setEditingDraft(null);
+  }, []);
+
+  const handleCanvasPointerDownCommit = useCallback(() => {
+    if (editingId) {
+      handleCommitInlineEdit();
+    }
+  }, [editingId, handleCommitInlineEdit]);
+
   const handlePositionChange = useCallback(
     (id: string, position: { x: number; y: number }) => {
       setElements((prev) =>
