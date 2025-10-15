@@ -1565,7 +1565,7 @@ export default function MenuDesignStudioSection() {
     let createdId: string | null = null;
     setElements((prev) => {
       const source = prev.find((element) => element.id === selectedId);
-      if (!source) {
+      if (!source || source.locked) {
         return prev;
       }
       const copy: DesignerElement = {
@@ -1575,6 +1575,7 @@ export default function MenuDesignStudioSection() {
         x: clamp(source.x + 32, 0, pageSize.width - source.width),
         y: clamp(source.y + 32, 0, pageSize.height - source.height),
         zIndex: getNextZIndex(),
+        locked: false,
       };
       createdId = copy.id;
       return [...prev, copy];
