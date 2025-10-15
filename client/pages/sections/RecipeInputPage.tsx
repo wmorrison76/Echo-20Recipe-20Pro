@@ -640,6 +640,15 @@ const clearRecipeWorkspace = useCallback(
   ],
 );
 
+useEffect(() => {
+  return () => {
+    if (finalizeResetTimerRef.current !== null) {
+      window.clearTimeout(finalizeResetTimerRef.current);
+      finalizeResetTimerRef.current = null;
+    }
+  };
+}, []);
+
 const finalizeRecipe = useCallback(() => {
   if (isFormPristine) {
     toast({
