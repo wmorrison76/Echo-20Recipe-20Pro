@@ -467,6 +467,9 @@ function DocFilterBar({
               onChange={(event) => onSearchChange(event.target.value)}
               placeholder="Search documents, owners, or tags"
               className="flex-1"
+              suggestionScope={["documents", "people", "tags", "systems"]}
+              minSuggestionQueryLength={1}
+              suggestionLimit={10}
             />
           </div>
           <div className="flex items-center gap-2">
