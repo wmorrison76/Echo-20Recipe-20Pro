@@ -942,6 +942,7 @@ function IngredientsTable({ recipeId }: { recipeId: string }) {
                   value={r.qty}
                   onChange={(e) => setRow(i, { qty: e.target.value })}
                   className="w-20 rounded border bg-background px-2 py-1"
+                  data-fuzzy="off"
                 />
               </td>
               <td className="p-1">
@@ -949,6 +950,8 @@ function IngredientsTable({ recipeId }: { recipeId: string }) {
                   value={r.unit}
                   onChange={(e) => setRow(i, { unit: e.target.value })}
                   className="w-24 rounded border bg-background px-2 py-1"
+                  data-fuzzy-scope="tags"
+                  data-fuzzy-min="1"
                 />
               </td>
               <td className="p-1">
@@ -956,6 +959,8 @@ function IngredientsTable({ recipeId }: { recipeId: string }) {
                   value={r.item}
                   onChange={(e) => setRow(i, { item: e.target.value })}
                   className="w-full rounded border bg-background px-2 py-1"
+                  data-fuzzy-scope="ingredients"
+                  data-fuzzy-min="1"
                 />
               </td>
               <td className="p-1">
@@ -963,6 +968,8 @@ function IngredientsTable({ recipeId }: { recipeId: string }) {
                   value={r.prep}
                   onChange={(e) => setRow(i, { prep: e.target.value })}
                   className="w-32 rounded border bg-background px-2 py-1"
+                  data-fuzzy-scope="ingredients"
+                  data-fuzzy-min="1"
                 />
               </td>
               <td className="p-1">
@@ -970,6 +977,7 @@ function IngredientsTable({ recipeId }: { recipeId: string }) {
                   value={r.yield}
                   onChange={(e) => setRow(i, { yield: e.target.value })}
                   className="w-24 rounded border bg-background px-2 py-1"
+                  data-fuzzy="off"
                 />
               </td>
               <td className="p-1">
@@ -977,6 +985,7 @@ function IngredientsTable({ recipeId }: { recipeId: string }) {
                   value={r.cost}
                   onChange={(e) => setRow(i, { cost: e.target.value })}
                   className="w-24 rounded border bg-background px-2 py-1"
+                  data-fuzzy="off"
                 />
               </td>
             </tr>
