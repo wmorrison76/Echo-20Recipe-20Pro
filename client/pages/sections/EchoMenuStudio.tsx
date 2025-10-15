@@ -4151,7 +4151,7 @@ function FloatingToolbarPanel({
             <Button
               variant="outline"
               size="sm"
-              disabled={!hasSelection}
+              disabled={!canMutateSelection}
               onClick={onDuplicateSelected}
             >
               <Copy className="mr-2 h-3.5 w-3.5" aria-hidden />
