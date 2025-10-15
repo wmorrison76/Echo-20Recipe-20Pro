@@ -3731,6 +3731,7 @@ function FloatingLayersPanel({
         top: bounds === "viewport" ? 0 : undefined,
         left: bounds === "viewport" ? 0 : undefined,
         transform: `translate(${state.x}px, ${state.y}px)`,
+        touchAction: state.pinned ? "auto" : "none",
       }}
     >
       <div className="flex items-center justify-between">
