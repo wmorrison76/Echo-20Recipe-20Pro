@@ -3969,11 +3969,13 @@ function FloatingToolbarPanel({
                     </span>
                     <Input
                       value={selectedElement.currency ?? "USD"}
-                      onChange={(event) =>
+                      disabled={selectionLocked}
+                      onChange={(event) => {
+                        if (selectionLocked) return;
                         onSelectionUpdate(selectedElement.id, {
                           currency: event.target.value,
-                        })
-                      }
+                        });
+                      }}
                     />
                   </div>
                 </div>
