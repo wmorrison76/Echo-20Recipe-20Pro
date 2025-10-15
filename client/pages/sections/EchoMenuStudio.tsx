@@ -1652,6 +1652,13 @@ type DesignerCanvasProps = {
   canvasSettings: CanvasSettings;
   pageSize: PageSize;
   onPositionChange: (id: string, position: { x: number; y: number }) => void;
+  editingId: string | null;
+  editingValue: string;
+  onEditingChange: (value: string) => void;
+  onBeginEdit: (id: string) => void;
+  onCommitEdit: () => void;
+  onCancelEdit: () => void;
+  onCanvasPointerDown?: () => void;
 };
 
 function DesignerCanvas({
