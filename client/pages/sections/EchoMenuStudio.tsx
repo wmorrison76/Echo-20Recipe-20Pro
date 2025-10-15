@@ -3139,16 +3139,16 @@ function FloatingToolbarPanel({
       ) {
         return;
       }
-      const container = containerRef.current;
       const panel = panelRef.current;
-      if (!container || !panel) return;
-      const bounds = container.getBoundingClientRect();
+      if (!panel) return;
+      const { width, height } = getAvailableSpace();
       dragData.current = {
         startX: event.clientX,
         startY: event.clientY,
         originX: state.x,
         originY: state.y,
-        bounds,
+        availableWidth: width,
+        availableHeight: height,
         panelWidth: panel.offsetWidth,
         panelHeight: panel.offsetHeight,
       };
@@ -3624,16 +3624,16 @@ function FloatingLayersPanel({
   const handlePointerDown = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
       if (state.pinned || event.button !== 0) return;
-      const container = containerRef.current;
       const panel = panelRef.current;
-      if (!container || !panel) return;
-      const bounds = container.getBoundingClientRect();
+      if (!panel) return;
+      const { width, height } = getAvailableSpace();
       dragData.current = {
         startX: event.clientX,
         startY: event.clientY,
         originX: state.x,
         originY: state.y,
-        bounds,
+        availableWidth: width,
+        availableHeight: height,
         panelWidth: panel.offsetWidth,
         panelHeight: panel.offsetHeight,
       };
