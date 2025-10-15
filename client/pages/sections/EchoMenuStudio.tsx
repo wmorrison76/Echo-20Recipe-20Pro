@@ -965,9 +965,15 @@ export default function MenuDesignStudioSection() {
     [pageSize.height, pageSize.width],
   );
 
-  const handleSelectLayer = useCallback((id: string) => {
-    setSelectedId(id);
-  }, []);
+  const handleSelectLayer = useCallback(
+    (id: string) => {
+      if (editingId && editingId !== id) {
+        handleCommitInlineEdit();
+      }
+      setSelectedId(id);
+    },
+    [editingId, handleCommitInlineEdit],
+  );
 
   const handleDeleteSelected = useCallback(() => {
     if (!selectedId) return;
