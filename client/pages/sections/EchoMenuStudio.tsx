@@ -3649,9 +3649,21 @@ function FloatingLayersPanel({
     window.removeEventListener("pointerup", handlePointerUp);
   }, [handlePointerMove]);
 
-  const handlePointerDown = useCallback(
+  const beginDrag = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
-      if (state.pinned || event.button !== 0) return;
+      if (state.pinned) return;
+      if (event.button !== 0 && event.pointerType !== "touch" && event.pointerType !== "pen") {
+        return;
+      }
+      const target = event.target as HTMLElement | null;
+      if (
+        target &&
+        target.closest(
+          "button, a, input, textarea, select, label, [contenteditable='true'], [role='textbox'], [role='spinbutton'], [role='slider'], [data-floating-panel-interactive='true']",
+        )
+      ) {
+        return;
+      }
       const panel = panelRef.current;
       if (!panel) return;
       const { width, height } = getAvailableSpace();
@@ -3667,6 +3679,7 @@ function FloatingLayersPanel({
       };
       window.addEventListener("pointermove", handlePointerMove);
       window.addEventListener("pointerup", handlePointerUp);
+      event.stopPropagation();
       event.preventDefault();
     },
     [getAvailableSpace, handlePointerMove, handlePointerUp, state.pinned, state.x, state.y],
