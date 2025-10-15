@@ -59,6 +59,8 @@ import {
   ZoomOut,
   ChevronUp,
   ChevronDown,
+  Lock,
+  Unlock,
 } from "lucide-react";
 
 type DesignerElementType =
