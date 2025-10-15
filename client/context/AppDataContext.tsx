@@ -609,13 +609,23 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   );
 
   const addRecipe = useCallback((recipe: Omit<Recipe, "id" | "createdAt">) => {
-    const item: Recipe = {
+    const candidate: Recipe = {
       id: uid(),
       createdAt: Date.now(),
       ...recipe,
     } as Recipe;
-    setRecipes((prev) => [item, ...prev]);
-    return item.id;
+    const sanitized = sanitizeRecipeRecord(candidate);
+    const key = recipeTitleKey(sanitized.title);
+    let resultId = sanitized.id;
+    setRecipes((prev) => {
+      const existing = prev.find((entry) => recipeTitleKey(entry.title) === key);
+      if (existing) {
+        resultId = existing.id;
+        return prev;
+      }
+      return [sanitized, ...prev];
+    });
+    return resultId;
   }, []);
 
   const updateImage = useCallback(
