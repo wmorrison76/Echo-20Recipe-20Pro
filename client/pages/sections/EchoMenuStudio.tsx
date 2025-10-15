@@ -1389,15 +1389,53 @@ export default function MenuDesignStudioSection() {
           selectedElement={selectedElement}
         />
 
-        <DesignerCanvas
-          elements={elements}
-          selectedId={selectedId}
-          onSelect={setSelectedId}
-          onDeselect={() => setSelectedId(null)}
-          canvasSettings={canvasSettings}
-          pageSize={pageSize}
-          onPositionChange={handlePositionChange}
-        />
+        <div ref={workspaceRef} className="relative flex flex-1">
+          <DesignerCanvas
+            elements={elements}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+            onDeselect={() => setSelectedId(null)}
+            canvasSettings={canvasSettings}
+            pageSize={pageSize}
+            onPositionChange={handlePositionChange}
+          />
+
+          <div className="pointer-events-none absolute inset-0">
+            <FloatingToolbarPanel
+              containerRef={workspaceRef}
+              state={floatingToolbar}
+              onStateChange={handleToolbarStateChange}
+              onTogglePin={handleToolbarPinToggle}
+              onAddHeading={handleAddHeading}
+              onAddBody={handleAddBody}
+              onAddMenuItem={handleAddMenuItem}
+              onAddDivider={handleAddDivider}
+              onAddShape={handleAddShape}
+              onAddImage={handleAddImage}
+              canvasSettings={canvasSettings}
+              onToggleGrid={handleToggleGrid}
+              onToggleColumns={handleToggleColumns}
+              onToggleMargins={handleToggleMargins}
+              selectedElement={selectedElement}
+              onAlignChange={handleAlignChange}
+              onAdjustFontSize={handleAdjustFontSize}
+              onAdjustLetterSpacing={handleAdjustLetterSpacing}
+              onAdjustLineHeight={handleAdjustLineHeight}
+              onDuplicateSelected={handleDuplicateSelected}
+              onDeleteSelected={handleDeleteSelected}
+            />
+            <FloatingLayersPanel
+              containerRef={workspaceRef}
+              state={floatingLayersPanel}
+              onStateChange={handleLayersPanelStateChange}
+              onTogglePin={handleLayersPinToggle}
+              layers={sortedLayers}
+              selectedId={selectedId}
+              onSelectLayer={handleSelectLayer}
+              onLayerShift={handleLayerShift}
+            />
+          </div>
+        </div>
 
         <InspectorPanel
           canvasSettings={canvasSettings}
