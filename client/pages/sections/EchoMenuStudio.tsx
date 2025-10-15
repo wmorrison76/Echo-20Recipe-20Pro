@@ -2884,6 +2884,102 @@ function FloatingToolbarPanel({
           </div>
         </div>
 
+        {selectedElement ? (
+          <div className="space-y-2">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+              Content
+            </p>
+            {selectedElement.type === "menu-item" ? (
+              <div className="space-y-2">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-medium uppercase tracking-[0.28em] text-muted-foreground">
+                    Label
+                  </span>
+                  <Input
+                    value={selectedElement.name}
+                    onChange={(event) =>
+                      onSelectionUpdate(selectedElement.id, {
+                        name: event.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] font-medium uppercase tracking-[0.28em] text-muted-foreground">
+                    Title
+                  </span>
+                  <Input
+                    value={selectedElement.text ?? ""}
+                    onChange={(event) =>
+                      onSelectionUpdate(selectedElement.id, {
+                        text: event.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] font-medium uppercase tracking-[0.28em] text-muted-foreground">
+                    Description
+                  </span>
+                  <Textarea
+                    rows={3}
+                    value={selectedElement.description ?? ""}
+                    onChange={(event) =>
+                      onSelectionUpdate(selectedElement.id, {
+                        description: event.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-medium uppercase tracking-[0.28em] text-muted-foreground">
+                      Price
+                    </span>
+                    <Input
+                      type="number"
+                      inputMode="decimal"
+                      value={selectedElement.price != null ? selectedElement.price : ""}
+                      onChange={(event) => {
+                        const nextValue = event.target.value;
+                        onSelectionUpdate(selectedElement.id, {
+                          price:
+                            nextValue === ""
+                              ? undefined
+                              : Number.parseFloat(nextValue),
+                        });
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-medium uppercase tracking-[0.28em] text-muted-foreground">
+                      Currency
+                    </span>
+                    <Input
+                      value={selectedElement.currency ?? "USD"}
+                      onChange={(event) =>
+                        onSelectionUpdate(selectedElement.id, {
+                          currency: event.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : selectedElement.text != null ? (
+              <Textarea
+                rows={Math.min(6, Math.max(3, Math.ceil((selectedElement.height || 60) / 60)))}
+                value={selectedElement.text}
+                onChange={(event) =>
+                  onSelectionUpdate(selectedElement.id, {
+                    text: event.target.value,
+                  })
+                }
+              />
+            ) : null}
+          </div>
+        ) : null}
+
         <div className="space-y-2">
           <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-muted-foreground">
             Canvas helpers
