@@ -2740,17 +2740,57 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   );
 
   const updateRecipe = useCallback((id: string, patch: Partial<Recipe>) => {
-    setRecipes((prev) =>
-      prev.map((r) =>
-        r.id === id
-          ? {
-              ...r,
-              ...patch,
-              extra: { ...(r.extra ?? {}), ...(patch as any).extra },
-            }
-          : r,
-      ),
-    );
+    setRecipes((prev) => {
+      const index = prev.findIndex((recipe) => recipe.id === id);
+      if (index === -1) return prev;
+      const current = prev[index]!;
+      const mergedExtra =
+        patch.extra !== undefined
+          ? { ...(current.extra ?? {}), ...(patch.extra ?? {}) }
+          : current.extra;
+
+      const mergedRecipe: Recipe = sanitizeRecipeRecord({
+        ...current,
+        ...patch,
+        id: current.id,
+        createdAt: current.createdAt,
+        title:
+          patch.title !== undefined
+            ? String(patch.title ?? "").trim() || "Untitled"
+            : current.title,
+        extra: mergedExtra,
+      });
+
+      const key = recipeTitleKey(mergedRecipe.title);
+      const conflictIndex = prev.findIndex(
+        (recipe, idx) => idx !== index && recipeTitleKey(recipe.title) === key,
+      );
+
+      if (conflictIndex !== -1) {
+        return prev.reduce<Recipe[]>((acc, recipe, idx) => {
+          if (idx === conflictIndex) {
+            const conflict = recipe;
+            acc.push({
+              ...conflict,
+              ...mergedRecipe,
+              id: conflict.id,
+              createdAt: conflict.createdAt,
+              extra:
+                mergedRecipe.extra !== undefined
+                  ? { ...(conflict.extra ?? {}), ...(mergedRecipe.extra ?? {}) }
+                  : conflict.extra,
+            });
+          } else if (idx !== index) {
+            acc.push(recipe);
+          }
+          return acc;
+        }, []);
+      }
+
+      const next = prev.slice();
+      next[index] = mergedRecipe;
+      return next;
+    });
   }, []);
 
   const toggleFavorite = useCallback((id: string) => {
