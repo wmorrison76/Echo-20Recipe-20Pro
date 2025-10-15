@@ -3096,9 +3096,21 @@ function FloatingToolbarPanel({
     window.removeEventListener("pointerup", handlePointerUp);
   }, [handlePointerMove]);
 
-  const handlePointerDown = useCallback(
+  const beginDrag = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
-      if (state.pinned || event.button !== 0) return;
+      if (state.pinned) return;
+      if (event.button !== 0 && event.pointerType !== "touch" && event.pointerType !== "pen") {
+        return;
+      }
+      const target = event.target as HTMLElement | null;
+      if (
+        target &&
+        target.closest(
+          "button, a, input, textarea, select, label, [contenteditable='true'], [role='textbox'], [role='spinbutton'], [role='slider'], [data-floating-panel-interactive='true']",
+        )
+      ) {
+        return;
+      }
       const container = containerRef.current;
       const panel = panelRef.current;
       if (!container || !panel) return;
@@ -3114,6 +3126,7 @@ function FloatingToolbarPanel({
       };
       window.addEventListener("pointermove", handlePointerMove);
       window.addEventListener("pointerup", handlePointerUp);
+      event.stopPropagation();
       event.preventDefault();
     },
     [containerRef, handlePointerMove, handlePointerUp, state.pinned, state.x, state.y],
@@ -3155,8 +3168,13 @@ function FloatingToolbarPanel({
   return (
     <div
       ref={panelRef}
+      data-floating-panel="toolbar"
       className="pointer-events-auto absolute z-40 w-[260px] rounded-2xl border border-slate-200/70 bg-white/95 p-3 shadow-2xl backdrop-blur dark:border-slate-800/60 dark:bg-slate-900/80"
-      style={{ transform: `translate(${state.x}px, ${state.y}px)` }}
+      style={{
+        transform: `translate(${state.x}px, ${state.y}px)`,
+        touchAction: state.pinned ? "auto" : "none",
+      }}
+      onPointerDownCapture={beginDrag}
     >
       <div className="flex items-center justify-between">
         <div
@@ -3164,7 +3182,6 @@ function FloatingToolbarPanel({
             "flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-slate-200",
             state.pinned ? "cursor-default" : "cursor-move",
           )}
-          onPointerDown={handlePointerDown}
         >
           <Move className="h-3.5 w-3.5" aria-hidden />
           Toolbox
@@ -3421,7 +3438,7 @@ function FloatingToolbarPanel({
             <Button
               variant="outline"
               size="icon"
-              className="h-9 w-full"
+              className="h-9 w/full"
               disabled={!canAdjustTypography}
               onClick={() => onAdjustLineHeight(-0.1)}
               title="Decrease line height"
