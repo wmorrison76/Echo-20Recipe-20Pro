@@ -618,10 +618,26 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     const key = recipeTitleKey(sanitized.title);
     let resultId = sanitized.id;
     setRecipes((prev) => {
-      const existing = prev.find((entry) => recipeTitleKey(entry.title) === key);
-      if (existing) {
+      const existingIndex = prev.findIndex(
+        (entry) => recipeTitleKey(entry.title) === key,
+      );
+      if (existingIndex !== -1) {
+        const existing = prev[existingIndex]!;
         resultId = existing.id;
-        return prev;
+        const mergedExtra =
+          recipe.extra !== undefined
+            ? { ...(existing.extra ?? {}), ...(recipe.extra ?? {}) }
+            : existing.extra;
+        const mergedExisting = sanitizeRecipeRecord({
+          ...existing,
+          ...recipe,
+          id: existing.id,
+          createdAt: existing.createdAt,
+          extra: mergedExtra,
+        } as Recipe);
+        const next = prev.slice();
+        next[existingIndex] = mergedExisting;
+        return next;
       }
       return [sanitized, ...prev];
     });
