@@ -1209,6 +1209,67 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
     setSelectedRecipeAccess(s.selectedRecipeAccess || []);
     if (s.taxonomy) setTaxonomy({ ...defaultSelection, ...s.taxonomy });
     setImage(s.image || null);
+
+    const meta = (s.extra ?? {}) as any;
+    if (meta && typeof meta === "object") {
+      if (meta.yield) {
+        const qty = Number(meta.yield.quantity);
+        if (Number.isFinite(qty) && qty >= 0) {
+          setYieldQty(qty);
+        }
+        if (meta.yield.unit) {
+          setYieldUnit(String(meta.yield.unit).toUpperCase());
+        }
+      }
+      if (meta.portion) {
+        const count = Number(meta.portion.count);
+        if (Number.isFinite(count) && count > 0) {
+          setPortionCount(count);
+        }
+        if (meta.portion.unit) {
+          setPortionUnit(String(meta.portion.unit).toUpperCase());
+        }
+      }
+      if (meta.times) {
+        if (meta.times.cook != null) setCookTime(String(meta.times.cook));
+        if (meta.times.temp != null) setCookTemp(String(meta.times.temp));
+        if (meta.times.prep != null) setPrepTime(String(meta.times.prep));
+      }
+      if (Array.isArray(meta.access)) {
+        setSelectedRecipeAccess(meta.access.map((value: unknown) => String(value)));
+      }
+      if (Array.isArray(meta.allergens) && meta.allergens.length) {
+        setSelectedAllergens(
+          meta.allergens.map((value: unknown) => String(value)),
+        );
+      }
+      if (Array.isArray(meta.nationality) && meta.nationality.length) {
+        setSelectedNationality(
+          meta.nationality.map((value: unknown) => String(value)),
+        );
+      }
+      if (Array.isArray(meta.courses) && meta.courses.length) {
+        setSelectedCourses(meta.courses.map((value: unknown) => String(value)));
+      }
+      if (Array.isArray(meta.recipeType) && meta.recipeType.length) {
+        setSelectedRecipeType(
+          meta.recipeType.map((value: unknown) => String(value)),
+        );
+      }
+      if (Array.isArray(meta.prepMethod) && meta.prepMethod.length) {
+        setSelectedPrepMethod(
+          meta.prepMethod.map((value: unknown) => String(value)),
+        );
+      }
+      if (Array.isArray(meta.cookingEquipment) && meta.cookingEquipment.length) {
+        setSelectedCookingEquipment(
+          meta.cookingEquipment.map((value: unknown) => String(value)),
+        );
+      }
+      if (meta.nutritionSnapshot) {
+        setNutrition(meta.nutritionSnapshot);
+      }
+    }
   };
   const pushHistory = (snap: any) => {
     historyRef.current.push(snap);
@@ -3389,7 +3450,7 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                     const lineStart = before.lastIndexOf("\n") + 1;
                     const currentLine = before.slice(lineStart);
                     const m = currentLine.match(/^\s*(\d+)[\.)]?\s*/);
-                    const nextNum = m ? String(Number(m[1]) + 1) + ". " : "��� ";
+                    const nextNum = m ? String(Number(m[1]) + 1) + ". " : "• ";
                     const newText = before + "\n" + nextNum + after;
                     el.textContent = newText;
                     const newOffset = offset + 1 + nextNum.length;
