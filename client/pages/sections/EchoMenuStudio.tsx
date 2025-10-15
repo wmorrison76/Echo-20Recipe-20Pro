@@ -137,6 +137,16 @@ type ElementDragState = {
   height: number;
 };
 
+const TEXT_EDITABLE_TYPES: DesignerElementType[] = [
+  "heading",
+  "subheading",
+  "body",
+  "menu-item",
+];
+
+const isTextEditableElement = (element: DesignerElement) =>
+  TEXT_EDITABLE_TYPES.includes(element.type);
+
 type FloatingPanelState = {
   x: number;
   y: number;
