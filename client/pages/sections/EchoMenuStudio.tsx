@@ -2734,11 +2734,12 @@ function FloatingToolbarPanel({
   const handlePointerMove = useCallback(
     (event: PointerEvent) => {
       if (!dragData.current) return;
-      const { startX, startY, originX, originY, bounds } = dragData.current;
+      const { startX, startY, originX, originY, bounds, panelWidth, panelHeight } =
+        dragData.current;
       const deltaX = event.clientX - startX;
       const deltaY = event.clientY - startY;
-      const maxX = Math.max(0, bounds.width - 220);
-      const maxY = Math.max(0, bounds.height - 180);
+      const maxX = Math.max(0, bounds.width - panelWidth);
+      const maxY = Math.max(0, bounds.height - panelHeight);
       onStateChange({
         x: clamp(originX + deltaX, 0, maxX),
         y: clamp(originY + deltaY, 0, maxY),
