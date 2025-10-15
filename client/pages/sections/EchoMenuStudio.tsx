@@ -3746,6 +3746,7 @@ function FloatingLayersPanel({
         transform: `translate(${state.x}px, ${state.y}px)`,
         touchAction: state.pinned ? "auto" : "none",
       }}
+      onPointerDownCapture={beginDrag}
     >
       <div className="flex items-center justify-between">
         <div
