@@ -3438,7 +3438,7 @@ function FloatingToolbarPanel({
             <Button
               variant="outline"
               size="icon"
-              className="h-9 w/full"
+              className="h-9 w-full"
               disabled={!canAdjustTypography}
               onClick={() => onAdjustLineHeight(-0.1)}
               title="Decrease line height"
