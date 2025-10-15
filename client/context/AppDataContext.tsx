@@ -1566,38 +1566,41 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     return results;
   };
 
-  const addRecipesFromHtmlFiles = useCallback(async (files: File[]) => {
-    const errors: { file: string; error: string }[] = [];
-    const collected: Recipe[] = [];
-    const titles: string[] = [];
-    for (const f of files) {
-      if (!/\.(html?|htm)$/i.test(f.name)) {
-        errors.push({ file: f.name, error: "Unsupported HTML type" });
-        continue;
-      }
-      try {
-        const html = await f.text();
-        const recs = htmlToRecipes(html, f.name);
-        collected.push(...recs);
-        titles.push(...recs.map((r) => r.title));
+  const addRecipesFromHtmlFiles = useCallback(
+    async (files: File[]) => {
+      const errors: { file: string; error: string }[] = [];
+      const collected: Recipe[] = [];
+      const titles: string[] = [];
+      for (const f of files) {
+        if (!/\.(html?|htm)$/i.test(f.name)) {
+          errors.push({ file: f.name, error: "Unsupported HTML type" });
+          continue;
+        }
         try {
-          const chunks = recs.map((r) =>
-            [r.title, ...(r.ingredients || []), ...(r.instructions || [])].join(
-              "\n",
-            ),
-          );
-          learnFromTextChunks(f.name.replace(/\.[^.]+$/, ""), chunks);
-        } catch {}
-      } catch (e: any) {
-        errors.push({
-          file: f.name,
-          error: e?.message ?? "Failed to read HTML",
-        });
+          const html = await f.text();
+          const recs = htmlToRecipes(html, f.name);
+          collected.push(...recs);
+          titles.push(...recs.map((r) => r.title));
+          try {
+            const chunks = recs.map((r) =>
+              [r.title, ...(r.ingredients || []), ...(r.instructions || [])].join(
+                "\n",
+              ),
+            );
+            learnFromTextChunks(f.name.replace(/\.[^.]+$/, ""), chunks);
+          } catch {}
+        } catch (e: any) {
+          errors.push({
+            file: f.name,
+            error: e?.message ?? "Failed to read HTML",
+          });
+        }
       }
-    }
-    if (collected.length) setRecipes((prev) => [...collected, ...prev]);
-    return { added: collected.length, errors, titles };
-  }, []);
+      const { added } = appendRecipes(collected);
+      return { added: added.length, errors, titles };
+    },
+    [appendRecipes],
+  );
 
   const addRecipesFromDocxFiles = useCallback(
     async (files: File[]) => {
