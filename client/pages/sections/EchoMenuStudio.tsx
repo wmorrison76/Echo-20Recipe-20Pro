@@ -1010,7 +1010,14 @@ export default function MenuDesignStudioSection() {
     if (createdId) {
       setSelectedId(createdId);
     }
-  }, [selectedId, pageSize.width, pageSize.height, getNextZIndex]);
+  }, [
+    editingId,
+    handleCommitInlineEdit,
+    selectedId,
+    pageSize.width,
+    pageSize.height,
+    getNextZIndex,
+  ]);
 
   const handleLayerShift = useCallback(
     (id: string, direction: "forward" | "backward") => {
