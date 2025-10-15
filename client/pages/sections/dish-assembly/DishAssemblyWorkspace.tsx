@@ -121,8 +121,6 @@ const DishAssemblyWorkspace: React.FC = () => {
   const [routingTab, setRoutingTab] = useState<"stations" | "printers">("stations");
   const [stationQuery, setStationQuery] = useState("");
   const [printerQuery, setPrinterQuery] = useState("");
-  const [stationsExpanded, setStationsExpanded] = useState(false);
-  const [printersExpanded, setPrintersExpanded] = useState(false);
 
   const heroImage = useMemo(() => {
     if (customImage) return customImage;
