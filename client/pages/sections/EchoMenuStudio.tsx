@@ -3081,12 +3081,20 @@ function FloatingToolbarPanel({
   const handlePointerMove = useCallback(
     (event: PointerEvent) => {
       if (!dragData.current) return;
-      const { startX, startY, originX, originY, bounds, panelWidth, panelHeight } =
-        dragData.current;
+      const {
+        startX,
+        startY,
+        originX,
+        originY,
+        availableWidth,
+        availableHeight,
+        panelWidth,
+        panelHeight,
+      } = dragData.current;
       const deltaX = event.clientX - startX;
       const deltaY = event.clientY - startY;
-      const maxX = Math.max(0, bounds.width - panelWidth);
-      const maxY = Math.max(0, bounds.height - panelHeight);
+      const maxX = Math.max(0, availableWidth - panelWidth);
+      const maxY = Math.max(0, availableHeight - panelHeight);
       onStateChange({
         x: clamp(originX + deltaX, 0, maxX),
         y: clamp(originY + deltaY, 0, maxY),
@@ -3555,12 +3563,20 @@ function FloatingLayersPanel({
   const handlePointerMove = useCallback(
     (event: PointerEvent) => {
       if (!dragData.current) return;
-      const { startX, startY, originX, originY, bounds, panelWidth, panelHeight } =
-        dragData.current;
+      const {
+        startX,
+        startY,
+        originX,
+        originY,
+        availableWidth,
+        availableHeight,
+        panelWidth,
+        panelHeight,
+      } = dragData.current;
       const deltaX = event.clientX - startX;
       const deltaY = event.clientY - startY;
-      const maxX = Math.max(0, bounds.width - panelWidth);
-      const maxY = Math.max(0, bounds.height - panelHeight);
+      const maxX = Math.max(0, availableWidth - panelWidth);
+      const maxY = Math.max(0, availableHeight - panelHeight);
       onStateChange({
         x: clamp(originX + deltaX, 0, maxX),
         y: clamp(originY + deltaY, 0, maxY),
