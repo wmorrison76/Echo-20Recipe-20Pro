@@ -1757,8 +1757,11 @@ function DesignerCanvas({
   );
 
   const handleCanvasPointerDown = useCallback(() => {
+    if (onCanvasPointerDown) {
+      onCanvasPointerDown();
+    }
     onDeselect();
-  }, [onDeselect]);
+  }, [onCanvasPointerDown, onDeselect]);
 
   const innerWidth = useMemo(
     () => pageSize.width - canvasSettings.margin * 2,
