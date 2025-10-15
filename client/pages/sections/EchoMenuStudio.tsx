@@ -3984,11 +3984,13 @@ function FloatingToolbarPanel({
               <Textarea
                 rows={Math.min(6, Math.max(3, Math.ceil((selectedElement.height || 60) / 60)))}
                 value={selectedElement.text ?? ""}
-                onChange={(event) =>
+                disabled={selectionLocked}
+                onChange={(event) => {
+                  if (selectionLocked) return;
                   onSelectionUpdate(selectedElement.id, {
                     text: event.target.value,
-                  })
-                }
+                  });
+                }}
               />
             ) : null}
           </div>
