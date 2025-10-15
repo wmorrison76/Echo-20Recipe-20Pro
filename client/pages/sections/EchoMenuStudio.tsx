@@ -2942,11 +2942,9 @@ function FloatingToolbarPanel({
                       value={selectedElement.price != null ? selectedElement.price : ""}
                       onChange={(event) => {
                         const nextValue = event.target.value;
+                        const parsed = Number.parseFloat(nextValue);
                         onSelectionUpdate(selectedElement.id, {
-                          price:
-                            nextValue === ""
-                              ? undefined
-                              : Number.parseFloat(nextValue),
+                          price: nextValue === "" || Number.isNaN(parsed) ? undefined : parsed,
                         });
                       }}
                     />
