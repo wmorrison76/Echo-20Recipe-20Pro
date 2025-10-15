@@ -3019,6 +3019,7 @@ function DividerControls({ element, onChange }: DividerControlsProps) {
 
 type FloatingToolbarPanelProps = {
   containerRef: React.RefObject<HTMLDivElement>;
+  bounds?: "container" | "viewport";
   state: FloatingPanelState;
   onStateChange: (changes: Partial<FloatingPanelState>) => void;
   onTogglePin: () => void;
@@ -3043,6 +3044,7 @@ type FloatingToolbarPanelProps = {
 
 function FloatingToolbarPanel({
   containerRef,
+  bounds = "container",
   state,
   onStateChange,
   onTogglePin,
