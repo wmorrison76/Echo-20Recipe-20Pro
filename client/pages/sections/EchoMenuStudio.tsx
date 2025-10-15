@@ -3908,6 +3908,12 @@ function FloatingToolbarPanel({
             <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-muted-foreground">
               Content
             </p>
+            {selectionLocked ? (
+              <div className="flex items-center gap-2 rounded-lg bg-amber-100/70 px-2 py-1 text-[11px] font-medium text-amber-700 dark:bg-amber-500/10 dark:text-amber-200">
+                <Lock className="h-3 w-3" aria-hidden />
+                <span>Unlock layer to edit</span>
+              </div>
+            ) : null}
             {selectedElement.type === "menu-item" ? (
               <div className="space-y-2">
                 <div className="space-y-1">
