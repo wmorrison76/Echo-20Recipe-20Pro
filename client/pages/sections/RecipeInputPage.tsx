@@ -717,7 +717,17 @@ const finalizeRecipe = useCallback(() => {
     });
   } finally {
     if (succeeded) {
-      clearRecipeWorkspace();
+      setFinalizeState("success");
+      clearRecipeWorkspace({ preserveSidebar: true });
+      if (finalizeResetTimerRef.current !== null) {
+        window.clearTimeout(finalizeResetTimerRef.current);
+      }
+      finalizeResetTimerRef.current = window.setTimeout(() => {
+        setFinalizeState("idle");
+        finalizeResetTimerRef.current = null;
+      }, 2250);
+    } else {
+      setFinalizeState("idle");
     }
   }
 }, [
@@ -732,6 +742,7 @@ const finalizeRecipe = useCallback(() => {
   toast,
   t,
   isFormPristine,
+  finalizeState,
 ]);
 
 const handleClearForm = useCallback(() => {
@@ -3635,7 +3646,7 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                   "⅞": "7/8",
                 };
                 s = s.replace(
-                  /[�����½¾⅐⅑��⅓⅔⅕⅖⅗��⅙⅚⅛⅜⅝⅞]/g,
+                  /[���½¾⅐⅑��⅓⅔⅕⅖⅗��⅙⅚⅛⅜⅝⅞]/g,
                   (ch) => fracMap[ch] || ch,
                 );
                 const m = s.match(
