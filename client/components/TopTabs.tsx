@@ -80,9 +80,9 @@ const navItems: NavItemConfig[] = [
     shortcut: { key: "KeyD", display: "D" },
   },
   {
-    to: "/?tab=echo-menu",
-    labelKey: "nav.echoMenuStudio",
-    fallback: "ECHO MENU STUDIO",
+    to: "/?tab=menu-design",
+    labelKey: "nav.menuDesignStudio",
+    fallback: "MENU DESIGN STUDIO",
     icon: ChefHat,
     shortcut: { key: "KeyM", display: "M" },
   },
