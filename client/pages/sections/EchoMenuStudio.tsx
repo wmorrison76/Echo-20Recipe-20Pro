@@ -4168,6 +4168,7 @@ type FloatingLayersPanelProps = {
   selectedId: string | null;
   onSelectLayer: (id: string) => void;
   onLayerShift: (id: string, direction: "forward" | "backward") => void;
+  onToggleLock: (id: string) => void;
 };
 
 function FloatingLayersPanel({
@@ -4180,6 +4181,7 @@ function FloatingLayersPanel({
   selectedId,
   onSelectLayer,
   onLayerShift,
+  onToggleLock,
 }: FloatingLayersPanelProps) {
   const panelRef = useRef<HTMLDivElement | null>(null);
   const dragData = useRef<{
