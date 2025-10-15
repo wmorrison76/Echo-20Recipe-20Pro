@@ -1856,12 +1856,35 @@ function DesignerCanvas({
               ) : null}
               {sortedElements.map((element) => {
                 const isSelected = element.id === selectedId;
+                const isEditable = isTextEditableElement(element);
+                const isEditing = Boolean(editingId && editingId === element.id && editingDraft);
+                const draft = isEditing && editingDraft ? editingDraft : null;
+                const draftText =
+                  draft && "text" in draft
+                    ? ((draft.text as string | undefined) ?? "")
+                    : element.text ?? "";
+                const draftName =
+                  draft && "name" in draft
+                    ? ((draft.name as string | undefined) ?? "")
+                    : element.name ?? "";
+                const draftDescription =
+                  draft && "description" in draft
+                    ? ((draft.description as string | undefined) ?? "")
+                    : element.description ?? "";
+                const draftCurrency =
+                  draft && "currency" in draft
+                    ? (draft.currency as string | undefined) ?? element.currency ?? "USD"
+                    : element.currency ?? "USD";
+                const draftPrice =
+                  draft && "price" in draft ? (draft.price as number | undefined) : element.price;
+                const draftPriceDisplay =
+                  draftPrice != null && !Number.isNaN(draftPrice) ? String(draftPrice) : "";
                 return (
                   <div
                     key={element.id}
                     role="presentation"
                     className={cn(
-                      "group absolute select-none", 
+                      "group absolute select-none transition-shadow",
                       isSelected
                         ? "ring-2 ring-cyan-500"
                         : "shadow-sm ring-1 ring-transparent",
@@ -1874,12 +1897,156 @@ function DesignerCanvas({
                       transform: `rotate(${element.rotation}deg)` as string,
                       opacity: element.opacity,
                       borderRadius: element.borderRadius,
-                      cursor: "move",
+                      cursor: isEditing ? "text" : "move",
                       zIndex: element.zIndex,
                     }}
                     onPointerDown={(event) => handleElementPointerDown(event, element)}
+                    onDoubleClick={(event) => handleElementDoubleClick(event, element)}
                   >
-                    {renderElement(element)}
+                    <div className="relative h-full w-full">
+                      <div
+                        className={cn(
+                          "h-full w-full transition-opacity",
+                          isEditing ? "pointer-events-none opacity-20" : "opacity-100",
+                        )}
+                      >
+                        {renderElement(element)}
+                      </div>
+                      {isEditing && isEditable ? (
+                        element.type === "menu-item" ? (
+                          <div
+                            className="absolute inset-0 z-10 flex h-full w-full flex-col gap-3 rounded-2xl border border-slate-300/60 bg-white/95 p-3 shadow-2xl backdrop-blur-sm dark:border-slate-700/70 dark:bg-slate-950/95"
+                            onPointerDown={(event) => event.stopPropagation()}
+                            onKeyDown={(event) => {
+                              if (event.key === "Escape") {
+                                event.stopPropagation();
+                                onCancelEdit();
+                              }
+                              if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+                                event.preventDefault();
+                                onCommitEdit();
+                              }
+                            }}
+                          >
+                            <div className="space-y-2 text-left">
+                              <div className="space-y-1">
+                                <span className="text-[10px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+                                  Label
+                                </span>
+                                <Input
+                                  autoFocus
+                                  value={draftName}
+                                  onChange={(event) =>
+                                    onEditingChange({ name: event.target.value })
+                                  }
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <span className="text-[10px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+                                  Title
+                                </span>
+                                <Input
+                                  value={draftText}
+                                  onChange={(event) =>
+                                    onEditingChange({ text: event.target.value })
+                                  }
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <span className="text-[10px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+                                  Description
+                                </span>
+                                <Textarea
+                                  rows={3}
+                                  value={draftDescription}
+                                  className="resize-none"
+                                  onChange={(event) =>
+                                    onEditingChange({ description: event.target.value })
+                                  }
+                                />
+                              </div>
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="space-y-1">
+                                  <span className="text-[10px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+                                    Price
+                                  </span>
+                                  <Input
+                                    type="number"
+                                    inputMode="decimal"
+                                    value={draftPriceDisplay}
+                                    onChange={(event) => {
+                                      const value = event.target.value;
+                                      const parsed = Number.parseFloat(value);
+                                      onEditingChange({
+                                        price:
+                                          value === "" || Number.isNaN(parsed)
+                                            ? undefined
+                                            : parsed,
+                                      });
+                                    }}
+                                  />
+                                </div>
+                                <div className="space-y-1">
+                                  <span className="text-[10px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+                                    Currency
+                                  </span>
+                                  <Input
+                                    value={draftCurrency}
+                                    onChange={(event) =>
+                                      onEditingChange({ currency: event.target.value })
+                                    }
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex justify-end gap-2 pt-1">
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => onCancelEdit()}
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                type="button"
+                                size="sm"
+                                onClick={() => onCommitEdit()}
+                              >
+                                Save
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <Textarea
+                            autoFocus
+                            value={draftText}
+                            className="absolute inset-0 z-10 h-full w-full resize-none rounded-[inherit] border border-cyan-200/80 bg-white/95 p-3 text-base font-medium shadow-xl focus-visible:ring-2 focus-visible:ring-cyan-500 dark:border-cyan-500/40 dark:bg-slate-950/90"
+                            style={{
+                              fontFamily: element.fontFamily,
+                              fontSize: element.fontSize,
+                              fontWeight: element.fontWeight,
+                              lineHeight: element.lineHeight,
+                              letterSpacing: element.letterSpacing,
+                              color: element.color ?? "#0f172a",
+                              textAlign: element.align,
+                            }}
+                            onChange={(event) => onEditingChange({ text: event.target.value })}
+                            onPointerDown={(event) => event.stopPropagation()}
+                            onKeyDown={(event) => {
+                              if (event.key === "Escape") {
+                                event.stopPropagation();
+                                onCancelEdit();
+                              }
+                              if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+                                event.preventDefault();
+                                onCommitEdit();
+                              }
+                            }}
+                          />
+                        )
+                      ) : null}
+                    </div>
                   </div>
                 );
               })}
