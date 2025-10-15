@@ -2642,9 +2642,9 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         errors.push({ file: f.name, error: e?.message ?? "OCR failed" });
       }
     }
-    if (collected.length) setRecipes((prev) => [...collected, ...prev]);
-    return { added: collected.length, errors, titles };
-  }, []);
+    const { added } = appendRecipes(collected);
+    return { added: added.length, errors, titles };
+  }, [appendRecipes]);
 
   const addFromZipArchive = useCallback(
     async (file: File) => {
