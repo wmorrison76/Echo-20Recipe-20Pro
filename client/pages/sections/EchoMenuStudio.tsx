@@ -3078,6 +3078,21 @@ function FloatingToolbarPanel({
     panelHeight: number;
   } | null>(null);
 
+  const getAvailableSpace = useCallback(() => {
+    if (bounds === "viewport" && typeof window !== "undefined") {
+      return { width: window.innerWidth, height: window.innerHeight };
+    }
+    const container = containerRef.current;
+    if (container) {
+      const rect = container.getBoundingClientRect();
+      return { width: rect.width, height: rect.height };
+    }
+    if (typeof window !== "undefined") {
+      return { width: window.innerWidth, height: window.innerHeight };
+    }
+    return { width: 0, height: 0 };
+  }, [bounds, containerRef]);
+
   const handlePointerMove = useCallback(
     (event: PointerEvent) => {
       if (!dragData.current) return;
@@ -3559,6 +3574,21 @@ function FloatingLayersPanel({
     panelWidth: number;
     panelHeight: number;
   } | null>(null);
+
+  const getAvailableSpace = useCallback(() => {
+    if (bounds === "viewport" && typeof window !== "undefined") {
+      return { width: window.innerWidth, height: window.innerHeight };
+    }
+    const container = containerRef.current;
+    if (container) {
+      const rect = container.getBoundingClientRect();
+      return { width: rect.width, height: rect.height };
+    }
+    if (typeof window !== "undefined") {
+      return { width: window.innerWidth, height: window.innerHeight };
+    }
+    return { width: 0, height: 0 };
+  }, [bounds, containerRef]);
 
   const handlePointerMove = useCallback(
     (event: PointerEvent) => {
