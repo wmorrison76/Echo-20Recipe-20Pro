@@ -1532,9 +1532,10 @@ export default function MenuDesignStudioSection() {
             onCanvasPointerDown={handleCanvasPointerDownCommit}
           />
 
-          <div className="pointer-events-none absolute inset-0">
+          <div className="pointer-events-none fixed inset-0 z-50">
             <FloatingToolbarPanel
               containerRef={workspaceRef}
+              bounds="viewport"
               state={floatingToolbar}
               onStateChange={handleToolbarStateChange}
               onTogglePin={handleToolbarPinToggle}
@@ -1558,6 +1559,7 @@ export default function MenuDesignStudioSection() {
             />
             <FloatingLayersPanel
               containerRef={workspaceRef}
+              bounds="viewport"
               state={floatingLayersPanel}
               onStateChange={handleLayersPanelStateChange}
               onTogglePin={handleLayersPinToggle}
