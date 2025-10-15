@@ -1150,7 +1150,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      if (collected.length) setRecipes((prev) => [...collected, ...prev]);
+      const { added } = appendRecipes(collected);
       try {
         const chunks = collected.map((r) =>
           [r.title, ...(r.ingredients || []), ...(r.instructions || [])].join(
@@ -1159,12 +1159,13 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         );
         if (chunks.length) learnFromTextChunks("json-import", chunks);
       } catch {}
-      // try auto-link after import
-      setTimeout(linkImagesToRecipesByFilename, 0);
+      if (added.length) {
+        setTimeout(linkImagesToRecipesByFilename, 0);
+      }
 
-      return { added: collected.length, errors, titles };
+      return { added: added.length, errors, titles };
     },
-    [linkImagesToRecipesByFilename],
+    [appendRecipes, linkImagesToRecipesByFilename, recipes],
   );
 
   const learnFromTextChunks = (book: string, chunks: string[]) => {
