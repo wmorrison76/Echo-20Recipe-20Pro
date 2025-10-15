@@ -816,7 +816,15 @@ const subRecipeOptions = useMemo<SubRecipeOption[]>(() => {
 
 const actionButtonBase =
   "inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-60";
-const finalizeButtonClasses = `${actionButtonBase} ${isDarkMode ? "bg-cyan-500 text-slate-950 hover:bg-cyan-400 focus-visible:ring-cyan-300/60 focus-visible:ring-offset-slate-950" : "bg-slate-900 text-white hover:bg-slate-800 focus-visible:ring-slate-400 focus-visible:ring-offset-white"}`;
+const finalizeButtonTone =
+  finalizeState === "success"
+    ? isDarkMode
+      ? "bg-emerald-400 text-slate-950 hover:bg-emerald-300 focus-visible:ring-emerald-300/60 focus-visible:ring-offset-slate-950 disabled:opacity-100 disabled:pointer-events-none"
+      : "bg-emerald-500 text-white hover:bg-emerald-500/90 focus-visible:ring-emerald-400 focus-visible:ring-offset-white disabled:opacity-100 disabled:pointer-events-none"
+    : isDarkMode
+      ? "bg-cyan-500 text-slate-950 hover:bg-cyan-400 focus-visible:ring-cyan-300/60 focus-visible:ring-offset-slate-950"
+      : "bg-slate-900 text-white hover:bg-slate-800 focus-visible:ring-slate-400 focus-visible:ring-offset-white";
+const finalizeButtonClasses = `${actionButtonBase} ${finalizeButtonTone}`;
 const clearButtonClasses = `${actionButtonBase} ${isDarkMode ? "border border-cyan-400/60 text-cyan-200 hover:bg-cyan-500/10 focus-visible:ring-cyan-300/40 focus-visible:ring-offset-slate-950" : "border border-slate-400 text-slate-700 hover:bg-slate-900/5 focus-visible:ring-slate-400/50 focus-visible:ring-offset-white"}`;
 const actionBarClasses = isDarkMode
   ? "border-cyan-400/40 bg-slate-950/60 shadow-[0_0_32px_rgba(56,189,248,0.15)]"
