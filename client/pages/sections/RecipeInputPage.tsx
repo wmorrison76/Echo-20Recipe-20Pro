@@ -665,6 +665,7 @@ const finalizeRecipe = useCallback(() => {
     return;
   }
   let succeeded = false;
+  setFinalizeState("saving");
   try {
     const title = (recipeName || "").trim() || "Untitled Recipe";
     const ingLines = ingredients
@@ -3634,7 +3635,7 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                   "⅞": "7/8",
                 };
                 s = s.replace(
-                  /[���½¾⅐⅑��⅓⅔⅕⅖⅗��⅙⅚⅛⅜⅝⅞]/g,
+                  /[�����½¾⅐⅑��⅓⅔⅕⅖⅗��⅙⅚⅛⅜⅝⅞]/g,
                   (ch) => fracMap[ch] || ch,
                 );
                 const m = s.match(
