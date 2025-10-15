@@ -3934,11 +3934,13 @@ function FloatingToolbarPanel({
                   <Textarea
                     rows={3}
                     value={selectedElement.description ?? ""}
-                    onChange={(event) =>
+                    disabled={selectionLocked}
+                    onChange={(event) => {
+                      if (selectionLocked) return;
                       onSelectionUpdate(selectedElement.id, {
                         description: event.target.value,
-                      })
-                    }
+                      });
+                    }}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
