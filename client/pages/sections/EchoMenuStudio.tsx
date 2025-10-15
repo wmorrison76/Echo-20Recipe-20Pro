@@ -3168,24 +3168,45 @@ function FloatingToolbarPanel({
   }, [handlePointerMove, handlePointerUp]);
 
   useEffect(() => {
-    const container = containerRef.current;
     const panel = panelRef.current;
-    if (!container || !panel || typeof ResizeObserver === "undefined") {
+    if (!panel) {
       return;
     }
-    const observer = new ResizeObserver(([entry]) => {
-      if (!entry) return;
-      const maxX = Math.max(0, entry.contentRect.width - panel.offsetWidth);
-      const maxY = Math.max(0, entry.contentRect.height - panel.offsetHeight);
+
+    const applyClamp = (availableWidth: number, availableHeight: number) => {
+      const maxX = Math.max(0, availableWidth - panel.offsetWidth);
+      const maxY = Math.max(0, availableHeight - panel.offsetHeight);
       const nextX = clamp(state.x, 0, maxX);
       const nextY = clamp(state.y, 0, maxY);
       if (nextX !== state.x || nextY !== state.y) {
         onStateChange({ x: nextX, y: nextY });
       }
+    };
+
+    if (bounds === "viewport") {
+      if (typeof window === "undefined") {
+        return;
+      }
+      const handleResize = () => {
+        const { width, height } = getAvailableSpace();
+        applyClamp(width, height);
+      };
+      handleResize();
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }
+
+    const container = containerRef.current;
+    if (!container || typeof ResizeObserver === "undefined") {
+      return;
+    }
+    const observer = new ResizeObserver(([entry]) => {
+      if (!entry) return;
+      applyClamp(entry.contentRect.width, entry.contentRect.height);
     });
     observer.observe(container);
     return () => observer.disconnect();
-  }, [containerRef, onStateChange, state.x, state.y]);
+  }, [bounds, containerRef, getAvailableSpace, onStateChange, state.x, state.y]);
 
   const hasSelection = Boolean(selectedElement);
   const canAdjustTypography =
@@ -3652,24 +3673,45 @@ function FloatingLayersPanel({
   }, [handlePointerMove, handlePointerUp]);
 
   useEffect(() => {
-    const container = containerRef.current;
     const panel = panelRef.current;
-    if (!container || !panel || typeof ResizeObserver === "undefined") {
+    if (!panel) {
       return;
     }
-    const observer = new ResizeObserver(([entry]) => {
-      if (!entry) return;
-      const maxX = Math.max(0, entry.contentRect.width - panel.offsetWidth);
-      const maxY = Math.max(0, entry.contentRect.height - panel.offsetHeight);
+
+    const applyClamp = (availableWidth: number, availableHeight: number) => {
+      const maxX = Math.max(0, availableWidth - panel.offsetWidth);
+      const maxY = Math.max(0, availableHeight - panel.offsetHeight);
       const nextX = clamp(state.x, 0, maxX);
       const nextY = clamp(state.y, 0, maxY);
       if (nextX !== state.x || nextY !== state.y) {
         onStateChange({ x: nextX, y: nextY });
       }
+    };
+
+    if (bounds === "viewport") {
+      if (typeof window === "undefined") {
+        return;
+      }
+      const handleResize = () => {
+        const { width, height } = getAvailableSpace();
+        applyClamp(width, height);
+      };
+      handleResize();
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }
+
+    const container = containerRef.current;
+    if (!container || typeof ResizeObserver === "undefined") {
+      return;
+    }
+    const observer = new ResizeObserver(([entry]) => {
+      if (!entry) return;
+      applyClamp(entry.contentRect.width, entry.contentRect.height);
     });
     observer.observe(container);
     return () => observer.disconnect();
-  }, [containerRef, onStateChange, state.x, state.y]);
+  }, [bounds, containerRef, getAvailableSpace, onStateChange, state.x, state.y]);
 
   return (
     <div
