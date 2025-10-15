@@ -1093,6 +1093,10 @@ export default function MenuDesignStudioSection() {
   const handleResetWorkspace = useCallback(() => {
     setElements([]);
     setSelectedId(null);
+    setDocumentName("Untitled Menu");
+    setPagePreset("letter");
+    setCanvasSettings(() => ({ ...INITIAL_CANVAS }));
+    setPageSize(() => ({ ...INITIAL_PAGE_SIZE }));
   }, []);
 
   const handleZoom = useCallback(
