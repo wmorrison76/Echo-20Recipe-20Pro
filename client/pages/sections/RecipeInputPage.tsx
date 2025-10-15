@@ -716,6 +716,40 @@ const finalizeRecipe = useCallback(() => {
       .map((s) => s.trim())
       .filter(Boolean);
     const cover = image && image.startsWith("data:") ? [image] : undefined;
+    const perServingMacros = nutritionDisplay?.perServing ?? null;
+    const nutritionSnapshot = nutritionDisplay
+      ? { ...nutritionDisplay, savedAt: Date.now() }
+      : nutrition
+        ? { ...nutrition, savedAt: Date.now() }
+        : null;
+    const recipeNutrition = perServingMacros
+      ? {
+          calories: perServingMacros.calories,
+          fat: perServingMacros.fat,
+          carbs: perServingMacros.carbs,
+          protein: perServingMacros.protein,
+          fiber: perServingMacros.fiber,
+          sugars: perServingMacros.sugars,
+          sodium: perServingMacros.sodium,
+          cholesterol: undefined,
+        }
+      : null;
+    const metadata = {
+      source: "manual",
+      taxonomy,
+      published: true,
+      yield: { quantity: yieldQty, unit: yieldUnit },
+      portion: { count: portionCount, unit: portionUnit },
+      times: { cook: cookTime, temp: cookTemp, prep: prepTime },
+      access: [...selectedRecipeAccess],
+      allergens: [...selectedAllergens],
+      nationality: [...selectedNationality],
+      courses: [...selectedCourses],
+      recipeType: [...selectedRecipeType],
+      prepMethod: [...selectedPrepMethod],
+      cookingEquipment: [...selectedCookingEquipment],
+      nutritionSnapshot,
+    };
     if (!recipeIdRef.current) {
       recipeIdRef.current = addRecipe({
         title,
@@ -723,7 +757,8 @@ const finalizeRecipe = useCallback(() => {
         instructions: insLines,
         imageDataUrls: cover,
         tags: [],
-        extra: { source: "manual", taxonomy, published: true },
+        nutrition: recipeNutrition,
+        extra: metadata,
       });
     } else {
       updateRecipe(recipeIdRef.current, {
@@ -731,7 +766,8 @@ const finalizeRecipe = useCallback(() => {
         ingredients: ingLines,
         instructions: insLines,
         imageDataUrls: cover,
-        extra: { taxonomy, published: true },
+        nutrition: recipeNutrition,
+        extra: metadata,
       });
     }
     succeeded = true;
@@ -3759,7 +3795,7 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                   "⅑": "1/9",
                   "⅒": "1/10",
                   "⅓": "1/3",
-                  "����": "2/3",
+                  "��": "2/3",
                   "⅕": "1/5",
                   "⅖": "2/5",
                   "⅗": "3/5",
