@@ -311,6 +311,7 @@ const RecipeInputPage = () => {
   const futureRef = useRef<any[]>([]);
   const autoSnapshotTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const autoSnapshotFingerprintRef = useRef<string>("");
+  const finalizeResetTimerRef = useRef<number | null>(null);
   const [directions, setDirections] = useState("1. ");
   const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
   const { addRecipe, updateRecipe, addImages, recipes } = useAppData();
