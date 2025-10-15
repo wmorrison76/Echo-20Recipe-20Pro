@@ -2812,6 +2812,7 @@ function FloatingToolbarPanel({
 
   return (
     <div
+      ref={panelRef}
       className="pointer-events-auto absolute z-40 w-[260px] rounded-2xl border border-slate-200/70 bg-white/95 p-3 shadow-2xl backdrop-blur dark:border-slate-800/60 dark:bg-slate-900/80"
       style={{ transform: `translate(${state.x}px, ${state.y}px)` }}
     >
