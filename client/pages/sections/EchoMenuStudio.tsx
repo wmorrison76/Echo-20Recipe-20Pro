@@ -3952,7 +3952,9 @@ function FloatingToolbarPanel({
                       type="number"
                       inputMode="decimal"
                       value={selectedElement.price != null ? selectedElement.price : ""}
+                      disabled={selectionLocked}
                       onChange={(event) => {
+                        if (selectionLocked) return;
                         const nextValue = event.target.value;
                         const parsed = Number.parseFloat(nextValue);
                         onSelectionUpdate(selectedElement.id, {
