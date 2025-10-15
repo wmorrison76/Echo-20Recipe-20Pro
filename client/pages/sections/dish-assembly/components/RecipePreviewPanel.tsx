@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 import { DishComponentRow, RecipeSummary, formatCurrencyValue } from "../utils";
 import { ArrowRight } from "lucide-react";
 
@@ -15,6 +16,7 @@ type RecipePreviewPanelProps = {
   activeComponentId: string | null;
   onFocusRow: (rowId: string) => void;
   onNavigateToRecipe: (recipeId: string) => void;
+  className?: string;
 };
 
 const RecipePreviewPanel: React.FC<RecipePreviewPanelProps> = ({
@@ -24,6 +26,7 @@ const RecipePreviewPanel: React.FC<RecipePreviewPanelProps> = ({
   activeComponentId,
   onFocusRow,
   onNavigateToRecipe,
+  className,
 }) => {
   const entries = useMemo(() => {
     return rows
@@ -53,7 +56,7 @@ const RecipePreviewPanel: React.FC<RecipePreviewPanelProps> = ({
   }, [activeComponentId, entries]);
 
   return (
-    <Card className="border-primary/30 bg-background/95 shadow-lg">
+    <Card className={cn("border-primary/30 bg-background/95 shadow-lg", className)}>
       <CardHeader>
         <CardTitle className="text-sm font-semibold uppercase tracking-[0.35em] text-muted-foreground">
           Component Explorer
