@@ -1642,6 +1642,7 @@ export default function MenuDesignStudioSection() {
         ...element,
         id: createId(),
         zIndex: getNextZIndex(),
+        locked: element.locked ?? false,
       };
       setElements((prev) => [...prev, payload]);
       setSelectedId(payload.id);
