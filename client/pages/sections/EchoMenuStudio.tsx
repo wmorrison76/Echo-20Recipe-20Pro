@@ -3754,7 +3754,6 @@ function FloatingLayersPanel({
             "flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-slate-200",
             state.pinned ? "cursor-default" : "cursor-move",
           )}
-          onPointerDown={handlePointerDown}
         >
           <Layers className="h-3.5 w-3.5" aria-hidden />
           Layers
