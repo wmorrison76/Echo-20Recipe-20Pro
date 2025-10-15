@@ -4160,7 +4160,7 @@ function FloatingToolbarPanel({
             <Button
               variant="destructive"
               size="sm"
-              disabled={!hasSelection}
+              disabled={!canMutateSelection}
               onClick={onDeleteSelected}
             >
               <Trash2 className="mr-2 h-3.5 w-3.5" aria-hidden />
