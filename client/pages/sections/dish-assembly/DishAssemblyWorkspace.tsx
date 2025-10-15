@@ -182,6 +182,32 @@ const DishAssemblyWorkspace: React.FC = () => {
     [recommendedPrinterIds],
   );
 
+  const filteredStations = useMemo(() => {
+    const query = stationQuery.trim().toLowerCase();
+    if (!query) return stations;
+    return stations.filter(
+      (station) =>
+        station.name.toLowerCase().includes(query) ||
+        station.category.toLowerCase().includes(query),
+    );
+  }, [stationQuery, stations]);
+
+  const filteredPrinters = useMemo(() => {
+    const query = printerQuery.trim().toLowerCase();
+    if (!query) return printers;
+    return printers.filter((printer) => {
+      const haystack = [
+        printer.name,
+        printer.technology,
+        printer.recommendedUse,
+        printer.description,
+      ]
+        .filter(Boolean)
+        .map((value) => value.toLowerCase());
+      return haystack.some((value) => value.includes(query));
+    });
+  }, [printerQuery, printers]);
+
   const handleRowChange = useCallback(
     (rowId: string, patch: Partial<DishComponentRow>) => {
       setComponentRows((rows) =>
