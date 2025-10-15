@@ -375,6 +375,8 @@ export const dictionaries: Record<LanguageCode, TranslationDictionary> = {
     "recipe.actions.recipeTools": "Outils de recette",
     "recipe.actions.language": "Changer de langue",
     "recipe.actions.finalize": "Finaliser et effacer",
+    "recipe.actions.finalizing": "Enregistrement...",
+    "recipe.actions.finalizedCTA": "Enregistré",
     "recipe.actions.sendToDishAssembly": "Envoyer vers Assemblage Plat",
     "recipe.actions.help": "Aide et raccourcis",
     "recipe.actions.theme": "Thème",
