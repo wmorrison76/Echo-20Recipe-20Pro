@@ -3586,24 +3586,36 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                 {nutritionDisplay && (
                   <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
                     <div className="flex items-center gap-1">
-                      <Button
+                      <button
                         type="button"
-                        variant={nutritionPerServing ? "default" : "outline"}
-                        size="sm"
                         onClick={() => setNutritionPerServing(true)}
-                        className="px-3 uppercase tracking-[0.18em]"
+                        className={`px-3 py-1 rounded-md border uppercase tracking-[0.18em] transition ${
+                          nutritionPerServing
+                            ? isDarkMode
+                              ? "border-cyan-400 bg-cyan-500/20 text-cyan-100"
+                              : "border-blue-500 bg-blue-600 text-white"
+                            : isDarkMode
+                              ? "border-cyan-500/30 text-cyan-200 hover:bg-cyan-500/10"
+                              : "border-slate-300 text-slate-700 hover:bg-slate-100"
+                        }`}
                       >
                         Per Serving
-                      </Button>
-                      <Button
+                      </button>
+                      <button
                         type="button"
-                        variant={!nutritionPerServing ? "default" : "outline"}
-                        size="sm"
                         onClick={() => setNutritionPerServing(false)}
-                        className="px-3 uppercase tracking-[0.18em]"
+                        className={`px-3 py-1 rounded-md border uppercase tracking-[0.18em] transition ${
+                          !nutritionPerServing
+                            ? isDarkMode
+                              ? "border-cyan-400 bg-cyan-500/20 text-cyan-100"
+                              : "border-blue-500 bg-blue-600 text-white"
+                            : isDarkMode
+                              ? "border-cyan-500/30 text-cyan-200 hover:bg-cyan-500/10"
+                              : "border-slate-300 text-slate-700 hover:bg-slate-100"
+                        }`}
                       >
                         Whole Recipe
-                      </Button>
+                      </button>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="uppercase tracking-[0.28em] text-muted-foreground">
@@ -3616,16 +3628,18 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                             : "border-slate-300 bg-white/70"
                         }`}
                       >
-                        <Button
+                        <button
                           type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6"
+                          className={`flex h-6 w-6 items-center justify-center rounded-md transition ${
+                            isDarkMode
+                              ? "text-cyan-100 hover:bg-cyan-500/10"
+                              : "text-slate-700 hover:bg-slate-200"
+                          }`}
                           onClick={() => setPortionCount(Math.max(1, servingsForLabel - 1))}
                           aria-label="Decrease servings"
                         >
                           <Minus className="h-3.5 w-3.5" aria-hidden />
-                        </Button>
+                        </button>
                         <input
                           type="number"
                           min={1}
@@ -3638,16 +3652,18 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                             isDarkMode ? "text-cyan-100" : "text-slate-800"
                           }`}
                         />
-                        <Button
+                        <button
                           type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6"
+                          className={`flex h-6 w-6 items-center justify-center rounded-md transition ${
+                            isDarkMode
+                              ? "text-cyan-100 hover:bg-cyan-500/10"
+                              : "text-slate-700 hover:bg-slate-200"
+                          }`}
                           onClick={() => setPortionCount(Math.max(1, servingsForLabel + 1))}
                           aria-label="Increase servings"
                         >
                           <Plus className="h-3.5 w-3.5" aria-hidden />
-                        </Button>
+                        </button>
                       </div>
                     </div>
                   </div>
