@@ -1547,13 +1547,15 @@ export default function MenuDesignStudioSection() {
 
   const handleDeleteSelected = useCallback(() => {
     if (!selectedId) return;
+    const target = elements.find((element) => element.id === selectedId);
+    if (!target || target.locked) return;
     setElements((prev) => prev.filter((element) => element.id !== selectedId));
     setSelectedId((current) => (current === selectedId ? null : current));
     if (editingId === selectedId) {
       setEditingId(null);
       setEditingDraft(null);
     }
-  }, [editingId, selectedId]);
+  }, [editingId, elements, selectedId]);
 
   const handleDuplicateSelected = useCallback(() => {
     if (editingId) {
