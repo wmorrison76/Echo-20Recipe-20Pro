@@ -1722,6 +1722,13 @@ function DesignerCanvas({
     (event: React.PointerEvent<HTMLDivElement>, element: DesignerElement) => {
       event.stopPropagation();
       if (event.button !== 0) return;
+      if (editingId) {
+        if (editingId === element.id) {
+          onSelect(element.id);
+          return;
+        }
+        onCommitEdit();
+      }
       const canvas = canvasRef.current;
       if (!canvas) return;
       const rect = canvas.getBoundingClientRect();
@@ -1739,7 +1746,14 @@ function DesignerCanvas({
       window.addEventListener("pointerup", handlePointerUp);
       onSelect(element.id);
     },
-    [canvasSettings.zoom, handlePointerMove, handlePointerUp, onSelect],
+    [
+      canvasSettings.zoom,
+      editingId,
+      handlePointerMove,
+      handlePointerUp,
+      onCommitEdit,
+      onSelect,
+    ],
   );
 
   const handleCanvasPointerDown = useCallback(() => {
