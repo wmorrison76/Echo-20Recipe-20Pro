@@ -16,6 +16,7 @@ import { AppDataProvider } from "@/context/AppDataContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { YieldProvider } from "@/context/YieldContext";
 import { CollaborationProvider } from "@/context/CollaborationContext";
+import { FuzzySuggestionManager } from "@/components/FuzzySuggestionManager";
 
 const queryClient = new QueryClient();
 
@@ -52,9 +53,10 @@ const App = () => (
         <Sonner />
         <LanguageProvider>
           <AppDataProvider>
+            <FuzzySuggestionManager />
             <YieldProvider>
               <CollaborationProvider>
-                  <BrowserRouter>
+                <BrowserRouter>
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/recipe/:id" element={<RecipeEditor />} />
