@@ -1707,6 +1707,161 @@ export default function MenuDesignStudioSection() {
     setEditingDraft(null);
   }, []);
 
+  const handleBeginMaskEditing = useCallback(
+    (id: string) => {
+      const target = elements.find((item) => item.id === id);
+      if (!target || target.type !== "image") {
+        return;
+      }
+      if (target.locked) {
+        toast({
+          title: "Layer is locked",
+          description: "Unlock the layer before editing its background.",
+        });
+        return;
+      }
+      if (target.rotation !== 0) {
+        toast({
+          title: "Reset rotation to edit background",
+          description: "Set rotation to 0° to align the selection tool with the image.",
+        });
+        return;
+      }
+      if (editingId) {
+        handleCommitInlineEdit();
+      }
+      setMaskEditor({
+        elementId: id,
+        points:
+          target.mask?.type === "polygon" && target.mask.points.length >= 3
+            ? target.mask.points.map((point) => ({ ...point }))
+            : [],
+        preview: null,
+      });
+      setSelectedId(id);
+    },
+    [editingId, elements, handleCommitInlineEdit, setSelectedId, toast],
+  );
+
+  const handleMaskPointAdd = useCallback((point: PolygonPoint) => {
+    setMaskEditor((prev) => {
+      if (!prev) return prev;
+      const clampedPoint = {
+        x: clamp(point.x, 0, 1),
+        y: clamp(point.y, 0, 1),
+      };
+      return {
+        ...prev,
+        points: [...prev.points, clampedPoint],
+      };
+    });
+  }, []);
+
+  const handleMaskPreview = useCallback((point: PolygonPoint | null) => {
+    setMaskEditor((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        preview: point ? { x: clamp(point.x, 0, 1), y: clamp(point.y, 0, 1) } : null,
+      };
+    });
+  }, []);
+
+  const handleMaskUndo = useCallback(() => {
+    setMaskEditor((prev) => {
+      if (!prev || prev.points.length === 0) {
+        return prev;
+      }
+      return {
+        ...prev,
+        points: prev.points.slice(0, -1),
+      };
+    });
+  }, []);
+
+  const handleMaskCommit = useCallback(() => {
+    setMaskEditor((prev) => {
+      if (!prev) {
+        return prev;
+      }
+      if (prev.points.length < 3) {
+        toast({
+          title: "Add more points",
+          description: "Draw at least three points to outline the area to keep.",
+        });
+        return prev;
+      }
+      updateElement(prev.elementId, {
+        mask: {
+          type: "polygon",
+          points: prev.points.map((point) => ({ ...point })),
+        },
+      });
+      toast({
+        title: "Background removed",
+        description: "The selected area is now isolated from the background.",
+      });
+      return null;
+    });
+  }, [toast, updateElement]);
+
+  const handleMaskCancel = useCallback(() => {
+    setMaskEditor(null);
+    toast({
+      title: "Selection cancelled",
+      description: "Background editing stopped without applying changes.",
+    });
+  }, [toast]);
+
+  const handleMaskClear = useCallback(
+    (id: string) => {
+      const target = elements.find((item) => item.id === id);
+      if (!target) {
+        return;
+      }
+      if (target.locked) {
+        toast({
+          title: "Layer is locked",
+          description: "Unlock the layer before clearing its background mask.",
+        });
+        return;
+      }
+      updateElement(id, { mask: undefined });
+      if (maskEditor?.elementId === id) {
+        setMaskEditor(null);
+      }
+      toast({
+        title: "Mask cleared",
+        description: "The image now shows its full background again.",
+      });
+    },
+    [elements, maskEditor?.elementId, toast, updateElement],
+  );
+
+  useEffect(() => {
+    if (!maskEditor) {
+      return;
+    }
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        handleMaskCancel();
+        return;
+      }
+      if ((event.key === "Backspace" || event.key === "Delete") && maskEditor.points.length > 0) {
+        event.preventDefault();
+        handleMaskUndo();
+        return;
+      }
+      if (event.key === "Enter") {
+        event.preventDefault();
+        handleMaskCommit();
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [handleMaskCancel, handleMaskCommit, handleMaskUndo, maskEditor]);
+
   const handleCanvasPointerDownCommit = useCallback(() => {
     if (editingId) {
       handleCommitInlineEdit();
