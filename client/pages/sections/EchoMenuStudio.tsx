@@ -3093,7 +3093,7 @@ export default function MenuDesignStudioSection() {
         throw new Error("Canvas element not found");
       }
 
-      await exportDesignAsPDF(canvasElement, documentName || "Menu Design", printPreset);
+      await exportDesignAsPDF(canvasElement, documentName || t("menu.menuDesignStudio"), printPreset);
       toast({
         title: "PDF exported",
         description: "Your design has been saved as PDF.",
@@ -3110,7 +3110,7 @@ export default function MenuDesignStudioSection() {
 
   const handleExportSVG = useCallback(async () => {
     try {
-      await exportDesignAsSVG(elements, pageSize, documentName || "Menu Design");
+      await exportDesignAsSVG(elements, pageSize, documentName || t("menu.menuDesignStudio"));
       toast({
         title: "SVG exported",
         description: "Your design has been saved as SVG.",
