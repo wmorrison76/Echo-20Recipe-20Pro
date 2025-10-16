@@ -197,7 +197,7 @@ export default function SaasRoadmapSection() {
       <div className="rounded-xl border bg-white/95 p-4 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15">
         <div className="space-y-4">
           <div className="space-y-1">
-            <div className="text-sm font-semibold">Operational suites</div>
+            <div className="text-sm font-semibold">{t("menu.operationalSuites")}</div>
             <p className="text-xs text-muted-foreground">
               These modules are fully coded and wired into the production
               experience. Jump into any workspace below.
