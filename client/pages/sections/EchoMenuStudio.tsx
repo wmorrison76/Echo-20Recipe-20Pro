@@ -34,6 +34,7 @@ import { formatCurrencyValue } from "./dish-assembly/utils";
 import { getSavedDesigns, saveDesign, getLastAutoSaveDesign } from "@/lib/menu-studio-storage";
 import { useAppData } from "@/context/AppDataContext";
 import { GalleryImagePicker } from "@/components/menu-studio/GalleryImagePicker";
+import { exportDesignAsPDF, exportDesignAsSVG } from "@/lib/menu-studio-export";
 import {
   AlignCenter,
   AlignLeft,
