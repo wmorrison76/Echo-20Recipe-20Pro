@@ -450,17 +450,41 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+
     const storedRecipes = readLS<Recipe[]>(LS_RECIPES, []);
     setRecipes(
       sanitizeRecipeCollection(storedRecipes.length ? storedRecipes : mockRecipes),
     );
-    setImages(readLS<GalleryImage[]>(LS_IMAGES, []));
     setLookbooks(readLS<LookBook[]>(LS_LOOKBOOKS, []));
     setTileBoards(readLS<TileBoard[]>(LS_TILE_BOARDS, []));
     setCollections(readLS<RecipeCollection[]>(LS_COLLECTIONS, []));
     setWorkflows(readLS<DishWorkflowPlan[]>(LS_WORKFLOWS, []));
     setInspections(readLS<InspectionReport[]>(LS_INSPECTIONS, []));
-  }, []);
+
+    const hydrate = async () => {
+      try {
+        const stored = readLS<Array<StoredGalleryImage & { dataUrl?: string }>>(LS_IMAGES, []);
+        const hydratedImages = await hydrateStoredImages(stored, createObjectUrl);
+        if (!cancelled) {
+          setImages(hydratedImages);
+          setImagesHydrated(true);
+        }
+      } catch (error) {
+        console.warn("Failed to restore gallery images", error);
+        if (!cancelled) {
+          setImages([]);
+          setImagesHydrated(true);
+        }
+      }
+    };
+
+    hydrate();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [createObjectUrl]);
 
   useEffect(() => {
     const onlyLegacyDemo =
