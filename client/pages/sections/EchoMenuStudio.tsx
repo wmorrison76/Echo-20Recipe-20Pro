@@ -2699,6 +2699,12 @@ export default function MenuDesignStudioSection() {
           onLayerShift={handleLayerShift}
           onLayerOpacityChange={handleLayerOpacityChange}
           onToggleLayerLock={handleToggleLayerLock}
+          maskEditor={maskEditor}
+          onBeginMaskEditing={handleBeginMaskEditing}
+          onMaskUndo={handleMaskUndo}
+          onMaskCommit={handleMaskCommit}
+          onMaskCancel={handleMaskCancel}
+          onMaskClear={handleMaskClear}
         />
       </div>
     </div>
