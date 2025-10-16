@@ -317,14 +317,24 @@ export default function ServerNotesSection() {
                 </p>
               </div>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={createNewNote}
-              className="gap-1.5"
-            >
-              <Plus className="h-4 w-4" /> {t("serverNotes.actions.newDocument")}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={createNewNote}
+                className="gap-1.5"
+              >
+                <Plus className="h-4 w-4" /> {t("serverNotes.actions.newDocument")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setExportDialogOpen(true)}
+                className="gap-1.5"
+              >
+                <Download className="h-4 w-4" /> {t("export.serverNotes.button", "Export")}
+              </Button>
+            </div>
           </header>
 
           <div className={`${panelSurfaceClass} p-4 sm:p-5 xl:p-6`}>
