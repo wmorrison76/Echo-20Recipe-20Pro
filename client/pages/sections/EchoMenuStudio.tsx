@@ -215,12 +215,130 @@ type FontDefinition = {
 };
 
 const FONT_LIBRARY: FontDefinition[] = [
-  { label: "Playfair Display", value: "'Playfair Display', serif" },
-  { label: "Cormorant Garamond", value: "'Cormorant Garamond', serif" },
-  { label: "Lora", value: "'Lora', serif" },
-  { label: "DM Sans", value: "'DM Sans', sans-serif" },
-  { label: "Inter", value: "'Inter', sans-serif" },
-  { label: "Montserrat", value: "'Montserrat', sans-serif" },
+  {
+    label: "Playfair Display",
+    family: "Playfair Display",
+    value: "'Playfair Display', serif",
+    importUrl:
+      "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap",
+  },
+  {
+    label: "Cormorant Garamond",
+    family: "Cormorant Garamond",
+    value: "'Cormorant Garamond', serif",
+    importUrl:
+      "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap",
+  },
+  {
+    label: "Lora",
+    family: "Lora",
+    value: "'Lora', serif",
+    importUrl: "https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap",
+  },
+  {
+    label: "DM Sans",
+    family: "DM Sans",
+    value: "'DM Sans', sans-serif",
+    importUrl: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap",
+  },
+  {
+    label: "Inter",
+    family: "Inter",
+    value: "'Inter', sans-serif",
+    importUrl: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+  },
+  {
+    label: "Montserrat",
+    family: "Montserrat",
+    value: "'Montserrat', sans-serif",
+    importUrl: "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap",
+  },
+  {
+    label: "Source Serif 4",
+    family: "Source Serif 4",
+    value: "'Source Serif 4', serif",
+    importUrl:
+      "https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;500;600;700&display=swap",
+  },
+  {
+    label: "Libre Baskerville",
+    family: "Libre Baskerville",
+    value: "'Libre Baskerville', serif",
+    importUrl:
+      "https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap",
+  },
+  {
+    label: "Bodoni Moda",
+    family: "Bodoni Moda",
+    value: "'Bodoni Moda', serif",
+    importUrl: "https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500;600;700&display=swap",
+  },
+  {
+    label: "EB Garamond",
+    family: "EB Garamond",
+    value: "'EB Garamond', serif",
+    importUrl: "https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&display=swap",
+  },
+  {
+    label: "Merriweather",
+    family: "Merriweather",
+    value: "'Merriweather', serif",
+    importUrl: "https://fonts.googleapis.com/css2?family=Merriweather:wght@400;500;600;700&display=swap",
+  },
+  {
+    label: "Work Sans",
+    family: "Work Sans",
+    value: "'Work Sans', sans-serif",
+    importUrl: "https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap",
+  },
+  {
+    label: "Figtree",
+    family: "Figtree",
+    value: "'Figtree', sans-serif",
+    importUrl: "https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap",
+  },
+  {
+    label: "Raleway",
+    family: "Raleway",
+    value: "'Raleway', sans-serif",
+    importUrl: "https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&display=swap",
+  },
+  {
+    label: "Poppins",
+    family: "Poppins",
+    value: "'Poppins', sans-serif",
+    importUrl: "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap",
+  },
+  {
+    label: "Space Grotesk",
+    family: "Space Grotesk",
+    value: "'Space Grotesk', sans-serif",
+    importUrl: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap",
+  },
+  {
+    label: "Crimson Pro",
+    family: "Crimson Pro",
+    value: "'Crimson Pro', serif",
+    importUrl: "https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&display=swap",
+  },
+  {
+    label: "Rubik",
+    family: "Rubik",
+    value: "'Rubik', sans-serif",
+    importUrl: "https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap",
+  },
+  {
+    label: "Manrope",
+    family: "Manrope",
+    value: "'Manrope', sans-serif",
+    importUrl: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap",
+  },
+  {
+    label: "Quicksand",
+    family: "Quicksand",
+    value: "'Quicksand', sans-serif",
+    importUrl: "https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap",
+  },
 ];
 
 const COLOR_PALETTES: Array<{ name: string; swatches: string[] }> = [
