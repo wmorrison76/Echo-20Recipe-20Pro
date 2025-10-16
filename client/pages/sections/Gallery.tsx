@@ -1441,12 +1441,13 @@ function GalleryGrid({
   gridTemplates,
   onRestoreDemo,
 }: GalleryGridProps) {
+  const { t } = useTranslation();
   if (!images.length) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-4 text-sm text-slate-600 dark:text-slate-200">
         <div className="text-base font-semibold text-slate-900 dark:text-slate-100">No images match the current filters.</div>
         <Button className="rounded-full px-4" onClick={() => onRestoreDemo()}>
-          Restore demo gallery
+          {t("gallery.restoreDemoGallery")}
         </Button>
       </div>
     );
