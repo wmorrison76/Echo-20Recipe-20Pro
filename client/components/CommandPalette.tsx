@@ -13,7 +13,7 @@ import {
   Search,
   FileText,
   Image,
-  Cook,
+  ChefHat,
   Pill,
   Boxes,
   ClipboardList,
@@ -89,7 +89,7 @@ export function CommandPalette() {
         id: "production",
         title: t("pages.production", "Production"),
         category: t("common.navigation", "Navigation"),
-        icon: Cook,
+        icon: ChefHat,
         action: () => {
           setParams({ tab: "production" });
           setIsOpen(false);
@@ -133,7 +133,7 @@ export function CommandPalette() {
         id: "dish-assembly",
         title: t("pages.dish_assembly", "Dish Assembly"),
         category: t("common.navigation", "Navigation"),
-        icon: Cook,
+        icon: ChefHat,
         action: () => {
           setParams({ tab: "dish-assembly" });
           setIsOpen(false);
