@@ -1,6 +1,5 @@
 import React, { useMemo, useState, useCallback, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useRegisterShortcut } from "@/context/KeyboardShortcutsContext";
 import {
   Dialog,
   DialogContent,
