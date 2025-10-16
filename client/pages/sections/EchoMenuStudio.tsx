@@ -1551,7 +1551,10 @@ export default function MenuDesignStudioSection() {
     if (!fontValue) {
       return;
     }
-    const definition = FONT_LIBRARY_BY_VALUE.get(fontValue);
+    const trimmedFamily = fontValue.split(",")[0]?.replace(/['"]/g, "").trim();
+    const definition =
+      FONT_LIBRARY_BY_VALUE.get(fontValue) ??
+      (trimmedFamily ? FONT_LIBRARY_BY_FAMILY.get(trimmedFamily) : undefined);
     if (!definition) {
       return;
     }
