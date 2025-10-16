@@ -4755,64 +4755,108 @@ function FloatingLayersPanel({
               <div
                 key={layer.id}
                 className={cn(
-                  "flex items-center justify-between rounded-xl border px-3 py-2 text-left transition",
+                  "rounded-xl border px-3 py-2 text-left transition",
                   active
                     ? "border-cyan-400 bg-cyan-500/10"
                     : "border-slate-200 bg-white hover:border-cyan-400 dark:border-slate-800 dark:bg-slate-900/70",
                   locked ? "opacity-80" : undefined,
                 )}
               >
-                <button
-                  type="button"
-                  onClick={() => onSelectLayer(layer.id)}
-                  className="flex flex-1 flex-col text-left"
+                <div className="flex items-center justify-between gap-2">
+                  <button
+                    type="button"
+                    onClick={() => onSelectLayer(layer.id)}
+                    className="flex flex-1 flex-col text-left"
+                    data-floating-panel-interactive="true"
+                  >
+                    <span className="flex items-center gap-1 text-xs font-semibold text-foreground">
+                      {layer.name}
+                      {locked ? (
+                        <Lock className="h-3 w-3 text-amber-500" aria-hidden />
+                      ) : null}
+                    </span>
+                    <span className="text-[10px] uppercase tracking-[0.34em] text-muted-foreground">
+                      {layer.type}
+                    </span>
+                  </button>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={() => onToggleLock(layer.id)}
+                      aria-label={locked ? "Unlock layer" : "Lock layer"}
+                      data-floating-panel-interactive="true"
+                    >
+                      {locked ? (
+                        <Unlock className="h-3.5 w-3.5" aria-hidden />
+                      ) : (
+                        <Lock className="h-3.5 w-3.5" aria-hidden />
+                      )}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={() => onLayerShift(layer.id, "front")}
+                      aria-label="Bring layer to front"
+                      data-floating-panel-interactive="true"
+                    >
+                      <ChevronsUp className="h-3.5 w-3.5" aria-hidden />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={() => onLayerShift(layer.id, "forward")}
+                      aria-label="Move layer forward"
+                      data-floating-panel-interactive="true"
+                    >
+                      <ChevronUp className="h-3.5 w-3.5" aria-hidden />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={() => onLayerShift(layer.id, "backward")}
+                      aria-label="Move layer backward"
+                      data-floating-panel-interactive="true"
+                    >
+                      <ChevronDown className="h-3.5 w-3.5" aria-hidden />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={() => onLayerShift(layer.id, "back")}
+                      aria-label="Send layer to back"
+                      data-floating-panel-interactive="true"
+                    >
+                      <ChevronsDown className="h-3.5 w-3.5" aria-hidden />
+                    </Button>
+                  </div>
+                </div>
+                <div
+                  className="mt-2 flex items-center gap-2"
                   data-floating-panel-interactive="true"
                 >
-                  <span className="flex items-center gap-1 text-xs font-semibold text-foreground">
-                    {layer.name}
-                    {locked ? (
-                      <Lock className="h-3 w-3 text-amber-500" aria-hidden />
-                    ) : null}
+                  <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+                    Opacity
                   </span>
-                  <span className="text-[10px] uppercase tracking-[0.34em] text-muted-foreground">
-                    {layer.type}
+                  <Slider
+                    value={[Math.round((layer.opacity ?? 1) * 100)]}
+                    min={0}
+                    max={100}
+                    step={1}
+                    className="flex-1"
+                    onValueChange={(value) =>
+                      onChangeOpacity(layer.id, (value[0] ?? 100) / 100)
+                    }
+                    aria-label="Layer opacity"
+                  />
+                  <span className="w-10 text-right text-[10px] font-semibold text-muted-foreground">
+                    {Math.round((layer.opacity ?? 1) * 100)}%
                   </span>
-                </button>
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={() => onToggleLock(layer.id)}
-                    aria-label={locked ? "Unlock layer" : "Lock layer"}
-                    data-floating-panel-interactive="true"
-                  >
-                    {locked ? (
-                      <Unlock className="h-3.5 w-3.5" aria-hidden />
-                    ) : (
-                      <Lock className="h-3.5 w-3.5" aria-hidden />
-                    )}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={() => onLayerShift(layer.id, "forward")}
-                    aria-label="Bring layer forward"
-                    data-floating-panel-interactive="true"
-                  >
-                    <ChevronUp className="h-3.5 w-3.5" aria-hidden />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={() => onLayerShift(layer.id, "backward")}
-                    aria-label="Send layer backward"
-                    data-floating-panel-interactive="true"
-                  >
-                    <ChevronDown className="h-3.5 w-3.5" aria-hidden />
-                  </Button>
                 </div>
               </div>
             );
