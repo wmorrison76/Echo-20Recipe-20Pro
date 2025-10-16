@@ -1268,24 +1268,24 @@ function GalleryToolbar({
   onLink,
 }: GalleryToolbarProps) {
   return (
-    <div className="pointer-events-auto flex w-full max-w-3xl flex-col gap-4 rounded-[28px] border border-white/12 bg-[radial-gradient(circle_at_top,_rgba(14,23,42,0.95),_rgba(14,25,48,0.72))] px-6 py-4 shadow-[0_28px_80px_rgba(15,23,42,0.55)] backdrop-blur-xl">
+    <div className="pointer-events-auto flex w-full max-w-3xl flex-col gap-4 rounded-[28px] border border-slate-300/50 dark:border-white/12 bg-slate-100 dark:bg-[radial-gradient(circle_at_top,_rgba(14,23,42,0.95),_rgba(14,25,48,0.72))] px-6 py-4 shadow-[0_28px_80px_rgba(15,23,42,0.55)] backdrop-blur-xl">
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative min-w-[220px] flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sky-200/70" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sky-600 dark:text-sky-200/70" />
           <input
             value={filter}
             onChange={(event) => onFilterChange(event.target.value)}
             placeholder="Search by name or tag"
-            className="w-full rounded-full border border-white/15 bg-white/10 pl-10 pr-3 py-2 text-sm text-slate-100 placeholder:text-slate-300/80 focus:border-sky-400 focus:outline-none focus:ring-0"
+            className="w-full rounded-full border border-slate-300/50 dark:border-white/15 bg-white dark:bg-white/10 pl-10 pr-3 py-2 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-600 dark:placeholder:text-slate-300/80 focus:border-sky-400 focus:outline-none focus:ring-0"
           />
         </div>
         <div className="flex items-center gap-2 text-xs">
-          <div className="flex items-center gap-1 rounded-full border border-white/14 bg-black/30 px-3 py-1.5 shadow-[0_12px_30px_rgba(8,15,30,0.38)]">
+          <div className="flex items-center gap-1 rounded-full border border-slate-300/50 dark:border-white/14 bg-slate-200 dark:bg-black/30 px-3 py-1.5 text-slate-900 dark:text-slate-100 shadow-[0_12px_30px_rgba(8,15,30,0.38)]">
             <SlidersHorizontal className="h-3.5 w-3.5" />
             <select
               value={sort}
               onChange={(event) => onSortChange(event.target.value as SortMode)}
-              className="bg-transparent text-xs focus:outline-none"
+              className="bg-transparent text-xs focus:outline-none text-slate-900 dark:text-slate-100"
             >
               <option value="newest">Newest</option>
               <option value="oldest">Oldest</option>
@@ -1293,12 +1293,12 @@ function GalleryToolbar({
               <option value="name">Name</option>
             </select>
           </div>
-          <div className="flex items-center gap-1 rounded-full border border-white/10 bg-black/25 px-3 py-1.5">
+          <div className="flex items-center gap-1 rounded-full border border-slate-300/50 dark:border-white/10 bg-slate-200 dark:bg-black/25 px-3 py-1.5 text-slate-900 dark:text-slate-100">
             <LayoutGrid className="h-3.5 w-3.5" />
             <select
               value={thumbSize}
               onChange={(event) => onThumbSizeChange(event.target.value as "s" | "m" | "l")}
-              className="bg-transparent text-xs focus:outline-none"
+              className="bg-transparent text-xs focus:outline-none text-slate-900 dark:text-slate-100"
             >
               <option value="s">Small</option>
               <option value="m">Medium</option>
@@ -1350,8 +1350,8 @@ function GalleryBulkActions({
   onUnfavorite,
 }: GalleryBulkActionsProps) {
   return (
-    <div className="pointer-events-auto flex max-w-2xl flex-wrap items-center gap-3 rounded-full border border-white/12 bg-black/65 px-5 py-3 text-xs shadow-[0_20px_60px_rgba(15,23,42,0.45)] backdrop-blur-lg">
-      <span className="font-semibold uppercase tracking-[0.3em] text-slate-200">{count} selected</span>
+    <div className="pointer-events-auto flex max-w-2xl flex-wrap items-center gap-3 rounded-full border border-slate-300/50 dark:border-white/12 bg-slate-100 dark:bg-black/65 px-5 py-3 text-xs text-slate-900 dark:text-slate-100 shadow-[0_20px_60px_rgba(15,23,42,0.45)] backdrop-blur-lg">
+      <span className="font-semibold uppercase tracking-[0.3em]">{count} selected</span>
       <input
         value={bulkTagDraft}
         onChange={(event) => onBulkTagChange(event.target.value)}
