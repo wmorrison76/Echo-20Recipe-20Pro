@@ -3337,6 +3337,135 @@ function DesignerCanvas({
   );
 }
 
+type MaskDrawingOverlayProps = {
+  points: PolygonPoint[];
+  preview: PolygonPoint | null;
+  onAddPoint: (point: PolygonPoint) => void;
+  onPreview: (point: PolygonPoint | null) => void;
+  onComplete: () => void;
+};
+
+function MaskDrawingOverlay({ points, preview, onAddPoint, onPreview, onComplete }: MaskDrawingOverlayProps) {
+  const handlePointerDown = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const rect = event.currentTarget.getBoundingClientRect();
+      if (!rect.width || !rect.height) {
+        return;
+      }
+      const point = {
+        x: clamp((event.clientX - rect.left) / rect.width, 0, 1),
+        y: clamp((event.clientY - rect.top) / rect.height, 0, 1),
+      };
+      onAddPoint(point);
+    },
+    [onAddPoint],
+  );
+
+  const handlePointerMove = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      const rect = event.currentTarget.getBoundingClientRect();
+      if (!rect.width || !rect.height) {
+        onPreview(null);
+        return;
+      }
+      const point = {
+        x: clamp((event.clientX - rect.left) / rect.width, 0, 1),
+        y: clamp((event.clientY - rect.top) / rect.height, 0, 1),
+      };
+      onPreview(point);
+    },
+    [onPreview],
+  );
+
+  const handlePointerLeave = useCallback(() => {
+    onPreview(null);
+  }, [onPreview]);
+
+  const handleDoubleClick = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+      onComplete();
+    },
+    [onComplete],
+  );
+
+  const polygonPoints = useMemo(() => {
+    if (points.length < 3) return "";
+    return points
+      .map((point) => `${(point.x * 100).toFixed(2)},${(point.y * 100).toFixed(2)}`)
+      .join(" ");
+  }, [points]);
+
+  const workingPolylinePoints = useMemo(() => {
+    const combined = preview ? [...points, preview] : points;
+    if (combined.length === 0) return "";
+    return combined
+      .map((point) => `${(point.x * 100).toFixed(2)},${(point.y * 100).toFixed(2)}`)
+      .join(" ");
+  }, [points, preview]);
+
+  return (
+    <div
+      className="absolute inset-0 z-40 cursor-crosshair"
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerLeave={handlePointerLeave}
+      onDoubleClick={handleDoubleClick}
+      onContextMenu={(event) => event.preventDefault()}
+    >
+      <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+        {polygonPoints ? (
+          <polygon
+            points={polygonPoints}
+            fill="rgba(6, 182, 212, 0.25)"
+            stroke="rgba(6, 182, 212, 0.6)"
+            strokeWidth={0.6}
+          />
+        ) : null}
+        {workingPolylinePoints ? (
+          <polyline
+            points={workingPolylinePoints}
+            fill="none"
+            stroke="rgba(6, 182, 212, 0.8)"
+            strokeWidth={0.7}
+            strokeDasharray="1.6 1.6"
+          />
+        ) : null}
+        {points.map((point, index) => (
+          <circle
+            key={`mask-point-${index}`}
+            cx={(point.x * 100).toFixed(2)}
+            cy={(point.y * 100).toFixed(2)}
+            r={1.6}
+            fill="#06b6d4"
+            stroke="#ffffff"
+            strokeWidth={0.5}
+          />
+        ))}
+        {preview ? (
+          <circle
+            cx={(preview.x * 100).toFixed(2)}
+            cy={(preview.y * 100).toFixed(2)}
+            r={1.8}
+            fill="#38bdf8"
+            stroke="#ffffff"
+            strokeWidth={0.5}
+            opacity={0.8}
+          />
+        ) : null}
+      </svg>
+      <div className="pointer-events-none absolute inset-x-0 top-2 flex justify-center">
+        <span className="rounded-full bg-slate-900/80 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-white shadow-lg">
+          Click to add points · Double-click/Enter to apply · Esc to cancel
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function renderElement(element: DesignerElement) {
   switch (element.type) {
     case "heading":
