@@ -75,7 +75,18 @@ export function GalleryImagePicker({
 
         {/* Gallery Grid */}
         <ScrollArea className="flex-1 px-6">
-          {filteredImages.length === 0 ? (
+          {images.length === 0 ? (
+            <div className="flex h-64 items-center justify-center text-center">
+              <div>
+                <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                  No images in gallery
+                </p>
+                <p className="text-xs text-slate-600 dark:text-slate-400">
+                  Upload images to the Gallery module first
+                </p>
+              </div>
+            </div>
+          ) : filteredImages.length === 0 ? (
             <div className="flex h-64 items-center justify-center text-center">
               <div>
                 <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
