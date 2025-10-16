@@ -2508,11 +2508,12 @@ export default function MenuDesignStudioSection() {
         setPageSize(template.pageSize);
         const matchedPreset = PAGE_PRESETS.find(
           (preset) =>
-            preset.width === template.pageSize?.width &&
-            preset.height === template.pageSize?.height,
+            preset.widthPx === template.pageSize?.width &&
+            preset.heightPx === template.pageSize?.height,
         );
         if (matchedPreset) {
           setPagePreset(matchedPreset.id);
+          setPrintPreset(matchedPreset);
         }
       }
       setDocumentName(template.name);
