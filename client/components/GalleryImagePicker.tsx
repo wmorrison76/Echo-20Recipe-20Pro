@@ -73,7 +73,7 @@ export function GalleryImagePicker({
                   }`}
                 >
                   <img
-                    src={image.url}
+                    src={image.dataUrl || image.blobUrl!}
                     alt={image.name || "Gallery image"}
                     className="w-full h-24 object-cover"
                   />
