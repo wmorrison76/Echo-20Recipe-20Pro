@@ -3005,11 +3005,14 @@ function DesignerCanvas({
   );
 
   const handleCanvasPointerDown = useCallback(() => {
+    if (maskEditor) {
+      return;
+    }
     if (onCanvasPointerDown) {
       onCanvasPointerDown();
     }
     onDeselect();
-  }, [onCanvasPointerDown, onDeselect]);
+  }, [maskEditor, onCanvasPointerDown, onDeselect]);
 
   const innerWidth = useMemo(
     () => pageSize.width - canvasSettings.margin * 2,
