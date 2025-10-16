@@ -22,6 +22,7 @@ import {
 } from "@/context/PageToolbarContext";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
+import { useCallback } from "react";
 import { CommandPalette } from "@/components/CommandPalette";
 import { useRegisterShortcut } from "@/context/KeyboardShortcutsContext";
 
@@ -44,13 +45,16 @@ function IndexContent() {
     ease: [0.4, 0, 0.2, 1],
   } as const;
 
+  const handleAddRecipeShortcut = useCallback(() => {
+    const newParams = new URLSearchParams(params);
+    newParams.set("tab", "add-recipe");
+    setParams(newParams, { replace: true });
+  }, [params, setParams]);
+
   useRegisterShortcut("add-recipe-shortcut", {
     key: "n",
     meta: true,
-    handler: () => {
-      params.set("tab", "add-recipe");
-      setParams(params, { replace: true });
-    },
+    handler: handleAddRecipeShortcut,
     preventDefault: true,
   });
 
