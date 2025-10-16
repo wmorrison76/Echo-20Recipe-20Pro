@@ -135,7 +135,7 @@ export function GallerySidebar({
         />
 
         <div className="space-y-3">
-          <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-300">
+          <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-700 dark:text-slate-300">
             <span>Look Books</span>
             <button
               className="flex h-7 w-7 items-center justify-center rounded-full border border-white/10 text-white transition hover:bg-white/10"
@@ -195,8 +195,8 @@ export function GallerySidebar({
             )}
           </div>
           <FlipbookPreview onOpen={onPreviewLookbook} />
-          <div className="space-y-2 rounded-2xl border border-white/12 p-3">
-            <div className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-300">New look book</div>
+          <div className="space-y-2 rounded-2xl border border-slate-300/60 dark:border-white/12 bg-slate-50 dark:bg-transparent p-3">
+            <div className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-900 dark:text-slate-300">New look book</div>
             <div className="flex items-center gap-2">
               <input
                 value={nameDraft}
@@ -219,7 +219,7 @@ export function GallerySidebar({
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
-            <div className="text-[10px] uppercase tracking-[0.3em] text-slate-400">
+            <div className="text-[10px] uppercase tracking-[0.3em] text-slate-600 dark:text-slate-400">
               Use selected images to seed instantly.
             </div>
           </div>
@@ -227,10 +227,10 @@ export function GallerySidebar({
 
         <div
           className={cn(
-            "rounded-2xl border border-dashed px-3 py-3 text-[11px] uppercase tracking-[0.3em] transition",
-            dropActive
-              ? "border-sky-400/80 bg-sky-500/10 text-sky-200"
-              : "border-slate-400/40 bg-slate-100 text-slate-700 dark:border-white/20 dark:bg-white/5 dark:text-slate-200",
+          "rounded-2xl border border-dashed px-3 py-3 text-[11px] uppercase tracking-[0.3em] transition",
+          dropActive
+            ? "border-sky-400/80 bg-sky-500/10 text-sky-700 dark:text-sky-200"
+            : "border-slate-400/40 bg-slate-100 text-slate-700 dark:border-white/20 dark:bg-white/5 dark:text-slate-200",
           )}
           onDragEnter={(event) => {
             event.preventDefault();
@@ -249,7 +249,7 @@ export function GallerySidebar({
         </div>
       </div>
 
-      <div className="border-t border-white/10 px-5 py-4 text-[11px] uppercase tracking-[0.3em] text-slate-400">
+      <div className="border-t border-slate-300/50 dark:border-white/10 px-5 py-4 text-[11px] uppercase tracking-[0.3em] text-slate-600 dark:text-slate-400">
         {selectedIdsCount > 0
           ? `${selectedIdsCount} image${selectedIdsCount === 1 ? "" : "s"} selected`
           : "Select images to manage metadata."}
@@ -310,13 +310,13 @@ function AutoCategoryList({ clusters, onSelect }: AutoCategoryListProps) {
 
   return (
     <div className="space-y-1.5">
-      <div className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-700 dark:text-slate-300">AI catalogued themes</div>
+      <div className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-900 dark:text-slate-300">AI catalogued themes</div>
       <div className="grid gap-1.5">
         {clusters.map((cluster) => (
           <button
             key={cluster.tag}
             onClick={() => onSelect(cluster.tag)}
-            className="flex items-center justify-between rounded-2xl border border-slate-300/50 dark:border-white/12 bg-slate-100 dark:bg-white/5 px-3 py-1.5 text-left text-[11px] uppercase tracking-[0.3em] text-slate-800 dark:text-slate-200 transition hover:border-sky-300/40 hover:bg-sky-500/10"
+            className="flex items-center justify-between rounded-2xl border border-slate-300/50 dark:border-white/12 bg-slate-100 dark:bg-white/5 px-3 py-1.5 text-left text-[11px] uppercase tracking-[0.3em] text-slate-900 dark:text-slate-200 transition hover:border-sky-300/40 dark:hover:border-sky-400/40 hover:bg-sky-500/10"
           >
             <span className="flex flex-col gap-0.5 text-left">
               <span className="text-slate-900 dark:text-slate-100">{cluster.tag}</span>
@@ -341,7 +341,7 @@ function FlipbookPreview({ onOpen }: FlipbookPreviewProps) {
 
   return (
     <button
-      className="group relative h-28 w-full overflow-hidden rounded-2xl border border-white/20 bg-black/35 text-left text-xs uppercase tracking-[0.3em] text-slate-200"
+      className="group relative h-28 w-full overflow-hidden rounded-2xl border border-slate-300/50 dark:border-white/20 bg-slate-100 dark:bg-black/35 text-left text-xs uppercase tracking-[0.3em] text-slate-900 dark:text-slate-200"
       style={{ perspective: "1200px" }}
       onClick={() => {
         setTurning(true);
