@@ -235,7 +235,7 @@ function GalleryCard({
       <div className="relative">
         {unsupported ? (
           <div className="flex aspect-[4/3] w-full items-center justify-center bg-slate-300 dark:bg-slate-800 text-xs uppercase tracking-[0.3em] text-slate-700 dark:text-slate-300">
-            No preview
+            {t("gallery.noPreview")}
           </div>
         ) : (
           <img
