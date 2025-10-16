@@ -1088,7 +1088,7 @@ const onFiles = async (files: File[]) => {
                   ref={collectionNameRef}
                   value={collectionDraftName}
                   onChange={(event) => setCollectionDraftName(event.target.value)}
-                  placeholder="Collection Name"
+                  placeholder={t("recipes.collectionName.placeholder", "Collection Name")}
                   className="flex-1 bg-transparent text-sm font-medium text-foreground outline-none placeholder:text-muted-foreground"
                 />
               </div>
