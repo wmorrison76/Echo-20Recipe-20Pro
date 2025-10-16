@@ -32,6 +32,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useHistory } from "@/hooks/use-history";
 import { formatCurrencyValue } from "./dish-assembly/utils";
 import { getSavedDesigns, saveDesign, getLastAutoSaveDesign } from "@/lib/menu-studio-storage";
+import { useAppData } from "@/context/AppDataContext";
+import { GalleryImagePicker } from "@/components/menu-studio/GalleryImagePicker";
 import {
   AlignCenter,
   AlignLeft,
@@ -675,7 +677,7 @@ const PAGE_PRESETS: PrintPreset[] = [
   }),
   createPreset({
     id: "tri_fold_tent",
-    label: "Tri-Fold Tent 4.25×11",
+    label: "Tri-Fold Tent 4.25��11",
     widthIn: 4.25,
     heightIn: 11,
     bleedIn: 0.125,
