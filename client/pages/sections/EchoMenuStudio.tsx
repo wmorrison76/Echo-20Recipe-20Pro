@@ -207,7 +207,14 @@ type FloatingPanelState = {
   pinned: boolean;
 };
 
-const FONT_LIBRARY = [
+type FontDefinition = {
+  label: string;
+  family: string;
+  value: string;
+  importUrl: string;
+};
+
+const FONT_LIBRARY: FontDefinition[] = [
   { label: "Playfair Display", value: "'Playfair Display', serif" },
   { label: "Cormorant Garamond", value: "'Cormorant Garamond', serif" },
   { label: "Lora", value: "'Lora', serif" },
