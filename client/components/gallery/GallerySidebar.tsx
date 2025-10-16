@@ -353,8 +353,8 @@ function FlipbookPreview({ onOpen }: FlipbookPreviewProps) {
       aria-label="Open flip book"
     >
       <div className="absolute inset-0 flex flex-col justify-center gap-1 p-4">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.35em]">Flip book</span>
-        <span className="text-[10px] text-slate-300">Pages animated with every turn</span>
+        <span className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-900 dark:text-slate-100">Flip book</span>
+        <span className="text-[10px] text-slate-600 dark:text-slate-300">Pages animated with every turn</span>
       </div>
       <div
         className="absolute inset-y-4 left-6 w-32 rounded-xl bg-gradient-to-br from-sky-400/60 via-sky-500/40 to-sky-300/30 shadow-[0_18px_40px_rgba(56,189,248,0.35)]"
