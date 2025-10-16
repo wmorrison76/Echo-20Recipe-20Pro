@@ -3613,6 +3613,12 @@ type InspectorPanelProps = {
   onLayerShift: (id: string, direction: "forward" | "backward" | "front" | "back") => void;
   onLayerOpacityChange: (id: string, opacity: number) => void;
   onToggleLayerLock: (id: string) => void;
+  maskEditor: MaskEditorState | null;
+  onBeginMaskEditing: (id: string) => void;
+  onMaskUndo: () => void;
+  onMaskCommit: () => void;
+  onMaskCancel: () => void;
+  onMaskClear: (id: string) => void;
 };
 
 function InspectorPanel({
