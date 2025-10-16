@@ -955,7 +955,7 @@ const seasonalTemplate: MenuTemplate = {
       type: "menu-item",
       name: "Course Five",
       text: "Honey Pollen Pavlova",
-      description: "chamomile cream · macerated berries · verbena ice",
+      description: "chamomile cream �� macerated berries · verbena ice",
       price: 16,
       currency: "USD",
       x: 120,
@@ -2932,7 +2932,7 @@ export default function MenuDesignStudioSection() {
                 {`${formatInches(printPreset.widthIn)}″ × ${formatInches(printPreset.heightIn)}″ • ${printPreset.dpi} DPI`}
               </div>
               <div className="text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
-                {printPreset.colorProfile}
+                {`Safe ${formatInches(printPreset.safeMarginIn)}″ • Bleed ${formatInches(printPreset.bleedIn)}″ • ${printPreset.colorProfile}`}
               </div>
             </div>
             <Button variant="outline" size="sm" onClick={() => setPageSize(({ width, height }) => ({ width: height, height: width }))}>
