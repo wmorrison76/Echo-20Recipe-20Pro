@@ -6,6 +6,7 @@ import "../../luccca-lookbook.css";
 import { useAppData } from "@/context/AppDataContext";
 import type { GalleryImage } from "@/context/AppDataContext";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/context/LanguageContext";
 import {
   Dialog,
   DialogContent,
