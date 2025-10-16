@@ -623,19 +623,19 @@ export default function GallerySection() {
       .map((tag) => tag.trim())
       .filter(Boolean);
     setShowTagDialog(false);
-    setStatus(`Processing ${files.length} image${files.length === 1 ? "" : "s"}...`);
+    setStatus(files.length === 1 ? t("gallery.processingImages").replace("{count}", "1") : t("gallery.processingImages").replace("{count}", String(files.length)));
     console.debug("Starting image import with tags:", tags);
     try {
       const added = await addImages(files, { tags });
       if (added === 0) {
-        setStatus("No images were added (check for duplicates or unsupported formats).");
+        setStatus(t("gallery.noImagesAdded"));
         console.warn("No images were successfully added");
       } else {
-        setStatus(`✓ Added ${added} file${added === 1 ? "" : "s"}. Images are being saved...`);
+        setStatus(t("gallery.addedCount").replace("{count}", String(added)).replace("{plural}", added === 1 ? "" : "s"));
         console.info("Successfully added", added, "images");
       }
     } catch (error) {
-      setStatus("Error adding images. Check browser console for details.");
+      setStatus(t("gallery.errorAddingImages"));
       console.error("Error importing images:", error);
     }
     (window as any).__pending_files = undefined;
@@ -674,7 +674,7 @@ export default function GallerySection() {
   const handleDeleteImage = (id: string) => {
     if (!confirm("Delete this image?")) return;
     deleteImage(id);
-    setStatus("Image deleted.");
+    setStatus(t("common.delete"));
   };
 
   const handleBulkTagSubmit = () => {
@@ -693,7 +693,7 @@ export default function GallerySection() {
     if (!activeImage) return;
     const name = nameDraft.trim();
     if (!name) {
-      setStatus("Name cannot be empty.");
+      setStatus(t("gallery.nameCannotBeEmpty"));
       return;
     }
     const tags = tagDraft
@@ -701,24 +701,24 @@ export default function GallerySection() {
       .map((tag) => tag.trim())
       .filter(Boolean);
     updateImage(activeImage.id, { name, tags });
-    setStatus("Image metadata updated.");
+    setStatus(t("gallery.preparingExport"));
   };
 
   const handleResetMetadata = () => {
     if (!activeImage) return;
     setNameDraft(activeImage.name);
     setTagDraft((activeImage.tags || []).join(", "));
-    setStatus("Metadata fields reverted.");
+    setStatus(t("gallery.clearSelection"));
   };
 
   const handleToggleLookbookMembership = (lookbookId: string, enabled: boolean) => {
     if (!activeImage) return;
     if (enabled) {
       addImagesToLookBook(lookbookId, [activeImage.id]);
-      setStatus("Image added to look book.");
+    setStatus(t("gallery.preparingExport"));
     } else {
       removeImagesFromLookBook(lookbookId, [activeImage.id]);
-      setStatus("Image removed from look book.");
+    setStatus(t("gallery.clearSelection"));
     }
   };
 
@@ -728,7 +728,7 @@ export default function GallerySection() {
       .map((value) => value.trim())
       .filter((value) => /^https?:\/\//i.test(value));
     if (!urls.length) {
-      setStatus("Enter valid http(s) image URLs.");
+    setStatus(t("gallery.preparingExport"));
       return;
     }
     setUrlLoading(true);
@@ -751,7 +751,7 @@ export default function GallerySection() {
         } catch (error: any) {
           console.warn("Failed to fetch image from URL:", url, error);
           failedUrls.push(url);
-          setStatus(`Failed to fetch ${url}: ${error?.message ?? "error"}`);
+          setStatus(t("gallery.failedFetch").replace("{url}", url).replace("{error}", error?.message ?? "error"));
         }
       }
       if (files.length) {
@@ -761,33 +761,33 @@ export default function GallerySection() {
           setStatus(`✓ Added ${added} image${added === 1 ? "" : "s"} from URLs.${failedUrls.length > 0 ? ` (${failedUrls.length} failed)` : ""}`);
           setUrlText("");
         } else {
-          setStatus("No images were added. Check for duplicates.");
+        setStatus(t("gallery.noImagesAdded"));
         }
       } else if (failedUrls.length > 0) {
-        setStatus(`Failed to fetch all ${failedUrls.length} URL(s). Check browser console.`);
+        setStatus(t("gallery.failedFetchUrls").replace("{count}", String(failedUrls.length)));
       }
     } catch (error) {
       console.error("Error importing images from URLs:", error);
-      setStatus("Error importing images. Check browser console.");
+      setStatus(t("gallery.errorImportingImages"));
     } finally {
       setUrlLoading(false);
     }
   };
 
   const handleExportAll = async () => {
-    setStatus("Preparing export...");
+    setStatus(t("gallery.preparingExport"));
     try {
       await exportAllZip();
-      setStatus("Export ready. ZIP download started.");
+      setStatus(t("gallery.exportReady"));
     } catch (error) {
       const message = error instanceof Error ? error.message : null;
-      setStatus(message ? `Export failed: ${message}` : "Export failed.");
+      setStatus(t("gallery.exportFailed"));
     }
   };
 
   const handleLinkRecipes = () => {
     linkImagesToRecipesByFilename();
-    setStatus("Linked images to recipes by filename.");
+    setStatus(t("gallery.linkRecipes"));
   };
 
   const handleCreateLookBook = (name: string) => {
