@@ -2051,6 +2051,7 @@ export default function MenuDesignStudioSection() {
           } as DesignerElement;
         }),
       );
+      setHasUnsavedChanges(true);
     },
     [ensureFontLoaded],
   );
