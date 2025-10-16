@@ -59,6 +59,8 @@ import {
   ZoomOut,
   ChevronUp,
   ChevronDown,
+  ChevronsUp,
+  ChevronsDown,
   Lock,
   Unlock,
 } from "lucide-react";
