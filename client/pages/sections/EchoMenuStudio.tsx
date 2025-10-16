@@ -1862,6 +1862,16 @@ export default function MenuDesignStudioSection() {
     return () => window.removeEventListener("keydown", handleKey);
   }, [handleMaskCancel, handleMaskCommit, handleMaskUndo, maskEditor]);
 
+  useEffect(() => {
+    if (!maskEditor) {
+      return;
+    }
+    const exists = elements.some((item) => item.id === maskEditor.elementId);
+    if (!exists) {
+      setMaskEditor(null);
+    }
+  }, [elements, maskEditor]);
+
   const handleCanvasPointerDownCommit = useCallback(() => {
     if (maskEditor) {
       return;
