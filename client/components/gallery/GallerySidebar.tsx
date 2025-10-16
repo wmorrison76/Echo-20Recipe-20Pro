@@ -230,7 +230,7 @@ export function GallerySidebar({
             "rounded-2xl border border-dashed px-3 py-3 text-[11px] uppercase tracking-[0.3em] transition",
             dropActive
               ? "border-sky-400/80 bg-sky-500/10 text-sky-200"
-              : "border-white/20 bg-white/5 text-slate-200",
+              : "border-slate-400/40 bg-slate-100 text-slate-700 dark:border-white/20 dark:bg-white/5 dark:text-slate-200",
           )}
           onDragEnter={(event) => {
             event.preventDefault();
