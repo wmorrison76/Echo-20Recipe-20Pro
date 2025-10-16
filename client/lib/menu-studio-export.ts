@@ -9,11 +9,26 @@ export async function exportDesignAsPDF(
   printPreset: any
 ) {
   try {
-    const { jsPDF } = await import("jspdf");
-    const html2canvas = await import("html2canvas").then((m) => m.default);
+    // Dynamically import to avoid build issues if libraries aren't installed
+    let jsPDFLib: any;
+    let html2canvasLib: any;
+
+    try {
+      const jsPDFModule = await import("jspdf");
+      jsPDFLib = jsPDFModule.jsPDF;
+    } catch {
+      throw new Error("jsPDF is not installed. Please install it with: npm install jspdf");
+    }
+
+    try {
+      const html2canvasModule = await import("html2canvas");
+      html2canvasLib = html2canvasModule.default;
+    } catch {
+      throw new Error("html2canvas is not installed. Please install it with: npm install html2canvas");
+    }
 
     // Take screenshot of canvas
-    const screenshot = await html2canvas(canvas, {
+    const screenshot = await html2canvasLib(canvas, {
       scale: 2,
       useCORS: true,
       logging: false,
@@ -25,7 +40,7 @@ export async function exportDesignAsPDF(
     const heightInches = printPreset.heightIn || 11;
 
     // Create PDF with correct dimensions
-    const pdf = new jsPDF({
+    const pdf = new jsPDFLib({
       orientation: widthInches > heightInches ? "landscape" : "portrait",
       unit: "in",
       format: [widthInches, heightInches],
@@ -40,7 +55,7 @@ export async function exportDesignAsPDF(
     return { success: true };
   } catch (error) {
     console.error("PDF export failed:", error);
-    throw new Error("Failed to export PDF. Make sure jsPDF and html2canvas are installed.");
+    throw error;
   }
 }
 
