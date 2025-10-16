@@ -2760,6 +2760,10 @@ function DesignerCanvas({
   onCommitEdit,
   onCancelEdit,
   onCanvasPointerDown,
+  maskEditor,
+  onMaskPointAdd,
+  onMaskPreview,
+  onMaskComplete,
 }: DesignerCanvasProps) {
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<ElementDragState | null>(null);
