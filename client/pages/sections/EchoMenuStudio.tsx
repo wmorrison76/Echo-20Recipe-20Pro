@@ -579,7 +579,7 @@ const PAGE_PRESETS: PrintPreset[] = [
   }),
   createPreset({
     id: "third_letter",
-    label: "Cocktail/Wine List – Third Letter",
+    label: "Cocktail/Wine List �� Third Letter",
     widthIn: 3.66,
     heightIn: 8.5,
     bleedIn: 0.125,
@@ -1867,7 +1867,12 @@ export default function MenuDesignStudioSection() {
   const [canvasSettings, setCanvasSettings] = useState<CanvasSettings>(
     INITIAL_CANVAS,
   );
-  const [elements, setElements] = useState<DesignerElement[]>(INITIAL_ELEMENTS);
+
+  // Use history hook for undo/redo on elements
+  const elementsHistory = useHistory<DesignerElement[]>(INITIAL_ELEMENTS, { maxStates: 50 });
+  const elements = elementsHistory.state;
+  const setElements = elementsHistory.setState;
+
   const [selectedId, setSelectedId] = useState<string | null>(
     INITIAL_ELEMENTS[0]?.id ?? null,
   );
@@ -1887,7 +1892,9 @@ export default function MenuDesignStudioSection() {
       y: 280,
       pinned: false,
     });
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const workspaceRef = useRef<HTMLDivElement | null>(null);
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
   const loadedFontsRef = useRef<Set<string>>(new Set());
 
