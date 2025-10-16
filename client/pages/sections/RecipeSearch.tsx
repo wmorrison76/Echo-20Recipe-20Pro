@@ -43,7 +43,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { axisOptions } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage, useTranslation } from "@/context/LanguageContext";
 import type { LanguageCode } from "@/i18n/config";
 import type { RecipeCollection } from "@shared/server-notes";
 
