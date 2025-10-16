@@ -201,9 +201,9 @@ export function PhotoStudioPanel({
 
       {activeImage ? (
         <div className="flex-1 space-y-4 overflow-y-auto pr-1">
-          <div className="overflow-hidden rounded-3xl border border-white/10 bg-black/40">
+          <div className="overflow-hidden rounded-3xl border border-slate-300/40 dark:border-white/10 bg-white dark:bg-black/40">
             {activeImage.unsupported ? (
-              <div className="flex aspect-[4/3] items-center justify-center text-xs uppercase tracking-[0.3em] text-slate-300">
+              <div className="flex aspect-[4/3] items-center justify-center text-xs uppercase tracking-[0.3em] text-slate-400 dark:text-slate-300">
                 No preview available
               </div>
             ) : (
@@ -214,10 +214,10 @@ export function PhotoStudioPanel({
                 style={inspectorImageStyle}
               />
             )}
-            <div className="flex items-center justify-between px-4 py-3">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-slate-300/40 dark:border-white/10">
               <div className="space-y-1">
-                <div className="text-sm font-semibold text-slate-100">{activeImage.name}</div>
-                <div className="text-[11px] uppercase tracking-[0.3em] text-slate-300">
+                <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">{activeImage.name}</div>
+                <div className="text-[11px] uppercase tracking-[0.3em] text-slate-600 dark:text-slate-300">
                   {tagLabel || "Untagged"}
                 </div>
               </div>
