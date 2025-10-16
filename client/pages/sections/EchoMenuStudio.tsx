@@ -3252,7 +3252,7 @@ type InspectorPanelProps = {
   onDuplicateSelected: () => void;
   layers: DesignerElement[];
   onSelectLayer: (id: string) => void;
-  onLayerShift: (id: string, direction: "forward" | "backward") => void;
+  onLayerShift: (id: string, direction: "forward" | "backward" | "front" | "back") => void;
 };
 
 function InspectorPanel({
@@ -4543,7 +4543,7 @@ type FloatingLayersPanelProps = {
   layers: DesignerElement[];
   selectedId: string | null;
   onSelectLayer: (id: string) => void;
-  onLayerShift: (id: string, direction: "forward" | "backward") => void;
+  onLayerShift: (id: string, direction: "forward" | "backward" | "front" | "back") => void;
   onToggleLock: (id: string) => void;
 };
 
