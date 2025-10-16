@@ -596,6 +596,12 @@ export default function ServerNotesSection() {
           </section>
         </div>
       </div>
+
+      <ServerNotesExportDialog
+        notes={currentNote}
+        open={exportDialogOpen}
+        onOpenChange={setExportDialogOpen}
+      />
     </div>
   );
 }
