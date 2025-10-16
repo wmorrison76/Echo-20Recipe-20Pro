@@ -35,6 +35,19 @@ type StoredGalleryImage = Omit<GalleryImage, "dataUrl" | "blobUrl"> & {
   hasBlob?: boolean;
 };
 
+const serializeImagesForStorage = (items: GalleryImage[]): StoredGalleryImage[] =>
+  items.map((item) => ({
+    id: item.id,
+    name: item.name,
+    createdAt: item.createdAt,
+    tags: item.tags ?? [],
+    favorite: item.favorite,
+    order: item.order,
+    type: item.type,
+    unsupported: item.unsupported,
+    hasBlob: Boolean(item.dataUrl || item.blobUrl),
+  }));
+
 export type LookBook = {
   id: string;
   name: string;
