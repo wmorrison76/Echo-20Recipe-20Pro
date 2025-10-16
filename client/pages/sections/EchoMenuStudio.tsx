@@ -3055,6 +3055,39 @@ export default function MenuDesignStudioSection() {
               <Download className="mr-2 h-4 w-4" aria-hidden />
               Export JSON
             </Button>
+            <div className="flex items-center gap-1 overflow-hidden rounded-full border border-cyan-500/30">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-none"
+                onClick={() => elementsHistory.undo()}
+                disabled={!elementsHistory.canUndo}
+                aria-label="Undo (Ctrl+Z)"
+                title="Undo (Ctrl+Z)"
+              >
+                <RotateCcw className="h-4 w-4" aria-hidden />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-none"
+                onClick={() => elementsHistory.redo()}
+                disabled={!elementsHistory.canRedo}
+                aria-label="Redo (Ctrl+Shift+Z)"
+                title="Redo (Ctrl+Shift+Z)"
+              >
+                <RotateCw className="h-4 w-4" aria-hidden />
+              </Button>
+              <div className="h-5 w-px bg-border" />
+            </div>
+            {hasUnsavedChanges && (
+              <div className="flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1.5">
+                <div className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+                <span className="text-xs font-medium uppercase tracking-[0.2em] text-amber-700 dark:text-amber-200">
+                  Unsaved
+                </span>
+              </div>
+            )}
             <div className="flex items-center overflow-hidden rounded-full border border-cyan-500/30">
               <Button
                 variant="ghost"
