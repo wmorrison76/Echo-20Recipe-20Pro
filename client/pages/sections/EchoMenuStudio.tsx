@@ -1062,7 +1062,7 @@ const coastalBrunchTemplate: MenuTemplate = {
       type: "menu-item",
       name: "Sunrise",
       text: "Citrus Ricotta Pancakes",
-      description: "candied grapefruit · vanilla creme fraiche · pistachio",
+      description: "candied grapefruit �� vanilla creme fraiche · pistachio",
       price: 18,
       currency: "USD",
       x: 96,
@@ -2503,6 +2503,7 @@ export default function MenuDesignStudioSection() {
               selectedId={selectedId}
               onSelectLayer={handleSelectLayer}
               onLayerShift={handleLayerShift}
+              onChangeOpacity={handleLayerOpacityChange}
               onToggleLock={handleToggleLayerLock}
             />
           </div>
