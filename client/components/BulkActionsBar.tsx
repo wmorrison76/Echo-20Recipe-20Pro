@@ -2,7 +2,7 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Copy, Trash2, Download, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/context/LanguageContext";
 import { cn } from "@/lib/utils";
 
 export type BulkActionItem = {
