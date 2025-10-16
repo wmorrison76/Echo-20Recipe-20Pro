@@ -93,7 +93,7 @@ export function exportCooksRecipesAsJSON(
   options: ExportOptions
 ): void {
   const data = {
-    title: "Cook's Recipe Book",
+    title: t("export.cooksRecipes.defaultTitle", options.language, "Cook's Recipe Book"),
     language: options.language,
     totalRecipes: recipes.length,
     recipes,
