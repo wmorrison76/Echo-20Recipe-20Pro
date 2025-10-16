@@ -3915,6 +3915,12 @@ function InspectorPanel({
               onUpdate={onUpdateElement}
               onDelete={onDeleteSelected}
               onDuplicate={onDuplicateSelected}
+              maskEditor={maskEditor}
+              onBeginMaskEditing={onBeginMaskEditing}
+              onMaskUndo={onMaskUndo}
+              onMaskCommit={onMaskCommit}
+              onMaskCancel={onMaskCancel}
+              onMaskClear={onMaskClear}
             />
           ) : (
             <div className="space-y-2 text-sm text-muted-foreground">
