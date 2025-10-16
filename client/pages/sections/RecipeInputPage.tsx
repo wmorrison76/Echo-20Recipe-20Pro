@@ -653,6 +653,7 @@ const clearRecipeWorkspace = useCallback(
     setDirections,
     setImage,
     setShowImagePopup,
+    setShowGalleryPicker,
     setSelectedAllergens,
     setSelectedNationality,
     setSelectedCourses,
