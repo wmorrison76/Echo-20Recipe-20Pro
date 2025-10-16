@@ -31,6 +31,10 @@ export type GalleryImage = {
   unsupported?: boolean;
 };
 
+type StoredGalleryImage = Omit<GalleryImage, "dataUrl" | "blobUrl"> & {
+  hasBlob?: boolean;
+};
+
 export type LookBook = {
   id: string;
   name: string;
