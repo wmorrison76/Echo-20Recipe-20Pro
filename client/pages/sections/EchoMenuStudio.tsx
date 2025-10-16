@@ -3236,6 +3236,7 @@ export default function MenuDesignStudioSection() {
 
   return (
     <div className="flex h-full min-h-[calc(100vh-140px)] flex-col gap-4 px-4 pb-10 pt-4 lg:px-6">
+      <UndoRedoFeedbackComponent />
       <Card className="border border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 via-background to-emerald-500/5 shadow-lg">
         <CardHeader className="gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-1">
