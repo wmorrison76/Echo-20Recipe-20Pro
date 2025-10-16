@@ -2582,6 +2582,8 @@ export default function MenuDesignStudioSection() {
       maskEditor,
       selectedElement,
       selectedId,
+      elementsHistory,
+      toast,
     ],
   );
 
