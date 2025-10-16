@@ -312,6 +312,7 @@ function GalleryCard({
 }
 
 export default function GallerySection() {
+  const { t } = useTranslation();
   const {
     images,
     lookbooks,
