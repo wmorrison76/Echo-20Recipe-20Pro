@@ -31,7 +31,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useHistory } from "@/hooks/use-history";
 import { formatCurrencyValue } from "./dish-assembly/utils";
-import { getSavedDesigns, saveDesign, getLastAutoSaveDesign } from "@/lib/menu-studio-storage";
+import { getSavedDesigns, saveDesign, deleteDesign, getLastAutoSaveDesign } from "@/lib/menu-studio-storage";
 import { useAppData } from "@/context/AppDataContext";
 import { GalleryImagePicker } from "@/components/menu-studio/GalleryImagePicker";
 import { SaveLoadDialog } from "@/components/menu-studio/SaveLoadDialog";
@@ -2862,7 +2862,6 @@ export default function MenuDesignStudioSection() {
 
   const handleDeleteSavedDesign = useCallback((designId: string) => {
     try {
-      const { deleteDesign } = require("@/lib/menu-studio-storage");
       deleteDesign(designId);
       setSavedDesigns(getSavedDesigns());
       toast({
