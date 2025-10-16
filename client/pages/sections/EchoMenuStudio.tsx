@@ -1831,6 +1831,8 @@ const createElementsFromTemplate = (template: MenuTemplate): DesignerElement[] =
     locked: element.locked ?? false,
   }));
 
+const DEFAULT_PRESET = PAGE_PRESETS[0];
+
 const INITIAL_CANVAS: CanvasSettings = {
   background: "#fefaf4",
   margin: 64,
