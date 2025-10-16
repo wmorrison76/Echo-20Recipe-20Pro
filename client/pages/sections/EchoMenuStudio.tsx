@@ -29,7 +29,9 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useHistory } from "@/hooks/use-history";
 import { formatCurrencyValue } from "./dish-assembly/utils";
+import { getSavedDesigns, saveDesign, getLastAutoSaveDesign } from "@/lib/menu-studio-storage";
 import {
   AlignCenter,
   AlignLeft,
@@ -63,6 +65,9 @@ import {
   ChevronsDown,
   Lock,
   Unlock,
+  RotateCcw,
+  RotateCw,
+  Save,
 } from "lucide-react";
 
 type DesignerElementType =
