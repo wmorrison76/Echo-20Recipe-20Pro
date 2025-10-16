@@ -62,29 +62,9 @@ type ToolSpec = {
 };
 
 const TOOL_GRID: ToolSpec[] = [
-  { key: "marquee", label: "Marquee", icon: RectangleHorizontal },
-  { key: "lasso", label: "Lasso", icon: Lasso },
   { key: "crop", label: "Crop", icon: Crop },
-  { key: "heal", label: "Heal brush", icon: Bandage },
-  { key: "clone", label: "Clone stamp", icon: Stamp },
-  { key: "erase", label: "Eraser", icon: Eraser },
-  { key: "blur", label: "Blur", icon: Droplet },
-  { key: "path", label: "Path select", icon: Pointer },
-  { key: "pen", label: "Pen", icon: PenTool },
-  { key: "annotate", label: "Annotation", icon: Pencil },
-  { key: "hand", label: "Hand", icon: Hand },
+  { key: "hand", label: "Pan", icon: Hand },
   { key: "color", label: "Color pick", icon: Pipette },
-  { key: "move", label: "Move", icon: Move },
-  { key: "magic", label: "Magic wand", icon: Wand2 },
-  { key: "slice", label: "Slice", icon: Scissors },
-  { key: "pencil", label: "Pencil", icon: Pencil },
-  { key: "history", label: "History brush", icon: History },
-  { key: "paint", label: "Paint bucket", icon: PaintBucket },
-  { key: "dodge", label: "Dodge", icon: Sparkles },
-  { key: "type", label: "Type", icon: Text },
-  { key: "shape", label: "Custom shape", icon: Shapes },
-  { key: "eyedropper", label: "Eye dropper", icon: Pipette },
-  { key: "zoom", label: "Zoom", icon: ZoomIn },
 ];
 
 const OVERLAY_QUICK_ACTIONS = [
