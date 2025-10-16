@@ -3198,6 +3198,15 @@ export default function MenuDesignStudioSection() {
               <Sparkles className="mr-2 h-4 w-4" aria-hidden />
               Apply seasonal
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowSaveLoadDialog(true)}
+              className="border-emerald-300/50 hover:border-emerald-400 dark:border-emerald-500/30"
+            >
+              <Save className="mr-2 h-4 w-4" aria-hidden />
+              Save / Load
+            </Button>
             <div className="flex items-center gap-1 rounded-lg border border-slate-300/50 dark:border-slate-700/60 p-1">
               <Button variant="ghost" size="sm" onClick={handleExportLayout} title="Export as JSON">
                 <Download className="mr-2 h-4 w-4" aria-hidden />
