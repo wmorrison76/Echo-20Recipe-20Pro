@@ -341,6 +341,16 @@ const FONT_LIBRARY: FontDefinition[] = [
   },
 ];
 
+const FONT_LIBRARY_BY_VALUE = new Map(
+  FONT_LIBRARY.map((font) => [font.value, font]),
+);
+
+const FONT_LIBRARY_BY_FAMILY = new Map(
+  FONT_LIBRARY.map((font) => [font.family, font]),
+);
+
+const DEFAULT_FONT_VALUE = FONT_LIBRARY[0]?.value ?? "serif";
+
 const COLOR_PALETTES: Array<{ name: string; swatches: string[] }> = [
   {
     name: "Earthy Mineral",
