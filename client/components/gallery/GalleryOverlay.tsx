@@ -358,22 +358,50 @@ export function GalleryOverlay({
           </main>
 
           <aside className="flex w-[260px] flex-col gap-3 rounded-3xl border border-slate-700/60 bg-black/35 p-4">
-            <OverlayPanel title="Color adjustments" defaultOpen>
-              <div className="grid gap-3 text-[11px] uppercase tracking-[0.3em] text-slate-300">
-                <span>Exposure {adjustments.exposure}</span>
-                <span>Contrast {adjustments.contrast}</span>
-                <span>Warmth {adjustments.warmth}</span>
-                <span>Saturation {adjustments.saturation}</span>
-                <span>Focus {adjustments.focus}</span>
+            <OverlayPanel title="Adjustments" defaultOpen>
+              <div className="space-y-4 text-[11px] uppercase tracking-[0.3em] text-slate-300">
+                <div>
+                  <span className="flex items-center justify-between mb-2">Exposure {adjustments.exposure}</span>
+                  <div className="flex items-center gap-2">
+                    <input type="range" min="-100" max="100" value={adjustments.exposure} className="flex-1 h-1 cursor-pointer" disabled style={{opacity: 0.5}} />
+                  </div>
+                </div>
+                <div>
+                  <span className="flex items-center justify-between mb-2">Contrast {adjustments.contrast}</span>
+                  <div className="flex items-center gap-2">
+                    <input type="range" min="-100" max="100" value={adjustments.contrast} className="flex-1 h-1 cursor-pointer" disabled style={{opacity: 0.5}} />
+                  </div>
+                </div>
+                <div>
+                  <span className="flex items-center justify-between mb-2">Warmth {adjustments.warmth}</span>
+                  <div className="flex items-center gap-2">
+                    <input type="range" min="-100" max="100" value={adjustments.warmth} className="flex-1 h-1 cursor-pointer" disabled style={{opacity: 0.5}} />
+                  </div>
+                </div>
+                <div>
+                  <span className="flex items-center justify-between mb-2">Saturation {adjustments.saturation}</span>
+                  <div className="flex items-center gap-2">
+                    <input type="range" min="-100" max="100" value={adjustments.saturation} className="flex-1 h-1 cursor-pointer" disabled style={{opacity: 0.5}} />
+                  </div>
+                </div>
+                <div>
+                  <span className="flex items-center justify-between mb-2">Focus {adjustments.focus}</span>
+                  <div className="flex items-center gap-2">
+                    <input type="range" min="-100" max="100" value={adjustments.focus} className="flex-1 h-1 cursor-pointer" disabled style={{opacity: 0.5}} />
+                  </div>
+                </div>
               </div>
               <Button
                 variant="ghost"
                 size="sm"
-                className="mt-3 rounded-full px-4"
+                className="mt-3 rounded-full px-4 w-full"
                 onClick={onResetAdjustments}
               >
-                Reset adjustments
+                Reset
               </Button>
+              <div className="text-[10px] text-slate-400 mt-2">
+                💡 Adjustments are displayed in the preview. Save to apply changes.
+              </div>
             </OverlayPanel>
 
             <OverlayPanel title="Layers">
