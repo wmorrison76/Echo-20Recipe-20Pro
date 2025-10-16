@@ -470,6 +470,7 @@ const RecipeInputPage = () => {
   const STEP_IMG_MAX_W = 720;
   const [image, setImage] = useState<string | null>(null);
   const [showImagePopup, setShowImagePopup] = useState(false);
+  const [showGalleryPicker, setShowGalleryPicker] = useState(false);
   const [currentCurrency, setCurrentCurrency] = useState("USD");
   const [currentUnits, setCurrentUnits] = useState<"Imperial" | "Metric">(
     "Imperial",
