@@ -129,7 +129,10 @@ export function SaveLoadDialog({
                 </label>
                 <Input
                   value={designName}
-                  onChange={(e) => setDesignName(e.target.value)}
+                  onChange={(e) => {
+                    setDesignName(e.target.value);
+                    setShowConfirmOverwrite(false);
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") handleSave();
                   }}
@@ -138,6 +141,19 @@ export function SaveLoadDialog({
                   autoFocus
                 />
               </div>
+              {existingDesignWithName && showConfirmOverwrite && (
+                <div className="rounded-lg border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/30 p-4 flex gap-3">
+                  <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
+                      Design already exists
+                    </p>
+                    <p className="text-xs text-amber-800 dark:text-amber-200 mt-1">
+                      "{designName}" will be overwritten with the current design.
+                    </p>
+                  </div>
+                </div>
+              )}
               <div className="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/30 p-4">
                 <p className="text-sm text-slate-600 dark:text-slate-400">
                   💾 Your design will be automatically saved to this browser's local storage. You can load it anytime from the Load tab.
