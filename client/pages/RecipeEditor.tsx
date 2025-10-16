@@ -218,6 +218,7 @@ export default function RecipeEditor() {
   const [directionImages, setDirectionImages] = useState<string[]>([]);
   const [nutritionValues, setNutritionValues] = useState<NutritionValuesState>(createEmptyNutritionValues);
   const [coverPreview, setCoverPreview] = useState<string | undefined>(undefined);
+  const [showGalleryPicker, setShowGalleryPicker] = useState(false);
   const [selectedNationality, setSelectedNationality] = useState<string[]>([]);
   const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
   const [selectedRecipeType, setSelectedRecipeType] = useState<string[]>([]);
