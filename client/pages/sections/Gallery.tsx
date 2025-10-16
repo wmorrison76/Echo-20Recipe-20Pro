@@ -233,7 +233,7 @@ function GalleryCard({
     >
       <div className="relative">
         {unsupported ? (
-          <div className="flex aspect-[4/3] w-full items-center justify-center bg-slate-800 text-xs uppercase tracking-[0.3em] text-slate-300">
+          <div className="flex aspect-[4/3] w-full items-center justify-center bg-slate-300 dark:bg-slate-800 text-xs uppercase tracking-[0.3em] text-slate-700 dark:text-slate-300">
             No preview
           </div>
         ) : (
@@ -258,8 +258,8 @@ function GalleryCard({
           />
         )}
         {favorite && (
-          <div className="pointer-events-none absolute right-3 bottom-3 z-20 flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-[10px] uppercase tracking-[0.3em] text-amber-200">
-            <Star className="h-3 w-3 fill-amber-300 text-amber-300" /> Fav
+          <div className="pointer-events-none absolute right-3 bottom-3 z-20 flex items-center gap-1 rounded-full bg-black/60 dark:bg-black/60 px-2 py-1 text-[10px] uppercase tracking-[0.3em] text-amber-700 dark:text-amber-200">
+            <Star className="h-3 w-3 fill-amber-400 dark:fill-amber-300 text-amber-400 dark:text-amber-300" /> Fav
           </div>
         )}
         {selected && (
@@ -281,7 +281,7 @@ function GalleryCard({
                 onDelete();
               }
             }}
-            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-black/70 text-white backdrop-blur transition hover:bg-red-600/80 focus:outline-none focus:ring-2 focus:ring-red-400/70"
+            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-slate-300/80 dark:bg-black/70 text-slate-900 dark:text-white backdrop-blur transition hover:bg-red-400 dark:hover:bg-red-600/80 focus:outline-none focus:ring-2 focus:ring-red-300 dark:focus:ring-red-400/70"
             aria-label="Delete"
           >
             <Trash2 className="h-4 w-4" />
