@@ -2634,6 +2634,10 @@ export default function MenuDesignStudioSection() {
             onCommitEdit={handleCommitInlineEdit}
             onCancelEdit={handleCancelInlineEdit}
             onCanvasPointerDown={handleCanvasPointerDownCommit}
+            maskEditor={maskEditor}
+            onMaskPointAdd={handleMaskPointAdd}
+            onMaskPreview={handleMaskPreview}
+            onMaskComplete={handleMaskCommit}
           />
 
           <div className="pointer-events-none fixed inset-0 z-50">
