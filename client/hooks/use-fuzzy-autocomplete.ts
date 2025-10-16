@@ -1,4 +1,6 @@
 import { useAppData } from "@/context/AppDataContext";
+import { INVENTORY_ITEMS } from "@/data/inventoryItems";
+import { SUPPLIERS } from "@/data/suppliers";
 import { useCallback, useMemo } from "react";
 import { buildDictionary, fuzzyMatch, type FuzzyMatchOptions } from "@/lib/fuzzy";
 
@@ -41,4 +43,228 @@ export function useIngredientSuggestions() {
       fuzzyMatch(query, candidates, options).map((entry) => entry.value),
     [candidates],
   );
+}
+
+// Inventory items by canonical name
+export function useInventoryItemSuggestions() {
+  const candidates = useMemo(() => {
+    return buildDictionary(INVENTORY_ITEMS.map((item) => item.canonicalName));
+  }, []);
+
+  return useCallback(
+    (query: string, options?: FuzzyMatchOptions) =>
+      fuzzyMatch(query, candidates, options).map((entry) => entry.value),
+    [candidates],
+  );
+}
+
+// Supplier names
+export function useSupplierNameSuggestions() {
+  const candidates = useMemo(() => {
+    return buildDictionary(SUPPLIERS.map((supplier) => supplier.name));
+  }, []);
+
+  return useCallback(
+    (query: string, options?: FuzzyMatchOptions) =>
+      fuzzyMatch(query, candidates, options).map((entry) => entry.value),
+    [candidates],
+  );
+}
+
+// Supplier SKUs
+export function useSupplierSkuSuggestions() {
+  const candidates = useMemo(() => {
+    const skus = new Set<string>();
+    SUPPLIERS.forEach((supplier) => {
+      // Catalog items would be populated from SUPPLIER_CATALOG
+    });
+    return Array.from(skus);
+  }, []);
+
+  return useCallback(
+    (query: string, options?: FuzzyMatchOptions) =>
+      fuzzyMatch(query, candidates, options).map((entry) => entry.value),
+    [candidates],
+  );
+}
+
+// Component names from recipes
+export function useComponentNameSuggestions() {
+  const { recipes } = useAppData();
+
+  const candidates = useMemo(() => {
+    const components = new Set<string>();
+    for (const recipe of recipes) {
+      if (recipe.components) {
+        for (const component of recipe.components) {
+          if (component && typeof component === "string") {
+            components.add(component);
+          }
+        }
+      }
+    }
+    return buildDictionary(Array.from(components));
+  }, [recipes]);
+
+  return useCallback(
+    (query: string, options?: FuzzyMatchOptions) =>
+      fuzzyMatch(query, candidates, options).map((entry) => entry.value),
+    [candidates],
+  );
+}
+
+// Allergen suggestions
+export function useAllergenSuggestions() {
+  const commonAllergens = useMemo(() => {
+    return buildDictionary([
+      "Dairy",
+      "Eggs",
+      "Fish",
+      "Crustacean",
+      "Tree nuts",
+      "Peanuts",
+      "Wheat",
+      "Soy",
+      "Sesame",
+      "Celery",
+      "Mustard",
+      "Sulfites",
+      "Mollusks",
+      "Lupine",
+    ]);
+  }, []);
+
+  return useCallback(
+    (query: string, options?: FuzzyMatchOptions) =>
+      fuzzyMatch(query, commonAllergens, options).map((entry) => entry.value),
+    [commonAllergens],
+  );
+}
+
+// Unit of measurement suggestions
+export function useUnitSuggestions() {
+  const commonUnits = useMemo(() => {
+    return buildDictionary([
+      "each",
+      "oz",
+      "lb",
+      "g",
+      "kg",
+      "ml",
+      "L",
+      "cup",
+      "tsp",
+      "tbsp",
+      "pint",
+      "quart",
+      "gallon",
+      "case",
+      "box",
+      "bunch",
+      "head",
+      "piece",
+      "portion",
+      "count",
+    ]);
+  }, []);
+
+  return useCallback(
+    (query: string, options?: FuzzyMatchOptions) =>
+      fuzzyMatch(query, commonUnits, options).map((entry) => entry.value),
+    [commonUnits],
+  );
+}
+
+// Technique suggestions
+export function useTechniqueSuggestions() {
+  const { recipes } = useAppData();
+
+  const candidates = useMemo(() => {
+    const techniques = new Set<string>();
+    for (const recipe of recipes) {
+      if (recipe.techniques) {
+        for (const technique of recipe.techniques) {
+          if (technique && typeof technique === "string") {
+            techniques.add(technique);
+          }
+        }
+      }
+    }
+    return buildDictionary(Array.from(techniques));
+  }, [recipes]);
+
+  return useCallback(
+    (query: string, options?: FuzzyMatchOptions) =>
+      fuzzyMatch(query, candidates, options).map((entry) => entry.value),
+    [candidates],
+  );
+}
+
+// Cuisine suggestions
+export function useCuisineSuggestions() {
+  const { recipes } = useAppData();
+
+  const candidates = useMemo(() => {
+    const cuisines = new Set<string>();
+    for (const recipe of recipes) {
+      if (recipe.cuisineType) {
+        cuisines.add(recipe.cuisineType);
+      }
+    }
+    return buildDictionary(Array.from(cuisines));
+  }, [recipes]);
+
+  return useCallback(
+    (query: string, options?: FuzzyMatchOptions) =>
+      fuzzyMatch(query, candidates, options).map((entry) => entry.value),
+    [candidates],
+  );
+}
+
+// Course/service suggestions
+export function useCourseSuggestions() {
+  const { recipes } = useAppData();
+
+  const candidates = useMemo(() => {
+    const courses = new Set<string>();
+    for (const recipe of recipes) {
+      if (recipe.course) {
+        courses.add(recipe.course);
+      }
+    }
+    return buildDictionary(Array.from(courses));
+  }, [recipes]);
+
+  return useCallback(
+    (query: string, options?: FuzzyMatchOptions) =>
+      fuzzyMatch(query, candidates, options).map((entry) => entry.value),
+    [candidates],
+  );
+}
+
+// Generic source-based suggestions
+export function useSourceSuggestions(source: "recipes" | "ingredients" | "suppliers" | "components" | "allergens" | "units" | "techniques" | "cuisines" | "courses") {
+  const recipeSuggestions = useRecipeNameSuggestions();
+  const ingredientSuggestions = useInventoryItemSuggestions();
+  const supplierSuggestions = useSupplierNameSuggestions();
+  const componentSuggestions = useComponentNameSuggestions();
+  const allergenSuggestions = useAllergenSuggestions();
+  const unitSuggestions = useUnitSuggestions();
+  const techniqueSuggestions = useTechniqueSuggestions();
+  const cuisineSuggestions = useCuisineSuggestions();
+  const courseSuggestions = useCourseSuggestions();
+
+  const suggestionMap = {
+    recipes: recipeSuggestions,
+    ingredients: ingredientSuggestions,
+    suppliers: supplierSuggestions,
+    components: componentSuggestions,
+    allergens: allergenSuggestions,
+    units: unitSuggestions,
+    techniques: techniqueSuggestions,
+    cuisines: cuisineSuggestions,
+    courses: courseSuggestions,
+  };
+
+  return suggestionMap[source];
 }
