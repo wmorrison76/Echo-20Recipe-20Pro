@@ -1931,13 +1931,23 @@ export default function MenuDesignStudioSection() {
       link.rel = "stylesheet";
       link.href = definition.importUrl;
       link.dataset.fontFamily = definition.family;
+      link.onerror = () => {
+        console.warn(`Failed to load font: ${definition.family}. Using fallback.`);
+        toast({
+          title: "Font loading warning",
+          description: `${definition.family} failed to load. Using system fallback.`,
+          variant: "destructive",
+        });
+      };
       document.head.appendChild(link);
     }
     if (document.fonts && typeof document.fonts.load === "function") {
-      document.fonts.load(`1rem ${definition.family}`).catch(() => undefined);
+      document.fonts.load(`1rem ${definition.family}`).catch((error) => {
+        console.warn(`Font loading error for ${definition.family}:`, error);
+      });
     }
     loadedFontsRef.current.add(definition.family);
-  }, []);
+  }, [toast]);
 
   useEffect(() => {
     ensureFontLoaded(DEFAULT_FONT_VALUE);
