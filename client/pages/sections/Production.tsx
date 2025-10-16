@@ -512,15 +512,15 @@ export default function ProductionSection(){
     <div className="container mx-auto px-4 py-4 space-y-4">
       <div className="rounded-xl border p-3 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15">
         <div className="flex items-center justify-between">
-          <div className="text-base font-semibold flex items-center gap-2"><CalendarClock className="w-4 h-4"/> Chef Production Calendar</div>
+          <div className="text-base font-semibold flex items-center gap-2"><CalendarClock className="w-4 h-4"/> {t("production.chef")}</div>
           <div className="flex items-center gap-2 text-sm">
             <input type="date" value={date} onChange={(e)=> setDate(e.target.value)} className="rounded-md border px-2 py-1" />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button size="sm"><Plus className="w-4 h-4 mr-1"/>Add task</Button>
+                <Button size="sm"><Plus className="w-4 h-4 mr-1"/>{t("production.addTask")}</Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Add task</DropdownMenuLabel>
+                <DropdownMenuLabel>{t("production.addTask")}</DropdownMenuLabel>
                 <DropdownMenuItem onClick={()=> openTaskDialog({ category:'production', title:'', roleId: roles[0]?.id })}>Production…</DropdownMenuItem>
                 <DropdownMenuItem onClick={()=> openTaskDialog({ category:'housekeeping', title:'Clean workstation' })}>Housekeeping…</DropdownMenuItem>
                 <DropdownMenuItem onClick={()=> openTaskDialog({ category:'delivery', title:'Delivery to outlet' })}>Delivery���</DropdownMenuItem>
@@ -528,8 +528,8 @@ export default function ProductionSection(){
                 <DropdownMenuItem onClick={()=> openTaskDialog({})}>Custom…</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button size="sm" variant="secondary" onClick={openQuick}><Plus className="w-4 h-4 mr-1"/>Add order</Button>
-            <Button size="sm" variant="outline" onClick={()=> setPrepOpen(true)}><Printer className="w-4 h-4 mr-1"/>Prep sheet</Button>
+            <Button size="sm" variant="secondary" onClick={openQuick}><Plus className="w-4 h-4 mr-1"/>{t("production.addOrder")}</Button>
+            <Button size="sm" variant="outline" onClick={()=> setPrepOpen(true)}><Printer className="w-4 h-4 mr-1"/>{t("production.prepSheet")}</Button>
           </div>
         </div>
       </div>
@@ -736,7 +736,7 @@ export default function ProductionSection(){
               {outlets.map(o=> (
                 <li key={o.id} className="flex items-center justify-between border-t py-1 gap-2">
                   <span className="flex-1">{o.name} • {o.type}</span>
-                  <span className="text-xs text-muted-foreground">Cutoff {o.orderCutoff||'—'} | Hours {o.open||'—'}–{o.close||'—'}</span>
+                  <span className="text-xs text-muted-foreground">Cutoff {o.orderCutoff||'—'} | Hours {o.open||'—'}–{o.close||'���'}</span>
                   <div className="flex items-center gap-2">
                     <Button size="sm" variant="secondary" onClick={()=> setGuideOutlet(o)}>Edit</Button>
                     <button onClick={()=> setOutlets(prev=> prev.filter(x=> x.id!==o.id))}><Trash className="w-4 h-4"/></button>
