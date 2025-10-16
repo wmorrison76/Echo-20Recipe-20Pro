@@ -21,6 +21,7 @@ import { WorkbenchPanel } from "@/components/RDLab/WorkbenchPanel";
 import { InsightsPanel } from "@/components/RDLab/InsightsPanel";
 import { RDLabSessionSidebar } from "@/components/RDLab/RDLabSessionSidebar";
 import { NewProjectDialog } from "@/components/RDLab/NewProjectDialog";
+import { GalleryImagePicker } from "@/components/GalleryImagePicker";
 import {
   Select,
   SelectContent,
