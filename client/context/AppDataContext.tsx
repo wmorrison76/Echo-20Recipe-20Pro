@@ -395,6 +395,20 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const imageObjectUrlsRef = useRef<Map<string, string>>(new Map());
   const [imagesHydrated, setImagesHydrated] = useState(false);
 
+  const createObjectUrl = useCallback(
+    (id: string, blob: Blob) => {
+      const cache = imageObjectUrlsRef.current;
+      const existing = cache.get(id);
+      if (existing) {
+        URL.revokeObjectURL(existing);
+      }
+      const url = URL.createObjectURL(blob);
+      cache.set(id, url);
+      return url;
+    },
+    [],
+  );
+
   const appendRecipes = useCallback(
     (incoming: Recipe[]) => {
       if (!incoming.length) {
