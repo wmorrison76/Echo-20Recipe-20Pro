@@ -2455,9 +2455,57 @@ export default function MenuDesignStudioSection() {
           tagName === "textarea" ||
           activeElement.isContentEditable ||
           activeElement.getAttribute("role") === "textbox";
+
+        // Allow undo/redo even in text inputs
         if (isTextInput) {
+          if ((event.key === "z" || event.key === "Z") && (event.metaKey || event.ctrlKey)) {
+            event.preventDefault();
+            if (event.shiftKey) {
+              elementsHistory.redo();
+            } else {
+              elementsHistory.undo();
+            }
+            toast({
+              title: event.shiftKey ? "Redo" : "Undo",
+              description: event.shiftKey ? "Redid last action" : "Undid last action",
+            });
+          }
+          if ((event.key === "s" || event.key === "S") && (event.metaKey || event.ctrlKey)) {
+            event.preventDefault();
+            setHasUnsavedChanges(true);
+          }
           return;
         }
+      }
+
+      // Handle undo/redo (Ctrl+Z / Ctrl+Shift+Z or Cmd+Z / Cmd+Shift+Z)
+      if ((event.key === "z" || event.key === "Z") && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
+        if (event.shiftKey) {
+          if (elementsHistory.canRedo) {
+            elementsHistory.redo();
+            toast({
+              title: "Redo",
+              description: "Redid last action",
+            });
+          }
+        } else {
+          if (elementsHistory.canUndo) {
+            elementsHistory.undo();
+            toast({
+              title: "Undo",
+              description: "Undid last action",
+            });
+          }
+        }
+        return;
+      }
+
+      // Handle save (Ctrl+S / Cmd+S)
+      if ((event.key === "s" || event.key === "S") && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
+        setHasUnsavedChanges(true);
+        return;
       }
 
       if (maskEditor) {
