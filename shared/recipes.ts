@@ -1,5 +1,3 @@
-import jsPDF from "jspdf";
-
 export type IngredientRow = {
   qty: string;
   unit: string;
