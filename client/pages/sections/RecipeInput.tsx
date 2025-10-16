@@ -37,7 +37,7 @@ export default function RecipeInputSection() {
     setTotal(steps);
     setImportedTitles([]);
     setErrors([]);
-    setStatus("Processing...");
+    setStatus(t("recipeInput.processing"));
 
     let importedCount = 0;
     const allErrors: { file: string; error: string }[] = [];
@@ -98,14 +98,14 @@ export default function RecipeInputSection() {
     }
 
     setErrors(allErrors);
-    setStatus(`Imported ${importedCount} recipe(s).${allErrors.length ? ` ${allErrors.length} item(s) had issues.` : ""}`);
+    setStatus(t("recipeInput.importedRecipesCount").replace("{importedCount}", String(importedCount)).replace("{allErrors}", allErrors.length ? ` ${allErrors.length} item(s) had issues.` : ""));
   };
 
   const importFromUrl = async () => {
     if (!zipUrl) return;
     try {
       setLoadingUrl(true);
-      setStatus("Downloading...");
+      setStatus(t("recipeInput.downloading"));
       const resp = await fetch(zipUrl);
       const contentType = resp.headers.get('content-type') || '';
       // Try JSON first (works for luccca_variant_* exports)
@@ -129,7 +129,7 @@ export default function RecipeInputSection() {
       setErrors(res.errors.map((e) => ({ file: e.entry, error: e.error })));
       setStatus(`Imported ${res.addedRecipes} recipe(s) and ${res.addedImages} image(s) from ZIP.`);
     } catch (e: any) {
-      setStatus(`Failed to import from URL: ${e?.message ?? "error"}`);
+      setStatus(t("recipeInput.failedImportUrl").replace("{e}", e?.message ?? "error"));
     } finally {
       setLoadingUrl(false);
     }
