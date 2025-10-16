@@ -4291,9 +4291,28 @@ function MenuItemControls({ element, onChange }: MenuItemControlsProps) {
 type ImageControlsProps = {
   element: DesignerElement;
   onChange: (changes: Partial<DesignerElement>) => void;
+  onBeginMaskEditing: () => void;
+  onMaskUndo: () => void;
+  onMaskCommit: () => void;
+  onMaskCancel: () => void;
+  onMaskClear: () => void;
+  isMaskEditing: boolean;
+  maskPointCount: number;
+  hasMask: boolean;
 };
 
-function ImageControls({ element, onChange }: ImageControlsProps) {
+function ImageControls({
+  element,
+  onChange,
+  onBeginMaskEditing,
+  onMaskUndo,
+  onMaskCommit,
+  onMaskCancel,
+  onMaskClear,
+  isMaskEditing,
+  maskPointCount,
+  hasMask,
+}: ImageControlsProps) {
   return (
     <div className="space-y-3">
       <div>
