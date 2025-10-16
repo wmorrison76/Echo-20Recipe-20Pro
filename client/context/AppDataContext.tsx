@@ -487,6 +487,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   }, [createObjectUrl]);
 
   useEffect(() => {
+    if (!imagesHydrated) return;
+
     const onlyLegacyDemo =
       images.length > 0 &&
       images.every(
@@ -499,36 +501,58 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const timestamp = Date.now();
-    const placeholders: GalleryImage[] = DEMO_PLACEHOLDERS.map((item, index) => ({
-      id: uid(),
-      name: item.name,
-      dataUrl: item.dataUrl,
-      createdAt: timestamp + index,
-      tags: item.tags,
-      favorite: false,
-      order: index,
-      type: item.mime,
-    }));
-
-    if (!placeholders.length) {
-      placeholders.push({
+    const seedPlaceholders = async () => {
+      const timestamp = Date.now();
+      const placeholders: GalleryImage[] = DEMO_PLACEHOLDERS.map((item, index) => ({
         id: uid(),
-        name: "luccca-demo.svg",
-        dataUrl: FALLBACK_GALLERY_IMAGE.dataUrl,
-        createdAt: timestamp,
-        tags: ["demo", "fallback"],
+        name: item.name,
+        dataUrl: item.dataUrl,
+        createdAt: timestamp + index,
+        tags: item.tags,
         favorite: false,
-        order: 0,
-        type: FALLBACK_GALLERY_IMAGE.mime,
-      });
-    }
+        order: index,
+        type: item.mime,
+      }));
 
-    setImages(placeholders);
-    try {
-      localStorage.setItem("gallery:seeded:food:v1", "1");
-    } catch {}
-  }, [images]);
+      if (!placeholders.length) {
+        placeholders.push({
+          id: uid(),
+          name: "luccca-demo.svg",
+          dataUrl: FALLBACK_GALLERY_IMAGE.dataUrl,
+          createdAt: timestamp,
+          tags: ["demo", "fallback"],
+          favorite: false,
+          order: 0,
+          type: FALLBACK_GALLERY_IMAGE.mime,
+        });
+      }
+
+      const enriched: GalleryImage[] = [];
+      for (const item of placeholders) {
+        if (!item.dataUrl) {
+          enriched.push(item);
+          continue;
+        }
+        try {
+          const blob = await blobFromDataUrl(item.dataUrl);
+          await saveImageBlob(item.id, blob);
+          const blobUrl = createObjectUrl(item.id, blob);
+          const refreshedDataUrl = await dataUrlFromBlob(blob);
+          enriched.push({ ...item, dataUrl: refreshedDataUrl, blobUrl });
+        } catch (error) {
+          console.warn("Failed to persist placeholder image", item.name, error);
+          enriched.push(item);
+        }
+      }
+
+      setImages(enriched);
+      try {
+        localStorage.setItem("gallery:seeded:food:v1", "1");
+      } catch {}
+    };
+
+    seedPlaceholders();
+  }, [images, imagesHydrated, createObjectUrl]);
 
   useEffect(() => {
     writeLS(LS_RECIPES, recipes);
