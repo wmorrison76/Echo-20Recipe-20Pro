@@ -3374,6 +3374,17 @@ function ToolSidebar({
                 Add divider
               </Button>
               <Separator className="my-3" />
+              {onOpenGalleryPicker && (
+                <Button
+                  variant="outline"
+                  className="w-full justify-start border-sky-300/50 bg-sky-50 hover:bg-sky-100 dark:border-sky-500/30 dark:bg-sky-950/30 dark:hover:bg-sky-900/30"
+                  onClick={onOpenGalleryPicker}
+                >
+                  <ImageIcon className="mr-2 h-4 w-4" aria-hidden />
+                  From gallery
+                </Button>
+              )}
+              <Separator className="my-3" />
               <ScrollArea className="h-[180px] pr-3">
                 <div className="grid grid-cols-2 gap-2">
                   {imageLibrary.map((asset) => (
