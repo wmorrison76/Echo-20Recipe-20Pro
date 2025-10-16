@@ -621,9 +621,21 @@ export default function GallerySection() {
       .map((tag) => tag.trim())
       .filter(Boolean);
     setShowTagDialog(false);
-    setStatus("Processing images...");
-    const added = await addImages(files, { tags });
-    setStatus(`Added ${added} file${added === 1 ? "" : "s"}.`);
+    setStatus(`Processing ${files.length} image${files.length === 1 ? "" : "s"}...`);
+    console.debug("Starting image import with tags:", tags);
+    try {
+      const added = await addImages(files, { tags });
+      if (added === 0) {
+        setStatus("No images were added (check for duplicates or unsupported formats).");
+        console.warn("No images were successfully added");
+      } else {
+        setStatus(`✓ Added ${added} file${added === 1 ? "" : "s"}. Images are being saved...`);
+        console.info("Successfully added", added, "images");
+      }
+    } catch (error) {
+      setStatus("Error adding images. Check browser console for details.");
+      console.error("Error importing images:", error);
+    }
     (window as any).__pending_files = undefined;
   };
 
