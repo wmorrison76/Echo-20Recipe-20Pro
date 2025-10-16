@@ -1,5 +1,6 @@
 import type { LanguageCode } from "@/i18n/config";
 import type { ServerNote, ServerNoteRecipe } from "@shared/server-notes";
+import { dictionaries } from "@/i18n/dictionaries";
 
 export type ExportFormat = "pdf" | "json" | "csv";
 
