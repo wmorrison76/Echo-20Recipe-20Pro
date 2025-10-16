@@ -142,6 +142,40 @@ type PageSize = {
   height: number;
 };
 
+type PrintPreset = {
+  id: string;
+  label: string;
+  widthPx: number;
+  heightPx: number;
+  widthIn: number;
+  heightIn: number;
+  bleedIn: number;
+  safeMarginIn: number;
+  bleedPx: number;
+  safeMarginPx: number;
+  dpi: number;
+  colorProfile: string;
+  orientation: "portrait" | "landscape";
+  description?: string;
+};
+
+type PrintPresetInput = {
+  id: string;
+  label: string;
+  dpi: number;
+  colorProfile: string;
+  orientation?: "portrait" | "landscape";
+  description?: string;
+  widthIn?: number;
+  heightIn?: number;
+  widthMm?: number;
+  heightMm?: number;
+  bleedIn?: number;
+  bleedMm?: number;
+  safeMarginIn?: number;
+  safeMarginMm?: number;
+};
+
 type MenuTemplate = {
   id: string;
   name: string;
