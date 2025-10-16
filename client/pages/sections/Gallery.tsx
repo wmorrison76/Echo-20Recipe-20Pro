@@ -1378,6 +1378,7 @@ function GalleryBulkActions({
   onFavorite,
   onUnfavorite,
 }: GalleryBulkActionsProps) {
+  const { t } = useTranslation();
   return (
     <div className="pointer-events-auto flex max-w-2xl flex-wrap items-center gap-3 rounded-full border border-slate-300/50 dark:border-white/12 bg-slate-100 dark:bg-black/65 px-5 py-3 text-xs text-slate-900 dark:text-slate-100 shadow-[0_20px_60px_rgba(15,23,42,0.45)] backdrop-blur-lg">
       <span className="font-semibold uppercase tracking-[0.3em]">{count} selected</span>
