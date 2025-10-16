@@ -2072,6 +2072,10 @@ export default function MenuDesignStudioSection() {
         }
       }
 
+      if (maskEditor) {
+        return;
+      }
+
       if (editingId) {
         if (event.key === "Escape") {
           event.preventDefault();
