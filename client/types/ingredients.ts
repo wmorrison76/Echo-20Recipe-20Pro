@@ -62,6 +62,13 @@ export const createIngredientRow = (
   supplierId: overrides.supplierId ?? null,
   supplierName: overrides.supplierName ?? null,
   supplierSku: overrides.supplierSku ?? null,
+  inventoryId: overrides.inventoryId ?? null,
+  inventoryName: overrides.inventoryName ?? null,
+  mappingConfidence: overrides.mappingConfidence ?? undefined,
+  totalCost: overrides.totalCost ?? null,
+  costVariance: overrides.costVariance ?? null,
+  costPerServing: overrides.costPerServing ?? null,
+  lastUpdatedAt: overrides.lastUpdatedAt ?? undefined,
 });
 
 export const createDividerRow = (label = "Step Break"): IngredientRow =>
