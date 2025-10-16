@@ -3162,7 +3162,7 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                           }}
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center rounded-md border border-dashed border-gray-400/70 bg-gray-100">
+                        <div className="flex h-full w-full flex-col items-center justify-center gap-3 rounded-md border border-dashed border-gray-400/70 bg-gray-100 p-4">
                           <label
                             className="cursor-pointer text-xs text-gray-600"
                             data-echo-key="cta:add:upload"
@@ -3184,6 +3184,14 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                             />
                             Upload Photo
                           </label>
+                          <span className="text-xs text-gray-500">or</span>
+                          <button
+                            type="button"
+                            onClick={() => setShowGalleryPicker(true)}
+                            className="text-xs text-blue-600 hover:text-blue-700 hover:underline"
+                          >
+                            Select from Gallery
+                          </button>
                         </div>
                       )}
                     </div>
@@ -3889,7 +3897,7 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                   "⅞": "7/8",
                 };
                 s = s.replace(
-                  /[���½¾⅐⅑��⅓⅔⅕⅖⅗��⅙⅚⅛⅜⅝⅞]/g,
+                  /[���½¾⅐⅑��⅓⅔⅕⅖⅗���⅙⅚⅛⅜⅝⅞]/g,
                   (ch) => fracMap[ch] || ch,
                 );
                 const m = s.match(
