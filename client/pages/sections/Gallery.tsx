@@ -289,9 +289,9 @@ function GalleryCard({
         </div>
       </div>
       <div className="flex flex-1 flex-col gap-3 px-4 pb-4 pt-3">
-        <div className="text-sm font-semibold leading-tight text-slate-100 line-clamp-2">{name}</div>
+        <div className="text-sm font-semibold leading-tight text-slate-900 dark:text-slate-100 line-clamp-2">{name}</div>
         {tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.25em] text-sky-100/90">
+          <div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.25em] text-sky-600 dark:text-sky-100/90">
             {tags.slice(0, 3).map((tag) => (
               <span
                 key={tag}
