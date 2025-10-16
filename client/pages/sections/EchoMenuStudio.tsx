@@ -1865,7 +1865,8 @@ export default function MenuDesignStudioSection() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingDraft, setEditingDraft] = useState<Partial<DesignerElement> | null>(null);
   const [maskEditor, setMaskEditor] = useState<MaskEditorState | null>(null);
-  const [pagePreset, setPagePreset] = useState<string>("letter");
+  const [pagePreset, setPagePreset] = useState<string>(DEFAULT_PRESET.id);
+  const [printPreset, setPrintPreset] = useState<PrintPreset>(DEFAULT_PRESET);
   const [floatingToolbar, setFloatingToolbar] = useState<FloatingPanelState>({
     x: 24,
     y: 32,
