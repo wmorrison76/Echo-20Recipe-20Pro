@@ -46,10 +46,8 @@ function IndexContent() {
   } as const;
 
   const handleAddRecipeShortcut = useCallback(() => {
-    const newParams = new URLSearchParams(params);
-    newParams.set("tab", "add-recipe");
-    setParams(newParams, { replace: true });
-  }, [params, setParams]);
+    setParams({ tab: "add-recipe" }, { replace: true });
+  }, [setParams]);
 
   useRegisterShortcut("add-recipe-shortcut", {
     key: "n",
@@ -60,11 +58,9 @@ function IndexContent() {
 
   const handleTabChange = useCallback(
     (v: string) => {
-      const newParams = new URLSearchParams(params);
-      newParams.set("tab", v);
-      setParams(newParams, { replace: true });
+      setParams({ tab: v }, { replace: true });
     },
-    [params, setParams],
+    [setParams],
   );
 
   return (
