@@ -3309,6 +3309,16 @@ export default function MenuDesignStudioSection() {
           />
         )}
 
+        <SaveLoadDialog
+          isOpen={showSaveLoadDialog}
+          onClose={() => setShowSaveLoadDialog(false)}
+          currentName={documentName}
+          onSave={handleSaveDesign}
+          onLoad={handleLoadDesign}
+          savedDesigns={savedDesigns}
+          onDeleteDesign={handleDeleteSavedDesign}
+        />
+
         <div ref={workspaceRef} className="relative flex flex-1">
           <DesignerCanvas
             elements={elements}
