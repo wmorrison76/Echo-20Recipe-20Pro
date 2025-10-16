@@ -1408,10 +1408,10 @@ function GalleryBulkActions({
   );
 }
 
-function GalleryDropHint() {
+function GalleryDropHint({ t }: { t: (key: string) => string }) {
   return (
     <div className="pointer-events-none rounded-2xl border border-dashed border-cyan-400/40 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 px-4 py-3 text-[11px] uppercase tracking-[0.3em] text-cyan-300/80 shadow-lg shadow-cyan-500/20">
-      💡 Drag &amp; drop images here to upload · RAW · HEIC · JPG · PNG
+      💡 {t("gallery.dragDropHint")}
     </div>
   );
 }
