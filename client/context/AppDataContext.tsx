@@ -3257,13 +3257,27 @@ const createTileBoard = useCallback(
       }
       return name;
     };
-    const pushImg = (label: string, hue: number, fileBase: string) => {
+    const pushImg = async (label: string, hue: number, fileBase: string) => {
       const name = makeUnique(fileBase);
-      const dataUrl = makeDataUrl(label, hue);
+      const rawDataUrl = makeDataUrl(label, hue);
+      const id = uid();
+      let dataUrl = rawDataUrl;
+      let blobUrl: string | undefined;
+      if (rawDataUrl) {
+        try {
+          const blob = await blobFromDataUrl(rawDataUrl);
+          await saveImageBlob(id, blob);
+          blobUrl = createObjectUrl(id, blob);
+          dataUrl = await dataUrlFromBlob(blob);
+        } catch (error) {
+          console.warn("Failed to persist demo placeholder", name, error);
+        }
+      }
       next.push({
-        id: uid(),
+        id,
         name,
         dataUrl,
+        blobUrl,
         createdAt: now,
         tags: ["demo", label.toLowerCase()],
         favorite: false,
@@ -3271,15 +3285,15 @@ const createTileBoard = useCallback(
         type: "image/jpeg",
       });
     };
-    pastryNames.forEach((lab, i) =>
-      pushImg(lab, (i * 25) % 360, `${lab.toLowerCase()}-demo.jpg`),
-    );
-    otherNames.forEach((lab, i) =>
-      pushImg(lab, (i * 60 + 180) % 360, `${lab.toLowerCase()}-demo.jpg`),
-    );
+    for (const [index, lab] of pastryNames.entries()) {
+      await pushImg(lab, (index * 25) % 360, `${lab.toLowerCase()}-demo.jpg`);
+    }
+    for (const [index, lab] of otherNames.entries()) {
+      await pushImg(lab, (index * 60 + 180) % 360, `${lab.toLowerCase()}-demo.jpg`);
+    }
     if (next.length) setImages((prev) => [...next, ...prev]);
     return next.length;
-  }, [images]);
+  }, [createObjectUrl, images]);
 
   const addStockFoodPhotos = useCallback(async (): Promise<number> => {
     const existingNames = new Set(images.map((i) => i.name));
