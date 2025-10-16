@@ -280,11 +280,45 @@ export function GalleryOverlay({
                     }}
                   >
                     {image ? (
-                      <img
-                        src={image.dataUrl || image.blobUrl}
-                        alt={image.name}
-                        className="max-h-[70vh] max-w-[70vw] rounded-3xl border border-white/10 shadow-[0_45px_80px_rgba(14,165,233,0.35)]"
-                      />
+                      <div className="relative inline-block">
+                        <img
+                          src={image.dataUrl || image.blobUrl}
+                          alt={image.name}
+                          className="max-h-[70vh] max-w-[70vw] rounded-3xl border border-white/10 shadow-[0_45px_80px_rgba(14,165,233,0.35)]"
+                        />
+                        {activeTool === "crop" && (
+                          <div
+                            className="absolute inset-0 rounded-3xl"
+                            style={{
+                              background: "rgba(0, 0, 0, 0.5)",
+                              border: "2px dashed rgb(59, 130, 246)",
+                              boxSizing: "border-box",
+                              left: `${cropBox.x}%`,
+                              top: `${cropBox.y}%`,
+                              width: `${cropBox.width}%`,
+                              height: `${cropBox.height}%`,
+                            }}
+                          >
+                            {["nw", "n", "ne", "w", "e", "sw", "s", "se"].map((handle) => (
+                              <div
+                                key={handle}
+                                onMouseDown={() => setIsDraggingCrop(handle)}
+                                className="absolute w-3 h-3 bg-blue-400 border border-white cursor-move hover:bg-blue-500"
+                                style={{
+                                  ...(handle === "nw" && { top: "-6px", left: "-6px", cursor: "nwse-resize" }),
+                                  ...(handle === "n" && { top: "-6px", left: "50%", transform: "translateX(-50%)", cursor: "ns-resize" }),
+                                  ...(handle === "ne" && { top: "-6px", right: "-6px", cursor: "nesw-resize" }),
+                                  ...(handle === "w" && { top: "50%", left: "-6px", transform: "translateY(-50%)", cursor: "ew-resize" }),
+                                  ...(handle === "e" && { top: "50%", right: "-6px", transform: "translateY(-50%)", cursor: "ew-resize" }),
+                                  ...(handle === "sw" && { bottom: "-6px", left: "-6px", cursor: "nesw-resize" }),
+                                  ...(handle === "s" && { bottom: "-6px", left: "50%", transform: "translateX(-50%)", cursor: "ns-resize" }),
+                                  ...(handle === "se" && { bottom: "-6px", right: "-6px", cursor: "nwse-resize" }),
+                                }}
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     ) : (
                       <div className="rounded-3xl border border-dashed border-slate-600/60 bg-black/40 px-12 py-16 text-center text-xs uppercase tracking-[0.35em] text-slate-400">
                         No image selected
