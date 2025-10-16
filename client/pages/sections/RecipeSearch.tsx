@@ -1018,13 +1018,13 @@ const onFiles = async (files: File[]) => {
               onClick={() => {
                 if (
                   confirm(
-                    "Delete all items in Trash permanently? This cannot be undone.",
+                    t("recipes.deleteAllTrash.confirm", "Delete all items in Trash permanently? This cannot be undone."),
                   )
                 )
                   purgeDeleted();
               }}
             >
-              Delete all
+              {t("recipes.deleteAll", "Delete all")}
             </Button>
           )}
           <Button
@@ -1032,7 +1032,7 @@ const onFiles = async (files: File[]) => {
             size="sm"
             onClick={() => clearRecipes()}
           >
-            Clear
+            {t("recipes.clear", "Clear")}
           </Button>
         </div>
       </div>
