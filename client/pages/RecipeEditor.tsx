@@ -201,11 +201,11 @@ export default function RecipeEditor() {
   const recipe = useMemo(() => (id ? getRecipeById(id) : undefined), [id, getRecipeById]);
 
   const handleBack = useCallback(() => {
-    if (window.history.length > 2) {
+    if (typeof window !== "undefined" && window.history.length > 1) {
       nav(-1);
-    } else {
-      nav("/");
+      return;
     }
+    nav("/?tab=search");
   }, [nav]);
 
   const [localTitle, setLocalTitle] = useState<string>("");
@@ -359,7 +359,7 @@ export default function RecipeEditor() {
     }
   }, []);
 
-  const handleSave = useCallback(() => {
+  const handleFinalize = useCallback(() => {
     if (!recipe) return;
 
     const directionLines = directionsText
@@ -385,37 +385,54 @@ export default function RecipeEditor() {
 
     const existingClassification = ((recipe.extra ?? {}) as { classification?: Record<string, unknown> }).classification ?? {};
 
-    updateRecipe(recipe.id, {
-      title: localTitle.trim() || "Untitled",
-      instructions: combinedDirections ? combinedDirections.split(/\r?\n/) : undefined,
-      nutrition: nutritionPayload,
-      imageDataUrls: coverPreview
-        ? [coverPreview, ...(recipe.imageDataUrls ?? []).slice(1)]
-        : recipe.imageDataUrls,
-      image: coverPreview ?? recipe.image,
-      extra: {
-        ...(recipe.extra ?? {}),
-        allergens,
-        allergenList: selectedAllergenList,
-        cookTime,
-        cookTemp,
-        directions: combinedDirections,
-        directionImages,
-        nutrition: nutritionPayload ?? undefined,
-        taxonomy,
-        classification: {
-          ...existingClassification,
-          nationality: selectedNationality,
-          courses: selectedCourses,
-          recipeType: selectedRecipeType,
-          prepMethod: selectedPrepMethod,
-          equipment: selectedCookingEquipment,
-          recipeAccess: selectedRecipeAccess,
+    try {
+      updateRecipe(recipe.id, {
+        title: localTitle.trim() || "Untitled",
+        instructions: combinedDirections ? combinedDirections.split(/\r?\n/) : undefined,
+        nutrition: nutritionPayload,
+        imageDataUrls: coverPreview
+          ? [coverPreview, ...(recipe.imageDataUrls ?? []).slice(1)]
+          : recipe.imageDataUrls,
+        image: coverPreview ?? recipe.image,
+        extra: {
+          ...(recipe.extra ?? {}),
+          allergens,
+          allergenList: selectedAllergenList,
+          cookTime,
+          cookTemp,
+          directions: combinedDirections,
+          directionImages,
+          nutrition: nutritionPayload ?? undefined,
+          taxonomy,
+          classification: {
+            ...existingClassification,
+            nationality: selectedNationality,
+            courses: selectedCourses,
+            recipeType: selectedRecipeType,
+            prepMethod: selectedPrepMethod,
+            equipment: selectedCookingEquipment,
+            recipeAccess: selectedRecipeAccess,
+          },
         },
-      },
-    });
+      });
 
-    toast({ title: "Recipe updated", description: "Changes saved successfully." });
+      toast({
+        title: "Recipe finalized",
+        description: "Saved to your library and cleared for the next entry.",
+      });
+      nav("/?tab=search");
+    } catch (error: any) {
+      console.error("Failed to finalize recipe", error);
+      const message =
+        typeof error?.message === "string" && error.message.trim().length
+          ? error.message
+          : "Unable to save changes.";
+      toast({
+        title: "Finalize failed",
+        description: message,
+        variant: "destructive",
+      });
+    }
   }, [
     recipe,
     directionsText,
@@ -436,6 +453,7 @@ export default function RecipeEditor() {
     taxonomy,
     updateRecipe,
     toast,
+    nav,
   ]);
 
   const modifiers = useMemo(() => {
@@ -511,7 +529,7 @@ export default function RecipeEditor() {
             <Button variant="secondary" onClick={handleBack}>
               Back
             </Button>
-            <Button onClick={handleSave}>Save</Button>
+            <Button onClick={handleFinalize}>Finalize & Clear</Button>
           </div>
         </div>
 
