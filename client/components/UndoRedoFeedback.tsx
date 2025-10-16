@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { RotateCcw, RotateCw } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/context/LanguageContext";
 
 type FeedbackType = "undo" | "redo";
 
