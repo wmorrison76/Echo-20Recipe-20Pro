@@ -287,7 +287,7 @@ function LibraryItem({ icon, label, count, active, onClick, action }: LibraryIte
       )}
     >
       <div className="flex items-center gap-2">
-        <span className="rounded-full bg-black/35 p-1 text-slate-100">{icon}</span>
+        <span className="rounded-full bg-slate-200 dark:bg-black/35 p-1 text-slate-700 dark:text-slate-100">{icon}</span>
         <span>{label}</span>
       </div>
       <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em]">
