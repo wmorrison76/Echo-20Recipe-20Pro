@@ -146,13 +146,13 @@ export default function RecipeInputSection() {
         </Dropzone>
 
         <div className="rounded-lg border p-4">
-          <div className="text-sm text-muted-foreground">Imported recipes</div>
+          <div className="text-sm text-muted-foreground">{t("recipeInput.importedRecipes")}</div>
           <div className="mt-1 text-2xl font-semibold">{recipes.length}</div>
           <div className="mt-4 flex flex-wrap gap-2">
             <Button variant="secondary" onClick={() => linkImagesToRecipesByFilename()}>
-              Link images from Gallery by filename
+              {t("recipeInput.linkImagesByFilename")}
             </Button>
-            <Button variant="destructive" onClick={() => clearRecipes()}>Clear recipes</Button>
+            <Button variant="destructive" onClick={() => clearRecipes()}>{t("recipeInput.clearRecipes")}</Button>
           </div>
 
           <div className="mt-6">
@@ -165,7 +165,7 @@ export default function RecipeInputSection() {
                 </div>
                 {importedTitles.length > 0 && (
                   <div className="max-h-40 overflow-auto rounded border p-2 text-xs">
-                    <div className="font-medium mb-1">Imported:</div>
+                    <div className="font-medium mb-1">{t("recipeInput.imported")}</div>
                     <ul className="space-y-1 list-disc pl-4">
                       {importedTitles.map((t, i) => (
                         <li key={i} className="truncate" title={t}>{t}</li>
@@ -183,11 +183,11 @@ export default function RecipeInputSection() {
               <input
                 value={zipUrl}
                 onChange={(e) => setZipUrl(e.target.value)}
-                placeholder="https://example.com"
+                placeholder={t("recipeInput.placeholderUrl")}
                 className="flex-1 rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring"
               />
               <Button onClick={importFromUrl} disabled={loadingUrl || !zipUrl}>
-                {loadingUrl ? "Importing..." : "Import"}
+                {loadingUrl ? t("recipeInput.importing") : t("recipeInput.import")}
               </Button>
             </div>
           </div>
@@ -199,7 +199,7 @@ export default function RecipeInputSection() {
       )}
       {errors.length > 0 && (
         <div className="rounded-md border p-3 text-sm">
-          <div className="font-medium mb-2">Errors</div>
+          <div className="font-medium mb-2">{t("recipeInput.errors")}</div>
           <ul className="space-y-1 list-disc pl-5">
             {errors.map((e, i) => (
               <li key={i}>
