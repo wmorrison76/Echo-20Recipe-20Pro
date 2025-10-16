@@ -1184,7 +1184,7 @@ const modernGridTemplate: MenuTemplate = {
       type: "menu-item",
       name: "Course Highlight",
       text: "Coal-Roasted Langoustine",
-      description: "xo butter · smoked paprika · fermented yuzu",
+      description: "xo butter · smoked paprika �� fermented yuzu",
       price: 32,
       currency: "USD",
       x: 96,
@@ -2518,6 +2518,15 @@ export default function MenuDesignStudioSection() {
         if (matchedPreset) {
           setPagePreset(matchedPreset.id);
           setPrintPreset(matchedPreset);
+          const nextMargin =
+            typeof template.settings?.margin === "number"
+              ? template.settings.margin
+              : matchedPreset.safeMarginPx;
+          setCanvasSettings((prev) => ({
+            ...prev,
+            margin: nextMargin,
+            bleed: matchedPreset.bleedPx,
+          }));
         }
       }
       setDocumentName(template.name);
