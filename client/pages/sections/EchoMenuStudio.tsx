@@ -36,6 +36,7 @@ import { useAppData } from "@/context/AppDataContext";
 import { GalleryImagePicker } from "@/components/menu-studio/GalleryImagePicker";
 import { SaveLoadDialog } from "@/components/menu-studio/SaveLoadDialog";
 import { exportDesignAsPDF, exportDesignAsSVG } from "@/lib/menu-studio-export";
+import { useTranslation } from "@/context/LanguageContext";
 import {
   AlignCenter,
   AlignLeft,
