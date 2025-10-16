@@ -601,6 +601,62 @@ const blobFromDataUrl = async (dataUrl: string): Promise<Blob> => {
   return response.blob();
 };
 
+const hydrateStoredImages = async (
+  records: Array<StoredGalleryImage & { dataUrl?: string; blobUrl?: string }>,
+  createObjectUrl: (id: string, blob: Blob) => string,
+): Promise<GalleryImage[]> => {
+  if (!records.length) {
+    return [];
+  }
+  const hydrated: GalleryImage[] = [];
+  for (const record of records) {
+    const {
+      hasBlob,
+      id,
+      name,
+      createdAt,
+      tags,
+      favorite,
+      order,
+      type,
+      unsupported,
+    } = record;
+    let dataUrl = record.dataUrl;
+    let blobUrl: string | undefined;
+    const shouldLoadBlob = hasBlob !== false || Boolean(record.dataUrl);
+    if (shouldLoadBlob) {
+      try {
+        let blob = await loadImageBlob(id);
+        if (!blob && record.dataUrl) {
+          blob = await blobFromDataUrl(record.dataUrl);
+          await saveImageBlob(id, blob);
+        }
+        if (blob) {
+          blobUrl = createObjectUrl(id, blob);
+          if (!unsupported && !dataUrl) {
+            dataUrl = await dataUrlFromBlob(blob);
+          }
+        }
+      } catch (error) {
+        console.warn("Failed to hydrate gallery image", name, error);
+      }
+    }
+    hydrated.push({
+      id,
+      name,
+      dataUrl: unsupported ? undefined : dataUrl,
+      blobUrl: blobUrl ?? (unsupported ? undefined : record.blobUrl),
+      createdAt,
+      tags,
+      favorite,
+      order,
+      type,
+      unsupported,
+    });
+  }
+  return hydrated;
+};
+
 const createTileBoard = useCallback(
     (input: { name: string; description?: string; category?: TileBoard["category"]; imageIds?: string[] }) => {
       const id = uid();
@@ -2172,7 +2228,7 @@ const createTileBoard = useCallback(
           (label) => line === label || line.startsWith(`${label} `),
         );
       const qtyRegex =
-        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾���⅔⅛⅜⅝⅞])(?:\s*(?:cups?|cup|tsp|teaspoons?|tbsp|tablespoons?|grams?|gram|kg|kilograms?|g|ml|milliliters?|l|liters?|oz|ounces?|lb|lbs|pounds?|pinch|dash|cloves?|cans?|sticks?|slices?|heads?|bunch(?:es)?|sprigs?))?\b/;
+        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[��½¾���⅔⅛⅜⅝⅞])(?:\s*(?:cups?|cup|tsp|teaspoons?|tbsp|tablespoons?|grams?|gram|kg|kilograms?|g|ml|milliliters?|l|liters?|oz|ounces?|lb|lbs|pounds?|pinch|dash|cloves?|cans?|sticks?|slices?|heads?|bunch(?:es)?|sprigs?))?\b/;
       const metaSuppress = /^\s*(?:yield|serves|makes|prep(?:aration)?|cook|total)\b/i;
 
       let lower = lines.map((line) => line.toLowerCase());
