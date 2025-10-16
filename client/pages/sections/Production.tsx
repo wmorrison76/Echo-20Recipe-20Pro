@@ -522,7 +522,7 @@ export default function ProductionSection(){
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>{t("production.addTask")}</DropdownMenuLabel>
                 <DropdownMenuItem onClick={()=> openTaskDialog({ category:'production', title:'', roleId: roles[0]?.id })}>{t("production.production")}</DropdownMenuItem>
-                <DropdownMenuItem onClick={()=> openTaskDialog({ category:'housekeeping', title:'Clean workstation' })}>Housekeeping…</DropdownMenuItem>
+                <DropdownMenuItem onClick={()=> openTaskDialog({ category:'housekeeping', title:'Clean workstation' })}>{t("production.housekeeping")}</DropdownMenuItem>
                 <DropdownMenuItem onClick={()=> openTaskDialog({ category:'delivery', title:'Delivery to outlet' })}>Delivery���</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={()=> openTaskDialog({})}>Custom…</DropdownMenuItem>
