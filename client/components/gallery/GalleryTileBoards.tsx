@@ -160,9 +160,9 @@ export function GalleryTileBoards({
                 return (
                   <article
                     key={tile.id}
-                    className="flex flex-col gap-3 rounded-3xl border border-white/12 bg-black/35 p-4 text-slate-100 shadow-[0_20px_50px_rgba(14,165,233,0.25)]"
+                    className="flex flex-col gap-3 rounded-3xl border border-slate-300/50 dark:border-white/12 bg-slate-100 dark:bg-black/35 p-4 text-slate-900 dark:text-slate-100 shadow-[0_20px_50px_rgba(14,165,233,0.25)]"
                   >
-                    <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/50">
+                    <div className="relative overflow-hidden rounded-2xl border border-slate-300/50 dark:border-white/10 bg-slate-200 dark:bg-black/50">
                       {image ? (
                         <img
                           src={image.dataUrl || image.blobUrl}
@@ -170,7 +170,7 @@ export function GalleryTileBoards({
                           className="h-40 w-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-40 items-center justify-center text-xs uppercase tracking-[0.35em] text-slate-400">
+                        <div className="flex h-40 items-center justify-center text-xs uppercase tracking-[0.35em] text-slate-600 dark:text-slate-400">
                           No image linked
                         </div>
                       )}
@@ -190,7 +190,7 @@ export function GalleryTileBoards({
                       placeholder="Notes"
                       className="h-16 rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm focus:border-sky-400 focus:outline-none"
                     />
-                    <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-slate-300">
+                    <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-slate-700 dark:text-slate-300">
                       <span>{tile.layout}</span>
                       <Button
                         variant="ghost"
@@ -206,7 +206,7 @@ export function GalleryTileBoards({
               })}
 
               {activeBoard.tiles.length === 0 && (
-                <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-white/15 bg-black/30 p-6 text-center text-sm uppercase tracking-[0.35em] text-slate-400">
+                <div className="flex flex-1 flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-slate-300/50 dark:border-white/15 bg-slate-100 dark:bg-black/30 p-6 text-center text-sm uppercase tracking-[0.35em] text-slate-600 dark:text-slate-400">
                   <Plus className="h-6 w-6" />
                   Drop or select gallery images to start tiles
                 </div>
@@ -214,14 +214,14 @@ export function GalleryTileBoards({
             </div>
 
             {selectedImages.length > 0 && (
-              <footer className="rounded-2xl border border-white/12 bg-black/35 px-4 py-3 text-[11px] uppercase tracking-[0.3em] text-slate-300">
+              <footer className="rounded-2xl border border-slate-300/50 dark:border-white/12 bg-slate-100 dark:bg-black/35 px-4 py-3 text-[11px] uppercase tracking-[0.3em] text-slate-900 dark:text-slate-300">
                 {selectedImages.length} gallery image{selectedImages.length === 1 ? "" : "s"} selected
                 — click "Add" to convert into tiles.
               </footer>
             )}
           </div>
         ) : (
-          <div className="flex h-full items-center justify-center rounded-3xl border border-dashed border-white/15 bg-black/35 text-sm uppercase tracking-[0.35em] text-slate-400">
+          <div className="flex h-full items-center justify-center rounded-3xl border border-dashed border-slate-300/50 dark:border-white/15 bg-slate-100 dark:bg-black/35 text-sm uppercase tracking-[0.35em] text-slate-600 dark:text-slate-400">
             Create a tile board to get started.
           </div>
         )}
