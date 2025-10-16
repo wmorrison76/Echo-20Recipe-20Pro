@@ -3463,7 +3463,7 @@ function DesignerCanvas({
                   className="pointer-events-none absolute inset-0"
                   style={{
                     borderRadius: "inherit",
-                    boxShadow: `0 0 0 ${canvasSettings.bleed}px rgba(244, 63, 94, 0.18)` as string,
+                    boxShadow: `0 0 0 ${canvasSettings.bleed}px rgba(244, 63, 94, 0.18)`,
                     border: "1px dashed rgba(244, 63, 94, 0.55)",
                   }}
                 />
