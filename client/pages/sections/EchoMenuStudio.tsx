@@ -1863,17 +1863,23 @@ export default function MenuDesignStudioSection() {
   }, [handleMaskCancel, handleMaskCommit, handleMaskUndo, maskEditor]);
 
   const handleCanvasPointerDownCommit = useCallback(() => {
+    if (maskEditor) {
+      return;
+    }
     if (editingId) {
       handleCommitInlineEdit();
     }
-  }, [editingId, handleCommitInlineEdit]);
+  }, [editingId, handleCommitInlineEdit, maskEditor]);
 
   const handleDeselect = useCallback(() => {
+    if (maskEditor) {
+      return;
+    }
     if (editingId) {
       handleCommitInlineEdit();
     }
     setSelectedId(null);
-  }, [editingId, handleCommitInlineEdit]);
+  }, [editingId, handleCommitInlineEdit, maskEditor]);
 
   const handlePositionChange = useCallback(
     (id: string, position: { x: number; y: number }) => {
