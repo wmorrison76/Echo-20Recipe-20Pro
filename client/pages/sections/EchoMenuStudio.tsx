@@ -2958,6 +2958,50 @@ export default function MenuDesignStudioSection() {
     }
   }, [canvasSettings, documentName, elements, pageSize, toast]);
 
+  const handleExportPDF = useCallback(async () => {
+    try {
+      toast({
+        title: "Exporting...",
+        description: "Generating PDF, this may take a moment.",
+      });
+
+      const canvasElement = workspaceRef.current?.querySelector('[data-canvas]') as HTMLDivElement;
+      if (!canvasElement) {
+        throw new Error("Canvas element not found");
+      }
+
+      await exportDesignAsPDF(canvasElement, documentName || "Menu Design", printPreset);
+      toast({
+        title: "PDF exported",
+        description: "Your design has been saved as PDF.",
+      });
+    } catch (error) {
+      console.error("PDF export failed:", error);
+      toast({
+        title: "Export failed",
+        description: error instanceof Error ? error.message : "Failed to export PDF. Make sure jsPDF is installed.",
+        variant: "destructive",
+      });
+    }
+  }, [documentName, printPreset, toast, workspaceRef]);
+
+  const handleExportSVG = useCallback(async () => {
+    try {
+      await exportDesignAsSVG(elements, pageSize, documentName || "Menu Design");
+      toast({
+        title: "SVG exported",
+        description: "Your design has been saved as SVG.",
+      });
+    } catch (error) {
+      console.error("SVG export failed:", error);
+      toast({
+        title: "Export failed",
+        description: error instanceof Error ? error.message : "Failed to export SVG.",
+        variant: "destructive",
+      });
+    }
+  }, [elements, pageSize, documentName, toast]);
+
   const handleResetWorkspace = useCallback(() => {
     setElements([]);
     setSelectedId(null);
