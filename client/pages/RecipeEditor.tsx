@@ -803,6 +803,11 @@ export default function RecipeEditor() {
       </div>
       <SubtleBottomGlow />
       <CornerBrand />
+      <GalleryImagePicker
+        open={showGalleryPicker}
+        onOpenChange={setShowGalleryPicker}
+        onSelectImage={setCoverPreview}
+      />
     </div>
   );
 }
