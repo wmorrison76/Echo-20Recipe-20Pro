@@ -1400,7 +1400,7 @@ const twilightCocktailTemplate: MenuTemplate = {
       type: "menu-item",
       name: "Glow",
       text: "Saffron Highball",
-      description: "rum blend · saffron syrup · soda �� lemon mist",
+      description: "rum blend · saffron syrup · soda · lemon mist",
       price: 15,
       currency: "USD",
       x: 104,
@@ -3155,8 +3155,16 @@ function DesignerCanvas({
                       cursor: isMaskEditing ? "crosshair" : isLocked ? "not-allowed" : isEditing ? "text" : "move",
                       zIndex: element.zIndex,
                     }}
-                    onPointerDown={(event) => handleElementPointerDown(event, element)}
-                    onDoubleClick={(event) => handleElementDoubleClick(event, element)}
+                    onPointerDown={
+                      isMaskEditing
+                        ? undefined
+                        : (event) => handleElementPointerDown(event, element)
+                    }
+                    onDoubleClick={
+                      isMaskEditing
+                        ? undefined
+                        : (event) => handleElementDoubleClick(event, element)
+                    }
                   >
                     <div className="relative h-full w-full">
                       <div
