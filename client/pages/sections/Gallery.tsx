@@ -1295,6 +1295,7 @@ function GalleryToolbar({
   onExport,
   onLink,
 }: GalleryToolbarProps) {
+  const { t } = useTranslation();
   return (
     <div className="pointer-events-auto flex w-full max-w-3xl flex-col gap-4 rounded-[28px] border border-slate-300/50 dark:border-white/12 bg-slate-100 dark:bg-[radial-gradient(circle_at_top,_rgba(14,23,42,0.95),_rgba(14,25,48,0.72))] px-6 py-4 shadow-[0_28px_80px_rgba(15,23,42,0.55)] backdrop-blur-xl">
       <div className="flex flex-wrap items-center gap-3">
