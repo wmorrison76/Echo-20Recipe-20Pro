@@ -1948,6 +1948,12 @@ export default function MenuDesignStudioSection() {
     (template: MenuTemplate) => {
       setEditingId(null);
       setEditingDraft(null);
+      template.elements.forEach((element) => {
+        const fontValue = (element as { fontFamily?: string }).fontFamily;
+        if (fontValue) {
+          ensureFontLoaded(fontValue);
+        }
+      });
       const mappedElements = createElementsFromTemplate(template);
       setElements(mappedElements);
       setSelectedId(mappedElements[0]?.id ?? null);
@@ -1970,7 +1976,7 @@ export default function MenuDesignStudioSection() {
       }
       setDocumentName(template.name);
     },
-    [],
+    [ensureFontLoaded],
   );
 
   const addElement = useCallback(
