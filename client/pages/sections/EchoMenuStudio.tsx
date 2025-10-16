@@ -104,6 +104,7 @@ type DesignerElement = {
   borderRadius?: number;
   thickness?: number;
   locked?: boolean;
+  mask?: ElementMask;
 };
 
 type CanvasSettings = {
