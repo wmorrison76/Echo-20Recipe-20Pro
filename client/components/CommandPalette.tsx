@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "@/context/LanguageContext";
 import {
   Search,
   FileText,
