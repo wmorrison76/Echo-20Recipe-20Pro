@@ -2739,6 +2739,10 @@ type DesignerCanvasProps = {
   onCommitEdit: () => void;
   onCancelEdit: () => void;
   onCanvasPointerDown?: () => void;
+  maskEditor: MaskEditorState | null;
+  onMaskPointAdd: (point: PolygonPoint) => void;
+  onMaskPreview: (point: PolygonPoint | null) => void;
+  onMaskComplete: () => void;
 };
 
 function DesignerCanvas({
