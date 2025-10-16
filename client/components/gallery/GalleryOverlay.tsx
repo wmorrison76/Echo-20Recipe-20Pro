@@ -165,6 +165,15 @@ export function GalleryOverlay({
             >
               Save
             </Button>
+            {activeTool === "crop" && (
+              <Button
+                size="sm"
+                className="rounded-full px-4 bg-amber-600 hover:bg-amber-700 text-white"
+                onClick={onSave}
+              >
+                Apply Crop
+              </Button>
+            )}
             <Button
               size="sm"
               variant="secondary"
