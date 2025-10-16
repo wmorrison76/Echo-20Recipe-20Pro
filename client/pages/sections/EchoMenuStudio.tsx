@@ -2998,6 +2998,7 @@ function DesignerCanvas({
       editingId,
       handlePointerMove,
       handlePointerUp,
+      maskEditor,
       onCommitEdit,
       onSelect,
     ],
