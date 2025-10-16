@@ -272,6 +272,7 @@ export default function RecipeSearchSection() {
   const [cat, setCat] = useState<Cat>("all");
   const { language: appLanguage, setLanguage, options: languageOptions } =
     useLanguage();
+  const { t } = useTranslation();
   const [menuExportLanguage, setMenuExportLanguage] = useState<LanguageCode>(
     appLanguage,
   );
