@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useAppData } from "@/context/AppDataContext";
-import { Gallery as GalleryIcon } from "lucide-react";
+import { Images as GalleryIcon } from "lucide-react";
 
 interface GalleryImagePickerProps {
   open: boolean;
