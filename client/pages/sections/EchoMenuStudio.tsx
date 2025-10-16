@@ -2143,6 +2143,7 @@ export default function MenuDesignStudioSection() {
       handleDuplicateSelected,
       handleDeselect,
       handleNudgeSelected,
+      maskEditor,
       selectedElement,
       selectedId,
     ],
