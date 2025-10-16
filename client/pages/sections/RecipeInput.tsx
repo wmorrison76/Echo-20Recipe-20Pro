@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Dropzone } from "@/components/Dropzone";
 import { Button } from "@/components/ui/button";
 import { useAppData } from "@/context/AppDataContext";
+import { useTranslation } from "@/context/LanguageContext";
 
 export default function RecipeInputSection() {
   const { addRecipesFromJsonFiles, addRecipesFromDocxFiles, addRecipesFromHtmlFiles, addFromZipArchive, addRecipesFromPdfFiles, addRecipesFromExcelFiles, addRecipesFromImageOcr, clearRecipes, recipes, linkImagesToRecipesByFilename } = useAppData();
