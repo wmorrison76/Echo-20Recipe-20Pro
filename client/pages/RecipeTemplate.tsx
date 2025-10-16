@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppData } from "@/context/AppDataContext";
 import { Button } from "@/components/ui/button";
@@ -232,11 +232,23 @@ export default function RecipeTemplate() {
     commitScale(1);
   };
 
+  const handleBackClick = useCallback(() => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      nav(-1);
+      return;
+    }
+    if (recipe?.id) {
+      nav(`/recipe/${recipe.id}`);
+      return;
+    }
+    nav("/");
+  }, [nav, recipe?.id]);
+
   return (
     <div className="min-h-screen bg-white">
       <div className="mx-auto max-w-4xl px-6 py-6 print:px-0">
         <div className="flex items-center justify-between mb-6 print:hidden">
-          <Button variant="secondary" onClick={() => nav(-1)}>
+          <Button variant="secondary" onClick={handleBackClick}>
             Back
           </Button>
           <div className="flex items-center gap-2">
