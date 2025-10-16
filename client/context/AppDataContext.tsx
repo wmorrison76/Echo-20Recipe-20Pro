@@ -3162,7 +3162,14 @@ const createTileBoard = useCallback(
   );
 
   const clearRecipes = useCallback(() => setRecipes([]), []);
-  const clearImages = useCallback(() => setImages([]), []);
+  const clearImages = useCallback(() => {
+    setImages([]);
+    imageObjectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+    imageObjectUrlsRef.current.clear();
+    clearAllImageBlobs().catch((error) =>
+      console.warn("Failed to clear gallery blob store", error),
+    );
+  }, []);
 
   const searchRecipes = useCallback(
     (q: string) => {
