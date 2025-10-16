@@ -187,7 +187,7 @@ export function PhotoStudioPanel({
         Drop photos to edit instantly
       </div>
 
-      <div className="flex items-center justify-between text-sm font-semibold uppercase tracking-[0.3em] opacity-70">
+      <div className="flex items-center justify-between text-sm font-semibold uppercase tracking-[0.3em] text-slate-900 dark:text-slate-100">
         <span>Photo studio</span>
         <Button
           size="sm"
@@ -239,7 +239,7 @@ export function PhotoStudioPanel({
           <ControlSection title="Adjustments" defaultOpen>
             {adjustmentPresets.length > 0 && (
               <div className="space-y-2">
-                <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] uppercase tracking-[0.3em] text-slate-300">
+                <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] uppercase tracking-[0.3em] text-slate-700 dark:text-slate-300">
                   <span>Presets</span>
                   <Button
                     size="sm"
@@ -269,7 +269,7 @@ export function PhotoStudioPanel({
             <div className="space-y-3">
               {adjustmentControls.map((control) => (
                 <div key={control.key} className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-slate-300">
+                  <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-slate-700 dark:text-slate-300">
                     <span>{control.label}</span>
                     <span>{adjustments[control.key]}</span>
                   </div>
@@ -330,7 +330,7 @@ export function PhotoStudioPanel({
                 />
               ))}
             </div>
-            <div className="mt-3 text-[11px] uppercase tracking-[0.3em] text-slate-300">
+            <div className="mt-3 text-[11px] uppercase tracking-[0.3em] text-slate-700 dark:text-slate-300">
               Active · {activeToolLabel}
             </div>
           </ControlSection>
@@ -472,7 +472,7 @@ export function PhotoStudioPanel({
             </Button>
           </ControlSection>
 
-          <div className="space-y-1 text-xs text-slate-300">
+          <div className="space-y-1 text-xs text-slate-600 dark:text-slate-300">
             <div className="flex items-center gap-2">
               <Tag className="h-3.5 w-3.5" />
               {tagLabel || "No tags yet"}
@@ -482,8 +482,8 @@ export function PhotoStudioPanel({
           </div>
         </div>
       ) : (
-        <div className="flex flex-1 flex-col items-center justify-center gap-4 text-sm text-slate-200">
-          <div className="text-base font-semibold">Select an image to begin editing.</div>
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 text-sm text-slate-600 dark:text-slate-200">
+          <div className="text-base font-semibold text-slate-900 dark:text-slate-100">Select an image to begin editing.</div>
         </div>
       )}
     </aside>
@@ -499,9 +499,9 @@ type ControlSectionProps = {
 function ControlSection({ title, defaultOpen = false, children }: ControlSectionProps) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="rounded-3xl border border-white/12 bg-black/30 p-4">
+    <div className="rounded-3xl border border-slate-300/40 dark:border-white/12 bg-slate-50 dark:bg-black/30 p-4">
       <button
-        className="flex w-full items-center justify-between text-[11px] uppercase tracking-[0.35em] text-slate-200"
+        className="flex w-full items-center justify-between text-[11px] uppercase tracking-[0.35em] text-slate-900 dark:text-slate-200"
         onClick={() => setOpen((prev) => !prev)}
       >
         <span>{title}</span>
@@ -512,7 +512,7 @@ function ControlSection({ title, defaultOpen = false, children }: ControlSection
           )}
         />
       </button>
-      {open && <div className="mt-3 space-y-3 text-slate-100">{children}</div>}
+      {open && <div className="mt-3 space-y-3 text-slate-900 dark:text-slate-100">{children}</div>}
     </div>
   );
 }
@@ -532,7 +532,7 @@ function ToolButton({ label, icon: Icon, active, onClick }: ToolButtonProps) {
         "flex items-center gap-2 rounded-2xl border px-3 py-2 text-left text-xs uppercase tracking-[0.3em] transition",
         active
           ? "border-sky-500/60 bg-sky-500/15 text-sky-100 shadow-[0_16px_36px_rgba(14,165,233,0.35)]"
-          : "border-white/12 bg-black/30 text-slate-200 hover:border-sky-400/40 hover:bg-sky-500/10",
+          : "border-slate-300/50 dark:border-white/12 bg-slate-100 dark:bg-black/30 text-slate-900 dark:text-slate-200 hover:border-sky-300/40 dark:hover:border-sky-400/40 hover:bg-sky-500/10",
       )}
     >
       <Icon className="h-4 w-4" />
@@ -556,8 +556,8 @@ function QuickActionCard({ label, description, icon: Icon, active, onClick }: Qu
       className={cn(
         "flex flex-col items-start gap-1 rounded-2xl border px-3 py-2 text-left transition",
         active
-          ? "border-sky-500/60 bg-sky-500/15 text-sky-100 shadow-[0_16px_36px_rgba(14,165,233,0.35)]"
-          : "border-white/12 bg-black/25 text-slate-200 hover-border-sky-400/40 hover:bg-sky-500/10",
+          ? "border-sky-500/60 bg-sky-500/15 text-sky-700 dark:text-sky-100 shadow-[0_16px_36px_rgba(14,165,233,0.35)]"
+          : "border-slate-300/50 dark:border-white/12 bg-slate-100 dark:bg-black/25 text-slate-900 dark:text-slate-200 hover:border-sky-300/40 dark:hover:border-sky-400/40 hover:bg-sky-500/10",
       )}
     >
       <span className="flex items-center gap-2 text-xs uppercase tracking-[0.3em]">
@@ -576,7 +576,7 @@ type LayerListItemProps = {
 
 function LayerListItem({ layer, visible, onToggle }: LayerListItemProps) {
   return (
-    <div className="flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-black/35 px-3 py-2 text-xs uppercase tracking-[0.3em] text-slate-200">
+    <div className="flex items-center justify-between gap-2 rounded-2xl border border-slate-300/50 dark:border-white/10 bg-slate-100 dark:bg-black/35 px-3 py-2 text-xs uppercase tracking-[0.3em] text-slate-900 dark:text-slate-200">
       <button
         onClick={onToggle}
         className="rounded-full border border-white/20 bg-black/40 p-1 text-white transition hover:border-sky-400/50 hover:text-sky-200"
@@ -586,7 +586,7 @@ function LayerListItem({ layer, visible, onToggle }: LayerListItemProps) {
       </button>
       <div className="flex flex-1 flex-col gap-0.5">
         <span>{layer.name}</span>
-        <span className="text-[9px] text-slate-400">{layer.meta}</span>
+        <span className="text-[9px] text-slate-600 dark:text-slate-400">{layer.meta}</span>
       </div>
       {layer.locked ? (
         <Lock className="h-3.5 w-3.5 text-slate-400" />
@@ -611,12 +611,12 @@ function PresetPill({ label, description, active, onClick }: PresetPillProps) {
       className={cn(
         "flex flex-col rounded-2xl border px-3 py-2 text-left text-xs uppercase tracking-[0.3em] transition",
         active
-          ? "border-sky-500/70 bg-sky-500/20 text-sky-100 shadow-[0_12px_30px_rgba(56,189,248,0.35)]"
-          : "border-white/12 bg-black/30 text-slate-200 hover-border-sky-400/40 hover:bg-sky-500/10",
+          ? "border-sky-500/70 bg-sky-500/20 text-sky-700 dark:text-sky-100 shadow-[0_12px_30px_rgba(56,189,248,0.35)]"
+          : "border-slate-300/50 dark:border-white/12 bg-slate-100 dark:bg-black/30 text-slate-900 dark:text-slate-200 hover:border-sky-300/40 dark:hover:border-sky-400/40 hover:bg-sky-500/10",
       )}
     >
       <span>{label}</span>
-      <span className="text-[9px] text-slate-400 normal-case tracking-[0.2em]">{description}</span>
+      <span className="text-[9px] text-slate-600 dark:text-slate-400 normal-case tracking-[0.2em]">{description}</span>
     </button>
   );
 }
@@ -630,7 +630,7 @@ type AdjustmentBadgeProps = {
 function AdjustmentBadge({ canApply, selectionCount, isActiveInSelection }: AdjustmentBadgeProps) {
   if (!selectionCount) {
     return (
-      <span className="rounded-full border border-white/15 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-slate-400">
+      <span className="rounded-full border border-slate-300/60 dark:border-white/15 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-slate-700 dark:text-slate-400">
         Select images to sync adjustments
       </span>
     );
@@ -638,14 +638,14 @@ function AdjustmentBadge({ canApply, selectionCount, isActiveInSelection }: Adju
 
   if (!canApply) {
     return (
-      <span className="rounded-full border border-amber-300/40 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-amber-200">
+      <span className="rounded-full border border-amber-300/40 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-amber-700 dark:text-amber-200">
         Add more selections
       </span>
     );
   }
 
   return (
-    <span className="rounded-full border border-sky-300/40 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-sky-100">
+    <span className="rounded-full border border-sky-300/40 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-sky-700 dark:text-sky-100">
       {isActiveInSelection ? "Synced selection" : "Active + selection"}
     </span>
   );
