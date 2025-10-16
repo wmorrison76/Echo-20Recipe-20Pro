@@ -3269,6 +3269,7 @@ type ToolSidebarProps = {
   colorPalettes: typeof COLOR_PALETTES;
   onPaletteApply: (swatches: string[]) => void;
   selectedElement: DesignerElement | null;
+  onOpenGalleryPicker?: () => void;
 };
 
 function ToolSidebar({
@@ -3286,6 +3287,7 @@ function ToolSidebar({
   colorPalettes,
   onPaletteApply,
   selectedElement,
+  onOpenGalleryPicker,
 }: ToolSidebarProps) {
   return (
     <Card className="w-full border border-slate-200/50 bg-white/80 backdrop-blur lg:w-[280px] dark:border-slate-800/60 dark:bg-slate-950/40">
