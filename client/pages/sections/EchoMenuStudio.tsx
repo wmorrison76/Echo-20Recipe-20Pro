@@ -3110,6 +3110,7 @@ function DesignerCanvas({
                 const isLocked = Boolean(element.locked);
                 const isEditable = isTextEditableElement(element);
                 const isEditing = Boolean(editingId && editingId === element.id && editingDraft);
+                const isMaskEditing = Boolean(maskEditor && maskEditor.elementId === element.id);
                 const draft = isEditing && editingDraft ? editingDraft : null;
                 const draftText =
                   draft && "text" in draft
