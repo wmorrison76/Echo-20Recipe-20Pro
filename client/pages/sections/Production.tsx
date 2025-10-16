@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAppData } from "@/context/AppDataContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, Trash, Users, CalendarClock, ClipboardList, ChefHat, Printer, Check, RotateCcw } from "lucide-react";
+import { useTranslation } from "@/context/LanguageContext";
 import { GlobalCalendar } from "@/components/panels/GlobalCalendar";
 import type { CalendarEvent } from "@/stores/beoStore";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
