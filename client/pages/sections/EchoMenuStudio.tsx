@@ -598,7 +598,7 @@ const PAGE_PRESETS: PrintPreset[] = [
   }),
   createPreset({
     id: "square_menu_9",
-    label: "Square Menu 9��9",
+    label: "Square Menu 9×9",
     widthIn: 9,
     heightIn: 9,
     bleedIn: 0.125,
@@ -2851,6 +2851,11 @@ export default function MenuDesignStudioSection() {
     setPagePreset(preset.id);
     setPrintPreset(preset);
     setPageSize({ width: preset.widthPx, height: preset.heightPx });
+    setCanvasSettings((prev) => ({
+      ...prev,
+      margin: preset.safeMarginPx,
+      bleed: preset.bleedPx,
+    }));
   }, []);
 
   useEffect(() => {
