@@ -1009,7 +1009,7 @@ const onFiles = async (files: File[]) => {
             size="sm"
             onClick={() => exportAllZip(menuExportLanguage)}
           >
-            Export all (ZIP)
+            {t("recipes.exportAll", "Export all (ZIP)")}
           </Button>
           {inTrashView && (
             <Button
