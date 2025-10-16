@@ -3199,7 +3199,7 @@ export default function MenuDesignStudioSection() {
         <CardHeader className="gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-1">
             <CardTitle className="text-xl font-semibold uppercase tracking-[0.45em] text-cyan-700 dark:text-cyan-200">
-              Menu Design Studio
+              {t("menu.menuDesignStudio")}
             </CardTitle>
             <CardDescription className="max-w-3xl text-sm">
               Start from a blank canvas or seasoned templates, arrange typography, imagery, and pricing with precise grid control, and export layout primitives ready for production.
