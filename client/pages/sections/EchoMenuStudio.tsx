@@ -3458,14 +3458,30 @@ function DesignerCanvas({
               }}
               onPointerDown={handleCanvasPointerDown}
             >
-              {canvasSettings.showMargins ? (
+              {canvasSettings.showBleed && canvasSettings.bleed > 0 ? (
+                <div
+                  className="pointer-events-none absolute inset-0"
+                  style={{
+                    borderRadius: "inherit",
+                    boxShadow: `0 0 0 ${canvasSettings.bleed}px rgba(244, 63, 94, 0.18)` as string,
+                    border: "1px dashed rgba(244, 63, 94, 0.55)",
+                  }}
+                />
+              ) : null}
+              {canvasSettings.showMargins && canvasSettings.margin > 0 ? (
                 <div
                   className="pointer-events-none absolute inset-0"
                   style={{
                     padding: canvasSettings.margin,
                   }}
                 >
-                  <div className="h-full w-full rounded-[32px] border border-dashed border-slate-400/30" />
+                  <div
+                    className="h-full w-full rounded-[32px] border border-dashed"
+                    style={{
+                      borderColor: "rgba(6, 182, 212, 0.6)",
+                      backgroundColor: "rgba(6, 182, 212, 0.08)",
+                    }}
+                  />
                 </div>
               ) : null}
               {canvasSettings.showColumns && canvasSettings.columns > 0 ? (
