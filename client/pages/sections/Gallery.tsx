@@ -732,8 +732,10 @@ export default function GallerySection() {
     setUrlLoading(true);
     try {
       const files: File[] = [];
+      const failedUrls: string[] = [];
       for (const url of urls) {
         try {
+          console.debug("Fetching image from URL:", url);
           const response = await fetch(url);
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
           const blob = await response.blob();
@@ -745,14 +747,26 @@ export default function GallerySection() {
             }),
           );
         } catch (error: any) {
+          console.warn("Failed to fetch image from URL:", url, error);
+          failedUrls.push(url);
           setStatus(`Failed to fetch ${url}: ${error?.message ?? "error"}`);
         }
       }
       if (files.length) {
+        console.debug("Adding", files.length, "images from URLs");
         const added = await addImages(files, { tags: [] });
-        setStatus(`Added ${added} image${added === 1 ? "" : "s"} from URLs.`);
-        setUrlText("");
+        if (added > 0) {
+          setStatus(`✓ Added ${added} image${added === 1 ? "" : "s"} from URLs.${failedUrls.length > 0 ? ` (${failedUrls.length} failed)` : ""}`);
+          setUrlText("");
+        } else {
+          setStatus("No images were added. Check for duplicates.");
+        }
+      } else if (failedUrls.length > 0) {
+        setStatus(`Failed to fetch all ${failedUrls.length} URL(s). Check browser console.`);
       }
+    } catch (error) {
+      console.error("Error importing images from URLs:", error);
+      setStatus("Error importing images. Check browser console.");
     } finally {
       setUrlLoading(false);
     }
