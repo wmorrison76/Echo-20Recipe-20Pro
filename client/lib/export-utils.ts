@@ -22,12 +22,16 @@ function downloadFile(content: string | Blob, filename: string, mimeType: string
   URL.revokeObjectURL(url);
 }
 
+function t(key: string, language: LanguageCode, fallback: string): string {
+  return dictionaries[language]?.[key] ?? fallback;
+}
+
 export function exportServerNotesAsJSON(
   notes: ServerNote,
   options: ExportOptions
 ): void {
   const data = {
-    title: notes.title || "Server Notes",
+    title: notes.title || t("export.serverNotes.defaultTitle", options.language, "Server Notes"),
     company: notes.companyName,
     outlet: notes.outletName,
     distributionDate: notes.distributionNotes,
