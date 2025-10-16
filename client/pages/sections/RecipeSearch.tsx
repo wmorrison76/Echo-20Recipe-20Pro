@@ -980,7 +980,7 @@ const onFiles = async (files: File[]) => {
               onClick={() => setCat(c)}
               className={`px-3 py-1 rounded-md text-sm ${cat === c ? "bg-background shadow" : "text-foreground/80"}`}
             >
-              {c.replace(/^[a-z]/, (s) => s.toUpperCase())}
+              {t(`recipes.filter.${c}`, c.replace(/^[a-z]/, (s) => s.toUpperCase()))}
             </button>
           ))}
         </div>
