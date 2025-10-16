@@ -624,6 +624,31 @@ export default function ServerNotesSection() {
         open={exportDialogOpen}
         onOpenChange={setExportDialogOpen}
       />
+
+      <CooksRecipesExportDialog
+        recipes={sortedSelected.map(item => ({
+          name: item.recipe.title || "Untitled",
+          ingredients: item.recipe.ingredients || [],
+          instructions: (item.recipe.instructions || []).join("\n"),
+          cookTime: item.recipe.cookTime?.toString(),
+          prepTime: item.recipe.prepTime?.toString(),
+          yield: item.recipe.description,
+          allergens: [],
+        }))}
+        open={cooksRecipesExportOpen}
+        onOpenChange={setCooksRecipesExportOpen}
+      />
+
+      <AllergenSheetExportDialog
+        items={sortedSelected.map(item => ({
+          name: item.recipe.title || "Untitled",
+          allergens: [],
+          course: item.recipe.course,
+          dish: item.recipe.description,
+        }))}
+        open={allergenSheetExportOpen}
+        onOpenChange={setAllergenSheetExportOpen}
+      />
     </div>
   );
 }
