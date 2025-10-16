@@ -619,6 +619,7 @@ const clearRecipeWorkspace = useCallback(
     setDirections("1. ");
     setImage(null);
     setShowImagePopup(false);
+    setShowGalleryPicker(false);
     setSelectedAllergens([]);
     setSelectedNationality([]);
     setSelectedCourses([]);
