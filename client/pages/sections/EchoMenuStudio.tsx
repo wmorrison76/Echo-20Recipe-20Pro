@@ -3635,6 +3635,12 @@ function InspectorPanel({
   onLayerShift,
   onLayerOpacityChange,
   onToggleLayerLock,
+  maskEditor,
+  onBeginMaskEditing,
+  onMaskUndo,
+  onMaskCommit,
+  onMaskCancel,
+  onMaskClear,
 }: InspectorPanelProps) {
   return (
     <Card className="w-full border border-slate-200/60 bg-white/80 backdrop-blur xl:w-[320px] dark:border-slate-800/70 dark:bg-slate-950/40">
