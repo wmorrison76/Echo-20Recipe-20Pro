@@ -169,7 +169,7 @@ export function PhotoStudioPanel({
           "rounded-3xl border border-dashed px-4 py-3 text-[11px] uppercase tracking-[0.35em] transition",
           dropActive
             ? "border-sky-400/80 bg-sky-500/15 text-sky-100"
-            : "border-white/15 bg-black/25 text-slate-300",
+            : "border-slate-300/50 dark:border-white/15 bg-slate-100 dark:bg-black/25 text-slate-700 dark:text-slate-300",
         )}
         onDragEnter={(event) => {
           event.preventDefault();
