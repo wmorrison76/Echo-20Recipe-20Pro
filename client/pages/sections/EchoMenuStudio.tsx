@@ -2779,6 +2779,21 @@ export default function MenuDesignStudioSection() {
     [addElement, canvasSettings.margin],
   );
 
+  const handleAddImageFromGallery = useCallback(
+    (image: any) => {
+      const imageUrl = image.dataUrl || image.blobUrl;
+      if (imageUrl) {
+        handleAddImage(imageUrl, image.name);
+        setShowGalleryPicker(false);
+        toast({
+          title: "Image added",
+          description: `${image.name} has been added to the canvas.`,
+        });
+      }
+    },
+    [handleAddImage, toast],
+  );
+
   const handlePaletteApply = useCallback(
     (swatches: string[]) => {
       if (selectedElement) {
