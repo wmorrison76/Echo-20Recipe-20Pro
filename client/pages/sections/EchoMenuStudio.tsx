@@ -3115,10 +3115,21 @@ export default function MenuDesignStudioSection() {
               <Sparkles className="mr-2 h-4 w-4" aria-hidden />
               Apply seasonal
             </Button>
-            <Button variant="outline" size="sm" onClick={handleExportLayout}>
-              <Download className="mr-2 h-4 w-4" aria-hidden />
-              Export JSON
-            </Button>
+            <div className="flex items-center gap-1 rounded-lg border border-slate-300/50 dark:border-slate-700/60 p-1">
+              <Button variant="ghost" size="sm" onClick={handleExportLayout} title="Export as JSON">
+                <Download className="mr-2 h-4 w-4" aria-hidden />
+                JSON
+              </Button>
+              <div className="h-5 w-px bg-border" />
+              <Button variant="ghost" size="sm" onClick={handleExportPDF} title="Export as PDF">
+                <Download className="mr-2 h-4 w-4" aria-hidden />
+                PDF
+              </Button>
+              <Button variant="ghost" size="sm" onClick={handleExportSVG} title="Export as SVG">
+                <Download className="mr-2 h-4 w-4" aria-hidden />
+                SVG
+              </Button>
+            </div>
             <div className="flex items-center gap-1 overflow-hidden rounded-full border border-cyan-500/30">
               <Button
                 variant="ghost"
