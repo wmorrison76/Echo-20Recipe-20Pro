@@ -1867,6 +1867,7 @@ const INITIAL_PAGE_SIZE: PageSize = {
 const INITIAL_ELEMENTS = createElementsFromTemplate(seasonalTemplate);
 
 export default function MenuDesignStudioSection() {
+  const { t } = useTranslation();
   const [documentName, setDocumentName] = useState("Seasonal Reveal Menu");
   const [pageSize, setPageSize] = useState<PageSize>(INITIAL_PAGE_SIZE);
   const [canvasSettings, setCanvasSettings] = useState<CanvasSettings>(
