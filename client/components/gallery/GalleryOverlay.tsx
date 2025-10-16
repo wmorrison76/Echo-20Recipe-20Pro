@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useState, useMemo, useRef } from "react";
 import type { GalleryImage } from "@/context/AppDataContext";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
