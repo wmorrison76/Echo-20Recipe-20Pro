@@ -50,6 +50,18 @@ export default function RecipeTemplate() {
   const [scaleDialogOpen, setScaleDialogOpen] = useState(false);
   const previousScaleRef = useRef<number | null>(null);
 
+  const handleBackClick = useCallback(() => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      nav(-1);
+      return;
+    }
+    if (recipe?.id) {
+      nav(`/recipe/${recipe.id}`);
+      return;
+    }
+    nav("/");
+  }, [nav, recipe?.id]);
+
   useEffect(() => {
     setAppliedScale(1);
     setScaleDialogOpen(false);
@@ -231,18 +243,6 @@ export default function RecipeTemplate() {
   const handleResetScale = () => {
     commitScale(1);
   };
-
-  const handleBackClick = useCallback(() => {
-    if (typeof window !== "undefined" && window.history.length > 1) {
-      nav(-1);
-      return;
-    }
-    if (recipe?.id) {
-      nav(`/recipe/${recipe.id}`);
-      return;
-    }
-    nav("/");
-  }, [nav, recipe?.id]);
 
   return (
     <div className="min-h-screen bg-white">
