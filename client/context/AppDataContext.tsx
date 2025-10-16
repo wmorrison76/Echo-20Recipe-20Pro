@@ -392,6 +392,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const [workflows, setWorkflows] = useState<DishWorkflowPlan[]>([]);
   const [inspections, setInspections] = useState<InspectionReport[]>([]);
   const mountedRef = useRef(true);
+  const imageObjectUrlsRef = useRef<Map<string, string>>(new Map());
+  const [imagesHydrated, setImagesHydrated] = useState(false);
 
   const appendRecipes = useCallback(
     (incoming: Recipe[]) => {
