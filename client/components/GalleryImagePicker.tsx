@@ -23,15 +23,15 @@ export function GalleryImagePicker({
   const handleConfirm = () => {
     if (selectedImageId) {
       const image = images.find((img) => img.id === selectedImageId);
-      if (image?.url) {
-        onSelectImage(image.url);
+      if (image?.dataUrl || image?.blobUrl) {
+        onSelectImage(image.dataUrl || image.blobUrl!);
         onOpenChange(false);
         setSelectedImageId(null);
       }
     }
   };
 
-  const displayableImages = images.filter((img) => img.url);
+  const displayableImages = images.filter((img) => img.dataUrl || img.blobUrl);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
