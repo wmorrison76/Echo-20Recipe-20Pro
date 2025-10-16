@@ -1835,7 +1835,7 @@ export default function MenuDesignStudioSection() {
         description: "The image now shows its full background again.",
       });
     },
-    [elements, maskEditor?.elementId, toast, updateElement],
+    [elements, maskEditor, toast, updateElement],
   );
 
   useEffect(() => {
