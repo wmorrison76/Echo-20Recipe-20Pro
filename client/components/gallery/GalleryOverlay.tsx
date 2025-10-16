@@ -119,6 +119,8 @@ export function GalleryOverlay({
   const [zoom, setZoom] = useState(100);
   const [gridSize, setGridSize] = useState(32);
   const [showRulers, setShowRulers] = useState(true);
+  const [cropBox, setCropBox] = useState({ x: 10, y: 10, width: 80, height: 80 });
+  const [isDraggingCrop, setIsDraggingCrop] = useState<string | null>(null);
 
   const layerMeta = useMemo(
     () =>
