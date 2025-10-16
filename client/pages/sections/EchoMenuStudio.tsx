@@ -598,7 +598,7 @@ const PAGE_PRESETS: PrintPreset[] = [
   }),
   createPreset({
     id: "square_menu_9",
-    label: "Square Menu 9×9",
+    label: "Square Menu 9��9",
     widthIn: 9,
     heightIn: 9,
     bleedIn: 0.125,
@@ -1837,11 +1837,13 @@ const DEFAULT_PRESET = PAGE_PRESETS[0];
 
 const INITIAL_CANVAS: CanvasSettings = {
   background: "#fefaf4",
-  margin: 64,
+  margin: DEFAULT_PRESET.safeMarginPx,
+  bleed: DEFAULT_PRESET.bleedPx,
   columns: 2,
   gutter: 32,
   showGrid: true,
   showMargins: true,
+  showBleed: true,
   showColumns: false,
   zoom: 0.75,
   gridSize: 24,
