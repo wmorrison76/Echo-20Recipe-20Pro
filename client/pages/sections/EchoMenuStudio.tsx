@@ -579,7 +579,7 @@ const PAGE_PRESETS: PrintPreset[] = [
   }),
   createPreset({
     id: "third_letter",
-    label: "Cocktail/Wine List �� Third Letter",
+    label: "Cocktail/Wine List – Third Letter",
     widthIn: 3.66,
     heightIn: 8.5,
     bleedIn: 0.125,
@@ -1934,6 +1934,47 @@ export default function MenuDesignStudioSection() {
   useEffect(() => {
     ensureFontLoaded(DEFAULT_FONT_VALUE);
   }, [ensureFontLoaded]);
+
+  // Auto-save design to localStorage
+  useEffect(() => {
+    if (!hasUnsavedChanges) return;
+
+    // Clear existing timeout
+    if (autoSaveTimeoutRef.current) {
+      clearTimeout(autoSaveTimeoutRef.current);
+    }
+
+    // Set new timeout for auto-save
+    autoSaveTimeoutRef.current = setTimeout(() => {
+      try {
+        const designData = {
+          id: `design-${Date.now()}`,
+          name: documentName,
+          elements,
+          pageSize,
+          canvasSettings,
+          pagePreset,
+          printPreset,
+          updatedAt: Date.now(),
+          version: 1 as const,
+        };
+        saveDesign(designData);
+        setHasUnsavedChanges(false);
+        toast({
+          title: "Design saved",
+          description: "Your work has been saved to browser storage.",
+        });
+      } catch (error) {
+        console.error("Auto-save failed:", error);
+      }
+    }, 30000); // Auto-save after 30 seconds of inactivity
+
+    return () => {
+      if (autoSaveTimeoutRef.current) {
+        clearTimeout(autoSaveTimeoutRef.current);
+      }
+    };
+  }, [hasUnsavedChanges, documentName, elements, pageSize, canvasSettings, pagePreset, printPreset, toast]);
 
   useEffect(() => {
     const uniqueFontValues = new Set<string>();
