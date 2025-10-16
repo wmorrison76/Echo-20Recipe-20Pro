@@ -429,6 +429,13 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    return () => {
+      imageObjectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+      imageObjectUrlsRef.current.clear();
+    };
+  }, []);
+
+  useEffect(() => {
     const storedRecipes = readLS<Recipe[]>(LS_RECIPES, []);
     setRecipes(
       sanitizeRecipeCollection(storedRecipes.length ? storedRecipes : mockRecipes),
