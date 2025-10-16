@@ -132,6 +132,42 @@ export function GalleryOverlay({
     [layers],
   );
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDraggingCrop) return;
+
+    const deltaX = e.movementX;
+    const deltaY = e.movementY;
+    const sensitivity = 0.1;
+
+    setCropBox((prev) => {
+      const newBox = { ...prev };
+      const handle = isDraggingCrop;
+
+      if (handle.includes("w")) {
+        newBox.x = Math.max(0, Math.min(prev.x + deltaX * sensitivity, prev.x + prev.width - 5));
+        newBox.width = Math.max(5, Math.min(100, prev.width - deltaX * sensitivity));
+      }
+      if (handle.includes("e")) {
+        newBox.width = Math.max(5, Math.min(100 - newBox.x, prev.width + deltaX * sensitivity));
+      }
+      if (handle.includes("n")) {
+        newBox.y = Math.max(0, Math.min(prev.y + deltaY * sensitivity, prev.y + prev.height - 5));
+        newBox.height = Math.max(5, Math.min(100, prev.height - deltaY * sensitivity));
+      }
+      if (handle.includes("s")) {
+        newBox.height = Math.max(5, Math.min(100 - newBox.y, prev.height + deltaY * sensitivity));
+      }
+
+      return newBox;
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDraggingCrop(null);
+  };
+
   if (!open) return null;
 
   return (
