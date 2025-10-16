@@ -4558,6 +4558,7 @@ function FloatingLayersPanel({
   selectedId,
   onSelectLayer,
   onLayerShift,
+  onChangeOpacity,
   onToggleLock,
 }: FloatingLayersPanelProps) {
   const panelRef = useRef<HTMLDivElement | null>(null);
