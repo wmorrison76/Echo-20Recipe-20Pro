@@ -15,6 +15,17 @@ export type IngredientRow = {
   supplierId: string | null;
   supplierName: string | null;
   supplierSku: string | null;
+
+  // NEW: Inventory linking
+  inventoryId?: string | null;        // Link to InventoryItem
+  inventoryName?: string | null;      // Cached display name
+  mappingConfidence?: number;         // 0-1, confidence of automatic mapping
+
+  // NEW: Cost tracking
+  totalCost?: number | null;          // qty * costPerUnit
+  costVariance?: number | null;       // % change from baseline
+  costPerServing?: number | null;     // for portion-based costing
+  lastUpdatedAt?: number;             // timestamp of last cost update
 };
 
 export type IngredientYieldInsight = {
