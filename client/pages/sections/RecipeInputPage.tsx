@@ -3994,6 +3994,13 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
           onApply={(d) => setImage(d)}
           isDarkMode={isDarkMode}
         />
+
+        <GalleryImagePicker
+          open={showGalleryPicker}
+          onOpenChange={setShowGalleryPicker}
+          onSelectImage={setImage}
+          isDarkMode={isDarkMode}
+        />
       </div>
     </RDLabProvider>
   );
