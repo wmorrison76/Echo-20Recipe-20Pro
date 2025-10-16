@@ -1847,6 +1847,13 @@ export default function MenuDesignStudioSection() {
     [editingId, handleCommitInlineEdit],
   );
 
+  const handleLayerOpacityChange = useCallback(
+    (id: string, opacity: number) => {
+      updateElement(id, { opacity: clamp(opacity, 0, 1) });
+    },
+    [updateElement],
+  );
+
   const handleToggleLayerLock = useCallback(
     (id: string) => {
       const element = elements.find((item) => item.id === id);
