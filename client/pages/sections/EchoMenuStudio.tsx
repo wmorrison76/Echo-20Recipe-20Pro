@@ -856,7 +856,7 @@ const modernGridTemplate: MenuTemplate = {
       type: "menu-item",
       name: "Course Highlight",
       text: "Coal-Roasted Langoustine",
-      description: "xo butter �� smoked paprika · fermented yuzu",
+      description: "xo butter · smoked paprika · fermented yuzu",
       price: 32,
       currency: "USD",
       x: 96,
@@ -3279,6 +3279,8 @@ function InspectorPanel({
   layers,
   onSelectLayer,
   onLayerShift,
+  onLayerOpacityChange,
+  onToggleLayerLock,
 }: InspectorPanelProps) {
   return (
     <Card className="w-full border border-slate-200/60 bg-white/80 backdrop-blur xl:w-[320px] dark:border-slate-800/70 dark:bg-slate-950/40">
