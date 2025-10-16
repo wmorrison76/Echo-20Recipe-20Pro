@@ -572,7 +572,15 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   }, [recipes]);
 
   useEffect(() => {
-    writeLS(LS_IMAGES, serializeImagesForStorage(images));
+    if (images.length > 0) {
+      try {
+        const serialized = serializeImagesForStorage(images);
+        writeLS(LS_IMAGES, serialized);
+        console.debug("Images persisted to localStorage:", serialized.length, "records");
+      } catch (error) {
+        console.error("Failed to persist images to localStorage:", error);
+      }
+    }
   }, [images]);
 
   useEffect(() => {
