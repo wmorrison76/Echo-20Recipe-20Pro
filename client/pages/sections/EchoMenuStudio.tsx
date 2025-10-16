@@ -4071,41 +4071,54 @@ function InspectorPanel({
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="canvas-margin" className="text-[11px] uppercase tracking-[0.32em] text-muted-foreground">
-                Margin
+              <Label
+                htmlFor="canvas-safe-margin"
+                className="text-[11px] uppercase tracking-[0.32em] text-muted-foreground"
+              >
+                Safe margin
               </Label>
               <Input
-                id="canvas-margin"
+                id="canvas-safe-margin"
                 type="number"
-                min={24}
+                min={8}
                 value={Math.round(canvasSettings.margin)}
                 onChange={(event) =>
                   onCanvasSettingsChange({
-                    margin: clamp(Number(event.target.value), 24, pageSize.width / 2 - 24),
+                    margin: clamp(
+                      Number(event.target.value),
+                      8,
+                      Math.min(pageSize.width, pageSize.height) / 2 - 8,
+                    ),
                   })
                 }
               />
             </div>
             <div>
-              <Label htmlFor="canvas-gutter" className="text-[11px] uppercase tracking-[0.32em] text-muted-foreground">
-                Gutter
+              <Label
+                htmlFor="canvas-bleed"
+                className="text-[11px] uppercase tracking-[0.32em] text-muted-foreground"
+              >
+                Bleed
               </Label>
               <Input
-                id="canvas-gutter"
+                id="canvas-bleed"
                 type="number"
-                min={8}
-                value={Math.round(canvasSettings.gutter)}
+                min={0}
+                value={Math.round(canvasSettings.bleed)}
                 onChange={(event) =>
                   onCanvasSettingsChange({
-                    gutter: clamp(Number(event.target.value), 0, 120),
+                    bleed: clamp(Number(event.target.value), 0, 240),
                   })
                 }
               />
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="canvas-columns" className="text-[11px] uppercase tracking-[0.32em] text-muted-foreground">
+              <Label
+                htmlFor="canvas-columns"
+                className="text-[11px] uppercase tracking-[0.32em] text-muted-foreground"
+              >
                 Columns
               </Label>
               <Input
@@ -4120,20 +4133,39 @@ function InspectorPanel({
                 }
               />
             </div>
-            <div className="col-span-2">
-              <Label className="text-[11px] uppercase tracking-[0.32em] text-muted-foreground">
-                Grid size
+            <div>
+              <Label
+                htmlFor="canvas-gutter"
+                className="text-[11px] uppercase tracking-[0.32em] text-muted-foreground"
+              >
+                Gutter
               </Label>
-              <Slider
-                value={[canvasSettings.gridSize]}
-                min={8}
-                max={80}
-                step={2}
-                onValueChange={(value) =>
-                  onCanvasSettingsChange({ gridSize: value[0] ?? canvasSettings.gridSize })
+              <Input
+                id="canvas-gutter"
+                type="number"
+                min={0}
+                value={Math.round(canvasSettings.gutter)}
+                onChange={(event) =>
+                  onCanvasSettingsChange({
+                    gutter: clamp(Number(event.target.value), 0, 120),
+                  })
                 }
               />
             </div>
+          </div>
+          <div>
+            <Label className="text-[11px] uppercase tracking-[0.32em] text-muted-foreground">
+              Grid size
+            </Label>
+            <Slider
+              value={[canvasSettings.gridSize]}
+              min={8}
+              max={80}
+              step={2}
+              onValueChange={(value) =>
+                onCanvasSettingsChange({ gridSize: value[0] ?? canvasSettings.gridSize })
+              }
+            />
           </div>
           <div className="space-y-2">
             <label className="flex items-center justify-between text-xs">
@@ -4146,7 +4178,7 @@ function InspectorPanel({
               />
             </label>
             <label className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Show margins</span>
+              <span className="text-muted-foreground">Show safe zone</span>
               <Switch
                 checked={canvasSettings.showMargins}
                 onCheckedChange={(checked) =>
@@ -4155,7 +4187,16 @@ function InspectorPanel({
               />
             </label>
             <label className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Show columns</span>
+              <span className="text-muted-foreground">Show bleed overlay</span>
+              <Switch
+                checked={canvasSettings.showBleed}
+                onCheckedChange={(checked) =>
+                  onCanvasSettingsChange({ showBleed: checked })
+                }
+              />
+            </label>
+            <label className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Show column guides</span>
               <Switch
                 checked={canvasSettings.showColumns}
                 onCheckedChange={(checked) =>
