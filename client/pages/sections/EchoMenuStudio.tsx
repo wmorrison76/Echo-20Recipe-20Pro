@@ -3206,8 +3206,20 @@ function renderElement(element: DesignerElement) {
       );
     }
     case "image": {
-      return element.imageUrl ? (
-        <div className="h-full w-full overflow-hidden rounded-[inherit]">
+      if (!element.imageUrl) {
+        return null;
+      }
+      const clipPath =
+        element.mask?.type === "polygon" && element.mask.points.length >= 3
+          ? `polygon(${element.mask.points
+              .map((point) => `${(point.x * 100).toFixed(2)}% ${(point.y * 100).toFixed(2)}%`)
+              .join(", ")})`
+          : undefined;
+      return (
+        <div
+          className="h-full w-full overflow-hidden rounded-[inherit]"
+          style={{ clipPath, WebkitClipPath: clipPath }}
+        >
           <img
             src={element.imageUrl}
             alt={element.name}
@@ -3215,7 +3227,7 @@ function renderElement(element: DesignerElement) {
             style={{ objectFit: element.objectFit ?? "cover" }}
           />
         </div>
-      ) : null;
+      );
     }
     case "shape": {
       const borderStyle = element.borderWidth
