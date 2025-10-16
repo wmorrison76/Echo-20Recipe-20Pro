@@ -478,13 +478,15 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     const hydrate = async () => {
       try {
         const stored = readLS<Array<StoredGalleryImage & { dataUrl?: string }>>(LS_IMAGES, []);
+        console.debug("Loading gallery images from localStorage:", stored.length, "records");
         const hydratedImages = await hydrateStoredImages(stored, createObjectUrl);
+        console.debug("Successfully hydrated gallery images:", hydratedImages.length, "images");
         if (!cancelled) {
           setImages(hydratedImages);
           setImagesHydrated(true);
         }
       } catch (error) {
-        console.warn("Failed to restore gallery images", error);
+        console.error("Failed to restore gallery images", error);
         if (!cancelled) {
           setImages([]);
           setImagesHydrated(true);
