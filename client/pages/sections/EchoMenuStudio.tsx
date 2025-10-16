@@ -3939,9 +3939,26 @@ type ElementInspectorProps = {
   onUpdate: (id: string, changes: Partial<DesignerElement>) => void;
   onDelete: () => void;
   onDuplicate: () => void;
+  maskEditor: MaskEditorState | null;
+  onBeginMaskEditing: (id: string) => void;
+  onMaskUndo: () => void;
+  onMaskCommit: () => void;
+  onMaskCancel: () => void;
+  onMaskClear: (id: string) => void;
 };
 
-function ElementInspector({ element, onUpdate, onDelete, onDuplicate }: ElementInspectorProps) {
+function ElementInspector({
+  element,
+  onUpdate,
+  onDelete,
+  onDuplicate,
+  maskEditor,
+  onBeginMaskEditing,
+  onMaskUndo,
+  onMaskCommit,
+  onMaskCancel,
+  onMaskClear,
+}: ElementInspectorProps) {
   const handleChange = (changes: Partial<DesignerElement>) => {
     onUpdate(element.id, changes);
   };
