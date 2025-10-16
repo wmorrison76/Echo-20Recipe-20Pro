@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { Trash2, Clock, X } from "lucide-react";
+import { Trash2, Clock, X, AlertCircle } from "lucide-react";
 import type { MenuDesignData } from "@/lib/menu-studio-storage";
 
 type SaveLoadDialogProps = {
@@ -27,14 +27,24 @@ export function SaveLoadDialog({
 }: SaveLoadDialogProps) {
   const [activeTab, setActiveTab] = useState<"save" | "load">("load");
   const [designName, setDesignName] = useState(currentName);
+  const [showConfirmOverwrite, setShowConfirmOverwrite] = useState(false);
 
   if (!isOpen) return null;
 
+  const existingDesignWithName = savedDesigns.find(d => d.name === designName.trim());
+
   const handleSave = () => {
-    if (designName.trim()) {
-      onSave(designName);
-      onClose();
+    if (!designName.trim()) return;
+
+    // Check if design name already exists
+    if (existingDesignWithName && !showConfirmOverwrite) {
+      setShowConfirmOverwrite(true);
+      return;
     }
+
+    onSave(designName);
+    setShowConfirmOverwrite(false);
+    onClose();
   };
 
   const handleLoad = (design: MenuDesignData) => {
