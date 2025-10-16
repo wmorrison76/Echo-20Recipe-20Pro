@@ -218,6 +218,7 @@ function GalleryCard({
   onDoubleClick,
   onDelete,
 }: GalleryCardProps) {
+  const { t } = useTranslation();
   return (
     <button
       onClick={onClick}
