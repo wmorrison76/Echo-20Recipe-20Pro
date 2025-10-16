@@ -319,7 +319,7 @@ function AutoCategoryList({ clusters, onSelect }: AutoCategoryListProps) {
             className="flex items-center justify-between rounded-2xl border border-white/12 bg-white/5 px-3 py-1.5 text-left text-[11px] uppercase tracking-[0.3em] text-slate-200 transition hover:border-sky-300/40 hover:bg-sky-500/10"
           >
             <span className="flex flex-col gap-0.5 text-left">
-              <span className="text-slate-100">{cluster.tag}</span>
+              <span className="text-slate-900 dark:text-slate-100">{cluster.tag}</span>
               <span className="text-[9px] text-slate-400">{cluster.freshnessLabel}</span>
             </span>
             <span className="rounded-full bg-black/25 px-2 py-0.5 text-[9px] font-semibold tracking-[0.35em] text-slate-200">
