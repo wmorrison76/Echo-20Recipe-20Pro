@@ -4544,6 +4544,7 @@ type FloatingLayersPanelProps = {
   selectedId: string | null;
   onSelectLayer: (id: string) => void;
   onLayerShift: (id: string, direction: "forward" | "backward" | "front" | "back") => void;
+  onChangeOpacity: (id: string, opacity: number) => void;
   onToggleLock: (id: string) => void;
 };
 
