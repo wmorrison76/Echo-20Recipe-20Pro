@@ -880,20 +880,20 @@ export default function GallerySection() {
 
   const shellClass = lucccaMode
     ? "luccca-theme border-slate-800/70 bg-slate-950/92 text-slate-100 shadow-[0_90px_200px_rgba(14,165,233,0.4)]"
-    : "border-slate-200/70 bg-white/96 text-slate-900 shadow-[0_90px_200px_rgba(15,23,42,0.12)]";
+    : "border-slate-300/80 bg-white text-slate-900 shadow-[0_20px_60px_rgba(15,23,42,0.16),0_8px_20px_rgba(59,130,246,0.12)]";
 
   const navSurface = lucccaMode
     ? "border-slate-700/60 bg-slate-900/75"
-    : "border-slate-200 bg-white";
+    : "border-slate-300/70 bg-gradient-to-b from-slate-50 to-white shadow-sm";
   const mainSurface = lucccaMode
     ? "border-slate-700/60 bg-slate-900/70"
-    : "border-slate-200/70 bg-white/95";
+    : "border-slate-300/70 bg-white shadow-sm";
   const detailSurface = lucccaMode
     ? "border-slate-700/60 bg-slate-900/75"
-    : "border-slate-200/70 bg-white";
+    : "border-slate-300/70 bg-white shadow-sm";
   const subtleSurface = lucccaMode
     ? "border-slate-700/50 bg-slate-900/60 text-slate-200"
-    : "border-slate-200/60 bg-white/85 text-slate-700";
+    : "border-slate-300/60 bg-slate-50 text-slate-800";
 
   return (
     <div
