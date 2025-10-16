@@ -339,6 +339,24 @@ export default function ServerNotesSection() {
               >
                 <Download className="h-4 w-4" /> {t("export.serverNotes.button", "Export")}
               </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCooksRecipesExportOpen(true)}
+                className="gap-1.5"
+                disabled={sortedSelected.length === 0}
+              >
+                <Download className="h-4 w-4" /> {t("export.cooksRecipes.button", "Export Recipes")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setAllergenSheetExportOpen(true)}
+                className="gap-1.5"
+                disabled={sortedSelected.length === 0}
+              >
+                <Download className="h-4 w-4" /> {t("export.allergenSheet.button", "Export Allergens")}
+              </Button>
             </div>
           </header>
 
