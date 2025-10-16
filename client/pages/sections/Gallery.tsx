@@ -955,7 +955,7 @@ export default function GallerySection() {
           <div className="relative flex h-full flex-col">
             <div className="relative z-20 flex flex-col gap-4 px-6 pt-6 pb-4">
               <div className="flex flex-wrap items-center gap-3">
-                <div className="flex items-center gap-2 rounded-full border border-white/10 bg-black/45 px-4 py-2 text-[11px] uppercase tracking-[0.35em] text-slate-200">
+                <div className="flex items-center gap-2 rounded-full border border-slate-300/50 dark:border-white/10 bg-slate-100 dark:bg-black/45 px-4 py-2 text-[11px] uppercase tracking-[0.35em] text-slate-900 dark:text-slate-200">
                   <button
                     type="button"
                     onClick={() => setGalleryView("grid")}
@@ -963,7 +963,7 @@ export default function GallerySection() {
                       "rounded-full px-3 py-1 transition",
                       galleryView === "grid"
                         ? "bg-sky-500 text-black"
-                        : "bg-transparent text-slate-200 hover:text-sky-200",
+                        : "bg-transparent text-slate-900 dark:text-slate-200 hover:text-sky-700 dark:hover:text-sky-200",
                     )}
                   >
                     Photo grid
@@ -975,7 +975,7 @@ export default function GallerySection() {
                       "rounded-full px-3 py-1 transition",
                       galleryView === "tiles"
                         ? "bg-sky-500 text-black"
-                        : "bg-transparent text-slate-200 hover:text-sky-200",
+                        : "bg-transparent text-slate-900 dark:text-slate-200 hover:text-sky-700 dark:hover:text-sky-200",
                     )}
                   >
                     Tile boards
