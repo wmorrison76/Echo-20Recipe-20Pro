@@ -994,7 +994,7 @@ const onFiles = async (files: File[]) => {
             }}
           >
             <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder="Export language" />
+              <SelectValue placeholder={t("recipes.exportLanguage", "Export language")} />
             </SelectTrigger>
             <SelectContent>
               {languageOptions.map((option) => (
