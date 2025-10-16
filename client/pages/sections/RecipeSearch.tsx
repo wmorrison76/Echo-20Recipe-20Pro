@@ -111,7 +111,7 @@ export function RecipeCard({
                   : "bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground",
               )}
             >
-              {selected ? "Selected" : "Select"}
+              {selected ? t("recipeSearch.selected") : t("recipeSearch.select")}
             </button>
           )}
         </div>
@@ -167,7 +167,7 @@ export function RecipeCard({
                   size="sm"
                   variant="outline"
                   onClick={onTrash}
-                  title="Restore"
+                  title={t("recipeSearch.restore")}
                 >
                   <RotateCcw />
                 </Button>
@@ -176,7 +176,7 @@ export function RecipeCard({
                     size="sm"
                     variant="destructive"
                     onClick={onDestroy}
-                    title="Delete forever"
+                    title={t("recipeSearch.deleteForever")}
                   >
                     <Trash2 />
                   </Button>
@@ -1633,7 +1633,7 @@ const onFiles = async (files: File[]) => {
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search the web (e.g. 'chocolate cake recipe')"
+                  placeholder={t("recipeSearch.searchWeb")}
                   className="flex-1 rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
                 />
                 <Button
@@ -1655,7 +1655,7 @@ const onFiles = async (files: File[]) => {
                 <input
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  placeholder="Paste a recipe page URL (https://...)"
+                  placeholder={t("recipeSearch.pasteUrl")}
                   className="flex-1 rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
                 />
                 <Button
@@ -2334,7 +2334,7 @@ const onFiles = async (files: File[]) => {
           ref={searchInputRef}
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search by name, ingredient, tag…"
+          placeholder={t("recipeSearch.searchByName")}
           className="w-full rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring"
         />
         </div>
@@ -2451,7 +2451,7 @@ const onFiles = async (files: File[]) => {
                           : "bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground",
                       )}
                     >
-                      {selected ? "Selected" : "Select"}
+                      {selected ? t("recipeSearch.selected") : t("recipeSearch.select")}
                     </button>
                   )}
                 </div>
@@ -2487,7 +2487,7 @@ const onFiles = async (files: File[]) => {
                           size="sm"
                           variant="outline"
                           onClick={() => restoreRecipe(r.id)}
-                          title="Restore"
+                          title={t("recipeSearch.restore")}
                         >
                           <RotateCcw />
                         </Button>
@@ -2497,7 +2497,7 @@ const onFiles = async (files: File[]) => {
                           onClick={() => {
                             if (confirm("Delete forever?")) destroyRecipe(r.id);
                           }}
-                          title="Delete forever"
+                          title={t("recipeSearch.deleteForever")}
                         >
                           <Trash2 />
                         </Button>
@@ -2558,7 +2558,7 @@ const onFiles = async (files: File[]) => {
                           : "bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground",
                       )}
                     >
-                      {selected ? "Selected" : "Select"}
+                      {selected ? t("recipeSearch.selected") : t("recipeSearch.select")}
                     </button>
                   )}
                 </div>
@@ -2599,7 +2599,7 @@ const onFiles = async (files: File[]) => {
                           size="sm"
                           variant="outline"
                           onClick={() => restoreRecipe(r.id)}
-                          title="Restore"
+                          title={t("recipeSearch.restore")}
                         >
                           <RotateCcw />
                         </Button>
@@ -2609,7 +2609,7 @@ const onFiles = async (files: File[]) => {
                           onClick={() => {
                             if (confirm("Delete forever?")) destroyRecipe(r.id);
                           }}
-                          title="Delete forever"
+                          title={t("recipeSearch.deleteForever")}
                         >
                           <Trash2 />
                         </Button>
