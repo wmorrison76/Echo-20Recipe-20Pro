@@ -215,12 +215,22 @@ export function SaveLoadDialog({
 
         {/* Footer */}
         <div className="border-t border-slate-200 dark:border-slate-800 px-6 py-4 flex justify-end gap-2">
-          <Button variant="outline" onClick={onClose}>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setShowConfirmOverwrite(false);
+              onClose();
+            }}
+          >
             Cancel
           </Button>
           {activeTab === "save" && (
-            <Button onClick={handleSave} disabled={!designName.trim()}>
-              Save design
+            <Button
+              onClick={handleSave}
+              disabled={!designName.trim()}
+              variant={showConfirmOverwrite ? "destructive" : "default"}
+            >
+              {showConfirmOverwrite ? "Overwrite design" : "Save design"}
             </Button>
           )}
         </div>
