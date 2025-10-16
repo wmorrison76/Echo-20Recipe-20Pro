@@ -1478,7 +1478,7 @@ const twilightCocktailTemplate: MenuTemplate = {
     {
       type: "body",
       name: "Footer Copy",
-      text: "Live DJ weekends · rooftop access for reservations",
+      text: "Live DJ weekends �� rooftop access for reservations",
       x: 104,
       y: 1044,
       width: 520,
@@ -1806,10 +1806,15 @@ export default function MenuDesignStudioSection() {
   }, [toast, updateElement]);
 
   const handleMaskCancel = useCallback(() => {
-    setMaskEditor(null);
-    toast({
-      title: "Selection cancelled",
-      description: "Background editing stopped without applying changes.",
+    setMaskEditor((prev) => {
+      if (!prev) {
+        return prev;
+      }
+      toast({
+        title: "Selection cancelled",
+        description: "Background editing stopped without applying changes.",
+      });
+      return null;
     });
   }, [toast]);
 
