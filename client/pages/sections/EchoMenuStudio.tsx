@@ -34,6 +34,7 @@ import { formatCurrencyValue } from "./dish-assembly/utils";
 import { getSavedDesigns, saveDesign, getLastAutoSaveDesign } from "@/lib/menu-studio-storage";
 import { useAppData } from "@/context/AppDataContext";
 import { GalleryImagePicker } from "@/components/menu-studio/GalleryImagePicker";
+import { SaveLoadDialog } from "@/components/menu-studio/SaveLoadDialog";
 import { exportDesignAsPDF, exportDesignAsSVG } from "@/lib/menu-studio-export";
 import {
   AlignCenter,
@@ -1897,6 +1898,8 @@ export default function MenuDesignStudioSection() {
     });
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [showGalleryPicker, setShowGalleryPicker] = useState(false);
+  const [showSaveLoadDialog, setShowSaveLoadDialog] = useState(false);
+  const [savedDesigns, setSavedDesigns] = useState(getSavedDesigns());
   const workspaceRef = useRef<HTMLDivElement | null>(null);
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
