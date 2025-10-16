@@ -421,10 +421,10 @@ export default function RecipeEditor() {
         description: "Saved to your library and cleared for the next entry.",
       });
       nav("/?tab=search");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Failed to finalize recipe", error);
       const message =
-        typeof error?.message === "string" && error.message.trim().length
+        error instanceof Error && error.message.trim().length
           ? error.message
           : "Unable to save changes.";
       toast({
