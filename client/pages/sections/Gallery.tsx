@@ -982,6 +982,9 @@ export default function GallerySection() {
                   </button>
                 </div>
               </div>
+              <div className="rounded-lg border border-cyan-400/30 bg-gradient-to-r from-cyan-500/5 to-blue-500/5 px-4 py-2 text-xs text-cyan-200/80">
+                💡 <span className="font-medium">Quick tip:</span> Drag and drop images anywhere on this page to upload them to your gallery
+              </div>
               {galleryView === "grid" && (
                 <div className="flex justify-center">
                   <GalleryToolbar
