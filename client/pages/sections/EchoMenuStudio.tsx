@@ -1953,6 +1953,27 @@ export default function MenuDesignStudioSection() {
     ensureFontLoaded(DEFAULT_FONT_VALUE);
   }, [ensureFontLoaded]);
 
+  // Helper function to check localStorage quota
+  const checkStorageQuota = useCallback(() => {
+    try {
+      if (!navigator.storage?.estimate) {
+        return; // Storage Quota API not available
+      }
+      navigator.storage.estimate().then((estimate) => {
+        const percentUsed = (estimate.usage || 0) / (estimate.quota || 1);
+        if (percentUsed > 0.8) {
+          toast({
+            title: "Storage warning",
+            description: `Browser storage is ${Math.round(percentUsed * 100)}% full. Consider deleting old designs.`,
+            variant: "destructive",
+          });
+        }
+      });
+    } catch (error) {
+      console.warn("Could not check storage quota:", error);
+    }
+  }, [toast]);
+
   // Auto-save design to localStorage
   useEffect(() => {
     if (!hasUnsavedChanges) return;
@@ -1982,8 +2003,15 @@ export default function MenuDesignStudioSection() {
           title: "Design saved",
           description: "Your work has been saved to browser storage.",
         });
+        // Check storage quota after saving
+        checkStorageQuota();
       } catch (error) {
         console.error("Auto-save failed:", error);
+        toast({
+          title: "Auto-save failed",
+          description: "Could not save your design. Browser storage may be full.",
+          variant: "destructive",
+        });
       }
     }, 30000); // Auto-save after 30 seconds of inactivity
 
@@ -1992,7 +2020,7 @@ export default function MenuDesignStudioSection() {
         clearTimeout(autoSaveTimeoutRef.current);
       }
     };
-  }, [hasUnsavedChanges, documentName, elements, pageSize, canvasSettings, pagePreset, printPreset, toast]);
+  }, [hasUnsavedChanges, documentName, elements, pageSize, canvasSettings, pagePreset, printPreset, toast, checkStorageQuota]);
 
   useEffect(() => {
     const uniqueFontValues = new Set<string>();
