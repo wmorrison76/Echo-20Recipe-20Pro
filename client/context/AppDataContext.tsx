@@ -3191,6 +3191,11 @@ const createTileBoard = useCallback(
   const restoreDemo = useCallback(() => {
     setImages([]);
     setLookbooks([]);
+    imageObjectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+    imageObjectUrlsRef.current.clear();
+    clearAllImageBlobs().catch((error) =>
+      console.warn("Failed to reset gallery storage", error),
+    );
     try {
       localStorage.removeItem(LS_IMAGES);
       localStorage.removeItem(LS_LOOKBOOKS);
