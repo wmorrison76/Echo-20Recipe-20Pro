@@ -572,7 +572,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   }, [recipes]);
 
   useEffect(() => {
-    writeLS(LS_IMAGES, images);
+    writeLS(LS_IMAGES, serializeImagesForStorage(images));
   }, [images]);
 
   useEffect(() => {
