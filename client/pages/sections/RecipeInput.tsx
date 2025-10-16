@@ -178,7 +178,7 @@ export default function RecipeInputSection() {
           </div>
 
           <div className="mt-6 space-y-2">
-            <div className="text-sm font-medium">Import Recipes from URL</div>
+            <div className="text-sm font-medium">{t("common.import")} Recipes {t("recipeSearch.pasteUrl").includes("http") ? "from URL" : "from URL"}</div>
             <div className="flex gap-2">
               <input
                 value={zipUrl}
