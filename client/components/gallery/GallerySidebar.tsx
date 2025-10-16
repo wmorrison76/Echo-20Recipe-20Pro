@@ -282,8 +282,8 @@ function LibraryItem({ icon, label, count, active, onClick, action }: LibraryIte
       className={cn(
         "flex w-full items-center justify-between gap-2 rounded-2xl border px-3 py-1.5 text-left text-xs transition",
         active
-          ? "border-sky-400/60 bg-sky-500/15 text-sky-100 shadow-[0_18px_40px_rgba(14,165,233,0.32)]"
-          : "border-white/10 bg-white/5 text-slate-200 hover:border-sky-300/40 hover:bg-sky-500/10",
+          ? "border-sky-400/60 bg-sky-500/15 text-sky-700 dark:text-sky-100 shadow-[0_18px_40px_rgba(14,165,233,0.32)]"
+          : "border-slate-300/60 bg-slate-100 text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 hover:border-sky-300/40 hover:bg-sky-500/10",
       )}
     >
       <div className="flex items-center gap-2">
