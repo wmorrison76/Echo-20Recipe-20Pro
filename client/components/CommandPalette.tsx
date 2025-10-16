@@ -182,12 +182,21 @@ export function CommandPalette() {
     setSelectedIndex(0);
   }, [filtered]);
 
-  useRegisterShortcut("command-palette", {
-    key: "k",
-    meta: true,
-    handler: () => setIsOpen(true),
-    preventDefault: true,
-  });
+  const handleOpenPalette = useCallback(() => {
+    setIsOpen(true);
+  }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsOpen(true);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     switch (e.key) {
