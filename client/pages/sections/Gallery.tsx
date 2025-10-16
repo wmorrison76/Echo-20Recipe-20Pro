@@ -1395,16 +1395,16 @@ function GalleryBulkActions({
         className="flex-1 rounded-full border border-transparent bg-slate-200 dark:bg-black/30 px-3 py-1 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-600 dark:placeholder:text-slate-400 focus:border-sky-400 focus:outline-none"
       />
       <Button size="sm" className="rounded-full px-4" onClick={onApplyTags}>
-        Apply tags
+        {t("gallery.applyTags")}
       </Button>
       <Button size="sm" variant="ghost" className="rounded-full px-4" onClick={onFavorite}>
-        Mark favorite
+        {t("gallery.markFavorite")}
       </Button>
       <Button size="sm" variant="ghost" className="rounded-full px-4" onClick={onUnfavorite}>
-        Clear favorite
+        {t("gallery.clearFavorite")}
       </Button>
       <Button size="sm" variant="ghost" className="rounded-full px-4" onClick={onClear}>
-        Clear selection
+        {t("gallery.clearSelection")}
       </Button>
     </div>
   );
