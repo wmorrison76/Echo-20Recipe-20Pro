@@ -1051,7 +1051,7 @@ export default function GallerySection() {
               )}
 
               <div className="pointer-events-none absolute bottom-6 left-6 z-30 hidden max-w-[320px] md:block">
-                <GalleryDropHint />
+                <GalleryDropHint t={t} />
               </div>
 
               {galleryView === "grid" ? (
