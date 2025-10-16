@@ -2897,18 +2897,26 @@ export default function MenuDesignStudioSection() {
             </CardDescription>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Select value={pagePreset} onValueChange={handlePagePresetChange}>
-              <SelectTrigger className="w-[190px]">
-                <SelectValue placeholder="Page size" />
-              </SelectTrigger>
-              <SelectContent>
-                {PAGE_PRESETS.map((preset) => (
-                  <SelectItem key={preset.id} value={preset.id}>
-                    {preset.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex flex-col gap-1">
+              <Select value={pagePreset} onValueChange={handlePagePresetChange}>
+                <SelectTrigger className="w-[220px]">
+                  <SelectValue placeholder="Page size" />
+                </SelectTrigger>
+                <SelectContent>
+                  {PAGE_PRESETS.map((preset) => (
+                    <SelectItem key={preset.id} value={preset.id}>
+                      {preset.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <div className="text-[11px] font-medium uppercase tracking-[0.24em] text-muted-foreground">
+                {`${formatInches(printPreset.widthIn)}″ × ${formatInches(printPreset.heightIn)}″ • ${printPreset.dpi} DPI`}
+              </div>
+              <div className="text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
+                {printPreset.colorProfile}
+              </div>
+            </div>
             <Button variant="outline" size="sm" onClick={() => setPageSize(({ width, height }) => ({ width: height, height: width }))}>
               <LayoutGrid className="mr-2 h-4 w-4" aria-hidden />
               Flip orientation
