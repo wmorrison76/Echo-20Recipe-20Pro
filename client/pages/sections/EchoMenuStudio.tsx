@@ -3209,7 +3209,7 @@ export default function MenuDesignStudioSection() {
             <div className="flex flex-col gap-1">
               <Select value={pagePreset} onValueChange={handlePagePresetChange}>
                 <SelectTrigger className="w-[220px]">
-                  <SelectValue placeholder="Page size" />
+                  <SelectValue placeholder={t("menu.menuDesignStudio")} />
                 </SelectTrigger>
                 <SelectContent>
                   {PAGE_PRESETS.map((preset) => (
