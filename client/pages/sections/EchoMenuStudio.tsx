@@ -1060,7 +1060,7 @@ const coastalBrunchTemplate: MenuTemplate = {
       type: "menu-item",
       name: "Sunrise",
       text: "Citrus Ricotta Pancakes",
-      description: "candied grapefruit �� vanilla creme fraiche · pistachio",
+      description: "candied grapefruit · vanilla creme fraiche · pistachio",
       price: 18,
       currency: "USD",
       x: 96,
@@ -1545,6 +1545,51 @@ export default function MenuDesignStudioSection() {
     });
   const workspaceRef = useRef<HTMLDivElement | null>(null);
   const { toast } = useToast();
+  const loadedFontsRef = useRef<Set<string>>(new Set());
+
+  const ensureFontLoaded = useCallback((fontValue?: string | null) => {
+    if (!fontValue) {
+      return;
+    }
+    const definition = FONT_LIBRARY_BY_VALUE.get(fontValue);
+    if (!definition) {
+      return;
+    }
+    if (typeof document === "undefined") {
+      return;
+    }
+    if (loadedFontsRef.current.has(definition.family)) {
+      return;
+    }
+    const existingLink = document.head.querySelector<HTMLLinkElement>(
+      `link[data-font-family="${definition.family}"]`,
+    );
+    if (!existingLink) {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = definition.importUrl;
+      link.dataset.fontFamily = definition.family;
+      document.head.appendChild(link);
+    }
+    if (document.fonts && typeof document.fonts.load === "function") {
+      document.fonts.load(`1rem ${definition.family}`).catch(() => undefined);
+    }
+    loadedFontsRef.current.add(definition.family);
+  }, []);
+
+  useEffect(() => {
+    ensureFontLoaded(DEFAULT_FONT_VALUE);
+  }, [ensureFontLoaded]);
+
+  useEffect(() => {
+    const uniqueFontValues = new Set<string>();
+    elements.forEach((element) => {
+      if (element.fontFamily) {
+        uniqueFontValues.add(element.fontFamily);
+      }
+    });
+    uniqueFontValues.forEach((font) => ensureFontLoaded(font));
+  }, [elements, ensureFontLoaded]);
 
   const handleToolbarStateChange = useCallback(
     (changes: Partial<FloatingPanelState>) => {
