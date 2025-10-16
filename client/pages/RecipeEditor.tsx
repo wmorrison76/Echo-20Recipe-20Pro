@@ -17,6 +17,7 @@ import TronBackdrop from "@/components/TronBackdrop";
 import RightSidebar from "@/pages/sections/RightSidebar";
 import { useAppData } from "@/context/AppDataContext";
 import { useToast } from "@/hooks/use-toast";
+import { GalleryImagePicker } from "@/components/GalleryImagePicker";
 import type { RecipeNutrition } from "@shared/recipes";
 
 function Labeled({ label, children }: { label: string; children: ReactNode }) {
