@@ -1478,7 +1478,7 @@ const twilightCocktailTemplate: MenuTemplate = {
     {
       type: "body",
       name: "Footer Copy",
-      text: "Live DJ weekends �� rooftop access for reservations",
+      text: "Live DJ weekends · rooftop access for reservations",
       x: 104,
       y: 1044,
       width: 520,
@@ -4420,6 +4420,11 @@ function ImageControls({
             <Button size="sm" variant="ghost" onClick={onMaskClear} disabled={!hasMask}>
               Clear mask
             </Button>
+            {hasMask ? (
+              <span className="inline-block rounded-full bg-emerald-500/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-emerald-600">
+                Mask applied
+              </span>
+            ) : null}
             <p className="text-[11px] leading-relaxed text-muted-foreground">
               Outline the area you want to keep. The rest of the image becomes transparent when applied.
             </p>
