@@ -840,58 +840,56 @@ const createTileBoard = useCallback(
       let added = 0;
       const existing = new Set(images.map((i) => i.name));
       const maxOrder = images.length
-        ? Math.max(
-            ...images.map((i) =>
-              typeof (i as any).order === "number" ? (i as any).order : -1,
-            ),
-          )
+        ? Math.max(...images.map((i) => (typeof i.order === "number" ? i.order : -1)))
         : -1;
       let order = maxOrder + 1;
       const next: GalleryImage[] = [];
-      for (const f of files) {
-        if (existing.has(f.name)) continue;
+      for (const file of files) {
+        if (existing.has(file.name)) continue;
         try {
+          const createdAt = Date.now();
+          const baseMeta = {
+            id: uid(),
+            name: file.name,
+            createdAt,
+            tags: opts?.tags ?? [],
+            favorite: false,
+            order: order++,
+            type: file.type,
+          };
           const isDisplayable =
-            f.type.startsWith("image/") || /\.(heic|heif)$/i.test(f.name);
+            file.type.startsWith("image/") || /\.(heic|heif)$/i.test(file.name);
           if (isDisplayable) {
-            const dataUrl = await dataUrlFromFile(f);
+            const dataUrl = await dataUrlFromFile(file);
+            await saveImageBlob(baseMeta.id, file);
+            const blobUrl = createObjectUrl(baseMeta.id, file);
             next.push({
-              id: uid(),
-              name: f.name,
+              ...baseMeta,
               dataUrl,
-              createdAt: Date.now(),
-              tags: opts?.tags ?? [],
-              favorite: false,
-              order: order++,
-              type: f.type,
+              blobUrl,
             });
             added++;
           } else {
-            const blob = new Blob([await f.arrayBuffer()], {
-              type: f.type || "application/octet-stream",
+            const blob = new Blob([await file.arrayBuffer()], {
+              type: file.type || "application/octet-stream",
             });
-            const blobUrl = URL.createObjectURL(blob);
+            await saveImageBlob(baseMeta.id, blob);
+            const blobUrl = createObjectUrl(baseMeta.id, blob);
             next.push({
-              id: uid(),
-              name: f.name,
+              ...baseMeta,
               blobUrl,
-              createdAt: Date.now(),
-              tags: opts?.tags ?? [],
-              favorite: false,
-              order: order++,
-              type: f.type,
               unsupported: true,
             });
             added++;
           }
-        } catch (e) {
-          console.warn("Failed to read file", f.name, e);
+        } catch (error) {
+          console.warn("Failed to ingest image", file.name, error);
         }
       }
       if (next.length) setImages((prev) => [...next, ...prev]);
       return added;
     },
-    [images],
+    [images, createObjectUrl],
   );
 
   const addRecipe = useCallback((recipe: Omit<Recipe, "id" | "createdAt">) => {
