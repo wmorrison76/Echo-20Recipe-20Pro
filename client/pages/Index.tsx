@@ -58,6 +58,15 @@ function IndexContent() {
     preventDefault: true,
   });
 
+  const handleTabChange = useCallback(
+    (v: string) => {
+      const newParams = new URLSearchParams(params);
+      newParams.set("tab", v);
+      setParams(newParams, { replace: true });
+    },
+    [params, setParams],
+  );
+
   return (
     <TronBackdrop>
       <CommandPalette />
@@ -141,10 +150,7 @@ function IndexContent() {
         <main className="w-full py-2">
           <Tabs
             value={active}
-            onValueChange={(v) => {
-              params.set("tab", v);
-              setParams(params, { replace: true });
-            }}
+            onValueChange={handleTabChange}
             className="w-full"
           >
             <TabsContent value="search">
