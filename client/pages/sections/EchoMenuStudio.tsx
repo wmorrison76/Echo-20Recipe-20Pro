@@ -119,6 +119,12 @@ type ElementMask = {
   points: PolygonPoint[];
 };
 
+type MaskEditorState = {
+  elementId: string;
+  points: PolygonPoint[];
+  preview: PolygonPoint | null;
+};
+
 type CanvasSettings = {
   background: string;
   margin: number;
