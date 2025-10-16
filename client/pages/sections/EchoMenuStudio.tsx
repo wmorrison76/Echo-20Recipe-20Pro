@@ -1400,7 +1400,7 @@ const twilightCocktailTemplate: MenuTemplate = {
       type: "menu-item",
       name: "Glow",
       text: "Saffron Highball",
-      description: "rum blend · saffron syrup · soda · lemon mist",
+      description: "rum blend · saffron syrup · soda �� lemon mist",
       price: 15,
       currency: "USD",
       x: 104,
@@ -3152,7 +3152,7 @@ function DesignerCanvas({
                       transform: `rotate(${element.rotation}deg)` as string,
                       opacity: element.opacity,
                       borderRadius: element.borderRadius,
-                      cursor: isLocked ? "not-allowed" : isEditing ? "text" : "move",
+                      cursor: isMaskEditing ? "crosshair" : isLocked ? "not-allowed" : isEditing ? "text" : "move",
                       zIndex: element.zIndex,
                     }}
                     onPointerDown={(event) => handleElementPointerDown(event, element)}
