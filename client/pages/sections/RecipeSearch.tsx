@@ -1075,11 +1075,11 @@ const onFiles = async (files: File[]) => {
             <div className="flex min-w-[220px] flex-1 flex-col gap-2">
               <div className="flex items-center gap-2">
                 <div className="text-xs font-semibold uppercase tracking-[0.32em] text-muted-foreground">
-                  Menu Collection
+                  {t("recipes.menuCollection", "Menu Collection")}
                 </div>
                 {activeCollectionId && (
                   <span className="rounded-full bg-primary/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-primary">
-                    Editing
+                    {t("recipes.editing", "Editing")}
                   </span>
                 )}
               </div>
