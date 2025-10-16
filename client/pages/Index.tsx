@@ -22,6 +22,8 @@ import {
 } from "@/context/PageToolbarContext";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
+import { CommandPalette } from "@/components/CommandPalette";
+import { useRegisterShortcut } from "@/context/KeyboardShortcutsContext";
 
 export default function Index() {
   return (
@@ -42,8 +44,19 @@ function IndexContent() {
     ease: [0.4, 0, 0.2, 1],
   } as const;
 
+  useRegisterShortcut("add-recipe-shortcut", {
+    key: "n",
+    meta: true,
+    handler: () => {
+      params.set("tab", "add-recipe");
+      setParams(params, { replace: true });
+    },
+    preventDefault: true,
+  });
+
   return (
     <TronBackdrop>
+      <CommandPalette />
       <div
         className="min-h-screen text-foreground"
         style={{
