@@ -3963,6 +3963,16 @@ function ElementInspector({
     onUpdate(element.id, changes);
   };
 
+  const isMaskEditing = Boolean(maskEditor && maskEditor.elementId === element.id);
+  const currentMaskPointCount = isMaskEditing
+    ? maskEditor?.points.length ?? 0
+    : element.mask?.type === "polygon"
+      ? element.mask.points.length
+      : 0;
+  const hasMask = Boolean(
+    element.mask?.type === "polygon" && (element.mask.points?.length ?? 0) >= 3,
+  );
+
   return (
     <div className="space-y-4 text-sm">
       <div className="grid grid-cols-2 gap-3">
