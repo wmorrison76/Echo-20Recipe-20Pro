@@ -1362,7 +1362,7 @@ function GalleryBulkActions({
           }
         }}
         placeholder="Add tags (comma separated)"
-        className="flex-1 rounded-full border border-transparent bg-black/30 px-3 py-1 text-xs text-slate-100 placeholder:text-slate-400 focus:border-sky-400 focus:outline-none"
+        className="flex-1 rounded-full border border-transparent bg-slate-200 dark:bg-black/30 px-3 py-1 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-600 dark:placeholder:text-slate-400 focus:border-sky-400 focus:outline-none"
       />
       <Button size="sm" className="rounded-full px-4" onClick={onApplyTags}>
         Apply tags
@@ -1413,8 +1413,8 @@ function GalleryGrid({
 }: GalleryGridProps) {
   if (!images.length) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-4 text-sm text-slate-200">
-        <div className="text-base font-semibold">No images match the current filters.</div>
+      <div className="flex h-full flex-col items-center justify-center gap-4 text-sm text-slate-600 dark:text-slate-200">
+        <div className="text-base font-semibold text-slate-900 dark:text-slate-100">No images match the current filters.</div>
         <Button className="rounded-full px-4" onClick={() => onRestoreDemo()}>
           Restore demo gallery
         </Button>
