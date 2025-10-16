@@ -149,11 +149,11 @@ export function GalleryOverlay({
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(51,133,255,0.25),_transparent_60%)] opacity-50" />
 
-      <div className="relative z-[210] mx-auto flex h-[92vh] w-[92vw] flex-col overflow-hidden rounded-[36px] border border-slate-700/60 bg-slate-950/95 shadow-[0_40px_160px_rgba(15,23,42,0.55)]">
-        <header className="flex items-center justify-between border-b border-slate-700/60 bg-slate-900/80 px-8 py-4 text-xs uppercase tracking-[0.35em] text-slate-200">
+      <div className="relative z-[210] mx-auto flex h-[92vh] w-[92vw] flex-col overflow-hidden rounded-[36px] border border-slate-300/50 dark:border-slate-700/60 bg-white dark:bg-slate-950/95 shadow-[0_40px_160px_rgba(15,23,42,0.55)]">
+        <header className="flex items-center justify-between border-b border-slate-300/50 dark:border-slate-700/60 bg-slate-50 dark:bg-slate-900/80 px-8 py-4 text-xs uppercase tracking-[0.35em] text-slate-900 dark:text-slate-200">
           <div className="flex items-center gap-4">
             <span>Studio overlay</span>
-            <span className="rounded-full border border-slate-500/50 bg-black/30 px-3 py-1 text-[11px] text-slate-300">
+            <span className="rounded-full border border-slate-300/60 dark:border-slate-500/50 bg-slate-100 dark:bg-black/30 px-3 py-1 text-[11px] text-slate-700 dark:text-slate-300">
               {image?.name ?? "No image"}
             </span>
           </div>
@@ -186,18 +186,18 @@ export function GalleryOverlay({
         </header>
 
         <div className="flex flex-1 gap-4 overflow-hidden px-6 py-6">
-          <aside className="flex w-[120px] flex-col gap-3 rounded-3xl border border-slate-700/60 bg-black/35 p-4">
-            <div className="text-[10px] uppercase tracking-[0.35em] text-slate-300">Tools</div>
+          <aside className="flex w-[120px] flex-col gap-3 rounded-3xl border border-slate-300/50 dark:border-slate-700/60 bg-slate-100 dark:bg-black/35 p-4">
+            <div className="text-[10px] uppercase tracking-[0.35em] text-slate-900 dark:text-slate-300">Tools</div>
             <div className="grid grid-cols-2 gap-2">
               {TOOL_GRID.map((tool) => (
                 <button
                   key={tool.key}
                   onClick={() => onSelectTool(tool.key)}
                   className={cn(
-                    "flex aspect-square items-center justify-center rounded-xl border text-slate-200 transition",
+                    "flex aspect-square items-center justify-center rounded-xl border transition",
                     activeTool === tool.key
-                      ? "border-sky-400 bg-sky-500/20 text-sky-100"
-                      : "border-slate-700/60 bg-black/30 hover:border-sky-400/40 hover:bg-sky-500/10",
+                      ? "border-sky-400 bg-sky-500/20 text-sky-700 dark:text-sky-100"
+                      : "border-slate-300/50 dark:border-slate-700/60 text-slate-900 dark:text-slate-200 bg-slate-200 dark:bg-black/30 hover:border-sky-300/40 dark:hover:border-sky-400/40 hover:bg-sky-500/10",
                   )}
                   aria-label={tool.label}
                 >
@@ -207,21 +207,21 @@ export function GalleryOverlay({
             </div>
           </aside>
 
-          <main className="relative flex min-w-0 flex-1 flex-col overflow-hidden rounded-3xl border border-slate-700/60 bg-slate-900/80">
-            <div className="flex items-center justify-between border-b border-slate-700/60 bg-black/30 px-5 py-3 text-[11px] uppercase tracking-[0.3em] text-slate-300">
+          <main className="relative flex min-w-0 flex-1 flex-col overflow-hidden rounded-3xl border border-slate-300/50 dark:border-slate-700/60 bg-slate-50 dark:bg-slate-900/80">
+            <div className="flex items-center justify-between border-b border-slate-300/50 dark:border-slate-700/60 bg-slate-100 dark:bg-black/30 px-5 py-3 text-[11px] uppercase tracking-[0.3em] text-slate-900 dark:text-slate-300">
               <div className="flex items-center gap-3">
                 <button
-                  className="rounded-full border border-slate-600/60 bg-black/40 p-2 text-slate-200 transition hover:border-sky-400/40 hover:text-sky-200"
+                  className="rounded-full border border-slate-300/60 dark:border-slate-600/60 bg-slate-200 dark:bg-black/40 p-2 text-slate-900 dark:text-slate-200 transition hover:border-sky-300/40 dark:hover:border-sky-400/40 hover:text-sky-700 dark:hover:text-sky-200"
                   onClick={() => setGridSize((size) => Math.max(8, size - 4))}
                   aria-label="Decrease grid size"
                 >
                   <Minus className="h-4 w-4" />
                 </button>
-                <span className="rounded-full border border-slate-600/60 bg-black/30 px-3 py-1 text-[10px]">
+                <span className="rounded-full border border-slate-300/60 dark:border-slate-600/60 bg-slate-200 dark:bg-black/30 px-3 py-1 text-[10px] text-slate-900 dark:text-slate-100">
                   Grid {gridSize}px
                 </span>
                 <button
-                  className="rounded-full border border-slate-600/60 bg-black/40 p-2 text-slate-200 transition hover:border-sky-400/40 hover:text-sky-200"
+                  className="rounded-full border border-slate-300/60 dark:border-slate-600/60 bg-slate-200 dark:bg-black/40 p-2 text-slate-900 dark:text-slate-200 transition hover:border-sky-300/40 dark:hover:border-sky-400/40 hover:text-sky-700 dark:hover:text-sky-200"
                   onClick={() => setGridSize((size) => Math.min(96, size + 4))}
                   aria-label="Increase grid size"
                 >
@@ -230,17 +230,17 @@ export function GalleryOverlay({
               </div>
               <div className="flex items-center gap-2">
                 <button
-                  className="rounded-full border border-slate-600/60 bg-black/40 p-2 text-slate-200 transition hover:border-sky-400/40 hover:text-sky-200"
+                  className="rounded-full border border-slate-300/60 dark:border-slate-600/60 bg-slate-200 dark:bg-black/40 p-2 text-slate-900 dark:text-slate-200 transition hover:border-sky-300/40 dark:hover:border-sky-400/40 hover:text-sky-700 dark:hover:text-sky-200"
                   onClick={() => setZoom((value) => Math.max(25, value - 10))}
                   aria-label="Zoom out"
                 >
                   <ZoomOut className="h-4 w-4" />
                 </button>
-                <span className="rounded-full border border-slate-600/60 bg-black/30 px-3 py-1 text-[10px]">
+                <span className="rounded-full border border-slate-300/60 dark:border-slate-600/60 bg-slate-200 dark:bg-black/30 px-3 py-1 text-[10px] text-slate-900 dark:text-slate-100">
                   {zoom}%
                 </span>
                 <button
-                  className="rounded-full border border-slate-600/60 bg-black/40 p-2 text-slate-200 transition hover:border-sky-400/40 hover:text-sky-200"
+                  className="rounded-full border border-slate-300/60 dark:border-slate-600/60 bg-slate-200 dark:bg-black/40 p-2 text-slate-900 dark:text-slate-200 transition hover:border-sky-300/40 dark:hover:border-sky-400/40 hover:text-sky-700 dark:hover:text-sky-200"
                   onClick={() => setZoom((value) => Math.min(400, value + 10))}
                   aria-label="Zoom in"
                 >
@@ -249,14 +249,14 @@ export function GalleryOverlay({
               </div>
               <div className="flex items-center gap-2 text-[10px]">
                 <button
-                  className="rounded-full border border-slate-600/60 bg-black/40 p-2 text-slate-200 transition hover:border-sky-400/40 hover:text-sky-200"
+                  className="rounded-full border border-slate-300/60 dark:border-slate-600/60 bg-slate-200 dark:bg-black/40 p-2 text-slate-900 dark:text-slate-200 transition hover:border-sky-300/40 dark:hover:border-sky-400/40 hover:text-sky-700 dark:hover:text-sky-200"
                   onClick={() => setZoom(100)}
                   aria-label="Reset view"
                 >
                   <Move className="h-4 w-4" />
                 </button>
                 <button
-                  className="rounded-full border border-slate-600/60 bg-black/40 p-2 text-slate-200 transition hover:border-sky-400/40 hover:text-sky-200"
+                  className="rounded-full border border-slate-300/60 dark:border-slate-600/60 bg-slate-200 dark:bg-black/40 p-2 text-slate-900 dark:text-slate-200 transition hover:border-sky-300/40 dark:hover:border-sky-400/40 hover:text-sky-700 dark:hover:text-sky-200"
                   onClick={() => setZoom(150)}
                   aria-label="Fit to screen"
                 >
@@ -264,8 +264,10 @@ export function GalleryOverlay({
                 </button>
                 <button
                   className={cn(
-                    "rounded-full border border-slate-600/60 bg-black/40 p-2 text-slate-200 transition hover:border-sky-400/40 hover:text-sky-200",
-                    showRulers && "border-sky-400/60 text-sky-100",
+                    "rounded-full border p-2 transition",
+                    showRulers
+                      ? "border-sky-400/60 bg-sky-500/20 text-sky-700 dark:text-sky-100"
+                      : "border-slate-300/60 dark:border-slate-600/60 bg-slate-200 dark:bg-black/40 text-slate-900 dark:text-slate-200 hover:border-sky-300/40 dark:hover:border-sky-400/40 hover:text-sky-700 dark:hover:text-sky-200",
                   )}
                   onClick={() => setShowRulers((prev) => !prev)}
                   aria-label="Toggle rulers"
@@ -340,7 +342,7 @@ export function GalleryOverlay({
                         )}
                       </div>
                     ) : (
-                      <div className="rounded-3xl border border-dashed border-slate-600/60 bg-black/40 px-12 py-16 text-center text-xs uppercase tracking-[0.35em] text-slate-400">
+                      <div className="rounded-3xl border border-dashed border-slate-300/60 dark:border-slate-600/60 bg-slate-200 dark:bg-black/40 px-12 py-16 text-center text-xs uppercase tracking-[0.35em] text-slate-600 dark:text-slate-400">
                         No image selected
                       </div>
                     )}
