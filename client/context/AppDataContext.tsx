@@ -845,7 +845,10 @@ const createTileBoard = useCallback(
       let order = maxOrder + 1;
       const next: GalleryImage[] = [];
       for (const file of files) {
-        if (existing.has(file.name)) continue;
+        if (existing.has(file.name)) {
+          console.debug("Skipping duplicate image name", file.name);
+          continue;
+        }
         try {
           const createdAt = Date.now();
           const baseMeta = {
@@ -861,7 +864,12 @@ const createTileBoard = useCallback(
             file.type.startsWith("image/") || /\.(heic|heif)$/i.test(file.name);
           if (isDisplayable) {
             const dataUrl = await dataUrlFromFile(file);
-            await saveImageBlob(baseMeta.id, file);
+            try {
+              await saveImageBlob(baseMeta.id, file);
+            } catch (storageError) {
+              console.error("Failed to save image blob to IndexedDB", file.name, storageError);
+              throw storageError;
+            }
             const blobUrl = createObjectUrl(baseMeta.id, file);
             next.push({
               ...baseMeta,
@@ -869,11 +877,17 @@ const createTileBoard = useCallback(
               blobUrl,
             });
             added++;
+            console.debug("Successfully added displayable image", file.name);
           } else {
             const blob = new Blob([await file.arrayBuffer()], {
               type: file.type || "application/octet-stream",
             });
-            await saveImageBlob(baseMeta.id, blob);
+            try {
+              await saveImageBlob(baseMeta.id, blob);
+            } catch (storageError) {
+              console.error("Failed to save unsupported image blob to IndexedDB", file.name, storageError);
+              throw storageError;
+            }
             const blobUrl = createObjectUrl(baseMeta.id, blob);
             next.push({
               ...baseMeta,
@@ -881,12 +895,18 @@ const createTileBoard = useCallback(
               unsupported: true,
             });
             added++;
+            console.debug("Successfully added unsupported image", file.name);
           }
         } catch (error) {
-          console.warn("Failed to ingest image", file.name, error);
+          console.error("Failed to ingest image", file.name, error);
         }
       }
-      if (next.length) setImages((prev) => [...next, ...prev]);
+      if (next.length) {
+        console.debug("Adding images to state, count:", next.length);
+        setImages((prev) => [...next, ...prev]);
+      } else {
+        console.warn("No images were successfully processed");
+      }
       return added;
     },
     [images, createObjectUrl],
