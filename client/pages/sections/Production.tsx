@@ -69,6 +69,7 @@ async function sha256Hex(text: string){
 }
 
 export default function ProductionSection(){
+  const { t } = useTranslation();
   const { recipes } = useAppData();
 
   const [roles, setRoles] = useState<Role[]>(()=> readLS(LS_ROLES, [ { id: uid(), name: "Baker" }, { id: uid(), name: "Chocolates & Confections" } ]));
