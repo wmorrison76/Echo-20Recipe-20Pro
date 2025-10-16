@@ -4353,6 +4353,50 @@ function ImageControls({
           onValueChange={(value) => onChange({ borderRadius: value[0] ?? 0 })}
         />
       </div>
+      <div className="space-y-3 rounded-xl border border-dashed border-slate-300/70 p-3">
+        <div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.32em] text-muted-foreground">
+          <span>Background</span>
+          <Wand2 className="h-3.5 w-3.5" aria-hidden />
+        </div>
+        {isMaskEditing ? (
+          <div className="space-y-2">
+            <p className="text-[11px] leading-relaxed text-muted-foreground">
+              Click around the subject to add points. Undo removes the last point. Double-click or press Enter to apply your selection.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Button size="sm" onClick={onMaskCommit} disabled={maskPointCount < 3}>
+                Apply selection
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={onMaskUndo}
+                disabled={maskPointCount === 0}
+              >
+                Undo point
+              </Button>
+              <Button size="sm" variant="ghost" onClick={onMaskCancel}>
+                Cancel
+              </Button>
+            </div>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+              Points: {maskPointCount}
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <Button size="sm" variant="secondary" onClick={onBeginMaskEditing}>
+              Start background selection
+            </Button>
+            <Button size="sm" variant="ghost" onClick={onMaskClear} disabled={!hasMask}>
+              Clear mask
+            </Button>
+            <p className="text-[11px] leading-relaxed text-muted-foreground">
+              Outline the area you want to keep. The rest of the image becomes transparent when applied.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
