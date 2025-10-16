@@ -1015,7 +1015,7 @@ export default function GallerySection() {
                   💡 <span className="font-medium">Quick tip:</span> {t("gallery.quickTip")}
                 </div>
                 <div className="rounded-lg border border-emerald-400/30 bg-gradient-to-r from-emerald-500/5 to-green-500/5 px-4 py-2 text-xs text-emerald-200/80">
-                  ✓ <span className="font-medium">Production ready:</span> Crop (with handles), Adjustments (preview), Pan &amp; Color Pick are fully functional
+                  ✓ <span className="font-medium">Production ready:</span> {t("gallery.productionReady")}
                 </div>
               </div>
               {galleryView === "grid" && (
