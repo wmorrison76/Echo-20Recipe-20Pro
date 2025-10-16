@@ -1060,7 +1060,7 @@ const coastalBrunchTemplate: MenuTemplate = {
       type: "menu-item",
       name: "Sunrise",
       text: "Citrus Ricotta Pancakes",
-      description: "candied grapefruit · vanilla creme fraiche · pistachio",
+      description: "candied grapefruit �� vanilla creme fraiche · pistachio",
       price: 18,
       currency: "USD",
       x: 96,
@@ -3610,7 +3610,7 @@ function TextElementControls({ element, onChange }: TextElementControlsProps) {
           Typeface
         </Label>
         <Select
-          value={element.fontFamily ?? FONT_LIBRARY[0]?.value}
+          value={element.fontFamily ?? DEFAULT_FONT_VALUE}
           onValueChange={(value) => onChange({ fontFamily: value })}
         >
           <SelectTrigger>
@@ -3618,7 +3618,11 @@ function TextElementControls({ element, onChange }: TextElementControlsProps) {
           </SelectTrigger>
           <SelectContent>
             {FONT_LIBRARY.map((font) => (
-              <SelectItem key={font.value} value={font.value}>
+              <SelectItem
+                key={font.value}
+                value={font.value}
+                style={{ fontFamily: font.value }}
+              >
                 {font.label}
               </SelectItem>
             ))}
