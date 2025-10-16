@@ -3175,6 +3175,15 @@ function DesignerCanvas({
                       >
                         {renderElement(element)}
                       </div>
+                      {isMaskEditing ? (
+                        <MaskDrawingOverlay
+                          points={maskEditor?.points ?? []}
+                          preview={maskEditor?.preview ?? null}
+                          onAddPoint={onMaskPointAdd}
+                          onPreview={onMaskPreview}
+                          onComplete={onMaskComplete}
+                        />
+                      ) : null}
                       {isLocked ? (
                         <div className="pointer-events-none absolute -top-3 -right-3 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-slate-900 text-white shadow-lg dark:bg-slate-100 dark:text-slate-900">
                           <Lock className="h-3.5 w-3.5" aria-hidden />
