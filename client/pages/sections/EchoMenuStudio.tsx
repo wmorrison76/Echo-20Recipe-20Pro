@@ -30,6 +30,8 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useHistory } from "@/hooks/use-history";
+import { useSaveShortcut } from "@/hooks/use-save-shortcut";
+import { useUndoRedoFeedback } from "@/components/UndoRedoFeedback";
 import { formatCurrencyValue } from "./dish-assembly/utils";
 import { getSavedDesigns, saveDesign, deleteDesign, getLastAutoSaveDesign } from "@/lib/menu-studio-storage";
 import { useAppData } from "@/context/AppDataContext";
