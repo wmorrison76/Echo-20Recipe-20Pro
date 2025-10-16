@@ -1427,7 +1427,7 @@ const twilightCocktailTemplate: MenuTemplate = {
       type: "menu-item",
       name: "Savory",
       text: "Charred Octopus Skewer",
-      description: "black garlic glaze · smoked tomato · pickled fennel",
+      description: "black garlic glaze �� smoked tomato · pickled fennel",
       price: 21,
       currency: "USD",
       x: 104,
@@ -1987,10 +1987,13 @@ export default function MenuDesignStudioSection() {
         zIndex: getNextZIndex(),
         locked: element.locked ?? false,
       };
+      if (payload.fontFamily) {
+        ensureFontLoaded(payload.fontFamily);
+      }
       setElements((prev) => [...prev, payload]);
       setSelectedId(payload.id);
     },
-    [getNextZIndex],
+    [ensureFontLoaded, getNextZIndex],
   );
 
   const handleAddHeading = useCallback(() => {
