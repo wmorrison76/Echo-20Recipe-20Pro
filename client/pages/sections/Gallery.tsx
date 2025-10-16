@@ -225,9 +225,11 @@ function GalleryCard({
         "group relative flex flex-col overflow-hidden rounded-3xl border text-left transition duration-300",
         active
           ? "ring-2 ring-sky-400 shadow-[0_35px_70px_rgba(14,165,233,0.35)]"
-          : "ring-1 ring-transparent shadow-[0_22px_60px_rgba(15,23,42,0.22)]",
+          : "ring-1 ring-transparent shadow-[0_22px_60px_rgba(15,23,42,0.22)] dark:shadow-[0_22px_60px_rgba(15,23,42,0.22)]",
         selected && !active && "ring-2 ring-sky-300",
-        unsupported ? "bg-slate-900/45" : "bg-slate-900/30",
+        unsupported
+          ? "bg-slate-900/45 dark:bg-slate-900/45 bg-slate-200 dark:bg-slate-200"
+          : "bg-slate-900/30 dark:bg-slate-900/30 bg-white dark:bg-slate-800",
       )}
       data-echo-key={`card:gallery:item:${id}`}
     >
