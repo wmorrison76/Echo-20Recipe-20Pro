@@ -80,6 +80,8 @@ export default function ServerNotesSection() {
   const [savedNotes, setSavedNotes] = useState<ServerNote[]>([]);
   const [noteSession, setNoteSession] = useState(0);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [cooksRecipesExportOpen, setCooksRecipesExportOpen] = useState(false);
+  const [allergenSheetExportOpen, setAllergenSheetExportOpen] = useState(false);
   const pendingSelectionSessionRef = useRef<number | null>(null);
 
   useEffect(() => {
