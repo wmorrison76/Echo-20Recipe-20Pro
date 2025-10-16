@@ -2824,7 +2824,8 @@ export default function MenuDesignStudioSection() {
     setElements([]);
     setSelectedId(null);
     setDocumentName("Untitled Menu");
-    setPagePreset("letter");
+    setPagePreset(DEFAULT_PRESET.id);
+    setPrintPreset(DEFAULT_PRESET);
     setCanvasSettings(() => ({ ...INITIAL_CANVAS }));
     setPageSize(() => ({ ...INITIAL_PAGE_SIZE }));
   }, []);
