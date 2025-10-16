@@ -1923,6 +1923,32 @@ export default function MenuDesignStudioSection() {
     { enabled: true, showToast: true },
   );
 
+  // Setup undo/redo keyboard shortcuts with visual feedback
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Cmd/Ctrl+Z for undo
+      if ((e.metaKey || e.ctrlKey) && !e.shiftKey && e.key.toLowerCase() === "z") {
+        e.preventDefault();
+        elementsHistory.undo();
+        showFeedback("undo");
+      }
+      // Cmd/Ctrl+Shift+Z or Cmd/Ctrl+Y for redo
+      if (
+        ((e.metaKey || e.ctrlKey) &&
+          e.shiftKey &&
+          e.key.toLowerCase() === "z") ||
+        ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "y")
+      ) {
+        e.preventDefault();
+        elementsHistory.redo();
+        showFeedback("redo");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [elementsHistory, showFeedback]);
+
   const ensureFontLoaded = useCallback((fontValue?: string | null) => {
     if (!fontValue) {
       return;
