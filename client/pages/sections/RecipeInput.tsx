@@ -5,6 +5,7 @@ import { useAppData } from "@/context/AppDataContext";
 import { useTranslation } from "@/context/LanguageContext";
 
 export default function RecipeInputSection() {
+  const { t } = useTranslation();
   const { addRecipesFromJsonFiles, addRecipesFromDocxFiles, addRecipesFromHtmlFiles, addFromZipArchive, addRecipesFromPdfFiles, addRecipesFromExcelFiles, addRecipesFromImageOcr, clearRecipes, recipes, linkImagesToRecipesByFilename } = useAppData();
   const [status, setStatus] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ file: string; error: string }[]>([]);
