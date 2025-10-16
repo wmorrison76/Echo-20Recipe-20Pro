@@ -19,6 +19,9 @@ export default defineConfig(({ mode }) => ({
       external: ["html2canvas", "jspdf"],
     },
   },
+  optimizeDeps: {
+    exclude: ["html2canvas", "jspdf"],
+  },
   plugins: [react(), expressPlugin()],
   resolve: {
     alias: {
