@@ -184,6 +184,7 @@ export async function downloadRecipePDF(
   recipe: RecipeExport,
   opts?: { watermarkUrl?: string },
 ) {
+  const { default: jsPDF } = await import("jspdf");
   const doc = new jsPDF({ unit: "pt", format: "letter" });
   const margin = 40;
   const colLeft = 270;
