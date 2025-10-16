@@ -128,10 +128,12 @@ type MaskEditorState = {
 type CanvasSettings = {
   background: string;
   margin: number;
+  bleed: number;
   columns: number;
   gutter: number;
   showGrid: boolean;
   showMargins: boolean;
+  showBleed: boolean;
   showColumns: boolean;
   zoom: number;
   gridSize: number;
