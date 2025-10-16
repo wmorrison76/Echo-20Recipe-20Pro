@@ -1909,6 +1909,19 @@ export default function MenuDesignStudioSection() {
   const { toast } = useToast();
   const loadedFontsRef = useRef<Set<string>>(new Set());
   const { images: galleryImages } = useAppData();
+  const { feedback, showFeedback, UndoRedoFeedbackComponent } = useUndoRedoFeedback();
+
+  // Setup save shortcut (Cmd+S)
+  useSaveShortcut(
+    () => {
+      if (documentName) {
+        return Promise.resolve(
+          handleSaveDesign(documentName)
+        );
+      }
+    },
+    { enabled: true, showToast: true },
+  );
 
   const ensureFontLoaded = useCallback((fontValue?: string | null) => {
     if (!fontValue) {
