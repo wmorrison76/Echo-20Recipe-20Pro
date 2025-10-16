@@ -1826,6 +1826,9 @@ export default function MenuDesignStudioSection() {
         });
         return;
       }
+      if (!target.mask) {
+        return;
+      }
       updateElement(id, { mask: undefined });
       if (maskEditor?.elementId === id) {
         setMaskEditor(null);
