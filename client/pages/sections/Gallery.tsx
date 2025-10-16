@@ -1012,7 +1012,7 @@ export default function GallerySection() {
               </div>
               <div className="space-y-2">
                 <div className="rounded-lg border border-cyan-400/30 bg-gradient-to-r from-cyan-500/5 to-blue-500/5 px-4 py-2 text-xs text-cyan-200/80">
-                  💡 <span className="font-medium">Quick tip:</span> Drag and drop images anywhere on this page to upload them to your gallery
+                  💡 <span className="font-medium">Quick tip:</span> {t("gallery.quickTip")}
                 </div>
                 <div className="rounded-lg border border-emerald-400/30 bg-gradient-to-r from-emerald-500/5 to-green-500/5 px-4 py-2 text-xs text-emerald-200/80">
                   ✓ <span className="font-medium">Production ready:</span> Crop (with handles), Adjustments (preview), Pan &amp; Color Pick are fully functional
