@@ -566,14 +566,19 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     });
 
   const dataUrlFromBlob = (blob: Blob): Promise<string> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result));
-      reader.onerror = () => reject(reader.error);
-      reader.readAsDataURL(blob);
-    });
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
 
-  const createTileBoard = useCallback(
+const blobFromDataUrl = async (dataUrl: string): Promise<Blob> => {
+  const response = await fetch(dataUrl);
+  return response.blob();
+};
+
+const createTileBoard = useCallback(
     (input: { name: string; description?: string; category?: TileBoard["category"]; imageIds?: string[] }) => {
       const id = uid();
       const now = Date.now();
