@@ -1172,7 +1172,7 @@ const coastalBrunchTemplate: MenuTemplate = {
       type: "menu-item",
       name: "Refresh",
       text: "Herb Tonic",
-      description: "lemon verbena · cucumber · sparkling",
+      description: "lemon verbena · cucumber �� sparkling",
       price: 9,
       currency: "USD",
       x: 488,
@@ -2961,6 +2961,9 @@ function DesignerCanvas({
   const handleElementPointerDown = useCallback(
     (event: React.PointerEvent<HTMLDivElement>, element: DesignerElement) => {
       event.stopPropagation();
+      if (maskEditor) {
+        return;
+      }
       if (event.button !== 0) return;
       if (editingId) {
         if (editingId === element.id) {
