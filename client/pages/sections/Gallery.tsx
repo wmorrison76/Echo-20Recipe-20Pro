@@ -1202,7 +1202,7 @@ export default function GallerySection() {
             <input
               value={importTags}
               onChange={(event) => setImportTags(event.target.value)}
-              placeholder="e.g. plating, dessert"
+              placeholder={t("recipeSearch.searchByName")}
               className="w-full rounded-md border bg-background px-3 py-2"
             />
             <div className="flex justify-end gap-2">
@@ -1303,7 +1303,7 @@ function GalleryToolbar({
           <input
             value={filter}
             onChange={(event) => onFilterChange(event.target.value)}
-            placeholder="Search by name or tag"
+            placeholder={t("recipeSearch.searchByName")}
             className="w-full rounded-full border border-slate-300/50 dark:border-white/15 bg-white dark:bg-white/10 pl-10 pr-3 py-2 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-600 dark:placeholder:text-slate-300/80 focus:border-sky-400 focus:outline-none focus:ring-0"
           />
         </div>
@@ -1389,7 +1389,7 @@ function GalleryBulkActions({
             onApplyTags();
           }
         }}
-        placeholder="Add tags (comma separated)"
+        placeholder={t("gallery.applyTags")}
         className="flex-1 rounded-full border border-transparent bg-slate-200 dark:bg-black/30 px-3 py-1 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-600 dark:placeholder:text-slate-400 focus:border-sky-400 focus:outline-none"
       />
       <Button size="sm" className="rounded-full px-4" onClick={onApplyTags}>
