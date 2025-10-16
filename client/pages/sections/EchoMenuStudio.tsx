@@ -1809,7 +1809,7 @@ export default function MenuDesignStudioSection() {
   ]);
 
   const handleLayerShift = useCallback(
-    (id: string, direction: "forward" | "backward") => {
+    (id: string, direction: "forward" | "backward" | "front" | "back") => {
       if (editingId) {
         handleCommitInlineEdit();
       }
@@ -1818,16 +1818,25 @@ export default function MenuDesignStudioSection() {
         const ordered = [...prev].sort((a, b) => a.zIndex - b.zIndex);
         const currentIndex = ordered.findIndex((item) => item.id === id);
         if (currentIndex === -1) return prev;
-        const targetIndex = direction === "forward"
-          ? Math.min(ordered.length - 1, currentIndex + 1)
-          : Math.max(0, currentIndex - 1);
+        const targetIndex = (() => {
+          switch (direction) {
+            case "forward":
+              return Math.min(ordered.length - 1, currentIndex + 1);
+            case "backward":
+              return Math.max(0, currentIndex - 1);
+            case "front":
+              return ordered.length - 1;
+            case "back":
+              return 0;
+            default:
+              return currentIndex;
+          }
+        })();
         if (targetIndex === currentIndex) return prev;
-        const swapped = [...ordered];
-        [swapped[currentIndex], swapped[targetIndex]] = [
-          swapped[targetIndex],
-          swapped[currentIndex],
-        ];
-        return swapped.map((element, index) => ({
+        const reordered = [...ordered];
+        const [moved] = reordered.splice(currentIndex, 1);
+        reordered.splice(targetIndex, 0, moved);
+        return reordered.map((element, index) => ({
           ...element,
           zIndex: index + 1,
         }));
