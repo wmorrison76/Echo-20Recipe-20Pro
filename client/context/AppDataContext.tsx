@@ -966,9 +966,20 @@ const createTileBoard = useCallback(
   }, []);
 
   const deleteImage = useCallback((id: string) => {
-    setImages((prev) => prev.filter((i) => i.id !== id));
+    setImages((prev) => {
+      const next = prev.filter((i) => i.id !== id);
+      const existingUrl = imageObjectUrlsRef.current.get(id);
+      if (existingUrl) {
+        URL.revokeObjectURL(existingUrl);
+        imageObjectUrlsRef.current.delete(id);
+      }
+      return next;
+    });
     setLookbooks((prev) =>
       prev.map((b) => ({ ...b, imageIds: b.imageIds.filter((x) => x !== id) })),
+    );
+    deleteImageBlob(id).catch((error) =>
+      console.warn("Failed to remove gallery image blob", error),
     );
   }, []);
 
