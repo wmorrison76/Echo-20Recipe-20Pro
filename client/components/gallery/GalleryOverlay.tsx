@@ -171,7 +171,13 @@ export function GalleryOverlay({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-gradient-to-br from-black/70 via-slate-900/65 to-slate-950/80 backdrop-blur-lg">
+    <div
+      ref={containerRef}
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-gradient-to-br from-black/70 via-slate-900/65 to-slate-950/80 backdrop-blur-lg"
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+    >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(51,133,255,0.25),_transparent_60%)] opacity-50" />
 
       <div className="relative z-[210] mx-auto flex h-[92vh] w-[92vw] flex-col overflow-hidden rounded-[36px] border border-slate-700/60 bg-slate-950/95 shadow-[0_40px_160px_rgba(15,23,42,0.55)]">
