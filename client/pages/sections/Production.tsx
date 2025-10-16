@@ -536,12 +536,12 @@ export default function ProductionSection(){
 
       <Tabs defaultValue="calendar" className="w-full">
         <TabsList className="flex flex-wrap gap-1 p-1 bg-muted rounded-lg">
-          <TabsTrigger value="calendar">Calendar</TabsTrigger>
-          <TabsTrigger value="global-cal">Global Calendar</TabsTrigger>
-          <TabsTrigger value="orders">Orders</TabsTrigger>
-          <TabsTrigger value="staff">Staff & Duties</TabsTrigger>
-          <TabsTrigger value="outlets">Outlets</TabsTrigger>
-          <TabsTrigger value="trash">Trash <span style={{ marginLeft:6, background:trashColor, color:'#fff', borderRadius:12, padding:'0 6px' }}>{trashCount}</span></TabsTrigger>
+          <TabsTrigger value="calendar">{t("production.calendar")}</TabsTrigger>
+          <TabsTrigger value="global-cal">{t("production.globalCalendar")}</TabsTrigger>
+          <TabsTrigger value="orders">{t("production.orders")}</TabsTrigger>
+          <TabsTrigger value="staff">{t("production.staffDuties")}</TabsTrigger>
+          <TabsTrigger value="outlets">{t("production.outlets")}</TabsTrigger>
+          <TabsTrigger value="trash">{t("production.trash")} <span style={{ marginLeft:6, background:trashColor, color:'#fff', borderRadius:12, padding:'0 6px' }}>{trashCount}</span></TabsTrigger>
         </TabsList>
 
         <TabsContent value="calendar">
