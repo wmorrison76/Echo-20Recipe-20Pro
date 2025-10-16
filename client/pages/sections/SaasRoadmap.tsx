@@ -191,7 +191,7 @@ export default function SaasRoadmapSection() {
     <div className="container mx-auto space-y-6 px-4 py-4">
       <div className="rounded-xl border bg-white/95 p-3 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15">
         <div className="text-sm text-muted-foreground">LUCCCA SaaS Roadmap</div>
-        <div className="text-base font-semibold">Capabilities</div>
+        <div className="text-base font-semibold">{t("menu.capabilities")}</div>
       </div>
 
       <div className="rounded-xl border bg-white/95 p-4 ring-1 ring-black/5 dark:bg-zinc-900 dark:ring-sky-500/15">
