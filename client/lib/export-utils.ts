@@ -54,15 +54,15 @@ export function exportServerNotesAsCSV(
   options: ExportOptions
 ): void {
   const lines: string[] = [];
-  
-  lines.push("Server Notes Export");
-  lines.push(`Title,${notes.title || "Untitled"}`);
-  lines.push(`Company,${notes.companyName}`);
-  lines.push(`Outlet,${notes.outletName}`);
-  lines.push(`Distribution Date,${notes.distributionNotes}`);
+
+  lines.push(t("export.serverNotes.csvTitle", options.language, "Server Notes Export"));
+  lines.push(`${t("export.common.title", options.language, "Title")},${notes.title || t("common.untitled", options.language, "Untitled")}`);
+  lines.push(`${t("export.common.company", options.language, "Company")},${notes.companyName}`);
+  lines.push(`${t("export.common.outlet", options.language, "Outlet")},${notes.outletName}`);
+  lines.push(`${t("export.common.distributionDate", options.language, "Distribution Date")},${notes.distributionNotes}`);
   lines.push("");
-  lines.push("Recipes");
-  lines.push("Recipe Name,Course,Cuisine,Portions");
+  lines.push(t("export.common.recipes", options.language, "Recipes"));
+  lines.push(`${t("export.common.recipeName", options.language, "Recipe Name")},${t("export.common.course", options.language, "Course")},${t("export.common.cuisine", options.language, "Cuisine")},${t("export.common.portions", options.language, "Portions")}`);
   
   notes.selectedRecipes.forEach((recipe) => {
     const course = recipe.course || "";
