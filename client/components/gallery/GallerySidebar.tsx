@@ -88,8 +88,8 @@ export function GallerySidebar({
     >
       <div className="flex flex-1 flex-col gap-4 px-5 pb-4 pt-5">
         <div>
-          <h2 className="text-base font-semibold uppercase tracking-[0.3em] text-slate-100">Library</h2>
-          <p className="text-[11px] uppercase tracking-[0.35em] text-slate-400">Curate & explore</p>
+          <h2 className="text-base font-semibold uppercase tracking-[0.3em] text-slate-900 dark:text-slate-100">Library</h2>
+          <p className="text-[11px] uppercase tracking-[0.35em] text-slate-600 dark:text-slate-400">Curate & explore</p>
         </div>
 
         <div className="grid gap-2 text-sm">
