@@ -2843,8 +2843,9 @@ export default function MenuDesignStudioSection() {
   const handlePagePresetChange = useCallback((id: string) => {
     const preset = PAGE_PRESETS.find((entry) => entry.id === id);
     if (!preset) return;
-    setPagePreset(id);
-    setPageSize({ width: preset.width, height: preset.height });
+    setPagePreset(preset.id);
+    setPrintPreset(preset);
+    setPageSize({ width: preset.widthPx, height: preset.heightPx });
   }, []);
 
   useEffect(() => {
