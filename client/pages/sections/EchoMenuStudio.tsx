@@ -4064,7 +4064,18 @@ function ElementInspector({
         <MenuItemControls element={element} onChange={handleChange} />
       ) : null}
       {element.type === "image" ? (
-        <ImageControls element={element} onChange={handleChange} />
+        <ImageControls
+          element={element}
+          onChange={handleChange}
+          onBeginMaskEditing={() => onBeginMaskEditing(element.id)}
+          onMaskUndo={onMaskUndo}
+          onMaskCommit={onMaskCommit}
+          onMaskCancel={onMaskCancel}
+          onMaskClear={() => onMaskClear(element.id)}
+          isMaskEditing={isMaskEditing}
+          maskPointCount={currentMaskPointCount}
+          hasMask={hasMask}
+        />
       ) : null}
       {element.type === "shape" ? (
         <ShapeControls element={element} onChange={handleChange} />
