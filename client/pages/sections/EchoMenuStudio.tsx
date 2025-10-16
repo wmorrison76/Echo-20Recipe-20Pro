@@ -435,11 +435,297 @@ const IMAGE_LIBRARY = [
   },
 ];
 
-const PAGE_PRESETS = [
-  { id: "letter", label: "US Letter 8.5×11", width: 816, height: 1056 },
-  { id: "legal", label: "US Legal 8.5×14", width: 816, height: 1344 },
-  { id: "a4", label: "A4 210×297mm", width: 794, height: 1123 },
-  { id: "square", label: "Square 12×12", width: 960, height: 960 },
+const INCH_TO_PX = 96;
+const mmToInches = (mm: number) => mm / 25.4;
+const toPx = (inches: number) => Math.round(inches * INCH_TO_PX);
+const resolveDimension = (
+  dimensionIn: number | undefined,
+  dimensionMm: number | undefined,
+  id: string,
+  axis: "width" | "height",
+) => {
+  if (typeof dimensionIn === "number") {
+    return dimensionIn;
+  }
+  if (typeof dimensionMm === "number") {
+    return mmToInches(dimensionMm);
+  }
+  throw new Error(`Preset ${id} is missing ${axis} measurement`);
+};
+const resolveMeasure = (
+  valueIn: number | undefined,
+  valueMm: number | undefined,
+  fallback: number,
+) => {
+  if (typeof valueIn === "number") {
+    return valueIn;
+  }
+  if (typeof valueMm === "number") {
+    return mmToInches(valueMm);
+  }
+  return fallback;
+};
+const createPreset = (config: PrintPresetInput): PrintPreset => {
+  const widthIn = resolveDimension(config.widthIn, config.widthMm, config.id, "width");
+  const heightIn = resolveDimension(config.heightIn, config.heightMm, config.id, "height");
+  const bleedIn = resolveMeasure(config.bleedIn, config.bleedMm, 0.125);
+  const safeMarginIn = resolveMeasure(config.safeMarginIn, config.safeMarginMm, 0.25);
+  const orientation =
+    config.orientation ?? (heightIn >= widthIn ? "portrait" : "landscape");
+
+  return {
+    id: config.id,
+    label: config.label,
+    widthPx: toPx(widthIn),
+    heightPx: toPx(heightIn),
+    widthIn,
+    heightIn,
+    bleedIn,
+    safeMarginIn,
+    bleedPx: toPx(bleedIn),
+    safeMarginPx: toPx(safeMarginIn),
+    dpi: config.dpi,
+    colorProfile: config.colorProfile,
+    orientation,
+    description: config.description,
+  };
+};
+const formatInches = (value: number) => {
+  const rounded = Math.round(value * 100) / 100;
+  if (Number.isInteger(rounded)) {
+    return rounded.toFixed(0);
+  }
+  return rounded.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+};
+const PAGE_PRESETS: PrintPreset[] = [
+  createPreset({
+    id: "letter_menu",
+    label: "Full Menu – US Letter",
+    widthIn: 8.5,
+    heightIn: 11,
+    bleedIn: 0.125,
+    safeMarginIn: 0.25,
+    dpi: 300,
+    colorProfile: "US Sheetfed Coated (SWOP) v2",
+    orientation: "portrait",
+    description: "Standard dine-in menus, most common in the U.S.",
+  }),
+  createPreset({
+    id: "legal_menu",
+    label: "Extended Menu – Legal",
+    widthIn: 8.5,
+    heightIn: 14,
+    bleedIn: 0.125,
+    safeMarginIn: 0.25,
+    dpi: 300,
+    colorProfile: "US Sheetfed Coated (SWOP) v2",
+    orientation: "portrait",
+    description: "Adds extra length for prix-fixe courses or wine lists.",
+  }),
+  createPreset({
+    id: "tabloid_menu",
+    label: "Oversize Menu – Tabloid",
+    widthIn: 11,
+    heightIn: 17,
+    bleedIn: 0.125,
+    safeMarginIn: 0.25,
+    dpi: 300,
+    colorProfile: "US Sheetfed Coated (SWOP) v2",
+    orientation: "portrait",
+    description: "Ideal for folded menus, drink menus, or dual-page layouts.",
+  }),
+  createPreset({
+    id: "a4_menu",
+    label: "International Menu – A4",
+    widthMm: 210,
+    heightMm: 297,
+    bleedMm: 3,
+    safeMarginMm: 5,
+    dpi: 300,
+    colorProfile: "FOGRA39 (ISO Coated v2)",
+    orientation: "portrait",
+    description: "Global standard equivalent to US Letter.",
+  }),
+  createPreset({
+    id: "a3_menu",
+    label: "Large Format – A3",
+    widthMm: 297,
+    heightMm: 420,
+    bleedMm: 3,
+    safeMarginMm: 5,
+    dpi: 300,
+    colorProfile: "FOGRA39 (ISO Coated v2)",
+    orientation: "portrait",
+    description: "Common for bold single-sheet menus or posters.",
+  }),
+  createPreset({
+    id: "half_letter",
+    label: "Menu Card – Half Letter",
+    widthIn: 5.5,
+    heightIn: 8.5,
+    bleedIn: 0.125,
+    safeMarginIn: 0.25,
+    dpi: 300,
+    colorProfile: "US Sheetfed Coated (SWOP) v2",
+    orientation: "portrait",
+    description: "Perfect for cocktail, dessert, or insert cards.",
+  }),
+  createPreset({
+    id: "third_letter",
+    label: "Cocktail/Wine List – Third Letter",
+    widthIn: 3.66,
+    heightIn: 8.5,
+    bleedIn: 0.125,
+    safeMarginIn: 0.25,
+    dpi: 300,
+    colorProfile: "US Sheetfed Coated (SWOP) v2",
+    orientation: "portrait",
+    description: "Slim bar menus or focused wine lists.",
+  }),
+  createPreset({
+    id: "square_menu_8",
+    label: "Square Menu 8×8",
+    widthIn: 8,
+    heightIn: 8,
+    bleedIn: 0.125,
+    safeMarginIn: 0.25,
+    dpi: 300,
+    colorProfile: "US Sheetfed Coated (SWOP) v2",
+    orientation: "portrait",
+    description: "Boutique square layout for tasting menus.",
+  }),
+  createPreset({
+    id: "square_menu_9",
+    label: "Square Menu 9×9",
+    widthIn: 9,
+    heightIn: 9,
+    bleedIn: 0.125,
+    safeMarginIn: 0.25,
+    dpi: 300,
+    colorProfile: "US Sheetfed Coated (SWOP) v2",
+    orientation: "portrait",
+    description: "Premium square layout with additional breathing room.",
+  }),
+  createPreset({
+    id: "buffet_label",
+    label: "Buffet Label Card (Folded)",
+    widthIn: 3.5,
+    heightIn: 4,
+    bleedIn: 0.0625,
+    safeMarginIn: 0.125,
+    dpi: 300,
+    colorProfile: "US Sheetfed Coated (SWOP) v2",
+    orientation: "landscape",
+    description: "Tent card size for buffet or station labeling.",
+  }),
+  createPreset({
+    id: "mini_tent",
+    label: "Mini Tent Card 4×6",
+    widthIn: 6,
+    heightIn: 4,
+    bleedIn: 0.125,
+    safeMarginIn: 0.25,
+    dpi: 300,
+    colorProfile: "US Sheetfed Coated (SWOP) v2",
+    orientation: "landscape",
+    description: "Tent cards with additional space for allergen callouts.",
+  }),
+  createPreset({
+    id: "tray_label",
+    label: "Tray Label 2×6",
+    widthIn: 6,
+    heightIn: 2,
+    bleedIn: 0.0625,
+    safeMarginIn: 0.2,
+    dpi: 300,
+    colorProfile: "US Sheetfed Coated (SWOP) v2",
+    orientation: "landscape",
+    description: "Steam table or chafing dish clip labels.",
+  }),
+  createPreset({
+    id: "table_tent_small",
+    label: "Table Tent Small 4×6",
+    widthIn: 4,
+    heightIn: 6,
+    bleedIn: 0.125,
+    safeMarginIn: 0.25,
+    dpi: 300,
+    colorProfile: "US Sheetfed Coated (SWOP) v2",
+    orientation: "portrait",
+    description: "Drink specials or dessert promo tents.",
+  }),
+  createPreset({
+    id: "table_tent_medium",
+    label: "Table Tent Medium 5×7",
+    widthIn: 5,
+    heightIn: 7,
+    bleedIn: 0.125,
+    safeMarginIn: 0.25,
+    dpi: 300,
+    colorProfile: "US Sheetfed Coated (SWOP) v2",
+    orientation: "portrait",
+    description: "Multi-panel event or daily special tents.",
+  }),
+  createPreset({
+    id: "tri_fold_tent",
+    label: "Tri-Fold Tent 4.25×11",
+    widthIn: 4.25,
+    heightIn: 11,
+    bleedIn: 0.125,
+    safeMarginIn: 0.25,
+    dpi: 300,
+    colorProfile: "US Sheetfed Coated (SWOP) v2",
+    orientation: "portrait",
+    description: "Premium three-sided tent presentation.",
+  }),
+  createPreset({
+    id: "tabloid_plus",
+    label: "Tabloid+ Oversize 12×18",
+    widthIn: 12,
+    heightIn: 18,
+    bleedIn: 0.125,
+    safeMarginIn: 0.25,
+    dpi: 300,
+    colorProfile: "US Sheetfed Coated (SWOP) v2",
+    orientation: "portrait",
+    description: "Fine dining multi-page folded menus.",
+  }),
+  createPreset({
+    id: "poster_18x24",
+    label: "Poster Display 18×24",
+    widthIn: 18,
+    heightIn: 24,
+    bleedIn: 0.125,
+    safeMarginIn: 0.25,
+    dpi: 200,
+    colorProfile: "US Sheetfed Coated (SWOP) v2",
+    orientation: "portrait",
+    description: "Daily feature or buffet display boards.",
+  }),
+  createPreset({
+    id: "poster_24x36",
+    label: "Poster Display 24×36",
+    widthIn: 24,
+    heightIn: 36,
+    bleedIn: 0.125,
+    safeMarginIn: 0.25,
+    dpi: 200,
+    colorProfile: "US Sheetfed Coated (SWOP) v2",
+    orientation: "portrait",
+    description: "Large-format hero signage for foyers or buffets.",
+  }),
+  createPreset({
+    id: "banner_11x42",
+    label: "Banner 11×42",
+    widthIn: 42,
+    heightIn: 11,
+    bleedIn: 0.125,
+    safeMarginIn: 0.5,
+    dpi: 150,
+    colorProfile: "US Sheetfed Coated (SWOP) v2",
+    orientation: "landscape",
+    description: "Wall or buffet backdrop banners.",
+  }),
 ];
 
 const clamp = (value: number, min: number, max: number) => {
