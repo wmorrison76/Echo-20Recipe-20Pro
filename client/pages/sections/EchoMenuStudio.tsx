@@ -2525,6 +2525,8 @@ export default function MenuDesignStudioSection() {
           layers={sortedLayers}
           onSelectLayer={handleSelectLayer}
           onLayerShift={handleLayerShift}
+          onLayerOpacityChange={handleLayerOpacityChange}
+          onToggleLayerLock={handleToggleLayerLock}
         />
       </div>
     </div>
