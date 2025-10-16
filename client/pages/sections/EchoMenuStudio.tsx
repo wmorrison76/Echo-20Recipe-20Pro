@@ -2798,6 +2798,87 @@ export default function MenuDesignStudioSection() {
     [handleAddImage, toast],
   );
 
+  const handleSaveDesign = useCallback(
+    (name: string) => {
+      try {
+        const designData = {
+          id: `design-${Date.now()}`,
+          name,
+          elements,
+          pageSize,
+          canvasSettings,
+          pagePreset,
+          printPreset,
+          updatedAt: Date.now(),
+          version: 1 as const,
+        };
+        saveDesign(designData);
+        setSavedDesigns(getSavedDesigns());
+        setHasUnsavedChanges(false);
+        setDocumentName(name);
+        toast({
+          title: "Design saved",
+          description: `${name} has been saved successfully.`,
+        });
+      } catch (error) {
+        console.error("Save failed:", error);
+        toast({
+          title: "Save failed",
+          description: "Failed to save design.",
+          variant: "destructive",
+        });
+      }
+    },
+    [elements, pageSize, canvasSettings, pagePreset, printPreset, toast],
+  );
+
+  const handleLoadDesign = useCallback(
+    (design: any) => {
+      try {
+        setElements(design.elements || []);
+        setPageSize(design.pageSize || INITIAL_PAGE_SIZE);
+        setCanvasSettings(design.canvasSettings || INITIAL_CANVAS);
+        setPagePreset(design.pagePreset || DEFAULT_PRESET.id);
+        setPrintPreset(design.printPreset || DEFAULT_PRESET);
+        setDocumentName(design.name || "Untitled Menu");
+        setSelectedId(design.elements?.[0]?.id ?? null);
+        setHasUnsavedChanges(false);
+        elementsHistory.reset(design.elements || []);
+        toast({
+          title: "Design loaded",
+          description: `${design.name} has been loaded successfully.`,
+        });
+      } catch (error) {
+        console.error("Load failed:", error);
+        toast({
+          title: "Load failed",
+          description: "Failed to load design.",
+          variant: "destructive",
+        });
+      }
+    },
+    [toast, elementsHistory],
+  );
+
+  const handleDeleteSavedDesign = useCallback((designId: string) => {
+    try {
+      const { deleteDesign } = require("@/lib/menu-studio-storage");
+      deleteDesign(designId);
+      setSavedDesigns(getSavedDesigns());
+      toast({
+        title: "Design deleted",
+        description: "The design has been removed from storage.",
+      });
+    } catch (error) {
+      console.error("Delete failed:", error);
+      toast({
+        title: "Delete failed",
+        description: "Failed to delete design.",
+        variant: "destructive",
+      });
+    }
+  }, [toast]);
+
   const handlePaletteApply = useCallback(
     (swatches: string[]) => {
       if (selectedElement) {
