@@ -576,7 +576,15 @@ export default function RecipeEditor() {
               <CardHeader className="pb-4">
                 <CardTitle className="text-base">Ingredients</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                {recipe.extra && typeof recipe.extra === "object" && "ingredientsTable" in recipe.extra && Array.isArray((recipe.extra as any).ingredientsTable) && (
+                  <RecipeEditorCostingPanel
+                    ingredients={(recipe.extra as any).ingredientsTable}
+                    recipeTitle={recipe.title}
+                    servings={1}
+                    compact={true}
+                  />
+                )}
                 <IngredientsTable recipeId={recipe.id} />
               </CardContent>
             </Card>
