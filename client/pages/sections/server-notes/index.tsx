@@ -29,6 +29,8 @@ import { ServerNotesGenerator } from "@/components/ServerNotesGenerator";
 import { AllergyMatrixDialog } from "@/components/AllergyMatrixDialog";
 import { CooksRecipeBookGenerator } from "@/components/CooksRecipeBookGenerator";
 import { ServerNotesExportDialog } from "@/components/ServerNotesExportDialog";
+import { CooksRecipesExportDialog } from "@/components/CooksRecipesExportDialog";
+import { AllergenSheetExportDialog } from "@/components/AllergenSheetExportDialog";
 import type { LanguageCode } from "@/i18n/config";
 import {
   createEmptyServerNote,
