@@ -67,19 +67,9 @@ const TOOL_GRID: ToolSpec[] = [
   { key: "color", label: "Color pick", icon: Pipette },
 ];
 
-const OVERLAY_QUICK_ACTIONS = [
-  { key: "blend", label: "Blend layers" },
-  { key: "sharpen", label: "Sharpen focus" },
-  { key: "retouch", label: "Retouch skin" },
-  { key: "highlight", label: "Lift highlights" },
-];
+const OVERLAY_QUICK_ACTIONS: { key: string; label: string }[] = [];
 
-const QUICK_PRESETS = [
-  { key: "remove-bg", label: "Remove background" },
-  { key: "auto-color", label: "Auto color" },
-  { key: "hyper-real", label: "Hyper realistic" },
-  { key: "bw", label: "Black & white" },
-];
+const QUICK_PRESETS: { key: string; label: string }[] = [];
 
 export function GalleryOverlay({
   open,
