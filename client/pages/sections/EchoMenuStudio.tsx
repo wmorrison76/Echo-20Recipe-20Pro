@@ -1845,7 +1845,10 @@ const INITIAL_CANVAS: CanvasSettings = {
   gridSize: 24,
 };
 
-const INITIAL_PAGE_SIZE: PageSize = { width: 816, height: 1056 };
+const INITIAL_PAGE_SIZE: PageSize = {
+  width: DEFAULT_PRESET.widthPx,
+  height: DEFAULT_PRESET.heightPx,
+};
 
 const INITIAL_ELEMENTS = createElementsFromTemplate(seasonalTemplate);
 
