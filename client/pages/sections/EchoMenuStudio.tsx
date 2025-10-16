@@ -3150,7 +3150,16 @@ export default function MenuDesignStudioSection() {
           colorPalettes={COLOR_PALETTES}
           onPaletteApply={handlePaletteApply}
           selectedElement={selectedElement}
+          onOpenGalleryPicker={() => setShowGalleryPicker(true)}
         />
+
+        {showGalleryPicker && (
+          <GalleryImagePicker
+            images={galleryImages}
+            onSelectImage={handleAddImageFromGallery}
+            onClose={() => setShowGalleryPicker(false)}
+          />
+        )}
 
         <div ref={workspaceRef} className="relative flex flex-1">
           <DesignerCanvas
