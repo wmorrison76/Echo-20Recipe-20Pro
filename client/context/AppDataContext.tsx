@@ -11,6 +11,7 @@ import JSZip from "jszip";
 import mockRecipes from "@/data/mockRecipes";
 import { KITCHEN_STATIONS, CHIT_PRINTERS } from "@/data/kitchenStations";
 import { DEMO_PLACEHOLDERS, FALLBACK_GALLERY_IMAGE } from "@/lib/placeholders";
+import { clearAllImageBlobs, deleteImageBlob, loadImageBlob, saveImageBlob } from "@/lib/gallery-storage";
 import type { Recipe } from "@shared/recipes";
 import type { RecipeCollection } from "@shared/server-notes";
 import { defaultLanguage, type LanguageCode } from "@/i18n/config";
