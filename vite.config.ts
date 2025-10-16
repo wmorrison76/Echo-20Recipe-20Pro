@@ -15,6 +15,9 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: "dist/spa",
+    rollupOptions: {
+      external: ["html2canvas", "jspdf"],
+    },
   },
   plugins: [react(), expressPlugin()],
   resolve: {
