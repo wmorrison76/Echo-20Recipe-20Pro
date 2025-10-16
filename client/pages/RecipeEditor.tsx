@@ -698,14 +698,24 @@ export default function RecipeEditor() {
                     if (event.target) event.target.value = "";
                   }}
                 />
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => coverInputRef.current?.click()}
-                >
-                  {coverPreview ? "Replace Photo" : "Upload Photo"}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => coverInputRef.current?.click()}
+                  >
+                    {coverPreview ? "Replace Photo" : "Upload Photo"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setShowGalleryPicker(true)}
+                  >
+                    From Gallery
+                  </Button>
+                </div>
               </CardContent>
             </Card>
 
