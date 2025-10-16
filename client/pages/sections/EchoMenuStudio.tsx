@@ -107,6 +107,16 @@ type DesignerElement = {
   mask?: ElementMask;
 };
 
+type PolygonPoint = {
+  x: number;
+  y: number;
+};
+
+type ElementMask = {
+  type: "polygon";
+  points: PolygonPoint[];
+};
+
 type CanvasSettings = {
   background: string;
   margin: number;
