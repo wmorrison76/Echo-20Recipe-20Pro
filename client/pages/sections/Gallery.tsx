@@ -365,8 +365,14 @@ export default function GallerySection() {
   const [overlayOpen, setOverlayOpen] = useState(false);
   const [galleryView, setGalleryView] = useState<"grid" | "tiles">("grid");
   const [activeTileBoardId, setActiveTileBoardId] = useState<string | null>(null);
+  const [uploadLoading, setUploadLoading] = useState(false);
 
   const uploadInputRef = useRef<HTMLInputElement | null>(null);
+
+  // File size limits
+  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB per file
+  const MAX_TOTAL_SIZE = 500 * 1024 * 1024; // 500MB total per batch
+  const SUPPORTED_FORMATS = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
   const favoriteCount = useMemo(
     () => images.filter((img) => img.favorite).length,
@@ -624,20 +630,67 @@ export default function GallerySection() {
       .map((tag) => tag.trim())
       .filter(Boolean);
     setShowTagDialog(false);
-    setStatus(files.length === 1 ? t("gallery.processingImages").replace("{count}", "1") : t("gallery.processingImages").replace("{count}", String(files.length)));
+
+    // Validate files before uploading
+    const validationErrors: string[] = [];
+    let totalSize = 0;
+    const validFiles: File[] = [];
+
+    for (const file of files) {
+      // Check file size
+      if (file.size > MAX_FILE_SIZE) {
+        validationErrors.push(`${file.name}: File exceeds 50MB limit (${(file.size / 1024 / 1024).toFixed(1)}MB)`);
+        continue;
+      }
+
+      // Check file format
+      if (!SUPPORTED_FORMATS.includes(file.type)) {
+        validationErrors.push(`${file.name}: Unsupported format. Only JPEG, PNG, WebP, and GIF are supported.`);
+        continue;
+      }
+
+      totalSize += file.size;
+      validFiles.push(file);
+    }
+
+    // Check total size
+    if (totalSize > MAX_TOTAL_SIZE) {
+      validationErrors.push(`Total upload size exceeds 500MB limit. Please upload fewer files.`);
+    }
+
+    // Report validation errors
+    if (validationErrors.length > 0) {
+      setStatus(`⚠️ ${validationErrors[0]} (${validationErrors.length} file${validationErrors.length !== 1 ? "s" : ""} failed validation)`);
+      console.warn("File validation errors:", validationErrors);
+    }
+
+    if (validFiles.length === 0) {
+      setStatus("❌ No valid files to upload. Please check file formats and sizes.");
+      (window as any).__pending_files = undefined;
+      return;
+    }
+
+    setUploadLoading(true);
+    setStatus(`Uploading ${validFiles.length} file${validFiles.length !== 1 ? "s" : ""}...`);
     console.debug("Starting image import with tags:", tags);
     try {
-      const added = await addImages(files, { tags });
+      const added = await addImages(validFiles, { tags });
       if (added === 0) {
-        setStatus(t("gallery.noImagesAdded"));
+        setStatus(`⚠️ No images added. ${validationErrors.length > 0 ? validationErrors[0] : "Please check file formats."}`);
         console.warn("No images were successfully added");
       } else {
-        setStatus(t("gallery.addedCount").replace("{count}", String(added)).replace("{plural}", added === 1 ? "" : "s"));
+        const summary = `✓ Added ${added} image${added === 1 ? "" : "s"}`;
+        const failedCount = validFiles.length - added;
+        const errorSummary = failedCount > 0 ? ` (${failedCount} file${failedCount !== 1 ? "s" : ""} could not be processed)` : "";
+        setStatus(summary + errorSummary);
         console.info("Successfully added", added, "images");
       }
     } catch (error) {
-      setStatus(t("gallery.errorAddingImages"));
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      setStatus(`❌ Error uploading images: ${errorMessage}`);
       console.error("Error importing images:", error);
+    } finally {
+      setUploadLoading(false);
     }
     (window as any).__pending_files = undefined;
   };
