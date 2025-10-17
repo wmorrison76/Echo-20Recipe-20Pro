@@ -307,15 +307,38 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                   )}
                   placeholder={t("recipe.ingredients.placeholders.unit", "QTS")}
                 />
-                <input
-                  data-row={index}
-                  data-col={2}
-                  value={row.item}
-                  onChange={onFieldChange(index, "item")}
-                  onKeyDown={onGridKeyDown}
-                  className={inputTone(isDarkMode, undefined, false, false)}
-                  placeholder={t("recipe.ingredients.placeholders.item", "Ingredient")}
-                />
+                <div className="relative flex items-center gap-1">
+                  <input
+                    data-row={index}
+                    data-col={2}
+                    value={row.item}
+                    onChange={onFieldChange(index, "item")}
+                    onKeyDown={onGridKeyDown}
+                    className={inputTone(isDarkMode, undefined, false, false)}
+                    placeholder={t("recipe.ingredients.placeholders.item", "Ingredient")}
+                  />
+                  <Popover open={selectedSelectorRow === index} onOpenChange={(open) => setSelectedSelectorRow(open ? index : null)}>
+                    <PopoverTrigger asChild>
+                      <button
+                        className={`shrink-0 p-1.5 rounded transition-colors ${
+                          row.inventoryId
+                            ? isDarkMode ? "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30" : "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+                            : isDarkMode ? "bg-slate-700/50 text-slate-400 hover:bg-slate-700" : "bg-slate-200 text-slate-600 hover:bg-slate-300"
+                        }`}
+                        title="Link to supplier"
+                      >
+                        <Link2 className="h-3.5 w-3.5" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-72" align="start">
+                      <IngredientSelector
+                        suggestedText={row.item}
+                        showPrice={true}
+                        onSelect={(invId, item) => handleIngredientSelect(index, invId, item)}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
                 <input
                   data-row={index}
                   data-col={3}
