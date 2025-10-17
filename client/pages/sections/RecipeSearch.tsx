@@ -379,6 +379,7 @@ export default function RecipeSearchSection() {
     addFromZipArchive,
     toggleFavorite,
     rateRecipe,
+    updateRecipeTags,
     deleteRecipe,
     restoreRecipe,
     exportAllZip,
