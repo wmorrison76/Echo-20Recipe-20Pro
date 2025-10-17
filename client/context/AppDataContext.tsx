@@ -7,7 +7,6 @@ import React, {
   useState,
   useRef,
 } from "react";
-import JSZip from "jszip";
 import mockRecipes from "@/data/mockRecipes";
 import { KITCHEN_STATIONS, CHIT_PRINTERS } from "@/data/kitchenStations";
 import { DEMO_PLACEHOLDERS, FALLBACK_GALLERY_IMAGE } from "@/lib/placeholders";
@@ -1084,6 +1083,8 @@ const createTileBoard = useCallback(
 
   const exportAllZip = useCallback(
     async (language: LanguageCode = defaultLanguage) => {
+      const JSZipModule = await import("jszip");
+      const JSZip = JSZipModule.default;
       const zip = new JSZip();
       const timestamp = new Date().toISOString();
       zip.file("data/recipes.json", JSON.stringify(recipes, null, 2));
