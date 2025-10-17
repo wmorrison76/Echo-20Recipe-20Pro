@@ -188,6 +188,11 @@ function IndexContent() {
                 <WasteTrackingWorkspace />
               </div>
             </TabsContent>
+            <TabsContent value="customer-service">
+              <div className="container mx-auto space-y-3 px-3 py-3">
+                <CustomerServiceWorkspace />
+              </div>
+            </TabsContent>
             <TabsContent value="dish-assembly">
               <DishAssemblySection />
             </TabsContent>
