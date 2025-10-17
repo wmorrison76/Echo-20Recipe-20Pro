@@ -144,6 +144,12 @@ const navItems: NavItemConfig[] = [
     shortcut: { key: "Digit8", display: "8" },
   },
   {
+    to: "/?tab=waste-tracking",
+    labelKey: "nav.wasteTracking",
+    fallback: "WASTE TRACKING",
+    icon: Trash2,
+  },
+  {
     to: "/?tab=gallery",
     labelKey: "nav.gallery",
     fallback: "GALLERY",
