@@ -786,6 +786,7 @@ export default function GallerySection() {
       return;
     }
     setUrlLoading(true);
+    setUploadLoading(true);
     try {
       const files: File[] = [];
       const failedUrls: string[] = [];
@@ -825,6 +826,7 @@ export default function GallerySection() {
       setStatus(t("gallery.errorImportingImages"));
     } finally {
       setUrlLoading(false);
+      setUploadLoading(false);
     }
   };
 
