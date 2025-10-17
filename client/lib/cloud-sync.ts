@@ -61,12 +61,14 @@ class CloudSyncManager {
           filter: `organization_id=eq.${organizationId}`,
         },
         (payload) => {
+          const newRecord = payload.new as any;
+          const oldRecord = payload.old as any;
           const syncEvent: SyncEvent = {
             id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
             event_type: payload.eventType as any,
             table,
-            record_id: payload.new?.id || payload.old?.id,
-            user_id: payload.new?.updated_by || "system",
+            record_id: newRecord?.id || oldRecord?.id,
+            user_id: newRecord?.updated_by || "system",
             organization_id: organizationId,
             old_data: payload.old,
             new_data: payload.new,
