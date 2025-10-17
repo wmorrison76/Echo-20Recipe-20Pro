@@ -163,6 +163,25 @@ export function RecipeCard({
               {r.tags.slice(0, 5).join(" · ")}
             </p>
           ) : null}
+
+          {/* Cost Display Badges */}
+          {(recipeCost || portionCost) && (
+            <div className="mt-2 flex flex-wrap gap-2 items-center">
+              {portionCost && (
+                <Badge variant="secondary" className="gap-1 text-xs">
+                  <DollarSign className="h-2.5 w-2.5" />
+                  ${portionCost.toFixed(2)}/portion
+                </Badge>
+              )}
+              {recipeCost && !portionCost && (
+                <Badge variant="secondary" className="gap-1 text-xs">
+                  <DollarSign className="h-2.5 w-2.5" />
+                  ${recipeCost.toFixed(2)} total
+                </Badge>
+              )}
+            </div>
+          )}
+
           {r.ingredients?.length ? (
             <ul className="mt-2 mb-0 text-xs text-muted-foreground max-h-10 overflow-hidden hide-scrollbar list-disc pl-4">
               {r.ingredients.slice(0, 5).map((x, i) => (
