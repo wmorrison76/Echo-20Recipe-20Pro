@@ -14,7 +14,7 @@ function openDatabase(): Promise<IDBDatabase> {
     return Promise.reject(new Error("IndexedDB is not available"));
   }
   if (!dbPromise) {
-    dbPromise = new Promise((resolve, reject) => {
+    dbPromise = (new Promise<IDBDatabase>((resolve, reject) => {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
       request.onupgradeneeded = () => {
         const db = request.result;
@@ -27,7 +27,7 @@ function openDatabase(): Promise<IDBDatabase> {
       request.onblocked = () => {
         reject(new Error("Gallery storage upgrade is blocked"));
       };
-    }).catch((error) => {
+    }) as Promise<IDBDatabase>).catch((error) => {
       dbPromise = null;
       throw error;
     });
