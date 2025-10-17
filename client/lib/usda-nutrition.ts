@@ -462,9 +462,11 @@ export type NutritionInfo = {
   calories: number;
   protein: number;
   fat: number;
-  carbs: number;
-  fiber: number;
-  allergens: string[];
+  carbs?: number;
+  carbohydrates?: number;
+  fiber?: number;
+  sodium?: number;
+  allergens?: string[];
 };
 
 export function extractNutritionInfo(foodItem: USDAFoodItem): NutritionInfo {
