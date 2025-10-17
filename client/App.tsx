@@ -64,9 +64,31 @@ const App = () => (
                   <KeyboardShortcutsProvider>
                     <BrowserRouter>
                       <Routes>
-                        <Route path="/" element={<Index />} />
-                        <Route path="/recipe/:id" element={<RecipeEditor />} />
-                        <Route path="/recipe/:id/view" element={<RecipeTemplate />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route
+                          path="/"
+                          element={
+                            <ProtectedRoute>
+                              <Index />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/recipe/:id"
+                          element={
+                            <ProtectedRoute>
+                              <RecipeEditor />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/recipe/:id/view"
+                          element={
+                            <ProtectedRoute>
+                              <RecipeTemplate />
+                            </ProtectedRoute>
+                          }
+                        />
                         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                         <Route path="*" element={<NotFound />} />
                       </Routes>
