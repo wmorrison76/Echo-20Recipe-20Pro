@@ -405,6 +405,22 @@ export default function RecipeSearchSection() {
   const [ftech, setFTech] = useState<string>("");
   const [fcourse, setFCourse] = useState<string>("");
   const [fdiet, setFDiet] = useState<string>("");
+
+  // Autocomplete state
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const suggestionsRef = useRef<HTMLDivElement | null>(null);
+
+  // Generate autocomplete suggestions from recipe titles
+  const suggestions = useMemo(() => {
+    if (!q.trim()) return [];
+    const lowerQ = q.toLowerCase();
+    return recipes
+      .filter(r => !r.deletedAt && r.title.toLowerCase().includes(lowerQ))
+      .slice(0, 8)
+      .map(r => r.title)
+      .filter((v, i, a) => a.indexOf(v) === i);
+  }, [q, recipes]);
+
   const results = useMemo(() => {
     const base = searchRecipes(q);
     const filterByTax = (arr: typeof base) =>
