@@ -1,6 +1,7 @@
 import type { LanguageCode } from "@/i18n/config";
 import type { ServerNote, ServerNoteRecipe } from "@shared/server-notes";
 import { dictionaries } from "@/i18n/dictionaries";
+import { downloadBlob } from "@/lib/download-utils";
 
 export type ExportFormat = "pdf" | "json" | "csv";
 
@@ -19,14 +20,7 @@ function downloadFile(
     typeof content === "string"
       ? new Blob([content], { type: mimeType })
       : content;
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  downloadBlob(blob, filename);
 }
 
 function t(key: string, language: LanguageCode, fallback: string): string {
