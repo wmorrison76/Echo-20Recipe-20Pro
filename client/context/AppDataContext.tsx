@@ -3146,6 +3146,11 @@ const createTileBoard = useCallback(
       prev.map((r) => (r.id === id ? { ...r, rating: v } : r)),
     );
   }, []);
+  const updateRecipeTags = useCallback((id: string, tags: string[]) => {
+    setRecipes((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, tags } : r)),
+    );
+  }, []);
   const deleteRecipe = useCallback((id: string) => {
     setRecipes((prev) =>
       prev.map((r) => (r.id === id ? { ...r, deletedAt: Date.now() } : r)),
