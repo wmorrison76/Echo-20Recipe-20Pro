@@ -23,6 +23,7 @@ import {
   Sprout,
   Save,
   ShoppingCart,
+  Trash2,
   UtensilsCrossed,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
