@@ -103,8 +103,8 @@ describe("Authentication Service", () => {
 
   describe("signOut", () => {
     it("should handle signout", async () => {
-      // Should not throw error
-      expect(() => signOut()).not.toThrow();
+      const result = await signOut();
+      expect(result).toHaveProperty("success");
     });
   });
 
@@ -120,7 +120,6 @@ describe("Authentication Service", () => {
     it("should handle profile updates", async () => {
       const updates = {
         username: "newusername",
-        fullName: "New Name",
       };
 
       const result = await updateUserProfile(updates);
