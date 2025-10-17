@@ -214,13 +214,13 @@ class RealSupplierAPIManager {
 
     try {
       // Fetch from each supplier in parallel
-      const [syscoUpdates, usFood Updates, gfsUpdates] = await Promise.all([
+      const results = await Promise.all([
         this.fetchSyscoPrices(skus),
         this.fetchUSFoodsPrices(skus),
         this.fetchGFSPrices(skus),
       ]);
 
-      updates.push(...syscoUpdates, ...usFood Updates, ...gfsUpdates);
+      updates.push(...results[0], ...results[1], ...results[2]);
     } catch (error) {
       console.error("Error fetching price updates:", error);
     }
