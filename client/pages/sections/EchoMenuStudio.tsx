@@ -2060,7 +2060,9 @@ export default function MenuDesignStudioSection() {
 
   useEffect(() => {
     ensureFontLoaded(DEFAULT_FONT_VALUE);
-  }, [ensureFontLoaded]);
+    // Check storage quota on component mount
+    checkStorageQuota();
+  }, [ensureFontLoaded, checkStorageQuota]);
 
   // Helper function to check localStorage quota
   const checkStorageQuota = useCallback(() => {
@@ -2070,12 +2072,26 @@ export default function MenuDesignStudioSection() {
       }
       navigator.storage.estimate().then((estimate) => {
         const percentUsed = (estimate.usage || 0) / (estimate.quota || 1);
-        if (percentUsed > 0.8) {
+        const quotaMB = Math.round((estimate.quota || 0) / 1024 / 1024);
+        const usedMB = Math.round((estimate.usage || 0) / 1024 / 1024);
+
+        if (percentUsed > 0.9) {
           toast({
-            title: "Storage warning",
-            description: `Browser storage is ${Math.round(percentUsed * 100)}% full. Consider deleting old designs.`,
+            title: "Critical: Storage almost full",
+            description: `Using ${usedMB}MB of ${quotaMB}MB available. Delete old designs immediately to prevent data loss.`,
             variant: "destructive",
           });
+        } else if (percentUsed > 0.8) {
+          toast({
+            title: "Storage warning",
+            description: `Using ${usedMB}MB of ${quotaMB}MB available (${Math.round(percentUsed * 100)}%). Consider deleting old designs.`,
+            variant: "destructive",
+          });
+        } else if (percentUsed > 0.6) {
+          // Just log warning for moderate usage
+          console.warn(
+            `Browser storage is ${Math.round(percentUsed * 100)}% full (${usedMB}MB of ${quotaMB}MB)`,
+          );
         }
       });
     } catch (error) {
