@@ -6,6 +6,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Provider as PaperProvider } from "react-native-paper";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { AuthProvider, useAuth } from "../client/context/AuthContext";
 import { AppDataProvider } from "../client/context/AppDataContext";
 import LoginScreen from "./screens/auth/LoginScreen";
