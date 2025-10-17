@@ -32,7 +32,7 @@ describe("Authentication Service", () => {
         email: "test@example.com",
         password: "Password123!",
         username: "testuser",
-        organizationName: "Test Org",
+        organization_name: "Test Org",
       };
 
       const result = await signUp(data);
@@ -47,7 +47,7 @@ describe("Authentication Service", () => {
         email: "invalid-email",
         password: "Password123!",
         username: "testuser",
-        organizationName: "Test Org",
+        organization_name: "Test Org",
       };
 
       const result = await signUp(data);
@@ -60,7 +60,7 @@ describe("Authentication Service", () => {
         email: "test@example.com",
         password: "weak",
         username: "testuser",
-        organizationName: "Test Org",
+        organization_name: "Test Org",
       };
 
       const result = await signUp(data);
