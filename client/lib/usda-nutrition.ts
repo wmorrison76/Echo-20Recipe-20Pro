@@ -1,333 +1,416 @@
-// USDA FoodData Central API integration
-// Uses free public API - no API key required for basic queries
-// Reference: https://fdc.nal.usda.gov/api-guide.html
+// Integration with USDA FoodData Central for nutrition database
 
-export interface USDAFoodItem {
+export type NutrientValue = {
+  value: number;
+  unit: string;
+  per100g: number;
+};
+
+export type USDAFoodItem = {
   fdcId: string;
   description: string;
-  dataType: string;
+  foodCategory: string;
   publishedDate: string;
-  foodNutrients: USDANutrient[];
-  brandOwner?: string;
-  ingredients?: string;
-  servingSize?: number;
-  servingSizeUnit?: string;
-}
+  dataType: "Survey (FNDDS)" | "Foundation" | "SR Legacy" | "Branded";
+  nutrients: {
+    energy: NutrientValue; // kcal
+    protein: NutrientValue; // g
+    fat: NutrientValue; // g
+    carbohydrate: NutrientValue; // g
+    fiber: NutrientValue; // g
+    sugar: NutrientValue; // g
+    sodium: NutrientValue; // mg
+    calcium: NutrientValue; // mg
+    iron: NutrientValue; // mg
+    potassium: NutrientValue; // mg
+    vitaminA: NutrientValue; // mcg
+    vitaminC: NutrientValue; // mg
+    vitaminD: NutrientValue; // mcg
+    vitaminB12: NutrientValue; // mcg
+    [key: string]: NutrientValue | string;
+  };
+};
 
-export interface USDANutrient {
-  nutrientId: number;
-  nutrientName: string;
-  nutrientNumber: string;
-  unit: string;
-  value: number;
-}
-
-export interface NutritionInfo {
-  calories: number;
-  protein: number;
-  fat: number;
-  saturatedFat?: number;
-  transFat?: number;
-  carbohydrates: number;
-  fiber?: number;
-  sugars?: number;
-  sodium?: number;
-  cholesterol?: number;
-  calcium?: number;
-  iron?: number;
-  potassium?: number;
-  vitaminA?: number;
-  vitaminC?: number;
-  vitaminD?: number;
-  vitaminB12?: number;
-}
-
-export interface RecipeNutritionBreakdown {
+export type RecipeNutritionInfo = {
   recipeId: string;
   recipeName: string;
+  servingSize: number;
+  servingUnit: string;
+  perServing: {
+    calories: number;
+    protein: number; // g
+    fat: number; // g
+    carbs: number; // g
+    fiber: number; // g
+    sodium: number; // mg
+  };
   ingredients: Array<{
-    ingredientName: string;
+    name: string;
     quantity: number;
     unit: string;
     fdcId?: string;
-    nutritionPer100g?: NutritionInfo;
+    nutrition: {
+      calories: number;
+      protein: number;
+      fat: number;
+      carbs: number;
+    };
   }>;
-  totalNutrition: NutritionInfo;
-  perServingNutrition: NutritionInfo;
-  servingSize: number;
-  servingUnit: string;
-  lastUpdated: number;
-}
-
-// Nutrient ID mapping (USDA FDC nutrient numbers)
-const NUTRIENT_IDS = {
-  ENERGY: 1008, // kcal
-  PROTEIN: 1003, // g
-  TOTAL_LIPID: 1004, // g (Fat)
-  CARBOHYDRATE: 1005, // g
-  FIBER: 1079, // g (Dietary fiber)
-  SUGARS: 2000, // g
-  SODIUM: 1093, // mg
-  CHOLESTEROL: 1253, // mg
-  CALCIUM: 1087, // mg
-  IRON: 1089, // mg
-  POTASSIUM: 1092, // mg
-  VITAMIN_A: 1106, // µg
-  VITAMIN_C: 1162, // mg
-  VITAMIN_D: 1114, // µg
-  VITAMIN_B12: 1168, // µg
-  SATURATED_FAT: 1258, // g
-  TRANS_FAT: 1257, // g
+  allergenInfo: string[];
 };
 
-/**
- * Search USDA FoodData Central for food items
- * @param query - Food name or ingredient to search for
- * @param pageSize - Number of results to return (1-200)
- * @returns Promise<USDAFoodItem[]>
- */
-export async function searchUSDAFoods(query: string, pageSize: number = 10): Promise<USDAFoodItem[]> {
-  try {
-    const params = new URLSearchParams({
-      query,
-      pageSize: Math.min(pageSize, 200).toString(),
-      pageNumber: "1",
-    });
+class USDANutritionDB {
+  private apiKey = import.meta.env.VITE_USDA_API_KEY || "";
+  private baseUrl = "https://fdc.nal.usda.gov/api/foods/search";
+  private cache: Map<string, { data: USDAFoodItem; timestamp: number }> = new Map();
+  private cacheTTL = 86400000; // 24 hours
 
-    const response = await fetch(
-      `https://api.nal.usda.gov/fdc/v1/foods/search?${params.toString()}`,
-    );
+  /**
+   * Search USDA FoodData Central
+   */
+  async searchFoods(query: string, limit: number = 10): Promise<USDAFoodItem[]> {
+    const cacheKey = `usda-${query}-${limit}`;
 
-    if (!response.ok) {
-      throw new Error(`USDA API error: ${response.statusText}`);
+    // Check cache
+    const cached = this.cache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
+      return [cached.data];
     }
 
-    const data = await response.json() as { foods: USDAFoodItem[] };
-    return data.foods || [];
-  } catch (error) {
-    console.error("Error searching USDA foods:", error);
-    return [];
-  }
-}
+    try {
+      const url = new URL(this.baseUrl);
+      url.searchParams.append("query", query);
+      url.searchParams.append("pageSize", limit.toString());
+      url.searchParams.append("api_key", this.apiKey);
 
-/**
- * Get detailed nutrition information for a specific USDA food item
- * @param fdcId - USDA FDC ID for the food
- * @returns Promise<USDAFoodItem | null>
- */
-export async function getUSDAFoodDetails(fdcId: string): Promise<USDAFoodItem | null> {
-  try {
-    const response = await fetch(
-      `https://api.nal.usda.gov/fdc/v1/food/${fdcId}`,
-    );
+      const response = await fetch(url.toString());
 
-    if (!response.ok) {
-      throw new Error(`USDA API error: ${response.statusText}`);
-    }
+      if (!response.ok) {
+        console.error("USDA API error:", response.statusText);
+        return [];
+      }
 
-    return await response.json() as USDAFoodItem;
-  } catch (error) {
-    console.error("Error fetching USDA food details:", error);
-    return null;
-  }
-}
+      const data = await response.json();
+      const foods = (data.foods || []).map((f: any) => this.parseUSDAFood(f));
 
-/**
- * Extract key nutrition values from USDA nutrient array
- * @param nutrients - Array of USDA nutrients
- * @returns NutritionInfo object with standard nutrition values
- */
-export function extractNutritionInfo(nutrients: USDANutrient[]): NutritionInfo {
-  const getValue = (nutrientId: number, defaultValue: number = 0) => {
-    const nutrient = nutrients.find((n) => n.nutrientId === nutrientId);
-    return nutrient ? nutrient.value : defaultValue;
-  };
+      // Cache top result
+      if (foods.length > 0) {
+        this.cache.set(cacheKey, { data: foods[0], timestamp: Date.now() });
+      }
 
-  return {
-    calories: getValue(NUTRIENT_IDS.ENERGY, 0),
-    protein: getValue(NUTRIENT_IDS.PROTEIN, 0),
-    fat: getValue(NUTRIENT_IDS.TOTAL_LIPID, 0),
-    saturatedFat: getValue(NUTRIENT_IDS.SATURATED_FAT),
-    transFat: getValue(NUTRIENT_IDS.TRANS_FAT),
-    carbohydrates: getValue(NUTRIENT_IDS.CARBOHYDRATE, 0),
-    fiber: getValue(NUTRIENT_IDS.FIBER),
-    sugars: getValue(NUTRIENT_IDS.SUGARS),
-    sodium: getValue(NUTRIENT_IDS.SODIUM),
-    cholesterol: getValue(NUTRIENT_IDS.CHOLESTEROL),
-    calcium: getValue(NUTRIENT_IDS.CALCIUM),
-    iron: getValue(NUTRIENT_IDS.IRON),
-    potassium: getValue(NUTRIENT_IDS.POTASSIUM),
-    vitaminA: getValue(NUTRIENT_IDS.VITAMIN_A),
-    vitaminC: getValue(NUTRIENT_IDS.VITAMIN_C),
-    vitaminD: getValue(NUTRIENT_IDS.VITAMIN_D),
-    vitaminB12: getValue(NUTRIENT_IDS.VITAMIN_B12),
-  };
-}
-
-/**
- * Calculate nutrition per 100g from USDA food data
- * @param foodItem - USDA food item with nutrition data
- * @param servingSize - Serving size in grams
- * @returns NutritionInfo per 100g
- */
-export function getNutritionPer100g(foodItem: USDAFoodItem, servingSize?: number): NutritionInfo {
-  const nutrition = extractNutritionInfo(foodItem.foodNutrients);
-
-  // If we have serving size, scale to per 100g
-  if (servingSize && servingSize > 0) {
-    const scale = 100 / servingSize;
-    return {
-      calories: Math.round(nutrition.calories * scale),
-      protein: Math.round(nutrition.protein * scale * 10) / 10,
-      fat: Math.round(nutrition.fat * scale * 10) / 10,
-      saturatedFat: nutrition.saturatedFat ? Math.round(nutrition.saturatedFat * scale * 10) / 10 : undefined,
-      transFat: nutrition.transFat ? Math.round(nutrition.transFat * scale * 10) / 10 : undefined,
-      carbohydrates: Math.round(nutrition.carbohydrates * scale * 10) / 10,
-      fiber: nutrition.fiber ? Math.round(nutrition.fiber * scale * 10) / 10 : undefined,
-      sugars: nutrition.sugars ? Math.round(nutrition.sugars * scale * 10) / 10 : undefined,
-      sodium: nutrition.sodium ? Math.round(nutrition.sodium * scale) : undefined,
-      cholesterol: nutrition.cholesterol ? Math.round(nutrition.cholesterol * scale) : undefined,
-      calcium: nutrition.calcium ? Math.round(nutrition.calcium * scale) : undefined,
-      iron: nutrition.iron ? Math.round(nutrition.iron * scale * 10) / 10 : undefined,
-      potassium: nutrition.potassium ? Math.round(nutrition.potassium * scale) : undefined,
-      vitaminA: nutrition.vitaminA ? Math.round(nutrition.vitaminA * scale) : undefined,
-      vitaminC: nutrition.vitaminC ? Math.round(nutrition.vitaminC * scale * 10) / 10 : undefined,
-      vitaminD: nutrition.vitaminD ? Math.round(nutrition.vitaminD * scale * 10) / 10 : undefined,
-      vitaminB12: nutrition.vitaminB12 ? Math.round(nutrition.vitaminB12 * scale * 10) / 10 : undefined,
-    };
-  }
-
-  return nutrition;
-}
-
-/**
- * Scale nutrition values by a multiplier (e.g., for different quantities)
- * @param nutrition - Base nutrition info
- * @param multiplier - Scaling factor
- * @returns Scaled NutritionInfo
- */
-export function scaleNutrition(nutrition: NutritionInfo, multiplier: number): NutritionInfo {
-  return {
-    calories: Math.round(nutrition.calories * multiplier),
-    protein: Math.round(nutrition.protein * multiplier * 10) / 10,
-    fat: Math.round(nutrition.fat * multiplier * 10) / 10,
-    saturatedFat: nutrition.saturatedFat ? Math.round(nutrition.saturatedFat * multiplier * 10) / 10 : undefined,
-    transFat: nutrition.transFat ? Math.round(nutrition.transFat * multiplier * 10) / 10 : undefined,
-    carbohydrates: Math.round(nutrition.carbohydrates * multiplier * 10) / 10,
-    fiber: nutrition.fiber ? Math.round(nutrition.fiber * multiplier * 10) / 10 : undefined,
-    sugars: nutrition.sugars ? Math.round(nutrition.sugars * multiplier * 10) / 10 : undefined,
-    sodium: nutrition.sodium ? Math.round(nutrition.sodium * multiplier) : undefined,
-    cholesterol: nutrition.cholesterol ? Math.round(nutrition.cholesterol * multiplier) : undefined,
-    calcium: nutrition.calcium ? Math.round(nutrition.calcium * multiplier) : undefined,
-    iron: nutrition.iron ? Math.round(nutrition.iron * multiplier * 10) / 10 : undefined,
-    potassium: nutrition.potassium ? Math.round(nutrition.potassium * multiplier) : undefined,
-    vitaminA: nutrition.vitaminA ? Math.round(nutrition.vitaminA * multiplier) : undefined,
-    vitaminC: nutrition.vitaminC ? Math.round(nutrition.vitaminC * multiplier * 10) / 10 : undefined,
-    vitaminD: nutrition.vitaminD ? Math.round(nutrition.vitaminD * multiplier * 10) / 10 : undefined,
-    vitaminB12: nutrition.vitaminB12 ? Math.round(nutrition.vitaminB12 * multiplier * 10) / 10 : undefined,
-  };
-}
-
-/**
- * Add multiple nutrition values together
- * @param nutritionArray - Array of NutritionInfo objects to sum
- * @returns Combined NutritionInfo
- */
-export function combineNutrition(nutritionArray: NutritionInfo[]): NutritionInfo {
-  if (nutritionArray.length === 0) {
-    return {
-      calories: 0,
-      protein: 0,
-      fat: 0,
-      carbohydrates: 0,
-    };
-  }
-
-  return {
-    calories: Math.round(nutritionArray.reduce((sum, n) => sum + (n.calories || 0), 0)),
-    protein: Math.round(nutritionArray.reduce((sum, n) => sum + (n.protein || 0), 0) * 10) / 10,
-    fat: Math.round(nutritionArray.reduce((sum, n) => sum + (n.fat || 0), 0) * 10) / 10,
-    saturatedFat: Math.round(nutritionArray.reduce((sum, n) => sum + (n.saturatedFat || 0), 0) * 10) / 10 || undefined,
-    transFat: Math.round(nutritionArray.reduce((sum, n) => sum + (n.transFat || 0), 0) * 10) / 10 || undefined,
-    carbohydrates: Math.round(nutritionArray.reduce((sum, n) => sum + (n.carbohydrates || 0), 0) * 10) / 10,
-    fiber: Math.round(nutritionArray.reduce((sum, n) => sum + (n.fiber || 0), 0) * 10) / 10 || undefined,
-    sugars: Math.round(nutritionArray.reduce((sum, n) => sum + (n.sugars || 0), 0) * 10) / 10 || undefined,
-    sodium: Math.round(nutritionArray.reduce((sum, n) => sum + (n.sodium || 0), 0)) || undefined,
-    cholesterol: Math.round(nutritionArray.reduce((sum, n) => sum + (n.cholesterol || 0), 0)) || undefined,
-    calcium: Math.round(nutritionArray.reduce((sum, n) => sum + (n.calcium || 0), 0)) || undefined,
-    iron: Math.round(nutritionArray.reduce((sum, n) => sum + (n.iron || 0), 0) * 10) / 10 || undefined,
-    potassium: Math.round(nutritionArray.reduce((sum, n) => sum + (n.potassium || 0), 0)) || undefined,
-    vitaminA: Math.round(nutritionArray.reduce((sum, n) => sum + (n.vitaminA || 0), 0)) || undefined,
-    vitaminC: Math.round(nutritionArray.reduce((sum, n) => sum + (n.vitaminC || 0), 0) * 10) / 10 || undefined,
-    vitaminD: Math.round(nutritionArray.reduce((sum, n) => sum + (n.vitaminD || 0), 0) * 10) / 10 || undefined,
-    vitaminB12: Math.round(nutritionArray.reduce((sum, n) => sum + (n.vitaminB12 || 0), 0) * 10) / 10 || undefined,
-  };
-}
-
-/**
- * Check if ingredient contains common allergens
- * @param description - Food description from USDA
- * @param ingredients - Ingredients list from USDA
- * @returns Array of detected allergens
- */
-export function detectAllergens(description: string, ingredients?: string): string[] {
-  const allergenKeywords: Record<string, string[]> = {
-    dairy: ["milk", "cheese", "cream", "butter", "lactose", "whey", "casein"],
-    eggs: ["egg", "albumin"],
-    fish: ["fish", "salmon", "tuna", "anchovy", "cod"],
-    crustacean: ["shrimp", "crab", "lobster", "crawfish"],
-    "tree nuts": ["almond", "cashew", "walnut", "pecan", "pistachio", "macadamia"],
-    peanuts: ["peanut", "groundnut"],
-    wheat: ["wheat", "flour", "bread", "cereal"],
-    soy: ["soy", "soybean", "tofu", "tempeh"],
-    sesame: ["sesame", "tahini"],
-  };
-
-  const searchText = `${description} ${ingredients || ""}`.toLowerCase();
-  const detected: string[] = [];
-
-  for (const [allergen, keywords] of Object.entries(allergenKeywords)) {
-    if (keywords.some((keyword) => searchText.includes(keyword))) {
-      detected.push(allergen);
+      return foods;
+    } catch (error) {
+      console.error("Error searching USDA foods:", error);
+      return [];
     }
   }
 
-  return detected;
-}
+  /**
+   * Get food details by FDC ID
+   */
+  async getFoodById(fdcId: string): Promise<USDAFoodItem | null> {
+    const cacheKey = `usda-id-${fdcId}`;
 
-// Local cache for USDA searches (to minimize API calls)
-const foodCache = new Map<string, USDAFoodItem>();
-const maxCacheSize = 100;
+    // Check cache
+    const cached = this.cache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
+      return cached.data;
+    }
 
-/**
- * Search with caching to reduce API calls
- * @param query - Food to search for
- * @param pageSize - Number of results
- * @returns Promise<USDAFoodItem[]>
- */
-export async function searchUSDAFoodsCached(query: string, pageSize: number = 10): Promise<USDAFoodItem[]> {
-  const cacheKey = `${query}:${pageSize}`;
+    try {
+      const url = new URL(`https://fdc.nal.usda.gov/api/foods/${fdcId}`);
+      url.searchParams.append("api_key", this.apiKey);
 
-  // Check cache first
-  if (foodCache.has(cacheKey)) {
-    return [foodCache.get(cacheKey)!];
+      const response = await fetch(url.toString());
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const data = await response.json();
+      const food = this.parseUSDAFood(data);
+
+      // Cache result
+      this.cache.set(cacheKey, { data: food, timestamp: Date.now() });
+
+      return food;
+    } catch (error) {
+      console.error("Error fetching USDA food:", error);
+      return null;
+    }
   }
 
-  // Fetch from API
-  const results = await searchUSDAFoods(query, pageSize);
+  /**
+   * Search for foods by category
+   */
+  async searchByCategory(category: string): Promise<USDAFoodItem[]> {
+    try {
+      const url = new URL(this.baseUrl);
+      url.searchParams.append("query", category);
+      url.searchParams.append("pageSize", "50");
+      url.searchParams.append("api_key", this.apiKey);
 
-  // Store first result in cache
-  if (results.length > 0) {
-    foodCache.set(cacheKey, results[0]);
+      const response = await fetch(url.toString());
 
-    // Simple cache size management
-    if (foodCache.size > maxCacheSize) {
-      const firstKey = foodCache.keys().next().value;
-      if (firstKey) {
-        foodCache.delete(firstKey);
+      if (!response.ok) {
+        return [];
+      }
+
+      const data = await response.json();
+      return (data.foods || []).map((f: any) => this.parseUSDAFood(f));
+    } catch (error) {
+      console.error("Error searching by category:", error);
+      return [];
+    }
+  }
+
+  /**
+   * Calculate recipe nutrition from ingredients
+   */
+  async calculateRecipeNutrition(
+    recipeName: string,
+    ingredients: Array<{
+      name: string;
+      quantity: number;
+      unit: string;
+    }>,
+    servingSize: number,
+    servingUnit: string,
+  ): Promise<RecipeNutritionInfo> {
+    const ingredientNutrition = [];
+    let totalCalories = 0;
+    let totalProtein = 0;
+    let totalFat = 0;
+    let totalCarbs = 0;
+    let totalFiber = 0;
+    let totalSodium = 0;
+
+    for (const ingredient of ingredients) {
+      const foods = await this.searchFoods(ingredient.name, 1);
+
+      if (foods.length > 0) {
+        const food = foods[0];
+        const quantity = this.convertToGrams(ingredient.quantity, ingredient.unit);
+
+        const caloriesPerGram = food.nutrients.energy.per100g / 100;
+        const proteinPerGram = food.nutrients.protein.per100g / 100;
+        const fatPerGram = food.nutrients.fat.per100g / 100;
+        const carbsPerGram = food.nutrients.carbohydrate.per100g / 100;
+        const fiberPerGram = food.nutrients.fiber.per100g / 100;
+        const sodiumPerGram = food.nutrients.sodium.per100g / 100;
+
+        const ingredientCalories = caloriesPerGram * quantity;
+        const ingredientProtein = proteinPerGram * quantity;
+        const ingredientFat = fatPerGram * quantity;
+        const ingredientCarbs = carbsPerGram * quantity;
+        const ingredientFiber = fiberPerGram * quantity;
+        const ingredientSodium = sodiumPerGram * quantity;
+
+        totalCalories += ingredientCalories;
+        totalProtein += ingredientProtein;
+        totalFat += ingredientFat;
+        totalCarbs += ingredientCarbs;
+        totalFiber += ingredientFiber;
+        totalSodium += ingredientSodium;
+
+        ingredientNutrition.push({
+          name: ingredient.name,
+          quantity: ingredient.quantity,
+          unit: ingredient.unit,
+          fdcId: food.fdcId,
+          nutrition: {
+            calories: ingredientCalories,
+            protein: ingredientProtein,
+            fat: ingredientFat,
+            carbs: ingredientCarbs,
+          },
+        });
       }
     }
+
+    // Calculate per serving
+    const servingSizeGrams = this.convertToGrams(servingSize, servingUnit);
+    const servings = Math.max(1, totalCalories > 0 ? 1 : 0);
+
+    return {
+      recipeId: `recipe-${Date.now()}`,
+      recipeName,
+      servingSize,
+      servingUnit,
+      perServing: {
+        calories: Math.round(totalCalories / servings),
+        protein: Math.round((totalProtein / servings) * 10) / 10,
+        fat: Math.round((totalFat / servings) * 10) / 10,
+        carbs: Math.round((totalCarbs / servings) * 10) / 10,
+        fiber: Math.round((totalFiber / servings) * 10) / 10,
+        sodium: Math.round(totalSodium / servings),
+      },
+      ingredients: ingredientNutrition,
+      allergenInfo: this.detectAllergens(ingredientNutrition),
+    };
   }
 
-  return results;
+  /**
+   * Get common allergens in food
+   */
+  async getAllergenInfo(fdcId: string): Promise<string[]> {
+    const food = await this.getFoodById(fdcId);
+    if (!food) return [];
+
+    const allergens: string[] = [];
+
+    // Check food description for allergen keywords
+    const description = food.description.toLowerCase();
+    const allergenKeywords: Record<string, string> = {
+      peanut: "peanut",
+      "tree nut": "tree nut",
+      milk: "milk",
+      egg: "egg",
+      fish: "fish",
+      shellfish: "shellfish",
+      crustacean: "crustacean",
+      wheat: "wheat",
+      soy: "soy",
+      sesame: "sesame",
+      gluten: "gluten",
+    };
+
+    Object.values(allergenKeywords).forEach((keyword) => {
+      if (description.includes(keyword)) {
+        allergens.push(keyword);
+      }
+    });
+
+    return allergens;
+  }
+
+  /**
+   * Compare nutrition of similar foods
+   */
+  async compareNutrition(foodName1: string, foodName2: string): Promise<{
+    food1: USDAFoodItem | null;
+    food2: USDAFoodItem | null;
+    comparison: {
+      caloriesDiff: number;
+      proteinDiff: number;
+      fatDiff: number;
+      carbsDiff: number;
+    };
+  }> {
+    const foods1 = await this.searchFoods(foodName1, 1);
+    const foods2 = await this.searchFoods(foodName2, 1);
+
+    const food1 = foods1[0] || null;
+    const food2 = foods2[0] || null;
+
+    return {
+      food1,
+      food2,
+      comparison: {
+        caloriesDiff: (food2?.nutrients.energy.per100g || 0) - (food1?.nutrients.energy.per100g || 0),
+        proteinDiff: (food2?.nutrients.protein.per100g || 0) - (food1?.nutrients.protein.per100g || 0),
+        fatDiff: (food2?.nutrients.fat.per100g || 0) - (food1?.nutrients.fat.per100g || 0),
+        carbsDiff: (food2?.nutrients.carbohydrate.per100g || 0) - (food1?.nutrients.carbohydrate.per100g || 0),
+      },
+    };
+  }
+
+  /**
+   * Parse USDA API response
+   */
+  private parseUSDAFood(data: any): USDAFoodItem {
+    const getNutrient = (nutrientId: number, defaultValue: number = 0) => {
+      const nutrient = (data.foodNutrients || []).find((n: any) => n.nutrient.id === nutrientId);
+      return nutrient?.value || defaultValue;
+    };
+
+    return {
+      fdcId: data.fdcId,
+      description: data.description,
+      foodCategory: data.foodCategory || "General",
+      publishedDate: data.publishedDate || new Date().toISOString(),
+      dataType: data.dataType || "Survey (FNDDS)",
+      nutrients: {
+        energy: { value: getNutrient(1008), unit: "kcal", per100g: getNutrient(1008) }, // Energy
+        protein: { value: getNutrient(1003), unit: "g", per100g: getNutrient(1003) },
+        fat: { value: getNutrient(1004), unit: "g", per100g: getNutrient(1004) },
+        carbohydrate: { value: getNutrient(1005), unit: "g", per100g: getNutrient(1005) },
+        fiber: { value: getNutrient(1079), unit: "g", per100g: getNutrient(1079) },
+        sugar: { value: getNutrient(2000), unit: "g", per100g: getNutrient(2000) },
+        sodium: { value: getNutrient(1093), unit: "mg", per100g: getNutrient(1093) },
+        calcium: { value: getNutrient(1087), unit: "mg", per100g: getNutrient(1087) },
+        iron: { value: getNutrient(1089), unit: "mg", per100g: getNutrient(1089) },
+        potassium: { value: getNutrient(1092), unit: "mg", per100g: getNutrient(1092) },
+        vitaminA: { value: getNutrient(1104), unit: "mcg", per100g: getNutrient(1104) },
+        vitaminC: { value: getNutrient(1162), unit: "mg", per100g: getNutrient(1162) },
+        vitaminD: { value: getNutrient(1114), unit: "mcg", per100g: getNutrient(1114) },
+        vitaminB12: { value: getNutrient(1168), unit: "mcg", per100g: getNutrient(1168) },
+      },
+    };
+  }
+
+  /**
+   * Convert common units to grams
+   */
+  private convertToGrams(quantity: number, unit: string): number {
+    const conversions: Record<string, number> = {
+      g: 1,
+      gram: 1,
+      grams: 1,
+      oz: 28.35,
+      ounce: 28.35,
+      ounces: 28.35,
+      lb: 453.6,
+      lbs: 453.6,
+      pound: 453.6,
+      pounds: 453.6,
+      kg: 1000,
+      ml: 1, // Approximate for water
+      l: 1000,
+      cup: 240,
+      cups: 240,
+      tbsp: 15,
+      tsp: 5,
+    };
+
+    return quantity * (conversions[unit.toLowerCase()] || 1);
+  }
+
+  /**
+   * Detect allergens in ingredients
+   */
+  private detectAllergens(ingredients: RecipeNutritionInfo["ingredients"]): string[] {
+    const allergens = new Set<string>();
+    const allergenPatterns: Record<string, string[]> = {
+      peanut: ["peanut", "arachis"],
+      "tree nut": ["almond", "cashew", "walnut", "pecan", "macadamia", "pistachio", "brazil"],
+      milk: ["milk", "dairy", "cheese", "butter", "cream", "yogurt"],
+      egg: ["egg", "eggs"],
+      fish: ["fish", "cod", "salmon", "tuna"],
+      shellfish: ["shellfish", "shrimp", "crab", "lobster", "oyster"],
+      wheat: ["wheat", "bread", "pasta"],
+      soy: ["soy", "soybean", "tofu"],
+      sesame: ["sesame"],
+    };
+
+    ingredients.forEach((ingredient) => {
+      const name = ingredient.name.toLowerCase();
+      Object.entries(allergenPatterns).forEach(([allergen, patterns]) => {
+        if (patterns.some((pattern) => name.includes(pattern))) {
+          allergens.add(allergen);
+        }
+      });
+    });
+
+    return Array.from(allergens);
+  }
+
+  /**
+   * Clear cache
+   */
+  clearCache() {
+    this.cache.clear();
+  }
 }
+
+export const usdaNutrition = new USDANutritionDB();
