@@ -88,8 +88,8 @@ export function requestIdleCallback(callback: () => void): number {
  */
 export function cancelIdleCallback(id: number): void {
   if (typeof window !== "undefined" && "cancelIdleCallback" in window) {
-    window.cancelIdleCallback(id as unknown as number);
-  } else {
+    (window as any).cancelIdleCallback(id as unknown as number);
+  } else if (typeof window !== "undefined") {
     window.clearTimeout(id as unknown as number);
   }
 }
