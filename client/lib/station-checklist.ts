@@ -120,9 +120,9 @@ export function buildStationChecklist(
           yieldText: row.yield ? normalizeWhitespace(row.yield) : undefined,
           recipeId: recipe.id,
           recipeName: recipe.title,
-        } satisfies StationChecklistItem;
+        } as StationChecklistItem;
       })
-      .filter((value): value is StationChecklistItem => value !== null);
+      .filter((value): value is Exclude<typeof value, null> => value !== null);
 
     if (ingredients.length === 0) {
       missing.push({ recipeId: recipe.id, recipeName: recipe.title, reason: "noIngredients" });
