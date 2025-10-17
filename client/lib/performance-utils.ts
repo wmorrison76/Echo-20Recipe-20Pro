@@ -253,7 +253,10 @@ export function prefersDarkMode(): boolean {
  * @param quality - Compression quality (0-1)
  * @returns Compressed data URL
  */
-export function compressImageDataUrl(dataUrl: string, quality: number = 0.8): string {
+export async function compressImageDataUrl(dataUrl: string, quality: number = 0.8): Promise<string> {
+  if (typeof document === "undefined") {
+    return dataUrl;
+  }
   const canvas = document.createElement("canvas");
   const img = new Image();
 
@@ -266,7 +269,7 @@ export function compressImageDataUrl(dataUrl: string, quality: number = 0.8): st
       resolve(canvas.toDataURL("image/jpeg", quality));
     };
     img.src = dataUrl;
-  }).then((url) => url as string);
+  });
 }
 
 /**
