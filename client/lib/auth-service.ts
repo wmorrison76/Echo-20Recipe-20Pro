@@ -49,6 +49,9 @@ export async function signUp(data: SignUpData): Promise<{
   error?: string;
   user?: AuthUser;
 }> {
+  if (!supabase) {
+    return { success: false, error: "Supabase is not configured" };
+  }
   try {
     // Create auth user
     const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -119,6 +122,9 @@ export async function signIn(data: SignInData): Promise<{
   error?: string;
   session?: AuthSession;
 }> {
+  if (!supabase) {
+    return { success: false, error: "Supabase is not configured" };
+  }
   try {
     const { data: authData, error } = await supabase.auth.signInWithPassword({
       email: data.email,
@@ -165,6 +171,9 @@ export async function signOut(): Promise<{
   success: boolean;
   error?: string;
 }> {
+  if (!supabase) {
+    return { success: false, error: "Supabase is not configured" };
+  }
   try {
     const { error } = await supabase.auth.signOut();
     return { success: !error, error: error?.message };
@@ -177,6 +186,9 @@ export async function signOut(): Promise<{
  * Get current session
  */
 export async function getCurrentSession(): Promise<AuthSession | null> {
+  if (!supabase) {
+    return null;
+  }
   try {
     const { data } = await supabase.auth.getSession();
 
@@ -213,6 +225,9 @@ export async function refreshToken(): Promise<{
   success: boolean;
   error?: string;
 }> {
+  if (!supabase) {
+    return { success: false, error: "Supabase is not configured" };
+  }
   try {
     const { error } = await supabase.auth.refreshSession();
     return { success: !error, error: error?.message };
@@ -232,6 +247,9 @@ export async function updateUserProfile(
   error?: string;
   user?: AuthUser;
 }> {
+  if (!supabase) {
+    return { success: false, error: "Supabase is not configured" };
+  }
   try {
     const { data, error } = await supabase
       .from("users")
@@ -257,6 +275,9 @@ export async function resetPassword(email: string): Promise<{
   success: boolean;
   error?: string;
 }> {
+  if (!supabase) {
+    return { success: false, error: "Supabase is not configured" };
+  }
   try {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
@@ -275,6 +296,9 @@ export async function updatePassword(newPassword: string): Promise<{
   success: boolean;
   error?: string;
 }> {
+  if (!supabase) {
+    return { success: false, error: "Supabase is not configured" };
+  }
   try {
     const { error } = await supabase.auth.updateUser({
       password: newPassword,
@@ -298,6 +322,9 @@ export async function isAuthenticated(): Promise<boolean> {
  * Get user by ID
  */
 export async function getUserById(userId: string): Promise<AuthUser | null> {
+  if (!supabase) {
+    return null;
+  }
   try {
     const { data, error } = await supabase
       .from("users")
@@ -317,6 +344,9 @@ export async function getUserById(userId: string): Promise<AuthUser | null> {
 export async function getOrganizationMembers(
   organizationId: string,
 ): Promise<AuthUser[]> {
+  if (!supabase) {
+    return [];
+  }
   try {
     const { data, error } = await supabase
       .from("users")
@@ -340,6 +370,9 @@ export async function inviteUserToOrganization(
   success: boolean;
   error?: string;
 }> {
+  if (!supabase) {
+    return { success: false, error: "Supabase is not configured" };
+  }
   try {
     // Create invitation record
     const { error } = await supabase
@@ -367,6 +400,9 @@ export async function acceptOrganizationInvitation(
   success: boolean;
   error?: string;
 }> {
+  if (!supabase) {
+    return { success: false, error: "Supabase is not configured" };
+  }
   try {
     // Get invitation
     const { data: invitation, error: fetchError } = await supabase
