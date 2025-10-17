@@ -250,9 +250,9 @@ export default function RecipeTemplate() {
         }
       };
       window.addEventListener("afterprint", handleAfterPrint, { once: true });
-      requestAnimationFrame(() => {
+      setTimeout(() => {
         window.print();
-      });
+      }, 100);
     }
   };
 
