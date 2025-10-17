@@ -7,6 +7,7 @@ import NutritionAllergensWorkspace from "./sections/saas/NutritionAllergensWorks
 import HaccpComplianceWorkspace from "./sections/saas/HaccpComplianceWorkspace";
 import WasteTrackingWorkspace from "./sections/saas/WasteTrackingWorkspace";
 import CustomerServiceWorkspace from "./sections/saas/CustomerServiceWorkspace";
+import PlateCostingWorkspace from "./sections/saas/PlateCostingWorkspace";
 import ServerNotesSection from "./sections/server-notes";
 import OperationsDocsSection from "./sections/operations-docs";
 import DishAssemblySection from "./sections/dish-assembly";
