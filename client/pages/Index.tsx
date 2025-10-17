@@ -5,6 +5,7 @@ import SaasRoadmapSection from "./sections/SaasRoadmap";
 import InventorySuppliesWorkspace from "./sections/saas/InventorySuppliesWorkspace";
 import NutritionAllergensWorkspace from "./sections/saas/NutritionAllergensWorkspace";
 import HaccpComplianceWorkspace from "./sections/saas/HaccpComplianceWorkspace";
+import WasteTrackingWorkspace from "./sections/saas/WasteTrackingWorkspace";
 import ServerNotesSection from "./sections/server-notes";
 import OperationsDocsSection from "./sections/operations-docs";
 import DishAssemblySection from "./sections/dish-assembly";
