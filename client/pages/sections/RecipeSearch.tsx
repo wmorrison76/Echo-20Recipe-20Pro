@@ -46,6 +46,8 @@ import { cn } from "@/lib/utils";
 import { useLanguage, useTranslation } from "@/context/LanguageContext";
 import type { LanguageCode } from "@/i18n/config";
 import type { RecipeCollection } from "@shared/server-notes";
+import { InlineCostBadge } from "@/components/RecipeCostSummary";
+import { getIngredientRowsFromRecipe } from "@/lib/recipe-scaling";
 
 export function RecipeCard({
   r,
