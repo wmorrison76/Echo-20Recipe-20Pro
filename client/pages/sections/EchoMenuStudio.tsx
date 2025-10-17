@@ -2025,17 +2025,33 @@ export default function MenuDesignStudioSection() {
             `Failed to load font: ${definition.family}. Using fallback.`,
           );
           toast({
-            title: "Font loading warning",
-            description: `${definition.family} failed to load. Using system fallback.`,
+            title: "Font unavailable",
+            description: `${definition.family} couldn't load. Using system fallback font instead.`,
             variant: "destructive",
           });
+          // Mark as failed so we don't try again
+          loadedFontsRef.current.add(`${definition.family}:failed`);
+        };
+        link.onload = () => {
+          // Font loaded successfully
+          loadedFontsRef.current.add(definition.family);
         };
         document.head.appendChild(link);
       }
       if (document.fonts && typeof document.fonts.load === "function") {
-        document.fonts.load(`1rem ${definition.family}`).catch((error) => {
-          console.warn(`Font loading error for ${definition.family}:`, error);
-        });
+        document.fonts
+          .load(`400 1rem ${definition.family}`)
+          .catch((error) => {
+            console.warn(`Font loading error for ${definition.family}:`, error);
+            // Still add to loaded so we don't retry endlessly
+            if (!loadedFontsRef.current.has(definition.family)) {
+              toast({
+                title: "Font loading error",
+                description: `Could not load ${definition.family}. Ensure you have internet connection.`,
+                variant: "destructive",
+              });
+            }
+          });
       }
       loadedFontsRef.current.add(definition.family);
     },
