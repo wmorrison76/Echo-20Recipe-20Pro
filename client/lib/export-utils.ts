@@ -64,11 +64,12 @@ export function exportServerNotesAsCSV(
   lines.push(t("export.common.recipes", options.language, "Recipes"));
   lines.push(`${t("export.common.recipeName", options.language, "Recipe Name")},${t("export.common.course", options.language, "Course")},${t("export.common.cuisine", options.language, "Cuisine")},${t("export.common.portions", options.language, "Portions")}`);
   
-  notes.selectedRecipes.forEach((recipe) => {
+  notes.selectedRecipes.forEach((noteRecipe) => {
+    const recipe = noteRecipe.recipe;
     const course = recipe.course || "";
     const cuisine = recipe.cuisine || "";
-    const portions = recipe.portions || "";
-    lines.push(`"${recipe.name}","${course}","${cuisine}","${portions}"`);
+    const portions = "";
+    lines.push(`"${recipe.title}","${course}","${cuisine}","${portions}"`);
   });
 
   downloadFile(
