@@ -210,7 +210,7 @@ export function generateDailyPlateAnalysis(
   const wasteCost = wastedPlates.reduce((sum, p) => sum + p.cost, 0) + dayWastes.reduce((sum, w) => sum + w.cost, 0);
   const wastePercent = totalCost > 0 ? Math.round((wasteCost / totalCost) * 10000) / 100 : 0;
 
-  const lostRevenue = returnPlates.reduce((sum, p) => sum + p.price, 0) + compCost;
+  const lostRevenue = returnedPlates.reduce((sum, p) => sum + p.price, 0) + compCost;
   const totalCostOfIssues = returnCost + compCost + wasteCost;
   const effectiveMargin = totalRevenue > 0 ? Math.round(((totalRevenue - totalCost - totalCostOfIssues) / totalRevenue) * 10000) / 100 : 0;
 
