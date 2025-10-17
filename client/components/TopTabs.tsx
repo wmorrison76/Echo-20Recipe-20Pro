@@ -24,6 +24,7 @@ import {
   Sprout,
   Save,
   ShoppingCart,
+  Truck,
   Trash2,
   Users,
   UtensilsCrossed,
