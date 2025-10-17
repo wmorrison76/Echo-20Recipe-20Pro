@@ -2567,6 +2567,7 @@ const onFiles = async (files: File[]) => {
               onPreview={() => setPreview(r)}
               onFav={() => toggleFavorite(r.id)}
               onRate={(n) => rateRecipe(r.id, n)}
+              onUpdateTags={(tags) => updateRecipeTags(r.id, tags)}
               onTrash={() =>
                 r.deletedAt ? restoreRecipe(r.id) : deleteRecipe(r.id)
               }
