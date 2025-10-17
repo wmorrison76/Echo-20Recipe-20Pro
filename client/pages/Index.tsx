@@ -182,6 +182,11 @@ function IndexContent() {
                 <HaccpComplianceWorkspace />
               </div>
             </TabsContent>
+            <TabsContent value="waste-tracking">
+              <div className="container mx-auto space-y-3 px-3 py-3">
+                <WasteTrackingWorkspace />
+              </div>
+            </TabsContent>
             <TabsContent value="dish-assembly">
               <DishAssemblySection />
             </TabsContent>
