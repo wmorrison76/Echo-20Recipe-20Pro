@@ -5574,15 +5574,23 @@ function ImageControls({
         </div>
         {isMaskEditing ? (
           <div className="space-y-2">
-            <p className="text-[11px] leading-relaxed text-muted-foreground">
-              Click around the subject to add points. Undo removes the last
-              point. Double-click or press Enter to apply your selection.
-            </p>
+            <div className="rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 p-3">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-blue-700 dark:text-blue-300 mb-2">
+                ℹ️ Editing Instructions
+              </p>
+              <ul className="text-[11px] leading-relaxed text-blue-600 dark:text-blue-200 space-y-1">
+                <li>✓ Click on the image to add selection points around the subject you want to keep</li>
+                <li>✓ Minimum 3 points required to create a mask</li>
+                <li>✓ Click &quot;Undo point&quot; to remove the last point</li>
+                <li>✓ Press <kbd className="px-1.5 py-0.5 bg-blue-200 dark:bg-blue-700 rounded text-xs font-mono">Enter</kbd> or double-click to apply</li>
+              </ul>
+            </div>
             <div className="flex flex-wrap gap-2">
               <Button
                 size="sm"
                 onClick={onMaskCommit}
                 disabled={maskPointCount < 3}
+                title={maskPointCount < 3 ? `Need ${3 - maskPointCount} more points` : "Apply mask"}
               >
                 Apply selection
               </Button>
@@ -5591,19 +5599,28 @@ function ImageControls({
                 variant="outline"
                 onClick={onMaskUndo}
                 disabled={maskPointCount === 0}
+                title="Undo last point"
               >
                 Undo point
               </Button>
-              <Button size="sm" variant="ghost" onClick={onMaskCancel}>
+              <Button size="sm" variant="ghost" onClick={onMaskCancel} title="Exit mask editor without saving">
                 Cancel
               </Button>
             </div>
-            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-              Points: {maskPointCount}
+            <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-semibold">
+              Points added: <span className="text-blue-600 dark:text-blue-400">{maskPointCount}/3+</span>
             </p>
           </div>
         ) : (
           <div className="space-y-2">
+            <div className="rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-3">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-amber-700 dark:text-amber-300 mb-2">
+                💡 Background Removal
+              </p>
+              <p className="text-[11px] leading-relaxed text-amber-700 dark:text-amber-200">
+                Remove the background from your image by creating a selection around the subject. The outlined area will be kept, and the rest will become transparent.
+              </p>
+            </div>
             <Button size="sm" variant="secondary" onClick={onBeginMaskEditing}>
               Start background selection
             </Button>
@@ -5612,18 +5629,15 @@ function ImageControls({
               variant="ghost"
               onClick={onMaskClear}
               disabled={!hasMask}
+              title="Remove current mask and start over"
             >
               Clear mask
             </Button>
             {hasMask ? (
-              <span className="inline-block rounded-full bg-emerald-500/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-emerald-600">
-                Mask applied
+              <span className="inline-block rounded-full bg-emerald-500/10 border border-emerald-300 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-emerald-600 dark:text-emerald-400">
+                ✓ Mask applied
               </span>
             ) : null}
-            <p className="text-[11px] leading-relaxed text-muted-foreground">
-              Outline the area you want to keep. The rest of the image becomes
-              transparent when applied.
-            </p>
           </div>
         )}
       </div>
