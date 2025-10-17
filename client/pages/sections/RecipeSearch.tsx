@@ -70,6 +70,7 @@ export function RecipeCard({
   selected?: boolean;
   onToggleSelect?: () => void;
 }) {
+  const { t } = useTranslation();
   const cover = r.imageDataUrls?.[0] ?? r.image ?? undefined;
   const stars = Array.from({ length: 5 }, (_, i) => i < (r.rating || 0));
   return (
