@@ -151,6 +151,12 @@ const navItems: NavItemConfig[] = [
     icon: Trash2,
   },
   {
+    to: "/?tab=customer-service",
+    labelKey: "nav.customerService",
+    fallback: "CUSTOMERS",
+    icon: Users,
+  },
+  {
     to: "/?tab=gallery",
     labelKey: "nav.gallery",
     fallback: "GALLERY",
