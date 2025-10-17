@@ -1,5 +1,5 @@
 import "./global.css";
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import "./add-recipe.styles.css";
 
 import { Toaster } from "@/components/ui/toaster";
@@ -8,11 +8,19 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import Login from "./pages/Login";
-import RecipeEditor from "./pages/RecipeEditor";
-import RecipeTemplate from "./pages/RecipeTemplate";
+
+// Lazy load route components to reduce initial bundle size
+const Index = lazy(() => import("./pages/Index"));
+const RecipeEditor = lazy(() => import("./pages/RecipeEditor"));
+const RecipeTemplate = lazy(() => import("./pages/RecipeTemplate"));
+const Login = lazy(() => import("./pages/Login"));
+
+const LoadingFallback = () => (
+  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}>
+    <div>Loading...</div>
+  </div>
+);
 import { AppDataProvider } from "@/context/AppDataContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { YieldProvider } from "@/context/YieldContext";
@@ -63,34 +71,36 @@ const App = () => (
                 <AuthProvider>
                   <KeyboardShortcutsProvider>
                     <BrowserRouter>
-                      <Routes>
-                        <Route
-                          path="/"
-                          element={
-                            <ProtectedRoute>
-                              <Index />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/recipe/:id"
-                          element={
-                            <ProtectedRoute>
-                              <RecipeEditor />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/recipe/:id/view"
-                          element={
-                            <ProtectedRoute>
-                              <RecipeTemplate />
-                            </ProtectedRoute>
-                          }
-                        />
-                        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                        <Route path="*" element={<NotFound />} />
-                      </Routes>
+                      <Suspense fallback={<LoadingFallback />}>
+                        <Routes>
+                          <Route
+                            path="/"
+                            element={
+                              <ProtectedRoute>
+                                <Index />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/recipe/:id"
+                            element={
+                              <ProtectedRoute>
+                                <RecipeEditor />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/recipe/:id/view"
+                            element={
+                              <ProtectedRoute>
+                                <RecipeTemplate />
+                              </ProtectedRoute>
+                            }
+                          />
+                          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                          <Route path="*" element={<NotFound />} />
+                        </Routes>
+                      </Suspense>
                     </BrowserRouter>
                   </KeyboardShortcutsProvider>
                 </AuthProvider>
