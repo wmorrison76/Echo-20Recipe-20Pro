@@ -82,7 +82,7 @@ export interface CompAnalysis {
   totalComps: number;
   totalCompCost: number;
   compReasons: Record<string, { count: number; cost: number }>;
-  topCompmedDishes: Array<{ recipeName: string; count: number; totalCost: number }>;
+  topCompedDishes: Array<{ recipeName: string; count: number; cost: number }>;
   compPercent: number;
   recommendation: string;
 }
