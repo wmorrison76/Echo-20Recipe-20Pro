@@ -24,6 +24,7 @@ import {
   Save,
   ShoppingCart,
   Trash2,
+  Users,
   UtensilsCrossed,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
