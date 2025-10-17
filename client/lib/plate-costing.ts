@@ -285,7 +285,7 @@ export function analyzeComps(comps: CompRecord[], period: "daily" | "weekly" | "
     totalComps,
     totalCompCost,
     compReasons,
-    topCompmedDishes,
+    topCompedDishes,
     compPercent: 0, // Would need daily revenue to calculate
     recommendation,
   };
