@@ -314,7 +314,7 @@ function generateCostingRecommendations(recipes: RecipeCosting[], trends: any): 
   return recommendations;
 }
 
-function determineVarianceCategory(recipe: RecipeCosting) {
+function determineVarianceCategory(recipe: RecipeCosting): "yield-loss" | "portion-size" | "labor" | "price-increase" {
   if (recipe.wasteMetrics.wastePercent > 8) return "yield-loss";
   if (Math.abs(recipe.avgCost - recipe.pricePoint * ((100 - recipe.targetMargin) / 100)) > 5) return "price-increase";
   return "labor";
