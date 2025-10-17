@@ -194,6 +194,11 @@ function IndexContent() {
                 <CustomerServiceWorkspace />
               </div>
             </TabsContent>
+            <TabsContent value="plate-costing">
+              <div className="container mx-auto space-y-3 px-3 py-3">
+                <PlateCostingWorkspace />
+              </div>
+            </TabsContent>
             <TabsContent value="dish-assembly">
               <DishAssemblySection />
             </TabsContent>
