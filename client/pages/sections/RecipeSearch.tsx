@@ -75,6 +75,21 @@ export function RecipeCard({
   const { t } = useTranslation();
   const cover = r.imageDataUrls?.[0] ?? r.image ?? undefined;
   const stars = Array.from({ length: 5 }, (_, i) => i < (r.rating || 0));
+
+  // Calculate recipe cost from extra data if available
+  const recipeCost = (() => {
+    try {
+      const serverNotes = r.extra?.serverNotes as any;
+      if (serverNotes?.totals?.fullRecipeCost) {
+        return serverNotes.totals.fullRecipeCost;
+      }
+    } catch {}
+    return null;
+  })();
+
+  const portionCost = recipeCost && r.extra?.serverNotes?.portionCount
+    ? recipeCost / (r.extra.serverNotes.portionCount || 1)
+    : null;
   return (
     <div
       className={cn(
