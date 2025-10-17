@@ -1947,7 +1947,7 @@ export default function MenuDesignStudioSection() {
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
   const loadedFontsRef = useRef<Set<string>>(new Set());
-  const { images: galleryImages } = useAppData();
+  const { images: galleryImages, reloadImages } = useAppData();
   const { feedback, showFeedback, UndoRedoFeedbackComponent } =
     useUndoRedoFeedback();
 
