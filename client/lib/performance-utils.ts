@@ -88,10 +88,11 @@ export function requestIdleCallback(callback: () => void): number {
  * @param id - ID from requestIdleCallback
  */
 export function cancelIdleCallback(id: number): void {
-  if (typeof window !== "undefined" && "cancelIdleCallback" in window) {
-    (window as any).cancelIdleCallback(id as unknown as number);
-  } else if (typeof window !== "undefined") {
-    window.clearTimeout(id as unknown as number);
+  const w = typeof window !== "undefined" ? (window as any) : null;
+  if (w && "cancelIdleCallback" in w) {
+    w.cancelIdleCallback(id as unknown as number);
+  } else if (w && "clearTimeout" in w) {
+    w.clearTimeout(id as unknown as number);
   }
 }
 
