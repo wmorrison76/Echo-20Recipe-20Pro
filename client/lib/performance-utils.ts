@@ -74,9 +74,12 @@ export function memoize<T extends (...args: any[]) => any>(func: T): T {
  */
 export function requestIdleCallback(callback: () => void): number {
   if (typeof window !== "undefined" && "requestIdleCallback" in window) {
-    return window.requestIdleCallback(callback) as unknown as number;
+    return (window as any).requestIdleCallback(callback) as unknown as number;
   }
-  return window.setTimeout(callback, 1) as unknown as number;
+  if (typeof window !== "undefined") {
+    return window.setTimeout(callback, 1) as unknown as number;
+  }
+  return 0;
 }
 
 /**
