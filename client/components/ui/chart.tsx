@@ -1,7 +1,10 @@
 import * as React from "react";
-import * as RechartsPrimitive from "recharts";
+import { lazy, Suspense } from "react";
 
 import { cn } from "@/lib/utils";
+
+// Dynamically import Recharts to reduce initial bundle size
+const RechartsPrimitive = lazy(() => import("recharts"));
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const;
