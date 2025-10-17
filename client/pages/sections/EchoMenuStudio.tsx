@@ -2685,6 +2685,10 @@ export default function MenuDesignStudioSection() {
       ) {
         event.preventDefault();
         setHasUnsavedChanges(true);
+        toast({
+          title: "Saving...",
+          description: "Your design will be saved automatically",
+        });
         return;
       }
 
@@ -2721,6 +2725,10 @@ export default function MenuDesignStudioSection() {
       if ((event.key === "Delete" || event.key === "Backspace") && !isLocked) {
         event.preventDefault();
         handleDeleteSelected();
+        toast({
+          title: "Element deleted",
+          description: "Press Ctrl+Z to undo",
+        });
         return;
       }
 
@@ -2731,6 +2739,10 @@ export default function MenuDesignStudioSection() {
       ) {
         event.preventDefault();
         handleDuplicateSelected();
+        toast({
+          title: "Element duplicated",
+          description: "New element created",
+        });
         return;
       }
 
@@ -3381,7 +3393,7 @@ export default function MenuDesignStudioSection() {
                 </SelectContent>
               </Select>
               <div className="text-[11px] font-medium uppercase tracking-[0.24em] text-muted-foreground">
-                {`${formatInches(printPreset.widthIn)}″ × ${formatInches(printPreset.heightIn)}″ • ${printPreset.dpi} DPI`}
+                {`${formatInches(printPreset.widthIn)}��� × ${formatInches(printPreset.heightIn)}″ • ${printPreset.dpi} DPI`}
               </div>
               <div className="text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
                 {`Safe ${formatInches(printPreset.safeMarginIn)}″ • Bleed ${formatInches(printPreset.bleedIn)}″ • ${printPreset.colorProfile}`}
