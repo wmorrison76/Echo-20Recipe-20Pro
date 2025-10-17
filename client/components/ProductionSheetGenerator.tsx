@@ -1,8 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { jsPDF } from "jspdf";
-import "jspdf/dist/jspdf.umd.min.js";
 import { Download, Printer } from "lucide-react";
 
 export interface ProductionSheetItem {
@@ -32,7 +30,8 @@ export const ProductionSheetGenerator: React.FC<ProductionSheetGeneratorProps> =
   organizationName = "Restaurant/Bakery",
   instructions,
 }) => {
-  const generatePDF = useCallback(() => {
+  const generatePDF = useCallback(async () => {
+    const { jsPDF } = await import("jspdf");
     const doc = new jsPDF();
     let yPosition = 20;
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -143,8 +142,8 @@ export const ProductionSheetGenerator: React.FC<ProductionSheetGeneratorProps> =
     return doc;
   }, [date, service, items, organizationName, instructions]);
 
-  const handleDownloadPDF = useCallback(() => {
-    const doc = generatePDF();
+  const handleDownloadPDF = useCallback(async () => {
+    const doc = await generatePDF();
     doc.save(`production-sheet-${date}.pdf`);
   }, [generatePDF, date]);
 
