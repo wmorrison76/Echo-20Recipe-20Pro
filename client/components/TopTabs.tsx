@@ -158,6 +158,12 @@ const navItems: NavItemConfig[] = [
     icon: Users,
   },
   {
+    to: "/?tab=plate-costing",
+    labelKey: "nav.plateCosting",
+    fallback: "COSTING",
+    icon: DollarSign,
+  },
+  {
     to: "/?tab=gallery",
     labelKey: "nav.gallery",
     fallback: "GALLERY",
