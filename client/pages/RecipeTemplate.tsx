@@ -282,6 +282,9 @@ export default function RecipeTemplate() {
             >
               Edit
             </Button>
+            <Button variant="outline" onClick={openScaleDialog}>
+              Scale
+            </Button>
             <Button onClick={openScaleDialog}>Print</Button>
           </div>
         </div>
