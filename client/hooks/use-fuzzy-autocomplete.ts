@@ -180,26 +180,35 @@ export function useUnitSuggestions() {
 
 // Technique suggestions
 export function useTechniqueSuggestions() {
-  const { recipes } = useAppData();
-
-  const candidates = useMemo(() => {
-    const techniques = new Set<string>();
-    for (const recipe of recipes) {
-      if (recipe.techniques) {
-        for (const technique of recipe.techniques) {
-          if (technique && typeof technique === "string") {
-            techniques.add(technique);
-          }
-        }
-      }
-    }
-    return buildDictionary(Array.from(techniques));
-  }, [recipes]);
+  const commonTechniques = useMemo(
+    () =>
+      buildDictionary([
+        "Bake",
+        "Boil",
+        "Braise",
+        "Broil",
+        "Chop",
+        "Dice",
+        "Ferment",
+        "Fry",
+        "Grill",
+        "Julienne",
+        "Marinate",
+        "Mince",
+        "Poach",
+        "Roast",
+        "Sauté",
+        "Simmer",
+        "Steam",
+        "Stew",
+      ]),
+    [],
+  );
 
   return useCallback(
     (query: string, options?: FuzzyMatchOptions) =>
-      fuzzyMatch(query, candidates, options).map((entry) => entry.value),
-    [candidates],
+      fuzzyMatch(query, commonTechniques, options).map((entry) => entry.value),
+    [commonTechniques],
   );
 }
 
