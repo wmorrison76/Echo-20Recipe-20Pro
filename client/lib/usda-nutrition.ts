@@ -12,6 +12,7 @@ export type USDAFoodItem = {
   foodCategory: string;
   publishedDate: string;
   dataType: "Survey (FNDDS)" | "Foundation" | "SR Legacy" | "Branded";
+  brandOwner?: string;
   nutrients: {
     energy: NutrientValue; // kcal
     protein: NutrientValue; // g
