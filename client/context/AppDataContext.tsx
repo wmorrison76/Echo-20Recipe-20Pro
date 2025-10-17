@@ -3471,6 +3471,7 @@ const createTileBoard = useCallback(
       exportAllZip,
       toggleFavorite,
       rateRecipe,
+      updateRecipeTags,
       deleteRecipe,
       restoreRecipe,
       purgeDeleted,
