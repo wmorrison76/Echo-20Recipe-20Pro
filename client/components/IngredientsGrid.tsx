@@ -70,6 +70,23 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
   onApplySupplierQuote,
 }) => {
   const { t } = useTranslation();
+  const [selectedSelectorRow, setSelectedSelectorRow] = useState<number | null>(null);
+
+  const handleIngredientSelect = (index: number, inventoryId: string, inventoryItem: any) => {
+    // Update the ingredient row with the selected inventory item
+    onFieldChange(index, "item")({
+      target: { value: inventoryItem.name || inventoryItem.id },
+    } as React.ChangeEvent<HTMLInputElement>);
+
+    // Optionally update cost if available
+    if (inventoryItem.currentPrice) {
+      onFieldChange(index, "cost")({
+        target: { value: String(inventoryItem.currentPrice) },
+      } as React.ChangeEvent<HTMLInputElement>);
+    }
+
+    setSelectedSelectorRow(null);
+  };
 
   const handleDragStart = (index: number) => (event: React.DragEvent<HTMLButtonElement>) => {
     event.dataTransfer.setData("text/plain", String(index));
