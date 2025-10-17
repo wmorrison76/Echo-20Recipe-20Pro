@@ -189,6 +189,22 @@ export default function RecipeTemplate() {
   const displayQuantity = (value?: number) =>
     Number.isFinite(value) ? formatQuantity(value as number) : undefined;
 
+  type MacroTotals = {
+    calories?: number;
+    fat?: number;
+    carbs?: number;
+    protein?: number;
+    fiber?: number;
+    sugars?: number;
+    sodium?: number;
+    cholesterol?: number;
+  };
+
+  type NutritionAnalysis = MacroTotals & {
+    perServing?: MacroTotals;
+    totals?: MacroTotals;
+  };
+
   const Nut = nutrition as (NutritionAnalysis | null);
   const labelPortion: MacroTotals | null = (() => {
     if (!Nut) return null;
