@@ -14,6 +14,7 @@ import { clearAllImageBlobs, deleteImageBlob, loadImageBlob, saveImageBlob } fro
 import type { Recipe } from "@shared/recipes";
 import type { RecipeCollection } from "@shared/server-notes";
 import { defaultLanguage, type LanguageCode } from "@/i18n/config";
+import { downloadZip } from "@/lib/download-utils";
 export type { Recipe } from "@shared/recipes";
 // Mammoth is loaded on-demand to keep bundle small and avoid init errors in some environments
 
@@ -1134,15 +1135,7 @@ const createTileBoard = useCallback(
         }
       }
       const blob = await zip.generateAsync({ type: "blob" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `recipe-studio-export-${timestamp.slice(0, 10)}.zip`;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        URL.revokeObjectURL(a.href);
-        a.remove();
-      }, 0);
+      downloadZip(blob, `recipe-studio-export-${timestamp.slice(0, 10)}.zip`);
     },
     [collections, images, lookbooks, recipes],
   );
