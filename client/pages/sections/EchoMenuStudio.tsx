@@ -3433,31 +3433,33 @@ export default function MenuDesignStudioSection() {
               <Save className="mr-2 h-4 w-4" aria-hidden />
               Save / Load
             </Button>
-            <div className="flex items-center gap-1 rounded-lg border border-slate-300/50 dark:border-slate-700/60 p-1">
+            <div className="flex items-center gap-2 rounded-lg border-2 border-blue-400/50 bg-blue-50 dark:border-blue-500/50 dark:bg-blue-950/30 p-2">
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={handleExportLayout}
-                title="Export as JSON"
+                title="Copy design as JSON to clipboard for technical handoff"
+                className="border-blue-300 hover:bg-blue-100 dark:border-blue-600 dark:hover:bg-blue-900"
               >
                 <Download className="mr-2 h-4 w-4" aria-hidden />
                 JSON
               </Button>
-              <div className="h-5 w-px bg-border" />
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={handleExportPDF}
-                title="Export as PDF"
+                title="Export design as print-ready PDF with 300 DPI"
+                className="border-blue-300 hover:bg-blue-100 dark:border-blue-600 dark:hover:bg-blue-900"
               >
                 <Download className="mr-2 h-4 w-4" aria-hidden />
                 PDF
               </Button>
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={handleExportSVG}
-                title="Export as SVG"
+                title="Export design as vector SVG for editing"
+                className="border-blue-300 hover:bg-blue-100 dark:border-blue-600 dark:hover:bg-blue-900"
               >
                 <Download className="mr-2 h-4 w-4" aria-hidden />
                 SVG
