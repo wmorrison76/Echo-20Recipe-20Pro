@@ -60,6 +60,7 @@ export function RecipeCard({
   selectMode,
   selected,
   onToggleSelect,
+  onUpdateTags,
 }: {
   r: ReturnType<typeof useAppData>["recipes"][number];
   onPreview: () => void;
@@ -71,10 +72,13 @@ export function RecipeCard({
   selectMode?: boolean;
   selected?: boolean;
   onToggleSelect?: () => void;
+  onUpdateTags?: (tags: string[]) => void;
 }) {
   const { t } = useTranslation();
   const cover = r.imageDataUrls?.[0] ?? r.image ?? undefined;
   const stars = Array.from({ length: 5 }, (_, i) => i < (r.rating || 0));
+  const [showCategoryDialog, setShowCategoryDialog] = useState(false);
+  const [categoryInput, setCategoryInput] = useState("");
 
   // Calculate recipe cost from extra data if available
   const recipeCost = (() => {
