@@ -51,14 +51,12 @@ export default function RecipeTemplate() {
   const previousScaleRef = useRef<number | null>(null);
 
   const handleBackClick = useCallback(() => {
-    if (typeof window !== "undefined" && window.history.length > 1) {
-      nav(-1);
-      return;
-    }
+    // Prefer going to recipe editor if we have an ID
     if (recipe?.id) {
       nav(`/recipe/${recipe.id}`);
       return;
     }
+    // Fall back to home
     nav("/");
   }, [nav, recipe?.id]);
 
