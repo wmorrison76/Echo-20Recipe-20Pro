@@ -95,10 +95,13 @@ export function useComponentNameSuggestions() {
   const candidates = useMemo(() => {
     const components = new Set<string>();
     for (const recipe of recipes) {
-      if (recipe.components) {
-        for (const component of recipe.components) {
-          if (component && typeof component === "string") {
-            components.add(component);
+      if (recipe.title) {
+        components.add(recipe.title);
+      }
+      if (recipe.tags) {
+        for (const tag of recipe.tags) {
+          if (tag && typeof tag === "string") {
+            components.add(tag);
           }
         }
       }
