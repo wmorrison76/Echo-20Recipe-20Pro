@@ -414,3 +414,90 @@ class USDANutritionDB {
 }
 
 export const usdaNutrition = new USDANutritionDB();
+
+// Export convenience functions
+export async function searchUSDAFoodsCached(query: string, limit: number = 10): Promise<USDAFoodItem[]> {
+  return usdaNutrition.searchFoods(query, limit);
+}
+
+export async function getFoodById(fdcId: string): Promise<USDAFoodItem | null> {
+  return usdaNutrition.getFoodById(fdcId);
+}
+
+export async function searchByCategory(category: string): Promise<USDAFoodItem[]> {
+  return usdaNutrition.searchByCategory(category);
+}
+
+export async function calculateRecipeNutrition(
+  recipeName: string,
+  ingredients: Array<{ name: string; quantity: number; unit: string }>,
+  servingSize: number,
+  servingUnit: string,
+): Promise<RecipeNutritionInfo> {
+  return usdaNutrition.calculateRecipeNutrition(recipeName, ingredients, servingSize, servingUnit);
+}
+
+export async function getAllergenInfo(fdcId: string): Promise<string[]> {
+  return usdaNutrition.getAllergenInfo(fdcId);
+}
+
+export async function compareNutrition(
+  foodName1: string,
+  foodName2: string,
+): Promise<{
+  food1: USDAFoodItem | null;
+  food2: USDAFoodItem | null;
+  comparison: {
+    caloriesDiff: number;
+    proteinDiff: number;
+    fatDiff: number;
+    carbsDiff: number;
+  };
+}> {
+  return usdaNutrition.compareNutrition(foodName1, foodName2);
+}
+
+// Helper functions for NutritionAnalyzer
+export type NutritionInfo = {
+  calories: number;
+  protein: number;
+  fat: number;
+  carbs: number;
+  fiber: number;
+  allergens: string[];
+};
+
+export function extractNutritionInfo(foodItem: USDAFoodItem): NutritionInfo {
+  return {
+    calories: foodItem.nutrients.energy.value,
+    protein: foodItem.nutrients.protein.value,
+    fat: foodItem.nutrients.fat.value,
+    carbs: foodItem.nutrients.carbohydrate.value,
+    fiber: foodItem.nutrients.fiber.value,
+    allergens: [],
+  };
+}
+
+export function detectAllergens(description: string, ingredients?: any[]): string[] {
+  const allergens = new Set<string>();
+  const allergenKeywords = {
+    peanut: ["peanut", "arachis"],
+    "tree nut": ["almond", "cashew", "walnut", "pecan", "macadamia", "pistachio", "brazil"],
+    milk: ["milk", "dairy", "cheese", "butter", "cream", "yogurt"],
+    egg: ["egg", "eggs"],
+    fish: ["fish", "cod", "salmon", "tuna"],
+    shellfish: ["shellfish", "shrimp", "crab", "lobster", "oyster"],
+    wheat: ["wheat", "bread", "pasta"],
+    soy: ["soy", "soybean", "tofu"],
+    sesame: ["sesame"],
+  };
+
+  const text = (description + " " + (ingredients?.join(" ") || "")).toLowerCase();
+  Object.entries(allergenKeywords).forEach(([allergen, patterns]) => {
+    if (patterns.some((pattern) => text.includes(pattern))) {
+      allergens.add(allergen);
+    }
+  });
+
+  return Array.from(allergens);
+}
