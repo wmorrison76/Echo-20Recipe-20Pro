@@ -57,8 +57,8 @@ export const NutritionAnalyzer: React.FC<NutritionAnalyzerProps> = ({
   const handleAddIngredient = useCallback(() => {
     if (!selectedResult || !quantity) return;
 
-    const nutrition = extractNutritionInfo(selectedResult.foodNutrients);
-    const allergens = detectAllergens(selectedResult.description, selectedResult.ingredients);
+    const nutrition = extractNutritionInfo(selectedResult);
+    const allergens = detectAllergens(selectedResult.description);
 
     const newIngredient: IngredientNutrition = {
       ingredientName: selectedResult.description,
