@@ -1031,6 +1031,7 @@ export default function GallerySection() {
         <Dropzone
           multiple
           onFiles={handleFiles}
+          busy={uploadLoading}
           className={cn("relative overflow-hidden rounded-[32px] border", mainSurface)}
         >
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(125,211,252,0.14),_transparent_70%)]" />
