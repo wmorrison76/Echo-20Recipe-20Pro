@@ -19,6 +19,7 @@ import { CollaborationProvider } from "@/context/CollaborationContext";
 import { FuzzySuggestionManager } from "@/components/FuzzySuggestionManager";
 import { KeyboardShortcutsProvider } from "@/context/KeyboardShortcutsContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider } from "@/context/AuthContext";
 
 const queryClient = new QueryClient();
 
@@ -58,17 +59,19 @@ const App = () => (
             <FuzzySuggestionManager />
             <YieldProvider>
               <CollaborationProvider>
-                <KeyboardShortcutsProvider>
-                  <BrowserRouter>
-                    <Routes>
-                      <Route path="/" element={<Index />} />
-                      <Route path="/recipe/:id" element={<RecipeEditor />} />
-                      <Route path="/recipe/:id/view" element={<RecipeTemplate />} />
-                      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </BrowserRouter>
-                </KeyboardShortcutsProvider>
+                <AuthProvider>
+                  <KeyboardShortcutsProvider>
+                    <BrowserRouter>
+                      <Routes>
+                        <Route path="/" element={<Index />} />
+                        <Route path="/recipe/:id" element={<RecipeEditor />} />
+                        <Route path="/recipe/:id/view" element={<RecipeTemplate />} />
+                        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </BrowserRouter>
+                  </KeyboardShortcutsProvider>
+                </AuthProvider>
               </CollaborationProvider>
             </YieldProvider>
           </AppDataProvider>
