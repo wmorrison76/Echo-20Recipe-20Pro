@@ -174,25 +174,25 @@ export const ToastMenuSync: React.FC<ToastMenuSyncProps> = ({
         {syncResult && (
           <div
             className={`p-4 rounded border ${
-              syncResult.success
+              syncResult.itemsFailed === 0
                 ? "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800"
                 : "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800"
             }`}
           >
             <div className="flex items-start gap-3">
-              {syncResult.success ? (
+              {syncResult.itemsFailed === 0 ? (
                 <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
               ) : (
                 <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
               )}
               <div className="flex-1">
                 <p className="font-semibold text-sm mb-2">
-                  {syncResult.success ? "Sync Successful" : "Sync Failed"}
+                  {syncResult.itemsFailed === 0 ? "Sync Successful" : "Sync Completed with Errors"}
                 </p>
                 <div className="text-sm space-y-1">
                   <p>
                     <span className="text-green-600 dark:text-green-400 font-medium">
-                      ✓ {syncResult.itemsSynced}
+                      ��� {syncResult.itemsSynced}
                     </span>{" "}
                     recipes synced
                   </p>
