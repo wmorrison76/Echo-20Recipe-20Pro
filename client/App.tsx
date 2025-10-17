@@ -19,7 +19,6 @@ import { CollaborationProvider } from "@/context/CollaborationContext";
 import { FuzzySuggestionManager } from "@/components/FuzzySuggestionManager";
 import { KeyboardShortcutsProvider } from "@/context/KeyboardShortcutsContext";
 import { AuthProvider } from "@/context/AuthContext";
-import { AuthProvider } from "@/context/AuthContext";
 
 const queryClient = new QueryClient();
 
