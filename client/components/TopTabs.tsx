@@ -165,6 +165,12 @@ const navItems: NavItemConfig[] = [
     icon: DollarSign,
   },
   {
+    to: "/?tab=suppliers",
+    labelKey: "nav.suppliers",
+    fallback: "SUPPLIERS",
+    icon: Truck,
+  },
+  {
     to: "/?tab=gallery",
     labelKey: "nav.gallery",
     fallback: "GALLERY",
