@@ -118,20 +118,22 @@ describe("Authentication Service", () => {
 
   describe("updateUserProfile", () => {
     it("should handle profile updates", async () => {
+      const userId = "test-user-id";
       const updates = {
         username: "newusername",
       };
 
-      const result = await updateUserProfile(updates);
+      const result = await updateUserProfile(userId, updates);
       expect(result).toHaveProperty("success");
     });
 
     it("should validate profile updates", async () => {
+      const userId = "test-user-id";
       const updates = {
         username: "", // Invalid empty username
       };
 
-      const result = await updateUserProfile(updates);
+      const result = await updateUserProfile(userId, updates);
       // Should handle validation gracefully
       expect(result).toHaveProperty("success");
     });
