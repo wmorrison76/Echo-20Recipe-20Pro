@@ -18,48 +18,53 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       external: ["html2canvas", "jspdf"],
       output: {
-        manualChunks: {
+        manualChunks(id) {
           // Core dependencies
-          react: ["react", "react-dom"],
-          router: ["react-router-dom"],
+          if (id.includes("node_modules/react") || id.includes("node_modules/react-dom")) {
+            return "react";
+          }
+          if (id.includes("node_modules/react-router-dom")) {
+            return "router";
+          }
 
-          // UI Framework
-          radix: [
-            "@radix-ui/react-accordion",
-            "@radix-ui/react-alert-dialog",
-            "@radix-ui/react-aspect-ratio",
-            "@radix-ui/react-avatar",
-            "@radix-ui/react-checkbox",
-            "@radix-ui/react-collapsible",
-            "@radix-ui/react-context-menu",
-            "@radix-ui/react-dialog",
-            "@radix-ui/react-dropdown-menu",
-            "@radix-ui/react-hover-card",
-            "@radix-ui/react-label",
-            "@radix-ui/react-menubar",
-            "@radix-ui/react-navigation-menu",
-            "@radix-ui/react-popover",
-            "@radix-ui/react-progress",
-            "@radix-ui/react-radio-group",
-            "@radix-ui/react-scroll-area",
-            "@radix-ui/react-select",
-            "@radix-ui/react-separator",
-            "@radix-ui/react-slider",
-            "@radix-ui/react-slot",
-            "@radix-ui/react-switch",
-            "@radix-ui/react-tabs",
-            "@radix-ui/react-toast",
-            "@radix-ui/react-toggle",
-            "@radix-ui/react-toggle-group",
-            "@radix-ui/react-tooltip",
-          ],
+          // UI Framework - split Radix UI
+          if (id.includes("node_modules/@radix-ui")) {
+            return "radix";
+          }
 
           // Heavy visualization libraries
-          charts: ["recharts"],
-          graphics: ["three", "@react-three/fiber", "@react-three/drei"],
+          if (id.includes("node_modules/recharts")) {
+            return "charts";
+          }
+          if (id.includes("node_modules/three") || id.includes("@react-three")) {
+            return "graphics";
+          }
+
+          // Document processing (heavy libraries)
+          if (id.includes("node_modules/mammoth")) {
+            return "docx-mammoth";
+          }
+          if (id.includes("node_modules/jszip")) {
+            return "jszip";
+          }
+
+          // Form handling
+          if (id.includes("node_modules/react-hook-form")) {
+            return "forms";
+          }
+
+          // Animation libraries
+          if (id.includes("node_modules/framer-motion")) {
+            return "animations";
+          }
 
           // Utilities
-          utils: ["clsx", "tailwind-merge", "date-fns", "lucide-react"],
+          if (id.includes("node_modules/date-fns")) {
+            return "date-utils";
+          }
+          if (id.includes("node_modules/lucide-react")) {
+            return "icons";
+          }
         },
       },
     },
