@@ -193,7 +193,9 @@ export async function analyzeMenuProfit(
     const totalCost = recipe.avgCost * saleLine.unitsSold;
     const totalProfit = saleLine.totalRevenue - totalCost;
     const profitMargin =
-      saleLine.totalRevenue > 0 ? (totalProfit / saleLine.totalRevenue) * 100 : 0;
+      saleLine.totalRevenue > 0
+        ? (totalProfit / saleLine.totalRevenue) * 100
+        : 0;
 
     return {
       recipeId: recipe.recipeId,
@@ -207,11 +209,16 @@ export async function analyzeMenuProfit(
     };
   });
 
-  const totalRevenue = recipeAnalysis.reduce((sum, r) => sum + r.totalRevenue, 0);
+  const totalRevenue = recipeAnalysis.reduce(
+    (sum, r) => sum + r.totalRevenue,
+    0,
+  );
   const totalCost = recipeAnalysis.reduce((sum, r) => sum + r.totalCost, 0);
   const totalProfit = totalRevenue - totalCost;
 
-  const sorted = [...recipeAnalysis].sort((a, b) => b.totalProfit - a.totalProfit);
+  const sorted = [...recipeAnalysis].sort(
+    (a, b) => b.totalProfit - a.totalProfit,
+  );
 
   return {
     period: { startDate, endDate },
@@ -220,8 +227,12 @@ export async function analyzeMenuProfit(
     totalCost,
     totalProfit,
     averageMargin: totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0,
-    topPerformers: sorted.slice(0, 5).map((r) => ({ recipe: r.recipeName, profit: r.totalProfit })),
-    underperformers: sorted.slice(-5).map((r) => ({ recipe: r.recipeName, profit: r.totalProfit })),
+    topPerformers: sorted
+      .slice(0, 5)
+      .map((r) => ({ recipe: r.recipeName, profit: r.totalProfit })),
+    underperformers: sorted
+      .slice(-5)
+      .map((r) => ({ recipe: r.recipeName, profit: r.totalProfit })),
   };
 }
 
@@ -239,7 +250,8 @@ export async function analyzeSupplierCosts(
   suppliers.forEach((supplier) => {
     supplier.topProducts.forEach((product) => {
       const category = product.category || "other";
-      costsByCategory[category] = (costsByCategory[category] || 0) + product.cost;
+      costsByCategory[category] =
+        (costsByCategory[category] || 0) + product.cost;
     });
   });
 
@@ -261,8 +273,10 @@ function calculateCostingSummary(recipes: RecipeCosting[]) {
 
   return {
     totalRecipes: recipes.length,
-    averageCost: recipes.reduce((sum, r) => sum + r.avgCost, 0) / recipes.length,
-    averageMargin: recipes.reduce((sum, r) => sum + r.actualMargin, 0) / recipes.length,
+    averageCost:
+      recipes.reduce((sum, r) => sum + r.avgCost, 0) / recipes.length,
+    averageMargin:
+      recipes.reduce((sum, r) => sum + r.actualMargin, 0) / recipes.length,
     recipesOnTarget: onTarget,
     recipesAboveTarget: above,
     recipesBelowTarget: below,
@@ -279,12 +293,22 @@ function calculateCostTrends(recipes: RecipeCosting[]) {
 
   return {
     avgCostChange: costChanges.reduce((a, b) => a + b, 0) / costChanges.length,
-    costVariance: Math.sqrt(costChanges.reduce((sum, x) => sum + Math.pow(x, 2), 0) / costChanges.length),
-    marginVariance: recipes.reduce((sum, r) => sum + Math.abs(r.actualMargin - r.targetMargin), 0) / recipes.length,
+    costVariance: Math.sqrt(
+      costChanges.reduce((sum, x) => sum + Math.pow(x, 2), 0) /
+        costChanges.length,
+    ),
+    marginVariance:
+      recipes.reduce(
+        (sum, r) => sum + Math.abs(r.actualMargin - r.targetMargin),
+        0,
+      ) / recipes.length,
   };
 }
 
-function generateCostingRecommendations(recipes: RecipeCosting[], trends: any): string[] {
+function generateCostingRecommendations(
+  recipes: RecipeCosting[],
+  trends: any,
+): string[] {
   const recommendations: string[] = [];
 
   // Below-target recipes
@@ -314,14 +338,26 @@ function generateCostingRecommendations(recipes: RecipeCosting[], trends: any): 
   return recommendations;
 }
 
-function determineVarianceCategory(recipe: RecipeCosting): "yield-loss" | "portion-size" | "labor" | "price-increase" {
+function determineVarianceCategory(
+  recipe: RecipeCosting,
+): "yield-loss" | "portion-size" | "labor" | "price-increase" {
   if (recipe.wasteMetrics.wastePercent > 8) return "yield-loss";
-  if (Math.abs(recipe.avgCost - recipe.pricePoint * ((100 - recipe.targetMargin) / 100)) > 5) return "price-increase";
+  if (
+    Math.abs(
+      recipe.avgCost - recipe.pricePoint * ((100 - recipe.targetMargin) / 100),
+    ) > 5
+  )
+    return "price-increase";
   return "labor";
 }
 
 function generateVarianceRecommendations(variances: any[]): string[] {
-  return variances.slice(0, 3).map((v) => `Review ${v.recipeName}: ${v.variance > 0 ? "costs increasing" : "costs decreasing"} by ${Math.abs(v.variance).toFixed(1)}%`);
+  return variances
+    .slice(0, 3)
+    .map(
+      (v) =>
+        `Review ${v.recipeName}: ${v.variance > 0 ? "costs increasing" : "costs decreasing"} by ${Math.abs(v.variance).toFixed(1)}%`,
+    );
 }
 
 function generateSupplierRecommendations(suppliers: any[]): string[] {
@@ -330,27 +366,43 @@ function generateSupplierRecommendations(suppliers: any[]): string[] {
   // Highest cost suppliers
   const highestCost = suppliers.sort((a, b) => b.totalSpent - a.totalSpent)[0];
   if (highestCost) {
-    recommendations.push(`Negotiate volume discount with ${highestCost.supplierName} (highest spend)`);
+    recommendations.push(
+      `Negotiate volume discount with ${highestCost.supplierName} (highest spend)`,
+    );
   }
 
   // Low reliability
   const lowReliable = suppliers.filter((s) => s.reliability < 0.9);
   if (lowReliable.length > 0) {
-    recommendations.push(`Review suppliers with <90% on-time delivery: ${lowReliable.map((s) => s.supplierName).join(", ")}`);
+    recommendations.push(
+      `Review suppliers with <90% on-time delivery: ${lowReliable.map((s) => s.supplierName).join(", ")}`,
+    );
   }
 
   return recommendations;
 }
 
 // Placeholder data fetching (would be Supabase calls in real implementation)
-async function fetchRecipeCosting(organizationId: string, startDate: number, endDate: number): Promise<RecipeCosting[]> {
+async function fetchRecipeCosting(
+  organizationId: string,
+  startDate: number,
+  endDate: number,
+): Promise<RecipeCosting[]> {
   return [];
 }
 
-async function fetchSalesData(organizationId: string, startDate: number, endDate: number) {
+async function fetchSalesData(
+  organizationId: string,
+  startDate: number,
+  endDate: number,
+) {
   return [];
 }
 
-async function fetchSupplierData(organizationId: string, startDate: number, endDate: number) {
+async function fetchSupplierData(
+  organizationId: string,
+  startDate: number,
+  endDate: number,
+) {
   return [];
 }

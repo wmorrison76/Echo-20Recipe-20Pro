@@ -2,7 +2,11 @@ import { useAppData } from "@/context/AppDataContext";
 import { INVENTORY_ITEMS } from "@/data/inventoryItems";
 import { SUPPLIERS } from "@/data/suppliers";
 import { useCallback, useMemo } from "react";
-import { buildDictionary, fuzzyMatch, type FuzzyMatchOptions } from "@/lib/fuzzy";
+import {
+  buildDictionary,
+  fuzzyMatch,
+  type FuzzyMatchOptions,
+} from "@/lib/fuzzy";
 
 export function useFuzzyAutocomplete(source: string[] | Set<string>) {
   const dictionary = useMemo(() => buildDictionary(source), [source]);
@@ -16,7 +20,10 @@ export function useFuzzyAutocomplete(source: string[] | Set<string>) {
 
 export function useRecipeNameSuggestions() {
   const { recipes } = useAppData();
-  const names = useMemo(() => recipes.map((recipe) => recipe.title || ""), [recipes]);
+  const names = useMemo(
+    () => recipes.map((recipe) => recipe.title || ""),
+    [recipes],
+  );
   return useFuzzyAutocomplete(names);
 }
 
@@ -30,7 +37,9 @@ export function useIngredientSuggestions() {
       for (const row of rows) {
         const text = String(row || "").trim();
         if (!text) continue;
-        const cleaned = text.replace(/^\s*[0-9]+(?:[\/\.,]\s*[0-9]+)?\s*[a-zA-Z\.\-]*\s*/i, "").trim();
+        const cleaned = text
+          .replace(/^\s*[0-9]+(?:[\/\.,]\s*[0-9]+)?\s*[a-zA-Z\.\-]*\s*/i, "")
+          .trim();
         if (!cleaned) continue;
         extracted.push(cleaned);
       }
@@ -264,7 +273,18 @@ export function useCourseSuggestions() {
 }
 
 // Generic source-based suggestions
-export function useSourceSuggestions(source: "recipes" | "ingredients" | "suppliers" | "components" | "allergens" | "units" | "techniques" | "cuisines" | "courses") {
+export function useSourceSuggestions(
+  source:
+    | "recipes"
+    | "ingredients"
+    | "suppliers"
+    | "components"
+    | "allergens"
+    | "units"
+    | "techniques"
+    | "cuisines"
+    | "courses",
+) {
   const recipeSuggestions = useRecipeNameSuggestions();
   const ingredientSuggestions = useInventoryItemSuggestions();
   const supplierSuggestions = useSupplierNameSuggestions();

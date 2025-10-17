@@ -27,7 +27,9 @@ class CloudSyncManager {
   private channels: Map<string, RealtimeChannel> = new Map();
   private syncQueue: SyncEvent[] = [];
   private isSyncing = false;
-  private conflictResolver: ((conflict: SyncConflict) => Promise<"local" | "remote">) | null = null;
+  private conflictResolver:
+    | ((conflict: SyncConflict) => Promise<"local" | "remote">)
+    | null = null;
 
   /**
    * Initialize real-time sync for a table
@@ -120,7 +122,9 @@ class CloudSyncManager {
         // Re-queue on error with exponential backoff
         event.synced = false;
         this.syncQueue.push(event);
-        await new Promise((resolve) => setTimeout(resolve, 1000 * (6 - this.syncQueue.length)));
+        await new Promise((resolve) =>
+          setTimeout(resolve, 1000 * (6 - this.syncQueue.length)),
+        );
       }
     }
 
@@ -236,18 +240,22 @@ export const cloudSync = new CloudSyncManager();
  */
 export async function monitorOrganizationPresence(
   organizationId: string,
-  onPresenceChange: (users: Array<{ id: string; email: string; status: string }>) => void,
+  onPresenceChange: (
+    users: Array<{ id: string; email: string; status: string }>,
+  ) => void,
 ) {
   const channel = supabase.channel(`presence:${organizationId}`);
 
   channel
     .on("presence", { event: "sync" }, () => {
       const state = channel.presenceState();
-      const users = Object.entries(state).map(([userId, data]: [string, any]) => ({
-        id: userId,
-        email: data[0]?.email || "Unknown",
-        status: data[0]?.status || "offline",
-      }));
+      const users = Object.entries(state).map(
+        ([userId, data]: [string, any]) => ({
+          id: userId,
+          email: data[0]?.email || "Unknown",
+          status: data[0]?.status || "offline",
+        }),
+      );
       onPresenceChange(users);
     })
     .on("presence", { event: "join" }, ({ key, newPresences }) => {

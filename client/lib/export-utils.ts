@@ -10,8 +10,15 @@ export interface ExportOptions {
   language: LanguageCode;
 }
 
-function downloadFile(content: string | Blob, filename: string, mimeType: string) {
-  const blob = typeof content === "string" ? new Blob([content], { type: mimeType }) : content;
+function downloadFile(
+  content: string | Blob,
+  filename: string,
+  mimeType: string,
+) {
+  const blob =
+    typeof content === "string"
+      ? new Blob([content], { type: mimeType })
+      : content;
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
@@ -28,10 +35,12 @@ function t(key: string, language: LanguageCode, fallback: string): string {
 
 export function exportServerNotesAsJSON(
   notes: ServerNote,
-  options: ExportOptions
+  options: ExportOptions,
 ): void {
   const data = {
-    title: notes.title || t("export.serverNotes.defaultTitle", options.language, "Server Notes"),
+    title:
+      notes.title ||
+      t("export.serverNotes.defaultTitle", options.language, "Server Notes"),
     company: notes.companyName,
     outlet: notes.outletName,
     distributionDate: notes.distributionNotes,
@@ -45,25 +54,37 @@ export function exportServerNotesAsJSON(
   downloadFile(
     JSON.stringify(data, null, 2),
     `${options.filename}.json`,
-    "application/json"
+    "application/json",
   );
 }
 
 export function exportServerNotesAsCSV(
   notes: ServerNote,
-  options: ExportOptions
+  options: ExportOptions,
 ): void {
   const lines: string[] = [];
 
-  lines.push(t("export.serverNotes.csvTitle", options.language, "Server Notes Export"));
-  lines.push(`${t("export.common.title", options.language, "Title")},${notes.title || t("common.untitled", options.language, "Untitled")}`);
-  lines.push(`${t("export.common.company", options.language, "Company")},${notes.companyName}`);
-  lines.push(`${t("export.common.outlet", options.language, "Outlet")},${notes.outletName}`);
-  lines.push(`${t("export.common.distributionDate", options.language, "Distribution Date")},${notes.distributionNotes}`);
+  lines.push(
+    t("export.serverNotes.csvTitle", options.language, "Server Notes Export"),
+  );
+  lines.push(
+    `${t("export.common.title", options.language, "Title")},${notes.title || t("common.untitled", options.language, "Untitled")}`,
+  );
+  lines.push(
+    `${t("export.common.company", options.language, "Company")},${notes.companyName}`,
+  );
+  lines.push(
+    `${t("export.common.outlet", options.language, "Outlet")},${notes.outletName}`,
+  );
+  lines.push(
+    `${t("export.common.distributionDate", options.language, "Distribution Date")},${notes.distributionNotes}`,
+  );
   lines.push("");
   lines.push(t("export.common.recipes", options.language, "Recipes"));
-  lines.push(`${t("export.common.recipeName", options.language, "Recipe Name")},${t("export.common.course", options.language, "Course")},${t("export.common.cuisine", options.language, "Cuisine")},${t("export.common.portions", options.language, "Portions")}`);
-  
+  lines.push(
+    `${t("export.common.recipeName", options.language, "Recipe Name")},${t("export.common.course", options.language, "Course")},${t("export.common.cuisine", options.language, "Cuisine")},${t("export.common.portions", options.language, "Portions")}`,
+  );
+
   notes.selectedRecipes.forEach((noteRecipe) => {
     const recipe = noteRecipe.recipe;
     const course = recipe.course || "";
@@ -75,7 +96,7 @@ export function exportServerNotesAsCSV(
   downloadFile(
     lines.join("\n"),
     `${options.filename}.csv`,
-    "text/csv;charset=utf-8"
+    "text/csv;charset=utf-8",
   );
 }
 
@@ -91,10 +112,14 @@ export interface CooksRecipe {
 
 export function exportCooksRecipesAsJSON(
   recipes: CooksRecipe[],
-  options: ExportOptions
+  options: ExportOptions,
 ): void {
   const data = {
-    title: t("export.cooksRecipes.defaultTitle", options.language, "Cook's Recipe Book"),
+    title: t(
+      "export.cooksRecipes.defaultTitle",
+      options.language,
+      "Cook's Recipe Book",
+    ),
     language: options.language,
     totalRecipes: recipes.length,
     recipes,
@@ -104,33 +129,35 @@ export function exportCooksRecipesAsJSON(
   downloadFile(
     JSON.stringify(data, null, 2),
     `${options.filename}.json`,
-    "application/json"
+    "application/json",
   );
 }
 
 export function exportCooksRecipesAsCSV(
   recipes: CooksRecipe[],
-  options: ExportOptions
+  options: ExportOptions,
 ): void {
   const lines: string[] = [];
-  
+
   lines.push("Cook's Recipe Book");
   lines.push(`Total Recipes,${recipes.length}`);
   lines.push("");
   lines.push("Recipe Name,Prep Time,Cook Time,Yield,Allergens");
-  
+
   recipes.forEach((recipe) => {
     const prepTime = recipe.prepTime || "";
     const cookTime = recipe.cookTime || "";
     const recipeYield = recipe.yield || "";
     const allergens = recipe.allergens?.join("; ") || "";
-    lines.push(`"${recipe.name}","${prepTime}","${cookTime}","${recipeYield}","${allergens}"`);
+    lines.push(
+      `"${recipe.name}","${prepTime}","${cookTime}","${recipeYield}","${allergens}"`,
+    );
   });
 
   downloadFile(
     lines.join("\n"),
     `${options.filename}.csv`,
-    "text/csv;charset=utf-8"
+    "text/csv;charset=utf-8",
   );
 }
 
@@ -143,7 +170,7 @@ export interface AllergenItem {
 
 export function exportAllergenSheetAsJSON(
   items: AllergenItem[],
-  options: ExportOptions
+  options: ExportOptions,
 ): void {
   const data = {
     title: "Allergen Sheet",
@@ -156,21 +183,21 @@ export function exportAllergenSheetAsJSON(
   downloadFile(
     JSON.stringify(data, null, 2),
     `${options.filename}.json`,
-    "application/json"
+    "application/json",
   );
 }
 
 export function exportAllergenSheetAsCSV(
   items: AllergenItem[],
-  options: ExportOptions
+  options: ExportOptions,
 ): void {
   const lines: string[] = [];
-  
+
   lines.push("Allergen Sheet");
   lines.push(`Total Items,${items.length}`);
   lines.push("");
   lines.push("Item Name,Course,Dish,Allergens");
-  
+
   items.forEach((item) => {
     const course = item.course || "";
     const dish = item.dish || "";
@@ -181,14 +208,14 @@ export function exportAllergenSheetAsCSV(
   downloadFile(
     lines.join("\n"),
     `${options.filename}.csv`,
-    "text/csv;charset=utf-8"
+    "text/csv;charset=utf-8",
   );
 }
 
 export function exportAsHTML(
   title: string,
   content: Record<string, unknown>,
-  options: ExportOptions
+  options: ExportOptions,
 ): void {
   const htmlContent = `
 <!DOCTYPE html>
@@ -263,6 +290,6 @@ export function exportAsHTML(
   downloadFile(
     htmlContent,
     `${options.filename}.html`,
-    "text/html;charset=utf-8"
+    "text/html;charset=utf-8",
   );
 }

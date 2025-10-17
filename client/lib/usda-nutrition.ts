@@ -62,13 +62,17 @@ export type RecipeNutritionInfo = {
 class USDANutritionDB {
   private apiKey = import.meta.env.VITE_USDA_API_KEY || "";
   private baseUrl = "https://fdc.nal.usda.gov/api/foods/search";
-  private cache: Map<string, { data: USDAFoodItem; timestamp: number }> = new Map();
+  private cache: Map<string, { data: USDAFoodItem; timestamp: number }> =
+    new Map();
   private cacheTTL = 86400000; // 24 hours
 
   /**
    * Search USDA FoodData Central
    */
-  async searchFoods(query: string, limit: number = 10): Promise<USDAFoodItem[]> {
+  async searchFoods(
+    query: string,
+    limit: number = 10,
+  ): Promise<USDAFoodItem[]> {
     const cacheKey = `usda-${query}-${limit}`;
 
     // Check cache
@@ -190,7 +194,10 @@ class USDANutritionDB {
 
       if (foods.length > 0) {
         const food = foods[0];
-        const quantity = this.convertToGrams(ingredient.quantity, ingredient.unit);
+        const quantity = this.convertToGrams(
+          ingredient.quantity,
+          ingredient.unit,
+        );
 
         const caloriesPerGram = food.nutrients.energy.per100g / 100;
         const proteinPerGram = food.nutrients.protein.per100g / 100;
@@ -287,7 +294,10 @@ class USDANutritionDB {
   /**
    * Compare nutrition of similar foods
    */
-  async compareNutrition(foodName1: string, foodName2: string): Promise<{
+  async compareNutrition(
+    foodName1: string,
+    foodName2: string,
+  ): Promise<{
     food1: USDAFoodItem | null;
     food2: USDAFoodItem | null;
     comparison: {
@@ -307,10 +317,18 @@ class USDANutritionDB {
       food1,
       food2,
       comparison: {
-        caloriesDiff: (food2?.nutrients.energy.per100g || 0) - (food1?.nutrients.energy.per100g || 0),
-        proteinDiff: (food2?.nutrients.protein.per100g || 0) - (food1?.nutrients.protein.per100g || 0),
-        fatDiff: (food2?.nutrients.fat.per100g || 0) - (food1?.nutrients.fat.per100g || 0),
-        carbsDiff: (food2?.nutrients.carbohydrate.per100g || 0) - (food1?.nutrients.carbohydrate.per100g || 0),
+        caloriesDiff:
+          (food2?.nutrients.energy.per100g || 0) -
+          (food1?.nutrients.energy.per100g || 0),
+        proteinDiff:
+          (food2?.nutrients.protein.per100g || 0) -
+          (food1?.nutrients.protein.per100g || 0),
+        fatDiff:
+          (food2?.nutrients.fat.per100g || 0) -
+          (food1?.nutrients.fat.per100g || 0),
+        carbsDiff:
+          (food2?.nutrients.carbohydrate.per100g || 0) -
+          (food1?.nutrients.carbohydrate.per100g || 0),
       },
     };
   }
@@ -320,7 +338,9 @@ class USDANutritionDB {
    */
   private parseUSDAFood(data: any): USDAFoodItem {
     const getNutrient = (nutrientId: number, defaultValue: number = 0) => {
-      const nutrient = (data.foodNutrients || []).find((n: any) => n.nutrient.id === nutrientId);
+      const nutrient = (data.foodNutrients || []).find(
+        (n: any) => n.nutrient.id === nutrientId,
+      );
       return nutrient?.value || defaultValue;
     };
 
@@ -331,20 +351,76 @@ class USDANutritionDB {
       publishedDate: data.publishedDate || new Date().toISOString(),
       dataType: data.dataType || "Survey (FNDDS)",
       nutrients: {
-        energy: { value: getNutrient(1008), unit: "kcal", per100g: getNutrient(1008) }, // Energy
-        protein: { value: getNutrient(1003), unit: "g", per100g: getNutrient(1003) },
-        fat: { value: getNutrient(1004), unit: "g", per100g: getNutrient(1004) },
-        carbohydrate: { value: getNutrient(1005), unit: "g", per100g: getNutrient(1005) },
-        fiber: { value: getNutrient(1079), unit: "g", per100g: getNutrient(1079) },
-        sugar: { value: getNutrient(2000), unit: "g", per100g: getNutrient(2000) },
-        sodium: { value: getNutrient(1093), unit: "mg", per100g: getNutrient(1093) },
-        calcium: { value: getNutrient(1087), unit: "mg", per100g: getNutrient(1087) },
-        iron: { value: getNutrient(1089), unit: "mg", per100g: getNutrient(1089) },
-        potassium: { value: getNutrient(1092), unit: "mg", per100g: getNutrient(1092) },
-        vitaminA: { value: getNutrient(1104), unit: "mcg", per100g: getNutrient(1104) },
-        vitaminC: { value: getNutrient(1162), unit: "mg", per100g: getNutrient(1162) },
-        vitaminD: { value: getNutrient(1114), unit: "mcg", per100g: getNutrient(1114) },
-        vitaminB12: { value: getNutrient(1168), unit: "mcg", per100g: getNutrient(1168) },
+        energy: {
+          value: getNutrient(1008),
+          unit: "kcal",
+          per100g: getNutrient(1008),
+        }, // Energy
+        protein: {
+          value: getNutrient(1003),
+          unit: "g",
+          per100g: getNutrient(1003),
+        },
+        fat: {
+          value: getNutrient(1004),
+          unit: "g",
+          per100g: getNutrient(1004),
+        },
+        carbohydrate: {
+          value: getNutrient(1005),
+          unit: "g",
+          per100g: getNutrient(1005),
+        },
+        fiber: {
+          value: getNutrient(1079),
+          unit: "g",
+          per100g: getNutrient(1079),
+        },
+        sugar: {
+          value: getNutrient(2000),
+          unit: "g",
+          per100g: getNutrient(2000),
+        },
+        sodium: {
+          value: getNutrient(1093),
+          unit: "mg",
+          per100g: getNutrient(1093),
+        },
+        calcium: {
+          value: getNutrient(1087),
+          unit: "mg",
+          per100g: getNutrient(1087),
+        },
+        iron: {
+          value: getNutrient(1089),
+          unit: "mg",
+          per100g: getNutrient(1089),
+        },
+        potassium: {
+          value: getNutrient(1092),
+          unit: "mg",
+          per100g: getNutrient(1092),
+        },
+        vitaminA: {
+          value: getNutrient(1104),
+          unit: "mcg",
+          per100g: getNutrient(1104),
+        },
+        vitaminC: {
+          value: getNutrient(1162),
+          unit: "mg",
+          per100g: getNutrient(1162),
+        },
+        vitaminD: {
+          value: getNutrient(1114),
+          unit: "mcg",
+          per100g: getNutrient(1114),
+        },
+        vitaminB12: {
+          value: getNutrient(1168),
+          unit: "mcg",
+          per100g: getNutrient(1168),
+        },
       },
     };
   }
@@ -379,11 +455,21 @@ class USDANutritionDB {
   /**
    * Detect allergens in ingredients
    */
-  private detectAllergens(ingredients: RecipeNutritionInfo["ingredients"]): string[] {
+  private detectAllergens(
+    ingredients: RecipeNutritionInfo["ingredients"],
+  ): string[] {
     const allergens = new Set<string>();
     const allergenPatterns: Record<string, string[]> = {
       peanut: ["peanut", "arachis"],
-      "tree nut": ["almond", "cashew", "walnut", "pecan", "macadamia", "pistachio", "brazil"],
+      "tree nut": [
+        "almond",
+        "cashew",
+        "walnut",
+        "pecan",
+        "macadamia",
+        "pistachio",
+        "brazil",
+      ],
       milk: ["milk", "dairy", "cheese", "butter", "cream", "yogurt"],
       egg: ["egg", "eggs"],
       fish: ["fish", "cod", "salmon", "tuna"],
@@ -416,7 +502,10 @@ class USDANutritionDB {
 export const usdaNutrition = new USDANutritionDB();
 
 // Export convenience functions
-export async function searchUSDAFoodsCached(query: string, limit: number = 10): Promise<USDAFoodItem[]> {
+export async function searchUSDAFoodsCached(
+  query: string,
+  limit: number = 10,
+): Promise<USDAFoodItem[]> {
   return usdaNutrition.searchFoods(query, limit);
 }
 
@@ -424,7 +513,9 @@ export async function getFoodById(fdcId: string): Promise<USDAFoodItem | null> {
   return usdaNutrition.getFoodById(fdcId);
 }
 
-export async function searchByCategory(category: string): Promise<USDAFoodItem[]> {
+export async function searchByCategory(
+  category: string,
+): Promise<USDAFoodItem[]> {
   return usdaNutrition.searchByCategory(category);
 }
 
@@ -434,7 +525,12 @@ export async function calculateRecipeNutrition(
   servingSize: number,
   servingUnit: string,
 ): Promise<RecipeNutritionInfo> {
-  return usdaNutrition.calculateRecipeNutrition(recipeName, ingredients, servingSize, servingUnit);
+  return usdaNutrition.calculateRecipeNutrition(
+    recipeName,
+    ingredients,
+    servingSize,
+    servingUnit,
+  );
 }
 
 export async function getAllergenInfo(fdcId: string): Promise<string[]> {
@@ -480,11 +576,22 @@ export function extractNutritionInfo(foodItem: USDAFoodItem): NutritionInfo {
   };
 }
 
-export function detectAllergens(description: string, ingredients?: any[]): string[] {
+export function detectAllergens(
+  description: string,
+  ingredients?: any[],
+): string[] {
   const allergens = new Set<string>();
   const allergenKeywords = {
     peanut: ["peanut", "arachis"],
-    "tree nut": ["almond", "cashew", "walnut", "pecan", "macadamia", "pistachio", "brazil"],
+    "tree nut": [
+      "almond",
+      "cashew",
+      "walnut",
+      "pecan",
+      "macadamia",
+      "pistachio",
+      "brazil",
+    ],
     milk: ["milk", "dairy", "cheese", "butter", "cream", "yogurt"],
     egg: ["egg", "eggs"],
     fish: ["fish", "cod", "salmon", "tuna"],
@@ -494,7 +601,11 @@ export function detectAllergens(description: string, ingredients?: any[]): strin
     sesame: ["sesame"],
   };
 
-  const text = (description + " " + (ingredients?.join(" ") || "")).toLowerCase();
+  const text = (
+    description +
+    " " +
+    (ingredients?.join(" ") || "")
+  ).toLowerCase();
   Object.entries(allergenKeywords).forEach(([allergen, patterns]) => {
     if (patterns.some((pattern) => text.includes(pattern))) {
       allergens.add(allergen);

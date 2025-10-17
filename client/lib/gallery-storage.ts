@@ -14,20 +14,23 @@ function openDatabase(): Promise<IDBDatabase> {
     return Promise.reject(new Error("IndexedDB is not available"));
   }
   if (!dbPromise) {
-    dbPromise = (new Promise<IDBDatabase>((resolve, reject) => {
-      const request = indexedDB.open(DB_NAME, DB_VERSION);
-      request.onupgradeneeded = () => {
-        const db = request.result;
-        if (!db.objectStoreNames.contains(STORE_IMAGES)) {
-          db.createObjectStore(STORE_IMAGES, { keyPath: "id" });
-        }
-      };
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error ?? new Error("Failed to open gallery storage"));
-      request.onblocked = () => {
-        reject(new Error("Gallery storage upgrade is blocked"));
-      };
-    }) as Promise<IDBDatabase>).catch((error) => {
+    dbPromise = (
+      new Promise<IDBDatabase>((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onupgradeneeded = () => {
+          const db = request.result;
+          if (!db.objectStoreNames.contains(STORE_IMAGES)) {
+            db.createObjectStore(STORE_IMAGES, { keyPath: "id" });
+          }
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () =>
+          reject(request.error ?? new Error("Failed to open gallery storage"));
+        request.onblocked = () => {
+          reject(new Error("Gallery storage upgrade is blocked"));
+        };
+      }) as Promise<IDBDatabase>
+    ).catch((error) => {
       dbPromise = null;
       throw error;
     });
@@ -35,7 +38,10 @@ function openDatabase(): Promise<IDBDatabase> {
   return dbPromise;
 }
 
-function runTransaction<T>(mode: IDBTransactionMode, handler: (store: IDBObjectStore) => void): Promise<T> {
+function runTransaction<T>(
+  mode: IDBTransactionMode,
+  handler: (store: IDBObjectStore) => void,
+): Promise<T> {
   return new Promise(async (resolve, reject) => {
     try {
       const db = await openDatabase();
@@ -43,8 +49,10 @@ function runTransaction<T>(mode: IDBTransactionMode, handler: (store: IDBObjectS
       const store = tx.objectStore(STORE_IMAGES);
       handler(store);
       tx.oncomplete = () => resolve(undefined as T);
-      tx.onerror = () => reject(tx.error ?? new Error("Gallery storage transaction failed"));
-      tx.onabort = () => reject(tx.error ?? new Error("Gallery storage transaction aborted"));
+      tx.onerror = () =>
+        reject(tx.error ?? new Error("Gallery storage transaction failed"));
+      tx.onabort = () =>
+        reject(tx.error ?? new Error("Gallery storage transaction aborted"));
     } catch (error) {
       reject(error);
     }
@@ -67,7 +75,8 @@ export async function loadImageBlob(id: string): Promise<Blob | null> {
       const record = request.result as ImageRecord | undefined;
       resolve(record?.blob ?? null);
     };
-    request.onerror = () => reject(request.error ?? new Error("Failed to load gallery blob"));
+    request.onerror = () =>
+      reject(request.error ?? new Error("Failed to load gallery blob"));
   });
 }
 

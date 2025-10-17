@@ -7,12 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -33,7 +28,12 @@ import { useHistory } from "@/hooks/use-history";
 import { useSaveShortcut } from "@/hooks/use-save-shortcut";
 import { useUndoRedoFeedback } from "@/components/UndoRedoFeedback";
 import { formatCurrencyValue } from "./dish-assembly/utils";
-import { getSavedDesigns, saveDesign, deleteDesign, getLastAutoSaveDesign } from "@/lib/menu-studio-storage";
+import {
+  getSavedDesigns,
+  saveDesign,
+  deleteDesign,
+  getLastAutoSaveDesign,
+} from "@/lib/menu-studio-storage";
 import { useAppData } from "@/context/AppDataContext";
 import { GalleryImagePicker } from "@/components/menu-studio/GalleryImagePicker";
 import { SaveLoadDialog } from "@/components/menu-studio/SaveLoadDialog";
@@ -217,7 +217,9 @@ const TEXT_EDITABLE_TYPES: DesignerElementType[] = [
 const isTextEditableElement = (element: DesignerElement) =>
   TEXT_EDITABLE_TYPES.includes(element.type);
 
-const createDraftFromElement = (element: DesignerElement): Partial<DesignerElement> => {
+const createDraftFromElement = (
+  element: DesignerElement,
+): Partial<DesignerElement> => {
   if (element.type === "menu-item") {
     return {
       name: element.name ?? "",
@@ -289,25 +291,29 @@ const FONT_LIBRARY: FontDefinition[] = [
     label: "Lora",
     family: "Lora",
     value: "'Lora', serif",
-    importUrl: "https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap",
+    importUrl:
+      "https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap",
   },
   {
     label: "DM Sans",
     family: "DM Sans",
     value: "'DM Sans', sans-serif",
-    importUrl: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap",
+    importUrl:
+      "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap",
   },
   {
     label: "Inter",
     family: "Inter",
     value: "'Inter', sans-serif",
-    importUrl: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+    importUrl:
+      "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
   },
   {
     label: "Montserrat",
     family: "Montserrat",
     value: "'Montserrat', sans-serif",
-    importUrl: "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap",
+    importUrl:
+      "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap",
   },
   {
     label: "Source Serif 4",
@@ -327,73 +333,85 @@ const FONT_LIBRARY: FontDefinition[] = [
     label: "Bodoni Moda",
     family: "Bodoni Moda",
     value: "'Bodoni Moda', serif",
-    importUrl: "https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500;600;700&display=swap",
+    importUrl:
+      "https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500;600;700&display=swap",
   },
   {
     label: "EB Garamond",
     family: "EB Garamond",
     value: "'EB Garamond', serif",
-    importUrl: "https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&display=swap",
+    importUrl:
+      "https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600;700&display=swap",
   },
   {
     label: "Merriweather",
     family: "Merriweather",
     value: "'Merriweather', serif",
-    importUrl: "https://fonts.googleapis.com/css2?family=Merriweather:wght@400;500;600;700&display=swap",
+    importUrl:
+      "https://fonts.googleapis.com/css2?family=Merriweather:wght@400;500;600;700&display=swap",
   },
   {
     label: "Work Sans",
     family: "Work Sans",
     value: "'Work Sans', sans-serif",
-    importUrl: "https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap",
+    importUrl:
+      "https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap",
   },
   {
     label: "Figtree",
     family: "Figtree",
     value: "'Figtree', sans-serif",
-    importUrl: "https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap",
+    importUrl:
+      "https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap",
   },
   {
     label: "Raleway",
     family: "Raleway",
     value: "'Raleway', sans-serif",
-    importUrl: "https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&display=swap",
+    importUrl:
+      "https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&display=swap",
   },
   {
     label: "Poppins",
     family: "Poppins",
     value: "'Poppins', sans-serif",
-    importUrl: "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap",
+    importUrl:
+      "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap",
   },
   {
     label: "Space Grotesk",
     family: "Space Grotesk",
     value: "'Space Grotesk', sans-serif",
-    importUrl: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap",
+    importUrl:
+      "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap",
   },
   {
     label: "Crimson Pro",
     family: "Crimson Pro",
     value: "'Crimson Pro', serif",
-    importUrl: "https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&display=swap",
+    importUrl:
+      "https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&display=swap",
   },
   {
     label: "Rubik",
     family: "Rubik",
     value: "'Rubik', sans-serif",
-    importUrl: "https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap",
+    importUrl:
+      "https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap",
   },
   {
     label: "Manrope",
     family: "Manrope",
     value: "'Manrope', sans-serif",
-    importUrl: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap",
+    importUrl:
+      "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap",
   },
   {
     label: "Quicksand",
     family: "Quicksand",
     value: "'Quicksand', sans-serif",
-    importUrl: "https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap",
+    importUrl:
+      "https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap",
   },
 ];
 
@@ -480,10 +498,24 @@ const resolveMeasure = (
   return fallback;
 };
 const createPreset = (config: PrintPresetInput): PrintPreset => {
-  const widthIn = resolveDimension(config.widthIn, config.widthMm, config.id, "width");
-  const heightIn = resolveDimension(config.heightIn, config.heightMm, config.id, "height");
+  const widthIn = resolveDimension(
+    config.widthIn,
+    config.widthMm,
+    config.id,
+    "width",
+  );
+  const heightIn = resolveDimension(
+    config.heightIn,
+    config.heightMm,
+    config.id,
+    "height",
+  );
   const bleedIn = resolveMeasure(config.bleedIn, config.bleedMm, 0.125);
-  const safeMarginIn = resolveMeasure(config.safeMarginIn, config.safeMarginMm, 0.25);
+  const safeMarginIn = resolveMeasure(
+    config.safeMarginIn,
+    config.safeMarginMm,
+    0.25,
+  );
   const orientation =
     config.orientation ?? (heightIn >= widthIn ? "portrait" : "landscape");
 
@@ -1061,7 +1093,8 @@ const seasonalTemplate: MenuTemplate = {
 const modernGridTemplate: MenuTemplate = {
   id: "modern-grid",
   name: "Modern Grid",
-  description: "Bold sans serif layout with modular grid and alternating imagery.",
+  description:
+    "Bold sans serif layout with modular grid and alternating imagery.",
   pageSize: { width: 900, height: 1200 },
   settings: {
     background: "#0f172a",
@@ -1289,7 +1322,8 @@ const modernGridTemplate: MenuTemplate = {
 const coastalBrunchTemplate: MenuTemplate = {
   id: "coastal-brunch",
   name: "Coastal Brunch",
-  description: "Sun-washed palette with airy serif headings and seaside accents.",
+  description:
+    "Sun-washed palette with airy serif headings and seaside accents.",
   pageSize: { width: 768, height: 1024 },
   settings: {
     background: "#f1f9ff",
@@ -1561,7 +1595,8 @@ const coastalBrunchTemplate: MenuTemplate = {
 const twilightCocktailTemplate: MenuTemplate = {
   id: "twilight-cocktail",
   name: "Twilight Cocktail Hour",
-  description: "Moody twilight gradient with art-deco typography and spotlight imagery.",
+  description:
+    "Moody twilight gradient with art-deco typography and spotlight imagery.",
   pageSize: { width: 816, height: 1280 },
   settings: {
     background: "#06080f",
@@ -1837,7 +1872,9 @@ const TEMPLATE_PRESETS: MenuTemplate[] = [
   twilightCocktailTemplate,
 ];
 
-const createElementsFromTemplate = (template: MenuTemplate): DesignerElement[] =>
+const createElementsFromTemplate = (
+  template: MenuTemplate,
+): DesignerElement[] =>
   template.elements.map((element, index) => ({
     ...element,
     id: createId(),
@@ -1872,12 +1909,13 @@ export default function MenuDesignStudioSection() {
   const { t } = useTranslation();
   const [documentName, setDocumentName] = useState("Seasonal Reveal Menu");
   const [pageSize, setPageSize] = useState<PageSize>(INITIAL_PAGE_SIZE);
-  const [canvasSettings, setCanvasSettings] = useState<CanvasSettings>(
-    INITIAL_CANVAS,
-  );
+  const [canvasSettings, setCanvasSettings] =
+    useState<CanvasSettings>(INITIAL_CANVAS);
 
   // Use history hook for undo/redo on elements
-  const elementsHistory = useHistory<DesignerElement[]>(INITIAL_ELEMENTS, { maxStates: 50 });
+  const elementsHistory = useHistory<DesignerElement[]>(INITIAL_ELEMENTS, {
+    maxStates: 50,
+  });
   const elements = elementsHistory.state;
   const setElements = elementsHistory.setState;
 
@@ -1885,7 +1923,8 @@ export default function MenuDesignStudioSection() {
     INITIAL_ELEMENTS[0]?.id ?? null,
   );
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingDraft, setEditingDraft] = useState<Partial<DesignerElement> | null>(null);
+  const [editingDraft, setEditingDraft] =
+    useState<Partial<DesignerElement> | null>(null);
   const [maskEditor, setMaskEditor] = useState<MaskEditorState | null>(null);
   const [pagePreset, setPagePreset] = useState<string>(DEFAULT_PRESET.id);
   const [printPreset, setPrintPreset] = useState<PrintPreset>(DEFAULT_PRESET);
@@ -1909,15 +1948,14 @@ export default function MenuDesignStudioSection() {
   const { toast } = useToast();
   const loadedFontsRef = useRef<Set<string>>(new Set());
   const { images: galleryImages } = useAppData();
-  const { feedback, showFeedback, UndoRedoFeedbackComponent } = useUndoRedoFeedback();
+  const { feedback, showFeedback, UndoRedoFeedbackComponent } =
+    useUndoRedoFeedback();
 
   // Setup save shortcut (Cmd+S)
   useSaveShortcut(
     () => {
       if (documentName) {
-        return Promise.resolve(
-          handleSaveDesign(documentName)
-        );
+        return Promise.resolve(handleSaveDesign(documentName));
       }
     },
     { enabled: true, showToast: true },
@@ -1927,7 +1965,11 @@ export default function MenuDesignStudioSection() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Cmd/Ctrl+Z for undo
-      if ((e.metaKey || e.ctrlKey) && !e.shiftKey && e.key.toLowerCase() === "z") {
+      if (
+        (e.metaKey || e.ctrlKey) &&
+        !e.shiftKey &&
+        e.key.toLowerCase() === "z"
+      ) {
         e.preventDefault();
         elementsHistory.undo();
         showFeedback("undo");
@@ -1949,48 +1991,56 @@ export default function MenuDesignStudioSection() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [elementsHistory, showFeedback]);
 
-  const ensureFontLoaded = useCallback((fontValue?: string | null) => {
-    if (!fontValue) {
-      return;
-    }
-    const trimmedFamily = fontValue.split(",")[0]?.replace(/['"]/g, "").trim();
-    const definition =
-      FONT_LIBRARY_BY_VALUE.get(fontValue) ??
-      (trimmedFamily ? FONT_LIBRARY_BY_FAMILY.get(trimmedFamily) : undefined);
-    if (!definition) {
-      return;
-    }
-    if (typeof document === "undefined") {
-      return;
-    }
-    if (loadedFontsRef.current.has(definition.family)) {
-      return;
-    }
-    const existingLink = document.head.querySelector<HTMLLinkElement>(
-      `link[data-font-family="${definition.family}"]`,
-    );
-    if (!existingLink) {
-      const link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.href = definition.importUrl;
-      link.dataset.fontFamily = definition.family;
-      link.onerror = () => {
-        console.warn(`Failed to load font: ${definition.family}. Using fallback.`);
-        toast({
-          title: "Font loading warning",
-          description: `${definition.family} failed to load. Using system fallback.`,
-          variant: "destructive",
+  const ensureFontLoaded = useCallback(
+    (fontValue?: string | null) => {
+      if (!fontValue) {
+        return;
+      }
+      const trimmedFamily = fontValue
+        .split(",")[0]
+        ?.replace(/['"]/g, "")
+        .trim();
+      const definition =
+        FONT_LIBRARY_BY_VALUE.get(fontValue) ??
+        (trimmedFamily ? FONT_LIBRARY_BY_FAMILY.get(trimmedFamily) : undefined);
+      if (!definition) {
+        return;
+      }
+      if (typeof document === "undefined") {
+        return;
+      }
+      if (loadedFontsRef.current.has(definition.family)) {
+        return;
+      }
+      const existingLink = document.head.querySelector<HTMLLinkElement>(
+        `link[data-font-family="${definition.family}"]`,
+      );
+      if (!existingLink) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = definition.importUrl;
+        link.dataset.fontFamily = definition.family;
+        link.onerror = () => {
+          console.warn(
+            `Failed to load font: ${definition.family}. Using fallback.`,
+          );
+          toast({
+            title: "Font loading warning",
+            description: `${definition.family} failed to load. Using system fallback.`,
+            variant: "destructive",
+          });
+        };
+        document.head.appendChild(link);
+      }
+      if (document.fonts && typeof document.fonts.load === "function") {
+        document.fonts.load(`1rem ${definition.family}`).catch((error) => {
+          console.warn(`Font loading error for ${definition.family}:`, error);
         });
-      };
-      document.head.appendChild(link);
-    }
-    if (document.fonts && typeof document.fonts.load === "function") {
-      document.fonts.load(`1rem ${definition.family}`).catch((error) => {
-        console.warn(`Font loading error for ${definition.family}:`, error);
-      });
-    }
-    loadedFontsRef.current.add(definition.family);
-  }, [toast]);
+      }
+      loadedFontsRef.current.add(definition.family);
+    },
+    [toast],
+  );
 
   useEffect(() => {
     ensureFontLoaded(DEFAULT_FONT_VALUE);
@@ -2052,7 +2102,8 @@ export default function MenuDesignStudioSection() {
         console.error("Auto-save failed:", error);
         toast({
           title: "Auto-save failed",
-          description: "Could not save your design. Browser storage may be full.",
+          description:
+            "Could not save your design. Browser storage may be full.",
           variant: "destructive",
         });
       }
@@ -2063,7 +2114,17 @@ export default function MenuDesignStudioSection() {
         clearTimeout(autoSaveTimeoutRef.current);
       }
     };
-  }, [hasUnsavedChanges, documentName, elements, pageSize, canvasSettings, pagePreset, printPreset, toast, checkStorageQuota]);
+  }, [
+    hasUnsavedChanges,
+    documentName,
+    elements,
+    pageSize,
+    canvasSettings,
+    pagePreset,
+    printPreset,
+    toast,
+    checkStorageQuota,
+  ]);
 
   useEffect(() => {
     const uniqueFontValues = new Set<string>();
@@ -2128,11 +2189,16 @@ export default function MenuDesignStudioSection() {
           if (element.id !== id) {
             return element;
           }
-          const hasLockedChange = Object.prototype.hasOwnProperty.call(changes, "locked");
+          const hasLockedChange = Object.prototype.hasOwnProperty.call(
+            changes,
+            "locked",
+          );
           if (element.locked && !hasLockedChange) {
             return element;
           }
-          const nextLocked = hasLockedChange ? Boolean(changes.locked) : element.locked ?? false;
+          const nextLocked = hasLockedChange
+            ? Boolean(changes.locked)
+            : (element.locked ?? false);
           return {
             ...element,
             ...changes,
@@ -2157,9 +2223,12 @@ export default function MenuDesignStudioSection() {
     [elements],
   );
 
-  const handleInlineEditingChange = useCallback((changes: Partial<DesignerElement>) => {
-    setEditingDraft((prev) => ({ ...(prev ?? {}), ...changes }));
-  }, []);
+  const handleInlineEditingChange = useCallback(
+    (changes: Partial<DesignerElement>) => {
+      setEditingDraft((prev) => ({ ...(prev ?? {}), ...changes }));
+    },
+    [],
+  );
 
   const handleCommitInlineEdit = useCallback(() => {
     if (!editingId || !editingDraft) return;
@@ -2196,7 +2265,8 @@ export default function MenuDesignStudioSection() {
       if (target.rotation !== 0) {
         toast({
           title: "Reset rotation to edit background",
-          description: "Set rotation to 0° to align the selection tool with the image.",
+          description:
+            "Set rotation to 0° to align the selection tool with the image.",
         });
         return;
       }
@@ -2235,7 +2305,9 @@ export default function MenuDesignStudioSection() {
       if (!prev) return prev;
       return {
         ...prev,
-        preview: point ? { x: clamp(point.x, 0, 1), y: clamp(point.y, 0, 1) } : null,
+        preview: point
+          ? { x: clamp(point.x, 0, 1), y: clamp(point.y, 0, 1) }
+          : null,
       };
     });
   }, []);
@@ -2260,7 +2332,8 @@ export default function MenuDesignStudioSection() {
       if (prev.points.length < 3) {
         toast({
           title: "Add more points",
-          description: "Draw at least three points to outline the area to keep.",
+          description:
+            "Draw at least three points to outline the area to keep.",
         });
         return prev;
       }
@@ -2329,7 +2402,10 @@ export default function MenuDesignStudioSection() {
         handleMaskCancel();
         return;
       }
-      if ((event.key === "Backspace" || event.key === "Delete") && maskEditor.points.length > 0) {
+      if (
+        (event.key === "Backspace" || event.key === "Delete") &&
+        maskEditor.points.length > 0
+      ) {
         event.preventDefault();
         handleMaskUndo();
         return;
@@ -2548,7 +2624,10 @@ export default function MenuDesignStudioSection() {
 
         // Allow undo/redo even in text inputs
         if (isTextInput) {
-          if ((event.key === "z" || event.key === "Z") && (event.metaKey || event.ctrlKey)) {
+          if (
+            (event.key === "z" || event.key === "Z") &&
+            (event.metaKey || event.ctrlKey)
+          ) {
             event.preventDefault();
             if (event.shiftKey) {
               elementsHistory.redo();
@@ -2557,10 +2636,15 @@ export default function MenuDesignStudioSection() {
             }
             toast({
               title: event.shiftKey ? "Redo" : "Undo",
-              description: event.shiftKey ? "Redid last action" : "Undid last action",
+              description: event.shiftKey
+                ? "Redid last action"
+                : "Undid last action",
             });
           }
-          if ((event.key === "s" || event.key === "S") && (event.metaKey || event.ctrlKey)) {
+          if (
+            (event.key === "s" || event.key === "S") &&
+            (event.metaKey || event.ctrlKey)
+          ) {
             event.preventDefault();
             setHasUnsavedChanges(true);
           }
@@ -2569,7 +2653,10 @@ export default function MenuDesignStudioSection() {
       }
 
       // Handle undo/redo (Ctrl+Z / Ctrl+Shift+Z or Cmd+Z / Cmd+Shift+Z)
-      if ((event.key === "z" || event.key === "Z") && (event.metaKey || event.ctrlKey)) {
+      if (
+        (event.key === "z" || event.key === "Z") &&
+        (event.metaKey || event.ctrlKey)
+      ) {
         event.preventDefault();
         if (event.shiftKey) {
           if (elementsHistory.canRedo) {
@@ -2592,7 +2679,10 @@ export default function MenuDesignStudioSection() {
       }
 
       // Handle save (Ctrl+S / Cmd+S)
-      if ((event.key === "s" || event.key === "S") && (event.metaKey || event.ctrlKey)) {
+      if (
+        (event.key === "s" || event.key === "S") &&
+        (event.metaKey || event.ctrlKey)
+      ) {
         event.preventDefault();
         setHasUnsavedChanges(true);
         return;
@@ -2634,7 +2724,11 @@ export default function MenuDesignStudioSection() {
         return;
       }
 
-      if ((event.key === "d" || event.key === "D") && (event.metaKey || event.ctrlKey) && !isLocked) {
+      if (
+        (event.key === "d" || event.key === "D") &&
+        (event.metaKey || event.ctrlKey) &&
+        !isLocked
+      ) {
         event.preventDefault();
         handleDuplicateSelected();
         return;
@@ -2941,23 +3035,26 @@ export default function MenuDesignStudioSection() {
     [toast, elementsHistory],
   );
 
-  const handleDeleteSavedDesign = useCallback((designId: string) => {
-    try {
-      deleteDesign(designId);
-      setSavedDesigns(getSavedDesigns());
-      toast({
-        title: "Design deleted",
-        description: "The design has been removed from storage.",
-      });
-    } catch (error) {
-      console.error("Delete failed:", error);
-      toast({
-        title: "Delete failed",
-        description: "Failed to delete design.",
-        variant: "destructive",
-      });
-    }
-  }, [toast]);
+  const handleDeleteSavedDesign = useCallback(
+    (designId: string) => {
+      try {
+        deleteDesign(designId);
+        setSavedDesigns(getSavedDesigns());
+        toast({
+          title: "Design deleted",
+          description: "The design has been removed from storage.",
+        });
+      } catch (error) {
+        console.error("Delete failed:", error);
+        toast({
+          title: "Delete failed",
+          description: "Failed to delete design.",
+          variant: "destructive",
+        });
+      }
+    },
+    [toast],
+  );
 
   const handlePaletteApply = useCallback(
     (swatches: string[]) => {
@@ -3012,12 +3109,9 @@ export default function MenuDesignStudioSection() {
     (delta: number) => {
       if (!selectedElement) return;
       if (
-        ![
-          "heading",
-          "subheading",
-          "body",
-          "menu-item",
-        ].includes(selectedElement.type)
+        !["heading", "subheading", "body", "menu-item"].includes(
+          selectedElement.type,
+        )
       ) {
         return;
       }
@@ -3036,12 +3130,9 @@ export default function MenuDesignStudioSection() {
     (delta: number) => {
       if (!selectedElement) return;
       if (
-        ![
-          "heading",
-          "subheading",
-          "body",
-          "menu-item",
-        ].includes(selectedElement.type)
+        !["heading", "subheading", "body", "menu-item"].includes(
+          selectedElement.type,
+        )
       ) {
         return;
       }
@@ -3060,12 +3151,9 @@ export default function MenuDesignStudioSection() {
     (delta: number) => {
       if (!selectedElement) return;
       if (
-        ![
-          "heading",
-          "subheading",
-          "body",
-          "menu-item",
-        ].includes(selectedElement.type)
+        !["heading", "subheading", "body", "menu-item"].includes(
+          selectedElement.type,
+        )
       ) {
         return;
       }
@@ -3084,12 +3172,9 @@ export default function MenuDesignStudioSection() {
     (align: "left" | "center" | "right") => {
       if (!selectedElement) return;
       if (
-        ![
-          "heading",
-          "subheading",
-          "body",
-          "menu-item",
-        ].includes(selectedElement.type)
+        !["heading", "subheading", "body", "menu-item"].includes(
+          selectedElement.type,
+        )
       ) {
         return;
       }
@@ -3129,12 +3214,18 @@ export default function MenuDesignStudioSection() {
         description: "Generating PDF, this may take a moment.",
       });
 
-      const canvasElement = workspaceRef.current?.querySelector('[data-canvas]') as HTMLDivElement;
+      const canvasElement = workspaceRef.current?.querySelector(
+        "[data-canvas]",
+      ) as HTMLDivElement;
       if (!canvasElement) {
         throw new Error("Canvas element not found");
       }
 
-      await exportDesignAsPDF(canvasElement, documentName || t("menu.menuDesignStudio"), printPreset);
+      await exportDesignAsPDF(
+        canvasElement,
+        documentName || t("menu.menuDesignStudio"),
+        printPreset,
+      );
       toast({
         title: "PDF exported",
         description: "Your design has been saved as PDF.",
@@ -3143,7 +3234,10 @@ export default function MenuDesignStudioSection() {
       console.error("PDF export failed:", error);
       toast({
         title: "Export failed",
-        description: error instanceof Error ? error.message : "Failed to export PDF. Make sure jsPDF is installed.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to export PDF. Make sure jsPDF is installed.",
         variant: "destructive",
       });
     }
@@ -3151,7 +3245,11 @@ export default function MenuDesignStudioSection() {
 
   const handleExportSVG = useCallback(async () => {
     try {
-      await exportDesignAsSVG(elements, pageSize, documentName || t("menu.menuDesignStudio"));
+      await exportDesignAsSVG(
+        elements,
+        pageSize,
+        documentName || t("menu.menuDesignStudio"),
+      );
       toast({
         title: "SVG exported",
         description: "Your design has been saved as SVG.",
@@ -3160,7 +3258,8 @@ export default function MenuDesignStudioSection() {
       console.error("SVG export failed:", error);
       toast({
         title: "Export failed",
-        description: error instanceof Error ? error.message : "Failed to export SVG.",
+        description:
+          error instanceof Error ? error.message : "Failed to export SVG.",
         variant: "destructive",
       });
     }
@@ -3176,15 +3275,12 @@ export default function MenuDesignStudioSection() {
     setPageSize(() => ({ ...INITIAL_PAGE_SIZE }));
   }, []);
 
-  const handleZoom = useCallback(
-    (delta: number) => {
-      setCanvasSettings((prev) => ({
-        ...prev,
-        zoom: clamp(Number(prev.zoom.toFixed(2)) + delta, 0.3, 1.6),
-      }));
-    },
-    [],
-  );
+  const handleZoom = useCallback((delta: number) => {
+    setCanvasSettings((prev) => ({
+      ...prev,
+      zoom: clamp(Number(prev.zoom.toFixed(2)) + delta, 0.3, 1.6),
+    }));
+  }, []);
 
   const handlePagePresetChange = useCallback((id: string) => {
     const preset = PAGE_PRESETS.find((entry) => entry.id === id);
@@ -3211,7 +3307,10 @@ export default function MenuDesignStudioSection() {
         handleDeleteSelected();
         return;
       }
-      if ((event.key === "d" || event.key === "D") && (event.metaKey || event.ctrlKey)) {
+      if (
+        (event.key === "d" || event.key === "D") &&
+        (event.metaKey || event.ctrlKey)
+      ) {
         event.preventDefault();
         handleDuplicateSelected();
         return;
@@ -3219,8 +3318,18 @@ export default function MenuDesignStudioSection() {
       if (event.key.startsWith("Arrow")) {
         event.preventDefault();
         const step = event.shiftKey ? 10 : 1;
-        const dx = event.key === "ArrowRight" ? step : event.key === "ArrowLeft" ? -step : 0;
-        const dy = event.key === "ArrowDown" ? step : event.key === "ArrowUp" ? -step : 0;
+        const dx =
+          event.key === "ArrowRight"
+            ? step
+            : event.key === "ArrowLeft"
+              ? -step
+              : 0;
+        const dy =
+          event.key === "ArrowDown"
+            ? step
+            : event.key === "ArrowUp"
+              ? -step
+              : 0;
         if (!dx && !dy) return;
         const element = elements.find((entry) => entry.id === selectedId);
         if (!element) return;
@@ -3232,7 +3341,15 @@ export default function MenuDesignStudioSection() {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [elements, handleDeleteSelected, handleDuplicateSelected, pageSize.height, pageSize.width, selectedId, updateElement]);
+  }, [
+    elements,
+    handleDeleteSelected,
+    handleDuplicateSelected,
+    pageSize.height,
+    pageSize.width,
+    selectedId,
+    updateElement,
+  ]);
 
   return (
     <div className="flex h-full min-h-[calc(100vh-140px)] flex-col gap-4 px-4 pb-10 pt-4 lg:px-6">
@@ -3244,7 +3361,9 @@ export default function MenuDesignStudioSection() {
               {t("menu.menuDesignStudio")}
             </CardTitle>
             <CardDescription className="max-w-3xl text-sm">
-              Start from a blank canvas or seasoned templates, arrange typography, imagery, and pricing with precise grid control, and export layout primitives ready for production.
+              Start from a blank canvas or seasoned templates, arrange
+              typography, imagery, and pricing with precise grid control, and
+              export layout primitives ready for production.
             </CardDescription>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -3268,7 +3387,16 @@ export default function MenuDesignStudioSection() {
                 {`Safe ${formatInches(printPreset.safeMarginIn)}″ • Bleed ${formatInches(printPreset.bleedIn)}″ • ${printPreset.colorProfile}`}
               </div>
             </div>
-            <Button variant="outline" size="sm" onClick={() => setPageSize(({ width, height }) => ({ width: height, height: width }))}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                setPageSize(({ width, height }) => ({
+                  width: height,
+                  height: width,
+                }))
+              }
+            >
               <LayoutGrid className="mr-2 h-4 w-4" aria-hidden />
               Flip orientation
             </Button>
@@ -3276,7 +3404,11 @@ export default function MenuDesignStudioSection() {
               <FilePlus className="mr-2 h-4 w-4" aria-hidden />
               Blank canvas
             </Button>
-            <Button variant="outline" size="sm" onClick={() => handleApplyTemplate(seasonalTemplate)}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleApplyTemplate(seasonalTemplate)}
+            >
               <Sparkles className="mr-2 h-4 w-4" aria-hidden />
               Apply seasonal
             </Button>
@@ -3290,16 +3422,31 @@ export default function MenuDesignStudioSection() {
               Save / Load
             </Button>
             <div className="flex items-center gap-1 rounded-lg border border-slate-300/50 dark:border-slate-700/60 p-1">
-              <Button variant="ghost" size="sm" onClick={handleExportLayout} title="Export as JSON">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleExportLayout}
+                title="Export as JSON"
+              >
                 <Download className="mr-2 h-4 w-4" aria-hidden />
                 JSON
               </Button>
               <div className="h-5 w-px bg-border" />
-              <Button variant="ghost" size="sm" onClick={handleExportPDF} title="Export as PDF">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleExportPDF}
+                title="Export as PDF"
+              >
                 <Download className="mr-2 h-4 w-4" aria-hidden />
                 PDF
               </Button>
-              <Button variant="ghost" size="sm" onClick={handleExportSVG} title="Export as SVG">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleExportSVG}
+                title="Export as SVG"
+              >
                 <Download className="mr-2 h-4 w-4" aria-hidden />
                 SVG
               </Button>
@@ -3532,14 +3679,19 @@ function ToolSidebar({
   return (
     <Card className="w-full border border-slate-200/50 bg-white/80 backdrop-blur lg:w-[280px] dark:border-slate-800/60 dark:bg-slate-950/40">
       <CardHeader>
-        <CardTitle className="text-base font-semibold">Project assets</CardTitle>
+        <CardTitle className="text-base font-semibold">
+          Project assets
+        </CardTitle>
         <CardDescription className="text-xs">
           Templates, components, and palettes to accelerate composition.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
-          <Label htmlFor="document-name" className="text-xs uppercase tracking-[0.32em] text-muted-foreground">
+          <Label
+            htmlFor="document-name"
+            className="text-xs uppercase tracking-[0.32em] text-muted-foreground"
+          >
             Document
           </Label>
           <Input
@@ -3589,27 +3741,51 @@ function ToolSidebar({
           </TabsContent>
           <TabsContent value="elements" className="mt-3">
             <div className="space-y-2">
-              <Button variant="outline" className="w-full justify-start" onClick={onAddHeading}>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={onAddHeading}
+              >
                 <Type className="mr-2 h-4 w-4" aria-hidden />
                 Add headline
               </Button>
-              <Button variant="outline" className="w-full justify-start" onClick={onAddBody}>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={onAddBody}
+              >
                 <Type className="mr-2 h-4 w-4" aria-hidden />
                 Add body copy
               </Button>
-              <Button variant="outline" className="w-full justify-start" onClick={onAddMenuItem}>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={onAddMenuItem}
+              >
                 <Ruler className="mr-2 h-4 w-4" aria-hidden />
                 Add menu item
               </Button>
-              <Button variant="outline" className="w-full justify-start" onClick={() => onAddShape("rectangle")}>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => onAddShape("rectangle")}
+              >
                 <Square className="mr-2 h-4 w-4" aria-hidden />
                 Add rectangle
               </Button>
-              <Button variant="outline" className="w-full justify-start" onClick={() => onAddShape("ellipse")}>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={() => onAddShape("ellipse")}
+              >
                 <Circle className="mr-2 h-4 w-4" aria-hidden />
                 Add ellipse
               </Button>
-              <Button variant="outline" className="w-full justify-start" onClick={onAddDivider}>
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={onAddDivider}
+              >
                 <LayoutGrid className="mr-2 h-4 w-4" aria-hidden />
                 Add divider
               </Button>
@@ -3642,7 +3818,10 @@ function ToolSidebar({
                         />
                       </div>
                       <div className="px-2 py-2 text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
-                        <ImageIcon className="mr-1 inline h-3 w-3" aria-hidden />
+                        <ImageIcon
+                          className="mr-1 inline h-3 w-3"
+                          aria-hidden
+                        />
                         {asset.label}
                       </div>
                     </button>
@@ -3664,7 +3843,8 @@ function ToolSidebar({
                         {palette.name}
                       </CardTitle>
                       <CardDescription className="text-xs">
-                        Click to apply to {selectedElement ? "selection" : "canvas"}.
+                        Click to apply to{" "}
+                        {selectedElement ? "selection" : "canvas"}.
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
@@ -3751,8 +3931,16 @@ function DesignerCanvas({
       const zoom = canvasSettings.zoom || 1;
       const pointerX = (event.clientX - rect.left) / zoom;
       const pointerY = (event.clientY - rect.top) / zoom;
-      const nextX = clamp(pointerX - drag.offsetX, 0, pageSize.width - drag.width);
-      const nextY = clamp(pointerY - drag.offsetY, 0, pageSize.height - drag.height);
+      const nextX = clamp(
+        pointerX - drag.offsetX,
+        0,
+        pageSize.width - drag.width,
+      );
+      const nextY = clamp(
+        pointerY - drag.offsetY,
+        0,
+        pageSize.height - drag.height,
+      );
       onPositionChange(drag.id, { x: nextX, y: nextY });
     },
     [canvasSettings.zoom, onPositionChange, pageSize.height, pageSize.width],
@@ -3910,50 +4098,62 @@ function DesignerCanvas({
                     paddingRight: canvasSettings.margin,
                   }}
                 >
-                  {new Array(canvasSettings.columns).fill(null).map((_, index) => (
-                    <div
-                      key={`column-${index}`}
-                      style={{
-                        width: columnWidth,
-                        marginRight:
-                          index === canvasSettings.columns - 1
-                            ? 0
-                            : canvasSettings.gutter,
-                        backgroundColor: "rgba(59,130,246,0.04)",
-                        borderLeft: "1px solid rgba(59,130,246,0.16)",
-                        borderRight: "1px solid rgba(59,130,246,0.16)",
-                      }}
-                    />
-                  ))}
+                  {new Array(canvasSettings.columns)
+                    .fill(null)
+                    .map((_, index) => (
+                      <div
+                        key={`column-${index}`}
+                        style={{
+                          width: columnWidth,
+                          marginRight:
+                            index === canvasSettings.columns - 1
+                              ? 0
+                              : canvasSettings.gutter,
+                          backgroundColor: "rgba(59,130,246,0.04)",
+                          borderLeft: "1px solid rgba(59,130,246,0.16)",
+                          borderRight: "1px solid rgba(59,130,246,0.16)",
+                        }}
+                      />
+                    ))}
                 </div>
               ) : null}
               {sortedElements.map((element) => {
                 const isSelected = element.id === selectedId;
                 const isLocked = Boolean(element.locked);
                 const isEditable = isTextEditableElement(element);
-                const isEditing = Boolean(editingId && editingId === element.id && editingDraft);
-                const isMaskEditing = Boolean(maskEditor && maskEditor.elementId === element.id);
+                const isEditing = Boolean(
+                  editingId && editingId === element.id && editingDraft,
+                );
+                const isMaskEditing = Boolean(
+                  maskEditor && maskEditor.elementId === element.id,
+                );
                 const draft = isEditing && editingDraft ? editingDraft : null;
                 const draftText =
                   draft && "text" in draft
                     ? ((draft.text as string | undefined) ?? "")
-                    : element.text ?? "";
+                    : (element.text ?? "");
                 const draftName =
                   draft && "name" in draft
                     ? ((draft.name as string | undefined) ?? "")
-                    : element.name ?? "";
+                    : (element.name ?? "");
                 const draftDescription =
                   draft && "description" in draft
                     ? ((draft.description as string | undefined) ?? "")
-                    : element.description ?? "";
+                    : (element.description ?? "");
                 const draftCurrency =
                   draft && "currency" in draft
-                    ? (draft.currency as string | undefined) ?? element.currency ?? "USD"
-                    : element.currency ?? "USD";
+                    ? ((draft.currency as string | undefined) ??
+                      element.currency ??
+                      "USD")
+                    : (element.currency ?? "USD");
                 const draftPrice =
-                  draft && "price" in draft ? (draft.price as number | undefined) : element.price;
+                  draft && "price" in draft
+                    ? (draft.price as number | undefined)
+                    : element.price;
                 const draftPriceDisplay =
-                  draftPrice != null && !Number.isNaN(draftPrice) ? String(draftPrice) : "";
+                  draftPrice != null && !Number.isNaN(draftPrice)
+                    ? String(draftPrice)
+                    : "";
                 return (
                   <div
                     key={element.id}
@@ -3963,7 +4163,9 @@ function DesignerCanvas({
                       isSelected
                         ? "ring-2 ring-cyan-500"
                         : "shadow-sm ring-1 ring-transparent",
-                      isLocked && !isSelected ? "ring-1 ring-amber-400/70" : undefined,
+                      isLocked && !isSelected
+                        ? "ring-1 ring-amber-400/70"
+                        : undefined,
                     )}
                     data-locked={isLocked || undefined}
                     style={{
@@ -3974,7 +4176,13 @@ function DesignerCanvas({
                       transform: `rotate(${element.rotation}deg)` as string,
                       opacity: element.opacity,
                       borderRadius: element.borderRadius,
-                      cursor: isMaskEditing ? "crosshair" : isLocked ? "not-allowed" : isEditing ? "text" : "move",
+                      cursor: isMaskEditing
+                        ? "crosshair"
+                        : isLocked
+                          ? "not-allowed"
+                          : isEditing
+                            ? "text"
+                            : "move",
                       zIndex: element.zIndex,
                     }}
                     onPointerDown={
@@ -3992,7 +4200,9 @@ function DesignerCanvas({
                       <div
                         className={cn(
                           "h-full w-full transition-opacity",
-                          isEditing ? "pointer-events-none opacity-20" : "opacity-100",
+                          isEditing
+                            ? "pointer-events-none opacity-20"
+                            : "opacity-100",
                         )}
                       >
                         {renderElement(element)}
@@ -4022,7 +4232,10 @@ function DesignerCanvas({
                                 event.stopPropagation();
                                 onCancelEdit();
                               }
-                              if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+                              if (
+                                event.key === "Enter" &&
+                                (event.metaKey || event.ctrlKey)
+                              ) {
                                 event.preventDefault();
                                 onCommitEdit();
                               }
@@ -4037,7 +4250,9 @@ function DesignerCanvas({
                                   autoFocus
                                   value={draftName}
                                   onChange={(event) =>
-                                    onEditingChange({ name: event.target.value })
+                                    onEditingChange({
+                                      name: event.target.value,
+                                    })
                                   }
                                 />
                               </div>
@@ -4048,7 +4263,9 @@ function DesignerCanvas({
                                 <Input
                                   value={draftText}
                                   onChange={(event) =>
-                                    onEditingChange({ text: event.target.value })
+                                    onEditingChange({
+                                      text: event.target.value,
+                                    })
                                   }
                                 />
                               </div>
@@ -4061,7 +4278,9 @@ function DesignerCanvas({
                                   value={draftDescription}
                                   className="resize-none"
                                   onChange={(event) =>
-                                    onEditingChange({ description: event.target.value })
+                                    onEditingChange({
+                                      description: event.target.value,
+                                    })
                                   }
                                 />
                               </div>
@@ -4093,7 +4312,9 @@ function DesignerCanvas({
                                   <Input
                                     value={draftCurrency}
                                     onChange={(event) =>
-                                      onEditingChange({ currency: event.target.value })
+                                      onEditingChange({
+                                        currency: event.target.value,
+                                      })
                                     }
                                   />
                                 </div>
@@ -4132,14 +4353,19 @@ function DesignerCanvas({
                               textAlign: element.align,
                               whiteSpace: "pre-wrap",
                             }}
-                            onChange={(event) => onEditingChange({ text: event.target.value })}
+                            onChange={(event) =>
+                              onEditingChange({ text: event.target.value })
+                            }
                             onPointerDown={(event) => event.stopPropagation()}
                             onKeyDown={(event) => {
                               if (event.key === "Escape") {
                                 event.stopPropagation();
                                 onCancelEdit();
                               }
-                              if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+                              if (
+                                event.key === "Enter" &&
+                                (event.metaKey || event.ctrlKey)
+                              ) {
                                 event.preventDefault();
                                 onCommitEdit();
                               }
@@ -4167,7 +4393,13 @@ type MaskDrawingOverlayProps = {
   onComplete: () => void;
 };
 
-function MaskDrawingOverlay({ points, preview, onAddPoint, onPreview, onComplete }: MaskDrawingOverlayProps) {
+function MaskDrawingOverlay({
+  points,
+  preview,
+  onAddPoint,
+  onPreview,
+  onComplete,
+}: MaskDrawingOverlayProps) {
   const handlePointerDown = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
       event.preventDefault();
@@ -4217,7 +4449,10 @@ function MaskDrawingOverlay({ points, preview, onAddPoint, onPreview, onComplete
   const polygonPoints = useMemo(() => {
     if (points.length < 3) return "";
     return points
-      .map((point) => `${(point.x * 100).toFixed(2)},${(point.y * 100).toFixed(2)}`)
+      .map(
+        (point) =>
+          `${(point.x * 100).toFixed(2)},${(point.y * 100).toFixed(2)}`,
+      )
       .join(" ");
   }, [points]);
 
@@ -4225,7 +4460,10 @@ function MaskDrawingOverlay({ points, preview, onAddPoint, onPreview, onComplete
     const combined = preview ? [...points, preview] : points;
     if (combined.length === 0) return "";
     return combined
-      .map((point) => `${(point.x * 100).toFixed(2)},${(point.y * 100).toFixed(2)}`)
+      .map(
+        (point) =>
+          `${(point.x * 100).toFixed(2)},${(point.y * 100).toFixed(2)}`,
+      )
       .join(" ");
   }, [points, preview]);
 
@@ -4238,7 +4476,11 @@ function MaskDrawingOverlay({ points, preview, onAddPoint, onPreview, onComplete
       onDoubleClick={handleDoubleClick}
       onContextMenu={(event) => event.preventDefault()}
     >
-      <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <svg
+        className="absolute inset-0 h-full w-full"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+      >
         {polygonPoints ? (
           <polygon
             points={polygonPoints}
@@ -4315,9 +4557,7 @@ function renderElement(element: DesignerElement) {
       return (
         <div className="flex h-full w-full flex-col justify-between rounded-xl bg-white/70 p-4 shadow-sm backdrop-blur dark:bg-slate-900/70">
           <div>
-            <div
-              className="text-sm font-semibold uppercase tracking-[0.32em] text-muted-foreground"
-            >
+            <div className="text-sm font-semibold uppercase tracking-[0.32em] text-muted-foreground">
               {element.name}
             </div>
             <div
@@ -4358,7 +4598,10 @@ function renderElement(element: DesignerElement) {
       const clipPath =
         element.mask?.type === "polygon" && element.mask.points.length >= 3
           ? `polygon(${element.mask.points
-              .map((point) => `${(point.x * 100).toFixed(2)}% ${(point.y * 100).toFixed(2)}%`)
+              .map(
+                (point) =>
+                  `${(point.x * 100).toFixed(2)}% ${(point.y * 100).toFixed(2)}%`,
+              )
               .join(", ")})`
           : undefined;
       return (
@@ -4428,7 +4671,10 @@ type InspectorPanelProps = {
   onDuplicateSelected: () => void;
   layers: DesignerElement[];
   onSelectLayer: (id: string) => void;
-  onLayerShift: (id: string, direction: "forward" | "backward" | "front" | "back") => void;
+  onLayerShift: (
+    id: string,
+    direction: "forward" | "backward" | "front" | "back",
+  ) => void;
   onLayerOpacityChange: (id: string, opacity: number) => void;
   onToggleLayerLock: (id: string) => void;
   maskEditor: MaskEditorState | null;
@@ -4475,7 +4721,10 @@ function InspectorPanel({
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="page-width" className="text-[11px] uppercase tracking-[0.32em] text-muted-foreground">
+              <Label
+                htmlFor="page-width"
+                className="text-[11px] uppercase tracking-[0.32em] text-muted-foreground"
+              >
                 Width
               </Label>
               <Input
@@ -4484,12 +4733,17 @@ function InspectorPanel({
                 min={480}
                 value={Math.round(pageSize.width)}
                 onChange={(event) =>
-                  onPageSizeChange({ width: clamp(Number(event.target.value), 480, 2000) })
+                  onPageSizeChange({
+                    width: clamp(Number(event.target.value), 480, 2000),
+                  })
                 }
               />
             </div>
             <div>
-              <Label htmlFor="page-height" className="text-[11px] uppercase tracking-[0.32em] text-muted-foreground">
+              <Label
+                htmlFor="page-height"
+                className="text-[11px] uppercase tracking-[0.32em] text-muted-foreground"
+              >
                 Height
               </Label>
               <Input
@@ -4498,7 +4752,9 @@ function InspectorPanel({
                 min={640}
                 value={Math.round(pageSize.height)}
                 onChange={(event) =>
-                  onPageSizeChange({ height: clamp(Number(event.target.value), 640, 2400) })
+                  onPageSizeChange({
+                    height: clamp(Number(event.target.value), 640, 2400),
+                  })
                 }
               />
             </div>
@@ -4597,7 +4853,9 @@ function InspectorPanel({
               max={80}
               step={2}
               onValueChange={(value) =>
-                onCanvasSettingsChange({ gridSize: value[0] ?? canvasSettings.gridSize })
+                onCanvasSettingsChange({
+                  gridSize: value[0] ?? canvasSettings.gridSize,
+                })
               }
             />
           </div>
@@ -4683,7 +4941,12 @@ function InspectorPanel({
                       >
                         <span className="flex items-center gap-1 font-semibold text-foreground">
                           {layer.name}
-                          {locked ? <Lock className="h-3 w-3 text-amber-500" aria-hidden /> : null}
+                          {locked ? (
+                            <Lock
+                              className="h-3 w-3 text-amber-500"
+                              aria-hidden
+                            />
+                          ) : null}
                         </span>
                         <span className="text-[10px] uppercase tracking-[0.34em] text-muted-foreground">
                           {layer.type}
@@ -4752,7 +5015,10 @@ function InspectorPanel({
                         step={1}
                         className="flex-1"
                         onValueChange={(value) =>
-                          onLayerOpacityChange(layer.id, (value[0] ?? 100) / 100)
+                          onLayerOpacityChange(
+                            layer.id,
+                            (value[0] ?? 100) / 100,
+                          )
                         }
                         aria-label="Layer opacity"
                       />
@@ -4783,8 +5049,14 @@ function InspectorPanel({
             />
           ) : (
             <div className="space-y-2 text-sm text-muted-foreground">
-              <p>Select a layer to expose typography, imagery, and layout controls.</p>
-              <p>Use ⌘/Ctrl + D to duplicate and arrow keys to nudge 1px (⇧ + arrows for 10px).</p>
+              <p>
+                Select a layer to expose typography, imagery, and layout
+                controls.
+              </p>
+              <p>
+                Use ⌘/Ctrl + D to duplicate and arrow keys to nudge 1px (⇧ +
+                arrows for 10px).
+              </p>
             </div>
           )}
         </div>
@@ -4822,9 +5094,11 @@ function ElementInspector({
     onUpdate(element.id, changes);
   };
 
-  const isMaskEditing = Boolean(maskEditor && maskEditor.elementId === element.id);
+  const isMaskEditing = Boolean(
+    maskEditor && maskEditor.elementId === element.id,
+  );
   const currentMaskPointCount = isMaskEditing
-    ? maskEditor?.points.length ?? 0
+    ? (maskEditor?.points.length ?? 0)
     : element.mask?.type === "polygon"
       ? element.mask.points.length
       : 0;
@@ -4851,7 +5125,9 @@ function ElementInspector({
           <Input
             type="number"
             value={Math.round(element.x)}
-            onChange={(event) => handleChange({ x: Number(event.target.value) })}
+            onChange={(event) =>
+              handleChange({ x: Number(event.target.value) })
+            }
           />
         </div>
         <div>
@@ -4861,7 +5137,9 @@ function ElementInspector({
           <Input
             type="number"
             value={Math.round(element.y)}
-            onChange={(event) => handleChange({ y: Number(event.target.value) })}
+            onChange={(event) =>
+              handleChange({ y: Number(event.target.value) })
+            }
           />
         </div>
         <div>
@@ -4871,7 +5149,11 @@ function ElementInspector({
           <Input
             type="number"
             value={Math.round(element.width)}
-            onChange={(event) => handleChange({ width: clamp(Number(event.target.value), 40, 2000) })}
+            onChange={(event) =>
+              handleChange({
+                width: clamp(Number(event.target.value), 40, 2000),
+              })
+            }
           />
         </div>
         <div>
@@ -4881,7 +5163,11 @@ function ElementInspector({
           <Input
             type="number"
             value={Math.round(element.height)}
-            onChange={(event) => handleChange({ height: clamp(Number(event.target.value), 10, 2000) })}
+            onChange={(event) =>
+              handleChange({
+                height: clamp(Number(event.target.value), 10, 2000),
+              })
+            }
           />
         </div>
         <div>
@@ -4891,7 +5177,9 @@ function ElementInspector({
           <Input
             type="number"
             value={Math.round(element.rotation)}
-            onChange={(event) => handleChange({ rotation: Number(event.target.value) })}
+            onChange={(event) =>
+              handleChange({ rotation: Number(event.target.value) })
+            }
           />
         </div>
         <div>
@@ -4902,12 +5190,19 @@ function ElementInspector({
             value={[Math.round(element.opacity * 100)]}
             min={0}
             max={100}
-            onValueChange={(value) => handleChange({ opacity: (value[0] ?? 100) / 100 })}
+            onValueChange={(value) =>
+              handleChange({ opacity: (value[0] ?? 100) / 100 })
+            }
           />
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="sm" className="flex-1" onClick={onDuplicate}>
+        <Button
+          variant="outline"
+          size="sm"
+          className="flex-1"
+          onClick={onDuplicate}
+        >
           <Copy className="mr-2 h-4 w-4" aria-hidden />
           Duplicate
         </Button>
@@ -4916,7 +5211,9 @@ function ElementInspector({
           Delete
         </Button>
       </div>
-      {element.type === "heading" || element.type === "subheading" || element.type === "body" ? (
+      {element.type === "heading" ||
+      element.type === "subheading" ||
+      element.type === "body" ? (
         <TextElementControls element={element} onChange={handleChange} />
       ) : null}
       {element.type === "menu-item" ? (
@@ -4972,7 +5269,9 @@ function TextElementControls({ element, onChange }: TextElementControlsProps) {
           <Input
             type="number"
             value={Math.round(element.fontSize ?? 16)}
-            onChange={(event) => onChange({ fontSize: Number(event.target.value) })}
+            onChange={(event) =>
+              onChange({ fontSize: Number(event.target.value) })
+            }
           />
         </div>
         <div>
@@ -4983,7 +5282,9 @@ function TextElementControls({ element, onChange }: TextElementControlsProps) {
             type="number"
             step={0.05}
             value={Number(element.lineHeight ?? 1.4).toFixed(2)}
-            onChange={(event) => onChange({ lineHeight: Number(event.target.value) })}
+            onChange={(event) =>
+              onChange({ lineHeight: Number(event.target.value) })
+            }
           />
         </div>
         <div>
@@ -4994,7 +5295,9 @@ function TextElementControls({ element, onChange }: TextElementControlsProps) {
             type="number"
             step={0.1}
             value={Number(element.letterSpacing ?? 0).toFixed(1)}
-            onChange={(event) => onChange({ letterSpacing: Number(event.target.value) })}
+            onChange={(event) =>
+              onChange({ letterSpacing: Number(event.target.value) })
+            }
           />
         </div>
         <div>
@@ -5004,7 +5307,9 @@ function TextElementControls({ element, onChange }: TextElementControlsProps) {
           <Input
             type="number"
             value={element.fontWeight ?? 400}
-            onChange={(event) => onChange({ fontWeight: Number(event.target.value) })}
+            onChange={(event) =>
+              onChange({ fontWeight: Number(event.target.value) })
+            }
           />
         </div>
       </div>
@@ -5108,7 +5413,9 @@ function MenuItemControls({ element, onChange }: MenuItemControlsProps) {
           <Input
             type="number"
             value={element.price ?? 0}
-            onChange={(event) => onChange({ price: Number(event.target.value) })}
+            onChange={(event) =>
+              onChange({ price: Number(event.target.value) })
+            }
           />
         </div>
         <div>
@@ -5190,7 +5497,9 @@ function ImageControls({
         </Label>
         <Select
           value={element.objectFit ?? "cover"}
-          onValueChange={(value) => onChange({ objectFit: value as "cover" | "contain" })}
+          onValueChange={(value) =>
+            onChange({ objectFit: value as "cover" | "contain" })
+          }
         >
           <SelectTrigger>
             <SelectValue />
@@ -5220,10 +5529,15 @@ function ImageControls({
         {isMaskEditing ? (
           <div className="space-y-2">
             <p className="text-[11px] leading-relaxed text-muted-foreground">
-              Click around the subject to add points. Undo removes the last point. Double-click or press Enter to apply your selection.
+              Click around the subject to add points. Undo removes the last
+              point. Double-click or press Enter to apply your selection.
             </p>
             <div className="flex flex-wrap gap-2">
-              <Button size="sm" onClick={onMaskCommit} disabled={maskPointCount < 3}>
+              <Button
+                size="sm"
+                onClick={onMaskCommit}
+                disabled={maskPointCount < 3}
+              >
                 Apply selection
               </Button>
               <Button
@@ -5247,7 +5561,12 @@ function ImageControls({
             <Button size="sm" variant="secondary" onClick={onBeginMaskEditing}>
               Start background selection
             </Button>
-            <Button size="sm" variant="ghost" onClick={onMaskClear} disabled={!hasMask}>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={onMaskClear}
+              disabled={!hasMask}
+            >
               Clear mask
             </Button>
             {hasMask ? (
@@ -5256,7 +5575,8 @@ function ImageControls({
               </span>
             ) : null}
             <p className="text-[11px] leading-relaxed text-muted-foreground">
-              Outline the area you want to keep. The rest of the image becomes transparent when applied.
+              Outline the area you want to keep. The rest of the image becomes
+              transparent when applied.
             </p>
           </div>
         )}
@@ -5323,7 +5643,9 @@ function ShapeControls({ element, onChange }: ShapeControlsProps) {
           <Input
             type="number"
             value={element.borderWidth ?? 0}
-            onChange={(event) => onChange({ borderWidth: Number(event.target.value) })}
+            onChange={(event) =>
+              onChange({ borderWidth: Number(event.target.value) })
+            }
           />
         </div>
       </div>
@@ -5357,7 +5679,9 @@ function DividerControls({ element, onChange }: DividerControlsProps) {
         <Input
           type="number"
           value={element.thickness ?? 2}
-          onChange={(event) => onChange({ thickness: Number(event.target.value) })}
+          onChange={(event) =>
+            onChange({ thickness: Number(event.target.value) })
+          }
         />
       </div>
     </div>
@@ -5474,7 +5798,11 @@ function FloatingToolbarPanel({
   const beginDrag = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
       if (state.pinned) return;
-      if (event.button !== 0 && event.pointerType !== "touch" && event.pointerType !== "pen") {
+      if (
+        event.button !== 0 &&
+        event.pointerType !== "touch" &&
+        event.pointerType !== "pen"
+      ) {
         return;
       }
       const target = event.target as HTMLElement | null;
@@ -5504,7 +5832,14 @@ function FloatingToolbarPanel({
       event.stopPropagation();
       event.preventDefault();
     },
-    [getAvailableSpace, handlePointerMove, handlePointerUp, state.pinned, state.x, state.y],
+    [
+      getAvailableSpace,
+      handlePointerMove,
+      handlePointerUp,
+      state.pinned,
+      state.x,
+      state.y,
+    ],
   );
 
   useEffect(() => {
@@ -5553,7 +5888,14 @@ function FloatingToolbarPanel({
     });
     observer.observe(container);
     return () => observer.disconnect();
-  }, [bounds, containerRef, getAvailableSpace, onStateChange, state.x, state.y]);
+  }, [
+    bounds,
+    containerRef,
+    getAvailableSpace,
+    onStateChange,
+    state.x,
+    state.y,
+  ]);
 
   const hasSelection = Boolean(selectedElement);
   const selectionLocked = Boolean(selectedElement?.locked);
@@ -5561,7 +5903,9 @@ function FloatingToolbarPanel({
     hasSelection &&
     selectedElement &&
     !selectionLocked &&
-    ["heading", "subheading", "body", "menu-item"].includes(selectedElement.type);
+    ["heading", "subheading", "body", "menu-item"].includes(
+      selectedElement.type,
+    );
   const canMutateSelection = hasSelection && !selectionLocked;
 
   return (
@@ -5714,14 +6058,21 @@ function FloatingToolbarPanel({
                     <Input
                       type="number"
                       inputMode="decimal"
-                      value={selectedElement.price != null ? selectedElement.price : ""}
+                      value={
+                        selectedElement.price != null
+                          ? selectedElement.price
+                          : ""
+                      }
                       disabled={selectionLocked}
                       onChange={(event) => {
                         if (selectionLocked) return;
                         const nextValue = event.target.value;
                         const parsed = Number.parseFloat(nextValue);
                         onSelectionUpdate(selectedElement.id, {
-                          price: nextValue === "" || Number.isNaN(parsed) ? undefined : parsed,
+                          price:
+                            nextValue === "" || Number.isNaN(parsed)
+                              ? undefined
+                              : parsed,
                         });
                       }}
                     />
@@ -5745,7 +6096,10 @@ function FloatingToolbarPanel({
               </div>
             ) : selectedElement.text != null ? (
               <Textarea
-                rows={Math.min(6, Math.max(3, Math.ceil((selectedElement.height || 60) / 60)))}
+                rows={Math.min(
+                  6,
+                  Math.max(3, Math.ceil((selectedElement.height || 60) / 60)),
+                )}
                 value={selectedElement.text ?? ""}
                 disabled={selectionLocked}
                 onChange={(event) => {
@@ -5844,7 +6198,10 @@ function FloatingToolbarPanel({
               title="Tighten letter spacing"
               aria-label="Tighten letter spacing"
             >
-              <BetweenHorizontalStart className="h-4 w-4 rotate-180" aria-hidden />
+              <BetweenHorizontalStart
+                className="h-4 w-4 rotate-180"
+                aria-hidden
+              />
             </Button>
             <Button
               variant="outline"
@@ -5866,12 +6223,17 @@ function FloatingToolbarPanel({
               title="Decrease line height"
               aria-label="Decrease line height"
             >
-              <BetweenVerticalStart className="h-4 w-4 rotate-180" aria-hidden />
+              <BetweenVerticalStart
+                className="h-4 w-4 rotate-180"
+                aria-hidden
+              />
             </Button>
           </div>
           <div className="grid grid-cols-3 gap-2">
             <Button
-              variant={selectedElement?.align === "left" ? "default" : "outline"}
+              variant={
+                selectedElement?.align === "left" ? "default" : "outline"
+              }
               size="icon"
               className="h-9 w-full"
               disabled={!canAdjustTypography}
@@ -5882,7 +6244,9 @@ function FloatingToolbarPanel({
               <AlignLeft className="h-4 w-4" aria-hidden />
             </Button>
             <Button
-              variant={selectedElement?.align === "center" ? "default" : "outline"}
+              variant={
+                selectedElement?.align === "center" ? "default" : "outline"
+              }
               size="icon"
               className="h-9 w-full"
               disabled={!canAdjustTypography}
@@ -5893,7 +6257,9 @@ function FloatingToolbarPanel({
               <AlignCenter className="h-4 w-4" aria-hidden />
             </Button>
             <Button
-              variant={selectedElement?.align === "right" ? "default" : "outline"}
+              variant={
+                selectedElement?.align === "right" ? "default" : "outline"
+              }
               size="icon"
               className="h-9 w-full"
               disabled={!canAdjustTypography}
@@ -5945,7 +6311,10 @@ type FloatingLayersPanelProps = {
   layers: DesignerElement[];
   selectedId: string | null;
   onSelectLayer: (id: string) => void;
-  onLayerShift: (id: string, direction: "forward" | "backward" | "front" | "back") => void;
+  onLayerShift: (
+    id: string,
+    direction: "forward" | "backward" | "front" | "back",
+  ) => void;
   onChangeOpacity: (id: string, opacity: number) => void;
   onToggleLock: (id: string) => void;
 };
@@ -6024,7 +6393,11 @@ function FloatingLayersPanel({
   const beginDrag = useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
       if (state.pinned) return;
-      if (event.button !== 0 && event.pointerType !== "touch" && event.pointerType !== "pen") {
+      if (
+        event.button !== 0 &&
+        event.pointerType !== "touch" &&
+        event.pointerType !== "pen"
+      ) {
         return;
       }
       const target = event.target as HTMLElement | null;
@@ -6054,7 +6427,14 @@ function FloatingLayersPanel({
       event.stopPropagation();
       event.preventDefault();
     },
-    [getAvailableSpace, handlePointerMove, handlePointerUp, state.pinned, state.x, state.y],
+    [
+      getAvailableSpace,
+      handlePointerMove,
+      handlePointerUp,
+      state.pinned,
+      state.x,
+      state.y,
+    ],
   );
 
   useEffect(() => {
@@ -6103,7 +6483,14 @@ function FloatingLayersPanel({
     });
     observer.observe(container);
     return () => observer.disconnect();
-  }, [bounds, containerRef, getAvailableSpace, onStateChange, state.x, state.y]);
+  }, [
+    bounds,
+    containerRef,
+    getAvailableSpace,
+    onStateChange,
+    state.x,
+    state.y,
+  ]);
 
   return (
     <div

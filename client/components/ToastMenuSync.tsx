@@ -3,13 +3,25 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CheckCircle, AlertCircle, RefreshCw, ArrowUpRight } from "lucide-react";
+import {
+  Loader2,
+  CheckCircle,
+  AlertCircle,
+  RefreshCw,
+  ArrowUpRight,
+} from "lucide-react";
 import { useAppData } from "@/context/AppDataContext";
-import { syncRecipesToToast, type ToastConfig } from "@/lib/toast-pos-integration";
+import {
+  syncRecipesToToast,
+  type ToastConfig,
+} from "@/lib/toast-pos-integration";
 
 interface ToastMenuSyncProps {
   toastConfig: ToastConfig;
-  onSyncComplete?: (result: { itemsSynced: number; itemsFailed: number }) => void;
+  onSyncComplete?: (result: {
+    itemsSynced: number;
+    itemsFailed: number;
+  }) => void;
 }
 
 export const ToastMenuSync: React.FC<ToastMenuSyncProps> = ({
@@ -23,7 +35,9 @@ export const ToastMenuSync: React.FC<ToastMenuSyncProps> = ({
     itemsFailed: number;
     errors?: Array<{ itemId: string; error: string }>;
   } | null>(null);
-  const [selectedRecipes, setSelectedRecipes] = useState<Set<string>>(new Set());
+  const [selectedRecipes, setSelectedRecipes] = useState<Set<string>>(
+    new Set(),
+  );
 
   const toggleRecipe = (recipeId: string) => {
     const newSelected = new Set(selectedRecipes);
@@ -66,7 +80,10 @@ export const ToastMenuSync: React.FC<ToastMenuSyncProps> = ({
 
       const result = await syncRecipesToToast(toastConfig, recipesToSync);
       setSyncResult(result);
-      onSyncComplete?.({ itemsSynced: result.itemsSynced, itemsFailed: result.itemsFailed });
+      onSyncComplete?.({
+        itemsSynced: result.itemsSynced,
+        itemsFailed: result.itemsFailed,
+      });
 
       if (result.success) {
         // Clear selection on successful sync
@@ -96,8 +113,8 @@ export const ToastMenuSync: React.FC<ToastMenuSyncProps> = ({
         <Alert className="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
           <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
           <AlertDescription className="text-blue-800 dark:text-blue-200">
-            Select recipes to push to your Toast POS menu. This will create or update menu items
-            with current pricing and details.
+            Select recipes to push to your Toast POS menu. This will create or
+            update menu items with current pricing and details.
           </AlertDescription>
         </Alert>
 
@@ -123,12 +140,10 @@ export const ToastMenuSync: React.FC<ToastMenuSyncProps> = ({
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold">Select Recipes</p>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={toggleAllRecipes}
-            >
-              {selectedRecipes.size === recipes.length ? "Deselect All" : "Select All"}
+            <Button size="sm" variant="outline" onClick={toggleAllRecipes}>
+              {selectedRecipes.size === recipes.length
+                ? "Deselect All"
+                : "Select All"}
             </Button>
           </div>
 
@@ -150,7 +165,9 @@ export const ToastMenuSync: React.FC<ToastMenuSyncProps> = ({
                     className="mt-1 h-4 w-4 rounded border-input"
                   />
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm">{recipe.title || "Untitled"}</p>
+                    <p className="font-medium text-sm">
+                      {recipe.title || "Untitled"}
+                    </p>
                     <div className="flex gap-2 mt-1 flex-wrap">
                       {recipe.course && (
                         <Badge variant="outline" className="text-xs">
@@ -187,7 +204,9 @@ export const ToastMenuSync: React.FC<ToastMenuSyncProps> = ({
               )}
               <div className="flex-1">
                 <p className="font-semibold text-sm mb-2">
-                  {syncResult.itemsFailed === 0 ? "Sync Successful" : "Sync Completed with Errors"}
+                  {syncResult.itemsFailed === 0
+                    ? "Sync Successful"
+                    : "Sync Completed with Errors"}
                 </p>
                 <div className="text-sm space-y-1">
                   <p>
@@ -210,7 +229,10 @@ export const ToastMenuSync: React.FC<ToastMenuSyncProps> = ({
                     <p className="text-xs font-semibold">Errors:</p>
                     <ul className="text-xs space-y-1">
                       {syncResult.errors.slice(0, 3).map((err) => (
-                        <li key={err.itemId} className="text-red-700 dark:text-red-300">
+                        <li
+                          key={err.itemId}
+                          className="text-red-700 dark:text-red-300"
+                        >
                           • {err.error}
                         </li>
                       ))}
@@ -233,7 +255,10 @@ export const ToastMenuSync: React.FC<ToastMenuSyncProps> = ({
             {syncing ? "Syncing..." : "Sync to Toast POS"}
           </Button>
           {selectedRecipes.size > 0 && (
-            <Button variant="outline" onClick={() => setSelectedRecipes(new Set())}>
+            <Button
+              variant="outline"
+              onClick={() => setSelectedRecipes(new Set())}
+            >
               Clear Selection
             </Button>
           )}
@@ -245,8 +270,8 @@ export const ToastMenuSync: React.FC<ToastMenuSyncProps> = ({
             ℹ️ Pricing Note
           </p>
           <p className="text-xs text-amber-800 dark:text-amber-200">
-            Current sync uses estimated pricing. For real pricing, connect your costing engine or
-            manually update prices in Toast POS.
+            Current sync uses estimated pricing. For real pricing, connect your
+            costing engine or manually update prices in Toast POS.
           </p>
         </div>
       </CardContent>
