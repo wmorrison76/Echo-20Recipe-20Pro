@@ -290,8 +290,8 @@ export function monitorWebVitals(
     try {
       const lcpObserver = new PerformanceObserver((entryList) => {
         const entries = entryList.getEntries();
-        const lastEntry = entries[entries.length - 1];
-        vitals.LCP = lastEntry.renderTime || lastEntry.loadTime;
+        const lastEntry = entries[entries.length - 1] as any;
+        vitals.LCP = lastEntry?.renderTime || lastEntry?.loadTime;
       });
       lcpObserver.observe({ entryTypes: ["largest-contentful-paint"] });
     } catch (e) {
