@@ -3,6 +3,8 @@ import { useTranslation } from "@/context/LanguageContext";
 import type { SupplierQuoteMap } from "@/hooks/use-supplier-quotes";
 import type { SupplierQuote } from "@/lib/supplier-pricing";
 import type { IngredientRow } from "@/types/ingredients";
+import { IngredientSelector } from "@/components/IngredientSelector";
+import { Link2 } from "lucide-react";
 
 type IngredientsGridProps = {
   isDarkMode: boolean;
