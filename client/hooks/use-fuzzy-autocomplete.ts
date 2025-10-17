@@ -214,22 +214,31 @@ export function useTechniqueSuggestions() {
 
 // Cuisine suggestions
 export function useCuisineSuggestions() {
-  const { recipes } = useAppData();
-
-  const candidates = useMemo(() => {
-    const cuisines = new Set<string>();
-    for (const recipe of recipes) {
-      if (recipe.cuisineType) {
-        cuisines.add(recipe.cuisineType);
-      }
-    }
-    return buildDictionary(Array.from(cuisines));
-  }, [recipes]);
+  const commonCuisines = useMemo(
+    () =>
+      buildDictionary([
+        "American",
+        "Asian",
+        "Caribbean",
+        "Chinese",
+        "European",
+        "French",
+        "Indian",
+        "Italian",
+        "Japanese",
+        "Mediterranean",
+        "Mexican",
+        "Middle Eastern",
+        "Thai",
+        "Vietnamese",
+      ]),
+    [],
+  );
 
   return useCallback(
     (query: string, options?: FuzzyMatchOptions) =>
-      fuzzyMatch(query, candidates, options).map((entry) => entry.value),
-    [candidates],
+      fuzzyMatch(query, commonCuisines, options).map((entry) => entry.value),
+    [commonCuisines],
   );
 }
 
