@@ -2,7 +2,7 @@
 // Supports multiple service concepts: à la carte, banquets, events, seasonal menus
 
 export type ServiceType = "dine-in" | "takeout" | "delivery" | "catering" | "banquet" | "private-event";
-export type MenuType = "regular" | "seasonal" | "event" | "prix-fixe" | "tasting-menu";
+export type MenuType = "regular" | "seasonal" | "event" | "prix-fixe" | "tasting-menu" | "custom";
 export type DietaryRestriction = "vegetarian" | "vegan" | "gluten-free" | "dairy-free" | "nut-allergy" | "shellfish-allergy" | "kosher" | "halal";
 
 export interface ServiceConcept {
