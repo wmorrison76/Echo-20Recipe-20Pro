@@ -16,10 +16,15 @@ export function ProtectedRoute({
   children,
   requiredRoles,
 }: ProtectedRouteProps) {
+  // TEMPORARILY DISABLED FOR DEVELOPMENT
+  // Simply render the children without auth checks
+  return <>{children}</>;
+
+  // Original auth-protected version (commented out for dev):
+  /*
   const { isAuthenticated, loading, user } = useAuth();
   const location = useLocation();
 
-  // Show loading state while checking auth
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -31,12 +36,10 @@ export function ProtectedRoute({
     );
   }
 
-  // Redirect to login if not authenticated
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Check role-based access if required
   if (requiredRoles && user) {
     const userRole = user.role || "user";
     if (!requiredRoles.includes(userRole)) {
@@ -45,4 +48,5 @@ export function ProtectedRoute({
   }
 
   return <>{children}</>;
+  */
 }
