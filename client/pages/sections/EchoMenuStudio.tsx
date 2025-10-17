@@ -714,7 +714,7 @@ const PAGE_PRESETS: PrintPreset[] = [
   }),
   createPreset({
     id: "tri_fold_tent",
-    label: "Tri-Fold Tent 4.25×11",
+    label: "Tri-Fold Tent 4.25��11",
     widthIn: 4.25,
     heightIn: 11,
     bleedIn: 0.125,
@@ -1947,7 +1947,7 @@ export default function MenuDesignStudioSection() {
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
   const loadedFontsRef = useRef<Set<string>>(new Set());
-  const { images: galleryImages, reloadImages } = useAppData();
+  const { images: galleryImages } = useAppData();
   const { feedback, showFeedback, UndoRedoFeedbackComponent } =
     useUndoRedoFeedback();
 
@@ -3578,6 +3578,7 @@ export default function MenuDesignStudioSection() {
 
         {showGalleryPicker && (
           <GalleryImagePicker
+            key={galleryImages.length}
             images={galleryImages}
             onSelectImage={handleAddImageFromGallery}
             onClose={() => setShowGalleryPicker(false)}
