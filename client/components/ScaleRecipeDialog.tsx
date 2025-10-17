@@ -153,7 +153,7 @@ export function ScaleRecipeDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg print:hidden">
         <DialogHeader>
           <DialogTitle>Scale recipe before printing</DialogTitle>
           <DialogDescription>
