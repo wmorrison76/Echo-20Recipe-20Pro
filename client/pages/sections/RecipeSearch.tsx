@@ -87,9 +87,17 @@ export function RecipeCard({
     return null;
   })();
 
-  const portionCost = recipeCost && r.extra?.serverNotes?.portionCount
-    ? recipeCost / (r.extra.serverNotes.portionCount || 1)
-    : null;
+  const portionCost = (() => {
+    if (!recipeCost) return null;
+    try {
+      const serverNotes = r.extra?.serverNotes as any;
+      const portionCount = serverNotes?.portionCount;
+      if (portionCount) {
+        return recipeCost / portionCount;
+      }
+    } catch {}
+    return null;
+  })();
   return (
     <div
       className={cn(
