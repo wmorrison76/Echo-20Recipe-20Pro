@@ -77,7 +77,7 @@ import {
   Save,
 } from "lucide-react";
 
-type DesignerElementType =
+export type DesignerElementType =
   | "heading"
   | "subheading"
   | "body"
@@ -86,7 +86,7 @@ type DesignerElementType =
   | "shape"
   | "divider";
 
-type DesignerElement = {
+export type DesignerElement = {
   id: string;
   type: DesignerElementType;
   name: string;
