@@ -170,11 +170,86 @@ export function RecipeCard({
               </button>
             ))}
           </div>
-          {r.tags?.length ? (
-            <p className="m-0 text-xs text-muted-foreground">
-              {r.tags.slice(0, 5).join(" · ")}
-            </p>
-          ) : null}
+          <div className="flex items-center flex-wrap gap-2">
+            {r.tags?.length ? (
+              <p className="m-0 text-xs text-muted-foreground flex-1">
+                {r.tags.slice(0, 5).join(" · ")}
+              </p>
+            ) : (
+              <p className="m-0 text-xs text-muted-foreground italic">No categories</p>
+            )}
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-5 px-1.5 text-xs"
+              onClick={() => setShowCategoryDialog(true)}
+              title="Edit categories"
+            >
+              <Pencil className="h-3 w-3" />
+            </Button>
+          </div>
+          <Dialog open={showCategoryDialog} onOpenChange={setShowCategoryDialog}>
+            <DialogContent className="max-w-sm">
+              <DialogHeader>
+                <DialogTitle>Edit Categories for {r.title}</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium">Add category:</label>
+                  <div className="flex gap-2 mt-2">
+                    <input
+                      type="text"
+                      value={categoryInput}
+                      onChange={(e) => setCategoryInput(e.target.value)}
+                      placeholder="e.g., Soup, Appetizer"
+                      className="flex-1 rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring text-sm"
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter" && categoryInput.trim()) {
+                          const newTags = [...(r.tags || []), categoryInput.trim()];
+                          onUpdateTags?.(Array.from(new Set(newTags)));
+                          setCategoryInput("");
+                        }
+                      }}
+                    />
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        if (categoryInput.trim()) {
+                          const newTags = [...(r.tags || []), categoryInput.trim()];
+                          onUpdateTags?.(Array.from(new Set(newTags)));
+                          setCategoryInput("");
+                        }
+                      }}
+                    >
+                      Add
+                    </Button>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Current categories:</label>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {r.tags?.length ? (
+                      r.tags.map((tag) => (
+                        <Badge
+                          key={tag}
+                          variant="secondary"
+                          className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
+                          onClick={() => {
+                            onUpdateTags?.((r.tags || []).filter(t => t !== tag));
+                          }}
+                        >
+                          {tag}
+                          <X className="h-3 w-3 ml-1" />
+                        </Badge>
+                      ))
+                    ) : (
+                      <p className="text-xs text-muted-foreground">No categories assigned</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           {/* Cost Display Badges */}
           {(recipeCost || portionCost) && (
