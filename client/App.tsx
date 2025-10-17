@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
 import RecipeEditor from "./pages/RecipeEditor";
 import RecipeTemplate from "./pages/RecipeTemplate";
 import { AppDataProvider } from "@/context/AppDataContext";
@@ -19,6 +20,7 @@ import { CollaborationProvider } from "@/context/CollaborationContext";
 import { FuzzySuggestionManager } from "@/components/FuzzySuggestionManager";
 import { KeyboardShortcutsProvider } from "@/context/KeyboardShortcutsContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
