@@ -234,6 +234,8 @@ export default function CostingReportsSection() {
                     { name: "Above Target", value: 4 },
                     { name: "Below Target", value: 2 },
                   ]}
+                  dataKey="value"
+                  nameKey="name"
                   cx="50%"
                   cy="50%"
                   outerRadius={80}
