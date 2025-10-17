@@ -1,10 +1,12 @@
 import { GripVertical, Link2, MinusCircle, PlusCircle } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "@/context/LanguageContext";
 import type { SupplierQuoteMap } from "@/hooks/use-supplier-quotes";
 import type { SupplierQuote } from "@/lib/supplier-pricing";
 import type { IngredientRow } from "@/types/ingredients";
 import { IngredientSelector } from "@/components/IngredientSelector";
 import { Link2 } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 type IngredientsGridProps = {
   isDarkMode: boolean;
