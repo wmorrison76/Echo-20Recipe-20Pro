@@ -13,6 +13,7 @@ import {
   ChefHat,
   ChevronLeft,
   ClipboardList,
+  DollarSign,
   Factory,
   FileText,
   HelpCircle,
