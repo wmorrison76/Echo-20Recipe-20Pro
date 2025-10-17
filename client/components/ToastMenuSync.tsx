@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CheckCircle, AlertCircle, Sync, ArrowUpRight } from "lucide-react";
+import { Loader2, CheckCircle, AlertCircle, RefreshCw, ArrowUpRight } from "lucide-react";
 import { useAppData } from "@/context/AppDataContext";
 import { syncRecipesToToast, type ToastConfig } from "@/lib/toast-pos-integration";
 
@@ -192,7 +192,7 @@ export const ToastMenuSync: React.FC<ToastMenuSyncProps> = ({
                 <div className="text-sm space-y-1">
                   <p>
                     <span className="text-green-600 dark:text-green-400 font-medium">
-                      ��� {syncResult.itemsSynced}
+                      ✓ {syncResult.itemsSynced}
                     </span>{" "}
                     recipes synced
                   </p>
