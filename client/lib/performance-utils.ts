@@ -73,11 +73,12 @@ export function memoize<T extends (...args: any[]) => any>(func: T): T {
  * @returns ID for cancellation
  */
 export function requestIdleCallback(callback: () => void): number {
-  if (typeof window !== "undefined" && "requestIdleCallback" in window) {
-    return (window as any).requestIdleCallback(callback) as unknown as number;
+  const w = typeof window !== "undefined" ? (window as any) : null;
+  if (w && "requestIdleCallback" in w) {
+    return w.requestIdleCallback(callback) as unknown as number;
   }
-  if (typeof window !== "undefined") {
-    return window.setTimeout(callback, 1) as unknown as number;
+  if (w && "setTimeout" in w) {
+    return w.setTimeout(callback, 1) as unknown as number;
   }
   return 0;
 }
