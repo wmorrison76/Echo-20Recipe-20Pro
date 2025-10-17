@@ -156,7 +156,7 @@ export async function analyzeVariance(
     .sort((a, b) => Math.abs(b.variance) - Math.abs(a.variance));
 
   const totalVariance = variances.reduce((sum, v) => sum + v.variance, 0);
-  const largestVariance = variances[0] || { recipe: "N/A", amount: 0 };
+  const largestVariance = variances[0];
 
   const recommendations = generateVarianceRecommendations(variances);
 
@@ -166,8 +166,8 @@ export async function analyzeVariance(
     recipes: variances,
     totalVariance,
     largestVariance: {
-      recipe: largestVariance.recipeName,
-      amount: largestVariance.impact,
+      recipe: largestVariance ? largestVariance.recipeName : "N/A",
+      amount: largestVariance ? largestVariance.impact : 0,
     },
     recommendations,
   };
