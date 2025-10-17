@@ -12,8 +12,8 @@ import {
   getIngredientCostHistory,
   getSpendingSummary,
   type OrderHistoryEntry,
-  type PurchaseOrder,
 } from "../order-history";
+import type { PurchaseOrder } from "../order-export";
 
 // Mock localStorage
 const localStorageMock = (() => {
