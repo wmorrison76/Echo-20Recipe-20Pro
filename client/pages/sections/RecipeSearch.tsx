@@ -2010,7 +2010,7 @@ const onFiles = async (files: File[]) => {
                         .filter(Boolean)
                         .slice(0, 80);
                       const qty =
-                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
+                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝��])(?:\s*[a-zA-Z]+)?\b/;
                       let c = 0;
                       for (const L of ls) {
                         if (qty.test(L) || /^[•\-*]\s+/.test(L)) c++;
@@ -2469,14 +2469,41 @@ const onFiles = async (files: File[]) => {
         className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3"
         data-echo-key="section:recipes:filters"
       >
-        <div className="flex-1" data-echo-key="field:recipes:query">
+        <div className="flex-1 relative" data-echo-key="field:recipes:query">
           <input
-          ref={searchInputRef}
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder={t("recipeSearch.searchByName")}
-          className="w-full rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring"
-        />
+            ref={searchInputRef}
+            value={q}
+            onChange={(e) => {
+              setQ(e.target.value);
+              setShowSuggestions(true);
+            }}
+            onFocus={() => setShowSuggestions(true)}
+            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+            placeholder={t("recipeSearch.searchByName")}
+            className="w-full rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring"
+          />
+          {showSuggestions && suggestions.length > 0 && (
+            <div
+              ref={suggestionsRef}
+              className="absolute top-full left-0 right-0 mt-1 bg-background border rounded-md shadow-lg z-50 max-h-60 overflow-y-auto"
+            >
+              {suggestions.map((suggestion) => (
+                <button
+                  key={suggestion}
+                  type="button"
+                  onClick={() => {
+                    setQ(suggestion);
+                    setShowSuggestions(false);
+                    searchInputRef.current?.focus();
+                  }}
+                  className="w-full text-left px-3 py-2 hover:bg-muted transition-colors text-sm"
+                >
+                  <Search className="inline h-3 w-3 mr-2 opacity-50" />
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
         <select
           value={fcuisine}
