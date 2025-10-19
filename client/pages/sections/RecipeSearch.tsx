@@ -457,6 +457,8 @@ export default function RecipeSearchSection() {
         return byTitle(
           notDeleted.filter((r) => !r.tags || r.tags.length === 0),
         );
+      case "global":
+        return byTitle(notDeleted.filter((r) => (r as any).isGlobal === true));
       case "trash":
         return byTitle(filterByTax(base.filter((r) => !!r.deletedAt)));
       default:
