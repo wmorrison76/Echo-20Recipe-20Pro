@@ -1501,11 +1501,21 @@ function GalleryGrid({
   const { t } = useTranslation();
   if (!images.length) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-4 text-sm text-slate-600 dark:text-slate-200">
-        <div className="text-base font-semibold text-slate-900 dark:text-slate-100">No images match the current filters.</div>
-        <Button className="rounded-full px-4" onClick={() => onRestoreDemo()}>
-          {t("gallery.restoreDemoGallery")}
-        </Button>
+      <div className="flex h-full flex-col items-center justify-center gap-6 text-sm">
+        <div className="max-w-xs text-center space-y-2">
+          <UploadCloud className="mx-auto h-12 w-12 text-slate-300 dark:text-slate-600" />
+          <div className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+            No images in gallery
+          </div>
+          <p className="text-sm text-slate-600 dark:text-slate-400">
+            Drag and drop images here, or use the upload button to add photos to your gallery.
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button variant="outline" className="rounded-full" onClick={() => onRestoreDemo()}>
+            Load demo images
+          </Button>
+        </div>
       </div>
     );
   }
