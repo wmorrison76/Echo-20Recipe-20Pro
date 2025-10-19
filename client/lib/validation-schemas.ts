@@ -78,6 +78,14 @@ export const RecipeSchema = z.object({
   components: z.array(z.string()).optional(),
   techniques: z.array(z.string()).optional(),
   cuisineType: z.string().optional(),
+  // Global Recipe System
+  isGlobal: z.boolean().default(false),
+  createdBy: z.string().optional(),
+  globalSourceId: z.string().optional(),
+  lastModifiedBy: z.string().optional(),
+  lastModifiedAt: z.number().optional(),
+  requiresChefApproval: z.boolean().default(false),
+  pendingApprovalFrom: z.string().nullable().optional(),
 });
 
 export type RecipeType = z.infer<typeof RecipeSchema>;
