@@ -44,6 +44,7 @@ import {
   computeBaseYield,
   formatYieldPercent,
 } from "@/lib/yield-calculations";
+import { makeRecipeGlobal } from "@/lib/global-recipe-manager";
 import {
   Save,
   Image as ImageIcon,
