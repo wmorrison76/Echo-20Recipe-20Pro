@@ -313,18 +313,34 @@ export default function RightSidebar(props: RightSidebarProps) {
           <AccordionItem value="access" data-accordion-section="access">
             <AccordionTrigger>Recipe Access</AccordionTrigger>
             <AccordionContent>
-              <div className="grid grid-cols-2 gap-2">
-                {recipeAccessList.map((item) => (
-                  <label key={item} className="flex items-center gap-2 text-xs">
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-2">
+                  {recipeAccessList.map((item) => (
+                    <label key={item} className="flex items-center gap-2 text-xs">
+                      <input
+                        type="checkbox"
+                        className="scale-75"
+                        checked={selectedRecipeAccess.includes(item)}
+                        onChange={() => toggle(selectedRecipeAccess, onRecipeAccessChange, item)}
+                      />
+                      {item}
+                    </label>
+                  ))}
+                </div>
+                <div className="border-t border-gray-400/30 dark:border-slate-700/40 pt-3">
+                  <label className="flex items-start gap-2">
                     <input
                       type="checkbox"
-                      className="scale-75"
-                      checked={selectedRecipeAccess.includes(item)}
-                      onChange={() => toggle(selectedRecipeAccess, onRecipeAccessChange, item)}
+                      className="scale-75 mt-0.5"
+                      checked={isGlobal}
+                      onChange={(e) => onGlobalChange?.(e.target.checked)}
                     />
-                    {item}
+                    <span className="text-xs leading-tight">
+                      <div className="font-semibold text-slate-700 dark:text-slate-200">Make Global Recipe</div>
+                      <div className="text-gray-600 dark:text-slate-400">Available to all outlets. Share updates with chef approval.</div>
+                    </span>
                   </label>
-                ))}
+                </div>
               </div>
             </AccordionContent>
           </AccordionItem>
