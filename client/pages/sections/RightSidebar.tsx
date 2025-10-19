@@ -32,6 +32,8 @@ interface RightSidebarProps {
   onRecipeImport?: (recipeData: any) => void | Promise<void>;
   taxonomy: TaxonomySelection;
   onTaxonomyChange: (t: TaxonomySelection) => void;
+  isGlobal?: boolean;
+  onGlobalChange?: (isGlobal: boolean) => void;
 }
 
 const recipeAccessList = ["Bar", "Global", "Grab & Go", "Outlet", "Pastry"];
