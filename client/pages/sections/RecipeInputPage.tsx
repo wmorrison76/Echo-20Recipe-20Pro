@@ -3871,6 +3871,8 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
           onImageChange={setImage}
           taxonomy={taxonomy}
           onTaxonomyChange={setTaxonomy}
+          isGlobal={isGlobal}
+          onGlobalChange={setIsGlobal}
           onRecipeImport={async (data) => {
             const decode = (s: string) =>
               s
