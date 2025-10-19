@@ -64,6 +64,8 @@ export default function RightSidebar(props: RightSidebarProps) {
     onRecipeImport,
     taxonomy,
     onTaxonomyChange,
+    isGlobal = false,
+    onGlobalChange,
   } = props;
 
   const [status, setStatus] = useState("active");
