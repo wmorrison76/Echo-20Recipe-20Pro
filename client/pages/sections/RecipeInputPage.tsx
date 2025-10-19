@@ -130,6 +130,23 @@ const normalizeOptionalString = (value: unknown): string | null => {
   return normalized.length ? normalized : null;
 };
 
+const buildRecipeData = (params: {
+  title: string;
+  ingredients: string[];
+  instructions: string[];
+  imageDataUrls: string[];
+  tags: string[];
+  nutrition?: any;
+  extra?: any;
+  isGlobal?: boolean;
+}) => ({
+  ...params,
+  isGlobal: params.isGlobal ?? false,
+  createdBy: "Current User", // TODO: Get from auth context
+  lastModifiedBy: "Current User", // TODO: Get from auth context
+  lastModifiedAt: Date.now(),
+});
+
 type RDLabProjectSession = {
   id: string;
   name: string;
