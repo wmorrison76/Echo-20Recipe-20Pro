@@ -757,25 +757,24 @@ const finalizeRecipe = useCallback(() => {
       cookingEquipment: [...selectedCookingEquipment],
       nutritionSnapshot,
     };
+    const recipeData = {
+      title,
+      ingredients: ingLines,
+      instructions: insLines,
+      imageDataUrls: cover,
+      tags: [],
+      nutrition: recipeNutrition,
+      extra: metadata,
+      isGlobal,
+      createdBy: "Current User", // TODO: Get from auth context
+      lastModifiedBy: "Current User", // TODO: Get from auth context
+      lastModifiedAt: Date.now(),
+    };
+
     if (!recipeIdRef.current) {
-      recipeIdRef.current = addRecipe({
-        title,
-        ingredients: ingLines,
-        instructions: insLines,
-        imageDataUrls: cover,
-        tags: [],
-        nutrition: recipeNutrition,
-        extra: metadata,
-      });
+      recipeIdRef.current = addRecipe(recipeData);
     } else {
-      updateRecipe(recipeIdRef.current, {
-        title,
-        ingredients: ingLines,
-        instructions: insLines,
-        imageDataUrls: cover,
-        nutrition: recipeNutrition,
-        extra: metadata,
-      });
+      updateRecipe(recipeIdRef.current, recipeData);
     }
     succeeded = true;
     toast({
