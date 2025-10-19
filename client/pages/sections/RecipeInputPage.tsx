@@ -1500,21 +1500,25 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
         .map((s) => s.trim())
         .filter(Boolean);
       if (title) {
+        const recipeUpdateData = {
+          title,
+          ingredients: ingLines,
+          instructions: insLines,
+          extra: { taxonomy },
+          isGlobal,
+          lastModifiedBy: "Current User",
+          lastModifiedAt: Date.now(),
+        };
+
         if (!recipeIdRef.current) {
           recipeIdRef.current = addRecipe({
-            title,
-            ingredients: ingLines,
-            instructions: insLines,
+            ...recipeUpdateData,
             tags: [],
             extra: { source: "manual", taxonomy },
+            createdBy: "Current User",
           });
         } else {
-          updateRecipe(recipeIdRef.current, {
-            title,
-            ingredients: ingLines,
-            instructions: insLines,
-            extra: { taxonomy },
-          });
+          updateRecipe(recipeIdRef.current, recipeUpdateData);
         }
       }
     }, 600);
