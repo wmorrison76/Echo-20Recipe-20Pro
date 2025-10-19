@@ -460,6 +460,7 @@ const RecipeInputPage = () => {
   const [selectedRecipeAccess, setSelectedRecipeAccess] = useState<string[]>(
     [],
   );
+  const [isGlobal, setIsGlobal] = useState(false);
   const [chefNotes, setChefNotes] = useState<string>(() => {
     try {
       return localStorage.getItem("recipe:chef-notes") || "";
