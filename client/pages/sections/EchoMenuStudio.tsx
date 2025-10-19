@@ -3401,9 +3401,19 @@ export default function MenuDesignStudioSection() {
       <Card className="border border-cyan-500/30 bg-gradient-to-br from-cyan-500/10 via-background to-emerald-500/5 shadow-lg">
         <CardHeader className="gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-1">
-            <CardTitle className="text-xl font-semibold uppercase tracking-[0.45em] text-cyan-700 dark:text-cyan-200">
-              {t("menu.menuDesignStudio")}
-            </CardTitle>
+            <div className="flex items-center gap-3">
+              <CardTitle className="text-xl font-semibold uppercase tracking-[0.45em] text-cyan-700 dark:text-cyan-200">
+                {t("menu.menuDesignStudio")}
+              </CardTitle>
+              {hasUnsavedChanges && (
+                <div className="flex items-center gap-2 rounded-full bg-amber-100/70 px-3 py-1 dark:bg-amber-500/20">
+                  <div className="h-2 w-2 rounded-full bg-amber-600 dark:bg-amber-400 animate-pulse" />
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-700 dark:text-amber-200">
+                    Unsaved changes
+                  </span>
+                </div>
+              )}
+            </div>
             <CardDescription className="max-w-3xl text-sm">
               Start from a blank canvas or seasoned templates, arrange
               typography, imagery, and pricing with precise grid control, and
