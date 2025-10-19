@@ -393,7 +393,7 @@ export default function RecipeSearchSection() {
     setCollectionRecipes,
   } = useAppData();
   const [q, setQ] = useState("");
-  type Cat = "all" | "recent" | "top" | "favorites" | "uncategorized" | "trash";
+  type Cat = "all" | "recent" | "top" | "favorites" | "uncategorized" | "trash" | "global";
   const [cat, setCat] = useState<Cat>("all");
   const { language: appLanguage, setLanguage, options: languageOptions } =
     useLanguage();
