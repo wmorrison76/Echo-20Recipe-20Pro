@@ -1115,6 +1115,7 @@ const onFiles = async (files: File[]) => {
               "top",
               "favorites",
               "uncategorized",
+              "global",
               "trash",
             ] as Cat[]
           ).map((c) => (
