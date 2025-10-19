@@ -3440,6 +3440,9 @@ export default function MenuDesignStudioSection() {
               <div className="text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
                 {`Safe ${formatInches(printPreset.safeMarginIn)}″ • Bleed ${formatInches(printPreset.bleedIn)}″ • ${printPreset.colorProfile}`}
               </div>
+              <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70 pt-0.5">
+                {`Canvas: ${Math.round(pageSize.width)}px × ${Math.round(pageSize.height)}px`}
+              </div>
             </div>
             <Button
               variant="outline"
