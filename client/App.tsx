@@ -15,6 +15,7 @@ const Index = lazy(() => import("./pages/Index"));
 const RecipeEditor = lazy(() => import("./pages/RecipeEditor"));
 const RecipeTemplate = lazy(() => import("./pages/RecipeTemplate"));
 const Login = lazy(() => import("./pages/Login"));
+const PasswordReset = lazy(() => import("./pages/PasswordReset"));
 
 const LoadingFallback = () => (
   <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}>
