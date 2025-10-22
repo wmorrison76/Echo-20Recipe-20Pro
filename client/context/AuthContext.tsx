@@ -183,6 +183,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user]);
 
+  const handleRefreshSession = useCallback(async () => {
+    try {
+      const refreshResult = await refreshToken();
+      if (refreshResult.success) {
+        const currentSession = await getCurrentSession();
+        if (currentSession) {
+          setSession(currentSession);
+          setUser(currentSession.user);
+          return true;
+        }
+      } else {
+        setError(refreshResult.error || "Session refresh failed");
+        return false;
+      }
+    } catch (err) {
+      setError(String(err));
+      return false;
+    }
+    return false;
+  }, []);
+
   const value: AuthContextType = {
     user,
     session,
@@ -193,6 +214,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUp: handleSignUp,
     signOut: handleSignOut,
     updateProfile: handleUpdateProfile,
+    refreshSession: handleRefreshSession,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
