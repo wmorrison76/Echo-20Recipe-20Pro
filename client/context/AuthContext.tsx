@@ -46,18 +46,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Setup session change listener
   useEffect(() => {
-    const unsubscribe = setupSessionRefreshListener((newSession) => {
-      if (newSession) {
-        setUser(newSession.user);
-        setSession(newSession);
-      } else {
-        setUser(null);
-        setSession(null);
-      }
-    });
+    let unsubscribe: (() => void) | null = null;
+
+    try {
+      unsubscribe = setupSessionRefreshListener((newSession) => {
+        if (newSession) {
+          setUser(newSession.user);
+          setSession(newSession);
+        } else {
+          setUser(null);
+          setSession(null);
+        }
+      });
+    } catch (err) {
+      console.error("Failed to setup session listener:", err);
+    }
 
     return () => {
-      unsubscribe();
+      if (typeof unsubscribe === "function") {
+        unsubscribe();
+      }
     };
   }, []);
 
