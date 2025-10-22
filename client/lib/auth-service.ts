@@ -444,3 +444,117 @@ export async function acceptOrganizationInvitation(
     return { success: false, error: String(error) };
   }
 }
+
+/**
+ * Session refresh and management utilities
+ */
+export async function setupSessionRefreshListener(
+  onSessionChange: (session: AuthSession | null) => void,
+): Promise<() => void> {
+  if (!supabase) {
+    return () => {};
+  }
+
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange(async (event, session) => {
+    if (session) {
+      const currentSession = await getCurrentSession();
+      onSessionChange(currentSession);
+    } else {
+      onSessionChange(null);
+    }
+  });
+
+  return () => {
+    subscription?.unsubscribe();
+  };
+}
+
+/**
+ * Exchange password reset token for new password
+ */
+export async function resetPasswordWithToken(
+  token: string,
+  newPassword: string,
+): Promise<{
+  success: boolean;
+  error?: string;
+}> {
+  if (!supabase) {
+    return { success: false, error: "Supabase is not configured" };
+  }
+  try {
+    const { error } = await supabase.auth.verifyOtp({
+      token,
+      type: "recovery",
+    });
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    const updateResult = await updatePassword(newPassword);
+    return updateResult;
+  } catch (error) {
+    return { success: false, error: String(error) };
+  }
+}
+
+/**
+ * Validate session token
+ */
+export async function validateSession(): Promise<boolean> {
+  if (!supabase) {
+    return false;
+  }
+  try {
+    const { data } = await supabase.auth.getSession();
+    return !!data.session;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Get organization info
+ */
+export async function getOrganization(orgId: string): Promise<any | null> {
+  if (!supabase) {
+    return null;
+  }
+  try {
+    const { data, error } = await supabase
+      .from("organizations")
+      .select("*")
+      .eq("id", orgId)
+      .single();
+
+    return error ? null : data;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Check if user is organization owner
+ */
+export async function isOrganizationOwner(
+  userId: string,
+  orgId: string,
+): Promise<boolean> {
+  if (!supabase) {
+    return false;
+  }
+  try {
+    const { data, error } = await supabase
+      .from("organizations")
+      .select("owner_id")
+      .eq("id", orgId)
+      .single();
+
+    return !error && data?.owner_id === userId;
+  } catch {
+    return false;
+  }
+}
