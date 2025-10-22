@@ -9,7 +9,7 @@ import { Loader2 } from "lucide-react";
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, signIn, loading: authLoading } = useAuth();
+  const { isAuthenticated, signIn, signUp, loading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
