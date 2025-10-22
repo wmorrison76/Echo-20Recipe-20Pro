@@ -74,6 +74,8 @@ const App = () => (
                     <BrowserRouter>
                       <Suspense fallback={<LoadingFallback />}>
                         <Routes>
+                          <Route path="/login" element={<Login />} />
+                          <Route path="/password-reset" element={<PasswordReset />} />
                           <Route
                             path="/"
                             element={
