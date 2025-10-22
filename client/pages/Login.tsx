@@ -18,11 +18,9 @@ export default function Login() {
   const [username, setUsername] = useState("");
   const [orgName, setOrgName] = useState("");
 
-  // Redirect if already authenticated
-  if (isAuthenticated) {
-    const from = (location.state as any)?.from?.pathname || "/";
-    return <Navigate to={from} replace />;
-  }
+  // For module-level development, skip login and go directly to home
+  // Authentication will be enforced at the full program level
+  return <Navigate to="/" replace />;
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
