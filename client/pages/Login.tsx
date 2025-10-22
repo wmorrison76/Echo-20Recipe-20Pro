@@ -24,19 +24,44 @@ export default function Login() {
     return <Navigate to={from} replace />;
   }
 
-  const handleLogin = useCallback(
+  const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
       setError(null);
       setLoading(true);
 
       try {
-        const success = await signIn(email, password);
-        if (success) {
-          const from = (location.state as any)?.from?.pathname || "/";
-          navigate(from);
+        if (mode === "login") {
+          if (!email || !password) {
+            setError("Please fill in all fields");
+            setLoading(false);
+            return;
+          }
+          const success = await signIn(email, password);
+          if (success) {
+            const from = (location.state as any)?.from?.pathname || "/";
+            navigate(from);
+          } else {
+            setError("Invalid credentials. Please try again.");
+          }
         } else {
-          setError("Invalid credentials. Please try again.");
+          if (!email || !password || !username || !orgName) {
+            setError("Please fill in all fields");
+            setLoading(false);
+            return;
+          }
+          if (password.length < 8) {
+            setError("Password must be at least 8 characters long");
+            setLoading(false);
+            return;
+          }
+          const success = await signUp(email, password, username, orgName);
+          if (success) {
+            const from = (location.state as any)?.from?.pathname || "/";
+            navigate(from);
+          } else {
+            setError("Failed to create account. Please try again.");
+          }
         }
       } catch (err) {
         setError("An error occurred. Please try again.");
@@ -45,7 +70,7 @@ export default function Login() {
         setLoading(false);
       }
     },
-    [email, password, signIn, navigate, location],
+    [email, password, username, orgName, mode, signIn, signUp, navigate, location],
   );
 
   return (
