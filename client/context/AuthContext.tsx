@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
-import { signIn, signUp, signOut, getCurrentSession, updateUserProfile, type AuthUser, type AuthSession } from "@/lib/auth-service";
+import { signIn, signUp, signOut, getCurrentSession, updateUserProfile, setupSessionRefreshListener, refreshToken, type AuthUser, type AuthSession } from "@/lib/auth-service";
 
 type AuthContextType = {
   user: AuthUser | null;
@@ -11,15 +11,19 @@ type AuthContextType = {
   signUp: (email: string, password: string, username: string, orgName: string) => Promise<boolean>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<AuthUser>) => Promise<boolean>;
+  refreshSession: () => Promise<boolean>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const SESSION_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [session, setSession] = useState<AuthSession | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
 
   // Initialize auth on mount
   useEffect(() => {
@@ -39,6 +43,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     initAuth();
   }, []);
+
+  // Setup session change listener
+  useEffect(() => {
+    const unsubscribe = setupSessionRefreshListener((newSession) => {
+      if (newSession) {
+        setUser(newSession.user);
+        setSession(newSession);
+      } else {
+        setUser(null);
+        setSession(null);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  // Setup periodic session refresh
+  useEffect(() => {
+    if (session && session.access_token) {
+      const interval = setInterval(async () => {
+        const refreshResult = await refreshToken();
+        if (refreshResult.success) {
+          const currentSession = await getCurrentSession();
+          if (currentSession) {
+            setSession(currentSession);
+          }
+        }
+      }, SESSION_REFRESH_INTERVAL);
+
+      setRefreshInterval(interval);
+
+      return () => {
+        if (interval) clearInterval(interval);
+      };
+    }
+  }, [session]);
 
   const handleSignIn = useCallback(async (email: string, password: string) => {
     setError(null);
