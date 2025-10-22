@@ -145,6 +145,7 @@ CREATE INDEX idx_invitations_email ON organization_invitations(email);
 ### 3. Enable Authentication Methods
 
 In Supabase Dashboard:
+
 1. Go to Authentication > Providers
 2. Enable **Email**
 3. Configure email templates for password reset
@@ -154,6 +155,7 @@ In Supabase Dashboard:
 ### Authentication Flow
 
 #### Sign Up
+
 ```typescript
 import { useAuth } from "@/context/AuthContext";
 
@@ -184,6 +186,7 @@ function SignUpComponent() {
 ```
 
 #### Sign In
+
 ```typescript
 import { useAuth } from "@/context/AuthContext";
 
@@ -212,6 +215,7 @@ function LoginComponent() {
 ```
 
 #### Sign Out
+
 ```typescript
 import { useAuth } from "@/context/AuthContext";
 
@@ -230,6 +234,7 @@ function ProfileComponent() {
 ```
 
 #### Protected Routes
+
 ```typescript
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { AdminDashboard } from "@/pages/AdminDashboard";
@@ -249,6 +254,7 @@ import { AdminDashboard } from "@/pages/AdminDashboard";
 ### Session Management
 
 #### Get Current Session
+
 ```typescript
 import { useAuth } from "@/context/AuthContext";
 
@@ -272,6 +278,7 @@ function SessionComponent() {
 ```
 
 #### Refresh Session
+
 ```typescript
 import { useAuth } from "@/context/AuthContext";
 
@@ -294,6 +301,7 @@ function RefreshSessionComponent() {
 ```
 
 #### Session Monitoring
+
 ```typescript
 import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
@@ -343,6 +351,7 @@ function RecipeManagement() {
 ### Authentication
 
 #### `signUp(data: SignUpData)`
+
 Create a new user account with organization.
 
 ```typescript
@@ -350,21 +359,23 @@ const result = await signUp({
   email: "user@example.com",
   password: "secure_password",
   username: "username",
-  organization_name: "Restaurant Name"
+  organization_name: "Restaurant Name",
 });
 ```
 
 #### `signIn(data: SignInData)`
+
 Sign in with email and password.
 
 ```typescript
 const result = await signIn({
   email: "user@example.com",
-  password: "password"
+  password: "password",
 });
 ```
 
 #### `signOut()`
+
 Sign out current user.
 
 ```typescript
@@ -374,6 +385,7 @@ const result = await signOut();
 ### User Management
 
 #### `getCurrentSession()`
+
 Get current user session.
 
 ```typescript
@@ -381,6 +393,7 @@ const session = await getCurrentSession();
 ```
 
 #### `getUserById(userId: string)`
+
 Get user by ID.
 
 ```typescript
@@ -388,16 +401,18 @@ const user = await getUserById("user-uuid");
 ```
 
 #### `updateUserProfile(userId: string, updates: Partial<AuthUser>)`
+
 Update user profile.
 
 ```typescript
 const result = await updateUserProfile("user-uuid", {
   username: "new_username",
-  avatar_url: "https://..."
+  avatar_url: "https://...",
 });
 ```
 
 #### `updatePassword(newPassword: string)`
+
 Update user password.
 
 ```typescript
@@ -407,6 +422,7 @@ const result = await updatePassword("new_password");
 ### Password Reset
 
 #### `resetPassword(email: string)`
+
 Request password reset email.
 
 ```typescript
@@ -414,6 +430,7 @@ const result = await resetPassword("user@example.com");
 ```
 
 #### `resetPasswordWithToken(token: string, newPassword: string)`
+
 Reset password using token from email.
 
 ```typescript
@@ -423,27 +440,30 @@ const result = await resetPasswordWithToken(token, "new_password");
 ### Organization Management
 
 #### `inviteUserToOrganization(orgId: string, email: string, role: string)`
+
 Invite user to organization.
 
 ```typescript
 const result = await inviteUserToOrganization(
   "org-uuid",
   "newuser@example.com",
-  "chef"
+  "chef",
 );
 ```
 
 #### `acceptOrganizationInvitation(invitationId: string, userId: string)`
+
 Accept organization invitation.
 
 ```typescript
 const result = await acceptOrganizationInvitation(
   "invitation-uuid",
-  "user-uuid"
+  "user-uuid",
 );
 ```
 
 #### `getOrganizationMembers(orgId: string)`
+
 Get all members of organization.
 
 ```typescript
@@ -453,26 +473,31 @@ const members = await getOrganizationMembers("org-uuid");
 ## Security Best Practices
 
 ### 1. Environment Variables
+
 - Never commit `.env` files with real credentials
 - Use `.env.local` for local development
 - Use Netlify/Vercel environment variables for production
 
 ### 2. Password Requirements
+
 - Minimum 8 characters
 - Mix of upper and lowercase
 - Numbers and special characters recommended
 
 ### 3. Session Management
+
 - Sessions automatically refresh every 10 minutes
 - Expired sessions are cleared automatically
 - Monitor session health using session manager
 
 ### 4. Role-Based Access Control
+
 - Always check permissions before sensitive operations
 - Use ProtectedRoute for route protection
 - Combine auth checks with permission checks
 
 ### 5. Data Isolation
+
 - Users only see data from their organization
 - Outlet-specific data isolation enforced
 - RBAC system controls access to sensitive operations
@@ -480,21 +505,25 @@ const members = await getOrganizationMembers("org-uuid");
 ## Troubleshooting
 
 ### "Supabase is not configured"
+
 - Check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env
 - Verify keys are correct from Supabase dashboard
 - Restart dev server after adding env variables
 
 ### "User creation failed"
+
 - Check email is unique
 - Verify organization table exists and has correct schema
 - Check database permissions
 
 ### "Sign in failed"
+
 - Verify email exists in users table
 - Confirm password is correct
 - Check organization_id is valid
 
 ### "Session refresh failed"
+
 - Check internet connection
 - Verify token hasn't expired
 - Check Supabase project status
@@ -515,6 +544,7 @@ const members = await getOrganizationMembers("org-uuid");
 ### Environment Variables
 
 Set these in your hosting platform:
+
 ```
 VITE_SUPABASE_URL=production_url
 VITE_SUPABASE_ANON_KEY=production_key
@@ -523,6 +553,7 @@ VITE_SUPABASE_ANON_KEY=production_key
 ### Email Configuration
 
 Configure Supabase email templates for:
+
 1. Password reset
 2. Email verification
 3. Account invitation
@@ -539,6 +570,7 @@ Configure Supabase email templates for:
 ## Support
 
 For issues or questions:
+
 1. Check Supabase logs in project dashboard
 2. Review browser console for errors
 3. Verify environment variables are set

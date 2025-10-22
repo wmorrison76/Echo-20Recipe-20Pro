@@ -102,7 +102,7 @@ export function formatSessionExpiryTime(session: AuthSession | null): string {
 
   if (timeUntilExpiry < 0) return "Expired";
 
-  const minutes = Math.floor((timeUntilExpiry / 1000) % 3600 / 60);
+  const minutes = Math.floor(((timeUntilExpiry / 1000) % 3600) / 60);
   const seconds = Math.floor((timeUntilExpiry / 1000) % 60);
 
   if (minutes > 0) {
@@ -138,10 +138,13 @@ export function setupSessionHeartbeat(
 /**
  * Get remaining session time as percentage
  */
-export function getSessionHealthPercentage(session: AuthSession | null): number {
+export function getSessionHealthPercentage(
+  session: AuthSession | null,
+): number {
   if (!session) return 0;
 
-  const initialDuration = session.expires_at - (session.access_token ? Date.now() : 0);
+  const initialDuration =
+    session.expires_at - (session.access_token ? Date.now() : 0);
   const remaining = getSessionExpiryTime(session);
 
   if (initialDuration <= 0) return 0;

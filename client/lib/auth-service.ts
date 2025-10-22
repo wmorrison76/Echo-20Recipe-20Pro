@@ -5,9 +5,8 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
 
 // Only initialize Supabase if valid credentials are provided
-export const supabase = supabaseUrl && supabaseKey
-  ? createClient(supabaseUrl, supabaseKey)
-  : null;
+export const supabase =
+  supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
 // Authentication types
 export type AuthUser = {
@@ -353,7 +352,7 @@ export async function getOrganizationMembers(
       .select("*")
       .eq("organization_id", organizationId);
 
-    return error ? [] : (data || []);
+    return error ? [] : data || [];
   } catch {
     return [];
   }
@@ -375,14 +374,12 @@ export async function inviteUserToOrganization(
   }
   try {
     // Create invitation record
-    const { error } = await supabase
-      .from("organization_invitations")
-      .insert({
-        organization_id: organizationId,
-        email,
-        role,
-        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days
-      });
+    const { error } = await supabase.from("organization_invitations").insert({
+      organization_id: organizationId,
+      email,
+      role,
+      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days
+    });
 
     return { success: !error, error: error?.message };
   } catch (error) {

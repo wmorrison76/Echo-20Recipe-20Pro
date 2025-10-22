@@ -33,6 +33,7 @@ The Recipe Access Control system ensures that users can only perform actions on 
 ### Basic Permission Checks
 
 #### `canViewRecipe(context, recipe)`
+
 Determines if user can view a recipe.
 
 ```typescript
@@ -62,6 +63,7 @@ function RecipeView({ recipe }) {
 ```
 
 #### `canEditRecipe(context, recipe)`
+
 Determines if user can edit a recipe.
 
 ```typescript
@@ -92,6 +94,7 @@ function RecipeEditor({ recipe }) {
 ```
 
 #### `canDeleteRecipe(context, recipe)`
+
 Determines if user can delete a recipe.
 
 ```typescript
@@ -113,6 +116,7 @@ async function handleDeleteRecipe(recipe) {
 ### Global Recipe Permissions
 
 #### `canCreateGlobalRecipe(context)`
+
 Checks if user can create global recipes (shared across outlets).
 
 ```typescript
@@ -131,6 +135,7 @@ function CreateGlobalRecipeButton() {
 ```
 
 #### `canApproveGlobalRecipe(context)`
+
 Checks if user can approve global recipes before they're shared.
 
 ```typescript
@@ -151,6 +156,7 @@ function ApprovalQueue() {
 ### Data Filtering
 
 #### `filterRecipesByPermission(context, recipes)`
+
 Filters a list of recipes to only include ones user can view.
 
 ```typescript
@@ -178,6 +184,7 @@ function RecipeList({ recipes }) {
 ## User Roles and Recipe Permissions
 
 ### ADMIN
+
 - **View**: All recipes (global and outlet-specific)
 - **Create**: Global recipes, local recipes in any outlet
 - **Edit**: Any recipe
@@ -186,6 +193,7 @@ function RecipeList({ recipes }) {
 - **Access**: All outlets
 
 ### CHEF
+
 - **View**: All recipes in organization
 - **Create**: Global recipes, local recipes in assigned outlets
 - **Edit**: Own recipes and recipes in assigned outlets
@@ -194,6 +202,7 @@ function RecipeList({ recipes }) {
 - **Access**: Assigned outlets only
 
 ### MANAGER
+
 - **View**: All recipes in assigned outlets
 - **Create**: Local recipes in assigned outlets
 - **Edit**: Recipes in assigned outlets (approval required for global)
@@ -202,6 +211,7 @@ function RecipeList({ recipes }) {
 - **Access**: Assigned outlets only
 
 ### STAFF
+
 - **View**: Recipes in assigned outlet
 - **Create**: None (cannot create recipes)
 - **Edit**: None (cannot edit recipes)
@@ -210,6 +220,7 @@ function RecipeList({ recipes }) {
 - **Access**: Assigned outlet only
 
 ### FOH (Front of House)
+
 - **View**: Recipe summaries only
 - **Create**: None
 - **Edit**: None
@@ -281,7 +292,10 @@ app.put("/api/recipes/:id", async (req, res) => {
 ### Pattern 3: Data Filtering in Queries
 
 ```typescript
-import { filterRecipesByPermission, getAccessibleOutlets } from "@/lib/rbac-manager";
+import {
+  filterRecipesByPermission,
+  getAccessibleOutlets,
+} from "@/lib/rbac-manager";
 
 function useAccessibleRecipes() {
   const { user } = useAuth();
@@ -321,7 +335,10 @@ function OutletRecipes({ outletId }) {
 Recipe access control works with the approval workflow for global recipes:
 
 ```typescript
-import { canCreateGlobalRecipe, canApproveGlobalRecipe } from "@/lib/rbac-manager";
+import {
+  canCreateGlobalRecipe,
+  canApproveGlobalRecipe,
+} from "@/lib/rbac-manager";
 import { submitApprovalRequest } from "@/lib/approval-workflow";
 
 async function publishGlobalRecipe(recipe) {
@@ -398,14 +415,17 @@ All recipe access is logged for audit purposes:
 ## Best Practices
 
 ### 1. Always Validate on Server
+
 - Never trust client-side permission checks alone
 - Always validate permissions on the backend before modifying data
 
 ### 2. Use Permission Guards in UI
+
 - Use PermissionGuard component to hide unavailable actions
 - Provides better UX than showing and then blocking
 
 ### 3. Implement Lazy Permission Loading
+
 ```typescript
 // Load permissions once and cache them
 const { permissions } = usePermissions(outletId);
@@ -416,6 +436,7 @@ canCreateGlobalRecipe(context);
 ```
 
 ### 4. Provide Clear Feedback
+
 ```typescript
 <PermissionGuard
   hasPermission={false}
@@ -429,6 +450,7 @@ canCreateGlobalRecipe(context);
 ```
 
 ### 5. Log Permission Denials
+
 ```typescript
 if (!canEditRecipe(context, recipe)) {
   logPermissionDenial({
@@ -487,6 +509,7 @@ async function handleRecipeOperation(recipe, operation) {
 ## Testing
 
 ### Unit Tests
+
 ```typescript
 describe("Recipe Access Control", () => {
   it("should allow chef to edit their own recipes", () => {
@@ -509,6 +532,7 @@ describe("Recipe Access Control", () => {
 ```
 
 ### Integration Tests
+
 ```typescript
 describe("Recipe Operations", () => {
   it("should prevent staff from editing recipes", async () => {

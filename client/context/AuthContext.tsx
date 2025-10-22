@@ -1,5 +1,21 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
-import { signIn, signUp, signOut, getCurrentSession, updateUserProfile, setupSessionRefreshListener, refreshToken, type AuthUser, type AuthSession } from "@/lib/auth-service";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
+import {
+  signIn,
+  signUp,
+  signOut,
+  getCurrentSession,
+  updateUserProfile,
+  setupSessionRefreshListener,
+  refreshToken,
+  type AuthUser,
+  type AuthSession,
+} from "@/lib/auth-service";
 
 type AuthContextType = {
   user: AuthUser | null;
@@ -8,7 +24,12 @@ type AuthContextType = {
   error: string | null;
   isAuthenticated: boolean;
   signIn: (email: string, password: string) => Promise<boolean>;
-  signUp: (email: string, password: string, username: string, orgName: string) => Promise<boolean>;
+  signUp: (
+    email: string,
+    password: string,
+    username: string,
+    orgName: string,
+  ) => Promise<boolean>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<AuthUser>) => Promise<boolean>;
   refreshSession: () => Promise<boolean>;
@@ -23,7 +44,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<AuthSession | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
+  const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(
+    null,
+  );
 
   // Initialize auth on mount
   useEffect(() => {
@@ -115,7 +138,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const handleSignUp = useCallback(
-    async (email: string, password: string, username: string, orgName: string) => {
+    async (
+      email: string,
+      password: string,
+      username: string,
+      orgName: string,
+    ) => {
       setError(null);
       setLoading(true);
 
@@ -170,26 +198,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const handleUpdateProfile = useCallback(async (updates: Partial<AuthUser>) => {
-    if (!user) return false;
+  const handleUpdateProfile = useCallback(
+    async (updates: Partial<AuthUser>) => {
+      if (!user) return false;
 
-    setError(null);
+      setError(null);
 
-    try {
-      const result = await updateUserProfile(user.id, updates);
+      try {
+        const result = await updateUserProfile(user.id, updates);
 
-      if (result.success && result.user) {
-        setUser(result.user);
-        return true;
-      } else {
-        setError(result.error || "Profile update failed");
+        if (result.success && result.user) {
+          setUser(result.user);
+          return true;
+        } else {
+          setError(result.error || "Profile update failed");
+          return false;
+        }
+      } catch (err) {
+        setError(String(err));
         return false;
       }
-    } catch (err) {
-      setError(String(err));
-      return false;
-    }
-  }, [user]);
+    },
+    [user],
+  );
 
   const handleRefreshSession = useCallback(async () => {
     try {

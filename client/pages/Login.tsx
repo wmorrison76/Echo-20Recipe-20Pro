@@ -3,7 +3,13 @@ import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
 export default function Login() {
@@ -68,16 +74,30 @@ export default function Login() {
         setLoading(false);
       }
     },
-    [email, password, username, orgName, mode, signIn, signUp, navigate, location],
+    [
+      email,
+      password,
+      username,
+      orgName,
+      mode,
+      signIn,
+      signUp,
+      navigate,
+      location,
+    ],
   );
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-cyan-950 to-slate-950 flex items-center justify-center p-4">
       <Card className="w-full max-w-md border-cyan-500/25 bg-slate-950/80 backdrop-blur-xl">
         <CardHeader className="space-y-2">
-          <CardTitle className="text-2xl text-cyan-400">Echo Recipe Pro</CardTitle>
+          <CardTitle className="text-2xl text-cyan-400">
+            Echo Recipe Pro
+          </CardTitle>
           <CardDescription>
-            {mode === "login" ? "Sign in to your account" : "Create a new account"}
+            {mode === "login"
+              ? "Sign in to your account"
+              : "Create a new account"}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -157,7 +177,11 @@ export default function Login() {
               />
             </div>
 
-            {error && <div className="text-xs text-red-400 bg-red-950/30 p-2 rounded">{error}</div>}
+            {error && (
+              <div className="text-xs text-red-400 bg-red-950/30 p-2 rounded">
+                {error}
+              </div>
+            )}
 
             <Button
               type="submit"

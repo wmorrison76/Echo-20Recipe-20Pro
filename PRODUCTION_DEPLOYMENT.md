@@ -12,6 +12,7 @@ This guide provides complete instructions for deploying EchoMenuStudio to produc
 ## Pre-Deployment Checklist
 
 ### Application Testing
+
 - [ ] Run full test suite: `npm run test`
 - [ ] Run TypeScript check: `npm run typecheck`
 - [ ] Run linter: `npm run lint` (if configured)
@@ -25,6 +26,7 @@ This guide provides complete instructions for deploying EchoMenuStudio to produc
 - [ ] Test with slow network (DevTools throttling)
 
 ### Environment Setup
+
 - [ ] Create production Supabase project
 - [ ] Configure database schema
 - [ ] Enable email authentication
@@ -35,6 +37,7 @@ This guide provides complete instructions for deploying EchoMenuStudio to produc
 - [ ] Set up CDN if needed
 
 ### Security Review
+
 - [ ] Audit all API endpoints
 - [ ] Verify RBAC is enforced on backend
 - [ ] Review database security policies
@@ -45,6 +48,7 @@ This guide provides complete instructions for deploying EchoMenuStudio to produc
 - [ ] Review error messages (no sensitive info)
 
 ### Documentation
+
 - [ ] Updated API documentation
 - [ ] Deployment runbook
 - [ ] Rollback procedures
@@ -66,6 +70,7 @@ This guide provides complete instructions for deploying EchoMenuStudio to produc
 #### 2. Configure Build Settings
 
 In Netlify UI:
+
 1. Site Settings > Build & Deploy > Build Settings
 2. Set build command: `npm run build`
 3. Set publish directory: `dist`
@@ -123,6 +128,7 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 #### 1. Prepare Docker Image
 
 Create `Dockerfile`:
+
 ```dockerfile
 FROM node:18-alpine
 
@@ -156,6 +162,7 @@ docker push your-registry/echomenu-studio:latest
 #### 3. Deploy to Hosting
 
 For Kubernetes:
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -172,17 +179,17 @@ spec:
         app: echomenu-studio
     spec:
       containers:
-      - name: app
-        image: your-registry/echomenu-studio:latest
-        ports:
-        - containerPort: 8080
-        env:
-        - name: VITE_SUPABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: app-secrets
-              key: supabase-url
-        # ... other env vars
+        - name: app
+          image: your-registry/echomenu-studio:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: VITE_SUPABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: supabase-url
+          # ... other env vars
 ```
 
 ## Database Setup
@@ -268,6 +275,7 @@ source-map-explorer 'dist/**/*.js'
 ### 3. Code Splitting
 
 Already configured in Vite:
+
 ```typescript
 // Routes are lazy loaded
 const Index = lazy(() => import("./pages/Index"));
@@ -289,6 +297,7 @@ const RecipeEditor = lazy(() => import("./pages/RecipeEditor"));
 2. Create new project
 3. Get DSN
 4. Add to environment variables:
+
 ```
 VITE_SENTRY_DSN=your-dsn
 ```
@@ -296,6 +305,7 @@ VITE_SENTRY_DSN=your-dsn
 ### 2. Application Logs
 
 View logs in Netlify/Vercel dashboard:
+
 - Build logs
 - Function logs
 - Runtime errors
@@ -303,6 +313,7 @@ View logs in Netlify/Vercel dashboard:
 ### 3. Database Logs
 
 In Supabase:
+
 1. Click Project Settings > Logs
 2. View API requests
 3. View PostgreSQL logs
@@ -321,18 +332,17 @@ In Supabase:
 ### 1. CORS Setup
 
 In Supabase Project Settings:
+
 ```json
 {
-  "allowed_origins": [
-    "https://your-domain.com",
-    "https://www.your-domain.com"
-  ]
+  "allowed_origins": ["https://your-domain.com", "https://www.your-domain.com"]
 }
 ```
 
 ### 2. API Rate Limiting
 
 Configure in Supabase:
+
 1. Project Settings > Rate Limiting
 2. Set limits per IP
 3. Set limits per user
@@ -345,18 +355,22 @@ Configure in Supabase:
 ### 4. CSRF Protection
 
 Already configured in Express middleware:
+
 ```typescript
-const csrf = require('csurf');
+const csrf = require("csurf");
 app.use(csrf());
 ```
 
 ### 5. Content Security Policy
 
 Add to server headers:
+
 ```typescript
 app.use((req, res, next) => {
-  res.setHeader("Content-Security-Policy", 
-    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';");
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';",
+  );
   next();
 });
 ```
@@ -374,12 +388,14 @@ For production emails, set up custom SMTP:
 ### 2. Email Templates
 
 Customize in Supabase:
+
 1. Authentication > Email Templates
 2. Update password reset template
 3. Update email verification template
 4. Add organization branding
 
 Example template:
+
 ```html
 <h1>Reset Your Password</h1>
 <p>Click the link below to reset your password:</p>
@@ -471,6 +487,7 @@ app.get("/api/health", healthCheck);
 ### 2. Monitor Health Endpoint
 
 Set up monitoring to ping `/api/health` every 60 seconds:
+
 ```bash
 curl https://your-domain.com/api/health
 ```
@@ -517,10 +534,12 @@ VACUUM ANALYZE recipes;
 - Test restore every month
 
 ### 2. Recovery Point Objective (RPO)
+
 - Target: 1 hour
 - Supabase: Daily automated backups
 
 ### 3. Recovery Time Objective (RTO)
+
 - Target: 4 hours
 - Supabase restore: 1-2 hours
 - DNS propagation: 1-2 hours
@@ -534,18 +553,21 @@ VACUUM ANALYZE recipes;
 ## Post-Deployment Tasks
 
 ### Week 1
+
 - Monitor error logs daily
 - Check performance metrics
 - Gather user feedback
 - Monitor database performance
 
 ### Month 1
+
 - Review security logs
 - Optimize slow queries
 - Validate backup/restore
 - User adoption tracking
 
 ### Ongoing
+
 - Monthly security reviews
 - Quarterly performance audits
 - Semi-annual disaster recovery drills
@@ -556,24 +578,28 @@ VACUUM ANALYZE recipes;
 ### Common Issues
 
 **Build Fails**
+
 - Check Node version: `node --version`
 - Clear cache: `npm ci`
 - Check env variables
 - Review build logs
 
 **Database Connection Error**
+
 - Verify SUPABASE_URL
 - Check SUPABASE_ANON_KEY
 - Test connection with psql
 - Check firewall rules
 
 **Email Not Sending**
+
 - Verify SMTP settings in Supabase
 - Check email logs
 - Test with test email
 - Check rate limits
 
 **Performance Issues**
+
 - Check database queries
 - Review slow query logs
 - Optimize indexes
@@ -596,10 +622,10 @@ VACUUM ANALYZE recipes;
 
 ## Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0.0 | 2024-01-XX | Initial release |
-| 1.0.1 | - | Pending |
+| Version | Date       | Changes         |
+| ------- | ---------- | --------------- |
+| 1.0.0   | 2024-01-XX | Initial release |
+| 1.0.1   | -          | Pending         |
 
 ---
 

@@ -18,7 +18,14 @@ const Login = lazy(() => import("./pages/Login"));
 const PasswordReset = lazy(() => import("./pages/PasswordReset"));
 
 const LoadingFallback = () => (
-  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}>
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      height: "100vh",
+    }}
+  >
     <div>Loading...</div>
   </div>
 );
@@ -75,7 +82,10 @@ const App = () => (
                       <Suspense fallback={<LoadingFallback />}>
                         <Routes>
                           <Route path="/login" element={<Login />} />
-                          <Route path="/password-reset" element={<PasswordReset />} />
+                          <Route
+                            path="/password-reset"
+                            element={<PasswordReset />}
+                          />
                           <Route
                             path="/"
                             element={

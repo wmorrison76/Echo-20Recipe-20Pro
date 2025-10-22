@@ -3,7 +3,13 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { resetPassword, resetPasswordWithToken } from "@/lib/auth-service";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
 
@@ -102,10 +108,12 @@ export default function PasswordReset() {
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-cyan-950 to-slate-950 flex items-center justify-center p-4">
       <Card className="w-full max-w-md border-cyan-500/25 bg-slate-950/80 backdrop-blur-xl">
         <CardHeader className="space-y-2">
-          <CardTitle className="text-2xl text-cyan-400">Reset Password</CardTitle>
+          <CardTitle className="text-2xl text-cyan-400">
+            Reset Password
+          </CardTitle>
           <CardDescription>
-            {mode === "request" 
-              ? "Enter your email to receive a password reset link" 
+            {mode === "request"
+              ? "Enter your email to receive a password reset link"
               : "Enter your new password"}
           </CardDescription>
         </CardHeader>
@@ -134,7 +142,9 @@ export default function PasswordReset() {
               {error && (
                 <Alert className="mb-4 border-red-500/25 bg-red-950/30">
                   <AlertCircle className="h-4 w-4 text-red-400" />
-                  <AlertDescription className="text-red-200">{error}</AlertDescription>
+                  <AlertDescription className="text-red-200">
+                    {error}
+                  </AlertDescription>
                 </Alert>
               )}
 
@@ -182,7 +192,10 @@ export default function PasswordReset() {
               ) : (
                 <form onSubmit={handleResetPassword} className="space-y-4">
                   <div className="space-y-2">
-                    <label htmlFor="newPassword" className="text-sm font-medium">
+                    <label
+                      htmlFor="newPassword"
+                      className="text-sm font-medium"
+                    >
                       New Password
                     </label>
                     <Input
@@ -197,7 +210,10 @@ export default function PasswordReset() {
                   </div>
 
                   <div className="space-y-2">
-                    <label htmlFor="confirmPassword" className="text-sm font-medium">
+                    <label
+                      htmlFor="confirmPassword"
+                      className="text-sm font-medium"
+                    >
                       Confirm Password
                     </label>
                     <Input
