@@ -134,9 +134,20 @@ export default function Login() {
             )}
 
             <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium">
-                Password
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="password" className="text-sm font-medium">
+                  Password
+                </label>
+                {mode === "login" && (
+                  <button
+                    type="button"
+                    onClick={() => navigate("/password-reset")}
+                    className="text-xs text-cyan-400 hover:text-cyan-300"
+                  >
+                    Forgot password?
+                  </button>
+                )}
+              </div>
               <Input
                 id="password"
                 type="password"
