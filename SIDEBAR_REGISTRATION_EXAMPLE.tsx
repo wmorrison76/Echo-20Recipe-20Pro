@@ -217,7 +217,7 @@ export const SidebarWithRouting: React.FC = () => {
               <EchoRecipeProPanel isActive={true} />
             </Suspense>
           } />
-          {/* Other routes */}
+          <Route path="/" element={<EmptyState />} />
         </Routes>
       </main>
     </div>
