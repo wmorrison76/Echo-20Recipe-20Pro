@@ -2058,13 +2058,7 @@ export default function MenuDesignStudioSection() {
     [toast],
   );
 
-  useEffect(() => {
-    ensureFontLoaded(DEFAULT_FONT_VALUE);
-    // Check storage quota on component mount
-    checkStorageQuota();
-  }, [ensureFontLoaded, checkStorageQuota]);
-
-  // Helper function to check localStorage quota
+  // Helper function to check localStorage quota - define before useEffect that uses it
   const checkStorageQuota = useCallback(() => {
     try {
       if (!navigator.storage?.estimate) {
@@ -2098,6 +2092,12 @@ export default function MenuDesignStudioSection() {
       console.warn("Could not check storage quota:", error);
     }
   }, [toast]);
+
+  useEffect(() => {
+    ensureFontLoaded(DEFAULT_FONT_VALUE);
+    // Check storage quota on component mount
+    checkStorageQuota();
+  }, [ensureFontLoaded, checkStorageQuota]);
 
   // Auto-save design to localStorage
   useEffect(() => {
