@@ -1763,7 +1763,11 @@ const createTileBoard = useCallback(
       const el = blocks[i];
       const tag = el.tagName;
       const text = normalize(el.textContent || "");
-      if (!text) continue;
+      if (!text) {
+        console.log("[htmlToRecipes]", source, `Block ${i} (${tag}): empty text, skipping`);
+        continue;
+      }
+      console.log("[htmlToRecipes]", source, `Block ${i} (${tag}): "${text.substring(0, 60)}"`);
 
       let detectedTitle: { title: string; carry?: Element[] } | null = null;
 
