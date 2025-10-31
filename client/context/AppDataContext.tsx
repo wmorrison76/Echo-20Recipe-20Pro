@@ -1631,11 +1631,8 @@ const createTileBoard = useCallback(
 
     Array.from(doc.body.children).forEach(walk);
     if (!blocks.length) {
-      const allChildren = Array.from(doc.body.children);
-      blocks.push(...allChildren);
-      console.log("[htmlToRecipes]", source, "No blocks extracted from walk, using raw children:", allChildren.length);
+      blocks.push(...Array.from(doc.body.children));
     }
-    console.log("[htmlToRecipes]", source, "Total blocks:", blocks.length);
 
     const computeUppercaseRatio = (text: string) => {
       const letters = text.replace(/[^A-Za-z]/g, "");
@@ -1762,11 +1759,7 @@ const createTileBoard = useCallback(
       const el = blocks[i];
       const tag = el.tagName;
       const text = normalize(el.textContent || "");
-      if (!text) {
-        console.log("[htmlToRecipes]", source, `Block ${i} (${tag}): empty text, skipping`);
-        continue;
-      }
-      console.log("[htmlToRecipes]", source, `Block ${i} (${tag}): "${text.substring(0, 60)}"`);
+      if (!text) continue;
 
       let detectedTitle: { title: string; carry?: Element[] } | null = null;
 
@@ -1838,7 +1831,6 @@ const createTileBoard = useCallback(
         section.title = normTitle && !/^untitled$/i.test(normTitle) ? normTitle : baseName || "Untitled";
       }
     }
-    console.log("[htmlToRecipes]", source, "Found sections:", sections.length, "Titles:", sections.map(s => s.title));
 
     const extractListAfter = (startIdx: number, arr: Element[]) => {
       const out: string[] = [];
@@ -1945,7 +1937,6 @@ const createTileBoard = useCallback(
         } else if (instrCount > 0) {
           instructions = texts.filter((t) => /^(?:\d+\.|step|heat|cook|bake|fry|simmer)/i.test(t.trim()));
         } else if (texts.length > 1) {
-          console.log("[htmlToRecipes]", source, "No qty or instr patterns found. qtyCount:", qtyCount, "instrCount:", instrCount, "texts.length:", texts.length);
           ingredients = [];
           instructions = texts.filter((t) => t.trim().length > 2);
         }
@@ -1987,7 +1978,6 @@ const createTileBoard = useCallback(
         sourceFile: source,
       });
     }
-    console.log("[htmlToRecipes]", source, "Returning recipes:", results.length, "Recipes:", results.map(r => ({ title: r.title, ingCount: r.ingredients?.length ?? 0, instCount: r.instructions?.length ?? 0 })));
     return results;
   };
 
@@ -2066,7 +2056,6 @@ const createTileBoard = useCallback(
       }
 
       const { added } = appendRecipes(collected);
-      console.log("[addRecipesFromDocxFiles] collected:", collected.length, "added:", added.length, "errors:", errors.length);
       if (added.length) {
         setTimeout(linkImagesToRecipesByFilename, 0);
       }
