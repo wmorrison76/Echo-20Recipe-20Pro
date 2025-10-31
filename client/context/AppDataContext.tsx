@@ -1832,6 +1832,7 @@ const createTileBoard = useCallback(
         section.title = normTitle && !/^untitled$/i.test(normTitle) ? normTitle : baseName || "Untitled";
       }
     }
+    console.log("[htmlToRecipes]", source, "Found sections:", sections.length, "Titles:", sections.map(s => s.title));
 
     const extractListAfter = (startIdx: number, arr: Element[]) => {
       const out: string[] = [];
