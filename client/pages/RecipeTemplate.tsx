@@ -289,7 +289,7 @@ export default function RecipeTemplate() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border shadow-md p-8 relative">
+        <div className="bg-white rounded-xl border print:shadow-none shadow-md p-8 relative">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-serif tracking-widest">
               {recipe.title}
