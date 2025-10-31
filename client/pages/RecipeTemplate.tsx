@@ -433,7 +433,7 @@ export default function RecipeTemplate() {
           <img
             src="https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2Fc559ee72f28d41e3b77cf18c85d92bba?format=webp&width=200"
             alt="LUCCCA"
-            className="absolute right-4 select-none"
+            className="absolute right-4 select-none print:hidden"
             style={{ opacity: 0.75, width: 120, height: "auto", bottom: 0 }}
           />
         </div>
