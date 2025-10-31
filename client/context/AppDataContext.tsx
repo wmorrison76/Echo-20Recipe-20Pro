@@ -1564,7 +1564,6 @@ const createTileBoard = useCallback(
   const htmlToRecipes = (html: string, source: string): Recipe[] => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, "text/html");
-    console.log("[htmlToRecipes]", source, "HTML length:", html.length, "Body text preview:", doc.body.textContent?.substring(0, 200));
 
     const normalize = (text: string) => text.replace(/\s+/g, " ").trim();
 
