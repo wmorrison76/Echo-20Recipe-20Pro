@@ -1895,29 +1895,34 @@ const createTileBoard = useCallback(
 
       if (!ingredients.length && !instructions.length && texts.length > 0) {
         const allTexts = texts.join(" ").toLowerCase();
-        const hasIngredientKeywords = /ingredient|component|include|contain|require|add|mix|combine|blend/.test(allTexts);
-        const hasInstructionKeywords = /instruction|direction|step|procedure|method|process|do|make|prepare|heat|cook|bake|fry|simmer|boil/.test(allTexts);
+        const hasIngredientKeywords = /ingredient|component|include|contain|require|add|mix|combine|blend|butter|flour|sugar|salt|pepper|egg|milk|water|oil|garlic|onion/.test(allTexts);
+        const hasInstructionKeywords = /instruction|direction|step|procedure|method|process|do|make|prepare|heat|cook|bake|fry|simmer|boil|roast|grill|broil|toast|sear|whisk|fold|mix/.test(allTexts);
 
         if (hasIngredientKeywords || hasInstructionKeywords) {
           let firstInstructionIdx = -1;
           for (let i = 0; i < texts.length; i++) {
-            const t = texts[i].toLowerCase();
-            if (/^instruction|^direction|^step|^procedure|^method|^process/.test(t) ||
-                (/heat|cook|bake|fry|simmer|boil|roast|grill|broil|toast|sear/.test(t) && !qtyRe.test(t))) {
-              if (i > 0 && firstInstructionIdx < 0) {
-                firstInstructionIdx = i;
-                break;
-              }
+            const t = texts[i].toLowerCase().trim();
+            if (/^instruction|^direction|^step|^procedure|^method|^process/.test(t)) {
+              firstInstructionIdx = i;
+              break;
+            }
+            if (i > 0 && /^(heat|cook|bake|fry|simmer|boil|roast|grill|broil|toast|sear|whisk|fold|blend|mix|stir|pour|add to|combine|arrange|place|serve|sprinkle|drizzle|brush)\b/.test(t) && !qtyRe.test(t)) {
+              firstInstructionIdx = i;
+              break;
             }
           }
 
           if (firstInstructionIdx > 0) {
             ingredients = texts.slice(0, firstInstructionIdx).filter((t) => t.trim() && t.trim().length > 2);
             instructions = texts.slice(firstInstructionIdx).filter((t) => t.trim() && t.trim().length > 2);
+          } else if (firstInstructionIdx === 0) {
+            instructions = texts.filter((t) => t.trim() && t.trim().length > 2);
           } else {
-            ingredients = texts.filter((t) => qtyRe.test(t.trim()) || /^[a-z]/i.test(t.trim()));
-            if (ingredients.length < texts.length) {
-              instructions = texts.filter((t) => !ingredients.includes(t) && t.trim().length > 2);
+            const qtyLines = texts.filter((t) => qtyRe.test(t.trim()));
+            if (qtyLines.length > 0) {
+              const lastQtyIdx = texts.lastIndexOf(qtyLines[qtyLines.length - 1]);
+              ingredients = texts.slice(0, lastQtyIdx + 1).filter((t) => t.trim() && t.trim().length > 2);
+              instructions = texts.slice(lastQtyIdx + 1).filter((t) => t.trim() && t.trim().length > 2);
             }
           }
         }
@@ -2318,7 +2323,7 @@ const createTileBoard = useCallback(
         /\b(?:cup|cups?|tsp|teaspoons?|tbsp|tablespoons?|grams?|gram|kg|kilograms?|g|ml|milliliters?|l|liters?|oz|ounces?|lb|lbs|pounds?|serves?|makes|yield|minutes?|minute|mins?|hours?|hour|°f|°c|step|steps?)\b/i;
       const tocPatterns = [
         /^.{3,160}?[.\s·•]{2,}\d{1,4}(?:\D.*)?$/i,
-        /^.{3,160}?\s[-–�����]\s*\d{1,4}(?:\D.*)?$/i,
+        /^.{3,160}?\s[-–���]\s*\d{1,4}(?:\D.*)?$/i,
       ];
       const looksLikeIndexEntry = (line: string) => {
         if (line.length > 160) return false;
