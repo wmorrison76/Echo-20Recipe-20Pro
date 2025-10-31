@@ -187,13 +187,24 @@ export async function handleRecipeImport(req: Request, res: Response) {
 
     let r: Response;
     try {
-      r = await fetch(url, {
-        headers: { "user-agent": "Mozilla/5.0 RecipeStudioBot" },
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+      try {
+        r = await fetch(url, {
+          headers: { "user-agent": "Mozilla/5.0 RecipeStudioBot" },
+          signal: controller.signal,
+        });
+      } finally {
+        clearTimeout(timeoutId);
+      }
     } catch (fetchError: any) {
       console.error("[handleRecipeImport] Fetch error for URL:", url, fetchError);
+      const errorMsg = fetchError?.name === "AbortError"
+        ? "Request timed out (took too long to fetch)"
+        : fetchError?.message || "Network error";
       return res.status(503).json({
-        error: `Could not fetch URL: ${fetchError?.message || "Network error"}. The URL may be unreachable, blocked by CORS, or the server may be unavailable.`
+        error: `Could not fetch URL: ${errorMsg}. The URL may be unreachable or the server may be unavailable.`
       });
     }
 
