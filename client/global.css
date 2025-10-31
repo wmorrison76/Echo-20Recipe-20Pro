@@ -488,3 +488,43 @@
     animation-delay: 1.8s;
   }
 }
+
+/* Print styles */
+@page {
+  margin: 0.5in;
+  size: letter portrait;
+}
+
+@media print {
+  /* Hide print margins and headers/footers */
+  @page {
+    margin-top: 0.5in;
+    margin-bottom: 0.5in;
+    margin-left: 0.5in;
+    margin-right: 0.5in;
+  }
+
+  /* Remove default print margins and headers */
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Hide everything except the recipe content during print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  /* Prevent page break inside elements */
+  .rounded-xl {
+    page-break-inside: avoid;
+  }
+
+  /* Ensure images don't cause unnecessary page breaks */
+  img {
+    max-width: 100%;
+    page-break-inside: avoid;
+  }
+}
