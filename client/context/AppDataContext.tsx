@@ -1632,8 +1632,11 @@ const createTileBoard = useCallback(
 
     Array.from(doc.body.children).forEach(walk);
     if (!blocks.length) {
-      blocks.push(...Array.from(doc.body.children));
+      const allChildren = Array.from(doc.body.children);
+      blocks.push(...allChildren);
+      console.log("[htmlToRecipes]", source, "No blocks extracted from walk, using raw children:", allChildren.length);
     }
+    console.log("[htmlToRecipes]", source, "Total blocks:", blocks.length);
 
     const computeUppercaseRatio = (text: string) => {
       const letters = text.replace(/[^A-Za-z]/g, "");
