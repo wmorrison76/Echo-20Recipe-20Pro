@@ -493,10 +493,15 @@
 @page {
   margin: 0.5in;
   size: letter portrait;
+  /* Remove browser default headers and footers */
+  margin-top: 0.5in;
+  margin-bottom: 0.5in;
+  margin-left: 0.5in;
+  margin-right: 0.5in;
 }
 
 @media print {
-  /* Hide print margins and headers/footers */
+  /* Hide browser default headers/footers completely */
   @page {
     margin-top: 0.5in;
     margin-bottom: 0.5in;
@@ -504,27 +509,42 @@
     margin-right: 0.5in;
   }
 
-  /* Remove default print margins and headers */
+  html,
   body {
-    margin: 0;
-    padding: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    width: 100%;
+    height: 100%;
   }
 
-  /* Hide everything except the recipe content during print */
+  /* Preserve colors and styling */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     color-adjust: exact !important;
   }
 
+  /* Remove shadows from print */
+  .shadow-md,
+  .shadow {
+    box-shadow: none !important;
+  }
+
   /* Prevent page break inside elements */
   .rounded-xl {
     page-break-inside: avoid;
+    box-shadow: none !important;
   }
 
   /* Ensure images don't cause unnecessary page breaks */
   img {
     max-width: 100%;
     page-break-inside: avoid;
+  }
+
+  /* Hide the action buttons during print */
+  .print\\:hidden {
+    display: none !important;
   }
 }
