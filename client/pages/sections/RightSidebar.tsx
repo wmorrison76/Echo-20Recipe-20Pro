@@ -157,14 +157,23 @@ export default function RightSidebar(props: RightSidebarProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: recipeUrl }),
       });
-      const data = await res.json();
+
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error(`Server returned invalid response (${res.status}): ${res.statusText}`);
+      }
+
       if (!res.ok) {
         throw new Error(data?.error || `Import failed (${res.status})`);
       }
       await onRecipeImport?.(data);
       setRecipeUrl("");
     } catch (error: any) {
-      alert(error?.message || "Failed to import recipe");
+      console.error("[handleUrlSubmit] Error:", error);
+      const message = error?.message || "Failed to import recipe from URL";
+      alert(message);
     } finally {
       setIsImporting(false);
     }
