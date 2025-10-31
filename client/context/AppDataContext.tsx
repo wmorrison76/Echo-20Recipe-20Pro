@@ -1720,6 +1720,15 @@ const createTileBoard = useCallback(
       const words = norm.split(/\s+/);
       if (words.length === 1 && words[0].length <= 2) return false;
       if (words.length > 20) return false;
+
+      const upperCaseWordCount = words.filter((w) => /^[A-Z]/.test(w)).length;
+      const lowerCaseWordCount = words.filter((w) => /^[a-z]/.test(w)).length;
+      const startsWithArticle = /^(a|an|the|this|that|these|those)\s/i.test(norm);
+
+      if (startsWithArticle && lowerCaseWordCount > upperCaseWordCount) {
+        return false;
+      }
+
       const uppercaseRatio = computeUppercaseRatio(norm);
       const hasTitleCaseWords =
         words.filter((w) => /^[A-Z][a-z]{2,}/.test(w)).length >= Math.min(words.length, 2);
@@ -2309,7 +2318,7 @@ const createTileBoard = useCallback(
         /\b(?:cup|cups?|tsp|teaspoons?|tbsp|tablespoons?|grams?|gram|kg|kilograms?|g|ml|milliliters?|l|liters?|oz|ounces?|lb|lbs|pounds?|serves?|makes|yield|minutes?|minute|mins?|hours?|hour|°f|°c|step|steps?)\b/i;
       const tocPatterns = [
         /^.{3,160}?[.\s·•]{2,}\d{1,4}(?:\D.*)?$/i,
-        /^.{3,160}?\s[-–���]\s*\d{1,4}(?:\D.*)?$/i,
+        /^.{3,160}?\s[-–�����]\s*\d{1,4}(?:\D.*)?$/i,
       ];
       const looksLikeIndexEntry = (line: string) => {
         if (line.length > 160) return false;
