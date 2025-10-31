@@ -1945,6 +1945,10 @@ const createTileBoard = useCallback(
           ingredients = texts.filter((t) => qtyRe.test(t.trim()));
         } else if (instrCount > 0) {
           instructions = texts.filter((t) => /^(?:\d+\.|step|heat|cook|bake|fry|simmer)/i.test(t.trim()));
+        } else if (texts.length > 1) {
+          console.log("[htmlToRecipes]", source, "No qty or instr patterns found. qtyCount:", qtyCount, "instrCount:", instrCount, "texts.length:", texts.length);
+          ingredients = [];
+          instructions = texts.filter((t) => t.trim().length > 2);
         }
       }
 
