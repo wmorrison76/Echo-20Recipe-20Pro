@@ -1774,10 +1774,22 @@ const createTileBoard = useCallback(
                   t,
                 );
               });
+            const shouldCreateSection = current !== null && current.elements.length > 0;
             if (
-              bold ||
-              uppercaseRatio >= 0.5 ||
-              (contextHasKeyword && (uppercaseRatio >= 0.35 || candidate.split(/\s+/).length >= 2))
+              shouldCreateSection && (
+                bold ||
+                uppercaseRatio >= 0.5 ||
+                (contextHasKeyword && (uppercaseRatio >= 0.35 || candidate.split(/\s+/).length >= 2))
+              )
+            ) {
+              const carry = createCarryParagraphs(lines.slice(1));
+              detectedTitle = { title: candidate, carry };
+            } else if (
+              !current && (
+                bold ||
+                uppercaseRatio >= 0.5 ||
+                (contextHasKeyword && (uppercaseRatio >= 0.35 || candidate.split(/\s+/).length >= 2))
+              )
             ) {
               const carry = createCarryParagraphs(lines.slice(1));
               detectedTitle = { title: candidate, carry };
