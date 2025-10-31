@@ -1977,6 +1977,7 @@ const createTileBoard = useCallback(
         sourceFile: source,
       });
     }
+    console.log("[htmlToRecipes]", source, "Returning recipes:", results.length, "Recipes:", results.map(r => ({ title: r.title, ingCount: r.ingredients?.length ?? 0, instCount: r.instructions?.length ?? 0 })));
     return results;
   };
 
