@@ -2056,6 +2056,7 @@ const createTileBoard = useCallback(
       }
 
       const { added } = appendRecipes(collected);
+      console.log("[addRecipesFromDocxFiles] collected:", collected.length, "added:", added.length, "errors:", errors.length);
       if (added.length) {
         setTimeout(linkImagesToRecipesByFilename, 0);
       }
