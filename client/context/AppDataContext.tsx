@@ -1850,25 +1850,68 @@ const createTileBoard = useCallback(
       const findIdx = (label: string[]) =>
         lowerTexts.findIndex((t) => label.some((l) => t.startsWith(l)));
       let ingIdx = findIdx(["ingredients", "ingredient", "what you need"]);
-      let instIdx = findIdx(["instructions", "directions", "method", "steps"]);
+      let instIdx = findIdx(["instructions", "directions", "method", "steps", "procedure", "procedures"]);
       let ingredients = ingIdx >= 0 ? extractListAfter(ingIdx, els) : [];
       let instructions = instIdx >= 0 ? extractListAfter(instIdx, els) : [];
 
       if (!ingredients.length) {
         ingredients = texts.filter((t) => qtyRe.test(t.trim()));
       }
+
       if (!instructions.length) {
         const numbered = texts.filter((t) =>
-          /^(?:\d+\.|Step\s*\d+)/i.test(t.trim()),
+          /^(?:\d+\.|Step\s*\d+|procedure\s*\d+)/i.test(t.trim()),
         );
         if (numbered.length) instructions = numbered;
       }
+
+      if (!ingredients.length && !instructions.length && texts.length > 0) {
+        const allTexts = texts.join(" ").toLowerCase();
+        const hasIngredientKeywords = /ingredient|component|include|contain|require|add|mix|combine|blend/.test(allTexts);
+        const hasInstructionKeywords = /instruction|direction|step|procedure|method|process|do|make|prepare|heat|cook|bake|fry|simmer|boil/.test(allTexts);
+
+        if (hasIngredientKeywords || hasInstructionKeywords) {
+          let firstInstructionIdx = -1;
+          for (let i = 0; i < texts.length; i++) {
+            const t = texts[i].toLowerCase();
+            if (/^instruction|^direction|^step|^procedure|^method|^process/.test(t) ||
+                (/heat|cook|bake|fry|simmer|boil|roast|grill|broil|toast|sear/.test(t) && !qtyRe.test(t))) {
+              if (i > 0 && firstInstructionIdx < 0) {
+                firstInstructionIdx = i;
+                break;
+              }
+            }
+          }
+
+          if (firstInstructionIdx > 0) {
+            ingredients = texts.slice(0, firstInstructionIdx).filter((t) => t.trim() && t.trim().length > 2);
+            instructions = texts.slice(firstInstructionIdx).filter((t) => t.trim() && t.trim().length > 2);
+          } else {
+            ingredients = texts.filter((t) => qtyRe.test(t.trim()) || /^[a-z]/i.test(t.trim()));
+            if (ingredients.length < texts.length) {
+              instructions = texts.filter((t) => !ingredients.includes(t) && t.trim().length > 2);
+            }
+          }
+        }
+      }
+
+      if (!ingredients.length && !instructions.length) {
+        const qtyCount = texts.filter((t) => qtyRe.test(t.trim())).length;
+        const instrCount = texts.filter((t) => /^(?:\d+\.|step|heat|cook|bake)/i.test(t.trim())).length;
+
+        if (qtyCount > instrCount && qtyCount > 0) {
+          ingredients = texts.filter((t) => qtyRe.test(t.trim()));
+        } else if (instrCount > 0) {
+          instructions = texts.filter((t) => /^(?:\d+\.|step|heat|cook|bake|fry|simmer)/i.test(t.trim()));
+        }
+      }
+
       if (!instructions.length && ingredients.length) {
         const start = Math.max(
           texts.findIndex((t) => qtyRe.test(t.trim())) + 3,
           0,
         );
-        instructions = texts.slice(start, start + 20).filter(Boolean);
+        instructions = texts.slice(start, start + 20).filter((t) => t.trim().length > 2);
       }
 
       if (instructions.length) {
@@ -1886,8 +1929,8 @@ const createTileBoard = useCallback(
 
       const uniq = (arr: string[]) =>
         Array.from(new Set(arr.map((s) => s.replace(/\s+/g, " ").trim())));
-      ingredients = uniq(ingredients).filter(Boolean);
-      instructions = uniq(instructions).filter(Boolean);
+      ingredients = uniq(ingredients).filter((t) => t.length > 0);
+      instructions = uniq(instructions).filter((t) => t.length > 0);
 
       const title = (sec.title || baseName || "Untitled").trim() || "Untitled";
       results.push({
