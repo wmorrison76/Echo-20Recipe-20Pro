@@ -3961,32 +3961,50 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
               }
             }
             if (data?.image) {
+              const urlStr = String(data.image);
               try {
-                const urlStr = String(data.image);
-                fetch(urlStr)
-                  .then((res) => res.blob())
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+                fetch(urlStr, { signal: controller.signal })
+                  .then((res) => {
+                    clearTimeout(timeoutId);
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    return res.blob();
+                  })
                   .then(async (blob) => {
                     const ext = blob.type.includes("png") ? "png" : "jpg";
                     const fname = `${(data.title || "cover")
                       .toString()
                       .toLowerCase()
                       .replace(/[^a-z0-9]+/g, "-")}.${ext}`;
-                    await addImages(
-                      [
-                        new File([blob], fname, {
-                          type: blob.type || "image/jpeg",
-                        }),
-                      ],
-                      { tags: ["import", "web"] },
-                    );
+
+                    // Add image to library
+                    const fileObj = new File([blob], fname, {
+                      type: blob.type || "image/jpeg",
+                    });
+
+                    await addImages([fileObj], {
+                      tags: ["import", "web"],
+                      description: `Imported from ${new URL(urlStr).hostname}`
+                    });
+
+                    // Set preview as data URL
                     const reader = new FileReader();
-                    reader.onload = () =>
+                    reader.onload = () => {
                       setImage(String(reader.result || urlStr));
+                    };
                     reader.readAsDataURL(blob);
                   })
-                  .catch(() => setImage(String(data.image)));
-              } catch {
-                setImage(String(data.image));
+                  .catch((error) => {
+                    clearTimeout(timeoutId);
+                    console.warn("[onRecipeImport] Image fetch failed:", error?.message);
+                    // Fallback: use original URL if we can't download
+                    setImage(urlStr);
+                  });
+              } catch (error) {
+                console.warn("[onRecipeImport] Image import error:", error);
+                setImage(urlStr);
               }
             }
             // Top info
