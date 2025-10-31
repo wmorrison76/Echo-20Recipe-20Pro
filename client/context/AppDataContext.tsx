@@ -1829,15 +1829,18 @@ const createTileBoard = useCallback(
         const el = arr[i];
         const tag = el.tagName;
         if (["H1", "H2", "H3"].includes(tag)) break;
+        const text = (el.textContent || "").trim();
+        if (!text) continue;
+
         if (tag === "UL" || tag === "OL") {
           out.push(
             ...Array.from(el.querySelectorAll("li"))
               .map((li) => (li.textContent || "").trim())
               .filter(Boolean),
           );
-        } else if (tag === "P") {
-          const t = (el.textContent || "").trim();
-          if (t) out.push(t);
+        } else if (tag === "P" || tag === "DIV" || tag === "SPAN" || tag === "BLOCKQUOTE") {
+          const lines = text.split(/\r?\n+/).map((l) => l.trim()).filter(Boolean);
+          out.push(...lines);
         } else if (tag === "TABLE") {
           const cells = Array.from(
             el.querySelectorAll("td,th"),
@@ -1846,6 +1849,10 @@ const createTileBoard = useCallback(
             .map((c) => (c.textContent || "").trim())
             .filter(Boolean);
           out.push(...cellText);
+        } else if (tag === "BR" || tag === "HR") {
+          continue;
+        } else {
+          if (text.length > 2) out.push(text);
         }
       }
       return out;
