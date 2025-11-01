@@ -501,12 +501,10 @@
 }
 
 @media print {
-  /* Hide browser default headers/footers completely */
+  /* Remove page margins to minimize browser footers */
   @page {
-    margin-top: 0.5in;
-    margin-bottom: 0.5in;
-    margin-left: 0.5in;
-    margin-right: 0.5in;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   html,
@@ -516,6 +514,7 @@
     border: none !important;
     width: 100%;
     height: 100%;
+    background: white !important;
   }
 
   /* Preserve colors and styling */
@@ -546,5 +545,22 @@
   /* Hide the action buttons during print */
   .print\\:hidden {
     display: none !important;
+  }
+
+  /* Hide all links and their associated text/URLs */
+  a {
+    text-decoration: none !important;
+    border: none !important;
+  }
+
+  /* Suppress any content before/after links */
+  a::before,
+  a::after {
+    content: "" !important;
+  }
+
+  /* Add print margin to recipe card area */
+  .min-h-screen {
+    padding: 0.5in !important;
   }
 }
