@@ -58,7 +58,7 @@ function RDLabsWorkspaceContent({ defaultProject }: RDLabsWorkspaceProps) {
 
   // Show workbench after project selection
   return (
-    <div className="flex h-full flex-col gap-3">
+    <div className="w-full h-full flex flex-col gap-3 overflow-hidden">
       <div className="flex items-center justify-between">
         <Button
           variant="ghost"
