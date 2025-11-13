@@ -88,7 +88,7 @@ function RDLabsWorkspaceContent() {
       {/* Main content */}
       <div className="flex-1 flex overflow-hidden gap-0">
         {/* Discovery Panel - Left */}
-        <div className="w-80 border-r border-cyan-500/10 bg-slate-900/30 overflow-auto flex-shrink-0">
+        <div className="w-72 border-r border-cyan-500/10 bg-slate-900/30 overflow-auto flex-shrink-0">
           <div className="p-4">
             <DiscoveryPanel />
           </div>
@@ -110,7 +110,7 @@ function RDLabsWorkspaceContent() {
 
         {/* Right Panel - Insights/Session Info */}
         {!shouldShowDashboard && (
-          <div className="w-80 border-l border-cyan-500/10 bg-slate-900/30 overflow-auto flex-shrink-0">
+          <div className="w-72 border-l border-cyan-500/10 bg-slate-900/30 overflow-auto flex-shrink-0">
             <div className="p-4">
               <RDLabSessionSidebar
                 isDarkMode={true}
