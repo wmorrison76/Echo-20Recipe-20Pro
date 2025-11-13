@@ -1,10 +1,23 @@
 import { useState, useMemo } from "react";
 import { useRDLabStore } from "@/stores/rdLabStore";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Link as LinkIcon, Unlink, Plus, Search } from "lucide-react";
 import { toast } from "sonner";
@@ -17,12 +30,42 @@ interface LinkedRecipe {
 }
 
 const AVAILABLE_RECIPES: LinkedRecipe[] = [
-  { id: "rec-1", name: "Smoked Koji Custard", status: "draft", lastUpdated: "2h ago" },
-  { id: "rec-2", name: "Carbonic Yuzu Pearls", status: "published", lastUpdated: "1 day ago" },
-  { id: "rec-3", name: "Velvet Oyster Emulsion", status: "published", lastUpdated: "3 days ago" },
-  { id: "rec-4", name: "Charred Corn Silk Velouté", status: "draft", lastUpdated: "5 days ago" },
-  { id: "rec-5", name: "Koji Aged Beeswax Sauce", status: "draft", lastUpdated: "1 week ago" },
-  { id: "rec-6", name: "Fermented Citrus Oil", status: "published", lastUpdated: "2 weeks ago" },
+  {
+    id: "rec-1",
+    name: "Smoked Koji Custard",
+    status: "draft",
+    lastUpdated: "2h ago",
+  },
+  {
+    id: "rec-2",
+    name: "Carbonic Yuzu Pearls",
+    status: "published",
+    lastUpdated: "1 day ago",
+  },
+  {
+    id: "rec-3",
+    name: "Velvet Oyster Emulsion",
+    status: "published",
+    lastUpdated: "3 days ago",
+  },
+  {
+    id: "rec-4",
+    name: "Charred Corn Silk Velouté",
+    status: "draft",
+    lastUpdated: "5 days ago",
+  },
+  {
+    id: "rec-5",
+    name: "Koji Aged Beeswax Sauce",
+    status: "draft",
+    lastUpdated: "1 week ago",
+  },
+  {
+    id: "rec-6",
+    name: "Fermented Citrus Oil",
+    status: "published",
+    lastUpdated: "2 weeks ago",
+  },
 ];
 
 interface RecipeLinkingPanelProps {
@@ -32,13 +75,14 @@ interface RecipeLinkingPanelProps {
 export function RecipeLinkingPanel({
   experimentId: providedExperimentId,
 }: RecipeLinkingPanelProps) {
-  const { experiments, focusExperimentId, linkRecipe, unlinkRecipe } = useRDLabStore();
+  const { experiments, focusExperimentId, linkRecipe, unlinkRecipe } =
+    useRDLabStore();
   const experimentId = providedExperimentId || focusExperimentId;
   const [searchQuery, setSearchQuery] = useState("");
 
   const experiment = useMemo(
     () => experiments.find((e) => e.id === experimentId),
-    [experiments, experimentId]
+    [experiments, experimentId],
   );
 
   const linkedRecipeIds = experiment?.linkedRecipeIds || [];
@@ -49,7 +93,7 @@ export function RecipeLinkingPanel({
   const filteredAvailableRecipes = AVAILABLE_RECIPES.filter(
     (recipe) =>
       !linkedRecipeIds.includes(recipe.id) &&
-      recipe.name.toLowerCase().includes(searchQuery.toLowerCase())
+      recipe.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const handleLinkRecipe = (recipeId: string) => {
@@ -87,7 +131,9 @@ export function RecipeLinkingPanel({
         {/* Linked Recipes */}
         {linkedRecipes.length > 0 ? (
           <div className="space-y-3">
-            <p className="text-sm font-semibold">{linkedRecipes.length} linked recipe(s)</p>
+            <p className="text-sm font-semibold">
+              {linkedRecipes.length} linked recipe(s)
+            </p>
             <div className="space-y-2">
               {linkedRecipes.map((recipe) => (
                 <div
@@ -171,7 +217,10 @@ export function RecipeLinkingPanel({
                       <div className="flex-1 space-y-1">
                         <p className="text-sm font-semibold">{recipe.name}</p>
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-xs capitalize">
+                          <Badge
+                            variant="outline"
+                            className="text-xs capitalize"
+                          >
                             {recipe.status}
                           </Badge>
                           <span className="text-xs text-muted-foreground">

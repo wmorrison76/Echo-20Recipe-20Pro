@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -60,8 +66,14 @@ export default function APIWebhooksWorkspace() {
     setLoading(true);
     try {
       const [keysData, webhooksData, zapierData] = await Promise.all([
-        supabase.from("api_keys").select("*").order("created_at", { ascending: false }),
-        supabase.from("webhooks").select("*").order("created_at", { ascending: false }),
+        supabase
+          .from("api_keys")
+          .select("*")
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("webhooks")
+          .select("*")
+          .order("created_at", { ascending: false }),
         supabase.from("zapier_integrations").select("*"),
       ]);
 
@@ -70,7 +82,7 @@ export default function APIWebhooksWorkspace() {
       setZapierApps(zapierData.data || []);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to fetch data"
+        error instanceof Error ? error.message : "Failed to fetch data",
       );
     } finally {
       setLoading(false);
@@ -104,7 +116,7 @@ export default function APIWebhooksWorkspace() {
       toast.success("API key created successfully");
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to create API key"
+        error instanceof Error ? error.message : "Failed to create API key",
       );
     } finally {
       setLoading(false);
@@ -127,7 +139,7 @@ export default function APIWebhooksWorkspace() {
       toast.success("API key deleted");
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to delete API key"
+        error instanceof Error ? error.message : "Failed to delete API key",
       );
     } finally {
       setLoading(false);
@@ -152,7 +164,9 @@ export default function APIWebhooksWorkspace() {
   return (
     <div className="space-y-6 p-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold tracking-tight">API & Integrations</h2>
+        <h2 className="text-2xl font-bold tracking-tight">
+          API & Integrations
+        </h2>
         <p className="text-sm text-muted-foreground">
           Manage API keys, webhooks, and third-party integrations
         </p>
@@ -198,7 +212,8 @@ export default function APIWebhooksWorkspace() {
                       <div>
                         <p className="font-semibold">{key.name}</p>
                         <p className="text-sm text-muted-foreground">
-                          Created {new Date(key.created_at).toLocaleDateString()}
+                          Created{" "}
+                          {new Date(key.created_at).toLocaleDateString()}
                         </p>
                       </div>
                       <Button
@@ -279,17 +294,22 @@ export default function APIWebhooksWorkspace() {
             <CardHeader>
               <CardTitle>Webhooks</CardTitle>
               <CardDescription>
-                {webhooks.length} webhook{webhooks.length !== 1 ? "s" : ""} configured
+                {webhooks.length} webhook{webhooks.length !== 1 ? "s" : ""}{" "}
+                configured
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {webhooks.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  No webhooks configured. Add a webhook to receive real-time notifications.
+                  No webhooks configured. Add a webhook to receive real-time
+                  notifications.
                 </p>
               ) : (
                 webhooks.map((webhook) => (
-                  <Card key={webhook.id} className="border-l-4 border-l-blue-500">
+                  <Card
+                    key={webhook.id}
+                    className="border-l-4 border-l-blue-500"
+                  >
                     <CardContent className="pt-6 space-y-2">
                       <div className="flex items-center justify-between">
                         <div>
@@ -299,7 +319,11 @@ export default function APIWebhooksWorkspace() {
                           </p>
                         </div>
                         <Badge
-                          className={webhook.active ? "bg-green-100 text-green-800 dark:bg-green-900" : ""}
+                          className={
+                            webhook.active
+                              ? "bg-green-100 text-green-800 dark:bg-green-900"
+                              : ""
+                          }
                         >
                           {webhook.active ? "Active" : "Inactive"}
                         </Badge>
@@ -335,7 +359,8 @@ export default function APIWebhooksWorkspace() {
               {zapierApps.length === 0 ? (
                 <div className="space-y-4">
                   <p className="text-sm text-muted-foreground">
-                    No Zapier apps connected yet. Connect your first app to get started.
+                    No Zapier apps connected yet. Connect your first app to get
+                    started.
                   </p>
                   <Button className="gap-2">
                     <Zap className="h-4 w-4" />
@@ -345,14 +370,20 @@ export default function APIWebhooksWorkspace() {
               ) : (
                 <div className="space-y-4">
                   {zapierApps.map((app) => (
-                    <Card key={app.id} className="border-l-4 border-l-orange-500">
+                    <Card
+                      key={app.id}
+                      className="border-l-4 border-l-orange-500"
+                    >
                       <CardContent className="pt-6">
                         <div className="flex items-center justify-between mb-4">
                           <div>
                             <p className="font-semibold">{app.name}</p>
                             {app.connected_at && (
                               <p className="text-xs text-muted-foreground">
-                                Connected {new Date(app.connected_at).toLocaleDateString()}
+                                Connected{" "}
+                                {new Date(
+                                  app.connected_at,
+                                ).toLocaleDateString()}
                               </p>
                             )}
                           </div>
@@ -409,7 +440,8 @@ export default function APIWebhooksWorkspace() {
 
 function generateApiKey(): string {
   const prefix = "sk";
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let result = prefix + "_";
   for (let i = 0; i < 32; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));

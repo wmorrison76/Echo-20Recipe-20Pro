@@ -3,9 +3,22 @@ import { useRDLabStore } from "@/stores/rdLabStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Users, Trash2, Plus, Mail, MapPin } from "lucide-react";
 import { toast } from "sonner";
 
@@ -19,11 +32,41 @@ interface Collaborator {
 }
 
 const AVAILABLE_COLLABORATORS = [
-  { id: "user-1", name: "A. Vega", email: "a.vega@luccca.com", role: "editor" as const, location: "Kitchen A" },
-  { id: "user-2", name: "M. Ruiz", email: "m.ruiz@luccca.com", role: "editor" as const, location: "Kitchen B" },
-  { id: "user-3", name: "C. Nguyen", email: "c.nguyen@luccca.com", role: "viewer" as const, location: "Kitchen A" },
-  { id: "user-4", name: "C. Dufour", email: "c.dufour@luccca.com", role: "editor" as const, location: "Pastry" },
-  { id: "user-5", name: "L. Singh", email: "l.singh@luccca.com", role: "editor" as const, location: "Pastry" },
+  {
+    id: "user-1",
+    name: "A. Vega",
+    email: "a.vega@luccca.com",
+    role: "editor" as const,
+    location: "Kitchen A",
+  },
+  {
+    id: "user-2",
+    name: "M. Ruiz",
+    email: "m.ruiz@luccca.com",
+    role: "editor" as const,
+    location: "Kitchen B",
+  },
+  {
+    id: "user-3",
+    name: "C. Nguyen",
+    email: "c.nguyen@luccca.com",
+    role: "viewer" as const,
+    location: "Kitchen A",
+  },
+  {
+    id: "user-4",
+    name: "C. Dufour",
+    email: "c.dufour@luccca.com",
+    role: "editor" as const,
+    location: "Pastry",
+  },
+  {
+    id: "user-5",
+    name: "L. Singh",
+    email: "l.singh@luccca.com",
+    role: "editor" as const,
+    location: "Pastry",
+  },
 ];
 
 interface CollaborationPanelProps {
@@ -33,7 +76,12 @@ interface CollaborationPanelProps {
 export function CollaborationPanel({
   experimentId: providedExperimentId,
 }: CollaborationPanelProps) {
-  const { experiments, focusExperimentId, addCollaborator, removeCollaborator } = useRDLabStore();
+  const {
+    experiments,
+    focusExperimentId,
+    addCollaborator,
+    removeCollaborator,
+  } = useRDLabStore();
   const experimentId = providedExperimentId || focusExperimentId;
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<"editor" | "viewer">("editor");
@@ -42,7 +90,7 @@ export function CollaborationPanel({
 
   const experiment = useMemo(
     () => experiments.find((e) => e.id === experimentId),
-    [experiments, experimentId]
+    [experiments, experimentId],
   );
 
   const currentCollaborators = useMemo(() => {
@@ -66,7 +114,7 @@ export function CollaborationPanel({
     }
 
     const matchedUser = AVAILABLE_COLLABORATORS.find(
-      (user) => user.email.toLowerCase() === inviteEmail.toLowerCase()
+      (user) => user.email.toLowerCase() === inviteEmail.toLowerCase(),
     );
 
     if (!matchedUser) {
@@ -88,7 +136,7 @@ export function CollaborationPanel({
       toast.success(`${matchedUser.name} added as collaborator`);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to add collaborator"
+        error instanceof Error ? error.message : "Failed to add collaborator",
       );
     } finally {
       setIsInviting(false);
@@ -175,8 +223,9 @@ export function CollaborationPanel({
               <DialogHeader>
                 <DialogTitle>Invite Collaborator</DialogTitle>
                 <DialogDescription>
-                  Invite another EchoRecipePro user to collaborate on this experiment.
-                  They can be from the same location or another resort.
+                  Invite another EchoRecipePro user to collaborate on this
+                  experiment. They can be from the same location or another
+                  resort.
                 </DialogDescription>
               </DialogHeader>
 
@@ -197,10 +246,14 @@ export function CollaborationPanel({
                   <select
                     id="invite-role"
                     value={inviteRole}
-                    onChange={(e) => setInviteRole(e.target.value as "editor" | "viewer")}
+                    onChange={(e) =>
+                      setInviteRole(e.target.value as "editor" | "viewer")
+                    }
                     className="w-full px-3 py-2 border rounded-md bg-background"
                   >
-                    <option value="editor">Editor - Can edit experiments</option>
+                    <option value="editor">
+                      Editor - Can edit experiments
+                    </option>
                     <option value="viewer">Viewer - Can view only</option>
                   </select>
                 </div>
@@ -217,8 +270,9 @@ export function CollaborationPanel({
 
                 <div className="space-y-2 rounded-lg border border-blue-200/50 bg-blue-50 dark:border-blue-900/50 dark:bg-blue-900/10 p-3">
                   <p className="text-sm text-blue-900 dark:text-blue-100">
-                    <strong>Real-time sync:</strong> Collaborators will see live updates to
-                    experiments and can contribute simultaneously across any location.
+                    <strong>Real-time sync:</strong> Collaborators will see live
+                    updates to experiments and can contribute simultaneously
+                    across any location.
                   </p>
                 </div>
 

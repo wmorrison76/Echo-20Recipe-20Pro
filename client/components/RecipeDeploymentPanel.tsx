@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import { useRecipeDeployment } from "@/hooks/use-recipe-deployment";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle, CheckCircle2, Clock, Package, Zap } from "lucide-react";
@@ -17,8 +23,10 @@ interface RecipeDeploymentPanelProps {
 const statusColors = {
   draft: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
   scheduled: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  in_progress: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
-  completed: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+  in_progress:
+    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+  completed:
+    "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
   failed: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
   cancelled: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
 };
@@ -68,17 +76,22 @@ export default function RecipeDeploymentPanel({
   // Group deployments by status
   const draftDeployments = deployments.filter((d) => d.status === "draft");
   const activeDeployments = deployments.filter(
-    (d) => d.status === "in_progress" || d.status === "scheduled"
+    (d) => d.status === "in_progress" || d.status === "scheduled",
   );
   const completedDeployments = deployments.filter(
-    (d) => d.status === "completed" || d.status === "failed" || d.status === "cancelled"
+    (d) =>
+      d.status === "completed" ||
+      d.status === "failed" ||
+      d.status === "cancelled",
   );
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight">Recipe Deployments</h2>
+          <h2 className="text-2xl font-bold tracking-tight">
+            Recipe Deployments
+          </h2>
           <p className="text-sm text-muted-foreground">
             Manage recipe deployments across your stores
           </p>
@@ -175,10 +188,11 @@ interface DeploymentCardProps {
 }
 
 function DeploymentCard({ deployment, onClick }: DeploymentCardProps) {
-  const confirmationCount = deployment.store_deployment_confirmations?.length || 0;
+  const confirmationCount =
+    deployment.store_deployment_confirmations?.length || 0;
   const confirmedCount =
     deployment.store_deployment_confirmations?.filter(
-      (c: any) => c.status === "applied"
+      (c: any) => c.status === "applied",
     ).length || 0;
 
   return (
@@ -197,7 +211,11 @@ function DeploymentCard({ deployment, onClick }: DeploymentCardProps) {
               <CardDescription>{deployment.description}</CardDescription>
             )}
           </div>
-          <Badge className={statusColors[deployment.status as keyof typeof statusColors]}>
+          <Badge
+            className={
+              statusColors[deployment.status as keyof typeof statusColors]
+            }
+          >
             {deployment.status}
           </Badge>
         </div>
@@ -211,8 +229,12 @@ function DeploymentCard({ deployment, onClick }: DeploymentCardProps) {
             </p>
           </div>
           <div className="space-y-1">
-            <p className="text-sm font-medium text-muted-foreground">Priority</p>
-            <p className="text-sm font-semibold capitalize">{deployment.priority}</p>
+            <p className="text-sm font-medium text-muted-foreground">
+              Priority
+            </p>
+            <p className="text-sm font-semibold capitalize">
+              {deployment.priority}
+            </p>
           </div>
           <div className="space-y-1">
             <p className="text-sm font-medium text-muted-foreground">Packets</p>
@@ -236,7 +258,8 @@ function DeploymentCard({ deployment, onClick }: DeploymentCardProps) {
 
         {deployment.confirmation_deadline && (
           <div className="rounded-lg bg-amber-50 p-2 text-xs text-amber-900 dark:bg-amber-900/20 dark:text-amber-200">
-            Confirmation deadline: {format(new Date(deployment.confirmation_deadline), "PPP p")}
+            Confirmation deadline:{" "}
+            {format(new Date(deployment.confirmation_deadline), "PPP p")}
           </div>
         )}
       </CardContent>

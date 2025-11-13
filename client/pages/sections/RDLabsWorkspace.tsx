@@ -25,7 +25,7 @@ interface RDLabsWorkspaceProps {
 function RDLabsWorkspaceContent({ defaultProject }: RDLabsWorkspaceProps) {
   const store = useOptionalRDLabStore();
   const [selectedProject, setSelectedProject] = useState<string | null>(
-    defaultProject || null
+    defaultProject || null,
   );
   const [currentView, setCurrentView] = useState<
     "dashboard" | "workbench" | "discovery"

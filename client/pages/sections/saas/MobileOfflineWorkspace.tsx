@@ -1,8 +1,21 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Smartphone, Download, Wifi, WifiOff, ArrowUpRight, ArrowDownLeft } from "lucide-react";
+import {
+  Smartphone,
+  Download,
+  Wifi,
+  WifiOff,
+  ArrowUpRight,
+  ArrowDownLeft,
+} from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 export default function MobileOfflineWorkspace() {
@@ -82,16 +95,19 @@ export default function MobileOfflineWorkspace() {
                 <CardContent>
                   <ul className="space-y-2 text-sm">
                     <li className="flex items-center gap-2">
-                      <span className="text-green-600">✓</span> Home screen install
+                      <span className="text-green-600">✓</span> Home screen
+                      install
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-green-600">✓</span> Full-screen mode
                     </li>
                     <li className="flex items-center gap-2">
-                      <span className="text-green-600">✓</span> App-like experience
+                      <span className="text-green-600">✓</span> App-like
+                      experience
                     </li>
                     <li className="flex items-center gap-2">
-                      <span className="text-green-600">✓</span> Push notifications
+                      <span className="text-green-600">✓</span> Push
+                      notifications
                     </li>
                     <li className="flex items-center gap-2">
                       <span className="text-amber-600">○</span> Share target API
@@ -132,8 +148,8 @@ export default function MobileOfflineWorkspace() {
                 </div>
 
                 <div className="bg-green-50 dark:bg-green-950 p-3 rounded-lg text-sm text-green-900 dark:text-green-100">
-                  Changes are synced in real-time. If you lose connection, your edits will be
-                  queued and synced when you're back online.
+                  Changes are synced in real-time. If you lose connection, your
+                  edits will be queued and synced when you're back online.
                 </div>
               </div>
 
@@ -152,7 +168,9 @@ export default function MobileOfflineWorkspace() {
                   <div className="flex items-start gap-3">
                     <span className="text-green-600 mt-1">✓</span>
                     <div>
-                      <p className="font-medium text-sm">Edit with offline queue</p>
+                      <p className="font-medium text-sm">
+                        Edit with offline queue
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         Changes are stored locally and synced automatically
                       </p>
@@ -204,23 +222,33 @@ export default function MobileOfflineWorkspace() {
                   <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                     <div>
                       <p className="font-medium text-sm">Recipes</p>
-                      <p className="text-xs text-muted-foreground">342 recipes cached</p>
+                      <p className="text-xs text-muted-foreground">
+                        342 recipes cached
+                      </p>
                     </div>
-                    <span className="text-sm text-muted-foreground">28.5 MB</span>
+                    <span className="text-sm text-muted-foreground">
+                      28.5 MB
+                    </span>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                     <div>
                       <p className="font-medium text-sm">Images</p>
-                      <p className="text-xs text-muted-foreground">152 images cached</p>
+                      <p className="text-xs text-muted-foreground">
+                        152 images cached
+                      </p>
                     </div>
-                    <span className="text-sm text-muted-foreground">16.2 MB</span>
+                    <span className="text-sm text-muted-foreground">
+                      16.2 MB
+                    </span>
                   </div>
                   <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                     <div>
                       <p className="font-medium text-sm">App Shell</p>
                       <p className="text-xs text-muted-foreground">UI assets</p>
                     </div>
-                    <span className="text-sm text-muted-foreground">0.6 MB</span>
+                    <span className="text-sm text-muted-foreground">
+                      0.6 MB
+                    </span>
                   </div>
                 </div>
               </div>

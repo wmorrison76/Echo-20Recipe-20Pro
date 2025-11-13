@@ -7,7 +7,13 @@ export interface RecipeDeployment {
   created_by: string;
   deployment_name: string;
   description?: string;
-  status: "draft" | "scheduled" | "in_progress" | "completed" | "failed" | "cancelled";
+  status:
+    | "draft"
+    | "scheduled"
+    | "in_progress"
+    | "completed"
+    | "failed"
+    | "cancelled";
   target_outlets: string[];
   target_locations: string[];
   all_outlets: boolean;
@@ -38,7 +44,13 @@ export interface StoreConfirmation {
   deployment_id: string;
   outlet_id: string;
   location_id?: string;
-  status: "pending" | "received" | "confirmed" | "applied" | "failed" | "rejected";
+  status:
+    | "pending"
+    | "received"
+    | "confirmed"
+    | "applied"
+    | "failed"
+    | "rejected";
   received_at?: string;
   confirmed_at?: string;
   applied_at?: string;
@@ -74,7 +86,7 @@ export function useRecipeDeployment() {
       scheduledAt?: string,
       confirmationDeadline?: string,
       allowRollback?: boolean,
-      rollbackDeadline?: string
+      rollbackDeadline?: string,
     ) => {
       setLoading(true);
       try {
@@ -108,14 +120,16 @@ export function useRecipeDeployment() {
         return deployment;
       } catch (error) {
         toast.error(
-          error instanceof Error ? error.message : "Failed to create deployment"
+          error instanceof Error
+            ? error.message
+            : "Failed to create deployment",
         );
         throw error;
       } finally {
         setLoading(false);
       }
     },
-    []
+    [],
   );
 
   const fetchDeployments = useCallback(
@@ -128,7 +142,7 @@ export function useRecipeDeployment() {
         params.append("offset", offset.toString());
 
         const response = await fetch(
-          `/api/recipes/deployments?${params.toString()}`
+          `/api/recipes/deployments?${params.toString()}`,
         );
         if (!response.ok) throw new Error("Failed to fetch deployments");
 
@@ -142,7 +156,7 @@ export function useRecipeDeployment() {
         setLoading(false);
       }
     },
-    []
+    [],
   );
 
   const fetchDeploymentDetails = useCallback(async (deploymentId: string) => {
@@ -170,7 +184,7 @@ export function useRecipeDeployment() {
       confirmedByUserId?: string,
       confirmedByUsername?: string,
       rejectionReason?: string,
-      failureReason?: string
+      failureReason?: string,
     ) => {
       setLoading(true);
       try {
@@ -186,7 +200,7 @@ export function useRecipeDeployment() {
               rejection_reason: rejectionReason,
               failure_reason: failureReason,
             }),
-          }
+          },
         );
 
         if (!response.ok) throw new Error("Failed to update confirmation");
@@ -199,14 +213,16 @@ export function useRecipeDeployment() {
         return confirmation;
       } catch (error) {
         toast.error(
-          error instanceof Error ? error.message : "Failed to update confirmation"
+          error instanceof Error
+            ? error.message
+            : "Failed to update confirmation",
         );
         throw error;
       } finally {
         setLoading(false);
       }
     },
-    [fetchDeploymentDetails]
+    [fetchDeploymentDetails],
   );
 
   const startDeployment = useCallback(async (deploymentId: string) => {
@@ -217,7 +233,7 @@ export function useRecipeDeployment() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
 
       if (!response.ok) throw new Error("Failed to start deployment");
@@ -227,7 +243,7 @@ export function useRecipeDeployment() {
       return deployment;
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to start deployment"
+        error instanceof Error ? error.message : "Failed to start deployment",
       );
       throw error;
     } finally {
@@ -243,7 +259,7 @@ export function useRecipeDeployment() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
 
       if (!response.ok) throw new Error("Failed to cancel deployment");
@@ -253,7 +269,7 @@ export function useRecipeDeployment() {
       return deployment;
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to cancel deployment"
+        error instanceof Error ? error.message : "Failed to cancel deployment",
       );
       throw error;
     } finally {

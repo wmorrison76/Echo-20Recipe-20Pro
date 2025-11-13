@@ -22,10 +22,13 @@ const statusIcons = {
 };
 
 const statusColors = {
-  ideation: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
+  ideation:
+    "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
   testing: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-  ready: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
-  archived: "bg-slate-100 text-slate-800 dark:bg-slate-900/30 dark:text-slate-300",
+  ready:
+    "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
+  archived:
+    "bg-slate-100 text-slate-800 dark:bg-slate-900/30 dark:text-slate-300",
 };
 
 export interface SearchFilter {
@@ -62,12 +65,12 @@ export function GlobalExperimentSearch({
 
   const uniqueOwners = useMemo(
     () => [...new Set(experiments.map((e) => e.owner))],
-    [experiments]
+    [experiments],
   );
 
   const uniqueTags = useMemo(
     () => [...new Set(experiments.flatMap((e) => e.tags))],
-    [experiments]
+    [experiments],
   );
 
   const filteredExperiments = useMemo(() => {
@@ -90,7 +93,7 @@ export function GlobalExperimentSearch({
         ]
           .join(" ")
           .toLowerCase()
-          .includes(query)
+          .includes(query),
       );
     }
 
@@ -104,7 +107,7 @@ export function GlobalExperimentSearch({
       results = results.filter(
         (e) =>
           e.specialization === filters.specialization ||
-          e.specialization === "both"
+          e.specialization === "both",
       );
     }
 
@@ -127,7 +130,7 @@ export function GlobalExperimentSearch({
       onSelectExperiment?.(expId);
       onClose?.();
     },
-    [setFocusExperiment, onSelectExperiment, onClose]
+    [setFocusExperiment, onSelectExperiment, onClose],
   );
 
   const handleClearFilters = () => {
@@ -163,31 +166,42 @@ export function GlobalExperimentSearch({
       {/* Filters */}
       <div className="space-y-3 overflow-y-auto max-h-[40vh]">
         <div>
-          <p className="text-xs font-semibold text-muted-foreground mb-2">Status</p>
+          <p className="text-xs font-semibold text-muted-foreground mb-2">
+            Status
+          </p>
           <div className="flex flex-wrap gap-2">
-            {["all", "ideation", "testing", "ready", "archived"].map((status) => (
-              <Button
-                key={status}
-                variant={filters.status === status ? "default" : "outline"}
-                size="sm"
-                onClick={() =>
-                  setFilters({ ...filters, status: status as SearchFilter["status"] })
-                }
-                className="capitalize"
-              >
-                {status}
-              </Button>
-            ))}
+            {["all", "ideation", "testing", "ready", "archived"].map(
+              (status) => (
+                <Button
+                  key={status}
+                  variant={filters.status === status ? "default" : "outline"}
+                  size="sm"
+                  onClick={() =>
+                    setFilters({
+                      ...filters,
+                      status: status as SearchFilter["status"],
+                    })
+                  }
+                  className="capitalize"
+                >
+                  {status}
+                </Button>
+              ),
+            )}
           </div>
         </div>
 
         <div>
-          <p className="text-xs font-semibold text-muted-foreground mb-2">Specialization</p>
+          <p className="text-xs font-semibold text-muted-foreground mb-2">
+            Specialization
+          </p>
           <div className="flex flex-wrap gap-2">
             {["all", "culinary", "pastry", "both"].map((spec) => (
               <Button
                 key={spec}
-                variant={filters.specialization === spec ? "default" : "outline"}
+                variant={
+                  filters.specialization === spec ? "default" : "outline"
+                }
                 size="sm"
                 onClick={() =>
                   setFilters({
@@ -205,7 +219,9 @@ export function GlobalExperimentSearch({
 
         {uniqueOwners.length > 1 && (
           <div>
-            <p className="text-xs font-semibold text-muted-foreground mb-2">Owner</p>
+            <p className="text-xs font-semibold text-muted-foreground mb-2">
+              Owner
+            </p>
             <div className="flex flex-wrap gap-2">
               {uniqueOwners.map((owner) => (
                 <Badge
@@ -228,7 +244,9 @@ export function GlobalExperimentSearch({
 
         {uniqueTags.length > 0 && (
           <div>
-            <p className="text-xs font-semibold text-muted-foreground mb-2">Tags</p>
+            <p className="text-xs font-semibold text-muted-foreground mb-2">
+              Tags
+            </p>
             <div className="flex flex-wrap gap-2">
               {uniqueTags.map((tag) => (
                 <Badge
@@ -256,7 +274,8 @@ export function GlobalExperimentSearch({
           {hasActiveFilters && (
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
-                {filteredExperiments.length} result{filteredExperiments.length !== 1 ? "s" : ""}
+                {filteredExperiments.length} result
+                {filteredExperiments.length !== 1 ? "s" : ""}
               </p>
               <Button
                 variant="ghost"
@@ -274,7 +293,9 @@ export function GlobalExperimentSearch({
             <Card className="border-dashed">
               <CardContent className="flex flex-col items-center justify-center py-8 text-center">
                 <Search className="h-8 w-8 text-muted-foreground/40 mb-2" />
-                <p className="text-sm text-muted-foreground">No experiments found</p>
+                <p className="text-sm text-muted-foreground">
+                  No experiments found
+                </p>
               </CardContent>
             </Card>
           ) : (
@@ -306,7 +327,10 @@ export function GlobalExperimentSearch({
                           {exp.status}
                         </Badge>
                         {exp.specialization && (
-                          <Badge variant="secondary" className="text-xs capitalize">
+                          <Badge
+                            variant="secondary"
+                            className="text-xs capitalize"
+                          >
                             {exp.specialization}
                           </Badge>
                         )}
@@ -323,7 +347,11 @@ export function GlobalExperimentSearch({
                     {exp.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1 pt-2 border-t">
                         {exp.tags.slice(0, 3).map((tag) => (
-                          <Badge key={tag} variant="outline" className="text-xs">
+                          <Badge
+                            key={tag}
+                            variant="outline"
+                            className="text-xs"
+                          >
                             {tag}
                           </Badge>
                         ))}

@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -24,7 +30,9 @@ interface Location {
 
 export default function MultiLocationWorkspace() {
   const [locations, setLocations] = useState<Location[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(
+    null,
+  );
   const [loading, setLoading] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [newLocationName, setNewLocationName] = useState("");
@@ -52,7 +60,7 @@ export default function MultiLocationWorkspace() {
       setLocations(data || []);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to fetch locations"
+        error instanceof Error ? error.message : "Failed to fetch locations",
       );
     } finally {
       setLoading(false);
@@ -87,7 +95,7 @@ export default function MultiLocationWorkspace() {
       toast.success("Location created successfully");
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to create location"
+        error instanceof Error ? error.message : "Failed to create location",
       );
     } finally {
       setLoading(false);
@@ -191,7 +199,11 @@ export default function MultiLocationWorkspace() {
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center gap-3">
-        <Button variant="outline" size="icon" onClick={() => setSelectedLocation(null)}>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setSelectedLocation(null)}
+        >
           ←
         </Button>
         <div className="flex-1">
@@ -218,21 +230,25 @@ export default function MultiLocationWorkspace() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                {Array.from({ length: selectedLocation.recipe_overrides }).map((_, i) => (
-                  <Card key={i} className="border-l-4 border-l-blue-500">
-                    <CardContent className="flex items-center justify-between pt-6">
-                      <div>
-                        <p className="font-semibold">Recipe Override {i + 1}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Modified from central version
-                        </p>
-                      </div>
-                      <Button variant="outline" size="sm">
-                        Edit
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
+                {Array.from({ length: selectedLocation.recipe_overrides }).map(
+                  (_, i) => (
+                    <Card key={i} className="border-l-4 border-l-blue-500">
+                      <CardContent className="flex items-center justify-between pt-6">
+                        <div>
+                          <p className="font-semibold">
+                            Recipe Override {i + 1}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Modified from central version
+                          </p>
+                        </div>
+                        <Button variant="outline" size="sm">
+                          Edit
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ),
+                )}
               </div>
               <Button className="w-full gap-2">
                 <Plus className="h-4 w-4" />
@@ -252,7 +268,9 @@ export default function MultiLocationWorkspace() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                {Array.from({ length: selectedLocation.menu_customizations }).map((_, i) => (
+                {Array.from({
+                  length: selectedLocation.menu_customizations,
+                }).map((_, i) => (
                   <Card key={i} className="border-l-4 border-l-green-500">
                     <CardContent className="flex items-center justify-between pt-6">
                       <div>

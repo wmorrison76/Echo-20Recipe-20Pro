@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { useRecipeDeployment } from "@/hooks/use-recipe-deployment";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle, ArrowLeft, Check, Clock, Zap } from "lucide-react";
 import { format } from "date-fns";
@@ -16,7 +22,8 @@ interface DeploymentDetailsPanelProps {
 const confirmationStatusColors = {
   pending: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200",
   received: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  confirmed: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+  confirmed:
+    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
   applied: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
   rejected: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
   failed: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
@@ -36,16 +43,14 @@ export default function DeploymentDetailsPanel({
   onBack,
 }: DeploymentDetailsPanelProps) {
   const { updateStoreConfirmation, loading } = useRecipeDeployment();
-  const [processingOutletId, setProcessingOutletId] = useState<string | null>(null);
+  const [processingOutletId, setProcessingOutletId] = useState<string | null>(
+    null,
+  );
 
   const handleConfirmStore = async (outletId: string) => {
     setProcessingOutletId(outletId);
     try {
-      await updateStoreConfirmation(
-        deployment.id,
-        outletId,
-        "applied"
-      );
+      await updateStoreConfirmation(deployment.id, outletId, "applied");
     } finally {
       setProcessingOutletId(null);
     }
@@ -55,11 +60,21 @@ export default function DeploymentDetailsPanel({
   const confirmations = deployment.store_deployment_confirmations || [];
 
   // Group confirmations by status
-  const pendingConfirmations = confirmations.filter((c) => c.status === "pending");
-  const receivedConfirmations = confirmations.filter((c) => c.status === "received");
-  const confirmedConfirmations = confirmations.filter((c) => c.status === "confirmed");
-  const appliedConfirmations = confirmations.filter((c) => c.status === "applied");
-  const failedConfirmations = confirmations.filter((c) => c.status === "failed" || c.status === "rejected");
+  const pendingConfirmations = confirmations.filter(
+    (c) => c.status === "pending",
+  );
+  const receivedConfirmations = confirmations.filter(
+    (c) => c.status === "received",
+  );
+  const confirmedConfirmations = confirmations.filter(
+    (c) => c.status === "confirmed",
+  );
+  const appliedConfirmations = confirmations.filter(
+    (c) => c.status === "applied",
+  );
+  const failedConfirmations = confirmations.filter(
+    (c) => c.status === "failed" || c.status === "rejected",
+  );
 
   return (
     <div className="space-y-6">
@@ -122,9 +137,7 @@ export default function DeploymentDetailsPanel({
 
       <Tabs defaultValue="packets" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="packets">
-            Recipes ({packets.length})
-          </TabsTrigger>
+          <TabsTrigger value="packets">Recipes ({packets.length})</TabsTrigger>
           <TabsTrigger value="confirmations">
             Stores ({confirmations.length})
           </TabsTrigger>
@@ -141,22 +154,29 @@ export default function DeploymentDetailsPanel({
             packets.map((packet) => (
               <Card key={packet.id}>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base">{packet.recipe_name}</CardTitle>
-                  <CardDescription>Recipe ID: {packet.recipe_id}</CardDescription>
+                  <CardTitle className="text-base">
+                    {packet.recipe_name}
+                  </CardTitle>
+                  <CardDescription>
+                    Recipe ID: {packet.recipe_id}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {packet.changes_summary && Object.keys(packet.changes_summary).length > 0 && (
-                    <div className="space-y-2">
-                      <p className="text-sm font-semibold">Changes:</p>
-                      <ul className="space-y-1 text-sm text-muted-foreground">
-                        {Object.entries(packet.changes_summary).map(([key, value]) => (
-                          <li key={key} className="list-disc list-inside">
-                            {key}: {String(value)}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                  {packet.changes_summary &&
+                    Object.keys(packet.changes_summary).length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-sm font-semibold">Changes:</p>
+                        <ul className="space-y-1 text-sm text-muted-foreground">
+                          {Object.entries(packet.changes_summary).map(
+                            ([key, value]) => (
+                              <li key={key} className="list-disc list-inside">
+                                {key}: {String(value)}
+                              </li>
+                            ),
+                          )}
+                        </ul>
+                      </div>
+                    )}
                   <div className="text-xs text-muted-foreground">
                     Version: {packet.new_recipe_version_hash}
                   </div>
@@ -173,7 +193,9 @@ export default function DeploymentDetailsPanel({
                 <CardDescription>Pending</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold">{pendingConfirmations.length}</p>
+                <p className="text-2xl font-bold">
+                  {pendingConfirmations.length}
+                </p>
               </CardContent>
             </Card>
             <Card>
@@ -203,7 +225,10 @@ export default function DeploymentDetailsPanel({
               <CardContent>
                 <p className="text-2xl font-bold">
                   {confirmations.length > 0
-                    ? Math.round((appliedConfirmations.length / confirmations.length) * 100)
+                    ? Math.round(
+                        (appliedConfirmations.length / confirmations.length) *
+                          100,
+                      )
                     : 0}
                   %
                 </p>
@@ -221,7 +246,9 @@ export default function DeploymentDetailsPanel({
 
             <TabsContent value="applied" className="space-y-2">
               {appliedConfirmations.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No stores have applied yet</p>
+                <p className="text-sm text-muted-foreground">
+                  No stores have applied yet
+                </p>
               ) : (
                 appliedConfirmations.map((confirmation) => (
                   <StoreConfirmationCard
@@ -235,7 +262,9 @@ export default function DeploymentDetailsPanel({
 
             <TabsContent value="pending" className="space-y-2">
               {pendingConfirmations.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No pending confirmations</p>
+                <p className="text-sm text-muted-foreground">
+                  No pending confirmations
+                </p>
               ) : (
                 pendingConfirmations.map((confirmation) => (
                   <StoreConfirmationCard
@@ -249,17 +278,24 @@ export default function DeploymentDetailsPanel({
             </TabsContent>
 
             <TabsContent value="other" className="space-y-2">
-              {[...receivedConfirmations, ...confirmedConfirmations].length === 0 ? (
-                <p className="text-sm text-muted-foreground">No other confirmations</p>
+              {[...receivedConfirmations, ...confirmedConfirmations].length ===
+              0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No other confirmations
+                </p>
               ) : (
-                [...receivedConfirmations, ...confirmedConfirmations].map((confirmation) => (
-                  <StoreConfirmationCard
-                    key={confirmation.id}
-                    confirmation={confirmation}
-                    isProcessing={processingOutletId === confirmation.outlet_id}
-                    onApply={() => handleConfirmStore(confirmation.outlet_id)}
-                  />
-                ))
+                [...receivedConfirmations, ...confirmedConfirmations].map(
+                  (confirmation) => (
+                    <StoreConfirmationCard
+                      key={confirmation.id}
+                      confirmation={confirmation}
+                      isProcessing={
+                        processingOutletId === confirmation.outlet_id
+                      }
+                      onApply={() => handleConfirmStore(confirmation.outlet_id)}
+                    />
+                  ),
+                )
               )}
             </TabsContent>
 
@@ -305,7 +341,9 @@ function StoreConfirmationCard({
             </p>
           </div>
           <p className="text-sm text-muted-foreground">
-            {confirmation.location_id ? `Location: ${confirmation.location_id}` : "No specific location"}
+            {confirmation.location_id
+              ? `Location: ${confirmation.location_id}`
+              : "No specific location"}
           </p>
           {confirmation.applied_at && (
             <p className="text-xs text-green-600">
@@ -334,11 +372,7 @@ function StoreConfirmationCard({
             {confirmation.status}
           </Badge>
           {onApply && confirmation.status !== "applied" && (
-            <Button
-              size="sm"
-              onClick={onApply}
-              disabled={isProcessing}
-            >
+            <Button size="sm" onClick={onApply} disabled={isProcessing}>
               {isProcessing ? "..." : "Apply"}
             </Button>
           )}

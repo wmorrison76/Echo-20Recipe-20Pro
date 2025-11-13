@@ -59,18 +59,18 @@ function PastryLabWorkspaceContent({
 }: PastryLabWorkspaceProps) {
   const store = useOptionalRDLabStore();
   const [selectedProject, setSelectedProject] = useState<string | null>(
-    defaultProject || null
+    defaultProject || null,
   );
   const [currentView, setCurrentView] = useState<"dashboard" | "lab">(
-    selectedProject ? "lab" : "dashboard"
+    selectedProject ? "lab" : "dashboard",
   );
 
   const pastryExperiments = useMemo(
     () =>
       (store?.experiments || []).filter(
-        (e) => e.specialization === "pastry" || e.specialization === "both"
+        (e) => e.specialization === "pastry" || e.specialization === "both",
       ),
-    [store?.experiments]
+    [store?.experiments],
   );
 
   const pastryStats = useMemo(
@@ -80,7 +80,7 @@ function PastryLabWorkspaceContent({
       testing: pastryExperiments.filter((e) => e.status === "testing").length,
       ready: pastryExperiments.filter((e) => e.status === "ready").length,
     }),
-    [pastryExperiments]
+    [pastryExperiments],
   );
 
   const handleSelectProject = useCallback((projectId: string) => {

@@ -243,11 +243,7 @@ const experimentsSeed: LabExperiment[] = [
       "Rapid cool re-test for break",
       "Plate with nitrogen-frozen herb powder",
     ],
-    equipment: [
-      "Pacojet",
-      "Rotor-stator blender",
-      "Nitrogen tunnel",
-    ],
+    equipment: ["Pacojet", "Rotor-stator blender", "Nitrogen tunnel"],
     launchWindow: "Chef's counter prelude",
     textureObjectives: [
       "Sheen maintains under pass lamp for 12 minutes",
@@ -268,20 +264,38 @@ const experimentsSeed: LabExperiment[] = [
 ];
 
 const backlogSeed: LabTask[] = [
-  { id: "task-01", label: "Capture yield curves for koji custard", owner: "QA Team", due: "Today" },
-  { id: "task-02", label: "Source electric daisy micro-lot", owner: "Purchasing", due: "Tomorrow", isBlocked: true },
-  { id: "task-03", label: "Calibrate sous-vide ovens", owner: "Ops", due: "Friday" },
+  {
+    id: "task-01",
+    label: "Capture yield curves for koji custard",
+    owner: "QA Team",
+    due: "Today",
+  },
+  {
+    id: "task-02",
+    label: "Source electric daisy micro-lot",
+    owner: "Purchasing",
+    due: "Tomorrow",
+    isBlocked: true,
+  },
+  {
+    id: "task-03",
+    label: "Calibrate sous-vide ovens",
+    owner: "Ops",
+    due: "Friday",
+  },
 ];
 
 const insightSeed = [
   {
     headline: "Menu margin guardrails engaged",
-    detail: "Projected cost delta now +2.1% vs baseline thanks to AI assortment.",
+    detail:
+      "Projected cost delta now +2.1% vs baseline thanks to AI assortment.",
     metric: "▲ 2.1%",
   },
   {
     headline: "Guest sentiment heatmap",
-    detail: "Spark textures trending 18% above control; continue A/B with velvet baseline.",
+    detail:
+      "Spark textures trending 18% above control; continue A/B with velvet baseline.",
     metric: "18% uplift",
   },
   {
@@ -297,11 +311,18 @@ type RDLabProviderProps = {
 };
 
 export function RDLabProvider({ children }: RDLabProviderProps) {
-  const [experiments, setExperiments] = React.useState<LabExperiment[]>(experimentsSeed);
-  const [focusExperimentId, setFocusExperimentId] = React.useState<string>(experimentsSeed[0]?.id ?? "");
+  const [experiments, setExperiments] =
+    React.useState<LabExperiment[]>(experimentsSeed);
+  const [focusExperimentId, setFocusExperimentId] = React.useState<string>(
+    experimentsSeed[0]?.id ?? "",
+  );
   const [searchQuery, setSearchQuery] = React.useState<string>("");
-  const [specializationFilter, setSpecializationFilter] = React.useState<LabSpecialization | "all">("all");
-  const [selectedExperimentIds, setSelectedExperimentIds] = React.useState<Set<string>>(new Set());
+  const [specializationFilter, setSpecializationFilter] = React.useState<
+    LabSpecialization | "all"
+  >("all");
+  const [selectedExperimentIds, setSelectedExperimentIds] = React.useState<
+    Set<string>
+  >(new Set());
 
   const generateExperimentId = React.useCallback(() => {
     if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -328,15 +349,22 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
     );
   }, []);
 
-  const setExperimentStatus = React.useCallback((id: string, status: ExperimentStatus) => {
-    setExperiments((prev) =>
-      prev.map((exp) => (exp.id === id ? { ...exp, status, lastUpdated: "Just now" } : exp)),
-    );
-  }, []);
+  const setExperimentStatus = React.useCallback(
+    (id: string, status: ExperimentStatus) => {
+      setExperiments((prev) =>
+        prev.map((exp) =>
+          exp.id === id ? { ...exp, status, lastUpdated: "Just now" } : exp,
+        ),
+      );
+    },
+    [],
+  );
 
   const updateNotes = React.useCallback((id: string, notes: string) => {
     setExperiments((prev) =>
-      prev.map((exp) => (exp.id === id ? { ...exp, notes, lastUpdated: "Just now" } : exp)),
+      prev.map((exp) =>
+        exp.id === id ? { ...exp, notes, lastUpdated: "Just now" } : exp,
+      ),
     );
   }, []);
 
@@ -407,69 +435,81 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
     );
   }, []);
 
-  const appendSensoryTarget = React.useCallback((id: string, target: string) => {
-    const entry = target.trim();
-    if (!entry) return;
-    setExperiments((prev) =>
-      prev.map((exp) =>
-        exp.id === id
-          ? {
-              ...exp,
-              sensoryTargets: [...exp.sensoryTargets, entry],
-              lastUpdated: "Just now",
-            }
-          : exp,
-      ),
-    );
-  }, []);
+  const appendSensoryTarget = React.useCallback(
+    (id: string, target: string) => {
+      const entry = target.trim();
+      if (!entry) return;
+      setExperiments((prev) =>
+        prev.map((exp) =>
+          exp.id === id
+            ? {
+                ...exp,
+                sensoryTargets: [...exp.sensoryTargets, entry],
+                lastUpdated: "Just now",
+              }
+            : exp,
+        ),
+      );
+    },
+    [],
+  );
 
-  const appendTextureObjective = React.useCallback((id: string, objective: string) => {
-    const entry = objective.trim();
-    if (!entry) return;
-    setExperiments((prev) =>
-      prev.map((exp) =>
-        exp.id === id
-          ? {
-              ...exp,
-              textureObjectives: [...exp.textureObjectives, entry],
-              lastUpdated: "Just now",
-            }
-          : exp,
-      ),
-    );
-  }, []);
+  const appendTextureObjective = React.useCallback(
+    (id: string, objective: string) => {
+      const entry = objective.trim();
+      if (!entry) return;
+      setExperiments((prev) =>
+        prev.map((exp) =>
+          exp.id === id
+            ? {
+                ...exp,
+                textureObjectives: [...exp.textureObjectives, entry],
+                lastUpdated: "Just now",
+              }
+            : exp,
+        ),
+      );
+    },
+    [],
+  );
 
-  const appendFlavorConstellation = React.useCallback((id: string, constellation: string) => {
-    const entry = constellation.trim();
-    if (!entry) return;
-    setExperiments((prev) =>
-      prev.map((exp) =>
-        exp.id === id
-          ? {
-              ...exp,
-              flavorConstellations: [...exp.flavorConstellations, entry],
-              lastUpdated: "Just now",
-            }
-          : exp,
-      ),
-    );
-  }, []);
+  const appendFlavorConstellation = React.useCallback(
+    (id: string, constellation: string) => {
+      const entry = constellation.trim();
+      if (!entry) return;
+      setExperiments((prev) =>
+        prev.map((exp) =>
+          exp.id === id
+            ? {
+                ...exp,
+                flavorConstellations: [...exp.flavorConstellations, entry],
+                lastUpdated: "Just now",
+              }
+            : exp,
+        ),
+      );
+    },
+    [],
+  );
 
-  const appendFutureFoodAngle = React.useCallback((id: string, angle: string) => {
-    const entry = angle.trim();
-    if (!entry) return;
-    setExperiments((prev) =>
-      prev.map((exp) =>
-        exp.id === id
-          ? {
-              ...exp,
-              futureFoodAngles: [...exp.futureFoodAngles, entry],
-              lastUpdated: "Just now",
-            }
-          : exp,
-      ),
-    );
-  }, []);
+  const appendFutureFoodAngle = React.useCallback(
+    (id: string, angle: string) => {
+      const entry = angle.trim();
+      if (!entry) return;
+      setExperiments((prev) =>
+        prev.map((exp) =>
+          exp.id === id
+            ? {
+                ...exp,
+                futureFoodAngles: [...exp.futureFoodAngles, entry],
+                lastUpdated: "Just now",
+              }
+            : exp,
+        ),
+      );
+    },
+    [],
+  );
 
   const toggleExperimentSelection = React.useCallback((id: string) => {
     setSelectedExperimentIds((prev) => {
@@ -487,15 +527,18 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
     setSelectedExperimentIds(new Set());
   }, []);
 
-  const bulkSetStatus = React.useCallback((ids: string[], status: ExperimentStatus) => {
-    setExperiments((prev) =>
-      prev.map((exp) =>
-        ids.includes(exp.id)
-          ? { ...exp, status, lastUpdated: "Just now" }
-          : exp,
-      ),
-    );
-  }, []);
+  const bulkSetStatus = React.useCallback(
+    (ids: string[], status: ExperimentStatus) => {
+      setExperiments((prev) =>
+        prev.map((exp) =>
+          ids.includes(exp.id)
+            ? { ...exp, status, lastUpdated: "Just now" }
+            : exp,
+        ),
+      );
+    },
+    [],
+  );
 
   const bulkAddTag = React.useCallback((ids: string[], tag: string) => {
     const trimmedTag = tag.trim();
@@ -513,19 +556,9 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
     setExperiments((prev) =>
       prev.map((exp) =>
         ids.includes(exp.id)
-          ? { ...exp, tags: exp.tags.filter((t) => t !== tag), lastUpdated: "Just now" }
-          : exp,
-      ),
-    );
-  }, []);
-
-  const linkRecipe = React.useCallback((experimentId: string, recipeId: string) => {
-    setExperiments((prev) =>
-      prev.map((exp) =>
-        exp.id === experimentId
           ? {
               ...exp,
-              linkedRecipeIds: [...(exp.linkedRecipeIds || []), recipeId],
+              tags: exp.tags.filter((t) => t !== tag),
               lastUpdated: "Just now",
             }
           : exp,
@@ -533,47 +566,77 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
     );
   }, []);
 
-  const unlinkRecipe = React.useCallback((experimentId: string, recipeId: string) => {
-    setExperiments((prev) =>
-      prev.map((exp) =>
-        exp.id === experimentId
-          ? {
-              ...exp,
-              linkedRecipeIds: (exp.linkedRecipeIds || []).filter((id) => id !== recipeId),
-              lastUpdated: "Just now",
-            }
-          : exp,
-      ),
-    );
-  }, []);
+  const linkRecipe = React.useCallback(
+    (experimentId: string, recipeId: string) => {
+      setExperiments((prev) =>
+        prev.map((exp) =>
+          exp.id === experimentId
+            ? {
+                ...exp,
+                linkedRecipeIds: [...(exp.linkedRecipeIds || []), recipeId],
+                lastUpdated: "Just now",
+              }
+            : exp,
+        ),
+      );
+    },
+    [],
+  );
 
-  const addCollaborator = React.useCallback((experimentId: string, collaboratorId: string) => {
-    setExperiments((prev) =>
-      prev.map((exp) =>
-        exp.id === experimentId
-          ? {
-              ...exp,
-              collaborators: [...(exp.collaborators || []), collaboratorId],
-              lastUpdated: "Just now",
-            }
-          : exp,
-      ),
-    );
-  }, []);
+  const unlinkRecipe = React.useCallback(
+    (experimentId: string, recipeId: string) => {
+      setExperiments((prev) =>
+        prev.map((exp) =>
+          exp.id === experimentId
+            ? {
+                ...exp,
+                linkedRecipeIds: (exp.linkedRecipeIds || []).filter(
+                  (id) => id !== recipeId,
+                ),
+                lastUpdated: "Just now",
+              }
+            : exp,
+        ),
+      );
+    },
+    [],
+  );
 
-  const removeCollaborator = React.useCallback((experimentId: string, collaboratorId: string) => {
-    setExperiments((prev) =>
-      prev.map((exp) =>
-        exp.id === experimentId
-          ? {
-              ...exp,
-              collaborators: (exp.collaborators || []).filter((id) => id !== collaboratorId),
-              lastUpdated: "Just now",
-            }
-          : exp,
-      ),
-    );
-  }, []);
+  const addCollaborator = React.useCallback(
+    (experimentId: string, collaboratorId: string) => {
+      setExperiments((prev) =>
+        prev.map((exp) =>
+          exp.id === experimentId
+            ? {
+                ...exp,
+                collaborators: [...(exp.collaborators || []), collaboratorId],
+                lastUpdated: "Just now",
+              }
+            : exp,
+        ),
+      );
+    },
+    [],
+  );
+
+  const removeCollaborator = React.useCallback(
+    (experimentId: string, collaboratorId: string) => {
+      setExperiments((prev) =>
+        prev.map((exp) =>
+          exp.id === experimentId
+            ? {
+                ...exp,
+                collaborators: (exp.collaborators || []).filter(
+                  (id) => id !== collaboratorId,
+                ),
+                lastUpdated: "Just now",
+              }
+            : exp,
+        ),
+      );
+    },
+    [],
+  );
 
   const serializeState = React.useCallback((): RDLabSnapshot => {
     return {
@@ -596,7 +659,9 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
           : nextExperiments[0].id
         : "";
       setFocusExperimentId(resolvedFocusId);
-      setSearchQuery(typeof snapshot?.searchQuery === "string" ? snapshot.searchQuery : "");
+      setSearchQuery(
+        typeof snapshot?.searchQuery === "string" ? snapshot.searchQuery : "",
+      );
     },
     [setExperiments, setFocusExperimentId, setSearchQuery],
   );
@@ -665,7 +730,9 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
     ],
   );
 
-  return <RDLabContext.Provider value={value}>{children}</RDLabContext.Provider>;
+  return (
+    <RDLabContext.Provider value={value}>{children}</RDLabContext.Provider>
+  );
 }
 
 export function useOptionalRDLabStore() {

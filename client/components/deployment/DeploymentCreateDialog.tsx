@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { useRecipeDeployment } from "@/hooks/use-recipe-deployment";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -47,8 +53,12 @@ export default function DeploymentCreateDialog({
 }: DeploymentCreateDialogProps) {
   const [deploymentName, setDeploymentName] = useState("");
   const [description, setDescription] = useState("");
-  const [deploymentType, setDeploymentType] = useState<"recipe_update" | "menu_rollout" | "procedure_update">("recipe_update");
-  const [priority, setPriority] = useState<"critical" | "high" | "normal" | "low">("normal");
+  const [deploymentType, setDeploymentType] = useState<
+    "recipe_update" | "menu_rollout" | "procedure_update"
+  >("recipe_update");
+  const [priority, setPriority] = useState<
+    "critical" | "high" | "normal" | "low"
+  >("normal");
   const [selectedOutlets, setSelectedOutlets] = useState<string[]>([]);
   const [allOutlets, setAllOutlets] = useState(false);
   const [selectedRecipes, setSelectedRecipes] = useState<string[]>([]);
@@ -65,7 +75,7 @@ export default function DeploymentCreateDialog({
     setSelectedOutlets((prev) =>
       prev.includes(outletId)
         ? prev.filter((id) => id !== outletId)
-        : [...prev, outletId]
+        : [...prev, outletId],
     );
   };
 
@@ -73,7 +83,7 @@ export default function DeploymentCreateDialog({
     setSelectedRecipes((prev) =>
       prev.includes(recipeId)
         ? prev.filter((id) => id !== recipeId)
-        : [...prev, recipeId]
+        : [...prev, recipeId],
     );
   };
 
@@ -126,9 +136,11 @@ export default function DeploymentCreateDialog({
         priority,
         packets,
         scheduledAt,
-        confirmationDeadline ? new Date(confirmationDeadline).toISOString() : undefined,
+        confirmationDeadline
+          ? new Date(confirmationDeadline).toISOString()
+          : undefined,
         true,
-        undefined
+        undefined,
       );
 
       // Reset form
@@ -200,21 +212,31 @@ export default function DeploymentCreateDialog({
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="deployment-type">Deployment Type *</Label>
-                  <Select value={deploymentType} onValueChange={(v: any) => setDeploymentType(v)}>
+                  <Select
+                    value={deploymentType}
+                    onValueChange={(v: any) => setDeploymentType(v)}
+                  >
                     <SelectTrigger id="deployment-type">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="recipe_update">Recipe Update</SelectItem>
+                      <SelectItem value="recipe_update">
+                        Recipe Update
+                      </SelectItem>
                       <SelectItem value="menu_rollout">Menu Rollout</SelectItem>
-                      <SelectItem value="procedure_update">Procedure Update</SelectItem>
+                      <SelectItem value="procedure_update">
+                        Procedure Update
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="priority">Priority</Label>
-                  <Select value={priority} onValueChange={(v: any) => setPriority(v)}>
+                  <Select
+                    value={priority}
+                    onValueChange={(v: any) => setPriority(v)}
+                  >
                     <SelectTrigger id="priority">
                       <SelectValue />
                     </SelectTrigger>
@@ -233,7 +255,9 @@ export default function DeploymentCreateDialog({
                   <Checkbox
                     id="schedule"
                     checked={scheduleDeployment}
-                    onCheckedChange={(checked) => setScheduleDeployment(checked as boolean)}
+                    onCheckedChange={(checked) =>
+                      setScheduleDeployment(checked as boolean)
+                    }
                   />
                   <Label htmlFor="schedule" className="cursor-pointer">
                     Schedule Deployment
@@ -267,16 +291,23 @@ export default function DeploymentCreateDialog({
                   <Checkbox
                     id="requires-confirmation"
                     checked={requiresConfirmation}
-                    onCheckedChange={(checked) => setRequiresConfirmation(checked as boolean)}
+                    onCheckedChange={(checked) =>
+                      setRequiresConfirmation(checked as boolean)
+                    }
                   />
-                  <Label htmlFor="requires-confirmation" className="cursor-pointer">
+                  <Label
+                    htmlFor="requires-confirmation"
+                    className="cursor-pointer"
+                  >
                     Require Store Confirmation
                   </Label>
                 </div>
 
                 {requiresConfirmation && (
                   <div className="space-y-2 pl-6">
-                    <Label htmlFor="confirmation-deadline">Confirmation Deadline</Label>
+                    <Label htmlFor="confirmation-deadline">
+                      Confirmation Deadline
+                    </Label>
                     <Input
                       id="confirmation-deadline"
                       type="datetime-local"
@@ -299,7 +330,10 @@ export default function DeploymentCreateDialog({
                   if (!checked) setSelectedOutlets([]);
                 }}
               />
-              <Label htmlFor="all-outlets" className="cursor-pointer font-semibold">
+              <Label
+                htmlFor="all-outlets"
+                className="cursor-pointer font-semibold"
+              >
                 Deploy to All Outlets
               </Label>
             </div>
@@ -317,7 +351,10 @@ export default function DeploymentCreateDialog({
                         checked={selectedOutlets.includes(outlet.id)}
                         onCheckedChange={() => handleOutletToggle(outlet.id)}
                       />
-                      <Label htmlFor={outlet.id} className="cursor-pointer font-normal">
+                      <Label
+                        htmlFor={outlet.id}
+                        className="cursor-pointer font-normal"
+                      >
                         {outlet.name}
                       </Label>
                     </div>
@@ -330,7 +367,8 @@ export default function DeploymentCreateDialog({
               <Card className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
                 <CardContent className="pt-6">
                   <p className="text-sm text-blue-900 dark:text-blue-200">
-                    This deployment will be sent to all {MOCK_OUTLETS.length} outlets
+                    This deployment will be sent to all {MOCK_OUTLETS.length}{" "}
+                    outlets
                   </p>
                 </CardContent>
               </Card>
@@ -358,7 +396,10 @@ export default function DeploymentCreateDialog({
                     checked={selectedRecipes.includes(recipe.id)}
                     onCheckedChange={() => handleRecipeToggle(recipe.id)}
                   />
-                  <Label htmlFor={recipe.id} className="cursor-pointer font-normal">
+                  <Label
+                    htmlFor={recipe.id}
+                    className="cursor-pointer font-normal"
+                  >
                     {recipe.name}
                   </Label>
                 </div>
@@ -371,10 +412,7 @@ export default function DeploymentCreateDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={!isFormValid || loading}
-          >
+          <Button onClick={handleSubmit} disabled={!isFormValid || loading}>
             {loading ? "Creating..." : "Create Deployment"}
           </Button>
         </div>

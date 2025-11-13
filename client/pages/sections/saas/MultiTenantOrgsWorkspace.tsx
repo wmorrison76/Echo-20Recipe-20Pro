@@ -1,12 +1,32 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Shield, Plus, Mail, Trash2, Edit2, ExternalLink } from "lucide-react";
+import {
+  Users,
+  Shield,
+  Plus,
+  Mail,
+  Trash2,
+  Edit2,
+  ExternalLink,
+} from "lucide-react";
 import { supabase } from "@/lib/auth-service";
 import { toast } from "sonner";
 
@@ -39,7 +59,9 @@ export default function MultiTenantOrgsWorkspace() {
   const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [newOrgName, setNewOrgName] = useState("");
   const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState<"editor" | "viewer" | "admin">("editor");
+  const [inviteRole, setInviteRole] = useState<"editor" | "viewer" | "admin">(
+    "editor",
+  );
 
   useEffect(() => {
     if (!supabase) {
@@ -62,7 +84,9 @@ export default function MultiTenantOrgsWorkspace() {
       setOrganizations(data || []);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to fetch organizations"
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch organizations",
       );
     } finally {
       setLoading(false);
@@ -83,7 +107,7 @@ export default function MultiTenantOrgsWorkspace() {
       setMembers(data || []);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to fetch members"
+        error instanceof Error ? error.message : "Failed to fetch members",
       );
     } finally {
       setLoading(false);
@@ -117,7 +141,9 @@ export default function MultiTenantOrgsWorkspace() {
       toast.success("Organization created successfully");
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to create organization"
+        error instanceof Error
+          ? error.message
+          : "Failed to create organization",
       );
     } finally {
       setLoading(false);
@@ -150,7 +176,7 @@ export default function MultiTenantOrgsWorkspace() {
       toast.success(`Invitation sent to ${inviteEmail}`);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to invite member"
+        error instanceof Error ? error.message : "Failed to invite member",
       );
     } finally {
       setLoading(false);
@@ -174,7 +200,7 @@ export default function MultiTenantOrgsWorkspace() {
       toast.success("Member removed");
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to remove member"
+        error instanceof Error ? error.message : "Failed to remove member",
       );
     } finally {
       setLoading(false);
@@ -236,7 +262,8 @@ export default function MultiTenantOrgsWorkspace() {
             <DialogHeader>
               <DialogTitle>Create Organization</DialogTitle>
               <DialogDescription>
-                Create a new organization to manage team members and access control
+                Create a new organization to manage team members and access
+                control
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
@@ -248,7 +275,11 @@ export default function MultiTenantOrgsWorkspace() {
                   onChange={(e) => setNewOrgName(e.target.value)}
                 />
               </div>
-              <Button onClick={handleCreateOrganization} disabled={loading} className="w-full">
+              <Button
+                onClick={handleCreateOrganization}
+                disabled={loading}
+                className="w-full"
+              >
                 {loading ? "Creating..." : "Create"}
               </Button>
             </div>
@@ -261,7 +292,11 @@ export default function MultiTenantOrgsWorkspace() {
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center gap-3">
-        <Button variant="outline" size="icon" onClick={() => setSelectedOrg(null)}>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setSelectedOrg(null)}
+        >
           ←
         </Button>
         <div className="flex-1">
@@ -280,7 +315,11 @@ export default function MultiTenantOrgsWorkspace() {
         <TabsContent value="members" className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Team Members</h3>
-            <Button onClick={() => setShowInviteDialog(true)} size="sm" className="gap-2">
+            <Button
+              onClick={() => setShowInviteDialog(true)}
+              size="sm"
+              className="gap-2"
+            >
               <Mail className="h-4 w-4" />
               Invite Member
             </Button>
@@ -292,15 +331,14 @@ export default function MultiTenantOrgsWorkspace() {
                 <CardContent className="flex items-center justify-between pt-6">
                   <div>
                     <p className="font-semibold">{member.email}</p>
-                    <p className="text-sm text-muted-foreground">@{member.username}</p>
+                    <p className="text-sm text-muted-foreground">
+                      @{member.username}
+                    </p>
                     <div className="mt-2 flex gap-2">
                       <Badge variant="secondary" className="text-xs capitalize">
                         {member.role}
                       </Badge>
-                      <Badge
-                        variant="outline"
-                        className="text-xs capitalize"
-                      >
+                      <Badge variant="outline" className="text-xs capitalize">
                         {member.status}
                       </Badge>
                     </div>
@@ -347,7 +385,11 @@ export default function MultiTenantOrgsWorkspace() {
                     <option value="admin">Admin</option>
                   </select>
                 </div>
-                <Button onClick={handleInviteMember} disabled={loading} className="w-full">
+                <Button
+                  onClick={handleInviteMember}
+                  disabled={loading}
+                  className="w-full"
+                >
                   {loading ? "Sending..." : "Send Invitation"}
                 </Button>
               </div>
@@ -373,7 +415,10 @@ export default function MultiTenantOrgsWorkspace() {
                     Enabled
                   </Badge>
                   <p className="text-sm">
-                    Provider: <span className="font-semibold">{selectedOrg.sso_provider}</span>
+                    Provider:{" "}
+                    <span className="font-semibold">
+                      {selectedOrg.sso_provider}
+                    </span>
                   </p>
                 </div>
               ) : (

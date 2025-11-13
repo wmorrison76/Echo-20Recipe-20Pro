@@ -1,10 +1,22 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users, Share2, Plus, Eye, MessageSquare, Zap } from "lucide-react";
 import { supabase } from "@/lib/auth-service";
@@ -32,13 +44,17 @@ interface CollaborationActivity {
 
 export default function TeamWorkspacesWorkspace() {
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
-  const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
+  const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(
+    null,
+  );
   const [activities, setActivities] = useState<CollaborationActivity[]>([]);
   const [loading, setLoading] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [newWorkspaceName, setNewWorkspaceName] = useState("");
   const [newWorkspaceDesc, setNewWorkspaceDesc] = useState("");
-  const [newWorkspaceType, setNewWorkspaceType] = useState<"collection" | "project" | "campaign">("collection");
+  const [newWorkspaceType, setNewWorkspaceType] = useState<
+    "collection" | "project" | "campaign"
+  >("collection");
 
   useEffect(() => {
     if (!supabase) {
@@ -61,7 +77,7 @@ export default function TeamWorkspacesWorkspace() {
       setWorkspaces(data || []);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to fetch workspaces"
+        error instanceof Error ? error.message : "Failed to fetch workspaces",
       );
     } finally {
       setLoading(false);
@@ -83,7 +99,7 @@ export default function TeamWorkspacesWorkspace() {
       setActivities(data || []);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to fetch activity"
+        error instanceof Error ? error.message : "Failed to fetch activity",
       );
     } finally {
       setLoading(false);
@@ -122,7 +138,7 @@ export default function TeamWorkspacesWorkspace() {
       toast.success("Workspace created successfully");
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to create workspace"
+        error instanceof Error ? error.message : "Failed to create workspace",
       );
     } finally {
       setLoading(false);
@@ -134,7 +150,9 @@ export default function TeamWorkspacesWorkspace() {
       <div className="space-y-6 p-6">
         <div className="flex items-center justify-between">
           <div className="space-y-2">
-            <h2 className="text-2xl font-bold tracking-tight">Team Workspaces</h2>
+            <h2 className="text-2xl font-bold tracking-tight">
+              Team Workspaces
+            </h2>
             <p className="text-sm text-muted-foreground">
               Collaborate on shared collections with real-time sync and presence
             </p>
@@ -178,7 +196,9 @@ export default function TeamWorkspacesWorkspace() {
                   <p className="font-semibold">{workspace.recipe_count}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground capitalize">Type</p>
+                  <p className="text-sm text-muted-foreground capitalize">
+                    Type
+                  </p>
                   <p className="font-semibold">{workspace.type}</p>
                 </div>
               </CardContent>
@@ -223,7 +243,11 @@ export default function TeamWorkspacesWorkspace() {
                   <option value="campaign">Campaign</option>
                 </select>
               </div>
-              <Button onClick={handleCreateWorkspace} disabled={loading} className="w-full">
+              <Button
+                onClick={handleCreateWorkspace}
+                disabled={loading}
+                className="w-full"
+              >
                 {loading ? "Creating..." : "Create Workspace"}
               </Button>
             </div>
@@ -236,13 +260,19 @@ export default function TeamWorkspacesWorkspace() {
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center gap-3">
-        <Button variant="outline" size="icon" onClick={() => setSelectedWorkspace(null)}>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setSelectedWorkspace(null)}
+        >
           ←
         </Button>
         <div className="flex-1">
           <h2 className="text-2xl font-bold">{selectedWorkspace.name}</h2>
           {selectedWorkspace.description && (
-            <p className="text-sm text-muted-foreground">{selectedWorkspace.description}</p>
+            <p className="text-sm text-muted-foreground">
+              {selectedWorkspace.description}
+            </p>
           )}
         </div>
       </div>
@@ -288,14 +318,18 @@ export default function TeamWorkspacesWorkspace() {
                 Real-Time Sync
               </CardTitle>
               <CardDescription>
-                This workspace uses real-time synchronization with automatic conflict resolution
+                This workspace uses real-time synchronization with automatic
+                conflict resolution
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <p className="text-sm font-semibold">Sync Status: Active</p>
                 <div className="w-full bg-green-100 rounded-full h-2 dark:bg-green-900">
-                  <div className="bg-green-600 h-2 rounded-full" style={{ width: "100%" }}></div>
+                  <div
+                    className="bg-green-600 h-2 rounded-full"
+                    style={{ width: "100%" }}
+                  ></div>
                 </div>
               </div>
               <div className="text-sm text-muted-foreground">
@@ -317,13 +351,20 @@ export default function TeamWorkspacesWorkspace() {
             </CardHeader>
             <CardContent className="space-y-2">
               {activities.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No activity recorded</p>
+                <p className="text-sm text-muted-foreground">
+                  No activity recorded
+                </p>
               ) : (
                 activities.map((activity) => (
-                  <div key={activity.id} className="flex items-center justify-between border-b pb-3 last:border-0">
+                  <div
+                    key={activity.id}
+                    className="flex items-center justify-between border-b pb-3 last:border-0"
+                  >
                     <div>
                       <p className="text-sm font-semibold">{activity.user}</p>
-                      <p className="text-xs text-muted-foreground">{activity.action}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {activity.action}
+                      </p>
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {new Date(activity.timestamp).toLocaleDateString()}

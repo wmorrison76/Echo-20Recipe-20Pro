@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { useRDLabStore } from "@/stores/rdLabStore";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Trash2, Tag, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
@@ -19,22 +25,30 @@ export function BatchOperations() {
   const [newTag, setNewTag] = useState("");
 
   const selectedCount = selectedExperimentIds.size;
-  const selectedExperiments = experiments.filter((e) => selectedExperimentIds.has(e.id));
+  const selectedExperiments = experiments.filter((e) =>
+    selectedExperimentIds.has(e.id),
+  );
 
   if (selectedCount === 0) {
     return null;
   }
 
-  const handleBulkStatus = (status: "ideation" | "testing" | "ready" | "archived") => {
+  const handleBulkStatus = (
+    status: "ideation" | "testing" | "ready" | "archived",
+  ) => {
     bulkSetStatus(Array.from(selectedExperimentIds), status);
-    toast.success(`Updated ${selectedCount} experiment${selectedCount !== 1 ? "s" : ""} to ${status}`);
+    toast.success(
+      `Updated ${selectedCount} experiment${selectedCount !== 1 ? "s" : ""} to ${status}`,
+    );
     setShowStatusMenu(false);
   };
 
   const handleAddTag = () => {
     if (!newTag.trim()) return;
     bulkAddTag(Array.from(selectedExperimentIds), newTag);
-    toast.success(`Added tag "${newTag}" to ${selectedCount} experiment${selectedCount !== 1 ? "s" : ""}`);
+    toast.success(
+      `Added tag "${newTag}" to ${selectedCount} experiment${selectedCount !== 1 ? "s" : ""}`,
+    );
     setNewTag("");
   };
 
@@ -53,7 +67,9 @@ export function BatchOperations() {
       <CardContent className="space-y-4">
         {/* Selected List */}
         <div className="rounded-lg border border-white/20 bg-white/10 dark:border-cyan-500/20 dark:bg-white/5 p-3 max-h-32 overflow-y-auto">
-          <p className="text-xs font-semibold text-muted-foreground mb-2">Selected:</p>
+          <p className="text-xs font-semibold text-muted-foreground mb-2">
+            Selected:
+          </p>
           <div className="space-y-1">
             {selectedExperiments.map((exp) => (
               <p key={exp.id} className="text-xs text-foreground">
@@ -136,7 +152,9 @@ export function BatchOperations() {
           <div className="space-y-1">
             <p className="text-muted-foreground">Specializations</p>
             <div className="flex flex-wrap gap-1">
-              {[...new Set(selectedExperiments.map((e) => e.specialization))].map((spec) => (
+              {[
+                ...new Set(selectedExperiments.map((e) => e.specialization)),
+              ].map((spec) => (
                 <Badge key={spec} variant="secondary" className="text-xs">
                   {spec}
                 </Badge>
@@ -146,11 +164,17 @@ export function BatchOperations() {
           <div className="space-y-1">
             <p className="text-muted-foreground">Statuses</p>
             <div className="flex flex-wrap gap-1">
-              {[...new Set(selectedExperiments.map((e) => e.status))].map((status) => (
-                <Badge key={status} variant="secondary" className="text-xs capitalize">
-                  {status}
-                </Badge>
-              ))}
+              {[...new Set(selectedExperiments.map((e) => e.status))].map(
+                (status) => (
+                  <Badge
+                    key={status}
+                    variant="secondary"
+                    className="text-xs capitalize"
+                  >
+                    {status}
+                  </Badge>
+                ),
+              )}
             </div>
           </div>
         </div>

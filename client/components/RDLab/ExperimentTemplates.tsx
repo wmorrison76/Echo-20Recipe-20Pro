@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { useRDLabStore } from "@/stores/rdLabStore";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Zap } from "lucide-react";
@@ -108,11 +114,7 @@ const TEMPLATES: ExperimentTemplate[] = [
       "Duration",
       "Salt concentration",
     ],
-    targets: [
-      "Flavor development",
-      "Acidity level",
-      "Probiotic viability",
-    ],
+    targets: ["Flavor development", "Acidity level", "Probiotic viability"],
     flavorConstellations: [
       "Base flavor profile",
       "Fermented notes",
@@ -125,12 +127,17 @@ interface ExperimentTemplatesProps {
   specialization?: "culinary" | "pastry" | "both";
 }
 
-export function ExperimentTemplates({ specialization = "both" }: ExperimentTemplatesProps) {
+export function ExperimentTemplates({
+  specialization = "both",
+}: ExperimentTemplatesProps) {
   const { createExperiment } = useRDLabStore();
   const [isCreating, setIsCreating] = useState<string | null>(null);
 
   const filteredTemplates = TEMPLATES.filter(
-    (t) => specialization === "both" || t.specialization === "both" || t.specialization === specialization
+    (t) =>
+      specialization === "both" ||
+      t.specialization === "both" ||
+      t.specialization === specialization,
   );
 
   const handleUseTemplate = async (template: ExperimentTemplate) => {
@@ -184,10 +191,7 @@ export function ExperimentTemplates({ specialization = "both" }: ExperimentTempl
 
             <CardContent className="flex-1 space-y-3">
               {/* Specialization Badge */}
-              <Badge
-                variant="secondary"
-                className="text-xs capitalize w-fit"
-              >
+              <Badge variant="secondary" className="text-xs capitalize w-fit">
                 {template.specialization}
               </Badge>
 

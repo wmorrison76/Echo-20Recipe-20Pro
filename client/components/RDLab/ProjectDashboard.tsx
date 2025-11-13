@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -45,7 +51,8 @@ const DEMO_PROJECTS: RDLabProject[] = [
     ],
     experimentCount: 3,
     description: "Main experimental kitchen environment",
-    vision: "Preserve the seeded experimentation environment with its original texture, flavor, and future-of-food scaffolding.",
+    vision:
+      "Preserve the seeded experimentation environment with its original texture, flavor, and future-of-food scaffolding.",
     lastAccessedBy: "You",
     lastAccessedAt: "2h ago",
   },
@@ -63,7 +70,8 @@ const DEMO_PROJECTS: RDLabProject[] = [
     ],
     experimentCount: 12,
     description: "Texture and flavor development for spring menu",
-    vision: "Create delicate pastry expressions using fermented dairy and floral aromatics",
+    vision:
+      "Create delicate pastry expressions using fermented dairy and floral aromatics",
     lastAccessedBy: "C. Dufour",
     lastAccessedAt: "3 days ago",
   },
@@ -89,18 +97,21 @@ export function ProjectDashboard({
 }: ProjectDashboardProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredProjects, setFilteredProjects] = useState(allProjects);
-  const [specializationFilter, setSpecializationFilter] = useState<"all" | "culinary" | "pastry" | "both">("all");
+  const [specializationFilter, setSpecializationFilter] = useState<
+    "all" | "culinary" | "pastry" | "both"
+  >("all");
 
   useEffect(() => {
     let filtered = allProjects;
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter((p) =>
-        p.name.toLowerCase().includes(query) ||
-        p.description?.toLowerCase().includes(query) ||
-        p.createdBy.toLowerCase().includes(query) ||
-        p.collaborators.some((c) => c.name.toLowerCase().includes(query))
+      filtered = filtered.filter(
+        (p) =>
+          p.name.toLowerCase().includes(query) ||
+          p.description?.toLowerCase().includes(query) ||
+          p.createdBy.toLowerCase().includes(query) ||
+          p.collaborators.some((c) => c.name.toLowerCase().includes(query)),
       );
     }
 
@@ -108,7 +119,7 @@ export function ProjectDashboard({
       filtered = filtered.filter(
         (p) =>
           p.specialization === specializationFilter ||
-          p.specialization === "both"
+          p.specialization === "both",
       );
     }
 
@@ -146,7 +157,11 @@ export function ProjectDashboard({
               <CardContent className="flex flex-col items-center justify-center py-12 text-center">
                 <Zap className="h-12 w-12 text-muted-foreground/40 mb-3" />
                 <p className="text-muted-foreground">No recent projects</p>
-                <Button onClick={onCreateProject} variant="outline" className="mt-4 gap-2">
+                <Button
+                  onClick={onCreateProject}
+                  variant="outline"
+                  className="mt-4 gap-2"
+                >
                   <Plus className="h-4 w-4" />
                   Create Your First Project
                 </Button>
@@ -195,14 +210,18 @@ export function ProjectDashboard({
               All
             </Button>
             <Button
-              variant={specializationFilter === "culinary" ? "default" : "outline"}
+              variant={
+                specializationFilter === "culinary" ? "default" : "outline"
+              }
               onClick={() => setSpecializationFilter("culinary")}
               size="sm"
             >
               Culinary
             </Button>
             <Button
-              variant={specializationFilter === "pastry" ? "default" : "outline"}
+              variant={
+                specializationFilter === "pastry" ? "default" : "outline"
+              }
               onClick={() => setSpecializationFilter("pastry")}
               size="sm"
             >
@@ -279,7 +298,9 @@ function ProjectCard({ project, onClick, isRecent }: ProjectCardProps) {
                   : "bg-purple-100 text-purple-800 dark:bg-purple-900"
             }
           >
-            {project.specialization === "both" ? "Culinary + Pastry" : project.specialization}
+            {project.specialization === "both"
+              ? "Culinary + Pastry"
+              : project.specialization}
           </Badge>
         </div>
       </CardHeader>
@@ -327,7 +348,9 @@ function ProjectCard({ project, onClick, isRecent }: ProjectCardProps) {
         <div className="border-t pt-3 space-y-2 text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
             <Calendar className="h-3 w-3" />
-            <span>Created {format(new Date(project.createdAt), "MMM d, yyyy")}</span>
+            <span>
+              Created {format(new Date(project.createdAt), "MMM d, yyyy")}
+            </span>
           </div>
           {project.lastAccessedAt && (
             <div className="flex items-center gap-2">

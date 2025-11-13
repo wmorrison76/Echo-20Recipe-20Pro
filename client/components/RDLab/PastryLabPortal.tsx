@@ -48,14 +48,15 @@ const PASTRY_DRIVERS = [
 ];
 
 export function PastryLabPortal({ isOpen, onClose }: PastryLabPortalProps) {
-  const { experiments, setSpecializationFilter, specializationFilter } = useRDLabStore();
+  const { experiments, setSpecializationFilter, specializationFilter } =
+    useRDLabStore();
 
   const pastryExperiments = useMemo(
     () =>
       experiments.filter(
-        (e) => e.specialization === "pastry" || e.specialization === "both"
+        (e) => e.specialization === "pastry" || e.specialization === "both",
       ),
-    [experiments]
+    [experiments],
   );
 
   const experimentsByStatus = useMemo(
@@ -65,7 +66,7 @@ export function PastryLabPortal({ isOpen, onClose }: PastryLabPortalProps) {
       ready: pastryExperiments.filter((e) => e.status === "ready").length,
       archived: pastryExperiments.filter((e) => e.status === "archived").length,
     }),
-    [pastryExperiments]
+    [pastryExperiments],
   );
 
   if (!isOpen) return null;

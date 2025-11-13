@@ -1,6 +1,12 @@
 import { useRDLabStore } from "@/stores/rdLabStore";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Download, Upload, FileJson } from "lucide-react";
 import { toast } from "sonner";
 
@@ -91,7 +97,8 @@ export function ExportImport() {
             </Button>
           </div>
           <p className="text-xs text-muted-foreground">
-            Downloads as JSON file. Can be imported later or shared with team members.
+            Downloads as JSON file. Can be imported later or shared with team
+            members.
           </p>
         </div>
 
@@ -103,7 +110,9 @@ export function ExportImport() {
               <div className="text-center">
                 <Upload className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
                 <p className="text-sm font-medium">Click to import</p>
-                <p className="text-xs text-muted-foreground">or drag and drop JSON file</p>
+                <p className="text-xs text-muted-foreground">
+                  or drag and drop JSON file
+                </p>
               </div>
               <input
                 type="file"
@@ -130,7 +139,8 @@ export function ExportImport() {
             </label>
           </div>
           <p className="text-xs text-muted-foreground">
-            Upload a previously exported JSON file to restore experiments and projects.
+            Upload a previously exported JSON file to restore experiments and
+            projects.
           </p>
         </div>
 

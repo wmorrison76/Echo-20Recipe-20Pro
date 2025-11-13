@@ -6,7 +6,7 @@ const router = Router();
 // Initialize Supabase client
 const supabase = createClient(
   process.env.SUPABASE_URL || "",
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ""
+  process.env.SUPABASE_SERVICE_ROLE_KEY || "",
 );
 
 interface DeploymentRequest {
@@ -91,7 +91,9 @@ router.post("/api/recipes/deployments", async (req: Request, res: Response) => {
         deployment_type,
         priority: priority || "normal",
         requires_confirmation: requires_confirmation !== false,
-        scheduled_at: scheduled_at ? new Date(scheduled_at).toISOString() : null,
+        scheduled_at: scheduled_at
+          ? new Date(scheduled_at).toISOString()
+          : null,
         confirmation_deadline: confirmation_deadline
           ? new Date(confirmation_deadline).toISOString()
           : null,
@@ -155,7 +157,7 @@ router.post("/api/recipes/deployments", async (req: Request, res: Response) => {
       "deployment_created",
       userId,
       organizationId,
-      { packets_count: packets.length, target_outlets_count: outletIds.length }
+      { packets_count: packets.length, target_outlets_count: outletIds.length },
     );
 
     res.json({
@@ -173,55 +175,52 @@ router.post("/api/recipes/deployments", async (req: Request, res: Response) => {
 });
 
 // Get all deployments for organization
-router.get(
-  "/api/recipes/deployments",
-  async (req: Request, res: Response) => {
-    try {
-      const organizationId = (req as any).user?.organization_id;
-      const status = req.query.status as string;
-      const limit = parseInt(req.query.limit as string) || 50;
-      const offset = parseInt(req.query.offset as string) || 0;
+router.get("/api/recipes/deployments", async (req: Request, res: Response) => {
+  try {
+    const organizationId = (req as any).user?.organization_id;
+    const status = req.query.status as string;
+    const limit = parseInt(req.query.limit as string) || 50;
+    const offset = parseInt(req.query.offset as string) || 0;
 
-      if (!organizationId) {
-        return res.status(401).json({ error: "Unauthorized" });
-      }
+    if (!organizationId) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
 
-      let query = supabase
-        .from("recipe_deployments")
-        .select(
-          `
+    let query = supabase
+      .from("recipe_deployments")
+      .select(
+        `
           *,
           deployment_packets(id, recipe_name, recipe_id),
           store_deployment_confirmations(id, status, outlet_id)
         `,
-          { count: "exact" }
-        )
-        .eq("organization_id", organizationId)
-        .order("created_at", { ascending: false });
+        { count: "exact" },
+      )
+      .eq("organization_id", organizationId)
+      .order("created_at", { ascending: false });
 
-      if (status) {
-        query = query.eq("status", status);
-      }
-
-      const { data, error, count } = await query.range(offset, offset + limit);
-
-      if (error) {
-        return res.status(500).json({ error: error.message });
-      }
-
-      res.json({
-        success: true,
-        data,
-        total: count,
-        limit,
-        offset,
-      });
-    } catch (error) {
-      console.error("Get deployments error:", error);
-      res.status(500).json({ error: "Failed to fetch deployments" });
+    if (status) {
+      query = query.eq("status", status);
     }
+
+    const { data, error, count } = await query.range(offset, offset + limit);
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({
+      success: true,
+      data,
+      total: count,
+      limit,
+      offset,
+    });
+  } catch (error) {
+    console.error("Get deployments error:", error);
+    res.status(500).json({ error: "Failed to fetch deployments" });
   }
-);
+});
 
 // Get single deployment with all details
 router.get(
@@ -243,7 +242,7 @@ router.get(
           deployment_packets(*),
           store_deployment_confirmations(*),
           deployment_activity_log(*)
-        `
+        `,
         )
         .eq("id", deploymentId)
         .eq("organization_id", organizationId)
@@ -258,7 +257,7 @@ router.get(
       console.error("Get deployment error:", error);
       res.status(500).json({ error: "Failed to fetch deployment" });
     }
-  }
+  },
 );
 
 // Update store confirmation status
@@ -318,7 +317,7 @@ router.patch(
           outlet_id: outletId,
           status: confirmationData.status,
         },
-        outletId
+        outletId,
       );
 
       res.json({ success: true, confirmation });
@@ -328,7 +327,7 @@ router.patch(
         .status(500)
         .json({ error: "Failed to update deployment confirmation" });
     }
-  }
+  },
 );
 
 // Start a deployment
@@ -363,7 +362,7 @@ router.post(
         deploymentId,
         "deployment_started",
         (req as any).user?.id,
-        organizationId
+        organizationId,
       );
 
       res.json({ success: true, deployment });
@@ -371,7 +370,7 @@ router.post(
       console.error("Start deployment error:", error);
       res.status(500).json({ error: "Failed to start deployment" });
     }
-  }
+  },
 );
 
 // Cancel a deployment
@@ -406,7 +405,7 @@ router.post(
         deploymentId,
         "deployment_cancelled",
         (req as any).user?.id,
-        organizationId
+        organizationId,
       );
 
       res.json({ success: true, deployment });
@@ -414,7 +413,7 @@ router.post(
       console.error("Cancel deployment error:", error);
       res.status(500).json({ error: "Failed to cancel deployment" });
     }
-  }
+  },
 );
 
 // Helper function to log activity
@@ -424,7 +423,7 @@ async function logDeploymentActivity(
   userId: string | undefined,
   organizationId: string,
   details?: Record<string, any>,
-  outletId?: string
+  outletId?: string,
 ) {
   try {
     await supabase.from("deployment_activity_log").insert({

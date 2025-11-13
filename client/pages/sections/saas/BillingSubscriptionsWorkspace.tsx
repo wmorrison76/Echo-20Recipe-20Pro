@@ -1,9 +1,22 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CreditCard, Download, AlertCircle, CheckCircle2, User, Receipt } from "lucide-react";
+import {
+  CreditCard,
+  Download,
+  AlertCircle,
+  CheckCircle2,
+  User,
+  Receipt,
+} from "lucide-react";
 import { supabase } from "@/lib/auth-service";
 import { toast } from "sonner";
 
@@ -89,7 +102,9 @@ export default function BillingSubscriptionsWorkspace() {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(false);
-  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">(
+    "monthly",
+  );
 
   useEffect(() => {
     if (!supabase) {
@@ -116,7 +131,7 @@ export default function BillingSubscriptionsWorkspace() {
       setInvoices(invData.data || []);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to fetch billing data"
+        error instanceof Error ? error.message : "Failed to fetch billing data",
       );
     } finally {
       setLoading(false);
@@ -136,7 +151,9 @@ export default function BillingSubscriptionsWorkspace() {
   return (
     <div className="space-y-6 p-6">
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold tracking-tight">Billing & Subscriptions</h2>
+        <h2 className="text-2xl font-bold tracking-tight">
+          Billing & Subscriptions
+        </h2>
         <p className="text-sm text-muted-foreground">
           Manage your subscription, invoices, and payment methods
         </p>
@@ -162,13 +179,20 @@ export default function BillingSubscriptionsWorkspace() {
               <div>
                 <p className="text-sm text-muted-foreground">Billing Cycle</p>
                 <p className="font-semibold">
-                  {new Date(subscription.current_period_start).toLocaleDateString()} -{" "}
-                  {new Date(subscription.current_period_end).toLocaleDateString()}
+                  {new Date(
+                    subscription.current_period_start,
+                  ).toLocaleDateString()}{" "}
+                  -{" "}
+                  {new Date(
+                    subscription.current_period_end,
+                  ).toLocaleDateString()}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Seats</p>
-                <p className="font-semibold">{subscription.seats} team members</p>
+                <p className="font-semibold">
+                  {subscription.seats} team members
+                </p>
               </div>
             </div>
             {subscription.status === "trialing" && subscription.trial_end && (
