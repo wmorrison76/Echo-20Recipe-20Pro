@@ -271,9 +271,31 @@ function IndexContent() {
               value="rdlabs"
               className="h-[calc(100vh-200px)] flex flex-col overflow-hidden"
             >
-              <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
-                <div style={{ padding: "24px", backgroundColor: "#0f172a", color: "#e2e8f0", height: "100%", overflow: "auto" }}>
-                  <h1 style={{ fontSize: "24px", fontWeight: "bold", color: "#06b6d4", marginBottom: "16px" }}>
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <div
+                  style={{
+                    padding: "24px",
+                    backgroundColor: "#0f172a",
+                    color: "#e2e8f0",
+                    height: "100%",
+                    overflow: "auto",
+                  }}
+                >
+                  <h1
+                    style={{
+                      fontSize: "24px",
+                      fontWeight: "bold",
+                      color: "#06b6d4",
+                      marginBottom: "16px",
+                    }}
+                  >
                     R&D Labs Dashboard
                   </h1>
                   <p>Dashboard loaded successfully.</p>
