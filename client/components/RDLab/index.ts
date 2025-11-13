@@ -9,3 +9,5 @@ export { CollaborationPanel } from "./CollaborationPanel";
 export { BatchOperations } from "./BatchOperations";
 export { RecipeLinkingPanel } from "./RecipeLinkingPanel";
 export { ExperimentTemplates } from "./ExperimentTemplates";
+export { ExportImport } from "./ExportImport";
+export { PastryLabPortal } from "./PastryLabPortal";
