@@ -154,6 +154,9 @@ const experimentsSeed: LabExperiment[] = [
       "Valorize koji whey as a dessert texture builder",
       "Route smoker waste heat into low-carbon dessert flights",
     ],
+    specialization: "both",
+    linkedRecipeIds: [],
+    collaborators: [],
   },
   {
     id: "exp-carbon-02",
