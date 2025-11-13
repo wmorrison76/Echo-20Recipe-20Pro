@@ -309,23 +309,23 @@ function ProjectCard({ project, onClick, isRecent }: ProjectCardProps) {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3 text-sm">
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Experiments</p>
-            <p className="font-semibold">{project.experimentCount}</p>
+            <p className="text-xs text-cyan-300/70">Experiments</p>
+            <p className="font-semibold text-cyan-100">{project.experimentCount}</p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Team Members</p>
-            <p className="font-semibold">{project.collaborators.length + 1}</p>
+            <p className="text-xs text-cyan-300/70">Team Members</p>
+            <p className="font-semibold text-cyan-100">{project.collaborators.length + 1}</p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Updated</p>
-            <p className="font-semibold text-xs">{project.updatedAt}</p>
+            <p className="text-xs text-cyan-300/70">Updated</p>
+            <p className="font-semibold text-xs text-cyan-100">{project.updatedAt}</p>
           </div>
         </div>
 
         {/* Collaborators */}
         {project.collaborators.length > 0 && (
-          <div className="space-y-2 border-t pt-3">
-            <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+          <div className="space-y-2 border-t border-cyan-500/20 pt-3">
+            <p className="flex items-center gap-1 text-xs font-semibold text-cyan-300/70">
               <Users className="h-3 w-3" />
               Team
             </p>
