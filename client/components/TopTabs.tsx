@@ -520,7 +520,11 @@ export default function TopTabs() {
                 title="Help & Shortcuts"
                 onClick={() => setShowHelp(true)}
                 className={cn(
-                  "flex w-full items-center rounded-md px-2.5 py-1.5 font-medium text-foreground transition duration-300 hover:bg-white/70 dark:hover:bg-slate-900/70",
+                  "flex w-full items-center rounded-lg px-2.5 py-1.5 font-medium text-foreground transition duration-300",
+                  "bg-gradient-to-br from-white/25 to-white/10 dark:from-white/10 dark:to-white/5",
+                  "hover:from-white/40 hover:to-white/20 dark:hover:from-white/15 dark:hover:to-white/10",
+                  "border border-white/30 dark:border-white/10 hover:border-white/40 dark:hover:border-white/15",
+                  "shadow-sm hover:shadow-md backdrop-blur-md",
                   collapsed ? "justify-center px-1.5" : "justify-between",
                 )}
               >
