@@ -451,6 +451,11 @@ async function logDeploymentActivity(
   details?: Record<string, any>,
   outletId?: string,
 ) {
+  if (!supabase) {
+    console.warn("Supabase not available, skipping activity log");
+    return;
+  }
+
   try {
     await supabase.from("deployment_activity_log").insert({
       deployment_id: deploymentId,
