@@ -31,12 +31,6 @@ import {
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -354,7 +348,6 @@ export default function TopTabs() {
     };
   }, []);
 
-
   const navToggleShortcut = `${shortcutLabel}+Shift+N`;
 
   const translatedNavItems: NavItem[] = useMemo(
@@ -625,72 +618,6 @@ export default function TopTabs() {
           </div>
         </aside>
       </TooltipProvider>
-
-      <Dialog open={showHelp} onOpenChange={setShowHelp}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Help & Shortcuts</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-2 text-sm leading-relaxed">
-            <p className="font-medium">Keyboard shortcuts (hold Control/⌘):</p>
-            <ul className="list-disc pl-5">
-              <li>P=Pastry</li>
-              <li>T=Technique</li>
-              <li>C=Course</li>
-              <li>A=Allergens</li>
-              <li>D=Diets</li>
-              <li>M=Meal Period</li>
-              <li>U=Cuisine</li>
-              <li>S=Service Style</li>
-              <li>Y=Difficulty</li>
-              <li>E=Equipment</li>
-            </ul>
-            <p className="mt-2 font-medium">Adding recipes</p>
-            <ul className="list-disc pl-5">
-              <li>
-                Use Add Recipe to type/paste. “Save�� persists immediately. CSV
-                export includes Directions; Share and SMS send a formatted
-                recipe.
-              </li>
-              <li>
-                Import from the web: paste a URL in the right sidebar. The
-                importer reads JSON��LD or page sections, pulls times/yield, and
-                attaches the cover image to the gallery.
-              </li>
-            </ul>
-            <p className="mt-2 font-medium">Importing a Book PDF</p>
-            <ul className="list-disc pl-5">
-              <li>
-                Select a PDF in Recipe Search → Library. We parse the appendix
-                (recipe index) and show a selectable checklist with hidden
-                scrollbar.
-              </li>
-              <li>
-                Choose the recipes to import; each is processed one‑by‑one with
-                page cross-reference, metadata (prep/cook/total/yield/temp) and
-                a photo when available.
-              </li>
-            </ul>
-            <p className="mt-2 font-medium">Gallery</p>
-            <ul className="list-disc pl-5">
-              <li>
-                Grid or Masonry layout; choose thumbnail size
-                (Small/Medium/Large). Hover to get a soft glow; click to open
-                the lightbox.
-              </li>
-              <li>
-                Use tags to group photos and create Look Books. Open a Look Book
-                for an immersive showcase with storyboard navigation and quick
-                action controls.
-              </li>
-            </ul>
-            <p className="text-muted-foreground">
-              Tip: Use “Link to recipes” to auto-match images to recipes by
-              filename.
-            </p>
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }
