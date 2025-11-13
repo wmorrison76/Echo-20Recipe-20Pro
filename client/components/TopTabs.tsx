@@ -248,15 +248,24 @@ function TabLink({
   icon: Icon,
   collapsed,
   shortcutDisplay,
+  onClick,
 }: TabLinkProps) {
   const loc = useLocation();
   const active = new URLSearchParams(loc.search).get("tab") ?? "search";
   const value = new URLSearchParams(to.split("?")[1] || "").get("tab") || "";
   const isActive = active === value;
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
   const link = (
     <Link
       to={to}
+      onClick={handleClick}
       aria-label={label}
       className={cn(
         "group flex w-full items-center text-sm font-medium transition-all duration-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring relative",
