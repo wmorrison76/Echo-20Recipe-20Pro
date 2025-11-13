@@ -125,7 +125,7 @@ const experimentsSeed: LabExperiment[] = [
   {
     id: "exp-ferment-01",
     title: "Smoked koji custard",
-    status: "testing",
+    status: "archived",
     lastUpdated: "2h ago",
     owner: "A. Vega",
     notes:
