@@ -1,30 +1,104 @@
+import { useState } from "react";
+import { RDLabProvider, useOptionalRDLabStore } from "@/stores/rdLabStore";
+import {
+  ProjectDashboard,
+  DiscoveryPanel,
+  WorkbenchPanel,
+  InsightsPanel,
+  RDLabSessionSidebar,
+} from "@/components/RDLab";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { LayoutGrid } from "lucide-react";
 
 export default function RDLabsWorkspace() {
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center bg-slate-950 text-slate-100">
-      <div className="text-center space-y-6">
-        <div className="space-y-2">
-          <h1 className="text-5xl font-bold text-cyan-300">R&D Labs</h1>
-          <p className="text-xl text-slate-400">Welcome to your research kitchen</p>
+    <RDLabProvider>
+      <RDLabsWorkspaceContent />
+    </RDLabProvider>
+  );
+}
+
+function RDLabsWorkspaceContent() {
+  const store = useOptionalRDLabStore();
+  const [showDashboard, setShowDashboard] = useState(true);
+
+  if (!store) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-slate-950 text-white">
+        <div className="text-center">
+          <p className="text-xl font-bold mb-4">Loading R&D Labs...</p>
+          <p className="text-sm text-slate-400">Store initializing</p>
+        </div>
+      </div>
+    );
+  }
+
+  const culinaryExperiments = store.experiments.filter(
+    (e) => e.specialization === "culinary" || e.specialization === "both"
+  );
+
+  return (
+    <div className="w-full h-full flex flex-col bg-slate-950 text-slate-100">
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b border-cyan-400/20 bg-slate-900/50">
+        <h1 className="text-2xl font-bold text-cyan-300">R&D Labs</h1>
+        <div className="flex items-center gap-2">
+          <Button
+            variant={showDashboard ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setShowDashboard(!showDashboard)}
+            className="gap-2"
+            title="Toggle Dashboard View"
+          >
+            <LayoutGrid className="h-4 w-4" />
+            Dashboard
+          </Button>
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div className="flex-1 flex overflow-hidden gap-0">
+        {/* Discovery Panel - Left */}
+        <div className="w-72 border-r border-cyan-400/10 bg-slate-900/30 overflow-auto flex-shrink-0">
+          <div className="p-4">
+            <DiscoveryPanel />
+          </div>
         </div>
 
-        <p className="text-lg text-slate-300 max-w-md">
-          Start by creating a new project to begin your culinary or pastry experimentation journey.
-        </p>
-
-        <Button
-          className="gap-2 bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-2"
-          size="lg"
-        >
-          <Plus className="h-5 w-5" />
-          Create New Project
-        </Button>
-
-        <div className="text-sm text-slate-500 pt-4">
-          Preloaded projects will be available soon
+        {/* Center content - Dashboard or Workbench */}
+        <div className="flex-1 overflow-auto flex flex-col">
+          {showDashboard ? (
+            <ProjectDashboard
+              onSelectProject={() => setShowDashboard(false)}
+              onCreateProject={() => {}}
+            />
+          ) : (
+            <div className="p-4 flex-1 overflow-auto">
+              <WorkbenchPanel />
+            </div>
+          )}
         </div>
+
+        {/* Right Panel - Insights/Session Info */}
+        {!showDashboard && (
+          <div className="w-72 border-l border-cyan-400/10 bg-slate-900/30 overflow-auto flex-shrink-0">
+            <div className="p-4">
+              <RDLabSessionSidebar
+                isDarkMode={true}
+                projectName="R&D Labs"
+                createdAt={new Date().toISOString()}
+                updatedAt={new Date().toISOString()}
+                experimentsCount={culinaryExperiments.length}
+                discoveryQueue={culinaryExperiments.slice(0, 3)}
+                backlog={[]}
+                insights={[]}
+              />
+              <div className="mt-6">
+                <InsightsPanel />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
