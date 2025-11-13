@@ -24,25 +24,14 @@ interface RDLabsWorkspaceProps {
 
 function RDLabsWorkspaceContent({ defaultProject }: RDLabsWorkspaceProps) {
   const store = useOptionalRDLabStore();
-  const [selectedProject, setSelectedProject] = useState<string | null>(
-    defaultProject || null,
-  );
-  const [currentView, setCurrentView] = useState<
-    "dashboard" | "workbench" | "discovery"
-  >(selectedProject ? "workbench" : "dashboard");
+  const [showDashboard, setShowDashboard] = useState(true);
 
-  const handleSelectProject = useCallback((projectId: string) => {
-    setSelectedProject(projectId);
-    setCurrentView("workbench");
-  }, []);
-
-  const handleCreateProject = useCallback(() => {
-    setCurrentView("dashboard");
+  const handleSelectProject = useCallback((_projectId: string) => {
+    setShowDashboard(false);
   }, []);
 
   const handleBackToDashboard = useCallback(() => {
-    setSelectedProject(null);
-    setCurrentView("dashboard");
+    setShowDashboard(true);
   }, []);
 
   if (!store) {
@@ -53,17 +42,19 @@ function RDLabsWorkspaceContent({ defaultProject }: RDLabsWorkspaceProps) {
     );
   }
 
-  if (currentView === "dashboard") {
+  // Show dashboard on load
+  if (showDashboard) {
     return (
-      <div className="h-full overflow-auto">
+      <div className="h-full w-full overflow-auto">
         <ProjectDashboard
           onSelectProject={handleSelectProject}
-          onCreateProject={handleCreateProject}
+          onCreateProject={() => setShowDashboard(true)}
         />
       </div>
     );
   }
 
+  // Show workbench after project selection
   return (
     <div className="flex h-full flex-col gap-3">
       <div className="flex items-center justify-between">
