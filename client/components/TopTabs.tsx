@@ -176,7 +176,7 @@ const navItems: NavItemConfig[] = [
     to: "/?tab=rdlabs",
     labelKey: "nav.rdlabs",
     fallback: "R&D LABS",
-    icon: Beaker,
+    icon: Atom,
   },
   {
     to: "/?tab=pastry-lab",
