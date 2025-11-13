@@ -44,6 +44,10 @@ interface ConfirmationRequest {
 // Create a new recipe deployment
 router.post("/api/recipes/deployments", async (req: Request, res: Response) => {
   try {
+    if (!supabase) {
+      return res.status(503).json({ error: "Database service unavailable" });
+    }
+
     const {
       deployment_name,
       description,
