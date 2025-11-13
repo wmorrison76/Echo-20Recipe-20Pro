@@ -343,7 +343,7 @@ function GroupHeader({
       type="button"
       onClick={onToggle}
       className={cn(
-        "flex w-full items-center justify-between px-2.5 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-foreground/50 hover:text-foreground/70 transition-colors duration-300",
+        "flex w-full items-center justify-between px-2.5 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-foreground/50 hover:text-foreground/70 transition-colors duration-300",
         "hover:bg-white/5 dark:hover:bg-white/5 rounded-lg",
       )}
     >
@@ -574,7 +574,7 @@ export default function TopTabs() {
         >
           <div className="relative flex h-full flex-col">
             {!collapsed ? (
-              <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-foreground/50 px-2.5 py-0.5">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-foreground/50 px-2.5 py-0.5">
                 Navigation
               </span>
             ) : null}
