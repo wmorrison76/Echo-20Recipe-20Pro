@@ -237,6 +237,10 @@ router.get(
   "/api/recipes/deployments/:id",
   async (req: Request, res: Response) => {
     try {
+      if (!supabase) {
+        return res.status(503).json({ error: "Database service unavailable" });
+      }
+
       const organizationId = (req as any).user?.organization_id;
       const deploymentId = req.params.id;
 
