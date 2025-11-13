@@ -285,14 +285,14 @@ export function ProjectDashboard({
                       {project.collaborators.slice(0, 2).map((collab) => (
                         <div
                           key={collab.id}
-                          className="h-6 w-6 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 border border-slate-900 flex items-center justify-center text-xs font-medium text-slate-900"
+                          className="h-6 w-6 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 dark:from-cyan-400 dark:to-cyan-600 border border-background dark:border-slate-900 flex items-center justify-center text-xs font-medium text-white dark:text-slate-900"
                           title={collab.name}
                         >
                           {collab.name.charAt(0)}
                         </div>
                       ))}
                       {project.collaborators.length > 2 && (
-                        <div className="h-6 w-6 rounded-full bg-slate-800 border border-cyan-500/20 flex items-center justify-center text-xs text-cyan-300">
+                        <div className="h-6 w-6 rounded-full bg-muted dark:bg-slate-800 border border-cyan-500/20 dark:border-cyan-500/20 flex items-center justify-center text-xs text-accent dark:text-cyan-300">
                           +{project.collaborators.length - 2}
                         </div>
                       )}
