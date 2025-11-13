@@ -481,7 +481,7 @@ export default function TopTabs() {
               )}
             >
               {!collapsed ? (
-                <span className="rounded-full border border-white/60 bg-white/70 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.35em] text-slate-600 shadow-sm dark:border-cyan-500/40 dark:bg-slate-900/70 dark:text-cyan-200">
+                <span className="rounded-full bg-gradient-to-r from-white/40 to-white/20 dark:from-white/15 dark:to-white/5 border border-white/40 dark:border-white/20 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.35em] text-slate-700 dark:text-blue-100 shadow-sm backdrop-blur-md">
                   Navigation
                 </span>
               ) : null}
