@@ -144,12 +144,12 @@ export function ProjectDashboard({
   };
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-br from-[#050a15] via-[#0a1929] to-[#050a15] p-4 text-cyan-100">
+    <div className="flex flex-col h-full bg-background p-4 text-foreground dark:text-cyan-100">
       {/* Compact Header */}
       <div className="flex items-center justify-between mb-4 gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-cyan-100">R&D Labs</h1>
-          <p className="text-xs text-cyan-200/60 mt-0.5">
+          <h1 className="text-2xl font-bold text-foreground dark:text-cyan-100">R&D Labs</h1>
+          <p className="text-xs text-muted-foreground dark:text-cyan-200/60 mt-0.5">
             {filteredProjects.length} project{filteredProjects.length !== 1 ? "s" : ""}
           </p>
         </div>
