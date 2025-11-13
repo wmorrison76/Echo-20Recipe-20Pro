@@ -465,9 +465,9 @@ export default function TopTabs() {
           ref={asideRef}
           className={cn(
             "pointer-events-auto absolute left-0 top-20 z-[3200] flex flex-col overflow-hidden rounded-3xl transition-all duration-1000",
-            "bg-white/8 dark:bg-white/3",
-            "border border-white/20 dark:border-white/8",
-            "shadow-[0_8px_32px_0px_rgba(31,38,135,0.05)]",
+            "bg-white/3 dark:bg-white/1",
+            "border border-white/10 dark:border-white/5",
+            "shadow-[0_8px_32px_0px_rgba(31,38,135,0.02)]",
             "backdrop-blur-2xl",
             collapsed ? "w-14 space-y-2 p-2" : "w-60 space-y-3.5 p-4",
           )}
