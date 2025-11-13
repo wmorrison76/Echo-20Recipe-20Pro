@@ -76,12 +76,26 @@ function RDLabsWorkspaceContent() {
       {/* Professional Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-cyan-500/20 bg-slate-900/40 backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
-            <Beaker className="h-5 w-5 text-cyan-400" />
+          <div className={`p-2 rounded-lg border ${
+            labMode === "pastry"
+              ? "bg-rose-500/10 border-rose-500/20"
+              : "bg-cyan-500/10 border-cyan-500/20"
+          }`}>
+            {labMode === "pastry" ? (
+              <Sparkles className="h-5 w-5 text-rose-400" />
+            ) : (
+              <Beaker className="h-5 w-5 text-cyan-400" />
+            )}
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-cyan-300">R&D Labs</h1>
-            <p className="text-xs text-slate-400">Culinary & Pastry Research Environment</p>
+            <h1 className={`text-2xl font-bold ${
+              labMode === "pastry" ? "text-rose-300" : "text-cyan-300"
+            }`}>
+              R&D Labs
+            </h1>
+            <p className="text-xs text-slate-400">
+              {labMode === "pastry" ? "Pastry Research & Development" : "Culinary Research & Development"}
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -90,6 +104,24 @@ function RDLabsWorkspaceContent() {
             <p className="text-slate-500 text-xs">Research in progress</p>
           </div>
           <div className="flex gap-2">
+            <Button
+              variant={labMode === "pastry" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setLabMode(labMode === "pastry" ? "culinary" : "pastry")}
+              className={`gap-2 ${
+                labMode === "pastry"
+                  ? "bg-rose-600 hover:bg-rose-700 text-white"
+                  : ""
+              }`}
+              title={labMode === "pastry" ? "Switch to Culinary Lab" : "Switch to Pastry Lab"}
+            >
+              {labMode === "pastry" ? (
+                <Sparkles className="h-4 w-4" />
+              ) : (
+                <Sparkles className="h-4 w-4" />
+              )}
+              {labMode === "pastry" ? "Pastry Lab" : "Culinary Lab"}
+            </Button>
             <Button
               variant="outline"
               size="sm"
