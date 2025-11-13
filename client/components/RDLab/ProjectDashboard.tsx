@@ -221,8 +221,8 @@ export function ProjectDashboard({
       <div className="flex-1 overflow-hidden flex flex-col">
         {filteredProjects.length === 0 ? (
           <div className="flex flex-col items-center justify-center flex-1 text-center p-8">
-            <Search className="h-8 w-8 text-cyan-400/30 mb-2" />
-            <p className="text-cyan-300/70 text-sm">
+            <Search className="h-8 w-8 text-accent/30 dark:text-cyan-400/30 mb-2" />
+            <p className="text-muted-foreground dark:text-cyan-300/70 text-sm">
               No projects found
             </p>
           </div>
