@@ -260,8 +260,27 @@
     background-image: linear-gradient(
       180deg,
       rgba(255, 255, 255, 1) 0%,
-      rgba(247, 249, 255, 1) 100%
+      rgba(248, 250, 252, 1) 100%
     );
+  }
+
+  /* Light mode specific utilities */
+  html:not(.dark) .lab-surface {
+    background-color: rgba(248, 250, 252, 0.95);
+    border: 1px solid hsl(210, 20%, 88%);
+  }
+
+  html:not(.dark) .lab-accent-subtle {
+    background-color: rgba(6, 182, 212, 0.08);
+    color: hsl(190, 95%, 39%);
+  }
+
+  html:not(.dark) .lab-text-muted {
+    color: hsl(215, 12%, 45%);
+  }
+
+  html:not(.dark) .lab-divider {
+    border-color: hsl(210, 20%, 88%);
   }
 
   /* Marching ants border effect */
