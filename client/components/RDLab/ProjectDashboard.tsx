@@ -267,14 +267,14 @@ export function ProjectDashboard({
 
                   {/* Experiment Count */}
                   <div className="col-span-2 flex items-center">
-                    <span className="text-sm text-cyan-300 bg-cyan-900/20 rounded px-2 py-1">
+                    <span className="text-sm text-accent dark:text-cyan-300 bg-accent/10 dark:bg-cyan-900/20 rounded px-2 py-1">
                       {project.experimentCount}
                     </span>
                   </div>
 
                   {/* Last Updated */}
                   <div className="col-span-2 flex items-center">
-                    <span className="text-sm text-cyan-300/70">
+                    <span className="text-sm text-muted-foreground dark:text-cyan-300/70">
                       {project.updatedAt}
                     </span>
                   </div>
