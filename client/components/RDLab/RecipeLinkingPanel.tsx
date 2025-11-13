@@ -194,23 +194,21 @@ export function RecipeLinkingPanel({
         </Dialog>
 
         {/* Recipe Notes */}
-        <div className="space-y-3 border-t pt-4">
-          <p className="text-sm font-semibold">Recipe Implementation Notes</p>
-          <Textarea
-            placeholder="Add notes about how this experiment applies to the linked recipes..."
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={3}
-            className="text-sm"
-          />
-          <Button
-            size="sm"
-            onClick={handleUpdateNotes}
-            variant="outline"
-          >
-            Save Notes
-          </Button>
-        </div>
+        {linkedRecipes.length > 0 && (
+          <div className="space-y-3 border-t pt-4">
+            <p className="text-sm font-semibold">Implementation Notes</p>
+            <Textarea
+              placeholder="Add notes about how this experiment applies to the linked recipes..."
+              defaultValue={experiment?.recipeNotes || ""}
+              rows={3}
+              className="text-sm"
+              disabled
+            />
+            <p className="text-xs text-muted-foreground">
+              Notes are stored with the experiment
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
