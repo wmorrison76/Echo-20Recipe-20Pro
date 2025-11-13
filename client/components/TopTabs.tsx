@@ -263,8 +263,8 @@ function TabLink({
     >
       <Icon
         className={cn(
-          "h-4 w-4 flex-shrink-0 transition-transform duration-500",
-          collapsed ? "" : "group-hover:scale-[1.05]",
+          "h-4 w-4 flex-shrink-0 transition-all duration-300",
+          isActive ? "scale-110" : "group-hover:scale-110 group-hover:translate-y-[-2px]",
         )}
         aria-hidden
       />
