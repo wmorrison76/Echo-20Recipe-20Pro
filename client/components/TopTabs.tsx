@@ -543,9 +543,6 @@ export default function TopTabs() {
                       ? `${shortcutLabel}+${item.shortcut.display}`
                       : undefined
                   }
-                  onClick={
-                    item.to === "/?tab=rdlabs" ? onRDLabsClick : undefined
-                  }
                 />
               ))}
             </nav>
