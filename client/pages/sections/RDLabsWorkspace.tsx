@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { RDLabProvider } from "@/stores/rdLabStore";
-import { ProjectDashboard, RDLabsHelpPanel } from "@/components/RDLab";
-import { NewProjectDialog } from "@/components/RDLab/NewProjectDialog";
+import { ProjectDashboard, RDLabsHelpPanel, NewProjectDialog } from "@/components/RDLab";
 import { Button } from "@/components/ui/button";
 import { HelpCircle } from "lucide-react";
 
