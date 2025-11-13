@@ -56,9 +56,9 @@ function RDLabsWorkspaceContent() {
           <Button
             variant={showDashboard ? "default" : "ghost"}
             size="sm"
-            onClick={() => setShowDashboard(!showDashboard)}
+            onClick={() => handleToggleDashboard(!showDashboard)}
             className="gap-2"
-            title="Toggle Dashboard View"
+            title="R&D Labs Dashboard"
           >
             <LayoutGrid className="h-4 w-4" />
             Dashboard
