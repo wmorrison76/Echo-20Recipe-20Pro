@@ -7,6 +7,7 @@ import { handleNutritionAnalyze } from "./routes/nutrition";
 import { handleRecipeImport } from "./routes/recipe";
 import { proxyRecipeImage } from "./routes/recipeImage";
 import { recipeDeploymentRouter } from "./routes/recipe-deployment";
+import { rdLabsRouter } from "./routes/rdlabs";
 
 export function createServer() {
   const app = express();
