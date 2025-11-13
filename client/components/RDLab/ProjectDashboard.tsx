@@ -121,21 +121,21 @@ export function ProjectDashboard({
     switch (spec) {
       case "pastry":
         return (
-          <Badge className="gap-1 bg-amber-900/30 text-amber-300 border-amber-700/50 hover:bg-amber-900/40">
+          <Badge className="gap-1 bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-700/50 hover:bg-amber-100 dark:hover:bg-amber-900/40">
             <Sparkles className="h-3 w-3" />
             Pastry
           </Badge>
         );
       case "culinary":
         return (
-          <Badge className="gap-1 bg-cyan-900/30 text-cyan-300 border-cyan-700/50 hover:bg-cyan-900/40">
+          <Badge className="gap-1 bg-cyan-50 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-700/50 hover:bg-cyan-100 dark:hover:bg-cyan-900/40">
             <Beaker className="h-3 w-3" />
             Culinary
           </Badge>
         );
       default:
         return (
-          <Badge className="gap-1 bg-purple-900/30 text-purple-300 border-purple-700/50 hover:bg-purple-900/40">
+          <Badge className="gap-1 bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-700/50 hover:bg-purple-100 dark:hover:bg-purple-900/40">
             <Beaker className="h-3 w-3" />
             Both
           </Badge>
