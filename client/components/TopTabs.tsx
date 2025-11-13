@@ -544,7 +544,7 @@ export default function TopTabs() {
                 title="Help & Shortcuts"
                 onClick={() => setShowHelp(true)}
                 className={cn(
-                  "flex w-full items-center px-2.5 py-1.5 font-medium text-foreground/75 transition-all duration-300 hover:text-foreground",
+                  "flex w-full items-center px-2.5 py-1.5 font-medium text-foreground/75 transition-all duration-300 hover:text-foreground hover:bg-white/10 dark:hover:bg-white/5 rounded-lg",
                   collapsed ? "justify-center px-1.5" : "justify-between",
                 )}
               >
