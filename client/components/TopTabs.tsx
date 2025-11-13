@@ -121,13 +121,6 @@ const navItems: NavItemConfig[] = [
     shortcut: { key: "Digit0", display: "0" },
   },
   {
-    to: "/?tab=inventory",
-    labelKey: "nav.inventorySupplies",
-    fallback: "Inventory & Supplies",
-    icon: Boxes,
-    shortcut: { key: "Digit6", display: "6" },
-  },
-  {
     to: "/?tab=nutrition",
     labelKey: "nav.nutritionAllergens",
     fallback: "Nutrition/Allergens",
@@ -148,22 +141,10 @@ const navItems: NavItemConfig[] = [
     icon: Trash,
   },
   {
-    to: "/?tab=customer-service",
-    labelKey: "nav.customerService",
-    fallback: "CUSTOMERS",
-    icon: Users,
-  },
-  {
     to: "/?tab=plate-costing",
     labelKey: "nav.plateCosting",
     fallback: "COSTING",
     icon: DollarSign,
-  },
-  {
-    to: "/?tab=suppliers",
-    labelKey: "nav.suppliers",
-    fallback: "SUPPLIERS",
-    icon: Truck,
   },
   {
     to: "/?tab=gallery",
