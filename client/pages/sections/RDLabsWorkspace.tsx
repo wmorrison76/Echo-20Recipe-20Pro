@@ -57,7 +57,17 @@ function RDLabsWorkspaceContent() {
   }
 
   return (
-    <div className="w-full h-full flex flex-col bg-slate-950 text-slate-100">
+    <div className="w-full h-full flex flex-col bg-slate-950 text-slate-100 relative">
+      {/* Floating Dashboard Button */}
+      <button
+        onClick={() => setShowDashboard(true)}
+        className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 hover:from-cyan-300 hover:to-cyan-500 text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 border border-cyan-300/50"
+        title="Go to Dashboard"
+        aria-label="Go to Dashboard"
+      >
+        <BarChart3 className="h-6 w-6" />
+      </button>
+
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-cyan-500/10 bg-slate-900/50">
         <h1 className="text-lg font-semibold text-cyan-300">R&D Labs</h1>
