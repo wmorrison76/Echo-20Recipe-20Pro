@@ -560,7 +560,7 @@ export default function TopTabs() {
 
               <div
                 className={cn(
-                  "flex items-center justify-between px-2.5 py-1.5 text-sm font-medium text-foreground/75 transition-all duration-300",
+                  "flex items-center justify-between px-2.5 py-1.5 text-sm font-medium text-foreground/75 transition-all duration-300 hover:text-foreground hover:bg-white/10 dark:hover:bg-white/5 rounded-lg",
                   collapsed && "flex-col gap-1.5 px-2 py-1.5",
                 )}
               >
