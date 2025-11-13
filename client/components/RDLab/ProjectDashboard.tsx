@@ -243,21 +243,21 @@ export function ProjectDashboard({
                 <div
                   key={project.id}
                   onClick={() => onSelectProject(project.id)}
-                  className="grid grid-cols-12 gap-3 px-3 py-2.5 hover:bg-cyan-500/10 transition-colors cursor-pointer group"
+                  className="grid grid-cols-12 gap-3 px-3 py-2.5 hover:bg-accent/10 dark:hover:bg-cyan-500/10 transition-colors cursor-pointer group"
                 >
                   {/* Project Name */}
                   <div className="col-span-4 flex items-center gap-2 min-w-0">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-cyan-100 truncate group-hover:text-cyan-200">
+                      <p className="text-sm font-medium text-foreground dark:text-cyan-100 truncate group-hover:text-accent dark:group-hover:text-cyan-200">
                         {project.name}
                       </p>
                       {project.description && (
-                        <p className="text-xs text-cyan-300/50 truncate mt-0.5">
+                        <p className="text-xs text-muted-foreground dark:text-cyan-300/50 truncate mt-0.5">
                           {project.description}
                         </p>
                       )}
                     </div>
-                    <ChevronRight className="h-4 w-4 text-cyan-400/30 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <ChevronRight className="h-4 w-4 text-accent/30 dark:text-cyan-400/30 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
 
                   {/* Specialization Badge */}
