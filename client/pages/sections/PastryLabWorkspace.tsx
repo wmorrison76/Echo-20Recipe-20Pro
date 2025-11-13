@@ -157,7 +157,7 @@ function PastryLabWorkspaceContent({
         </Card>
       </div>
 
-      <Tabs defaultValue="workbench" className="flex flex-1 flex-col gap-3">
+      <Tabs defaultValue="workbench" className="flex flex-1 flex-col gap-3 overflow-hidden">
         <TabsList className="w-full justify-start border-b bg-transparent p-0">
           <TabsTrigger
             value="workbench"
