@@ -92,6 +92,16 @@ function RDLabsWorkspaceContent() {
             <Button
               variant="outline"
               size="sm"
+              onClick={() => setShowHelp(!showHelp)}
+              className="gap-2"
+              title="R&D Labs Guide"
+            >
+              <HelpCircle className="h-4 w-4" />
+              Guide
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setShowDashboard(true)}
               className="gap-2"
               title="Back to Dashboard"
