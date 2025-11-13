@@ -54,9 +54,7 @@ const PASTRY_FOCUS_AREAS = [
   },
 ];
 
-function PastryLabWorkspaceContent({
-  defaultProject,
-}: PastryLabWorkspaceProps) {
+function PastryLabWorkspaceContent() {
   const store = useOptionalRDLabStore();
   const [showDashboard, setShowDashboard] = useState(true);
 
