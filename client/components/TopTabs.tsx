@@ -17,7 +17,7 @@ import {
   Warehouse,
   FileText,
   HelpCircle,
-  Gallery,
+  ImageIcon,
   PencilLine,
   Shield,
   Wand2,
