@@ -1,9 +1,22 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ChevronDown, BookOpen, Beaker, Users, FileText, Lightbulb } from "lucide-react";
+import {
+  ChevronDown,
+  BookOpen,
+  Beaker,
+  Users,
+  FileText,
+  Lightbulb,
+} from "lucide-react";
 
 const HELP_SECTIONS = [
   {
@@ -194,7 +207,11 @@ export function RDLabsHelpPanel({ isOpen, onClose }: RDLabsHelpPanelProps) {
 
       {/* Content */}
       <ScrollArea className="flex-1">
-        <Tabs value={activeSection} onValueChange={setActiveSection} className="w-full h-full flex flex-col">
+        <Tabs
+          value={activeSection}
+          onValueChange={setActiveSection}
+          className="w-full h-full flex flex-col"
+        >
           <TabsList className="w-full justify-start gap-2 border-b border-cyan-500/20 rounded-none bg-transparent p-2">
             {HELP_SECTIONS.map((section) => {
               const Icon = section.icon;
@@ -212,11 +229,19 @@ export function RDLabsHelpPanel({ isOpen, onClose }: RDLabsHelpPanelProps) {
           </TabsList>
 
           {HELP_SECTIONS.map((section) => (
-            <TabsContent key={section.id} value={section.id} className="flex-1 p-4 space-y-4">
+            <TabsContent
+              key={section.id}
+              value={section.id}
+              className="flex-1 p-4 space-y-4"
+            >
               {section.content.map((item, idx) => (
                 <div key={idx} className="space-y-2">
-                  <h3 className="font-semibold text-cyan-300 text-sm">{item.subtitle}</h3>
-                  <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">{item.text}</p>
+                  <h3 className="font-semibold text-cyan-300 text-sm">
+                    {item.subtitle}
+                  </h3>
+                  <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
+                    {item.text}
+                  </p>
                   {idx < section.content.length - 1 && (
                     <div className="h-px bg-cyan-500/10 my-3" />
                   )}
@@ -230,7 +255,8 @@ export function RDLabsHelpPanel({ isOpen, onClose }: RDLabsHelpPanelProps) {
       {/* Footer */}
       <div className="border-t border-cyan-500/20 p-4 bg-slate-900/50">
         <p className="text-xs text-slate-400">
-          For additional support, check the main app help or contact your R&D coordinator.
+          For additional support, check the main app help or contact your R&D
+          coordinator.
         </p>
       </div>
     </div>

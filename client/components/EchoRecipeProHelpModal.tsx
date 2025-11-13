@@ -1,7 +1,15 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { BookOpen, Utensils, Settings, Users, TrendingUp, HelpCircle, X } from "lucide-react";
+import {
+  BookOpen,
+  Utensils,
+  Settings,
+  Users,
+  TrendingUp,
+  HelpCircle,
+  X,
+} from "lucide-react";
 
 const MAIN_HELP_SECTIONS = [
   {
@@ -187,27 +195,36 @@ interface EchoRecipeProHelpModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function EchoRecipeProHelpModal({ isOpen, onOpenChange }: EchoRecipeProHelpModalProps) {
+export function EchoRecipeProHelpModal({
+  isOpen,
+  onOpenChange,
+}: EchoRecipeProHelpModalProps) {
   const [activeSection, setActiveSection] = useState("overview");
 
   if (!isOpen) return null;
 
-  const currentSection = MAIN_HELP_SECTIONS.find(s => s.id === activeSection);
+  const currentSection = MAIN_HELP_SECTIONS.find((s) => s.id === activeSection);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="w-full max-w-4xl h-[90vh] bg-slate-950 rounded-lg shadow-2xl border border-cyan-500/20 flex flex-col overflow-hidden"
+      <div
+        className="w-full max-w-4xl h-[90vh] bg-slate-950 rounded-lg shadow-2xl border border-cyan-500/20 flex flex-col overflow-hidden"
         style={{
-          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 40px rgba(34, 211, 238, 0.1)"
-        }}>
-        
+          boxShadow:
+            "0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 40px rgba(34, 211, 238, 0.1)",
+        }}
+      >
         {/* Header */}
         <div className="border-b border-cyan-500/20 px-6 py-4 flex items-center justify-between bg-slate-900/50">
           <div className="flex items-center gap-3">
             <BookOpen className="h-6 w-6 text-cyan-400" />
             <div>
-              <h2 className="text-lg font-bold text-cyan-300">EchoRecipe Pro - Help Guide</h2>
-              <p className="text-xs text-slate-400">System features, workflows, and best practices</p>
+              <h2 className="text-lg font-bold text-cyan-300">
+                EchoRecipe Pro - Help Guide
+              </h2>
+              <p className="text-xs text-slate-400">
+                System features, workflows, and best practices
+              </p>
             </div>
           </div>
           <Button
@@ -258,13 +275,17 @@ export function EchoRecipeProHelpModal({ isOpen, onOpenChange }: EchoRecipeProHe
                       {currentSection.icon && (
                         <currentSection.icon className="h-5 w-5 text-cyan-400" />
                       )}
-                      <h3 className="text-xl font-bold text-cyan-300">{currentSection.title}</h3>
+                      <h3 className="text-xl font-bold text-cyan-300">
+                        {currentSection.title}
+                      </h3>
                     </div>
 
                     <div className="space-y-6">
                       {currentSection.content.map((item, idx) => (
                         <div key={idx} className="space-y-2">
-                          <h4 className="font-semibold text-cyan-200 text-base">{item.subtitle}</h4>
+                          <h4 className="font-semibold text-cyan-200 text-base">
+                            {item.subtitle}
+                          </h4>
                           <p className="text-sm text-slate-300 leading-relaxed break-words whitespace-normal">
                             {item.text}
                           </p>
@@ -283,7 +304,10 @@ export function EchoRecipeProHelpModal({ isOpen, onOpenChange }: EchoRecipeProHe
 
         {/* Footer */}
         <div className="border-t border-cyan-500/20 px-6 py-3 bg-slate-900/50 flex items-center justify-between text-xs text-slate-400">
-          <p>Need help with R&D Labs? Use the R&D Labs help button in the workspace.</p>
+          <p>
+            Need help with R&D Labs? Use the R&D Labs help button in the
+            workspace.
+          </p>
           <Button
             variant="outline"
             size="sm"
