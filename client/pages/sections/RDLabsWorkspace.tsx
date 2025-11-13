@@ -1,4 +1,4 @@
-import { useState, ReactNode } from "react";
+import React, { useState, ReactNode } from "react";
 import { RDLabProvider, useOptionalRDLabStore } from "@/stores/rdLabStore";
 
 class ErrorBoundary extends React.Component<
