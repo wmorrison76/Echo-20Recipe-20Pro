@@ -45,11 +45,13 @@ function RDLabsWorkspaceContent({ defaultProject }: RDLabsWorkspaceProps) {
   // Show dashboard on load
   if (showDashboard) {
     return (
-      <div className="h-full w-full overflow-auto">
-        <ProjectDashboard
-          onSelectProject={handleSelectProject}
-          onCreateProject={() => setShowDashboard(true)}
-        />
+      <div className="w-full h-full flex flex-col overflow-hidden">
+        <div className="flex-1 overflow-auto">
+          <ProjectDashboard
+            onSelectProject={handleSelectProject}
+            onCreateProject={() => setShowDashboard(true)}
+          />
+        </div>
       </div>
     );
   }
