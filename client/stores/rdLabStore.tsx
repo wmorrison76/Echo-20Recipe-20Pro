@@ -202,6 +202,9 @@ const experimentsSeed: LabExperiment[] = [
       "Position sparkling solids as non-alcoholic celebration ritual",
       "Refillable CO₂ capsules to eliminate single-use siphon chargers",
     ],
+    specialization: "culinary",
+    linkedRecipeIds: [],
+    collaborators: [],
   },
   {
     id: "exp-satin-03",
