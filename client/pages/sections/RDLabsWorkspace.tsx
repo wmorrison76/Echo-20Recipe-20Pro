@@ -80,10 +80,8 @@ function RDLabsWorkspaceContent() {
             </button>
           </div>
 
-          {/* Project Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Empty grid - no projects */}
-          </div>
+          {/* Project Grid - Empty */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" />
 
           {/* Quick Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-8">
