@@ -229,7 +229,7 @@ export function ProjectDashboard({
         ) : (
           <div className="overflow-y-auto flex-1">
             {/* List Header */}
-            <div className="sticky top-0 grid grid-cols-12 gap-3 px-3 py-2 bg-slate-900/30 border-b border-cyan-500/10 text-xs font-medium text-cyan-300/60 uppercase tracking-wider">
+            <div className="sticky top-0 grid grid-cols-12 gap-3 px-3 py-2 bg-input dark:bg-slate-900/30 border-b border-cyan-500/10 dark:border-cyan-500/10 text-xs font-medium text-muted-foreground dark:text-cyan-300/60 uppercase tracking-wider">
               <div className="col-span-4">Project</div>
               <div className="col-span-2">Type</div>
               <div className="col-span-2">Experiments</div>
@@ -238,7 +238,7 @@ export function ProjectDashboard({
             </div>
 
             {/* List Items */}
-            <div className="divide-y divide-cyan-500/10">
+            <div className="divide-y divide-cyan-500/10 dark:divide-cyan-500/10">
               {filteredProjects.map((project) => (
                 <div
                   key={project.id}
