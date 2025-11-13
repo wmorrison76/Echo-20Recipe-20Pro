@@ -109,10 +109,10 @@
   body {
     @apply bg-background text-foreground;
     background-image: linear-gradient(
-      60deg,
-      #f5faff 0%,
-      #f7fbff 50%,
-      #ffffff 100%
+      135deg,
+      hsl(210, 33%, 97%) 0%,
+      hsl(210, 25%, 98%) 50%,
+      hsl(210, 20%, 99%) 100%
     );
   }
 
