@@ -1,6 +1,16 @@
 import * as React from "react";
 
 export type ExperimentStatus = "ideation" | "testing" | "ready" | "archived";
+export type LabSpecialization = "culinary" | "pastry" | "both";
+
+export type LabCollaborator = {
+  userId: string;
+  username: string;
+  email: string;
+  role: "owner" | "editor" | "viewer";
+  joinedAt: string;
+  location?: string;
+};
 
 export type LabExperiment = {
   id: string;
@@ -19,6 +29,10 @@ export type LabExperiment = {
   textureObjectives: string[];
   flavorConstellations: string[];
   futureFoodAngles: string[];
+  specialization: LabSpecialization;
+  linkedRecipeIds?: string[];
+  recipeNotes?: string;
+  collaborators?: string[];
 };
 
 export type LabTask = {
