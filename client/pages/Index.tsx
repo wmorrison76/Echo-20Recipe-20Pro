@@ -28,16 +28,19 @@ import TopTabs from "@/components/TopTabs";
 import SubtleBottomGlow from "@/components/SubtleBottomGlow";
 import TronBackdrop from "@/components/TronBackdrop";
 import CornerBrand from "@/components/CornerBrand";
+import { EchoRecipeProHelpModal } from "@/components/EchoRecipeProHelpModal";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import {
   PageToolbarProvider,
   usePageToolbar,
 } from "@/context/PageToolbarContext";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { CommandPalette } from "@/components/CommandPalette";
 import { useRegisterShortcut } from "@/context/KeyboardShortcutsContext";
+import { HelpCircle } from "lucide-react";
 
 export default function Index() {
   return (
