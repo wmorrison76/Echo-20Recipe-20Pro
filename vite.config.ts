@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: "dist/spa",
     rollupOptions: {
-      external: ["html2canvas", "jspdf"],
+      external: ["jspdf"],
       output: {
         manualChunks(id) {
           // Core dependencies
