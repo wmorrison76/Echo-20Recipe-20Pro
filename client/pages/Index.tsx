@@ -76,7 +76,7 @@ function IndexContent() {
     <TronBackdrop>
       <CommandPalette />
       <div
-        className="min-h-screen text-foreground"
+        className="relative min-h-screen text-foreground"
         style={{
           paddingLeft: "calc(var(--sidebar-offset, 88px) - 0.35rem)",
         }}
