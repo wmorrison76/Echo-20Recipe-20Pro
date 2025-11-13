@@ -316,11 +316,11 @@ export default function WasteTrackingWorkspace() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Category</label>
               <Select
-                value={filters.category || ""}
+                value={filters.category || "all"}
                 onValueChange={(value) =>
                   setFilters((f) => ({
                     ...f,
-                    category: value || undefined,
+                    category: value === "all" ? undefined : value,
                   }))
                 }
               >
@@ -328,7 +328,7 @@ export default function WasteTrackingWorkspace() {
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Categories</SelectItem>
+                  <SelectItem value="all">All Categories</SelectItem>
                   {WASTE_CATEGORIES.map((cat) => (
                     <SelectItem key={cat.id} value={cat.id}>
                       {cat.label}
