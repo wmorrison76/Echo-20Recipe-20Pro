@@ -587,11 +587,11 @@ export default function TopTabs() {
                   : "rgba(0, 0, 0, 0.12)",
                 backdropFilter: "blur(20px)",
                 border: document.documentElement.classList.contains('dark')
-                  ? "1px solid rgba(255, 255, 255, 0.25)"
-                  : "1.5px solid rgba(0, 0, 0, 0.15)",
+                  ? "1px solid #06b6d4"
+                  : "1px solid rgba(0, 0, 0, 0.3)",
                 boxShadow: document.documentElement.classList.contains('dark')
                   ? "0 8px 32px 0 rgba(31, 38, 135, 0.1)"
-                  : "0 8px 32px 0 rgba(0, 0, 0, 0.08), 0 0 0 1.5px rgba(0, 0, 0, 0.1)",
+                  : "0 8px 32px 0 rgba(0, 0, 0, 0.08)",
                 padding: "10px 6px",
               }}
               onMouseEnter={(e) => {
