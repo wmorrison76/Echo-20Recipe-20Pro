@@ -163,6 +163,16 @@ function IndexContent() {
                 </motion.div>
               ) : null}
             </AnimatePresence>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setHelpModalOpen(true)}
+              className="gap-2"
+              title="Open EchoRecipe Pro Help"
+            >
+              <HelpCircle className="h-4 w-4" />
+              <span className="sr-only">Help</span>
+            </Button>
           </div>
         </header>
         <main className="w-full py-2">
