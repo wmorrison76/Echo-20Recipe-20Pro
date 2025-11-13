@@ -11,3 +11,4 @@ export { RecipeLinkingPanel } from "./RecipeLinkingPanel";
 export { ExperimentTemplates } from "./ExperimentTemplates";
 export { ExportImport } from "./ExportImport";
 export { PastryLabPortal } from "./PastryLabPortal";
+export { RDLabsHelpPanel } from "./RDLabsHelpPanel";
