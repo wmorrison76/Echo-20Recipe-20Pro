@@ -1,17 +1,8 @@
 import { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Clock, Plus, Search, Users, Zap } from "lucide-react";
-import { format } from "date-fns";
+import { Plus, Search, ChevronRight, Beaker, Sparkles } from "lucide-react";
 
 interface RDLabProject {
   id: string;
@@ -126,240 +117,193 @@ export function ProjectDashboard({
     setFilteredProjects(filtered);
   }, [searchQuery, specializationFilter, allProjects]);
 
+  const getSpecializationBadge = (spec: string) => {
+    switch (spec) {
+      case "pastry":
+        return (
+          <Badge className="gap-1 bg-amber-900/30 text-amber-300 border-amber-700/50 hover:bg-amber-900/40">
+            <Sparkles className="h-3 w-3" />
+            Pastry
+          </Badge>
+        );
+      case "culinary":
+        return (
+          <Badge className="gap-1 bg-cyan-900/30 text-cyan-300 border-cyan-700/50 hover:bg-cyan-900/40">
+            <Beaker className="h-3 w-3" />
+            Culinary
+          </Badge>
+        );
+      default:
+        return (
+          <Badge className="gap-1 bg-purple-900/30 text-purple-300 border-purple-700/50 hover:bg-purple-900/40">
+            <Beaker className="h-3 w-3" />
+            Both
+          </Badge>
+        );
+    }
+  };
+
   return (
-    <div className="min-h-screen space-y-8 bg-gradient-to-br from-[#050a15] via-[#0a1929] to-[#050a15] p-6 text-cyan-100">
-      {/* Header */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight text-cyan-100">R&D Lab Dashboard</h1>
-        <p className="text-cyan-200/70">
-          Manage your recipe development projects with collaborative teams
-        </p>
-      </div>
-
-      {/* Recent Projects */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-semibold text-cyan-100">Recent Projects</h2>
-            <p className="text-sm text-cyan-200/70">
-              Projects you've worked on recently
-            </p>
-          </div>
-          <Button onClick={onCreateProject} className="gap-2">
-            <Plus className="h-4 w-4" />
-            New Project
-          </Button>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          {recentProjects.length === 0 ? (
-            <Card className="col-span-2 border-dashed">
-              <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                <Zap className="h-12 w-12 text-muted-foreground/40 mb-3" />
-                <p className="text-muted-foreground">No recent projects</p>
-                <Button
-                  onClick={onCreateProject}
-                  variant="outline"
-                  className="mt-4 gap-2"
-                >
-                  <Plus className="h-4 w-4" />
-                  Create Your First Project
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            recentProjects.map((project) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                onClick={() => onSelectProject(project.id)}
-                isRecent={true}
-              />
-            ))
-          )}
-        </div>
-      </section>
-
-      {/* All Projects */}
-      <section className="space-y-4">
+    <div className="flex flex-col h-full bg-gradient-to-br from-[#050a15] via-[#0a1929] to-[#050a15] p-4 text-cyan-100">
+      {/* Compact Header */}
+      <div className="flex items-center justify-between mb-4 gap-3">
         <div>
-          <h2 className="text-xl font-semibold text-cyan-100">All Projects</h2>
-          <p className="text-sm text-cyan-200/70">
-            Browse and search all your projects
+          <h1 className="text-2xl font-bold text-cyan-100">R&D Labs</h1>
+          <p className="text-xs text-cyan-200/60 mt-0.5">
+            {filteredProjects.length} project{filteredProjects.length !== 1 ? "s" : ""}
           </p>
         </div>
+        <Button
+          onClick={onCreateProject}
+          size="sm"
+          className="gap-2 whitespace-nowrap"
+        >
+          <Plus className="h-4 w-4" />
+          New Lab
+        </Button>
+      </div>
 
-        {/* Search and Filter */}
-        <div className="space-y-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-cyan-300/50" />
-            <Input
-              placeholder="Search projects by name, description, or team member..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="border-cyan-500/20 bg-slate-950/70 pl-9 text-cyan-100 placeholder:text-cyan-300/40 focus:border-cyan-400"
-            />
-          </div>
-
-          <div className="flex gap-2 flex-wrap">
-            <Button
-              variant={specializationFilter === "all" ? "default" : "outline"}
-              onClick={() => setSpecializationFilter("all")}
-              size="sm"
-            >
-              All
-            </Button>
-            <Button
-              variant={
-                specializationFilter === "culinary" ? "default" : "outline"
-              }
-              onClick={() => setSpecializationFilter("culinary")}
-              size="sm"
-            >
-              Culinary
-            </Button>
-            <Button
-              variant={
-                specializationFilter === "pastry" ? "default" : "outline"
-              }
-              onClick={() => setSpecializationFilter("pastry")}
-              size="sm"
-            >
-              Pastry
-            </Button>
-            <Button
-              variant={specializationFilter === "both" ? "default" : "outline"}
-              onClick={() => setSpecializationFilter("both")}
-              size="sm"
-            >
-              Both
-            </Button>
-          </div>
+      {/* Search & Filters - Compact */}
+      <div className="space-y-2 mb-3">
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-cyan-300/40" />
+          <Input
+            placeholder="Search projects..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="h-8 border-cyan-500/20 bg-slate-950/50 pl-8 text-sm text-cyan-100 placeholder:text-cyan-300/40 focus:border-cyan-400"
+          />
         </div>
 
-        {/* Projects Grid */}
-        <div className="grid gap-4">
-          {filteredProjects.length === 0 ? (
-            <Card className="border-dashed border-cyan-500/20 bg-slate-950/30">
-              <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                <Search className="mb-3 h-12 w-12 text-cyan-400/40" />
-                <p className="text-cyan-300/70">
-                  No projects found matching your search
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {filteredProjects.map((project) => (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  onClick={() => onSelectProject(project.id)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-    </div>
-  );
-}
-
-interface ProjectCardProps {
-  project: RDLabProject;
-  onClick: () => void;
-  isRecent?: boolean;
-}
-
-function ProjectCard({ project, onClick, isRecent }: ProjectCardProps) {
-  return (
-    <Card
-      className={`cursor-pointer border-cyan-500/30 bg-slate-950/50 backdrop-blur-sm transition hover:border-cyan-500/50 hover:bg-slate-950/70 hover:shadow-lg dark:hover:shadow-cyan-500/20 ${
-        isRecent ? "border-cyan-400/60 dark:border-cyan-500/60 bg-slate-950/80" : ""
-      }`}
-      onClick={onClick}
-    >
-      <CardHeader>
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 space-y-2">
-            <CardTitle className="text-lg text-cyan-100">{project.name}</CardTitle>
-            {project.description && (
-              <CardDescription className="line-clamp-2 text-cyan-300/70">
-                {project.description}
-              </CardDescription>
-            )}
-          </div>
-          <Badge
-            className={
-              project.specialization === "pastry"
-                ? "bg-amber-100 text-amber-800 dark:bg-amber-900"
-                : project.specialization === "culinary"
-                  ? "bg-cyan-100 text-cyan-800 dark:bg-cyan-900"
-                  : "bg-purple-100 text-purple-800 dark:bg-purple-900"
-            }
+        <div className="flex gap-1.5 flex-wrap">
+          <Button
+            variant={specializationFilter === "all" ? "default" : "outline"}
+            onClick={() => setSpecializationFilter("all")}
+            size="sm"
+            className="h-7 text-xs"
           >
-            {project.specialization === "both"
-              ? "Culinary + Pastry"
-              : project.specialization}
-          </Badge>
+            All
+          </Button>
+          <Button
+            variant={
+              specializationFilter === "culinary" ? "default" : "outline"
+            }
+            onClick={() => setSpecializationFilter("culinary")}
+            size="sm"
+            className="h-7 text-xs gap-1"
+          >
+            <Beaker className="h-3 w-3" />
+            Culinary
+          </Button>
+          <Button
+            variant={
+              specializationFilter === "pastry" ? "default" : "outline"
+            }
+            onClick={() => setSpecializationFilter("pastry")}
+            size="sm"
+            className="h-7 text-xs gap-1"
+          >
+            <Sparkles className="h-3 w-3" />
+            Pastry
+          </Button>
+          <Button
+            variant={specializationFilter === "both" ? "default" : "outline"}
+            onClick={() => setSpecializationFilter("both")}
+            size="sm"
+            className="h-7 text-xs"
+          >
+            Both
+          </Button>
         </div>
-      </CardHeader>
+      </div>
 
-      <CardContent className="space-y-4">
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-3 text-sm">
-          <div className="space-y-1">
-            <p className="text-xs text-cyan-300/70">Experiments</p>
-            <p className="font-semibold text-cyan-100">{project.experimentCount}</p>
-          </div>
-          <div className="space-y-1">
-            <p className="text-xs text-cyan-300/70">Team Members</p>
-            <p className="font-semibold text-cyan-100">{project.collaborators.length + 1}</p>
-          </div>
-          <div className="space-y-1">
-            <p className="text-xs text-cyan-300/70">Updated</p>
-            <p className="font-semibold text-xs text-cyan-100">{project.updatedAt}</p>
-          </div>
-        </div>
-
-        {/* Collaborators */}
-        {project.collaborators.length > 0 && (
-          <div className="space-y-2 border-t border-cyan-500/20 pt-3">
-            <p className="flex items-center gap-1 text-xs font-semibold text-cyan-300/70">
-              <Users className="h-3 w-3" />
-              Team
+      {/* Projects List View */}
+      <div className="flex-1 overflow-hidden flex flex-col">
+        {filteredProjects.length === 0 ? (
+          <div className="flex flex-col items-center justify-center flex-1 text-center p-8">
+            <Search className="h-8 w-8 text-cyan-400/30 mb-2" />
+            <p className="text-cyan-300/70 text-sm">
+              No projects found
             </p>
-            <div className="flex flex-wrap gap-1">
-              {project.collaborators.slice(0, 3).map((collab) => (
-                <Badge key={collab.id} variant="secondary" className="text-xs">
-                  {collab.name}
-                </Badge>
+          </div>
+        ) : (
+          <div className="overflow-y-auto flex-1">
+            {/* List Header */}
+            <div className="sticky top-0 grid grid-cols-12 gap-3 px-3 py-2 bg-slate-900/30 border-b border-cyan-500/10 text-xs font-medium text-cyan-300/60 uppercase tracking-wider">
+              <div className="col-span-4">Project</div>
+              <div className="col-span-2">Type</div>
+              <div className="col-span-2">Experiments</div>
+              <div className="col-span-2">Updated</div>
+              <div className="col-span-2">Team</div>
+            </div>
+
+            {/* List Items */}
+            <div className="divide-y divide-cyan-500/10">
+              {filteredProjects.map((project) => (
+                <div
+                  key={project.id}
+                  onClick={() => onSelectProject(project.id)}
+                  className="grid grid-cols-12 gap-3 px-3 py-2.5 hover:bg-cyan-500/10 transition-colors cursor-pointer group"
+                >
+                  {/* Project Name */}
+                  <div className="col-span-4 flex items-center gap-2 min-w-0">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-cyan-100 truncate group-hover:text-cyan-200">
+                        {project.name}
+                      </p>
+                      {project.description && (
+                        <p className="text-xs text-cyan-300/50 truncate mt-0.5">
+                          {project.description}
+                        </p>
+                      )}
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-cyan-400/30 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+
+                  {/* Specialization Badge */}
+                  <div className="col-span-2 flex items-center">
+                    {getSpecializationBadge(project.specialization)}
+                  </div>
+
+                  {/* Experiment Count */}
+                  <div className="col-span-2 flex items-center">
+                    <span className="text-sm text-cyan-300 bg-cyan-900/20 rounded px-2 py-1">
+                      {project.experimentCount}
+                    </span>
+                  </div>
+
+                  {/* Last Updated */}
+                  <div className="col-span-2 flex items-center">
+                    <span className="text-sm text-cyan-300/70">
+                      {project.updatedAt}
+                    </span>
+                  </div>
+
+                  {/* Team/Collaborators */}
+                  <div className="col-span-2 flex items-center">
+                    <div className="flex -space-x-2">
+                      {project.collaborators.slice(0, 2).map((collab) => (
+                        <div
+                          key={collab.id}
+                          className="h-6 w-6 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 border border-slate-900 flex items-center justify-center text-xs font-medium text-slate-900"
+                          title={collab.name}
+                        >
+                          {collab.name.charAt(0)}
+                        </div>
+                      ))}
+                      {project.collaborators.length > 2 && (
+                        <div className="h-6 w-6 rounded-full bg-slate-800 border border-cyan-500/20 flex items-center justify-center text-xs text-cyan-300">
+                          +{project.collaborators.length - 2}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               ))}
-              {project.collaborators.length > 3 && (
-                <Badge variant="secondary" className="text-xs">
-                  +{project.collaborators.length - 3}
-                </Badge>
-              )}
             </div>
           </div>
         )}
-
-        {/* Timeline */}
-        <div className="border-t pt-3 space-y-2 text-xs text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <Calendar className="h-3 w-3" />
-            <span>
-              Created {format(new Date(project.createdAt), "MMM d, yyyy")}
-            </span>
-          </div>
-          {project.lastAccessedAt && (
-            <div className="flex items-center gap-2">
-              <Clock className="h-3 w-3" />
-              <span>Last accessed {project.lastAccessedAt}</span>
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
