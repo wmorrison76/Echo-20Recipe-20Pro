@@ -25,7 +25,6 @@ import {
   Trash,
   UtensilsCrossed,
   Beaker,
-  Sparkles,
   Atom,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
