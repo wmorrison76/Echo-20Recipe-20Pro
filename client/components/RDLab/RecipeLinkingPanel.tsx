@@ -53,14 +53,22 @@ export function RecipeLinkingPanel({
   );
 
   const handleLinkRecipe = (recipeId: string) => {
-    onLinkRecipe(recipeId);
+    if (!experimentId) {
+      toast.error("No experiment selected");
+      return;
+    }
+    linkRecipe(experimentId, recipeId);
     setSearchQuery("");
     toast.success("Recipe linked to experiment");
   };
 
-  const handleUpdateNotes = () => {
-    onUpdateRecipeNotes(notes);
-    toast.success("Recipe notes updated");
+  const handleUnlinkRecipe = (recipeId: string) => {
+    if (!experimentId) {
+      toast.error("No experiment selected");
+      return;
+    }
+    unlinkRecipe(experimentId, recipeId);
+    toast.success("Recipe unlinked");
   };
 
   return (
