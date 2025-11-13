@@ -271,10 +271,10 @@ function PastryLabWorkspaceContent() {
   );
 }
 
-export default function PastryLabWorkspace(props: PastryLabWorkspaceProps) {
+export default function PastryLabWorkspace() {
   return (
     <RDLabProvider>
-      <PastryLabWorkspaceContent {...props} />
+      <PastryLabWorkspaceContent />
     </RDLabProvider>
   );
 }
