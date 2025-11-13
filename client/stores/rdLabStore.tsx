@@ -467,6 +467,110 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
     );
   }, []);
 
+  const toggleExperimentSelection = React.useCallback((id: string) => {
+    setSelectedExperimentIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  const clearExperimentSelection = React.useCallback(() => {
+    setSelectedExperimentIds(new Set());
+  }, []);
+
+  const bulkSetStatus = React.useCallback((ids: string[], status: ExperimentStatus) => {
+    setExperiments((prev) =>
+      prev.map((exp) =>
+        ids.includes(exp.id)
+          ? { ...exp, status, lastUpdated: "Just now" }
+          : exp,
+      ),
+    );
+  }, []);
+
+  const bulkAddTag = React.useCallback((ids: string[], tag: string) => {
+    const trimmedTag = tag.trim();
+    if (!trimmedTag) return;
+    setExperiments((prev) =>
+      prev.map((exp) =>
+        ids.includes(exp.id) && !exp.tags.includes(trimmedTag)
+          ? { ...exp, tags: [...exp.tags, trimmedTag], lastUpdated: "Just now" }
+          : exp,
+      ),
+    );
+  }, []);
+
+  const bulkRemoveTag = React.useCallback((ids: string[], tag: string) => {
+    setExperiments((prev) =>
+      prev.map((exp) =>
+        ids.includes(exp.id)
+          ? { ...exp, tags: exp.tags.filter((t) => t !== tag), lastUpdated: "Just now" }
+          : exp,
+      ),
+    );
+  }, []);
+
+  const linkRecipe = React.useCallback((experimentId: string, recipeId: string) => {
+    setExperiments((prev) =>
+      prev.map((exp) =>
+        exp.id === experimentId
+          ? {
+              ...exp,
+              linkedRecipeIds: [...(exp.linkedRecipeIds || []), recipeId],
+              lastUpdated: "Just now",
+            }
+          : exp,
+      ),
+    );
+  }, []);
+
+  const unlinkRecipe = React.useCallback((experimentId: string, recipeId: string) => {
+    setExperiments((prev) =>
+      prev.map((exp) =>
+        exp.id === experimentId
+          ? {
+              ...exp,
+              linkedRecipeIds: (exp.linkedRecipeIds || []).filter((id) => id !== recipeId),
+              lastUpdated: "Just now",
+            }
+          : exp,
+      ),
+    );
+  }, []);
+
+  const addCollaborator = React.useCallback((experimentId: string, collaboratorId: string) => {
+    setExperiments((prev) =>
+      prev.map((exp) =>
+        exp.id === experimentId
+          ? {
+              ...exp,
+              collaborators: [...(exp.collaborators || []), collaboratorId],
+              lastUpdated: "Just now",
+            }
+          : exp,
+      ),
+    );
+  }, []);
+
+  const removeCollaborator = React.useCallback((experimentId: string, collaboratorId: string) => {
+    setExperiments((prev) =>
+      prev.map((exp) =>
+        exp.id === experimentId
+          ? {
+              ...exp,
+              collaborators: (exp.collaborators || []).filter((id) => id !== collaboratorId),
+              lastUpdated: "Just now",
+            }
+          : exp,
+      ),
+    );
+  }, []);
+
   const serializeState = React.useCallback((): RDLabSnapshot => {
     return {
       experiments: cloneState(experiments),
