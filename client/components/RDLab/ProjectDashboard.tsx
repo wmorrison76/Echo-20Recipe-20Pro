@@ -166,12 +166,12 @@ export function ProjectDashboard({
       {/* Search & Filters - Compact */}
       <div className="space-y-2 mb-3">
         <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-cyan-300/40" />
+          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-cyan-400/40 dark:text-cyan-300/40" />
           <Input
             placeholder="Search projects..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-8 border-cyan-500/20 bg-slate-950/50 pl-8 text-sm text-cyan-100 placeholder:text-cyan-300/40 focus:border-cyan-400"
+            className="h-8 border-cyan-500/20 dark:border-cyan-500/20 bg-white dark:bg-slate-950/50 pl-8 text-sm text-foreground dark:text-cyan-100 placeholder:text-cyan-400/40 dark:placeholder:text-cyan-300/40 focus:border-cyan-400"
           />
         </div>
 
