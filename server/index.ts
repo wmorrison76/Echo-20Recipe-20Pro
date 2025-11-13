@@ -6,6 +6,7 @@ import { githubRaw, githubZip } from "./routes/github";
 import { handleNutritionAnalyze } from "./routes/nutrition";
 import { handleRecipeImport } from "./routes/recipe";
 import { proxyRecipeImage } from "./routes/recipeImage";
+import { recipeDeploymentRouter } from "./routes/recipe-deployment";
 
 export function createServer() {
   const app = express();
@@ -31,6 +32,9 @@ export function createServer() {
   app.post("/api/nutrition/analyze", handleNutritionAnalyze);
   app.post("/api/recipe/import", handleRecipeImport);
   app.get("/api/recipe/image", proxyRecipeImage);
+
+  // Recipe Deployment System
+  app.use(recipeDeploymentRouter);
 
   return app;
 }
