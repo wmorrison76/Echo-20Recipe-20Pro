@@ -171,6 +171,18 @@ const navItems: NavItemConfig[] = [
     icon: ImageIcon,
     shortcut: { key: "Digit9", display: "9" },
   },
+  {
+    to: "/?tab=rdlabs",
+    labelKey: "nav.rdlabs",
+    fallback: "R&D LABS",
+    icon: Beaker,
+  },
+  {
+    to: "/?tab=pastry-lab",
+    labelKey: "nav.pastrylab",
+    fallback: "PASTRY LAB",
+    icon: Sparkles,
+  },
 ];
 
 type DissolvingTextProps = {
