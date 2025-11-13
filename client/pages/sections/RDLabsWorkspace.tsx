@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { RDLabProvider } from "@/stores/rdLabStore";
 import { ProjectDashboard, RDLabsHelpPanel } from "@/components/RDLab";
+import { NewProjectDialog } from "@/components/RDLab/NewProjectDialog";
 import { Button } from "@/components/ui/button";
 import { HelpCircle } from "lucide-react";
 
@@ -14,6 +15,22 @@ export default function RDLabsWorkspace() {
 
 function RDLabsWorkspaceContent() {
   const [showHelp, setShowHelp] = useState(false);
+  const [showNewProjectDialog, setShowNewProjectDialog] = useState(false);
+
+  const handleCreateProject = () => {
+    setShowNewProjectDialog(true);
+  };
+
+  const handleNewProjectSubmit = (payload: {
+    name: string;
+    vision: string;
+    textureFocus: string;
+    flavorNotes: string;
+    launchTarget: string;
+  }) => {
+    console.log("New project created:", payload);
+    setShowNewProjectDialog(false);
+  };
 
   return (
     <div className="w-full h-full flex flex-col bg-slate-950">
@@ -35,11 +52,17 @@ function RDLabsWorkspaceContent() {
         <div className="flex-1 overflow-auto">
           <ProjectDashboard
             onSelectProject={() => {}}
-            onCreateProject={() => {}}
+            onCreateProject={handleCreateProject}
           />
         </div>
         <RDLabsHelpPanel isOpen={showHelp} onClose={() => setShowHelp(false)} />
       </div>
+
+      <NewProjectDialog
+        open={showNewProjectDialog}
+        onOpenChange={setShowNewProjectDialog}
+        onSubmit={handleNewProjectSubmit}
+      />
     </div>
   );
 }
