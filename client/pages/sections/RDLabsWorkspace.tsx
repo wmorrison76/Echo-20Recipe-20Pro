@@ -59,14 +59,37 @@ function RDLabsWorkspaceContent() {
   return (
     <div className="w-full h-full flex flex-col bg-slate-950 text-slate-100 relative">
       {/* Floating Dashboard Button */}
-      <button
-        onClick={() => setShowDashboard(true)}
-        className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 hover:from-cyan-300 hover:to-cyan-500 text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 border border-cyan-300/50"
-        title="Go to Dashboard"
-        aria-label="Go to Dashboard"
-      >
-        <BarChart3 className="h-6 w-6" />
-      </button>
+      <div style={{ position: "fixed", bottom: "24px", right: "24px", zIndex: 9999 }}>
+        <button
+          onClick={() => setShowDashboard(true)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: "56px",
+            height: "56px",
+            borderRadius: "9999px",
+            background: "linear-gradient(to bottom right, #06b6d4, #0891b2)",
+            color: "white",
+            border: "2px solid rgba(6, 182, 212, 0.5)",
+            cursor: "pointer",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.5)",
+            transition: "all 0.2s",
+          }}
+          title="Go to Dashboard"
+          aria-label="Go to Dashboard"
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "scale(1.1)";
+            e.currentTarget.style.boxShadow = "0 6px 16px rgba(0, 0, 0, 0.7)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "scale(1)";
+            e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.5)";
+          }}
+        >
+          <BarChart3 className="h-6 w-6" />
+        </button>
+      </div>
 
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-cyan-500/10 bg-slate-900/50">
