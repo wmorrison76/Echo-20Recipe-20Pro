@@ -466,15 +466,17 @@ export default function TopTabs() {
           ref={asideRef}
           className={cn(
             "pointer-events-auto absolute left-0 top-20 z-[3200] flex flex-col overflow-hidden rounded-3xl transition-all duration-1000 group",
-            "backdrop-blur-2xl dark:shadow-[0_0_24px_rgba(0,255,136,0.15)]",
+            "backdrop-blur-2xl dark:shadow-[0_0_24px_rgba(6,182,212,0.15)]",
             collapsed ? "w-14 space-y-2 p-2" : "w-60 space-y-3.5 p-4",
           )}
           style={{
             maxHeight: "calc(100% - 80px)",
             backgroundColor: "rgba(255, 255, 255, 0.05)",
             borderWidth: "1.5px",
-            borderColor: "rgba(0, 0, 0, 0.1)",
-            boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.02), 0 0 0 1.5px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08)",
+            borderColor: document.documentElement.classList.contains('dark') ? 'rgba(6, 182, 212, 0.3)' : 'rgba(0, 0, 0, 0.1)',
+            boxShadow: document.documentElement.classList.contains('dark')
+              ? '0 8px 32px 0 rgba(31, 38, 135, 0.02), 0 0 0 1.5px rgba(6, 182, 212, 0.3), 0 0 24px rgba(6, 182, 212, 0.15)'
+              : '0 8px 32px 0 rgba(31, 38, 135, 0.02), 0 0 0 1.5px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08)',
           }}
           onMouseEnter={(e) => {
             const isDark = document.documentElement.classList.contains('dark');
