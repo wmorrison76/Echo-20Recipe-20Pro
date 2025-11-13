@@ -66,14 +66,14 @@ const navItems: NavItemConfig[] = [
     to: "/?tab=search",
     labelKey: "nav.recipes",
     fallback: "RECIPES",
-    icon: BookOpenCheck,
+    icon: BookMarked,
     shortcut: { key: "Digit1", display: "1" },
   },
   {
     to: "/?tab=add-recipe",
     labelKey: "nav.addRecipe",
     fallback: "ADD RECIPE",
-    icon: PenSquare,
+    icon: PencilLine,
     shortcut: { key: "Digit2", display: "2" },
   },
   {
@@ -94,7 +94,7 @@ const navItems: NavItemConfig[] = [
     to: "/?tab=server-notes",
     labelKey: "nav.serverNotes",
     fallback: "SERVER NOTES",
-    icon: ClipboardList,
+    icon: ListChecks,
     shortcut: { key: "Digit3", display: "3" },
   },
   {
@@ -108,7 +108,7 @@ const navItems: NavItemConfig[] = [
     to: "/?tab=production",
     labelKey: "nav.production",
     fallback: "PRODUCTION",
-    icon: Factory,
+    icon: Warehouse,
     shortcut: { key: "Digit4", display: "4" },
   },
   {
@@ -122,7 +122,7 @@ const navItems: NavItemConfig[] = [
     to: "/?tab=saas",
     labelKey: "nav.saas",
     fallback: "SaaS",
-    icon: Sparkles,
+    icon: Wand2,
     shortcut: { key: "Digit5", display: "5" },
   },
   {
@@ -136,21 +136,21 @@ const navItems: NavItemConfig[] = [
     to: "/?tab=nutrition",
     labelKey: "nav.nutritionAllergens",
     fallback: "Nutrition/Allergens",
-    icon: Sprout,
+    icon: Leaf,
     shortcut: { key: "Digit7", display: "7" },
   },
   {
     to: "/?tab=haccp",
     labelKey: "nav.haccpCompliance",
     fallback: "HACCP/Compliance",
-    icon: ShieldCheck,
+    icon: Shield,
     shortcut: { key: "Digit8", display: "8" },
   },
   {
     to: "/?tab=waste-tracking",
     labelKey: "nav.wasteTracking",
     fallback: "WASTE TRACKING",
-    icon: Trash2,
+    icon: Trash,
   },
   {
     to: "/?tab=customer-service",
@@ -174,7 +174,7 @@ const navItems: NavItemConfig[] = [
     to: "/?tab=gallery",
     labelKey: "nav.gallery",
     fallback: "GALLERY",
-    icon: Images,
+    icon: Gallery,
     shortcut: { key: "Digit9", display: "9" },
   },
 ];
