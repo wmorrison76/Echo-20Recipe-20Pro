@@ -20,7 +20,17 @@ export default function RDLabsWorkspace() {
 
 function RDLabsWorkspaceContent() {
   const store = useOptionalRDLabStore();
+  // Force dashboard view - the old portal implementation is archived
   const [showDashboard, setShowDashboard] = useState(true);
+
+  // Keep dashboard view locked for now - workbench interaction disabled
+  const handleToggleDashboard = (show: boolean) => {
+    // Only allow toggling to workbench if experiments exist
+    if (!show && store && store.experiments.length === 0) {
+      return; // Prevent switching to empty workbench
+    }
+    setShowDashboard(show);
+  };
 
   if (!store) {
     return (
