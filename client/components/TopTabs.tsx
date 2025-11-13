@@ -27,6 +27,8 @@ import {
   Trash,
   Users,
   UtensilsCrossed,
+  Beaker,
+  Sparkles,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
