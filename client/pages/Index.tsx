@@ -88,6 +88,9 @@ function IndexContent() {
   return (
     <TronBackdrop>
       <CommandPalette />
+      <div style={{ position: "fixed", top: "50px", left: "50px", zIndex: 9999, background: "yellow", padding: "20px", fontWeight: "bold", color: "black" }}>
+        YELLOW TEST IN INDEX.TSX
+      </div>
       <div
         className="relative min-h-screen text-foreground"
         style={{
