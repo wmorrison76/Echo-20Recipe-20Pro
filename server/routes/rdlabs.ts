@@ -415,9 +415,4 @@ rdLabsRouter.get("/api/rdlabs/insights/dashboard", requireAuth, async (req: Requ
   }
 });
 
-// ============ ERROR HANDLING ============
-
-// 404 handler for rdlabs routes
-rdLabsRouter.use((req: Request, res: Response) => {
-  sendError(res, "NOT_FOUND", `Route not found: ${req.method} ${req.path}`, 404);
-});
+// Note: 404 handling for non-existent rdlabs routes is handled by the main Express app
