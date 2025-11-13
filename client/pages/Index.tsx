@@ -396,11 +396,20 @@ function IndexContent() {
               }}
             >
               <div style={{ marginBottom: "24px" }}>
-                <h3 style={{ color: "#06b6d4", marginBottom: "8px", fontSize: "18px", fontWeight: "bold" }}>
+                <h3
+                  style={{
+                    color: "#06b6d4",
+                    marginBottom: "8px",
+                    fontSize: "18px",
+                    fontWeight: "bold",
+                  }}
+                >
                   Welcome to R&D Labs
                 </h3>
                 <p style={{ color: "#cbd5e1", lineHeight: "1.6" }}>
-                  Start your culinary or pastry experimentation journey. Create new projects, track experiments, and collaborate with your team.
+                  Start your culinary or pastry experimentation journey. Create
+                  new projects, track experiments, and collaborate with your
+                  team.
                 </p>
               </div>
 
@@ -412,7 +421,9 @@ function IndexContent() {
                   border: "1px solid rgba(6, 182, 212, 0.1)",
                 }}
               >
-                <h4 style={{ color: "#06b6d4", marginBottom: "8px" }}>No Projects Yet</h4>
+                <h4 style={{ color: "#06b6d4", marginBottom: "8px" }}>
+                  No Projects Yet
+                </h4>
                 <p style={{ color: "#94a3b8", fontSize: "14px" }}>
                   Click "Create New Project" to begin your research.
                 </p>
