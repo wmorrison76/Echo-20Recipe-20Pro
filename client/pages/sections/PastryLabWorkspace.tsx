@@ -17,10 +17,6 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronLeft, Sparkles, Search, Zap, Layout } from "lucide-react";
 
-interface PastryLabWorkspaceProps {
-  defaultProject?: string;
-}
-
 const PASTRY_FOCUS_AREAS = [
   {
     id: "lamination",
