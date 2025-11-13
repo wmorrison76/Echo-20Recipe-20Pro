@@ -11,11 +11,11 @@ import {
   BookMarked,
   ChefHat,
   ChevronLeft,
+  ChevronDown,
   ListChecks,
   DollarSign,
   Warehouse,
   FileText,
-  HelpCircle,
   ImageIcon,
   PencilLine,
   Shield,
@@ -54,107 +54,149 @@ type NavItemConfig = {
 
 type NavItem = NavItemConfig & { label: string };
 
-const navItems: NavItemConfig[] = [
+type NavGroup = {
+  id: string;
+  labelKey: string;
+  fallback: string;
+  items: NavItemConfig[];
+};
+
+const navGroups: NavGroup[] = [
   {
-    to: "/?tab=search",
-    labelKey: "nav.recipes",
-    fallback: "RECIPES",
-    icon: BookMarked,
-    shortcut: { key: "Digit1", display: "1" },
+    id: "recipes-design",
+    labelKey: "nav.group.recipesDesign",
+    fallback: "RECIPES & DESIGN",
+    items: [
+      {
+        to: "/?tab=search",
+        labelKey: "nav.recipes",
+        fallback: "RECIPES",
+        icon: BookMarked,
+        shortcut: { key: "Digit1", display: "1" },
+      },
+      {
+        to: "/?tab=add-recipe",
+        labelKey: "nav.addRecipe",
+        fallback: "ADD RECIPE",
+        icon: PencilLine,
+        shortcut: { key: "Digit2", display: "2" },
+      },
+      {
+        to: "/?tab=menu-design",
+        labelKey: "nav.menuDesignStudio",
+        fallback: "MENU DESIGN STUDIO",
+        icon: ChefHat,
+        shortcut: { key: "KeyM", display: "M" },
+      },
+      {
+        to: "/?tab=gallery",
+        labelKey: "nav.gallery",
+        fallback: "GALLERY",
+        icon: ImageIcon,
+        shortcut: { key: "Digit9", display: "9" },
+      },
+      {
+        to: "/?tab=dish-assembly",
+        labelKey: "nav.dishAssembly",
+        fallback: "DISH ASSEMBLY",
+        icon: UtensilsCrossed,
+        shortcut: { key: "KeyD", display: "D" },
+      },
+    ],
   },
   {
-    to: "/?tab=add-recipe",
-    labelKey: "nav.addRecipe",
-    fallback: "ADD RECIPE",
-    icon: PencilLine,
-    shortcut: { key: "Digit2", display: "2" },
+    id: "innovation",
+    labelKey: "nav.group.innovation",
+    fallback: "INNOVATION & R&D",
+    items: [
+      {
+        to: "/?tab=rdlabs",
+        labelKey: "nav.rdlabs",
+        fallback: "R&D LABS",
+        icon: Atom,
+      },
+      {
+        to: "/?tab=pastry-lab",
+        labelKey: "nav.pastrylab",
+        fallback: "PASTRY LAB",
+        icon: Sparkles,
+      },
+    ],
   },
   {
-    to: "/?tab=dish-assembly",
-    labelKey: "nav.dishAssembly",
-    fallback: "DISH ASSEMBLY",
-    icon: UtensilsCrossed,
-    shortcut: { key: "KeyD", display: "D" },
+    id: "operations",
+    labelKey: "nav.group.operations",
+    fallback: "OPERATIONS",
+    items: [
+      {
+        to: "/?tab=production",
+        labelKey: "nav.production",
+        fallback: "PRODUCTION",
+        icon: Warehouse,
+        shortcut: { key: "Digit4", display: "4" },
+      },
+      {
+        to: "/?tab=server-notes",
+        labelKey: "nav.serverNotes",
+        fallback: "SERVER NOTES",
+        icon: ListChecks,
+        shortcut: { key: "Digit3", display: "3" },
+      },
+      {
+        to: "/?tab=operations-docs",
+        labelKey: "nav.operationsDocs",
+        fallback: "OPERATIONS DOCS",
+        icon: FileText,
+        shortcut: { key: "KeyO", display: "O" },
+      },
+    ],
   },
   {
-    to: "/?tab=menu-design",
-    labelKey: "nav.menuDesignStudio",
-    fallback: "MENU DESIGN STUDIO",
-    icon: ChefHat,
-    shortcut: { key: "KeyM", display: "M" },
+    id: "supply-chain",
+    labelKey: "nav.group.supplyChain",
+    fallback: "SUPPLY CHAIN",
+    items: [
+      {
+        to: "/?tab=purch-rec",
+        labelKey: "nav.purchasingReceiving",
+        fallback: "PURCH/REC",
+        icon: ShoppingCart,
+        shortcut: { key: "Digit0", display: "0" },
+      },
+    ],
   },
   {
-    to: "/?tab=server-notes",
-    labelKey: "nav.serverNotes",
-    fallback: "SERVER NOTES",
-    icon: ListChecks,
-    shortcut: { key: "Digit3", display: "3" },
-  },
-  {
-    to: "/?tab=operations-docs",
-    labelKey: "nav.operationsDocs",
-    fallback: "OPERATIONS DOCS",
-    icon: FileText,
-    shortcut: { key: "KeyO", display: "O" },
-  },
-  {
-    to: "/?tab=production",
-    labelKey: "nav.production",
-    fallback: "PRODUCTION",
-    icon: Warehouse,
-    shortcut: { key: "Digit4", display: "4" },
-  },
-  {
-    to: "/?tab=purch-rec",
-    labelKey: "nav.purchasingReceiving",
-    fallback: "PURCH/REC",
-    icon: ShoppingCart,
-    shortcut: { key: "Digit0", display: "0" },
-  },
-  {
-    to: "/?tab=nutrition",
-    labelKey: "nav.nutritionAllergens",
-    fallback: "Nutrition/Allergens",
-    icon: Leaf,
-    shortcut: { key: "Digit7", display: "7" },
-  },
-  {
-    to: "/?tab=haccp",
-    labelKey: "nav.haccpCompliance",
-    fallback: "HACCP/Compliance",
-    icon: Shield,
-    shortcut: { key: "Digit8", display: "8" },
-  },
-  {
-    to: "/?tab=waste-tracking",
-    labelKey: "nav.wasteTracking",
-    fallback: "WASTE TRACKING",
-    icon: Trash,
-  },
-  {
-    to: "/?tab=plate-costing",
-    labelKey: "nav.plateCosting",
-    fallback: "COSTING",
-    icon: DollarSign,
-  },
-  {
-    to: "/?tab=gallery",
-    labelKey: "nav.gallery",
-    fallback: "GALLERY",
-    icon: ImageIcon,
-    shortcut: { key: "Digit9", display: "9" },
-  },
-  {
-    to: "/?tab=rdlabs",
-    labelKey: "nav.rdlabs",
-    fallback: "R&D LABS",
-    icon: Atom,
-  },
-  {
-    to: "/?tab=pastry-lab",
-    labelKey: "nav.pastrylab",
-    fallback: "PASTRY LAB",
-    icon: Sparkles,
+    id: "analysis-compliance",
+    labelKey: "nav.group.analysisCompliance",
+    fallback: "ANALYSIS & COMPLIANCE",
+    items: [
+      {
+        to: "/?tab=plate-costing",
+        labelKey: "nav.plateCosting",
+        fallback: "COSTING",
+        icon: DollarSign,
+      },
+      {
+        to: "/?tab=haccp",
+        labelKey: "nav.haccpCompliance",
+        fallback: "HACCP/COMPLIANCE",
+        icon: Shield,
+        shortcut: { key: "Digit8", display: "8" },
+      },
+      {
+        to: "/?tab=waste-tracking",
+        labelKey: "nav.wasteTracking",
+        fallback: "WASTE TRACKING",
+        icon: Trash,
+      },
+      {
+        to: "/?tab=nutrition",
+        labelKey: "nav.nutritionAllergens",
+        fallback: "NUTRITION/ALLERGENS",
+        icon: Leaf,
+        shortcut: { key: "Digit7", display: "7" },
+      },
+    ],
   },
 ];
 
@@ -286,6 +328,45 @@ function TabLink({
   );
 }
 
+type GroupHeaderProps = {
+  label: string;
+  collapsed: boolean;
+  isExpanded: boolean;
+  onToggle: () => void;
+};
+
+function GroupHeader({
+  label,
+  collapsed,
+  isExpanded,
+  onToggle,
+}: GroupHeaderProps) {
+  if (collapsed) {
+    return null;
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className={cn(
+        "flex w-full items-center justify-between px-2.5 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-foreground/50 hover:text-foreground/70 transition-colors duration-300",
+        "hover:bg-white/5 dark:hover:bg-white/5 rounded-lg",
+      )}
+    >
+      <DissolvingText collapsed={collapsed} ariaHidden={collapsed}>
+        {label}
+      </DissolvingText>
+      <ChevronDown
+        className={cn(
+          "h-3 w-3 transition-transform duration-300",
+          isExpanded ? "rotate-0" : "-rotate-90",
+        )}
+      />
+    </button>
+  );
+}
+
 export default function TopTabs() {
   const { t } = useTranslation();
   const location = useLocation();
@@ -304,6 +385,10 @@ export default function TopTabs() {
     }
     return false;
   });
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
+    new Set(["recipes-design", "innovation"])
+  );
+
   const shortcutLabel = useMemo(() => {
     if (typeof navigator === "undefined") {
       return "Ctrl";
@@ -350,25 +435,30 @@ export default function TopTabs() {
 
   const navToggleShortcut = `${shortcutLabel}+Shift+N`;
 
-  const translatedNavItems: NavItem[] = useMemo(
-    () =>
-      navItems.map((item) => ({
-        ...item,
-        label: t(item.labelKey, item.fallback),
-      })),
-    [t],
-  );
+  const translatedGroups: (NavGroup & { label: string; items: NavItem[] })[] =
+    useMemo(
+      () =>
+        navGroups.map((group) => ({
+          ...group,
+          label: t(group.labelKey, group.fallback),
+          items: group.items.map((item) => ({
+            ...item,
+            label: t(item.labelKey, item.fallback),
+          })),
+        })),
+      [t],
+    );
 
   const navShortcutMap = useMemo(() => {
-    return navItems.reduce(
-      (acc, item) => {
+    const map: Record<string, string> = {};
+    navGroups.forEach((group) => {
+      group.items.forEach((item) => {
         if (item.shortcut) {
-          acc[item.shortcut.key] = item.to;
+          map[item.shortcut.key] = item.to;
         }
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
+      });
+    });
+    return map;
   }, []);
 
   const setCollapsedManual = useCallback(
@@ -391,6 +481,18 @@ export default function TopTabs() {
     },
     [],
   );
+
+  const toggleGroup = useCallback((groupId: string) => {
+    setExpandedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(groupId)) {
+        next.delete(groupId);
+      } else {
+        next.add(groupId);
+      }
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -439,7 +541,7 @@ export default function TopTabs() {
           className={cn(
             "pointer-events-auto absolute left-0 top-20 z-[3200] flex flex-col overflow-hidden rounded-3xl transition-all duration-1000 group",
             "backdrop-blur-2xl dark:shadow-[0_0_24px_rgba(6,182,212,0.15)]",
-            collapsed ? "w-14 space-y-2 p-2" : "w-60 space-y-3.5 p-4",
+            collapsed ? "w-14 space-y-2 p-2" : "w-60 space-y-2 p-4",
           )}
           style={{
             maxHeight: "calc(100% - 80px)",
@@ -478,44 +580,52 @@ export default function TopTabs() {
           }}
         >
           <div className="relative flex h-full flex-col">
-            <div
-              className={cn(
-                "flex items-center gap-2 transition-all duration-500",
-                collapsed ? "justify-center gap-1" : "justify-start",
-              )}
-            >
-              {!collapsed ? (
-                <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-foreground/50 px-2.5 py-0.5">
-                  Navigation
-                </span>
-              ) : null}
-            </div>
+            {!collapsed ? (
+              <span className="text-[10px] font-semibold uppercase tracking-[0.35em] text-foreground/50 px-2.5 py-0.5">
+                Navigation
+              </span>
+            ) : null}
 
             <nav
               className={cn(
-                "max-h-[70vh] space-y-1 overflow-y-auto pr-1 transition-all duration-700",
+                "max-h-[70vh] space-y-2 overflow-y-auto pr-1 transition-all duration-700",
                 collapsed && "pr-0",
               )}
             >
-              {translatedNavItems.map((item) => (
-                <TabLink
-                  key={item.to}
-                  to={item.to}
-                  label={item.label}
-                  icon={item.icon}
-                  collapsed={collapsed}
-                  shortcutDisplay={
-                    item.shortcut
-                      ? `${shortcutLabel}+${item.shortcut.display}`
-                      : undefined
-                  }
-                />
+              {translatedGroups.map((group) => (
+                <div key={group.id} className="space-y-1">
+                  <GroupHeader
+                    label={group.label}
+                    collapsed={collapsed}
+                    isExpanded={expandedGroups.has(group.id)}
+                    onToggle={() => toggleGroup(group.id)}
+                  />
+
+                  {(collapsed || expandedGroups.has(group.id)) && (
+                    <div className={cn(collapsed ? "space-y-1" : "space-y-1")}>
+                      {group.items.map((item) => (
+                        <TabLink
+                          key={item.to}
+                          to={item.to}
+                          label={item.label}
+                          icon={item.icon}
+                          collapsed={collapsed}
+                          shortcutDisplay={
+                            item.shortcut
+                              ? `${shortcutLabel}+${item.shortcut.display}`
+                              : undefined
+                          }
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
             </nav>
 
             <div
               className={cn(
-                "space-y-3 border-t border-white/50 pt-3 text-sm transition-all duration-700 dark:border-slate-800/60",
+                "space-y-3 border-t border-white/50 pt-3 text-sm transition-all duration-700 dark:border-slate-800/60 mt-auto",
                 collapsed && "border-transparent pt-2",
               )}
             >
