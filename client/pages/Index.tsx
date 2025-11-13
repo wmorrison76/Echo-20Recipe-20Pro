@@ -212,6 +212,27 @@ function IndexContent() {
                 <SupplierManagementWorkspace />
               </div>
             </TabsContent>
+            <TabsContent value="orgs">
+              <MultiTenantOrgsWorkspace />
+            </TabsContent>
+            <TabsContent value="workspaces">
+              <TeamWorkspacesWorkspace />
+            </TabsContent>
+            <TabsContent value="api-webhooks">
+              <APIWebhooksWorkspace />
+            </TabsContent>
+            <TabsContent value="mobile-offline">
+              <MobileOfflineWorkspace />
+            </TabsContent>
+            <TabsContent value="multi-location">
+              <MultiLocationWorkspace />
+            </TabsContent>
+            <TabsContent value="billing">
+              <BillingSubscriptionsWorkspace />
+            </TabsContent>
+            <TabsContent value="recipe-deployments">
+              <RecipeDeploymentPanel isEnabled={true} />
+            </TabsContent>
             <TabsContent value="dish-assembly">
               <DishAssemblySection />
             </TabsContent>
