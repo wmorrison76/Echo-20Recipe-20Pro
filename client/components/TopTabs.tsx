@@ -119,13 +119,6 @@ const navItems: NavItemConfig[] = [
     shortcut: { key: "Digit0", display: "0" },
   },
   {
-    to: "/?tab=saas",
-    labelKey: "nav.saas",
-    fallback: "SaaS",
-    icon: Wand2,
-    shortcut: { key: "Digit5", display: "5" },
-  },
-  {
     to: "/?tab=inventory",
     labelKey: "nav.inventorySupplies",
     fallback: "Inventory & Supplies",
