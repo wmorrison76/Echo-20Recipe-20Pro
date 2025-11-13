@@ -356,14 +356,18 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
         })(),
         hypothesis: input.hypothesis.trim(),
         variablesUnderTest: sanitizeList(input.variablesUnderTest),
-      sensoryTargets: sanitizeList(input.sensoryTargets),
-      testPlan: sanitizeList(input.testPlan),
-      equipment: sanitizeList(input.equipment),
-      launchWindow: input.launchWindow?.trim() || "TBD",
-      textureObjectives: sanitizeList(input.textureObjectives),
-      flavorConstellations: sanitizeList(input.flavorConstellations),
-      futureFoodAngles: sanitizeList(input.futureFoodAngles),
-    };
+        sensoryTargets: sanitizeList(input.sensoryTargets),
+        testPlan: sanitizeList(input.testPlan),
+        equipment: sanitizeList(input.equipment),
+        launchWindow: input.launchWindow?.trim() || "TBD",
+        textureObjectives: sanitizeList(input.textureObjectives),
+        flavorConstellations: sanitizeList(input.flavorConstellations),
+        futureFoodAngles: sanitizeList(input.futureFoodAngles),
+        specialization: input.specialization ?? "culinary",
+        linkedRecipeIds: input.linkedRecipeIds ?? [],
+        recipeNotes: input.recipeNotes,
+        collaborators: [],
+      };
       setExperiments((prev) => [experiment, ...prev]);
       setFocusExperimentId(id);
       return id;
