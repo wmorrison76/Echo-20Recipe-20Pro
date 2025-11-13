@@ -285,6 +285,10 @@ function IndexContent() {
         <SubtleBottomGlow />
         <CornerBrand />
       </div>
+      <EchoRecipeProHelpModal
+        isOpen={helpModalOpen}
+        onOpenChange={setHelpModalOpen}
+      />
     </TronBackdrop>
   );
 }
