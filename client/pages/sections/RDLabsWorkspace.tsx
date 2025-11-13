@@ -48,7 +48,6 @@ export default function RDLabsWorkspace() {
 
 function RDLabsWorkspaceContent() {
   const store = useOptionalRDLabStore();
-  const [activeTab, setActiveTab] = useState<"projects" | "settings">("projects");
 
   if (!store) {
     return (
