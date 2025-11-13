@@ -464,32 +464,36 @@ export default function TopTabs() {
         <aside
           ref={asideRef}
           className={cn(
-            "pointer-events-auto absolute left-0 top-20 z-[3200] flex flex-col overflow-hidden rounded-3xl transition-all duration-1000 group hover:shadow-2xl",
-            "backdrop-blur-2xl",
+            "pointer-events-auto absolute left-0 top-20 z-[3200] flex flex-col overflow-hidden rounded-3xl transition-all duration-1000 group",
+            "backdrop-blur-2xl dark:shadow-[0_0_24px_rgba(0,255,136,0.15)]",
             collapsed ? "w-14 space-y-2 p-2" : "w-60 space-y-3.5 p-4",
           )}
           style={{
             maxHeight: "calc(100% - 80px)",
             backgroundColor: "rgba(255, 255, 255, 0.05)",
             borderWidth: "1.5px",
-            borderColor: `var(--color-mode) === 'dark' ? '#00ff88' : '#000000'`,
-            boxShadow: `0 8px 32px 0 rgba(31, 38, 135, 0.02),
-                        0 0 0 1.5px ${document.documentElement.classList.contains('dark') ? 'rgba(0, 255, 136, 0.3)' : 'rgba(0, 0, 0, 0.1)'},
-                        ${document.documentElement.classList.contains('dark') ? '0 0 24px rgba(0, 255, 136, 0.15)' : '0 4px 12px rgba(0, 0, 0, 0.08)'}`,
+            borderColor: "rgba(0, 0, 0, 0.1)",
+            boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.02), 0 0 0 1.5px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08)",
           }}
           onMouseEnter={(e) => {
             const isDark = document.documentElement.classList.contains('dark');
-            e.currentTarget.style.borderColor = isDark ? '#00ff88' : '#000000';
-            e.currentTarget.style.boxShadow = isDark
-              ? '0 8px 32px 0 rgba(31, 38, 135, 0.08), 0 0 0 1.5px rgba(0, 255, 136, 0.5), 0 0 32px rgba(0, 255, 136, 0.25), 0 0 16px rgba(0, 255, 136, 0.15)'
-              : '0 8px 32px 0 rgba(31, 38, 135, 0.12), 0 0 0 1.5px rgba(0, 0, 0, 0.2), 0 8px 20px rgba(0, 0, 0, 0.12)';
+            if (isDark) {
+              e.currentTarget.style.borderColor = '#00ff88';
+              e.currentTarget.style.boxShadow = '0 8px 32px 0 rgba(31, 38, 135, 0.08), 0 0 0 1.5px rgba(0, 255, 136, 0.6), 0 0 32px rgba(0, 255, 136, 0.3), 0 0 20px rgba(0, 255, 136, 0.2)';
+            } else {
+              e.currentTarget.style.borderColor = '#000000';
+              e.currentTarget.style.boxShadow = '0 8px 32px 0 rgba(31, 38, 135, 0.12), 0 0 0 1.5px rgba(0, 0, 0, 0.25), 0 8px 20px rgba(0, 0, 0, 0.12)';
+            }
           }}
           onMouseLeave={(e) => {
             const isDark = document.documentElement.classList.contains('dark');
-            e.currentTarget.style.borderColor = isDark ? 'rgba(0, 255, 136, 0.3)' : 'rgba(0, 0, 0, 0.1)';
-            e.currentTarget.style.boxShadow = isDark
-              ? '0 8px 32px 0 rgba(31, 38, 135, 0.02), 0 0 0 1.5px rgba(0, 255, 136, 0.3), 0 0 24px rgba(0, 255, 136, 0.15)'
-              : '0 8px 32px 0 rgba(31, 38, 135, 0.02), 0 0 0 1.5px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08)';
+            if (isDark) {
+              e.currentTarget.style.borderColor = 'rgba(0, 255, 136, 0.3)';
+              e.currentTarget.style.boxShadow = '0 8px 32px 0 rgba(31, 38, 135, 0.02), 0 0 0 1.5px rgba(0, 255, 136, 0.3), 0 0 24px rgba(0, 255, 136, 0.15)';
+            } else {
+              e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)';
+              e.currentTarget.style.boxShadow = '0 8px 32px 0 rgba(31, 38, 135, 0.02), 0 0 0 1.5px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08)';
+            }
           }}
         >
           <div className="relative flex h-full flex-col">
