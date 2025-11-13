@@ -313,7 +313,11 @@ function TabLink({
   );
 }
 
-export default function TopTabs() {
+interface TopTabsProps {
+  onRDLabsClick?: () => void;
+}
+
+export default function TopTabs({ onRDLabsClick }: TopTabsProps) {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
