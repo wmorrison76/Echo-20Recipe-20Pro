@@ -10,7 +10,7 @@ import {
   RDLabSessionSidebar,
 } from "@/components/RDLab";
 import { Button } from "@/components/ui/button";
-import { HelpCircle, LayoutGrid } from "lucide-react";
+import { HelpCircle, LayoutGrid, BarChart3 } from "lucide-react";
 
 export default function RDLabsWorkspace() {
   return (
