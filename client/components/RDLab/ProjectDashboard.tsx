@@ -127,11 +127,11 @@ export function ProjectDashboard({
   }, [searchQuery, specializationFilter, allProjects]);
 
   return (
-    <div className="space-y-8 p-6">
+    <div className="min-h-screen space-y-8 bg-gradient-to-br from-[#050a15] via-[#0a1929] to-[#050a15] p-6 text-cyan-100">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">R&D Lab Dashboard</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-3xl font-bold tracking-tight text-cyan-100">R&D Lab Dashboard</h1>
+        <p className="text-cyan-200/70">
           Manage your recipe development projects with collaborative teams
         </p>
       </div>
