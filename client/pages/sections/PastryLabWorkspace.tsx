@@ -58,12 +58,7 @@ function PastryLabWorkspaceContent({
   defaultProject,
 }: PastryLabWorkspaceProps) {
   const store = useOptionalRDLabStore();
-  const [selectedProject, setSelectedProject] = useState<string | null>(
-    defaultProject || null,
-  );
-  const [currentView, setCurrentView] = useState<"dashboard" | "lab">(
-    selectedProject ? "lab" : "dashboard",
-  );
+  const [showDashboard, setShowDashboard] = useState(true);
 
   const pastryExperiments = useMemo(
     () =>
@@ -83,18 +78,12 @@ function PastryLabWorkspaceContent({
     [pastryExperiments],
   );
 
-  const handleSelectProject = useCallback((projectId: string) => {
-    setSelectedProject(projectId);
-    setCurrentView("lab");
-  }, []);
-
-  const handleCreateProject = useCallback(() => {
-    setCurrentView("dashboard");
+  const handleSelectProject = useCallback((_projectId: string) => {
+    setShowDashboard(false);
   }, []);
 
   const handleBackToDashboard = useCallback(() => {
-    setSelectedProject(null);
-    setCurrentView("dashboard");
+    setShowDashboard(true);
   }, []);
 
   if (!store) {
@@ -105,19 +94,21 @@ function PastryLabWorkspaceContent({
     );
   }
 
-  if (currentView === "dashboard") {
+  if (showDashboard) {
     return (
-      <div className="h-full overflow-auto">
-        <ProjectDashboard
-          onSelectProject={handleSelectProject}
-          onCreateProject={handleCreateProject}
-        />
+      <div className="w-full h-full flex flex-col overflow-hidden">
+        <div className="flex-1 overflow-auto">
+          <ProjectDashboard
+            onSelectProject={handleSelectProject}
+            onCreateProject={() => setShowDashboard(true)}
+          />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-full flex-col gap-3">
+    <div className="w-full h-full flex flex-col gap-3 overflow-hidden">
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-rose-400" />
