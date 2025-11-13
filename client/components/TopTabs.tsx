@@ -479,8 +479,8 @@ export default function TopTabs() {
           onMouseEnter={(e) => {
             const isDark = document.documentElement.classList.contains('dark');
             if (isDark) {
-              e.currentTarget.style.borderColor = '#00ff88';
-              e.currentTarget.style.boxShadow = '0 8px 32px 0 rgba(31, 38, 135, 0.08), 0 0 0 1.5px rgba(0, 255, 136, 0.6), 0 0 32px rgba(0, 255, 136, 0.3), 0 0 20px rgba(0, 255, 136, 0.2)';
+              e.currentTarget.style.borderColor = '#06b6d4';
+              e.currentTarget.style.boxShadow = '0 8px 32px 0 rgba(31, 38, 135, 0.08), 0 0 0 1.5px rgba(6, 182, 212, 0.6), 0 0 32px rgba(6, 182, 212, 0.3), 0 0 20px rgba(6, 182, 212, 0.2)';
             } else {
               e.currentTarget.style.borderColor = '#000000';
               e.currentTarget.style.boxShadow = '0 8px 32px 0 rgba(31, 38, 135, 0.12), 0 0 0 1.5px rgba(0, 0, 0, 0.25), 0 8px 20px rgba(0, 0, 0, 0.12)';
@@ -489,8 +489,8 @@ export default function TopTabs() {
           onMouseLeave={(e) => {
             const isDark = document.documentElement.classList.contains('dark');
             if (isDark) {
-              e.currentTarget.style.borderColor = 'rgba(0, 255, 136, 0.3)';
-              e.currentTarget.style.boxShadow = '0 8px 32px 0 rgba(31, 38, 135, 0.02), 0 0 0 1.5px rgba(0, 255, 136, 0.3), 0 0 24px rgba(0, 255, 136, 0.15)';
+              e.currentTarget.style.borderColor = 'rgba(6, 182, 212, 0.3)';
+              e.currentTarget.style.boxShadow = '0 8px 32px 0 rgba(31, 38, 135, 0.02), 0 0 0 1.5px rgba(6, 182, 212, 0.3), 0 0 24px rgba(6, 182, 212, 0.15)';
             } else {
               e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.1)';
               e.currentTarget.style.boxShadow = '0 8px 32px 0 rgba(31, 38, 135, 0.02), 0 0 0 1.5px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08)';
