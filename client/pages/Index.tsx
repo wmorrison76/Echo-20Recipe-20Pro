@@ -185,6 +185,9 @@ function IndexContent() {
             className="w-full"
           >
             <TabsContent value="search">
+              <div style={{ background: "lime", padding: "20px", margin: "10px", color: "black", fontWeight: "bold" }}>
+                LIME TEST - ONLY ON SEARCH TAB
+              </div>
               <RecipeSearchSection />
             </TabsContent>
             <TabsContent value="gallery">
