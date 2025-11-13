@@ -71,6 +71,8 @@ function RDLabsWorkspaceContent() {
             <ProjectDashboard
               onSelectProject={() => setShowDashboard(false)}
               onCreateProject={() => {}}
+              recentProjects={[]}
+              allProjects={[]}
             />
           ) : (
             <div className="p-4 flex-1 overflow-auto">
