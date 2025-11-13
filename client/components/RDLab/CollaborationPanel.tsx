@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useRDLabStore } from "@/stores/rdLabStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,33 +18,64 @@ interface Collaborator {
   joinedAt: string;
 }
 
+const AVAILABLE_COLLABORATORS = [
+  { id: "user-1", name: "A. Vega", email: "a.vega@luccca.com", role: "editor" as const, location: "Kitchen A" },
+  { id: "user-2", name: "M. Ruiz", email: "m.ruiz@luccca.com", role: "editor" as const, location: "Kitchen B" },
+  { id: "user-3", name: "C. Nguyen", email: "c.nguyen@luccca.com", role: "viewer" as const, location: "Kitchen A" },
+  { id: "user-4", name: "C. Dufour", email: "c.dufour@luccca.com", role: "editor" as const, location: "Pastry" },
+  { id: "user-5", name: "L. Singh", email: "l.singh@luccca.com", role: "editor" as const, location: "Pastry" },
+];
+
 interface CollaborationPanelProps {
-  experimentId: string;
-  collaborators: Collaborator[];
-  currentUserRole: "owner" | "editor" | "viewer";
-  onAddCollaborator: (email: string, role: "editor" | "viewer") => void;
-  onRemoveCollaborator: (collaboratorId: string) => void;
-  onChangeRole: (collaboratorId: string, role: "editor" | "viewer") => void;
+  experimentId?: string;
 }
 
 export function CollaborationPanel({
-  experimentId,
-  collaborators,
-  currentUserRole,
-  onAddCollaborator,
-  onRemoveCollaborator,
-  onChangeRole,
+  experimentId: providedExperimentId,
 }: CollaborationPanelProps) {
+  const { experiments, focusExperimentId, addCollaborator, removeCollaborator } = useRDLabStore();
+  const experimentId = providedExperimentId || focusExperimentId;
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<"editor" | "viewer">("editor");
   const [inviteLocation, setInviteLocation] = useState("");
   const [isInviting, setIsInviting] = useState(false);
 
-  const canManageCollaborators = currentUserRole === "owner";
+  const experiment = useMemo(
+    () => experiments.find((e) => e.id === experimentId),
+    [experiments, experimentId]
+  );
+
+  const currentCollaborators = useMemo(() => {
+    if (!experiment?.collaborators) return [];
+    return experiment.collaborators
+      .map((collab) => AVAILABLE_COLLABORATORS.find((ac) => ac.id === collab))
+      .filter(Boolean) as Collaborator[];
+  }, [experiment]);
+
+  const canManageCollaborators = true;
 
   const handleInvite = async () => {
     if (!inviteEmail.trim()) {
       toast.error("Please enter an email address");
+      return;
+    }
+
+    if (!experimentId) {
+      toast.error("No experiment selected");
+      return;
+    }
+
+    const matchedUser = AVAILABLE_COLLABORATORS.find(
+      (user) => user.email.toLowerCase() === inviteEmail.toLowerCase()
+    );
+
+    if (!matchedUser) {
+      toast.error("User not found in system");
+      return;
+    }
+
+    if (experiment?.collaborators?.includes(matchedUser.id)) {
+      toast.error("This user is already a collaborator");
       return;
     }
 
