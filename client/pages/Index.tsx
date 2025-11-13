@@ -272,12 +272,6 @@ function IndexContent() {
             >
               <RDLabsWorkspace />
             </TabsContent>
-            <TabsContent
-              value="pastry-lab"
-              className="h-[calc(100vh-200px)] flex flex-col"
-            >
-              <PastryLabWorkspace />
-            </TabsContent>
           </Tabs>
         </main>
 
