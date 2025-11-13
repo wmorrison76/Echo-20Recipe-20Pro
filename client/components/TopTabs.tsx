@@ -252,13 +252,13 @@ function TabLink({
       to={to}
       aria-label={label}
       className={cn(
-        "group flex w-full items-center rounded-lg text-sm font-medium transition-all duration-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring backdrop-blur-sm",
+        "group flex w-full items-center text-sm font-medium transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         collapsed
           ? "justify-center gap-0 px-1.5 py-1.5"
           : "gap-1.5 px-2.5 py-1.5",
         isActive
-          ? "bg-gradient-to-r from-primary/90 to-primary/75 text-primary-foreground shadow-lg"
-          : "text-foreground/75 bg-white/15 dark:bg-white/5 border border-white/20 dark:border-white/10 hover:bg-white/25 dark:hover:bg-white/10 hover:text-foreground hover:shadow-md hover:border-white/30 dark:hover:border-white/15",
+          ? "text-primary"
+          : "text-foreground/60 hover:text-foreground",
       )}
     >
       <Icon
