@@ -108,7 +108,7 @@ export function RecipeLinkingPanel({
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onUnlinkRecipe(recipe.id)}
+                    onClick={() => handleUnlinkRecipe(recipe.id)}
                     className="h-8 w-8"
                   >
                     <Unlink className="h-4 w-4" />
