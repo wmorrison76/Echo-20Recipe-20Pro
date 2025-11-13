@@ -32,6 +32,7 @@ function RDLabsWorkspaceContent() {
   const [activeTab, setActiveTab] = useState("workbench");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showHelp, setShowHelp] = useState(false);
+  const [labMode, setLabMode] = useState<"culinary" | "pastry">("culinary");
 
   if (!store) {
     return (
