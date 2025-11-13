@@ -253,10 +253,16 @@ function IndexContent() {
             <TabsContent value="purch-rec">
               <PurchasingReceivingSection />
             </TabsContent>
-            <TabsContent value="rdlabs" className="h-[calc(100vh-200px)] flex flex-col">
+            <TabsContent
+              value="rdlabs"
+              className="h-[calc(100vh-200px)] flex flex-col"
+            >
               <RDLabsWorkspace />
             </TabsContent>
-            <TabsContent value="pastry-lab" className="h-[calc(100vh-200px)] flex flex-col">
+            <TabsContent
+              value="pastry-lab"
+              className="h-[calc(100vh-200px)] flex flex-col"
+            >
               <PastryLabWorkspace />
             </TabsContent>
           </Tabs>
