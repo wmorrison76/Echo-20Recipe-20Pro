@@ -252,13 +252,13 @@ function TabLink({
       to={to}
       aria-label={label}
       className={cn(
-        "group flex w-full items-center rounded-md text-sm font-medium transition-all duration-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "group flex w-full items-center rounded-lg text-sm font-medium transition-all duration-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring backdrop-blur-sm",
         collapsed
           ? "justify-center gap-0 px-1.5 py-1.5"
           : "gap-1.5 px-2.5 py-1.5",
         isActive
-          ? "bg-primary text-primary-foreground shadow"
-          : "text-foreground/75 hover:bg-muted hover:text-foreground",
+          ? "bg-gradient-to-r from-primary/90 to-primary/75 text-primary-foreground shadow-lg"
+          : "text-foreground/75 bg-white/15 dark:bg-white/5 border border-white/20 dark:border-white/10 hover:bg-white/25 dark:hover:bg-white/10 hover:text-foreground hover:shadow-md hover:border-white/30 dark:hover:border-white/15",
       )}
     >
       <Icon
@@ -606,7 +606,7 @@ export default function TopTabs() {
             <DialogTitle>Help & Shortcuts</DialogTitle>
           </DialogHeader>
           <div className="space-y-2 text-sm leading-relaxed">
-            <p className="font-medium">Keyboard shortcuts (hold Control/⌘):</p>
+            <p className="font-medium">Keyboard shortcuts (hold Control/���):</p>
             <ul className="list-disc pl-5">
               <li>P=Pastry</li>
               <li>T=Technique</li>
