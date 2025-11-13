@@ -9,7 +9,6 @@ import {
 import type { LucideIcon } from "lucide-react";
 import {
   BookMarked,
-  Boxes,
   ChefHat,
   ChevronLeft,
   ListChecks,
@@ -23,9 +22,7 @@ import {
   Leaf,
   Save,
   ShoppingCart,
-  Truck,
   Trash,
-  Users,
   UtensilsCrossed,
   Beaker,
   Sparkles,
