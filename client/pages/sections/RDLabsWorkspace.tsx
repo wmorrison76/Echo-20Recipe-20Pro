@@ -212,10 +212,10 @@ function RDLabsWorkspaceContent() {
   );
 }
 
-export default function RDLabsWorkspace(props: RDLabsWorkspaceProps) {
+export default function RDLabsWorkspace() {
   return (
     <RDLabProvider>
-      <RDLabsWorkspaceContent {...props} />
+      <RDLabsWorkspaceContent />
     </RDLabProvider>
   );
 }
