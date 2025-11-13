@@ -82,6 +82,9 @@ type NewExperimentInput = {
   notes?: string;
   status?: ExperimentStatus;
   launchWindow?: string;
+  specialization?: LabSpecialization;
+  linkedRecipeIds?: string[];
+  recipeNotes?: string;
 };
 
 type RDLabState = {
