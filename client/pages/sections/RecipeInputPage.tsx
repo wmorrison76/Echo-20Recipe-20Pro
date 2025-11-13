@@ -3281,6 +3281,7 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                   />
                 </DialogContent>
               </Dialog>
+              {/* ARCHIVED: RDLabsPortal moved to dedicated RDLabsWorkspace tab
               <RDLabsPortal
                 isOpen={isRndLabsOpen}
                 onClose={() => setIsRndLabsOpen(false)}
@@ -3290,6 +3291,7 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                 applyLayout={(nextLayout) => setRndLayout(nextLayout)}
                 defaultLayout={DEFAULT_RND_LAYOUT}
               />
+              */}
             </div>
 
             <div
