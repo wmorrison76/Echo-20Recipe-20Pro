@@ -282,9 +282,9 @@ function ProjectCard({ project, onClick, isRecent }: ProjectCardProps) {
       <CardHeader>
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 space-y-2">
-            <CardTitle className="text-lg">{project.name}</CardTitle>
+            <CardTitle className="text-lg text-cyan-100">{project.name}</CardTitle>
             {project.description && (
-              <CardDescription className="line-clamp-2">
+              <CardDescription className="line-clamp-2 text-cyan-300/70">
                 {project.description}
               </CardDescription>
             )}
