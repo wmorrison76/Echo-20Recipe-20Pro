@@ -274,8 +274,8 @@ interface ProjectCardProps {
 function ProjectCard({ project, onClick, isRecent }: ProjectCardProps) {
   return (
     <Card
-      className={`cursor-pointer transition hover:shadow-lg dark:hover:shadow-cyan-500/20 ${
-        isRecent ? "border-cyan-400/50 dark:border-cyan-500/50" : ""
+      className={`cursor-pointer border-cyan-500/30 bg-slate-950/50 backdrop-blur-sm transition hover:border-cyan-500/50 hover:bg-slate-950/70 hover:shadow-lg dark:hover:shadow-cyan-500/20 ${
+        isRecent ? "border-cyan-400/60 dark:border-cyan-500/60 bg-slate-950/80" : ""
       }`}
       onClick={onClick}
     >
