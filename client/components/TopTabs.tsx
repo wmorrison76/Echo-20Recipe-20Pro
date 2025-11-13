@@ -554,21 +554,21 @@ export default function TopTabs() {
             <button
               type="button"
               onClick={() => setCollapsedManual((prev) => !prev)}
-              className="group absolute right-[-18px] top-1/2 z-10 -translate-y-1/2 select-none rounded-full transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="group absolute right-[-18px] top-1/2 z-10 -translate-y-1/2 select-none rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               style={{
-                background: "linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(59, 130, 246, 0.1) 100%)",
+                background: "rgba(255, 255, 255, 0.15)",
                 backdropFilter: "blur(20px)",
-                border: "1px solid rgba(255, 255, 255, 0.3)",
-                boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.1)",
+                border: "1px solid rgba(255, 255, 255, 0.25)",
+                boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.1)",
                 padding: "10px 6px",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "linear-gradient(135deg, rgba(59, 130, 246, 0.35) 0%, rgba(59, 130, 246, 0.2) 100%)";
-                e.currentTarget.style.boxShadow = "0 12px 40px 0 rgba(59, 130, 246, 0.25), inset 0 0 20px rgba(255, 255, 255, 0.2)";
+                e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)";
+                e.currentTarget.style.boxShadow = "0 8px 32px 0 rgba(31, 38, 135, 0.2)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(59, 130, 246, 0.1) 100%)";
-                e.currentTarget.style.boxShadow = "0 8px 32px 0 rgba(31, 38, 135, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.1)";
+                e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
+                e.currentTarget.style.boxShadow = "0 8px 32px 0 rgba(31, 38, 135, 0.1)";
               }}
               aria-label={
                 collapsed ? "Expand navigation" : "Collapse navigation"
