@@ -53,6 +53,7 @@ export default function Index() {
 function IndexContent() {
   const [params, setParams] = useSearchParams();
   const [helpModalOpen, setHelpModalOpen] = useState(false);
+  const [rdLabsModalOpen, setRdLabsModalOpen] = useState(false);
   const active = params.get("tab") || "search";
   const {
     config: { items: toolbarItems, title: toolbarTitle },
