@@ -22,7 +22,7 @@ interface RDLabsWorkspaceProps {
   defaultProject?: string;
 }
 
-function RDLabsWorkspaceContent({ defaultProject }: RDLabsWorkspaceProps) {
+function RDLabsWorkspaceContent() {
   const store = useOptionalRDLabStore();
   const [showDashboard, setShowDashboard] = useState(true);
 
