@@ -12,6 +12,12 @@ export default defineConfig(({ mode }) => ({
       allow: ["./client", "./shared"],
       deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "server/**"],
     },
+    hmr: {
+      protocol: "ws",
+      host: "localhost",
+      port: 8080,
+    },
+    middlewareMode: false,
   },
   build: {
     outDir: "dist/spa",
