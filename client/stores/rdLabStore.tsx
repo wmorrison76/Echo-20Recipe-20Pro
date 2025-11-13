@@ -249,6 +249,9 @@ const experimentsSeed: LabExperiment[] = [
       "Showcase regenerative shellfish as climate-positive luxury",
       "Prototype cold-chain friendly oyster emulsion retail pack",
     ],
+    specialization: "culinary",
+    linkedRecipeIds: [],
+    collaborators: [],
   },
 ];
 
