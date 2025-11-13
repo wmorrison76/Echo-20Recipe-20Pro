@@ -174,7 +174,7 @@ const navItems: NavItemConfig[] = [
     to: "/?tab=gallery",
     labelKey: "nav.gallery",
     fallback: "GALLERY",
-    icon: Gallery,
+    icon: ImageIcon,
     shortcut: { key: "Digit9", display: "9" },
   },
 ];
