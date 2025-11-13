@@ -114,7 +114,14 @@ function RDLabsWorkspaceContent() {
       </div>
 
       {/* Main Content with Tabs */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* Help Panel Overlay */}
+        {showHelp && (
+          <div className="absolute right-0 top-0 bottom-0 z-50">
+            <RDLabsHelpPanel isOpen={showHelp} onClose={() => setShowHelp(false)} />
+          </div>
+        )}
+
         {/* Left Panel - Context */}
         <div className="w-80 border-r border-cyan-500/10 bg-slate-900/20 overflow-auto flex-shrink-0 flex flex-col">
           <div className="p-4 border-b border-cyan-500/10 bg-slate-950/40">
