@@ -310,7 +310,6 @@ export default function TopTabs() {
     }
     return false;
   });
-  const [showHelp, setShowHelp] = useState(false);
   const shortcutLabel = useMemo(() => {
     if (typeof navigator === "undefined") {
       return "Ctrl";
@@ -654,7 +653,7 @@ export default function TopTabs() {
             <p className="mt-2 font-medium">Adding recipes</p>
             <ul className="list-disc pl-5">
               <li>
-                Use Add Recipe to type/paste. “Save�� persists immediately. CSV
+                Use Add Recipe to type/paste. “Save��� persists immediately. CSV
                 export includes Directions; Share and SMS send a formatted
                 recipe.
               </li>
