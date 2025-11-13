@@ -582,19 +582,37 @@ export default function TopTabs() {
               onClick={() => setCollapsedManual((prev) => !prev)}
               className="group absolute right-[-18px] top-1/2 z-10 -translate-y-1/2 select-none rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               style={{
-                background: "rgba(255, 255, 255, 0.15)",
+                background: document.documentElement.classList.contains('dark')
+                  ? "rgba(255, 255, 255, 0.15)"
+                  : "rgba(0, 0, 0, 0.12)",
                 backdropFilter: "blur(20px)",
-                border: "1px solid rgba(255, 255, 255, 0.25)",
-                boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.1)",
+                border: document.documentElement.classList.contains('dark')
+                  ? "1px solid rgba(255, 255, 255, 0.25)"
+                  : "1.5px solid rgba(0, 0, 0, 0.15)",
+                boxShadow: document.documentElement.classList.contains('dark')
+                  ? "0 8px 32px 0 rgba(31, 38, 135, 0.1)"
+                  : "0 8px 32px 0 rgba(0, 0, 0, 0.08), 0 0 0 1.5px rgba(0, 0, 0, 0.1)",
                 padding: "10px 6px",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)";
-                e.currentTarget.style.boxShadow = "0 8px 32px 0 rgba(31, 38, 135, 0.2)";
+                const isDark = document.documentElement.classList.contains('dark');
+                if (isDark) {
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)";
+                  e.currentTarget.style.boxShadow = "0 8px 32px 0 rgba(31, 38, 135, 0.2)";
+                } else {
+                  e.currentTarget.style.background = "rgba(0, 0, 0, 0.18)";
+                  e.currentTarget.style.boxShadow = "0 8px 32px 0 rgba(0, 0, 0, 0.15), 0 0 0 1.5px rgba(0, 0, 0, 0.2)";
+                }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
-                e.currentTarget.style.boxShadow = "0 8px 32px 0 rgba(31, 38, 135, 0.1)";
+                const isDark = document.documentElement.classList.contains('dark');
+                if (isDark) {
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
+                  e.currentTarget.style.boxShadow = "0 8px 32px 0 rgba(31, 38, 135, 0.1)";
+                } else {
+                  e.currentTarget.style.background = "rgba(0, 0, 0, 0.12)";
+                  e.currentTarget.style.boxShadow = "0 8px 32px 0 rgba(0, 0, 0, 0.08), 0 0 0 1.5px rgba(0, 0, 0, 0.1)";
+                }
               }}
               aria-label={
                 collapsed ? "Expand navigation" : "Collapse navigation"
