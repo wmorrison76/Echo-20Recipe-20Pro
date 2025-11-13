@@ -86,7 +86,7 @@ function RDLabsWorkspaceContent() {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex overflow-hidden gap-0">
+      <div className="flex-1 flex overflow-hidden gap-0 relative">
         {/* Discovery Panel - Left */}
         <div className="w-72 border-r border-cyan-500/10 bg-slate-900/30 overflow-auto flex-shrink-0">
           <div className="p-4">
@@ -108,29 +108,30 @@ function RDLabsWorkspaceContent() {
           )}
         </div>
 
-        {/* Right Panel - Insights/Session Info */}
+        {/* Right Panel - Insights/Session Info or Help */}
         {!shouldShowDashboard && (
           <div className="w-72 border-l border-cyan-500/10 bg-slate-900/30 overflow-auto flex-shrink-0">
-            <div className="p-4">
-              <RDLabSessionSidebar
-                isDarkMode={true}
-                projectName="Active Project"
-                createdAt={new Date().toISOString()}
-                updatedAt={new Date().toISOString()}
-                experimentsCount={store.experiments.length}
-                discoveryQueue={store.experiments.slice(0, 3)}
-                backlog={[]}
-                insights={[]}
-              />
-              <div className="mt-6">
-                <InsightsPanel />
+            {showHelp ? (
+              <RDLabsHelpPanel isOpen={true} onClose={() => setShowHelp(false)} />
+            ) : (
+              <div className="p-4">
+                <RDLabSessionSidebar
+                  isDarkMode={true}
+                  projectName="Active Project"
+                  createdAt={new Date().toISOString()}
+                  updatedAt={new Date().toISOString()}
+                  experimentsCount={store.experiments.length}
+                  discoveryQueue={store.experiments.slice(0, 3)}
+                  backlog={[]}
+                  insights={[]}
+                />
+                <div className="mt-6">
+                  <InsightsPanel />
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
-
-        {/* Help Panel */}
-        <RDLabsHelpPanel isOpen={showHelp} onClose={() => setShowHelp(false)} />
       </div>
 
       {/* New Project Dialog */}
