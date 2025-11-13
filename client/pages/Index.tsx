@@ -94,7 +94,7 @@ function IndexContent() {
           paddingLeft: "calc(var(--sidebar-offset, 88px) - 0.35rem)",
         }}
       >
-        <TopTabs onRDLabsClick={() => setRdLabsModalOpen(true)} />
+        <TopTabs />
         <header className="flex flex-wrap items-center justify-between gap-3 pr-3 pt-3 pb-1.5 pl-2 sm:flex-nowrap sm:pl-2.5">
           <div className="flex items-center gap-2.5">
             <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/60 bg-white/80 text-xs font-semibold uppercase tracking-[0.35em] text-slate-700 shadow-sm backdrop-blur-sm dark:border-cyan-500/40 dark:bg-cyan-500/15 dark:text-cyan-200">
