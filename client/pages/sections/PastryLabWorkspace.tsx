@@ -59,7 +59,7 @@ function PastryLabWorkspaceContent() {
       {/* Main content */}
       <div className="flex-1 flex overflow-hidden gap-0">
         {/* Discovery Panel - Left */}
-        <div className="w-80 border-r border-rose-400/10 bg-slate-900/30 overflow-auto flex-shrink-0">
+        <div className="w-72 border-r border-rose-400/10 bg-slate-900/30 overflow-auto flex-shrink-0">
           <div className="p-4">
             <DiscoveryPanel />
           </div>
@@ -81,7 +81,7 @@ function PastryLabWorkspaceContent() {
 
         {/* Right Panel - Insights/Session Info */}
         {!showDashboard && (
-          <div className="w-80 border-l border-rose-400/10 bg-slate-900/30 overflow-auto flex-shrink-0">
+          <div className="w-72 border-l border-rose-400/10 bg-slate-900/30 overflow-auto flex-shrink-0">
             <div className="p-4">
               <RDLabSessionSidebar
                 isDarkMode={true}
