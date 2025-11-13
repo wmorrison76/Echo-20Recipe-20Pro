@@ -31,6 +31,7 @@ function RDLabsWorkspaceContent() {
   const [showDashboard, setShowDashboard] = useState(true);
   const [activeTab, setActiveTab] = useState("workbench");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [showHelp, setShowHelp] = useState(false);
 
   if (!store) {
     return (
