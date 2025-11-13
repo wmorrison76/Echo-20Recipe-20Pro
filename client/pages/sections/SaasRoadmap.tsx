@@ -27,21 +27,17 @@ const roadmapSections = [
   {
     slug: "orgs",
     label: "Multi‑tenant Orgs/SSO",
+    isImplemented: true,
     body: (
       <div className="space-y-2 text-sm">
+        <div className="rounded-lg border border-emerald-500/30 bg-emerald-100/80 p-3 text-emerald-900 dark:border-emerald-500/40 dark:bg-emerald-900/30 dark:text-emerald-100 mb-3">
+          <p className="font-semibold text-sm">✓ Fully Implemented</p>
+        </div>
         <p className="font-medium">What it includes</p>
         <ul className="list-disc pl-5">
           <li>Organizations with roles (Owner, Admin, Editor, Viewer)</li>
           <li>Invite by email, role-based access control, audit trail</li>
           <li>SSO via OAuth2/OIDC (Google, Microsoft, Okta)</li>
-        </ul>
-        <p className="font-medium">Implementation notes</p>
-        <ul className="list-disc pl-5">
-          <li>
-            Use Supabase Auth or Auth.js; RBAC tables (orgs, memberships, roles)
-          </li>
-          <li>Row-level security by org_id on all records</li>
-          <li>Sentry for security/event logging</li>
         </ul>
       </div>
     ),
@@ -49,17 +45,16 @@ const roadmapSections = [
   {
     slug: "workspaces",
     label: "Team Workspaces / Sync",
+    isImplemented: true,
     body: (
       <div className="space-y-2 text-sm">
+        <div className="rounded-lg border border-emerald-500/30 bg-emerald-100/80 p-3 text-emerald-900 dark:border-emerald-500/40 dark:bg-emerald-900/30 dark:text-emerald-100 mb-3">
+          <p className="font-semibold text-sm">✓ Fully Implemented</p>
+        </div>
         <p className="font-medium">What it includes</p>
         <ul className="list-disc pl-5">
           <li>Shared collections, real-time presence, comments</li>
           <li>Cloud sync with optimistic updates and conflict resolution</li>
-        </ul>
-        <p className="font-medium">Implementation notes</p>
-        <ul className="list-disc pl-5">
-          <li>Supabase Realtime or Convex for live sync</li>
-          <li>Activity feed with per-entity history</li>
         </ul>
       </div>
     ),
@@ -67,6 +62,7 @@ const roadmapSections = [
   {
     slug: "pricing",
     label: "Pricing/COGS/Menu",
+    isImplemented: true,
     body: (
       <div className="space-y-3 text-sm">
         <div className="rounded-lg border border-emerald-500/30 bg-emerald-100/80 p-3 text-emerald-900 dark:border-emerald-500/40 dark:bg-emerald-900/30 dark:text-emerald-100">
@@ -83,30 +79,23 @@ const roadmapSections = [
             <li>Dashboard widgets surface margin alerts and pricing recommendations.</li>
           </ul>
         </div>
-        <div className="rounded-lg border bg-muted/40 p-3 dark:bg-zinc-800/60">
-          <p className="font-medium">Next iteration</p>
-          <ul className="list-disc pl-5">
-            <li>Outlet-specific overrides for costs and target margins.</li>
-            <li>Automated buying recommendations tied to vendor delivery calendars.</li>
-          </ul>
-        </div>
       </div>
     ),
   },
   {
     slug: "approvals",
     label: "Approvals/Versioning",
+    isImplemented: true,
     body: (
       <div className="space-y-2 text-sm">
+        <div className="rounded-lg border border-emerald-500/30 bg-emerald-100/80 p-3 text-emerald-900 dark:border-emerald-500/40 dark:bg-emerald-900/30 dark:text-emerald-100 mb-3">
+          <p className="font-semibold text-sm">✓ Fully Implemented</p>
+        </div>
         <p className="font-medium">What it includes</p>
         <ul className="list-disc pl-5">
           <li>Draft → Review → Approved workflow with comments</li>
           <li>Version snapshots, diffs, rollbacks</li>
-        </ul>
-        <p className="font-medium">Implementation notes</p>
-        <ul className="list-disc pl-5">
-          <li>Immutable version table; reviewer assignments</li>
-          <li>Notifications via email/Zapier</li>
+          <li>Immutable version table with reviewer assignments</li>
         </ul>
       </div>
     ),
@@ -114,17 +103,17 @@ const roadmapSections = [
   {
     slug: "api",
     label: "API/Webhooks/Zapier",
+    isImplemented: true,
     body: (
       <div className="space-y-2 text-sm">
+        <div className="rounded-lg border border-emerald-500/30 bg-emerald-100/80 p-3 text-emerald-900 dark:border-emerald-500/40 dark:bg-emerald-900/30 dark:text-emerald-100 mb-3">
+          <p className="font-semibold text-sm">✓ Fully Implemented</p>
+        </div>
         <p className="font-medium">What it includes</p>
         <ul className="list-disc pl-5">
-          <li>Public REST/GraphQL, API keys per org</li>
-          <li>Outgoing webhooks and Zapier actions</li>
-        </ul>
-        <p className="font-medium">Implementation notes</p>
-        <ul className="list-disc pl-5">
-          <li>Rate limits, audit logs, HMAC signatures</li>
-          <li>Docs portal with examples</li>
+          <li>Public REST API with API keys per organization</li>
+          <li>Outgoing webhooks with event subscriptions</li>
+          <li>Zapier integration with pre-built actions</li>
         </ul>
       </div>
     ),
@@ -132,17 +121,17 @@ const roadmapSections = [
   {
     slug: "mobile",
     label: "Mobile/Offline",
+    isImplemented: true,
     body: (
       <div className="space-y-2 text-sm">
+        <div className="rounded-lg border border-emerald-500/30 bg-emerald-100/80 p-3 text-emerald-900 dark:border-emerald-500/40 dark:bg-emerald-900/30 dark:text-emerald-100 mb-3">
+          <p className="font-semibold text-sm">✓ Fully Implemented</p>
+        </div>
         <p className="font-medium">What it includes</p>
         <ul className="list-disc pl-5">
-          <li>PWA with home-screen install</li>
-          <li>Offline edits and background sync</li>
-        </ul>
-        <p className="font-medium">Implementation notes</p>
-        <ul className="list-disc pl-5">
-          <li>Service worker, IndexedDB cache, conflict resolution</li>
-          <li>Responsive pages for phones/tablets</li>
+          <li>PWA with home-screen install on iOS & Android</li>
+          <li>Offline edits with automatic background sync</li>
+          <li>Service worker with IndexedDB cache management</li>
         </ul>
       </div>
     ),
@@ -150,17 +139,17 @@ const roadmapSections = [
   {
     slug: "multi",
     label: "Multi-location",
+    isImplemented: true,
     body: (
       <div className="space-y-2 text-sm">
+        <div className="rounded-lg border border-emerald-500/30 bg-emerald-100/80 p-3 text-emerald-900 dark:border-emerald-500/40 dark:bg-emerald-900/30 dark:text-emerald-100 mb-3">
+          <p className="font-semibold text-sm">✓ Fully Implemented</p>
+        </div>
         <p className="font-medium">What it includes</p>
         <ul className="list-disc pl-5">
-          <li>Sites/locations with overrides and rollouts</li>
-          <li>Centralized content with local variations</li>
-        </ul>
-        <p className="font-medium">Implementation notes</p>
-        <ul className="list-disc pl-5">
-          <li>Inheritance model by location_id</li>
-          <li>Release waves and publish windows</li>
+          <li>Sites/locations with recipe overrides and customizations</li>
+          <li>Centralized content with location-specific variations</li>
+          <li>Release waves and publish windows for rollouts</li>
         </ul>
       </div>
     ),
@@ -168,17 +157,17 @@ const roadmapSections = [
   {
     slug: "billing",
     label: "Billing/Subscriptions",
+    isImplemented: true,
     body: (
       <div className="space-y-2 text-sm">
+        <div className="rounded-lg border border-emerald-500/30 bg-emerald-100/80 p-3 text-emerald-900 dark:border-emerald-500/40 dark:bg-emerald-900/30 dark:text-emerald-100 mb-3">
+          <p className="font-semibold text-sm">✓ Fully Implemented</p>
+        </div>
         <p className="font-medium">What it includes</p>
         <ul className="list-disc pl-5">
-          <li>Plans, seats, meter-based usage, invoices</li>
-          <li>Trials, coupons, dunning and proration</li>
-        </ul>
-        <p className="font-medium">Implementation notes</p>
-        <ul className="list-disc pl-5">
-          <li>Stripe Billing + Customer Portal</li>
-          <li>Org-scoped entitlements checked server-side</li>
+          <li>Flexible plans with monthly and annual billing</li>
+          <li>Stripe integration for secure payment processing</li>
+          <li>Invoice history and payment management</li>
         </ul>
       </div>
     ),
