@@ -611,7 +611,7 @@ export default function TopTabs() {
                   e.currentTarget.style.boxShadow = "0 8px 32px 0 rgba(31, 38, 135, 0.1)";
                 } else {
                   e.currentTarget.style.background = "rgba(0, 0, 0, 0.12)";
-                  e.currentTarget.style.boxShadow = "0 8px 32px 0 rgba(0, 0, 0, 0.08), 0 0 0 1.5px rgba(0, 0, 0, 0.1)";
+                  e.currentTarget.style.boxShadow = "0 8px 32px 0 rgba(0, 0, 0, 0.08)";
                 }
               }}
               aria-label={
