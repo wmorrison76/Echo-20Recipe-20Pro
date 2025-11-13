@@ -18,10 +18,6 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronLeft, Layout, Search, Zap } from "lucide-react";
 
-interface RDLabsWorkspaceProps {
-  defaultProject?: string;
-}
-
 function RDLabsWorkspaceContent() {
   const store = useOptionalRDLabStore();
   const [showDashboard, setShowDashboard] = useState(true);
