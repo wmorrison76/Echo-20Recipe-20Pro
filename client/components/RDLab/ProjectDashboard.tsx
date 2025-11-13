@@ -140,8 +140,8 @@ export function ProjectDashboard({
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-semibold">Recent Projects</h2>
-            <p className="text-sm text-muted-foreground">
+            <h2 className="text-xl font-semibold text-cyan-100">Recent Projects</h2>
+            <p className="text-sm text-cyan-200/70">
               Projects you've worked on recently
             </p>
           </div>
@@ -183,8 +183,8 @@ export function ProjectDashboard({
       {/* All Projects */}
       <section className="space-y-4">
         <div>
-          <h2 className="text-xl font-semibold">All Projects</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="text-xl font-semibold text-cyan-100">All Projects</h2>
+          <p className="text-sm text-cyan-200/70">
             Browse and search all your projects
           </p>
         </div>
@@ -192,12 +192,12 @@ export function ProjectDashboard({
         {/* Search and Filter */}
         <div className="space-y-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-cyan-300/50" />
             <Input
               placeholder="Search projects by name, description, or team member..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
+              className="border-cyan-500/20 bg-slate-950/70 pl-9 text-cyan-100 placeholder:text-cyan-300/40 focus:border-cyan-400"
             />
           </div>
 
@@ -240,10 +240,10 @@ export function ProjectDashboard({
         {/* Projects Grid */}
         <div className="grid gap-4">
           {filteredProjects.length === 0 ? (
-            <Card className="border-dashed">
+            <Card className="border-dashed border-cyan-500/20 bg-slate-950/30">
               <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                <Search className="h-12 w-12 text-muted-foreground/40 mb-3" />
-                <p className="text-muted-foreground">
+                <Search className="mb-3 h-12 w-12 text-cyan-400/40" />
+                <p className="text-cyan-300/70">
                   No projects found matching your search
                 </p>
               </CardContent>
