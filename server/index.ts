@@ -37,5 +37,8 @@ export function createServer() {
   // Recipe Deployment System
   app.use(recipeDeploymentRouter);
 
+  // R&D Labs API
+  app.use(rdLabsRouter);
+
   return app;
 }
