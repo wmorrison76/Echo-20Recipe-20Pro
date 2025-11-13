@@ -532,25 +532,6 @@ export default function TopTabs() {
                 collapsed && "border-transparent pt-2",
               )}
             >
-              <button
-                type="button"
-                title="Help & Shortcuts"
-                onClick={() => setShowHelp(true)}
-                className={cn(
-                  "flex w-full items-center px-2.5 py-1.5 font-medium text-foreground/75 transition-all duration-300 hover:text-foreground hover:bg-white/10 dark:hover:bg-white/5 rounded-lg",
-                  collapsed ? "justify-center px-1.5" : "justify-between",
-                )}
-              >
-                <DissolvingText
-                  collapsed={collapsed}
-                  ariaHidden={collapsed}
-                  className="text-sm font-medium"
-                >
-                  {t("recipe.actions.help", "Help & Shortcuts")}
-                </DissolvingText>
-                <HelpCircle className="h-4 w-4" aria-hidden />
-              </button>
-
               <div
                 className={cn(
                   "flex items-center justify-between px-2.5 py-1.5 text-sm font-medium text-foreground/75 transition-all duration-300 hover:text-foreground hover:bg-white/10 dark:hover:bg-white/5 rounded-lg",
