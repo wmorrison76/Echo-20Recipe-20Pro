@@ -20,7 +20,6 @@ import {
   ImageIcon,
   PencilLine,
   Shield,
-  Wand2,
   Leaf,
   Save,
   ShoppingCart,
