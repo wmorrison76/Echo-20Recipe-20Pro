@@ -81,18 +81,23 @@ export function CollaborationPanel({
 
     setIsInviting(true);
     try {
-      onAddCollaborator(inviteEmail, inviteRole);
+      addCollaborator(experimentId, matchedUser.id);
       setInviteEmail("");
       setInviteRole("editor");
       setInviteLocation("");
-      toast.success(`Invitation sent to ${inviteEmail}`);
+      toast.success(`${matchedUser.name} added as collaborator`);
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to send invitation"
+        error instanceof Error ? error.message : "Failed to add collaborator"
       );
     } finally {
       setIsInviting(false);
     }
+  };
+
+  const handleRemove = (collaboratorId: string) => {
+    removeCollaborator(experimentId, collaboratorId);
+    toast.success("Collaborator removed");
   };
 
   return (
@@ -103,19 +108,19 @@ export function CollaborationPanel({
           Collaborators
         </CardTitle>
         <CardDescription>
-          {collaborators.length > 0
-            ? `${collaborators.length} collaborator${collaborators.length !== 1 ? "s" : ""}`
+          {currentCollaborators.length > 0
+            ? `${currentCollaborators.length} collaborator${currentCollaborators.length !== 1 ? "s" : ""}`
             : "No collaborators yet"}
         </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-6">
         {/* Current Collaborators */}
-        {collaborators.length > 0 && (
+        {currentCollaborators.length > 0 && (
           <div className="space-y-3">
             <p className="text-sm font-semibold">Current Team</p>
             <div className="space-y-2">
-              {collaborators.map((collab) => (
+              {currentCollaborators.map((collab) => (
                 <div
                   key={collab.id}
                   className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 p-3 dark:border-cyan-500/20 dark:bg-cyan-500/5"
@@ -143,7 +148,7 @@ export function CollaborationPanel({
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => onRemoveCollaborator(collab.id)}
+                        onClick={() => handleRemove(collab.id)}
                         className="h-8 w-8"
                       >
                         <Trash2 className="h-4 w-4" />
