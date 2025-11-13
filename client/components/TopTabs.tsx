@@ -239,6 +239,7 @@ type TabLinkProps = {
   icon: LucideIcon;
   collapsed: boolean;
   shortcutDisplay?: string;
+  onClick?: () => void;
 };
 
 function TabLink({
