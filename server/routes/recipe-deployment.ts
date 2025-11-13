@@ -183,6 +183,10 @@ router.post("/api/recipes/deployments", async (req: Request, res: Response) => {
 // Get all deployments for organization
 router.get("/api/recipes/deployments", async (req: Request, res: Response) => {
   try {
+    if (!supabase) {
+      return res.status(503).json({ error: "Database service unavailable" });
+    }
+
     const organizationId = (req as any).user?.organization_id;
     const status = req.query.status as string;
     const limit = parseInt(req.query.limit as string) || 50;
