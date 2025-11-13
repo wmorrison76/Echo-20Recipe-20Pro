@@ -20,7 +20,10 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks(id) {
           // Core dependencies
-          if (id.includes("node_modules/react") || id.includes("node_modules/react-dom")) {
+          if (
+            id.includes("node_modules/react") ||
+            id.includes("node_modules/react-dom")
+          ) {
             return "react";
           }
           if (id.includes("node_modules/react-router-dom")) {
@@ -36,7 +39,10 @@ export default defineConfig(({ mode }) => ({
           if (id.includes("node_modules/recharts")) {
             return "charts";
           }
-          if (id.includes("node_modules/three") || id.includes("@react-three")) {
+          if (
+            id.includes("node_modules/three") ||
+            id.includes("@react-three")
+          ) {
             return "graphics";
           }
 
