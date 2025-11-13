@@ -1,9 +1,7 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { BookOpen, Utensils, Settings, Users, TrendingUp, HelpCircle } from "lucide-react";
+import { BookOpen, Utensils, Settings, Users, TrendingUp, HelpCircle, X } from "lucide-react";
 
 const MAIN_HELP_SECTIONS = [
   {
@@ -17,7 +15,7 @@ const MAIN_HELP_SECTIONS = [
       },
       {
         subtitle: "Core Modules",
-        text: "• Recipe Management: Create, edit, and organize recipes\n• Gallery: Visual documentation and styling guides\n• Menu Design Studio: Create and test menu layouts\n• Dish Assembly: Map plating procedures and components\n• Server Notes: Guest communication and procedure documentation\n• Operations: Production workflows and timelines\n• R&D Labs: Experimental development and innovation\n• Inventory & Supplies: Stock and purchasing management\n• Nutrition & Allergens: Compliance and dietary information\n• HACCP Compliance: Food safety protocols\n• Costing: Plate economics and margin analysis\n• Supplier Management: Vendor and sourcing management",
+        text: "Recipe Management: Create, edit, and organize recipes. Gallery: Visual documentation and styling guides. Menu Design Studio: Create and test menu layouts. Dish Assembly: Map plating procedures and components. Server Notes: Guest communication and procedure documentation. Operations: Production workflows and timelines. R&D Labs: Experimental development and innovation. Inventory & Supplies: Stock and purchasing management. Nutrition & Allergens: Compliance and dietary information. HACCP Compliance: Food safety protocols. Costing: Plate economics and margin analysis. Supplier Management: Vendor and sourcing management.",
       },
       {
         subtitle: "Architecture Philosophy",
@@ -36,7 +34,7 @@ const MAIN_HELP_SECTIONS = [
       },
       {
         subtitle: "Recipe Components",
-        text: "Each recipe contains:\n• Ingredients list with quantities and units\n• Step-by-step procedure with timing\n• Yield and serving information\n• Required equipment and stations\n• Plating diagram and presentation notes\n• Nutritional and allergen information\n• Cost breakdown and pricing\n• Variation options and substitutions",
+        text: "Each recipe contains: Ingredients list with quantities and units. Step-by-step procedure with timing. Yield and serving information. Required equipment and stations. Plating diagram and presentation notes. Nutritional and allergen information. Cost breakdown and pricing. Variation options and substitutions.",
       },
       {
         subtitle: "Search & Discovery",
@@ -128,7 +126,7 @@ const MAIN_HELP_SECTIONS = [
       },
       {
         subtitle: "Role-Based Access",
-        text: "Different user roles have appropriate permissions:\n• Admin: Full system access\n• Chef/R&D Director: Develop recipes and experiments\n• Manager: Oversee operations and costs\n• Staff: View and execute recipes\n• Vendors: Limited supplier portal access",
+        text: "Different user roles have appropriate permissions: Admin: Full system access. Chef/R&D Director: Develop recipes and experiments. Manager: Oversee operations and costs. Staff: View and execute recipes. Vendors: Limited supplier portal access.",
       },
       {
         subtitle: "Team Communication",
@@ -192,87 +190,110 @@ interface EchoRecipeProHelpModalProps {
 export function EchoRecipeProHelpModal({ isOpen, onOpenChange }: EchoRecipeProHelpModalProps) {
   const [activeSection, setActiveSection] = useState("overview");
 
+  if (!isOpen) return null;
+
+  const currentSection = MAIN_HELP_SECTIONS.find(s => s.id === activeSection);
+
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl h-[90vh] max-h-[90vh] p-0 border-cyan-500/20">
-        <div className="flex flex-col h-full">
-          {/* Header */}
-          <div className="border-b border-cyan-500/20 px-6 py-4">
-            <DialogHeader>
-              <div className="flex items-center gap-3">
-                <BookOpen className="h-6 w-6 text-cyan-400" />
-                <div>
-                  <DialogTitle>EchoRecipe Pro - Advanced Help</DialogTitle>
-                  <DialogDescription>
-                    Comprehensive guide to system features, workflows, and best practices
-                  </DialogDescription>
-                </div>
-              </div>
-            </DialogHeader>
-          </div>
-
-          {/* Content */}
-          <Tabs
-            value={activeSection}
-            onValueChange={setActiveSection}
-            className="flex-1 flex flex-col overflow-hidden"
-          >
-            <TabsList className="w-full justify-start gap-1 border-b border-cyan-500/20 rounded-none bg-transparent px-6 py-3 h-auto">
-              {MAIN_HELP_SECTIONS.map((section) => {
-                const Icon = section.icon;
-                return (
-                  <TabsTrigger
-                    key={section.id}
-                    value={section.id}
-                    className="gap-2 rounded-none border-b-2 border-transparent data-[state=active]:border-cyan-400 data-[state=active]:bg-transparent text-xs py-2"
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span>{section.title}</span>
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
-
-            {/* Scrollable Content */}
-            <ScrollArea className="flex-1 overflow-hidden">
-              {MAIN_HELP_SECTIONS.map((section) => (
-                <TabsContent
-                  key={section.id}
-                  value={section.id}
-                  className="space-y-6 px-6 py-4"
-                >
-                  {section.content.map((item, idx) => (
-                    <div key={idx} className="space-y-2">
-                      <h3 className="font-semibold text-cyan-300 text-base">
-                        {item.subtitle}
-                      </h3>
-                      <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
-                        {item.text}
-                      </p>
-                    </div>
-                  ))}
-                </TabsContent>
-              ))}
-            </ScrollArea>
-          </Tabs>
-
-          {/* Footer */}
-          <div className="border-t border-cyan-500/20 px-6 py-4 bg-slate-900/50">
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-slate-400">
-                Need more help? Use the R&D Labs help for experimental workflows.
-              </p>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onOpenChange(false)}
-              >
-                Close
-              </Button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="w-full max-w-4xl h-[90vh] bg-slate-950 rounded-lg shadow-2xl border border-cyan-500/20 flex flex-col overflow-hidden"
+        style={{
+          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 40px rgba(34, 211, 238, 0.1)"
+        }}>
+        
+        {/* Header */}
+        <div className="border-b border-cyan-500/20 px-6 py-4 flex items-center justify-between bg-slate-900/50">
+          <div className="flex items-center gap-3">
+            <BookOpen className="h-6 w-6 text-cyan-400" />
+            <div>
+              <h2 className="text-lg font-bold text-cyan-300">EchoRecipe Pro - Help Guide</h2>
+              <p className="text-xs text-slate-400">System features, workflows, and best practices</p>
             </div>
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onOpenChange(false)}
+            className="h-8 w-8 p-0 hover:bg-cyan-500/10"
+          >
+            <X className="h-5 w-5 text-cyan-400" />
+          </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+
+        {/* Content area with 2-panel layout */}
+        <div className="flex-1 flex overflow-hidden gap-0">
+          {/* Left panel - Topics */}
+          <div className="w-64 border-r border-cyan-500/20 bg-slate-900/30 flex flex-col">
+            <ScrollArea className="flex-1">
+              <div className="space-y-1 p-4">
+                {MAIN_HELP_SECTIONS.map((section) => {
+                  const Icon = section.icon;
+                  const isActive = section.id === activeSection;
+                  return (
+                    <button
+                      key={section.id}
+                      onClick={() => setActiveSection(section.id)}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors text-left ${
+                        isActive
+                          ? "bg-cyan-500/20 text-cyan-300 border-l-2 border-cyan-400"
+                          : "text-slate-300 hover:bg-slate-800/50 hover:text-cyan-300"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4 flex-shrink-0" />
+                      <span className="truncate">{section.title}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </ScrollArea>
+          </div>
+
+          {/* Right panel - Content */}
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <ScrollArea className="flex-1">
+              <div className="p-6 space-y-6">
+                {currentSection && (
+                  <>
+                    <div className="flex items-center gap-2 mb-4">
+                      {currentSection.icon && (
+                        <currentSection.icon className="h-5 w-5 text-cyan-400" />
+                      )}
+                      <h3 className="text-xl font-bold text-cyan-300">{currentSection.title}</h3>
+                    </div>
+
+                    <div className="space-y-6">
+                      {currentSection.content.map((item, idx) => (
+                        <div key={idx} className="space-y-2">
+                          <h4 className="font-semibold text-cyan-200 text-base">{item.subtitle}</h4>
+                          <p className="text-sm text-slate-300 leading-relaxed break-words whitespace-normal">
+                            {item.text}
+                          </p>
+                          {idx < currentSection.content.length - 1 && (
+                            <div className="h-px bg-cyan-500/10 mt-4" />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </ScrollArea>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="border-t border-cyan-500/20 px-6 py-3 bg-slate-900/50 flex items-center justify-between text-xs text-slate-400">
+          <p>Need help with R&D Labs? Use the R&D Labs help button in the workspace.</p>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onOpenChange(false)}
+            className="text-xs"
+          >
+            Close
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }
