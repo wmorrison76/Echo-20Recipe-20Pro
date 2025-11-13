@@ -115,12 +115,6 @@ const navGroups: NavGroup[] = [
         fallback: "R&D LABS",
         icon: Atom,
       },
-      {
-        to: "/?tab=pastry-lab",
-        labelKey: "nav.pastrylab",
-        fallback: "PASTRY LAB",
-        icon: Sparkles,
-      },
     ],
   },
   {
