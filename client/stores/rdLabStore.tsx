@@ -300,6 +300,8 @@ export function RDLabProvider({ children }: RDLabProviderProps) {
   const [experiments, setExperiments] = React.useState<LabExperiment[]>(experimentsSeed);
   const [focusExperimentId, setFocusExperimentId] = React.useState<string>(experimentsSeed[0]?.id ?? "");
   const [searchQuery, setSearchQuery] = React.useState<string>("");
+  const [specializationFilter, setSpecializationFilter] = React.useState<LabSpecialization | "all">("all");
+  const [selectedExperimentIds, setSelectedExperimentIds] = React.useState<Set<string>>(new Set());
 
   const generateExperimentId = React.useCallback(() => {
     if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
