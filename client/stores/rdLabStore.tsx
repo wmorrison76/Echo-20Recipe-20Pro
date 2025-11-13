@@ -93,6 +93,14 @@ type RDLabState = {
   setFocusExperiment: (id: string) => void;
   searchQuery: string;
   setSearchQuery: (value: string) => void;
+  specializationFilter: LabSpecialization | "all";
+  setSpecializationFilter: (spec: LabSpecialization | "all") => void;
+  selectedExperimentIds: Set<string>;
+  toggleExperimentSelection: (id: string) => void;
+  clearExperimentSelection: () => void;
+  bulkSetStatus: (ids: string[], status: ExperimentStatus) => void;
+  bulkAddTag: (ids: string[], tag: string) => void;
+  bulkRemoveTag: (ids: string[], tag: string) => void;
   backlog: LabTask[];
   insights: { headline: string; detail: string; metric?: string }[];
   toggleArchive: (id: string) => void;
@@ -105,6 +113,10 @@ type RDLabState = {
   appendTextureObjective: (id: string, objective: string) => void;
   appendFlavorConstellation: (id: string, constellation: string) => void;
   appendFutureFoodAngle: (id: string, angle: string) => void;
+  linkRecipe: (experimentId: string, recipeId: string) => void;
+  unlinkRecipe: (experimentId: string, recipeId: string) => void;
+  addCollaborator: (experimentId: string, collaboratorId: string) => void;
+  removeCollaborator: (experimentId: string, collaboratorId: string) => void;
   serializeState: () => RDLabSnapshot;
   hydrateState: (snapshot: RDLabSnapshot) => void;
 };
