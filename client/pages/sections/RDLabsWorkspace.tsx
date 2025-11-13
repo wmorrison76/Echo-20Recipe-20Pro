@@ -57,7 +57,15 @@ function RDLabsWorkspaceContent() {
   }
 
   return (
-    <div className="w-full h-full flex flex-col bg-slate-950 text-slate-100">
+    <div className="w-full h-full flex flex-col bg-slate-950 text-slate-100 relative">
+      {/* TEST: Big Yellow Circle */}
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-yellow-300 rounded-full z-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-2xl font-bold text-black">TEST CIRCLE</p>
+          <p className="text-sm text-black mt-2">If you see this, changes are loading!</p>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-cyan-500/10 bg-slate-900/50">
         <h1 className="text-lg font-semibold text-cyan-300">R&D Labs</h1>
