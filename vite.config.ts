@@ -70,7 +70,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    exclude: ["html2canvas", "jspdf"],
+    exclude: ["jspdf"],
   },
   plugins: [react(), expressPlugin()],
   resolve: {
