@@ -22,6 +22,8 @@ import DishAssemblySection from "./sections/dish-assembly";
 import MenuDesignStudioSection from "./sections/EchoMenuStudio";
 import ProductionSection from "./sections/Production";
 import PurchasingReceivingSection from "./sections/purchasing-receiving";
+import RDLabsWorkspace from "./sections/RDLabsWorkspace";
+import PastryLabWorkspace from "./sections/PastryLabWorkspace";
 import TopTabs from "@/components/TopTabs";
 import SubtleBottomGlow from "@/components/SubtleBottomGlow";
 import TronBackdrop from "@/components/TronBackdrop";
