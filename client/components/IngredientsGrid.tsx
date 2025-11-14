@@ -76,6 +76,7 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
   onAddDivider,
   supplierQuotes,
   onApplySupplierQuote,
+  onIngredientSelected,
 }) => {
   const { t } = useTranslation();
   const [selectedSelectorRow, setSelectedSelectorRow] = useState<number | null>(null);
