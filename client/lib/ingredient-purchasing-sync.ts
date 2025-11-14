@@ -4,6 +4,7 @@
  */
 
 import { INVENTORY_ITEMS, InventoryItem } from "@/data/inventoryItems";
+import { ingredientSimilarity, fuzzySearch } from "@/lib/fuzzy-matcher";
 
 export interface IngredientCostMatch {
   inventoryId: string;
@@ -14,48 +15,6 @@ export interface IngredientCostMatch {
   supplier: string;
   sku: string;
   confidence: number; // 0-1 fuzzy match confidence
-}
-
-/**
- * Levenshtein distance for fuzzy matching
- * Returns a score 0-1 where 1 is perfect match
- */
-function calculateSimilarity(str1: string, str2: string): number {
-  const s1 = str1.toLowerCase();
-  const s2 = str2.toLowerCase();
-
-  if (s1 === s2) return 1;
-  if (!s1 || !s2) return 0;
-
-  const longer = s1.length > s2.length ? s1 : s2;
-  const shorter = s1.length > s2.length ? s2 : s1;
-
-  const editDistance = levenshteinDistance(longer, shorter);
-  return (longer.length - editDistance) / longer.length;
-}
-
-/**
- * Calculate Levenshtein distance between two strings
- */
-function levenshteinDistance(s1: string, s2: string): number {
-  const costs: number[] = [];
-  for (let i = 0; i <= s1.length; i++) {
-    let lastValue = i;
-    for (let j = 0; j <= s2.length; j++) {
-      if (i === 0) {
-        costs[j] = j;
-      } else if (j > 0) {
-        let newValue = costs[j - 1];
-        if (s1.charAt(i - 1) !== s2.charAt(j - 1)) {
-          newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
-        }
-        costs[j - 1] = lastValue;
-        lastValue = newValue;
-      }
-    }
-    if (i > 0) costs[s2.length] = lastValue;
-  }
-  return costs[s2.length];
 }
 
 /**
