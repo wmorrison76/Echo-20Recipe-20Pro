@@ -282,6 +282,7 @@ type TabLinkProps = {
   icon: LucideIcon;
   collapsed: boolean;
   shortcutDisplay?: string;
+  onNavigate?: () => void;
 };
 
 function TabLink({
@@ -290,6 +291,7 @@ function TabLink({
   icon: Icon,
   collapsed,
   shortcutDisplay,
+  onNavigate,
 }: TabLinkProps) {
   const loc = useLocation();
   const active = new URLSearchParams(loc.search).get("tab") ?? "search";
@@ -308,6 +310,7 @@ function TabLink({
           : "gap-1.5 px-2.5 py-1.5",
         isActive ? "text-primary" : "text-foreground/60 hover:text-foreground",
       )}
+      onClick={onNavigate}
     >
       <Icon
         className={cn(
