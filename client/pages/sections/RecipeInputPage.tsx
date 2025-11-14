@@ -3299,12 +3299,6 @@ const RecipeInputPage = () => {
                 onAddDivider={addDividerRow}
               />
 
-              <RecipeEditorCostingPanel
-                ingredients={ingredients}
-                recipeTitle={recipeName}
-                servings={portionCount || 1}
-              />
-
               <SubRecipePicker
                 open={isSubRecipePickerOpen}
                 onOpenChange={setIsSubRecipePickerOpen}
