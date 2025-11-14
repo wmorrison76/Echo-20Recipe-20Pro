@@ -78,8 +78,13 @@ class KeyboardShortcutsManager {
    * Find matching shortcut for event
    */
   private findMatchingShortcut(event: KeyboardEvent): KeyboardShortcut | undefined {
+    // Guard against missing event key
+    if (!event.key) return undefined;
+
     return Array.from(this.shortcuts.values()).find((shortcut) => {
       if (!shortcut.enabled) return false;
+      // Guard against missing shortcut key
+      if (!shortcut.key) return false;
 
       const keyMatch = event.key.toLowerCase() === shortcut.key.toLowerCase();
       const ctrlMatch = shortcut.modifiers.ctrl ? event.ctrlKey : !event.ctrlKey;
