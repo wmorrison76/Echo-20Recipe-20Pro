@@ -40,6 +40,7 @@ import { useCallback, useMemo, useState } from "react";
 import { CommandPalette } from "@/components/CommandPalette";
 import { useRegisterShortcut } from "@/context/KeyboardShortcutsContext";
 import { HelpCircle } from "lucide-react";
+import ErrorBoundaryWrapper from "@/components/ErrorBoundaryWrapper";
 
 export default function Index() {
   return (
@@ -181,13 +182,19 @@ function IndexContent() {
             className="w-full"
           >
             <TabsContent value="search">
-              <RecipeSearchSection />
+              <ErrorBoundaryWrapper section="Recipe Search">
+                <RecipeSearchSection />
+              </ErrorBoundaryWrapper>
             </TabsContent>
             <TabsContent value="gallery">
-              <GallerySection />
+              <ErrorBoundaryWrapper section="Gallery">
+                <GallerySection />
+              </ErrorBoundaryWrapper>
             </TabsContent>
             <TabsContent value="add-recipe">
-              <AddRecipeSection />
+              <ErrorBoundaryWrapper section="Add Recipe">
+                <AddRecipeSection />
+              </ErrorBoundaryWrapper>
             </TabsContent>
             <TabsContent value="saas">
               <SaasRoadmapSection />
@@ -270,7 +277,9 @@ function IndexContent() {
               value="rdlabs"
               className="h-[calc(100vh-200px)] flex flex-col"
             >
-              <RDLabsWorkspace />
+              <ErrorBoundaryWrapper section="R&D Labs">
+                <RDLabsWorkspace />
+              </ErrorBoundaryWrapper>
             </TabsContent>
           </Tabs>
         </main>
