@@ -394,7 +394,7 @@ class ToastPOSManager {
    */
   startSync(intervalMs: number = 60000): void {
     if (this.syncInterval) {
-      clearInterval(this.syncInterval);
+      clearInterval(this.syncInterval as ReturnType<typeof setInterval>);
     }
 
     this.syncInterval = setInterval(async () => {
@@ -410,7 +410,7 @@ class ToastPOSManager {
    */
   stopSync(): void {
     if (this.syncInterval) {
-      clearInterval(this.syncInterval);
+      clearInterval(this.syncInterval as ReturnType<typeof setInterval>);
       this.syncInterval = null;
     }
   }
