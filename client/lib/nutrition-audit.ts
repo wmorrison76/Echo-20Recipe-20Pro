@@ -196,7 +196,7 @@ export function auditNutrition(
   });
 
   // Check serving size and servings are defined
-  if (!servingSize || servingSize.trim() === "") {
+  if (!servingSize || (typeof servingSize === 'string' && servingSize.trim() === "")) {
     errors.push({
       field: "serving_size",
       message: "Serving size must be specified for FDA labels",
@@ -204,10 +204,18 @@ export function auditNutrition(
     score -= 15;
   }
 
-  if (!servingsPerContainer || servingsPerContainer <= 0) {
+  if (typeof servingsPerContainer === 'number') {
+    if (!servingsPerContainer || servingsPerContainer <= 0) {
+      errors.push({
+        field: "servings_per_container",
+        message: "Servings per container must be a positive number",
+      });
+      score -= 15;
+    }
+  } else {
     errors.push({
       field: "servings_per_container",
-      message: "Servings per container must be a positive number",
+      message: "Servings per container must be specified",
     });
     score -= 15;
   }
