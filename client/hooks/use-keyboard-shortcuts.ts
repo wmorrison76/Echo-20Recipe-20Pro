@@ -20,7 +20,13 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcutConfig[]) {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Guard against undefined event key
+      if (!e.key) return;
+
       for (const shortcut of shortcutsRef.current) {
+        // Guard against undefined shortcut key
+        if (!shortcut.key) continue;
+
         const isKeyMatch =
           e.key.toLowerCase() === shortcut.key.toLowerCase();
         const isCtrlMatch = shortcut.ctrl ? e.ctrlKey : !e.ctrlKey;
