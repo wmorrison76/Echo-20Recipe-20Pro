@@ -53,13 +53,13 @@ const EXACT_MAPPINGS: IngredientMapping[] = [
 export function mapIngredientToInventory(recipeText: string): IngredientMapping | null {
   const normalizedText = recipeText.toLowerCase().trim();
 
-  // 1. Try exact matching first
+  // 1. Try exact matching first against EXACT_MAPPINGS
   const exactMatch = EXACT_MAPPINGS.find(
     (m) => m.recipeText.toLowerCase() === normalizedText,
   );
   if (exactMatch) return exactMatch;
 
-  // 2. Try case-insensitive partial matching
+  // 2. Try case-insensitive partial matching against EXACT_MAPPINGS
   const partialMatch = EXACT_MAPPINGS.find(
     (m) => normalizedText.includes(m.recipeText.toLowerCase()) ||
            m.recipeText.toLowerCase().includes(normalizedText),
@@ -71,34 +71,21 @@ export function mapIngredientToInventory(recipeText: string): IngredientMapping 
     };
   }
 
-  // 3. Fuzzy match against canonical names
-  let bestMatch: { inventoryId: string; similarity: number } | null = null;
-  for (const item of INVENTORY_ITEMS) {
-    const similarity = calculateSimilarity(recipeText, item.canonicalName);
-    if (similarity > 0.6) {
-      if (!bestMatch || similarity > bestMatch.similarity) {
-        bestMatch = { inventoryId: item.id, similarity };
-      }
-    }
-  }
+  // 3. Fuzzy match against canonical names using the better algorithm
+  const results = fuzzySearch(
+    recipeText,
+    INVENTORY_ITEMS,
+    (item) => item.canonicalName,
+    0.65, // Use slightly higher threshold for auto-mapping
+  );
 
-  if (bestMatch && bestMatch.similarity > 0.7) {
+  if (results.length > 0) {
+    const bestMatch = results[0];
     return {
       recipeText,
-      inventoryId: bestMatch.inventoryId,
-      confidence: bestMatch.similarity,
-      notes: "Fuzzy matched",
-    };
-  }
-
-  // 4. Try keyword matching
-  const keywords = findKeywords(recipeText);
-  if (keywords.length > 0) {
-    return {
-      recipeText,
-      inventoryId: keywords[0],
-      confidence: 0.5,
-      notes: "Matched by keyword",
+      inventoryId: bestMatch.item.id,
+      confidence: bestMatch.score,
+      notes: bestMatch.matchType === "exact" ? undefined : `Matched by ${bestMatch.matchType}`,
     };
   }
 
