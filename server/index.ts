@@ -9,6 +9,12 @@ import { proxyRecipeImage } from "./routes/recipeImage";
 import { recipeDeploymentRouter } from "./routes/recipe-deployment";
 import { rdLabsRouter } from "./routes/rdlabs";
 import { rdLabsAdvancedRouter } from "./routes/rdlabs-advanced";
+import {
+  proxyRecipeImage as proxyImageOptimized,
+  serveRecipeImage,
+  generateBlurhash,
+  getImageMetadata
+} from "./routes/images";
 
 export function createServer() {
   const app = express();
