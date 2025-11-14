@@ -561,6 +561,30 @@ export default function TopTabs() {
     return () => window.removeEventListener("keydown", handleNavShortcut);
   }, [navigate, navShortcutMap, shortcutLabel]);
 
+  // Close sidebar when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!asideRef.current) return;
+      const target = event.target as Node;
+
+      // Check if click is outside the sidebar
+      if (!asideRef.current.contains(target)) {
+        // Only close if sidebar is expanded
+        if (!collapsed) {
+          setCollapsedManual(true);
+        }
+      }
+    };
+
+    // Only attach listener if sidebar is expanded
+    if (!collapsed) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }
+  }, [collapsed, setCollapsedManual]);
+
   return (
     <>
       <TooltipProvider delayDuration={collapsed ? 0 : 200}>
