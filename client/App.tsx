@@ -1,6 +1,7 @@
 import "./global.css";
 import React, { Suspense, lazy } from "react";
 import "./add-recipe.styles.css";
+import * as Sentry from "@sentry/react";
 
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
@@ -9,6 +10,24 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NotFound from "./pages/NotFound";
+
+// Initialize Sentry for error tracking
+if (import.meta.env.PROD) {
+  Sentry.init({
+    dsn: "https://d4120668c0cafd04be9de8c62183794c@o4510361278611456.ingest.us.sentry.io/4510361279856640",
+    integrations: [
+      new Sentry.Replay({
+        maskAllText: true,
+        blockAllMedia: true,
+      }),
+    ],
+    tracesSampleRate: 1.0,
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1.0,
+    environment: import.meta.env.MODE,
+    sendDefaultPii: true,
+  });
+}
 
 // Lazy load route components to reduce initial bundle size
 const Index = lazy(() => import("./pages/Index"));
@@ -42,23 +61,56 @@ const queryClient = new QueryClient();
 
 class ErrorBoundary extends React.Component<
   { children: React.ReactNode },
-  { error: any }
+  { error: any; hasError: boolean }
 > {
   constructor(props: any) {
     super(props);
-    this.state = { error: null };
+    this.state = { error: null, hasError: false };
   }
   static getDerivedStateFromError(error: any) {
-    return { error };
+    return { hasError: true, error };
   }
-  componentDidCatch(error: any, info: any) {
-    console.error("App error:", error, info);
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error("App error:", error, errorInfo);
+
+    // Send error to Sentry
+    Sentry.captureException(error, {
+      contexts: {
+        react: {
+          componentStack: errorInfo.componentStack,
+        },
+      },
+    });
   }
   render() {
-    if (this.state.error)
+    if (this.state.hasError)
       return (
-        <div role="alert" style={{ padding: 16 }}>
-          Something went wrong. Please refresh.
+        <div
+          role="alert"
+          style={{
+            padding: 16,
+            margin: 16,
+            border: "1px solid #ff6b6b",
+            borderRadius: 8,
+            backgroundColor: "#ffe0e0",
+            color: "#c92a2a",
+          }}
+        >
+          <h2 style={{ marginTop: 0 }}>Something went wrong</h2>
+          <p>We've reported this error to our team. Please try refreshing the page.</p>
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              padding: "8px 16px",
+              backgroundColor: "#c92a2a",
+              color: "white",
+              border: "none",
+              borderRadius: 4,
+              cursor: "pointer",
+            }}
+          >
+            Refresh Page
+          </button>
         </div>
       );
     return this.props.children as any;
