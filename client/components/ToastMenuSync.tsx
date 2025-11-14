@@ -94,7 +94,6 @@ export const ToastMenuSync: React.FC<ToastMenuSyncProps> = ({
       setSyncResult({
         itemsSynced: 0,
         itemsFailed: 0,
-        message: "Toast POS integration is not yet implemented",
       });
     } catch (error) {
       setSyncResult({

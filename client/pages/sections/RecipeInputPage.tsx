@@ -1515,7 +1515,6 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
             ...recipeUpdateData,
             tags: [],
             extra: { source: "manual", taxonomy },
-            createdBy: "Current User",
           });
         } else {
           updateRecipe(recipeIdRef.current, recipeUpdateData);
@@ -3988,7 +3987,6 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
 
                     await addImages([fileObj], {
                       tags: ["import", "web"],
-                      description: `Imported from ${new URL(urlStr).hostname}`
                     });
 
                     // Set preview as data URL
