@@ -5,7 +5,16 @@
 
 import type { AccessContext, OutletUserRole } from "@/types/roles-permissions";
 import { UserRole as UserRoleEnum } from "@/types/roles-permissions";
-import { canAccessOutlet } from "@/lib/rbac-manager";
+
+// Re-export AccessContext for use in other modules
+export type { AccessContext };
+
+/**
+ * Check if user has access to a specific outlet
+ */
+function canAccessOutlet(outletRoles: OutletUserRole[], outletId: string): boolean {
+  return outletRoles.some((or) => or.outletId === outletId);
+}
 
 /**
  * Data with outlet context
