@@ -2,6 +2,7 @@
 // Handles common variations, synonyms, and fuzzy matching
 
 import { INVENTORY_ITEMS } from "./inventoryItems";
+import { ingredientSimilarity, fuzzySearch } from "@/lib/fuzzy-matcher";
 
 export type IngredientMapping = {
   recipeText: string;
@@ -15,6 +16,7 @@ export type IngredientMapping = {
 const EXACT_MAPPINGS: IngredientMapping[] = [
   { recipeText: "heirloom carrots, peeled", inventoryId: "ing-heirloom-carrot", confidence: 1.0 },
   { recipeText: "heirloom carrots", inventoryId: "ing-heirloom-carrot", confidence: 0.95 },
+  { recipeText: "heirloom carrot", inventoryId: "ing-heirloom-carrot", confidence: 0.95 },
   { recipeText: "carrots, peeled", inventoryId: "ing-heirloom-carrot", confidence: 0.85 },
   { recipeText: "whole blanched almonds", inventoryId: "ing-whole-blanched-almonds", confidence: 1.0 },
   { recipeText: "almonds, blanched", inventoryId: "ing-whole-blanched-almonds", confidence: 0.95 },
@@ -46,55 +48,6 @@ const EXACT_MAPPINGS: IngredientMapping[] = [
   { recipeText: "meyer lemons", inventoryId: "ing-meyer-lemon", confidence: 0.95 },
   { recipeText: "lemons", inventoryId: "ing-meyer-lemon", confidence: 0.7 },
 ];
-
-// Levenshtein distance for fuzzy matching
-function levenshteinDistance(str1: string, str2: string): number {
-  const m = str1.length;
-  const n = str2.length;
-  const dp: number[][] = Array(m + 1)
-    .fill(null)
-    .map(() => Array(n + 1).fill(0));
-
-  for (let i = 0; i <= m; i++) dp[i][0] = i;
-  for (let j = 0; j <= n; j++) dp[0][j] = j;
-
-  for (let i = 1; i <= m; i++) {
-    for (let j = 1; j <= n; j++) {
-      if (str1[i - 1] === str2[j - 1]) {
-        dp[i][j] = dp[i - 1][j - 1];
-      } else {
-        dp[i][j] = 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
-      }
-    }
-  }
-  return dp[m][n];
-}
-
-// Calculate similarity score (0-1) based on Levenshtein distance
-function calculateSimilarity(str1: string, str2: string): number {
-  const maxLen = Math.max(str1.length, str2.length);
-  if (maxLen === 0) return 1.0;
-  const distance = levenshteinDistance(str1.toLowerCase(), str2.toLowerCase());
-  return 1 - distance / maxLen;
-}
-
-// Find all words in a string that are keywords in inventory items
-function findKeywords(text: string): string[] {
-  const words = text.toLowerCase().split(/\s+/);
-  const keywords: string[] = [];
-
-  for (const item of INVENTORY_ITEMS) {
-    const itemWords = item.canonicalName.toLowerCase().split(/\s+/);
-    for (const word of itemWords) {
-      if (words.some((w) => w.includes(word) || word.includes(w))) {
-        keywords.push(item.id);
-        break;
-      }
-    }
-  }
-
-  return Array.from(new Set(keywords));
-}
 
 // Main function: Map recipe ingredient text to inventory item
 export function mapIngredientToInventory(recipeText: string): IngredientMapping | null {
