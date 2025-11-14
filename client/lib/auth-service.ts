@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { UserRole } from "@/types/roles-permissions";
 
 // Supabase client initialization
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
@@ -14,7 +15,7 @@ export type AuthUser = {
   email: string;
   username: string;
   avatar_url?: string;
-  role: "admin" | "chef" | "manager" | "staff";
+  role: UserRole;
   organization_id: string;
   created_at: number;
   updated_at: number;
@@ -32,7 +33,7 @@ export type SignUpData = {
   password: string;
   username: string;
   organization_name: string;
-  role?: "admin" | "chef" | "manager" | "staff";
+  role?: UserRole;
 };
 
 export type SignInData = {
