@@ -240,24 +240,22 @@ function GalleryCard({
             {t("gallery.noPreview")}
           </div>
         ) : (
-          <img
+          <ResponsiveGalleryImage
             src={src}
             alt={name}
-            loading="lazy"
-            className={cn(
-              "w-full object-cover transition duration-500 group-hover:scale-[1.05]",
+            width={800}
+            height={600}
+            aspectRatio={
               thumbSize === "s"
-                ? "aspect-square"
+                ? "1/1"
                 : thumbSize === "l"
-                  ? "aspect-[5/4]"
-                  : "aspect-[4/3]",
+                  ? "5/4"
+                  : "4/3"
+            }
+            className={cn(
+              "w-full transition duration-500 group-hover:scale-[1.05]"
             )}
-            onError={(event) => {
-              const el = event.currentTarget;
-              el.onerror = null;
-              el.src = "/placeholder.svg";
-              el.classList.add("opacity-70");
-            }}
+            objectFit="cover"
           />
         )}
         {favorite && (
