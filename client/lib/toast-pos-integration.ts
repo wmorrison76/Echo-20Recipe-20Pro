@@ -1,4 +1,4 @@
-import { supabase } from './auth-service';
+import { supabase } from "./auth-service";
 
 export interface ToastMenu {
   id: string;
@@ -20,7 +20,7 @@ export interface ToastMenuItem {
   category: string;
   tags: string[];
   disabled: boolean;
-  sod?: 'Start of Day' | 'All Day';
+  sod?: "Start of Day" | "All Day";
   modifiers?: ToastModifier[];
   allergens?: string[];
   nutritionInfo?: {
@@ -34,7 +34,7 @@ export interface ToastMenuItem {
 export interface ToastModifier {
   id: string;
   name: string;
-  type: 'Choice' | 'SplitChoice' | 'Quantity';
+  type: "Choice" | "SplitChoice" | "Quantity";
   required: boolean;
   options: ToastModifierOption[];
 }
@@ -61,7 +61,7 @@ export interface ToastOrder {
   subtotal: number;
   tax: number;
   total: number;
-  status: 'Open' | 'Completed' | 'Voided';
+  status: "Open" | "Completed" | "Voided";
   createdAt: number;
   closedAt?: number;
   serviceCharge?: number;
@@ -92,8 +92,14 @@ export interface ToastOrderItem {
 export interface ToastFulfillment {
   id: string;
   orderId: string;
-  type: 'Dine-In' | 'Takeout' | 'Delivery';
-  status: 'New' | 'Received' | 'In-Progress' | 'Ready' | 'Completed' | 'Cancelled';
+  type: "Dine-In" | "Takeout" | "Delivery";
+  status:
+    | "New"
+    | "Received"
+    | "In-Progress"
+    | "Ready"
+    | "Completed"
+    | "Cancelled";
   readyTime?: number;
   completedTime?: number;
 }
@@ -107,12 +113,12 @@ export interface ToastSync {
 }
 
 class ToastPOSManager {
-  private organizationId: string = '';
-  private apiToken: string = '';
-  private clientId: string = '';
-  private locationId: string = '';
+  private organizationId: string = "";
+  private apiToken: string = "";
+  private clientId: string = "";
+  private locationId: string = "";
   private syncInterval: NodeJS.Timer | null = null;
-  private readonly API_BASE = 'https://api.toasttab.com/v1';
+  private readonly API_BASE = "https://api.toasttab.com/v1";
 
   /**
    * Initialize Toast POS connection
@@ -122,13 +128,13 @@ class ToastPOSManager {
 
     try {
       const { data, error } = await supabase
-        .from('toast_credentials')
-        .select('api_token, client_id, location_id')
-        .eq('organization_id', organizationId)
+        .from("toast_credentials")
+        .select("api_token, client_id, location_id")
+        .eq("organization_id", organizationId)
         .single();
 
       if (error || !data) {
-        console.error('Toast credentials not found');
+        console.error("Toast credentials not found");
         return false;
       }
 
@@ -138,7 +144,7 @@ class ToastPOSManager {
 
       return true;
     } catch (error) {
-      console.error('Error initializing Toast POS:', error);
+      console.error("Error initializing Toast POS:", error);
       return false;
     }
   }
@@ -146,9 +152,11 @@ class ToastPOSManager {
   /**
    * Fetch menu from Toast
    */
-  async fetchMenu(menuId?: string): Promise<{ success: boolean; menu?: ToastMenu; error?: any }> {
+  async fetchMenu(
+    menuId?: string,
+  ): Promise<{ success: boolean; menu?: ToastMenu; error?: any }> {
     if (!this.apiToken) {
-      return { success: false, error: 'Toast not initialized' };
+      return { success: false, error: "Toast not initialized" };
     }
 
     try {
@@ -157,10 +165,10 @@ class ToastPOSManager {
         : `${this.API_BASE}/locations/${this.locationId}/menus`;
 
       const response = await fetch(endpoint, {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: `Bearer ${this.apiToken}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
@@ -173,7 +181,7 @@ class ToastPOSManager {
 
       return { success: true, menu };
     } catch (error) {
-      console.error('Error fetching menu from Toast:', error);
+      console.error("Error fetching menu from Toast:", error);
       return { success: false, error: String(error) };
     }
   }
@@ -181,17 +189,20 @@ class ToastPOSManager {
   /**
    * Sync recipe to Toast menu item
    */
-  async syncRecipeToToastMenu(recipeId: string, recipe: any): Promise<{ success: boolean; menuItemId?: string; error?: any }> {
+  async syncRecipeToToastMenu(
+    recipeId: string,
+    recipe: any,
+  ): Promise<{ success: boolean; menuItemId?: string; error?: any }> {
     if (!this.apiToken) {
-      return { success: false, error: 'Toast not initialized' };
+      return { success: false, error: "Toast not initialized" };
     }
 
     try {
       const menuItem = {
         name: recipe.title,
-        description: recipe.description || '',
+        description: recipe.description || "",
         price: (recipe.extra?.costPerServing || 0) * 100, // Toast uses cents
-        category: recipe.course || 'Entrees',
+        category: recipe.course || "Entrees",
         imageUrl: recipe.imageDataUrls?.[0],
         modifiers: this.buildModifiersFromIngredients(recipe.ingredients || []),
         externalId: recipeId,
@@ -200,13 +211,13 @@ class ToastPOSManager {
       const response = await fetch(
         `${this.API_BASE}/locations/${this.locationId}/menus/items`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
             Authorization: `Bearer ${this.apiToken}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(menuItem),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -216,18 +227,16 @@ class ToastPOSManager {
       const data = await response.json();
 
       // Store Toast menu item ID mapping
-      await supabase
-        .from('recipe_toast_mapping')
-        .upsert({
-          recipe_id: recipeId,
-          organization_id: this.organizationId,
-          toast_item_id: data.id,
-          last_synced: new Date().toISOString(),
-        });
+      await supabase.from("recipe_toast_mapping").upsert({
+        recipe_id: recipeId,
+        organization_id: this.organizationId,
+        toast_item_id: data.id,
+        last_synced: new Date().toISOString(),
+      });
 
       return { success: true, menuItemId: data.id };
     } catch (error) {
-      console.error('Error syncing recipe to Toast:', error);
+      console.error("Error syncing recipe to Toast:", error);
       return { success: false, error: String(error) };
     }
   }
@@ -237,10 +246,10 @@ class ToastPOSManager {
    */
   async fetchOrders(
     startTime: number,
-    endTime: number
+    endTime: number,
   ): Promise<{ success: boolean; orders?: ToastOrder[]; error?: any }> {
     if (!this.apiToken) {
-      return { success: false, error: 'Toast not initialized' };
+      return { success: false, error: "Toast not initialized" };
     }
 
     try {
@@ -250,27 +259,26 @@ class ToastPOSManager {
         endDate: new Date(endTime).toISOString(),
       });
 
-      const response = await fetch(
-        `${this.API_BASE}/orders?${params}`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${this.apiToken}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const response = await fetch(`${this.API_BASE}/orders?${params}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${this.apiToken}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) {
         return { success: false, error: `API error: ${response.statusText}` };
       }
 
       const data = await response.json();
-      const orders = (data.orders || []).map((o: any) => this.normalizeOrder(o));
+      const orders = (data.orders || []).map((o: any) =>
+        this.normalizeOrder(o),
+      );
 
       return { success: true, orders };
     } catch (error) {
-      console.error('Error fetching orders from Toast:', error);
+      console.error("Error fetching orders from Toast:", error);
       return { success: false, error: String(error) };
     }
   }
@@ -278,34 +286,34 @@ class ToastPOSManager {
   /**
    * Create order in Toast
    */
-  async createOrder(order: Partial<ToastOrder>): Promise<{ success: boolean; orderId?: string; error?: any }> {
+  async createOrder(
+    order: Partial<ToastOrder>,
+  ): Promise<{ success: boolean; orderId?: string; error?: any }> {
     if (!this.apiToken) {
-      return { success: false, error: 'Toast not initialized' };
+      return { success: false, error: "Toast not initialized" };
     }
 
     try {
       const toastOrder = {
         locationId: this.locationId,
         guestCount: order.guestCount || 1,
-        items: order.items?.map((item) => ({
-          itemId: item.id,
-          quantity: item.quantity,
-          modifiers: item.modifiers,
-        })) || [],
+        items:
+          order.items?.map((item) => ({
+            itemId: item.id,
+            quantity: item.quantity,
+            modifiers: item.modifiers,
+          })) || [],
         notes: order.notes,
       };
 
-      const response = await fetch(
-        `${this.API_BASE}/orders`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${this.apiToken}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(toastOrder),
-        }
-      );
+      const response = await fetch(`${this.API_BASE}/orders`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.apiToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(toastOrder),
+      });
 
       if (!response.ok) {
         return { success: false, error: `API error: ${response.statusText}` };
@@ -315,7 +323,7 @@ class ToastPOSManager {
 
       return { success: true, orderId: data.id };
     } catch (error) {
-      console.error('Error creating order in Toast:', error);
+      console.error("Error creating order in Toast:", error);
       return { success: false, error: String(error) };
     }
   }
@@ -323,22 +331,21 @@ class ToastPOSManager {
   /**
    * Get order status
    */
-  async getOrderStatus(orderId: string): Promise<{ success: boolean; order?: ToastOrder; error?: any }> {
+  async getOrderStatus(
+    orderId: string,
+  ): Promise<{ success: boolean; order?: ToastOrder; error?: any }> {
     if (!this.apiToken) {
-      return { success: false, error: 'Toast not initialized' };
+      return { success: false, error: "Toast not initialized" };
     }
 
     try {
-      const response = await fetch(
-        `${this.API_BASE}/orders/${orderId}`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${this.apiToken}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const response = await fetch(`${this.API_BASE}/orders/${orderId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${this.apiToken}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) {
         return { success: false, error: `API error: ${response.statusText}` };
@@ -349,7 +356,7 @@ class ToastPOSManager {
 
       return { success: true, order };
     } catch (error) {
-      console.error('Error fetching order status:', error);
+      console.error("Error fetching order status:", error);
       return { success: false, error: String(error) };
     }
   }
@@ -359,23 +366,23 @@ class ToastPOSManager {
    */
   async updateFulfillment(
     fulfillmentId: string,
-    status: ToastFulfillment['status']
+    status: ToastFulfillment["status"],
   ): Promise<{ success: boolean; error?: any }> {
     if (!this.apiToken) {
-      return { success: false, error: 'Toast not initialized' };
+      return { success: false, error: "Toast not initialized" };
     }
 
     try {
       const response = await fetch(
         `${this.API_BASE}/fulfillments/${fulfillmentId}`,
         {
-          method: 'PATCH',
+          method: "PATCH",
           headers: {
             Authorization: `Bearer ${this.apiToken}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ status }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -384,7 +391,7 @@ class ToastPOSManager {
 
       return { success: true };
     } catch (error) {
-      console.error('Error updating fulfillment:', error);
+      console.error("Error updating fulfillment:", error);
       return { success: false, error: String(error) };
     }
   }
@@ -432,24 +439,20 @@ class ToastPOSManager {
       }
 
       // Update sync status
-      await supabase
-        .from('toast_sync_status')
-        .upsert({
-          organization_id: this.organizationId,
-          last_sync_time: new Date().toISOString(),
-          synced_orders: ordersResult.orders?.length || 0,
-          status: 'success',
-        });
+      await supabase.from("toast_sync_status").upsert({
+        organization_id: this.organizationId,
+        last_sync_time: new Date().toISOString(),
+        synced_orders: ordersResult.orders?.length || 0,
+        status: "success",
+      });
     } catch (error) {
-      console.error('Sync error:', error);
-      await supabase
-        .from('toast_sync_status')
-        .upsert({
-          organization_id: this.organizationId,
-          last_sync_time: new Date().toISOString(),
-          status: 'error',
-          error: String(error),
-        });
+      console.error("Sync error:", error);
+      await supabase.from("toast_sync_status").upsert({
+        organization_id: this.organizationId,
+        last_sync_time: new Date().toISOString(),
+        status: "error",
+        error: String(error),
+      });
     }
   }
 
@@ -457,20 +460,18 @@ class ToastPOSManager {
    * Store orders in database
    */
   private async storeOrders(orders: ToastOrder[]): Promise<void> {
-    const { error } = await supabase
-      .from('toast_orders')
-      .upsert(
-        orders.map((o) => ({
-          toast_order_id: o.id,
-          organization_id: this.organizationId,
-          order_data: o,
-          status: o.status,
-          created_at: new Date(o.createdAt).toISOString(),
-        }))
-      );
+    const { error } = await supabase.from("toast_orders").upsert(
+      orders.map((o) => ({
+        toast_order_id: o.id,
+        organization_id: this.organizationId,
+        order_data: o,
+        status: o.status,
+        created_at: new Date(o.createdAt).toISOString(),
+      })),
+    );
 
     if (error) {
-      console.error('Error storing orders:', error);
+      console.error("Error storing orders:", error);
     }
   }
 
@@ -482,7 +483,9 @@ class ToastPOSManager {
       id: data.id,
       name: data.name,
       description: data.description,
-      items: (data.items || []).map((item: any) => this.normalizeMenuItem(item)),
+      items: (data.items || []).map((item: any) =>
+        this.normalizeMenuItem(item),
+      ),
       sections: (data.sections || []).map((section: any) => ({
         id: section.id,
         name: section.name,
@@ -541,7 +544,7 @@ class ToastPOSManager {
       subtotal: (data.subtotal || 0) / 100,
       tax: (data.tax || 0) / 100,
       total: (data.total || 0) / 100,
-      status: data.status || 'Open',
+      status: data.status || "Open",
       createdAt: new Date(data.createdAt).getTime(),
       closedAt: data.closedAt ? new Date(data.closedAt).getTime() : undefined,
       serviceCharge: data.serviceCharge ? data.serviceCharge / 100 : undefined,
@@ -554,17 +557,19 @@ class ToastPOSManager {
   /**
    * Build modifiers from recipe ingredients
    */
-  private buildModifiersFromIngredients(ingredients: string[]): ToastModifier[] {
+  private buildModifiersFromIngredients(
+    ingredients: string[],
+  ): ToastModifier[] {
     // Create optional ingredient modifiers
     return ingredients.slice(0, 5).map((ingredient, index) => ({
       id: `mod-${index}`,
       name: `${ingredient} Options`,
-      type: 'Choice' as const,
+      type: "Choice" as const,
       required: false,
       options: [
-        { id: '1', name: 'Extra', price: 50 }, // 50 cents
-        { id: '2', name: 'Light', price: 0 },
-        { id: '3', name: 'None', price: -50 },
+        { id: "1", name: "Extra", price: 50 }, // 50 cents
+        { id: "2", name: "Light", price: 0 },
+        { id: "3", name: "None", price: -50 },
       ],
     }));
   }
@@ -575,10 +580,10 @@ class ToastPOSManager {
   async getSyncStatus(): Promise<ToastSync | null> {
     try {
       const { data } = await supabase
-        .from('toast_sync_status')
-        .select('*')
-        .eq('organization_id', this.organizationId)
-        .order('created_at', { ascending: false })
+        .from("toast_sync_status")
+        .select("*")
+        .eq("organization_id", this.organizationId)
+        .order("created_at", { ascending: false })
         .limit(1)
         .single();
 
@@ -592,7 +597,7 @@ class ToastPOSManager {
         syncErrors: data.errors || [],
       };
     } catch (error) {
-      console.error('Error getting sync status:', error);
+      console.error("Error getting sync status:", error);
       return null;
     }
   }

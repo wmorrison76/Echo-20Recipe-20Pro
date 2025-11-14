@@ -1,5 +1,5 @@
-import { supabase } from './auth-service';
-import { cloudSync, type SyncEvent } from './cloud-sync';
+import { supabase } from "./auth-service";
+import { cloudSync, type SyncEvent } from "./cloud-sync";
 
 export interface MobileRecipeSync {
   organizationId: string;
@@ -28,7 +28,7 @@ export interface OfflineRecipe {
 interface PendingChange {
   id: string;
   recipeId: string;
-  type: 'create' | 'update' | 'delete';
+  type: "create" | "update" | "delete";
   data: any;
   timestamp: number;
   attempts: number;
@@ -42,16 +42,18 @@ interface SyncConflict {
 }
 
 class MobileRecipeSyncManager {
-  private organizationId: string = '';
-  private userId: string = '';
+  private organizationId: string = "";
+  private userId: string = "";
   private isOnline = navigator.onLine;
-  private dbName = 'recipe_app_db';
-  private storeName = 'recipes';
-  private conflictStoreName = 'sync_conflicts';
-  private pendingChangesStoreName = 'pending_changes';
+  private dbName = "recipe_app_db";
+  private storeName = "recipes";
+  private conflictStoreName = "sync_conflicts";
+  private pendingChangesStoreName = "pending_changes";
   private db: IDBDatabase | null = null;
   private syncIntervalId: NodeJS.Timer | null = null;
-  private conflictResolver: ((conflict: SyncConflict) => Promise<'local' | 'remote'>) | null = null;
+  private conflictResolver:
+    | ((conflict: SyncConflict) => Promise<"local" | "remote">)
+    | null = null;
   private readonly MAX_STORAGE = 52428800; // 50MB
   private readonly SYNC_INTERVAL = 30000; // 30 seconds
   private readonly RETRY_ATTEMPTS = 3;
@@ -68,15 +70,15 @@ class MobileRecipeSyncManager {
       await this.openDatabase();
 
       // Setup online/offline listeners
-      window.addEventListener('online', () => this.handleOnline());
-      window.addEventListener('offline', () => this.handleOffline());
+      window.addEventListener("online", () => this.handleOnline());
+      window.addEventListener("offline", () => this.handleOffline());
 
       // Start sync interval
       this.startSyncInterval();
 
       return true;
     } catch (error) {
-      console.error('Error initializing mobile sync:', error);
+      console.error("Error initializing mobile sync:", error);
       return false;
     }
   }
@@ -99,23 +101,27 @@ class MobileRecipeSyncManager {
 
         // Create recipes store
         if (!db.objectStoreNames.contains(this.storeName)) {
-          const store = db.createObjectStore(this.storeName, { keyPath: 'id' });
-          store.createIndex('lastModified', 'metadata.lastModified', { unique: false });
-          store.createIndex('needsSync', 'metadata.needsSync', { unique: false });
+          const store = db.createObjectStore(this.storeName, { keyPath: "id" });
+          store.createIndex("lastModified", "metadata.lastModified", {
+            unique: false,
+          });
+          store.createIndex("needsSync", "metadata.needsSync", {
+            unique: false,
+          });
         }
 
         // Create sync conflicts store
         if (!db.objectStoreNames.contains(this.conflictStoreName)) {
-          db.createObjectStore(this.conflictStoreName, { keyPath: 'recipeId' });
+          db.createObjectStore(this.conflictStoreName, { keyPath: "recipeId" });
         }
 
         // Create pending changes store
         if (!db.objectStoreNames.contains(this.pendingChangesStoreName)) {
           const store = db.createObjectStore(this.pendingChangesStoreName, {
-            keyPath: 'id',
+            keyPath: "id",
             autoIncrement: true,
           });
-          store.createIndex('timestamp', 'timestamp', { unique: false });
+          store.createIndex("timestamp", "timestamp", { unique: false });
         }
       };
     });
@@ -128,7 +134,7 @@ class MobileRecipeSyncManager {
     if (!this.db) return false;
 
     return new Promise((resolve) => {
-      const tx = this.db!.transaction([this.storeName], 'readwrite');
+      const tx = this.db!.transaction([this.storeName], "readwrite");
       const store = tx.objectStore(this.storeName);
 
       const recipeToStore = {
@@ -143,7 +149,7 @@ class MobileRecipeSyncManager {
 
       request.onerror = () => resolve(false);
       request.onsuccess = () => {
-        this.trackPendingChange('update', recipe.id, recipeToStore);
+        this.trackPendingChange("update", recipe.id, recipeToStore);
         resolve(true);
       };
     });
@@ -156,7 +162,7 @@ class MobileRecipeSyncManager {
     if (!this.db) return null;
 
     return new Promise((resolve) => {
-      const tx = this.db!.transaction([this.storeName], 'readonly');
+      const tx = this.db!.transaction([this.storeName], "readonly");
       const store = tx.objectStore(this.storeName);
       const request = store.get(recipeId);
 
@@ -172,7 +178,7 @@ class MobileRecipeSyncManager {
     if (!this.db) return [];
 
     return new Promise((resolve) => {
-      const tx = this.db!.transaction([this.storeName], 'readonly');
+      const tx = this.db!.transaction([this.storeName], "readonly");
       const store = tx.objectStore(this.storeName);
       const request = store.getAll();
 
@@ -188,13 +194,13 @@ class MobileRecipeSyncManager {
     if (!this.db) return false;
 
     return new Promise((resolve) => {
-      const tx = this.db!.transaction([this.storeName], 'readwrite');
+      const tx = this.db!.transaction([this.storeName], "readwrite");
       const store = tx.objectStore(this.storeName);
       const request = store.delete(recipeId);
 
       request.onerror = () => resolve(false);
       request.onsuccess = () => {
-        this.trackPendingChange('delete', recipeId, {});
+        this.trackPendingChange("delete", recipeId, {});
         resolve(true);
       };
     });
@@ -203,17 +209,21 @@ class MobileRecipeSyncManager {
   /**
    * Sync recipes from server
    */
-  async syncRecipesFromServer(): Promise<{ success: boolean; count: number; error?: any }> {
+  async syncRecipesFromServer(): Promise<{
+    success: boolean;
+    count: number;
+    error?: any;
+  }> {
     if (!this.isOnline) {
-      return { success: false, count: 0, error: 'Offline' };
+      return { success: false, count: 0, error: "Offline" };
     }
 
     try {
       const { data, error } = await supabase
-        .from('recipes')
-        .select('*')
-        .eq('organization_id', this.organizationId)
-        .gt('updated_at', new Date(Date.now() - 3600000).toISOString()); // Last hour
+        .from("recipes")
+        .select("*")
+        .eq("organization_id", this.organizationId)
+        .gt("updated_at", new Date(Date.now() - 3600000).toISOString()); // Last hour
 
       if (error) {
         return { success: false, count: 0, error };
@@ -247,7 +257,11 @@ class MobileRecipeSyncManager {
   /**
    * Sync pending changes to server
    */
-  async syncPendingChanges(): Promise<{ success: boolean; synced: number; failed: number }> {
+  async syncPendingChanges(): Promise<{
+    success: boolean;
+    synced: number;
+    failed: number;
+  }> {
     if (!this.isOnline) {
       return { success: false, synced: 0, failed: 0 };
     }
@@ -269,7 +283,7 @@ class MobileRecipeSyncManager {
         const event: SyncEvent = {
           id: change.id.toString(),
           event_type: change.type,
-          table: 'recipes',
+          table: "recipes",
           record_id: change.recipeId,
           user_id: this.userId,
           organization_id: this.organizationId,
@@ -283,7 +297,7 @@ class MobileRecipeSyncManager {
         await this.updatePendingChange(change.id, change.attempts + 1);
         synced++;
       } catch (error) {
-        console.error('Error syncing change:', error);
+        console.error("Error syncing change:", error);
         await this.updatePendingChange(change.id, change.attempts + 1);
         failed++;
       }
@@ -297,7 +311,7 @@ class MobileRecipeSyncManager {
    */
   private async handleOnline() {
     this.isOnline = true;
-    console.log('Device online - syncing recipes...');
+    console.log("Device online - syncing recipes...");
 
     // Sync server recipes
     await this.syncRecipesFromServer();
@@ -318,7 +332,7 @@ class MobileRecipeSyncManager {
    */
   private handleOffline() {
     this.isOnline = false;
-    console.log('Device offline - using local recipes');
+    console.log("Device offline - using local recipes");
   }
 
   /**
@@ -340,14 +354,17 @@ class MobileRecipeSyncManager {
    * Track pending change
    */
   private async trackPendingChange(
-    type: 'create' | 'update' | 'delete',
+    type: "create" | "update" | "delete",
     recipeId: string,
-    data: any
+    data: any,
   ) {
     if (!this.db) return;
 
     return new Promise<void>((resolve) => {
-      const tx = this.db!.transaction([this.pendingChangesStoreName], 'readwrite');
+      const tx = this.db!.transaction(
+        [this.pendingChangesStoreName],
+        "readwrite",
+      );
       const store = tx.objectStore(this.pendingChangesStoreName);
 
       const change: PendingChange = {
@@ -372,7 +389,10 @@ class MobileRecipeSyncManager {
     if (!this.db) return Promise.resolve([]);
 
     return new Promise((resolve) => {
-      const tx = this.db!.transaction([this.pendingChangesStoreName], 'readonly');
+      const tx = this.db!.transaction(
+        [this.pendingChangesStoreName],
+        "readonly",
+      );
       const store = tx.objectStore(this.pendingChangesStoreName);
       const request = store.getAll();
 
@@ -388,7 +408,10 @@ class MobileRecipeSyncManager {
     if (!this.db) return Promise.resolve();
 
     return new Promise((resolve) => {
-      const tx = this.db!.transaction([this.pendingChangesStoreName], 'readwrite');
+      const tx = this.db!.transaction(
+        [this.pendingChangesStoreName],
+        "readwrite",
+      );
       const store = tx.objectStore(this.pendingChangesStoreName);
 
       const getRequest = store.get(id);
@@ -411,7 +434,10 @@ class MobileRecipeSyncManager {
     if (!this.db) return Promise.resolve();
 
     return new Promise((resolve) => {
-      const tx = this.db!.transaction([this.pendingChangesStoreName], 'readwrite');
+      const tx = this.db!.transaction(
+        [this.pendingChangesStoreName],
+        "readwrite",
+      );
       const store = tx.objectStore(this.pendingChangesStoreName);
       const request = store.delete(id);
 
@@ -427,7 +453,7 @@ class MobileRecipeSyncManager {
     if (!this.db) return Promise.resolve();
 
     return new Promise((resolve) => {
-      const tx = this.db!.transaction([this.conflictStoreName], 'readwrite');
+      const tx = this.db!.transaction([this.conflictStoreName], "readwrite");
       const store = tx.objectStore(this.conflictStoreName);
 
       const conflict: SyncConflict = {
@@ -450,7 +476,7 @@ class MobileRecipeSyncManager {
     if (!this.db) return Promise.resolve([]);
 
     return new Promise((resolve) => {
-      const tx = this.db!.transaction([this.conflictStoreName], 'readonly');
+      const tx = this.db!.transaction([this.conflictStoreName], "readonly");
       const store = tx.objectStore(this.conflictStoreName);
       const request = store.getAll();
 
@@ -469,7 +495,7 @@ class MobileRecipeSyncManager {
       try {
         const resolution = await this.conflictResolver(conflict);
 
-        if (resolution === 'local') {
+        if (resolution === "local") {
           // Keep local version
           await this.syncPendingChanges();
         } else {
@@ -477,7 +503,7 @@ class MobileRecipeSyncManager {
           const remoteData = conflict.remoteVersion;
           const recipe: OfflineRecipe = {
             id: conflict.recipeId,
-            title: remoteData.title || '',
+            title: remoteData.title || "",
             ingredients: remoteData.ingredients || [],
             instructions: remoteData.instructions || [],
             metadata: {
@@ -492,11 +518,11 @@ class MobileRecipeSyncManager {
 
         // Remove conflict
         if (this.db) {
-          const tx = this.db.transaction([this.conflictStoreName], 'readwrite');
+          const tx = this.db.transaction([this.conflictStoreName], "readwrite");
           tx.objectStore(this.conflictStoreName).delete(conflict.recipeId);
         }
       } catch (error) {
-        console.error('Error resolving conflict:', error);
+        console.error("Error resolving conflict:", error);
       }
     }
   }
@@ -505,7 +531,7 @@ class MobileRecipeSyncManager {
    * Set conflict resolver
    */
   setConflictResolver(
-    resolver: (conflict: SyncConflict) => Promise<'local' | 'remote'>
+    resolver: (conflict: SyncConflict) => Promise<"local" | "remote">,
   ) {
     this.conflictResolver = resolver;
   }
@@ -516,7 +542,10 @@ class MobileRecipeSyncManager {
   async getSyncStatus(): Promise<MobileRecipeSync> {
     const offlineRecipes = await this.getAllOfflineRecipes();
     const pendingChanges = await this.getPendingChanges();
-    const storageEstimate = await navigator.storage?.estimate?.() || { usage: 0, quota: 0 };
+    const storageEstimate = (await navigator.storage?.estimate?.()) || {
+      usage: 0,
+      quota: 0,
+    };
 
     return {
       organizationId: this.organizationId,
@@ -539,7 +568,7 @@ class MobileRecipeSyncManager {
     return new Promise((resolve) => {
       const tx = this.db!.transaction(
         [this.storeName, this.conflictStoreName, this.pendingChangesStoreName],
-        'readwrite'
+        "readwrite",
       );
 
       tx.objectStore(this.storeName).clear();
@@ -559,8 +588,8 @@ class MobileRecipeSyncManager {
       clearInterval(this.syncIntervalId as ReturnType<typeof setInterval>);
     }
 
-    window.removeEventListener('online', () => this.handleOnline());
-    window.removeEventListener('offline', () => this.handleOffline());
+    window.removeEventListener("online", () => this.handleOnline());
+    window.removeEventListener("offline", () => this.handleOffline());
 
     if (this.db) {
       this.db.close();

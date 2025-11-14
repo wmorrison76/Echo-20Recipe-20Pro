@@ -199,17 +199,24 @@ export async function handleRecipeImport(req: Request, res: Response) {
         clearTimeout(timeoutId);
       }
     } catch (fetchError: any) {
-      console.error("[handleRecipeImport] Fetch error for URL:", url, fetchError);
-      const errorMsg = fetchError?.name === "AbortError"
-        ? "Request timed out (took too long to fetch)"
-        : fetchError?.message || "Network error";
+      console.error(
+        "[handleRecipeImport] Fetch error for URL:",
+        url,
+        fetchError,
+      );
+      const errorMsg =
+        fetchError?.name === "AbortError"
+          ? "Request timed out (took too long to fetch)"
+          : fetchError?.message || "Network error";
       return res.status(503).json({
-        error: `Could not fetch URL: ${errorMsg}. The URL may be unreachable or the server may be unavailable.`
+        error: `Could not fetch URL: ${errorMsg}. The URL may be unreachable or the server may be unavailable.`,
       });
     }
 
     if (!r.ok) {
-      return res.status(400).json({ error: `Fetch failed (${r.status}): ${r.statusText}` });
+      return res
+        .status(400)
+        .json({ error: `Fetch failed (${r.status}): ${r.statusText}` });
     }
 
     const html = await r.text();

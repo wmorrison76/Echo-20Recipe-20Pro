@@ -379,7 +379,7 @@ export default function TopTabs() {
     return false;
   });
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
-    new Set(["recipes-design", "innovation"])
+    new Set(["recipes-design", "innovation"]),
   );
 
   const shortcutLabel = useMemo(() => {

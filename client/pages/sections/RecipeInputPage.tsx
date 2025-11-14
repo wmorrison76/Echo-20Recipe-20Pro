@@ -15,7 +15,11 @@ import LanguageMenu from "@/components/LanguageMenu";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "@/context/LanguageContext";
 import { defaultSelection, TaxonomySelection } from "@/lib/taxonomy";
-import { RDLabProvider, type RDLabSnapshot, useRDLabStore } from "@/stores/rdLabStore";
+import {
+  RDLabProvider,
+  type RDLabSnapshot,
+  useRDLabStore,
+} from "@/stores/rdLabStore";
 import { DiscoveryPanel } from "@/components/RDLab/DiscoveryPanel";
 import { WorkbenchPanel } from "@/components/RDLab/WorkbenchPanel";
 import { InsightsPanel } from "@/components/RDLab/InsightsPanel";
@@ -85,7 +89,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import type { IngredientRow, IngredientYieldInsight } from "@/types/ingredients";
+import type {
+  IngredientRow,
+  IngredientYieldInsight,
+} from "@/types/ingredients";
 import {
   createIngredientRow,
   createDividerRow,
@@ -106,13 +113,13 @@ const sanitizeRndLayout = (candidate: unknown): [number, number, number] => {
       return DEFAULT_RND_LAYOUT[index];
     }
     const upperBound = 80;
-    return Math.max(
-      MIN_RND_LAYOUT[index],
-      Math.min(upperBound, numeric),
-    );
+    return Math.max(MIN_RND_LAYOUT[index], Math.min(upperBound, numeric));
   }) as [number, number, number];
 
-  const minimumTotal = MIN_RND_LAYOUT.reduce((total, value) => total + value, 0);
+  const minimumTotal = MIN_RND_LAYOUT.reduce(
+    (total, value) => total + value,
+    0,
+  );
   const sum = sanitized.reduce((total, value) => total + value, 0);
 
   if (sum < minimumTotal) {
@@ -168,7 +175,8 @@ const AUTO_SAVE_DELAY_MS = 1100;
 const sanitizeProjectSession = (value: unknown): RDLabProjectSession | null => {
   if (!value || typeof value !== "object") return null;
   const record = value as Record<string, unknown>;
-  const id = typeof record.id === "string" && record.id.trim().length ? record.id : null;
+  const id =
+    typeof record.id === "string" && record.id.trim().length ? record.id : null;
   if (!id) return null;
   const name =
     typeof record.name === "string" && record.name.trim().length
@@ -185,7 +193,9 @@ const sanitizeProjectSession = (value: unknown): RDLabProjectSession | null => {
         ? snapshotRaw.focusExperimentId
         : "",
     searchQuery:
-      typeof snapshotRaw.searchQuery === "string" ? snapshotRaw.searchQuery : "",
+      typeof snapshotRaw.searchQuery === "string"
+        ? snapshotRaw.searchQuery
+        : "",
   };
 
   const fallbackTimestamp = new Date().toISOString();
@@ -204,9 +214,12 @@ const sanitizeProjectSession = (value: unknown): RDLabProjectSession | null => {
     layout: sanitizeRndLayout(record.layout),
     snapshot,
     vision: typeof record.vision === "string" ? record.vision : undefined,
-    textureFocus: typeof record.textureFocus === "string" ? record.textureFocus : undefined,
-    flavorNotes: typeof record.flavorNotes === "string" ? record.flavorNotes : undefined,
-    launchTarget: typeof record.launchTarget === "string" ? record.launchTarget : undefined,
+    textureFocus:
+      typeof record.textureFocus === "string" ? record.textureFocus : undefined,
+    flavorNotes:
+      typeof record.flavorNotes === "string" ? record.flavorNotes : undefined,
+    launchTarget:
+      typeof record.launchTarget === "string" ? record.launchTarget : undefined,
   };
 };
 
@@ -257,7 +270,9 @@ const ensureIngredientRowId = (
     cost: normalizeString(raw.cost ?? source.cost),
     costPerUnit: null,
     supplierId: normalizeOptionalString(raw.supplierId ?? source.supplierId),
-    supplierName: normalizeOptionalString(raw.supplierName ?? source.supplierName),
+    supplierName: normalizeOptionalString(
+      raw.supplierName ?? source.supplierName,
+    ),
     supplierSku: normalizeOptionalString(raw.supplierSku ?? source.supplierSku),
   };
 
@@ -329,14 +344,16 @@ const RecipeInputPage = () => {
   ]);
   const historyRef = useRef<any[]>([]);
   const futureRef = useRef<any[]>([]);
-  const autoSnapshotTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoSnapshotTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const autoSnapshotFingerprintRef = useRef<string>("");
   const finalizeResetTimerRef = useRef<number | null>(null);
   const [directions, setDirections] = useState("1. ");
   const [isRightSidebarCollapsed, setIsRightSidebarCollapsed] = useState(false);
-  const [finalizeState, setFinalizeState] = useState<"idle" | "saving" | "success">(
-    "idle",
-  );
+  const [finalizeState, setFinalizeState] = useState<
+    "idle" | "saving" | "success"
+  >("idle");
   const { addRecipe, updateRecipe, addImages, recipes } = useAppData();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -434,7 +451,6 @@ const RecipeInputPage = () => {
     };
   }, [isRndLabsOpen]);
 
-
   const [pickerOpen, setPickerOpen] = useState<{ index: number } | null>(null);
   const [pickerQ, setPickerQ] = useState("");
   // Sync with global theme from ThemeToggle
@@ -516,366 +532,366 @@ const RecipeInputPage = () => {
   const [cookTemp, setCookTemp] = useState<string>("");
   const [prepTime, setPrepTime] = useState<string>("");
 
-const isFormPristine = useMemo(() => {
-  const hasName = recipeName.trim().length > 0;
-  const hasIngredientContent = ingredients.some((row) => {
-    if (!row) return false;
-    if ((row as any).type === "divider") {
-      return Boolean(row.item?.trim());
-    }
-    return [row.item, row.qty, row.unit, row.prep, row.cost].some((value) =>
-      Boolean((value || "").toString().trim()),
+  const isFormPristine = useMemo(() => {
+    const hasName = recipeName.trim().length > 0;
+    const hasIngredientContent = ingredients.some((row) => {
+      if (!row) return false;
+      if ((row as any).type === "divider") {
+        return Boolean(row.item?.trim());
+      }
+      return [row.item, row.qty, row.unit, row.prep, row.cost].some((value) =>
+        Boolean((value || "").toString().trim()),
+      );
+    });
+    const normalizedDirections = (directions || "").trim();
+    const hasDirections =
+      normalizedDirections.length > 0 && normalizedDirections !== "1.";
+    const hasImage = Boolean(image);
+    const hasAllergens = selectedAllergens.length > 0;
+    const hasNotes = chefNotes.trim().length > 0;
+    const hasMetaSelections =
+      selectedNationality.length > 0 ||
+      selectedCourses.length > 0 ||
+      selectedRecipeType.length > 0 ||
+      selectedPrepMethod.length > 0 ||
+      selectedCookingEquipment.length > 0 ||
+      selectedRecipeAccess.length > 0;
+    const hasTimingAdjustments =
+      cookTime.trim().length > 0 ||
+      cookTemp.trim().length > 0 ||
+      prepTime.trim().length > 0;
+    return !(
+      hasName ||
+      hasIngredientContent ||
+      hasDirections ||
+      hasImage ||
+      hasAllergens ||
+      hasNotes ||
+      hasMetaSelections ||
+      hasTimingAdjustments
     );
-  });
-  const normalizedDirections = (directions || "").trim();
-  const hasDirections =
-    normalizedDirections.length > 0 && normalizedDirections !== "1.";
-  const hasImage = Boolean(image);
-  const hasAllergens = selectedAllergens.length > 0;
-  const hasNotes = chefNotes.trim().length > 0;
-  const hasMetaSelections =
-    selectedNationality.length > 0 ||
-    selectedCourses.length > 0 ||
-    selectedRecipeType.length > 0 ||
-    selectedPrepMethod.length > 0 ||
-    selectedCookingEquipment.length > 0 ||
-    selectedRecipeAccess.length > 0;
-  const hasTimingAdjustments =
-    cookTime.trim().length > 0 ||
-    cookTemp.trim().length > 0 ||
-    prepTime.trim().length > 0;
-  return !(
-    hasName ||
-    hasIngredientContent ||
-    hasDirections ||
-    hasImage ||
-    hasAllergens ||
-    hasNotes ||
-    hasMetaSelections ||
-    hasTimingAdjustments
+  }, [
+    recipeName,
+    ingredients,
+    directions,
+    image,
+    selectedAllergens,
+    chefNotes,
+    selectedNationality,
+    selectedCourses,
+    selectedRecipeType,
+    selectedPrepMethod,
+    selectedCookingEquipment,
+    selectedRecipeAccess,
+    cookTime,
+    cookTemp,
+    prepTime,
+  ]);
+
+  const servingsForLabel = useMemo(() => {
+    if (!Number.isFinite(portionCount)) {
+      return 1;
+    }
+    const normalized = Number(portionCount) || 1;
+    return normalized > 0 ? normalized : 1;
+  }, [portionCount]);
+
+  const nutritionDisplay = useMemo(() => {
+    if (!nutrition) return null;
+    const totals = nutrition.totals;
+    if (!totals) {
+      return { ...nutrition, yieldQty: servingsForLabel };
+    }
+    const factor = 1 / servingsForLabel;
+    const scaleValue = (value: number | undefined) => {
+      const numeric = Number(value ?? 0);
+      if (!Number.isFinite(numeric)) return 0;
+      return numeric * factor;
+    };
+    const scaledPerServing = {
+      calories: Math.round(scaleValue(totals.calories)),
+      fat: Number(scaleValue(totals.fat).toFixed(2)),
+      saturatedFat: Number(scaleValue(totals.saturatedFat).toFixed(2)),
+      transFat: Number(scaleValue(totals.transFat).toFixed(2)),
+      carbs: Number(scaleValue(totals.carbs).toFixed(2)),
+      fiber: Number(scaleValue(totals.fiber).toFixed(2)),
+      sugars: Number(scaleValue(totals.sugars).toFixed(2)),
+      protein: Number(scaleValue(totals.protein).toFixed(2)),
+      sodium: Math.round(scaleValue(totals.sodium)),
+    };
+    return {
+      ...nutrition,
+      perServing: scaledPerServing,
+      yieldQty: servingsForLabel,
+    };
+  }, [nutrition, servingsForLabel]);
+
+  const clearRecipeWorkspace = useCallback(
+    (options?: { preserveSidebar?: boolean }) => {
+      try {
+        localStorage.removeItem("recipe:draft");
+      } catch {}
+      try {
+        localStorage.removeItem("recipe:add:description");
+      } catch {}
+      try {
+        localStorage.removeItem("recipe:chef-notes");
+      } catch {}
+      recipeIdRef.current = null;
+      historyRef.current = [];
+      futureRef.current = [];
+      if (autoSnapshotTimerRef.current) {
+        clearTimeout(autoSnapshotTimerRef.current);
+        autoSnapshotTimerRef.current = null;
+      }
+      autoSnapshotFingerprintRef.current = "";
+      allergenManualRef.current = false;
+      yieldManualRef.current = false;
+      if (stepImageInputRef.current) {
+        stepImageInputRef.current.value = "";
+      }
+      setRecipeName("");
+      setIngredients([createIngredientRow()]);
+      setDirections("1. ");
+      setImage(null);
+      setShowImagePopup(false);
+      setShowGalleryPicker(false);
+      setSelectedAllergens([]);
+      setSelectedNationality([]);
+      setSelectedCourses([]);
+      setSelectedRecipeType([]);
+      setSelectedPrepMethod([]);
+      setSelectedCookingEquipment([]);
+      setSelectedRecipeAccess([]);
+      setTaxonomy({ ...defaultSelection });
+      setCurrentCurrency("USD");
+      setCurrentUnits("Imperial");
+      setYieldQty(6);
+      setYieldUnit("QTS");
+      setPortionCount(6);
+      setPortionUnit("OZ");
+      setCookTime("");
+      setCookTemp("");
+      setPrepTime("");
+      setNutrition(null);
+      setNutritionLoading(false);
+      setNutritionError(null);
+      setNutritionPerServing(true);
+      setChefNotes("");
+      setYieldOpen(false);
+      if (!options?.preserveSidebar) {
+        setIsRightSidebarCollapsed(false);
+      }
+    },
+    [
+      setRecipeName,
+      setIngredients,
+      setDirections,
+      setImage,
+      setShowImagePopup,
+      setShowGalleryPicker,
+      setSelectedAllergens,
+      setSelectedNationality,
+      setSelectedCourses,
+      setSelectedRecipeType,
+      setSelectedPrepMethod,
+      setSelectedCookingEquipment,
+      setSelectedRecipeAccess,
+      setTaxonomy,
+      setCurrentCurrency,
+      setCurrentUnits,
+      setYieldQty,
+      setYieldUnit,
+      setPortionCount,
+      setPortionUnit,
+      setCookTime,
+      setCookTemp,
+      setPrepTime,
+      setNutrition,
+      setNutritionLoading,
+      setNutritionError,
+      setNutritionPerServing,
+      setChefNotes,
+      setYieldOpen,
+      setIsRightSidebarCollapsed,
+      createIngredientRow,
+    ],
   );
-}, [
-  recipeName,
-  ingredients,
-  directions,
-  image,
-  selectedAllergens,
-  chefNotes,
-  selectedNationality,
-  selectedCourses,
-  selectedRecipeType,
-  selectedPrepMethod,
-  selectedCookingEquipment,
-  selectedRecipeAccess,
-  cookTime,
-  cookTemp,
-  prepTime,
-]);
 
-const servingsForLabel = useMemo(() => {
-  if (!Number.isFinite(portionCount)) {
-    return 1;
-  }
-  const normalized = Number(portionCount) || 1;
-  return normalized > 0 ? normalized : 1;
-}, [portionCount]);
-
-const nutritionDisplay = useMemo(() => {
-  if (!nutrition) return null;
-  const totals = nutrition.totals;
-  if (!totals) {
-    return { ...nutrition, yieldQty: servingsForLabel };
-  }
-  const factor = 1 / servingsForLabel;
-  const scaleValue = (value: number | undefined) => {
-    const numeric = Number(value ?? 0);
-    if (!Number.isFinite(numeric)) return 0;
-    return numeric * factor;
-  };
-  const scaledPerServing = {
-    calories: Math.round(scaleValue(totals.calories)),
-    fat: Number(scaleValue(totals.fat).toFixed(2)),
-    saturatedFat: Number(scaleValue(totals.saturatedFat).toFixed(2)),
-    transFat: Number(scaleValue(totals.transFat).toFixed(2)),
-    carbs: Number(scaleValue(totals.carbs).toFixed(2)),
-    fiber: Number(scaleValue(totals.fiber).toFixed(2)),
-    sugars: Number(scaleValue(totals.sugars).toFixed(2)),
-    protein: Number(scaleValue(totals.protein).toFixed(2)),
-    sodium: Math.round(scaleValue(totals.sodium)),
-  };
-  return {
-    ...nutrition,
-    perServing: scaledPerServing,
-    yieldQty: servingsForLabel,
-  };
-}, [nutrition, servingsForLabel]);
-
-const clearRecipeWorkspace = useCallback(
-  (options?: { preserveSidebar?: boolean }) => {
-    try {
-      localStorage.removeItem("recipe:draft");
-    } catch {}
-    try {
-      localStorage.removeItem("recipe:add:description");
-    } catch {}
-    try {
-      localStorage.removeItem("recipe:chef-notes");
-    } catch {}
-    recipeIdRef.current = null;
-    historyRef.current = [];
-    futureRef.current = [];
-    if (autoSnapshotTimerRef.current) {
-      clearTimeout(autoSnapshotTimerRef.current);
-      autoSnapshotTimerRef.current = null;
-    }
-    autoSnapshotFingerprintRef.current = "";
-    allergenManualRef.current = false;
-    yieldManualRef.current = false;
-    if (stepImageInputRef.current) {
-      stepImageInputRef.current.value = "";
-    }
-    setRecipeName("");
-    setIngredients([createIngredientRow()]);
-    setDirections("1. ");
-    setImage(null);
-    setShowImagePopup(false);
-    setShowGalleryPicker(false);
-    setSelectedAllergens([]);
-    setSelectedNationality([]);
-    setSelectedCourses([]);
-    setSelectedRecipeType([]);
-    setSelectedPrepMethod([]);
-    setSelectedCookingEquipment([]);
-    setSelectedRecipeAccess([]);
-    setTaxonomy({ ...defaultSelection });
-    setCurrentCurrency("USD");
-    setCurrentUnits("Imperial");
-    setYieldQty(6);
-    setYieldUnit("QTS");
-    setPortionCount(6);
-    setPortionUnit("OZ");
-    setCookTime("");
-    setCookTemp("");
-    setPrepTime("");
-    setNutrition(null);
-    setNutritionLoading(false);
-    setNutritionError(null);
-    setNutritionPerServing(true);
-    setChefNotes("");
-    setYieldOpen(false);
-    if (!options?.preserveSidebar) {
-      setIsRightSidebarCollapsed(false);
-    }
-  },
-  [
-    setRecipeName,
-    setIngredients,
-    setDirections,
-    setImage,
-    setShowImagePopup,
-    setShowGalleryPicker,
-    setSelectedAllergens,
-    setSelectedNationality,
-    setSelectedCourses,
-    setSelectedRecipeType,
-    setSelectedPrepMethod,
-    setSelectedCookingEquipment,
-    setSelectedRecipeAccess,
-    setTaxonomy,
-    setCurrentCurrency,
-    setCurrentUnits,
-    setYieldQty,
-    setYieldUnit,
-    setPortionCount,
-    setPortionUnit,
-    setCookTime,
-    setCookTemp,
-    setPrepTime,
-    setNutrition,
-    setNutritionLoading,
-    setNutritionError,
-    setNutritionPerServing,
-    setChefNotes,
-    setYieldOpen,
-    setIsRightSidebarCollapsed,
-    createIngredientRow,
-  ],
-);
-
-useEffect(() => {
-  return () => {
-    if (finalizeResetTimerRef.current !== null) {
-      window.clearTimeout(finalizeResetTimerRef.current);
-      finalizeResetTimerRef.current = null;
-    }
-  };
-}, []);
-
-const finalizeRecipe = useCallback(() => {
-  if (finalizeState === "saving") {
-    return;
-  }
-  if (isFormPristine) {
-    toast({
-      title: t("recipe.actions.finalizeEmptyTitle", "Nothing to finalize"),
-      description: t(
-        "recipe.actions.finalizeEmptyDescription",
-        "Add details before finalizing the recipe.",
-      ),
-      variant: "destructive",
-    });
-    return;
-  }
-  let succeeded = false;
-  setFinalizeState("saving");
-  try {
-    const title = (recipeName || "").trim() || "Untitled Recipe";
-    const ingLines = ingredients
-      .map((r) =>
-        [r.qty, r.unit, r.item, r.prep].filter(Boolean).join(" ").trim(),
-      )
-      .filter(Boolean);
-    const insLines = String(directions || "")
-      .split(/\r?\n/)
-      .map((s) => s.trim())
-      .filter(Boolean);
-    const cover = image && image.startsWith("data:") ? [image] : undefined;
-    const perServingMacros = nutritionDisplay?.perServing ?? null;
-    const nutritionSnapshot = nutritionDisplay
-      ? { ...nutritionDisplay, savedAt: Date.now() }
-      : nutrition
-        ? { ...nutrition, savedAt: Date.now() }
-        : null;
-    const recipeNutrition = perServingMacros
-      ? {
-          calories: perServingMacros.calories,
-          fat: perServingMacros.fat,
-          carbs: perServingMacros.carbs,
-          protein: perServingMacros.protein,
-          fiber: perServingMacros.fiber,
-          sugars: perServingMacros.sugars,
-          sodium: perServingMacros.sodium,
-          cholesterol: undefined,
-        }
-      : null;
-    const metadata = {
-      source: "manual",
-      taxonomy,
-      published: true,
-      yield: { quantity: yieldQty, unit: yieldUnit },
-      portion: { count: portionCount, unit: portionUnit },
-      times: { cook: cookTime, temp: cookTemp, prep: prepTime },
-      access: [...selectedRecipeAccess],
-      allergens: [...selectedAllergens],
-      nationality: [...selectedNationality],
-      courses: [...selectedCourses],
-      recipeType: [...selectedRecipeType],
-      prepMethod: [...selectedPrepMethod],
-      cookingEquipment: [...selectedCookingEquipment],
-      nutritionSnapshot,
-    };
-    const recipeData = {
-      title,
-      ingredients: ingLines,
-      instructions: insLines,
-      imageDataUrls: cover,
-      tags: [],
-      nutrition: recipeNutrition,
-      extra: metadata,
-      isGlobal,
-      createdBy: "Current User", // TODO: Get from auth context
-      lastModifiedBy: "Current User", // TODO: Get from auth context
-      lastModifiedAt: Date.now(),
-    };
-
-    if (!recipeIdRef.current) {
-      recipeIdRef.current = addRecipe(recipeData);
-    } else {
-      updateRecipe(recipeIdRef.current, recipeData);
-    }
-    succeeded = true;
-    toast({
-      title: t("recipe.actions.finalizedTitle", "Recipe finalized"),
-      description: t(
-        "recipe.actions.finalizedDescription",
-        "Saved to your library and cleared for the next entry.",
-      ),
-    });
-  } catch (error: any) {
-    const message =
-      typeof error?.message === "string" && error.message.trim().length
-        ? error.message
-        : t("recipe.actions.finalizedErrorFallback", "Unexpected error");
-    console.error("Finalize recipe failed", error);
-    toast({
-      title: t("recipe.actions.finalizedError", "Unable to finalize recipe"),
-      description: message,
-      variant: "destructive",
-    });
-  } finally {
-    if (succeeded) {
-      setFinalizeState("success");
-      clearRecipeWorkspace({ preserveSidebar: true });
+  useEffect(() => {
+    return () => {
       if (finalizeResetTimerRef.current !== null) {
         window.clearTimeout(finalizeResetTimerRef.current);
-      }
-      finalizeResetTimerRef.current = window.setTimeout(() => {
-        setFinalizeState("idle");
         finalizeResetTimerRef.current = null;
-      }, 2250);
-    } else {
-      setFinalizeState("idle");
+      }
+    };
+  }, []);
+
+  const finalizeRecipe = useCallback(() => {
+    if (finalizeState === "saving") {
+      return;
     }
-  }
-}, [
-  addRecipe,
-  updateRecipe,
-  taxonomy,
-  recipeName,
-  ingredients,
-  directions,
-  image,
-  clearRecipeWorkspace,
-  toast,
-  t,
-  isFormPristine,
-  finalizeState,
-  yieldQty,
-  yieldUnit,
-  portionCount,
-  portionUnit,
-  cookTime,
-  cookTemp,
-  prepTime,
-  selectedRecipeAccess,
-  selectedAllergens,
-  selectedNationality,
-  selectedCourses,
-  selectedRecipeType,
-  selectedPrepMethod,
-  selectedCookingEquipment,
-  nutritionDisplay,
-  nutrition,
-]);
+    if (isFormPristine) {
+      toast({
+        title: t("recipe.actions.finalizeEmptyTitle", "Nothing to finalize"),
+        description: t(
+          "recipe.actions.finalizeEmptyDescription",
+          "Add details before finalizing the recipe.",
+        ),
+        variant: "destructive",
+      });
+      return;
+    }
+    let succeeded = false;
+    setFinalizeState("saving");
+    try {
+      const title = (recipeName || "").trim() || "Untitled Recipe";
+      const ingLines = ingredients
+        .map((r) =>
+          [r.qty, r.unit, r.item, r.prep].filter(Boolean).join(" ").trim(),
+        )
+        .filter(Boolean);
+      const insLines = String(directions || "")
+        .split(/\r?\n/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+      const cover = image && image.startsWith("data:") ? [image] : undefined;
+      const perServingMacros = nutritionDisplay?.perServing ?? null;
+      const nutritionSnapshot = nutritionDisplay
+        ? { ...nutritionDisplay, savedAt: Date.now() }
+        : nutrition
+          ? { ...nutrition, savedAt: Date.now() }
+          : null;
+      const recipeNutrition = perServingMacros
+        ? {
+            calories: perServingMacros.calories,
+            fat: perServingMacros.fat,
+            carbs: perServingMacros.carbs,
+            protein: perServingMacros.protein,
+            fiber: perServingMacros.fiber,
+            sugars: perServingMacros.sugars,
+            sodium: perServingMacros.sodium,
+            cholesterol: undefined,
+          }
+        : null;
+      const metadata = {
+        source: "manual",
+        taxonomy,
+        published: true,
+        yield: { quantity: yieldQty, unit: yieldUnit },
+        portion: { count: portionCount, unit: portionUnit },
+        times: { cook: cookTime, temp: cookTemp, prep: prepTime },
+        access: [...selectedRecipeAccess],
+        allergens: [...selectedAllergens],
+        nationality: [...selectedNationality],
+        courses: [...selectedCourses],
+        recipeType: [...selectedRecipeType],
+        prepMethod: [...selectedPrepMethod],
+        cookingEquipment: [...selectedCookingEquipment],
+        nutritionSnapshot,
+      };
+      const recipeData = {
+        title,
+        ingredients: ingLines,
+        instructions: insLines,
+        imageDataUrls: cover,
+        tags: [],
+        nutrition: recipeNutrition,
+        extra: metadata,
+        isGlobal,
+        createdBy: "Current User", // TODO: Get from auth context
+        lastModifiedBy: "Current User", // TODO: Get from auth context
+        lastModifiedAt: Date.now(),
+      };
 
-const handleClearForm = useCallback(() => {
-  if (isFormPristine) return;
-  const confirmMessage = t(
-    "recipe.actions.clearConfirm",
-    "Clear all fields? This can't be undone.",
-  );
-  if (!window.confirm(confirmMessage)) return;
-  clearRecipeWorkspace();
-  toast({
-    title: t("recipe.actions.clearedTitle", "Workspace cleared"),
-    description: t(
-      "recipe.actions.clearedDescription",
-      "Start fresh with a blank recipe draft.",
-    ),
-  });
-}, [clearRecipeWorkspace, isFormPristine, t, toast]);
+      if (!recipeIdRef.current) {
+        recipeIdRef.current = addRecipe(recipeData);
+      } else {
+        updateRecipe(recipeIdRef.current, recipeData);
+      }
+      succeeded = true;
+      toast({
+        title: t("recipe.actions.finalizedTitle", "Recipe finalized"),
+        description: t(
+          "recipe.actions.finalizedDescription",
+          "Saved to your library and cleared for the next entry.",
+        ),
+      });
+    } catch (error: any) {
+      const message =
+        typeof error?.message === "string" && error.message.trim().length
+          ? error.message
+          : t("recipe.actions.finalizedErrorFallback", "Unexpected error");
+      console.error("Finalize recipe failed", error);
+      toast({
+        title: t("recipe.actions.finalizedError", "Unable to finalize recipe"),
+        description: message,
+        variant: "destructive",
+      });
+    } finally {
+      if (succeeded) {
+        setFinalizeState("success");
+        clearRecipeWorkspace({ preserveSidebar: true });
+        if (finalizeResetTimerRef.current !== null) {
+          window.clearTimeout(finalizeResetTimerRef.current);
+        }
+        finalizeResetTimerRef.current = window.setTimeout(() => {
+          setFinalizeState("idle");
+          finalizeResetTimerRef.current = null;
+        }, 2250);
+      } else {
+        setFinalizeState("idle");
+      }
+    }
+  }, [
+    addRecipe,
+    updateRecipe,
+    taxonomy,
+    recipeName,
+    ingredients,
+    directions,
+    image,
+    clearRecipeWorkspace,
+    toast,
+    t,
+    isFormPristine,
+    finalizeState,
+    yieldQty,
+    yieldUnit,
+    portionCount,
+    portionUnit,
+    cookTime,
+    cookTemp,
+    prepTime,
+    selectedRecipeAccess,
+    selectedAllergens,
+    selectedNationality,
+    selectedCourses,
+    selectedRecipeType,
+    selectedPrepMethod,
+    selectedCookingEquipment,
+    nutritionDisplay,
+    nutrition,
+  ]);
 
-const subRecipeOptions = useMemo<SubRecipeOption[]>(() => {
+  const handleClearForm = useCallback(() => {
+    if (isFormPristine) return;
+    const confirmMessage = t(
+      "recipe.actions.clearConfirm",
+      "Clear all fields? This can't be undone.",
+    );
+    if (!window.confirm(confirmMessage)) return;
+    clearRecipeWorkspace();
+    toast({
+      title: t("recipe.actions.clearedTitle", "Workspace cleared"),
+      description: t(
+        "recipe.actions.clearedDescription",
+        "Start fresh with a blank recipe draft.",
+      ),
+    });
+  }, [clearRecipeWorkspace, isFormPristine, t, toast]);
+
+  const subRecipeOptions = useMemo<SubRecipeOption[]>(() => {
     if (!recipes || recipes.length === 0) return [];
     return [...recipes]
       .map((recipe) => {
@@ -922,30 +938,32 @@ const subRecipeOptions = useMemo<SubRecipeOption[]>(() => {
       return sum + (Number.isFinite(parsed) ? parsed : 0);
     }, 0);
   const calculatePortionCost = () => {
-  const t = calculateTotalCost();
-  const n = portionCount > 0 ? portionCount : 1;
-  return t / n;
-};
+    const t = calculateTotalCost();
+    const n = portionCount > 0 ? portionCount : 1;
+    return t / n;
+  };
 
-const actionButtonBase =
-  "inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-60";
-const finalizeButtonTone =
-  finalizeState === "success"
-    ? isDarkMode
-      ? "bg-emerald-400 text-slate-950 hover:bg-emerald-300 focus-visible:ring-emerald-300/60 focus-visible:ring-offset-slate-950 disabled:opacity-100 disabled:pointer-events-none"
-      : "bg-emerald-500 text-white hover:bg-emerald-500/90 focus-visible:ring-emerald-400 focus-visible:ring-offset-white disabled:opacity-100 disabled:pointer-events-none"
-    : isDarkMode
-      ? "bg-cyan-500 text-slate-950 hover:bg-cyan-400 focus-visible:ring-cyan-300/60 focus-visible:ring-offset-slate-950"
-      : "bg-slate-900 text-white hover:bg-slate-800 focus-visible:ring-slate-400 focus-visible:ring-offset-white";
-const finalizeButtonClasses = `${actionButtonBase} ${finalizeButtonTone}`;
-const clearButtonClasses = `${actionButtonBase} ${isDarkMode ? "border border-cyan-400/60 text-cyan-200 hover:bg-cyan-500/10 focus-visible:ring-cyan-300/40 focus-visible:ring-offset-slate-950" : "border border-slate-400 text-slate-700 hover:bg-slate-900/5 focus-visible:ring-slate-400/50 focus-visible:ring-offset-white"}`;
-const actionBarClasses = isDarkMode
-  ? "border-cyan-400/40 bg-slate-950/60 shadow-[0_0_32px_rgba(56,189,248,0.15)]"
-  : "border-slate-200 bg-white/80 shadow-[0_20px_40px_-24px_rgba(15,23,42,0.25)]";
-const actionCaptionTone = isDarkMode ? "text-cyan-200/90" : "text-slate-600";
-const actionDescriptionTone = isDarkMode ? "text-cyan-200/70" : "text-slate-500";
+  const actionButtonBase =
+    "inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-60";
+  const finalizeButtonTone =
+    finalizeState === "success"
+      ? isDarkMode
+        ? "bg-emerald-400 text-slate-950 hover:bg-emerald-300 focus-visible:ring-emerald-300/60 focus-visible:ring-offset-slate-950 disabled:opacity-100 disabled:pointer-events-none"
+        : "bg-emerald-500 text-white hover:bg-emerald-500/90 focus-visible:ring-emerald-400 focus-visible:ring-offset-white disabled:opacity-100 disabled:pointer-events-none"
+      : isDarkMode
+        ? "bg-cyan-500 text-slate-950 hover:bg-cyan-400 focus-visible:ring-cyan-300/60 focus-visible:ring-offset-slate-950"
+        : "bg-slate-900 text-white hover:bg-slate-800 focus-visible:ring-slate-400 focus-visible:ring-offset-white";
+  const finalizeButtonClasses = `${actionButtonBase} ${finalizeButtonTone}`;
+  const clearButtonClasses = `${actionButtonBase} ${isDarkMode ? "border border-cyan-400/60 text-cyan-200 hover:bg-cyan-500/10 focus-visible:ring-cyan-300/40 focus-visible:ring-offset-slate-950" : "border border-slate-400 text-slate-700 hover:bg-slate-900/5 focus-visible:ring-slate-400/50 focus-visible:ring-offset-white"}`;
+  const actionBarClasses = isDarkMode
+    ? "border-cyan-400/40 bg-slate-950/60 shadow-[0_0_32px_rgba(56,189,248,0.15)]"
+    : "border-slate-200 bg-white/80 shadow-[0_20px_40px_-24px_rgba(15,23,42,0.25)]";
+  const actionCaptionTone = isDarkMode ? "text-cyan-200/90" : "text-slate-600";
+  const actionDescriptionTone = isDarkMode
+    ? "text-cyan-200/70"
+    : "text-slate-500";
 
-const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
+  const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
     if (!selected.length) return;
     setIngredients((prev) => {
       const next = ensureIngredientRowIds(prev.slice());
@@ -1165,10 +1183,15 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
 
     autoSnapshotTimerRef.current = setTimeout(() => {
       const payload = serialize();
-      const activeIngredients = ingredients.filter((row) => row.type !== "divider").length;
+      const activeIngredients = ingredients.filter(
+        (row) => row.type !== "divider",
+      ).length;
       const summaryParts = [recipeName.trim() || "Untitled recipe"];
-      summaryParts.push(`${activeIngredients} ingredient${activeIngredients === 1 ? "" : "s"}`);
-      if (yieldQty) summaryParts.push(`yield ${yieldQty} ${yieldUnit || ""}`.trim());
+      summaryParts.push(
+        `${activeIngredients} ingredient${activeIngredients === 1 ? "" : "s"}`,
+      );
+      if (yieldQty)
+        summaryParts.push(`yield ${yieldQty} ${yieldUnit || ""}`.trim());
       collaboration.recordVersionSnapshot({
         summary: summaryParts.join(" · "),
         payload,
@@ -1184,14 +1207,7 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
         autoSnapshotTimerRef.current = null;
       }
     };
-  }, [
-    recipeName,
-    ingredients,
-    directions,
-    yieldQty,
-    yieldUnit,
-    collaboration,
-  ]);
+  }, [recipeName, ingredients, directions, yieldQty, yieldUnit, collaboration]);
 
   const restore = (s: any) => {
     if (!s) return;
@@ -1259,7 +1275,9 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
         if (meta.times.prep != null) setPrepTime(String(meta.times.prep));
       }
       if (Array.isArray(meta.access)) {
-        setSelectedRecipeAccess(meta.access.map((value: unknown) => String(value)));
+        setSelectedRecipeAccess(
+          meta.access.map((value: unknown) => String(value)),
+        );
       }
       if (Array.isArray(meta.allergens) && meta.allergens.length) {
         setSelectedAllergens(
@@ -1284,7 +1302,10 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
           meta.prepMethod.map((value: unknown) => String(value)),
         );
       }
-      if (Array.isArray(meta.cookingEquipment) && meta.cookingEquipment.length) {
+      if (
+        Array.isArray(meta.cookingEquipment) &&
+        meta.cookingEquipment.length
+      ) {
         setSelectedCookingEquipment(
           meta.cookingEquipment.map((value: unknown) => String(value)),
         );
@@ -1757,14 +1778,20 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
     [setIngredients],
   );
 
-  const ingredientYieldInsights = useMemo<(IngredientYieldInsight | null)[]>(() => {
+  const ingredientYieldInsights = useMemo<
+    (IngredientYieldInsight | null)[]
+  >(() => {
     return ingredients.map((row) => {
       if (row.type === "divider") return null;
       const item = row.item.trim();
       if (!item) return null;
       const prep = row.prep.trim();
       const base = computeBaseYield(item, prep);
-      const chef = findBestMatch({ item, prep: prep || undefined, method: prep || undefined });
+      const chef = findBestMatch({
+        item,
+        prep: prep || undefined,
+        method: prep || undefined,
+      });
       const combined = combineYields(
         base.percent,
         chef?.percent != null ? chef.percent : null,
@@ -1780,7 +1807,8 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
         combinedPercent: combined.percent,
         source: combined.source,
       };
-      if (insight.basePercent == null && insight.chefPercent == null) return null;
+      if (insight.basePercent == null && insight.chefPercent == null)
+        return null;
       return insight;
     });
   }, [ingredients, findBestMatch]);
@@ -2257,7 +2285,10 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
     const ensuredRows = ensureIngredientRowIds(ingredients);
     const ingLines = ensuredRows
       .map((row) =>
-        [row.qty, row.unit, row.item, row.prep].filter(Boolean).join(" ").trim(),
+        [row.qty, row.unit, row.item, row.prep]
+          .filter(Boolean)
+          .join(" ")
+          .trim(),
       )
       .filter(Boolean);
     const insLines = String(directions || "")
@@ -2305,10 +2336,12 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
 
     const existingRecipe =
       recipeIdRef.current != null
-        ? recipes.find((item) => item.id === recipeIdRef.current) ?? null
+        ? (recipes.find((item) => item.id === recipeIdRef.current) ?? null)
         : null;
     const baseExtra =
-      existingRecipe && existingRecipe.extra && typeof existingRecipe.extra === "object"
+      existingRecipe &&
+      existingRecipe.extra &&
+      typeof existingRecipe.extra === "object"
         ? { ...(existingRecipe.extra as Record<string, unknown>) }
         : {};
 
@@ -2702,7 +2735,9 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                 >
                   {t("recipe.actions.finalizeHeading", "Finalize workflow")}
                 </span>
-                <p className={`text-xs leading-relaxed ${actionDescriptionTone}`}>
+                <p
+                  className={`text-xs leading-relaxed ${actionDescriptionTone}`}
+                >
                   {t(
                     "recipe.actions.finalizeHint",
                     "Autosave is always on. Finalize stores this version and resets the workspace for your next dish.",
@@ -2785,7 +2820,9 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                     }`}
                   >
                     <div className="col-span-2 flex flex-col items-center gap-0.5 md:col-span-2">
-                      <span className={infoLabelClass}>{t("recipe.labels.cookTime", "COOK TIME")}</span>
+                      <span className={infoLabelClass}>
+                        {t("recipe.labels.cookTime", "COOK TIME")}
+                      </span>
                       <div className="flex items-center justify-center gap-1">
                         <input
                           value={cookTime}
@@ -2795,7 +2832,9 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                           data-echo-key="field:add:time"
                         />
                         {cookTimeDisplay && (
-                          <span className={`text-[9px] font-medium uppercase ${infoHelperClass}`}>
+                          <span
+                            className={`text-[9px] font-medium uppercase ${infoHelperClass}`}
+                          >
                             {cookTimeDisplay}
                           </span>
                         )}
@@ -2803,13 +2842,20 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                     </div>
 
                     <div className="col-span-2 flex flex-col items-center gap-0.5 md:col-span-2">
-                      <span className={infoLabelClass}>{t("recipe.labels.cookTemp", "COOK TEMP")}</span>
+                      <span className={infoLabelClass}>
+                        {t("recipe.labels.cookTemp", "COOK TEMP")}
+                      </span>
                       <input
                         value={cookTemp}
                         onChange={(e) => {
-                          const digits = e.target.value.replace(/[^0-9]/g, "").slice(0, 3);
-                          const suffix = currentUnits === "Imperial" ? "°F" : "°C";
-                          setCookTemp(digits ? `${parseInt(digits, 10)}${suffix}` : "");
+                          const digits = e.target.value
+                            .replace(/[^0-9]/g, "")
+                            .slice(0, 3);
+                          const suffix =
+                            currentUnits === "Imperial" ? "°F" : "°C";
+                          setCookTemp(
+                            digits ? `${parseInt(digits, 10)}${suffix}` : "",
+                          );
                         }}
                         placeholder="350°F"
                         className={`${infoInputClass} w-full text-center`}
@@ -2817,7 +2863,9 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                     </div>
 
                     <div className="col-span-2 flex flex-col items-center gap-0.5 md:col-span-2">
-                      <span className={infoLabelClass}>{t("recipe.labels.prepTime", "PREP TIME")}</span>
+                      <span className={infoLabelClass}>
+                        {t("recipe.labels.prepTime", "PREP TIME")}
+                      </span>
                       <div className="flex items-center justify-center gap-1">
                         <input
                           value={prepTime}
@@ -2826,7 +2874,9 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                           className={`${infoInputClass} w-full text-center`}
                         />
                         {prepTimeDisplay && (
-                          <span className={`text-[9px] font-medium uppercase ${infoHelperClass}`}>
+                          <span
+                            className={`text-[9px] font-medium uppercase ${infoHelperClass}`}
+                          >
                             {prepTimeDisplay}
                           </span>
                         )}
@@ -2850,7 +2900,9 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                     </div>
 
                     <div className="col-span-2 flex flex-col items-center gap-0.5 md:col-span-2">
-                      <span className={infoLabelClass}>{t("recipe.labels.recipeType", "RECIPE")}</span>
+                      <span className={infoLabelClass}>
+                        {t("recipe.labels.recipeType", "RECIPE")}
+                      </span>
                       <span className={infoValuePillClass}>
                         {selectedRecipeType.includes("Full Recipe")
                           ? t("recipe.labels.full", "FULL")
@@ -2910,7 +2962,9 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                     </div>
 
                     <div className="col-span-4 flex flex-col items-center gap-0.5 md:col-span-4">
-                      <span className={infoLabelClass}>{t("recipe.labels.portion", "PORTION")}</span>
+                      <span className={infoLabelClass}>
+                        {t("recipe.labels.portion", "PORTION")}
+                      </span>
                       <div className="flex items-center justify-center gap-1">
                         <input
                           type="number"
@@ -2922,7 +2976,9 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                         />
                         <input
                           value={portionUnit}
-                          onChange={(e) => setPortionUnit(e.target.value.toUpperCase())}
+                          onChange={(e) =>
+                            setPortionUnit(e.target.value.toUpperCase())
+                          }
                           className={`${infoInputClass} w-14 flex-1 text-center uppercase`}
                         />
                       </div>
@@ -3275,7 +3331,11 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                     recipeName={recipeName}
                     defaultMethod={selectedPrepMethod[0] || ""}
                     methodOptions={knownPrepMethods}
-                    item={ingredients.find((row) => row.type !== "divider" && row.item.trim())?.item}
+                    item={
+                      ingredients.find(
+                        (row) => row.type !== "divider" && row.item.trim(),
+                      )?.item
+                    }
                     onClose={() => setYieldOpen(false)}
                   />
                 </DialogContent>
@@ -3790,7 +3850,9 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                               ? "text-cyan-100 hover:bg-cyan-500/10"
                               : "text-slate-700 hover:bg-slate-200"
                           }`}
-                          onClick={() => setPortionCount(Math.max(1, servingsForLabel - 1))}
+                          onClick={() =>
+                            setPortionCount(Math.max(1, servingsForLabel - 1))
+                          }
                           aria-label="Decrease servings"
                         >
                           <Minus className="h-3.5 w-3.5" aria-hidden />
@@ -3801,7 +3863,10 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                           step="0.25"
                           value={servingsForLabel}
                           onChange={(event) => {
-                            const next = Math.max(1, Number(event.target.value));
+                            const next = Math.max(
+                              1,
+                              Number(event.target.value),
+                            );
                             setPortionCount(next);
                           }}
                           className={`w-16 border-0 bg-transparent text-center text-sm font-semibold outline-none ${
@@ -3815,7 +3880,9 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                               ? "text-cyan-100 hover:bg-cyan-500/10"
                               : "text-slate-700 hover:bg-slate-200"
                           }`}
-                          onClick={() => setPortionCount(Math.max(1, servingsForLabel + 1))}
+                          onClick={() =>
+                            setPortionCount(Math.max(1, servingsForLabel + 1))
+                          }
                           aria-label="Increase servings"
                         >
                           <Plus className="h-3.5 w-3.5" aria-hidden />
@@ -3998,7 +4065,10 @@ const insertSubRecipeRows = (selected: SubRecipeOption[]) => {
                   })
                   .catch((error) => {
                     clearTimeout(timeoutId);
-                    console.warn("[onRecipeImport] Image fetch failed:", error?.message);
+                    console.warn(
+                      "[onRecipeImport] Image fetch failed:",
+                      error?.message,
+                    );
                     // Fallback: use original URL if we can't download
                     setImage(urlStr);
                   });
@@ -4089,7 +4159,9 @@ function RDLabsPortal({
   const [sessions, setSessions] = useState<RDLabProjectSession[]>([]);
   const [activeSessionId, setActiveSessionIdState] = useState<string>("");
   const [sessionsLoaded, setSessionsLoaded] = useState(false);
-  const [autoSaveState, setAutoSaveState] = useState<"idle" | "saving" | "saved">("idle");
+  const [autoSaveState, setAutoSaveState] = useState<
+    "idle" | "saving" | "saved"
+  >("idle");
   const [lastSavedAt, setLastSavedAt] = useState<string>("");
   const [savePulseKey, setSavePulseKey] = useState(0);
   const [newProjectOpen, setNewProjectOpen] = useState(false);
@@ -4142,7 +4214,10 @@ function RDLabsPortal({
     (next: RDLabProjectSession[]) => {
       if (!isBrowser) return;
       try {
-        window.localStorage.setItem(RDLAB_SESSIONS_STORAGE_KEY, JSON.stringify(next));
+        window.localStorage.setItem(
+          RDLAB_SESSIONS_STORAGE_KEY,
+          JSON.stringify(next),
+        );
       } catch {
         /* ignore storage errors */
       }
@@ -4213,7 +4288,9 @@ function RDLabsPortal({
         if (Array.isArray(parsed)) {
           storedSessions = parsed
             .map((session) => sanitizeProjectSession(session))
-            .filter((session): session is RDLabProjectSession => session != null);
+            .filter(
+              (session): session is RDLabProjectSession => session != null,
+            );
         }
       }
     } catch {
@@ -4232,14 +4309,19 @@ function RDLabsPortal({
         snapshot,
         vision:
           "Preserve the seeded experimentation environment with its original texture, flavor, and future-of-food scaffolding.",
-        textureFocus: "Smoked custards, carbonated citrus pearls, velvet emulsions",
-        flavorNotes: "Koji smoke layered with maple brine and electric citrus aromatics.",
+        textureFocus:
+          "Smoked custards, carbonated citrus pearls, velvet emulsions",
+        flavorNotes:
+          "Koji smoke layered with maple brine and electric citrus aromatics.",
         launchTarget: "Evergreen innovation baseline",
       };
       storedSessions = [defaultSession];
       persistSessions(storedSessions);
       try {
-        window.localStorage.setItem(RDLAB_ACTIVE_SESSION_KEY, defaultSession.id);
+        window.localStorage.setItem(
+          RDLAB_ACTIVE_SESSION_KEY,
+          defaultSession.id,
+        );
       } catch {
         /* ignore */
       }
@@ -4253,12 +4335,15 @@ function RDLabsPortal({
       }
     })();
 
-    const activeId = storedSessions.some((session) => session.id === storedActiveId)
+    const activeId = storedSessions.some(
+      (session) => session.id === storedActiveId,
+    )
       ? (storedActiveId as string)
-      : storedSessions[0]?.id ?? "";
+      : (storedSessions[0]?.id ?? "");
 
     const activeSession =
-      storedSessions.find((session) => session.id === activeId) ?? storedSessions[0];
+      storedSessions.find((session) => session.id === activeId) ??
+      storedSessions[0];
 
     if (activeId) {
       setActiveSession(activeId);
@@ -4300,7 +4385,9 @@ function RDLabsPortal({
   const projectName = activeSession?.name ?? "Untitled Lab";
 
   const focusExperiment = useMemo(
-    () => experiments.find((item) => item.id === focusExperimentId) ?? experiments[0],
+    () =>
+      experiments.find((item) => item.id === focusExperimentId) ??
+      experiments[0],
     [experiments, focusExperimentId],
   );
 
@@ -4338,7 +4425,8 @@ function RDLabsPortal({
 
         didPersist = true;
         const sorted = [...mapped].sort(
-          (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+          (a, b) =>
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
         );
         return sorted;
       });
@@ -4356,7 +4444,14 @@ function RDLabsPortal({
       triggerHint();
       return timestamp;
     },
-    [sessionsLoaded, activeSessionId, serializeState, updateSessions, layout, triggerHint],
+    [
+      sessionsLoaded,
+      activeSessionId,
+      serializeState,
+      updateSessions,
+      layout,
+      triggerHint,
+    ],
   );
 
   const handleSessionChange = useCallback(
@@ -4373,7 +4468,14 @@ function RDLabsPortal({
       setSavePulseKey((key) => key + 1);
       setHintVisible(false);
     },
-    [activeSessionId, sessions, performSave, hydrateState, applyLayout, setActiveSession],
+    [
+      activeSessionId,
+      sessions,
+      performSave,
+      hydrateState,
+      applyLayout,
+      setActiveSession,
+    ],
   );
 
   const handleProjectCreate = useCallback(
@@ -4417,7 +4519,14 @@ function RDLabsPortal({
       triggerHint();
       setNewProjectOpen(false);
     },
-    [hydrateState, applyLayout, defaultLayout, updateSessions, setActiveSession, triggerHint],
+    [
+      hydrateState,
+      applyLayout,
+      defaultLayout,
+      updateSessions,
+      setActiveSession,
+      triggerHint,
+    ],
   );
 
   useEffect(() => {
@@ -4465,7 +4574,10 @@ function RDLabsPortal({
   return createPortal(
     <>
       <div className="fixed inset-0 z-[110] flex items-center justify-center px-4 py-6">
-        <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-2xl" onClick={handleOverlayClose} />
+        <div
+          className="absolute inset-0 bg-slate-950/80 backdrop-blur-2xl"
+          onClick={handleOverlayClose}
+        />
         <div className="relative z-10 flex w-full max-w-[min(1240px,95vw)] flex-col">
           <div
             role="dialog"
@@ -4530,7 +4642,9 @@ function RDLabsPortal({
                         {sessions.map((session) => (
                           <SelectItem key={session.id} value={session.id}>
                             <div className="flex flex-col gap-0.5">
-                              <span className="text-sm font-medium">{session.name}</span>
+                              <span className="text-sm font-medium">
+                                {session.name}
+                              </span>
                               <span className="text-xs opacity-70">
                                 {formatProjectTimestamp(session.updatedAt)}
                               </span>
@@ -4544,8 +4658,13 @@ function RDLabsPortal({
               </header>
               <div className="relative z-10 flex flex-1 min-h-0 overflow-hidden">
                 <div className="flex flex-1 min-h-0 flex-col gap-3 px-4 pb-4 pt-4">
-                  <p className={`max-w-3xl text-sm leading-relaxed ${accentMuted}`}>
-                    Drag the dividers to resize each workspace. Use these surfaces for experiments, documentation, and automation flows. Layout widths persist so your lab reopens exactly how you left it.
+                  <p
+                    className={`max-w-3xl text-sm leading-relaxed ${accentMuted}`}
+                  >
+                    Drag the dividers to resize each workspace. Use these
+                    surfaces for experiments, documentation, and automation
+                    flows. Layout widths persist so your lab reopens exactly how
+                    you left it.
                   </p>
                   <PanelGroup
                     key={layout.join("-")}
@@ -4553,14 +4672,24 @@ function RDLabsPortal({
                     onLayout={onLayoutChange}
                     className="relative z-10 flex h-full min-h-0 items-stretch gap-3"
                   >
-                    <Panel minSize={20} order={1} defaultSize={layout[0]} className="flex min-h-0">
+                    <Panel
+                      minSize={20}
+                      order={1}
+                      defaultSize={layout[0]}
+                      className="flex min-h-0"
+                    >
                       <section
                         data-chalk-label="INSPIRE"
                         className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[0]}`}
                       >
-                        <header className={rndPanelHeadingClasses}>Discovery runway</header>
-                        <p className={`mt-2 text-xs leading-relaxed ${accentMuted}`}>
-                          Stage inspiration, competitive research, and sourcing notes here.
+                        <header className={rndPanelHeadingClasses}>
+                          Discovery runway
+                        </header>
+                        <p
+                          className={`mt-2 text-xs leading-relaxed ${accentMuted}`}
+                        >
+                          Stage inspiration, competitive research, and sourcing
+                          notes here.
                         </p>
                         <div className="mt-3 flex-1 min-h-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-2.5 shadow-inner shadow-cyan-500/5">
                           <DiscoveryPanel />
@@ -4570,14 +4699,24 @@ function RDLabsPortal({
                     <PanelResizeHandle className={rndHandleClasses}>
                       <span className="pointer-events-none h-10 w-0.5 rounded-full bg-white/60 opacity-80 transition group-hover:bg-cyan-200/80" />
                     </PanelResizeHandle>
-                    <Panel minSize={26} order={2} defaultSize={layout[1]} className="flex min-h-0">
+                    <Panel
+                      minSize={26}
+                      order={2}
+                      defaultSize={layout[1]}
+                      className="flex min-h-0"
+                    >
                       <section
                         data-chalk-label="FORMULATE"
                         className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[1]}`}
                       >
-                        <header className={rndPanelHeadingClasses}>Workbench</header>
-                        <p className={`mt-2 text-xs leading-relaxed ${accentMuted}`}>
-                          Reserve this lane for formulations, live tests, or shared prototypes.
+                        <header className={rndPanelHeadingClasses}>
+                          Workbench
+                        </header>
+                        <p
+                          className={`mt-2 text-xs leading-relaxed ${accentMuted}`}
+                        >
+                          Reserve this lane for formulations, live tests, or
+                          shared prototypes.
                         </p>
                         <div className="mt-3 flex-1 min-h-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-2.5 shadow-inner shadow-cyan-500/5">
                           <WorkbenchPanel />
@@ -4587,14 +4726,24 @@ function RDLabsPortal({
                     <PanelResizeHandle className={rndHandleClasses}>
                       <span className="pointer-events-none h-10 w-0.5 rounded-full bg-white/60 opacity-80 transition group-hover:bg-cyan-200/80" />
                     </PanelResizeHandle>
-                    <Panel minSize={20} order={3} defaultSize={layout[2]} className="flex min-h-0">
+                    <Panel
+                      minSize={20}
+                      order={3}
+                      defaultSize={layout[2]}
+                      className="flex min-h-0"
+                    >
                       <section
                         data-chalk-label="SYNTHESIZE"
                         className={`${rndPanelBaseClasses} ${rndPanelToneClasses} ${rndPanelThemes[2]}`}
                       >
-                        <header className={rndPanelHeadingClasses}>Insight stack</header>
-                        <p className={`mt-2 text-xs leading-relaxed ${accentMuted}`}>
-                          Pin KPIs, AI summaries, or vendor comparisons for rapid decisions.
+                        <header className={rndPanelHeadingClasses}>
+                          Insight stack
+                        </header>
+                        <p
+                          className={`mt-2 text-xs leading-relaxed ${accentMuted}`}
+                        >
+                          Pin KPIs, AI summaries, or vendor comparisons for
+                          rapid decisions.
                         </p>
                         <div className="mt-3 flex-1 min-h-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-2.5 shadow-inner shadow-cyan-500/5">
                           <InsightsPanel />
@@ -4630,8 +4779,9 @@ function RDLabsPortal({
                       key={savePulseKey}
                       className="flex items-center gap-1.5 rounded-full border border-cyan-400/40 bg-cyan-500/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.3em] text-cyan-100 shadow-[0_25px_60px_-40px_rgba(56,189,248,0.75)] animate-rd-save-pulse"
                     >
-                      <span className="h-2 w-2 rounded-full bg-emerald-300" />
-                      ({projectName}) Last saved {formatProjectTimestamp(lastSavedAt)}
+                      <span className="h-2 w-2 rounded-full bg-emerald-300" />(
+                      {projectName}) Last saved{" "}
+                      {formatProjectTimestamp(lastSavedAt)}
                     </div>
                   ) : null}
                 </div>

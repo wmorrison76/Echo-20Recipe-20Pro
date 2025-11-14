@@ -41,7 +41,14 @@ export interface InventoryTransaction {
   id: string;
   outletId: string;
   inventoryItemId: string;
-  transactionType: "scan" | "adjustment" | "use" | "transfer_out" | "transfer_in" | "damage" | "return";
+  transactionType:
+    | "scan"
+    | "adjustment"
+    | "use"
+    | "transfer_out"
+    | "transfer_in"
+    | "damage"
+    | "return";
   quantity: number;
   reason?: string;
   reference?: string; // recipe ID, transfer ID, etc.

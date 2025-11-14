@@ -291,7 +291,6 @@ function IndexContent() {
         isOpen={helpModalOpen}
         onOpenChange={setHelpModalOpen}
       />
-
     </TronBackdrop>
   );
 }

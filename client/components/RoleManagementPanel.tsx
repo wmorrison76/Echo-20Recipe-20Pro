@@ -5,7 +5,10 @@
 
 import React, { useState, useCallback } from "react";
 import { usePermissions } from "@/hooks/use-permissions";
-import { PermissionGuard, RestrictedContent } from "@/components/PermissionGuard";
+import {
+  PermissionGuard,
+  RestrictedContent,
+} from "@/components/PermissionGuard";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,8 +26,15 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { UserRole, OutletUserRole, Permission } from "@/types/roles-permissions";
-import { UserRole as UserRoleEnum, Permission as PermissionEnum } from "@/types/roles-permissions";
+import type {
+  UserRole,
+  OutletUserRole,
+  Permission,
+} from "@/types/roles-permissions";
+import {
+  UserRole as UserRoleEnum,
+  Permission as PermissionEnum,
+} from "@/types/roles-permissions";
 
 interface User {
   id: string;
@@ -43,7 +53,11 @@ interface Outlet {
 interface RoleManagementPanelProps {
   users: User[];
   outlets: Outlet[];
-  onRoleChange?: (userId: string, outletId: string, role: UserRole) => Promise<void>;
+  onRoleChange?: (
+    userId: string,
+    outletId: string,
+    role: UserRole,
+  ) => Promise<void>;
   onRoleRemove?: (userId: string, outletId: string) => Promise<void>;
   loading?: boolean;
 }
@@ -60,7 +74,12 @@ export function RoleManagementPanel({
   const [isAssigning, setIsAssigning] = useState(false);
 
   if (!permissions.canManageAllUsers()) {
-    return <RestrictedContent title="Role Management" message="You don't have permission to manage user roles." />;
+    return (
+      <RestrictedContent
+        title="Role Management"
+        message="You don't have permission to manage user roles."
+      />
+    );
   }
 
   const user = selectedUser ? users.find((u) => u.id === selectedUser) : null;
@@ -123,7 +142,11 @@ interface UserRoleCardProps {
   outlets: Outlet[];
   onSelect: () => void;
   isSelected: boolean;
-  onRoleChange?: (userId: string, outletId: string, role: UserRole) => Promise<void>;
+  onRoleChange?: (
+    userId: string,
+    outletId: string,
+    role: UserRole,
+  ) => Promise<void>;
   onRoleRemove?: (userId: string, outletId: string) => Promise<void>;
 }
 
@@ -166,7 +189,9 @@ function UserRoleCard({
   return (
     <div
       className={`rounded-lg border p-4 cursor-pointer transition-colors ${
-        isSelected ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"
+        isSelected
+          ? "border-blue-500 bg-blue-50"
+          : "border-gray-200 hover:border-gray-300"
       }`}
       onClick={onSelect}
     >
@@ -227,7 +252,9 @@ function AssignOutletRoleDialog({
   isLoading,
 }: AssignOutletRoleDialogProps) {
   const [selectedOutlet, setSelectedOutlet] = useState<string>("");
-  const [selectedRole, setSelectedRole] = useState<UserRole>(UserRoleEnum.STAFF);
+  const [selectedRole, setSelectedRole] = useState<UserRole>(
+    UserRoleEnum.STAFF,
+  );
   const [isSaving, setIsSaving] = useState(false);
 
   const availableOutlets = outlets.filter(
@@ -355,7 +382,9 @@ export function OutletRoleSummary({
       <CardContent>
         <div className="space-y-2">
           {outletUsers.length === 0 ? (
-            <p className="text-sm text-gray-600">No users assigned to this outlet.</p>
+            <p className="text-sm text-gray-600">
+              No users assigned to this outlet.
+            </p>
           ) : (
             outletUsers.map((user) => {
               const role = user.outletRoles.find(

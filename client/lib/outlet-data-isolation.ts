@@ -12,7 +12,10 @@ export type { AccessContext };
 /**
  * Check if user has access to a specific outlet
  */
-function canAccessOutlet(outletRoles: OutletUserRole[], outletId: string): boolean {
+function canAccessOutlet(
+  outletRoles: OutletUserRole[],
+  outletId: string,
+): boolean {
   return outletRoles.some((or) => or.outletId === outletId);
 }
 
@@ -38,7 +41,9 @@ export function filterOutletData<T extends OutletData>(
   }
 
   // Non-admins see only data from accessible outlets
-  return data.filter((item) => canAccessOutlet(context.outletRoles, item.outletId));
+  return data.filter((item) =>
+    canAccessOutlet(context.outletRoles, item.outletId),
+  );
 }
 
 /**
@@ -237,7 +242,8 @@ export function aggregateOutletData<T extends OutletData>(
 
   for (const [outletId, items] of Object.entries(dataByOutlet)) {
     // Check access
-    const hasAccess = context.userRole === UserRoleEnum.ADMIN ||
+    const hasAccess =
+      context.userRole === UserRoleEnum.ADMIN ||
       canAccessOutlet(context.outletRoles, outletId);
 
     if (hasAccess) {

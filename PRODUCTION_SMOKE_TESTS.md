@@ -9,6 +9,7 @@
 ## Test Setup
 
 ### Prerequisites
+
 - [ ] Fresh browser (no cached data)
 - [ ] Clear local storage: `localStorage.clear()`
 - [ ] Open Developer Console (F12)
@@ -16,6 +17,7 @@
 - [ ] Have Sentry dashboard open in separate tab
 
 ### Test Data
+
 - Create test recipe if needed
 - Use sample images (already in app)
 - Test with various file formats
@@ -25,6 +27,7 @@
 ## Core Functionality Tests
 
 ### 1. Authentication & Login
+
 - [ ] Navigate to login page
 - [ ] Login with valid credentials
 - [ ] Verify session is created
@@ -35,6 +38,7 @@
 **Expected**: No errors in console, smooth redirect to recipe search
 
 ### 2. Recipe Search & Browse
+
 - [ ] Search recipes with text query
 - [ ] Filter by category
 - [ ] Filter by tags
@@ -46,6 +50,7 @@
 **Expected**: All operations complete without errors, UI remains responsive
 
 ### 3. Add Recipe
+
 - [ ] Create new recipe with minimal data
 - [ ] Upload image for recipe
 - [ ] Save recipe
@@ -56,6 +61,7 @@
 **Expected**: CRUD operations work smoothly
 
 ### 4. Gallery
+
 - [ ] View gallery
 - [ ] Upload images
 - [ ] Tag images
@@ -66,6 +72,7 @@
 **Expected**: Image operations complete without errors
 
 ### 5. R&D Labs (Critical Path)
+
 - [ ] Navigate to R&D Labs
 - [ ] View experiments
 - [ ] Create experiment
@@ -76,6 +83,7 @@
 **Expected**: No TypeScript errors, smooth UX, Sentry clean
 
 ### 6. Error Boundaries (Test Error Handling)
+
 - [ ] Trigger intentional error in console: `throw new Error("Test")`
 - [ ] Verify error boundary catches error
 - [ ] Verify error appears in Sentry
@@ -85,6 +93,7 @@
 **Expected**: Error gracefully handled, user informed, Sentry receives error
 
 ### 7. Production Sections
+
 - [ ] Production Dashboard loads
 - [ ] Can create production plan
 - [ ] Can assign items
@@ -99,6 +108,7 @@
 Since R&D Labs is moving to Luccca, verify thoroughly:
 
 ### R&D Labs Core
+
 - [ ] Discovery Panel loads
 - [ ] Workbench Panel loads
 - [ ] Can create experiment from template
@@ -109,6 +119,7 @@ Since R&D Labs is moving to Luccca, verify thoroughly:
 - [ ] All icons render properly
 
 ### R&D Labs Data
+
 - [ ] Experiments persist on refresh
 - [ ] Can collaborate (if enabled)
 - [ ] Global experiment search works
@@ -116,6 +127,7 @@ Since R&D Labs is moving to Luccca, verify thoroughly:
 - [ ] Batch operations work
 
 ### R&D Labs Edge Cases
+
 - [ ] Try with 100+ experiments
 - [ ] Try with large images
 - [ ] Close and reopen browser
@@ -129,6 +141,7 @@ Since R&D Labs is moving to Luccca, verify thoroughly:
 ## Performance Tests
 
 ### Bundle Size
+
 - [ ] Open Network tab in DevTools
 - [ ] Refresh page
 - [ ] Check main bundle < 500KB (gzip)
@@ -137,6 +150,7 @@ Since R&D Labs is moving to Luccca, verify thoroughly:
 **Expected**: Page loads in < 3 seconds on 4G
 
 ### Runtime Performance
+
 - [ ] Open Performance tab
 - [ ] Refresh page
 - [ ] Check First Contentful Paint (FCP) < 2s
@@ -146,6 +160,7 @@ Since R&D Labs is moving to Luccca, verify thoroughly:
 **Expected**: Smooth interactions, no jank
 
 ### Memory Usage
+
 - [ ] Open Memory tab
 - [ ] Take heap snapshot before actions
 - [ ] Perform 50 recipe searches
@@ -160,6 +175,7 @@ Since R&D Labs is moving to Luccca, verify thoroughly:
 ## Security Tests
 
 ### Authentication
+
 - [ ] JWT tokens in secure storage
 - [ ] Session timeout works
 - [ ] Can't access protected routes without auth
@@ -168,6 +184,7 @@ Since R&D Labs is moving to Luccca, verify thoroughly:
 **Expected**: No security warnings in console
 
 ### Error Messages
+
 - [ ] Error messages don't expose sensitive data
 - [ ] Stack traces only in development
 - [ ] API error messages are generic in production
@@ -175,6 +192,7 @@ Since R&D Labs is moving to Luccca, verify thoroughly:
 **Expected**: No sensitive data leaks
 
 ### Sentry Integration
+
 - [ ] Sentry DSN not exposed in console
 - [ ] No PII in regular logs
 - [ ] Session replay doesn't capture passwords
@@ -187,12 +205,14 @@ Since R&D Labs is moving to Luccca, verify thoroughly:
 ## Browser Compatibility
 
 Test on:
+
 - [ ] Chrome (latest)
 - [ ] Firefox (latest)
 - [ ] Safari (latest)
 - [ ] Edge (latest)
 
 For each browser:
+
 - [ ] Page loads correctly
 - [ ] All buttons clickable
 - [ ] Forms work properly
@@ -218,29 +238,36 @@ For each browser:
 Intentionally trigger errors to test error handling:
 
 ### Test 1: Async Error
+
 ```javascript
 setTimeout(() => {
   throw new Error("Async error test");
 }, 2000);
 ```
+
 - [ ] Error boundary catches error
 - [ ] Sentry receives error with correct context
 - [ ] User sees error message
 - [ ] User can retry
 
 ### Test 2: Component Error
+
 Add to any component: `throw new Error("Component test")`
+
 - [ ] Error caught by nearest boundary
 - [ ] Sentry receives error with component stack
 - [ ] Component fallback UI shows
 
 ### Test 3: Network Error
+
 Simulate in DevTools: Network tab → Offline
+
 - [ ] App gracefully handles offline
 - [ ] Error messages are helpful
 - [ ] Retry functionality works
 
 ### Test 4: Large Data Operations
+
 - [ ] Export 1000 recipes (ZIP)
 - [ ] Import large ZIP file
 - [ ] Verify no timeout errors
@@ -282,6 +309,7 @@ Simulate in DevTools: Network tab → Offline
 - [ ] Environment tags are correct
 
 **To verify**:
+
 1. Open Sentry dashboard
 2. Go to Issues
 3. Look for test errors
@@ -313,37 +341,39 @@ After completing all tests:
 
 Use this section to document any issues during testing:
 
-| Issue | Severity | Reproduction | Status |
-|-------|----------|--------------|--------|
-| Example: Button unclickable | High | Click button in R&D Labs | RESOLVED |
+| Issue                       | Severity | Reproduction             | Status   |
+| --------------------------- | -------- | ------------------------ | -------- |
+| Example: Button unclickable | High     | Click button in R&D Labs | RESOLVED |
 
 ---
 
 ## Test Results Summary
 
-**Date**: ___________  
-**Tester**: ___________  
+**Date**: ****\_\_\_****  
+**Tester**: ****\_\_\_****  
 **Environment**: Staging  
-**Browser**: ___________  
+**Browser**: ****\_\_\_****
 
-**Overall Status**: ☐ PASS  ☐ FAIL  ☐ PASS WITH ISSUES
+**Overall Status**: ☐ PASS ☐ FAIL ☐ PASS WITH ISSUES
 
 **Critical Issues Found**: 0  
-**High Priority Issues**: ___  
-**Medium Priority Issues**: ___  
+**High Priority Issues**: **_  
+**Medium Priority Issues**: _**
 
 **Notes**:
+
 ```
 [Add any notes or observations here]
 ```
 
-**Sign-off**: ______________________ Date: __________
+**Sign-off**: **********\_\_********** Date: ****\_\_****
 
 ---
 
 ## Quick Test Command
 
 For automated smoke tests (if available):
+
 ```bash
 npm run test:smoke
 ```
@@ -366,5 +396,5 @@ After passing smoke tests:
 
 ---
 
-*Smoke Tests Created: Production Readiness Implementation*  
-*Last Updated: Session Continuation*
+_Smoke Tests Created: Production Readiness Implementation_  
+_Last Updated: Session Continuation_

@@ -70,8 +70,8 @@ class ErrorBoundaryWrapper extends React.Component<
               ⚠️ Error in {this.props.section || "Section"}
             </h3>
             <p>
-              We've encountered an unexpected error. Please try refreshing the page or
-              navigating to another section.
+              We've encountered an unexpected error. Please try refreshing the
+              page or navigating to another section.
             </p>
             {process.env.NODE_ENV === "development" && (
               <details style={{ marginTop: "8px", fontSize: "12px" }}>
@@ -126,7 +126,7 @@ export default ErrorBoundaryWrapper;
 // Export higher-order component for easier use
 export function withErrorBoundary<P extends object>(
   Component: React.ComponentType<P>,
-  section?: string
+  section?: string,
 ) {
   return function WithErrorBoundaryComponent(props: P) {
     return (

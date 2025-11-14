@@ -9,6 +9,7 @@
 ## What's Been Done
 
 ### ✅ Sentry Initialization (Completed)
+
 - **Installed packages**:
   - `@sentry/react@10.25.0`
   - `@sentry/replay@7.116.0`
@@ -27,21 +28,22 @@
       dsn: sentryDsn,
       integrations: [
         new Replay({
-          maskAllText: true,      // Privacy: mask text in replays
-          blockAllMedia: true,     // Privacy: block media files
+          maskAllText: true, // Privacy: mask text in replays
+          blockAllMedia: true, // Privacy: block media files
         }),
       ],
-      tracesSampleRate: 0.1,      // 10% performance tracking
-      replaysSessionSampleRate: 0.1,      // 10% session replays
-      replaysOnErrorSampleRate: 1.0,      // 100% replays on errors
-      environment: production,            // Environment tagging
-      sendDefaultPii: true,               // Include user info
-      enabled: isProd || debugMode,       // Auto-enable in production
+      tracesSampleRate: 0.1, // 10% performance tracking
+      replaysSessionSampleRate: 0.1, // 10% session replays
+      replaysOnErrorSampleRate: 1.0, // 100% replays on errors
+      environment: production, // Environment tagging
+      sendDefaultPii: true, // Include user info
+      enabled: isProd || debugMode, // Auto-enable in production
     });
   }
   ```
 
 ### ✅ Error Boundaries (Completed)
+
 - **Root ErrorBoundary in `App.tsx`**:
   - Catches all uncaught React errors
   - Sends errors to Sentry with component stack
@@ -61,7 +63,9 @@
   - ✅ R&D Labs
 
 ### ✅ Environment Configuration (Completed)
+
 - **`.env.production` created** with:
+
   ```
   VITE_SENTRY_DSN=https://d4120668c0cafd04be9de8c62183794c@o4510361278611456.ingest.us.sentry.io/4510361279856640
   VITE_SENTRY_ENVIRONMENT=production
@@ -116,12 +120,14 @@
 ### Session Replay
 
 When an error occurs:
+
 1. All user interactions leading up to the error are captured
 2. Replay is sent to Sentry along with the error
 3. Developers can "see" exactly what user did before error
 4. Network requests and console logs are included
 
-**Privacy**: 
+**Privacy**:
+
 - Text is masked (XXXX out)
 - Media files are blocked
 - Only on production
@@ -132,6 +138,7 @@ When an error occurs:
 ## Production Monitoring Setup
 
 ### Step 1: Verify Sentry Project (You Already Have This)
+
 ✅ Project ID: `4510361279856640`  
 ✅ Organization: `o4510361278611456`  
 ✅ DSN Configured: ✓
@@ -141,6 +148,7 @@ When an error occurs:
 Go to **Project Settings → Alerts & Integrations → Alerts**
 
 #### Alert 1: Error Rate Spike
+
 ```
 IF:      Error rate > 10 errors/minute
 THEN:    Send notification to team
@@ -149,6 +157,7 @@ NOTIFY:  Slack / Email
 ```
 
 #### Alert 2: Critical Errors
+
 ```
 IF:      Error level = ERROR or FATAL
 THEN:    Send notification immediately
@@ -157,6 +166,7 @@ NOTIFY:  Slack / PagerDuty
 ```
 
 #### Alert 3: User Impact
+
 ```
 IF:      Unique affected users > 5
 THEN:    Send notification to team
@@ -181,6 +191,7 @@ In Sentry Dashboard → Performance:
 4. Set performance alerts
 
 **Current Configuration**:
+
 - Traces Sample Rate: 10% (captures 1 in 10 page loads)
 - Replays on Error: 100% (every error has session replay)
 
@@ -191,6 +202,7 @@ In Sentry Dashboard → Performance:
 ### Test 1: Trigger an Error (Development)
 
 In browser console:
+
 ```javascript
 // This will trigger error boundary
 throw new Error("Test error from console");
@@ -210,6 +222,7 @@ setTimeout(() => {
 ### Test 3: Component Error
 
 Add this to any component:
+
 ```tsx
 if (someCondition) {
   throw new Error("Component render error");
@@ -236,10 +249,12 @@ if (someCondition) {
 ## File Changes Summary
 
 ### New Files
+
 - `client/components/ErrorBoundaryWrapper.tsx` (139 lines)
 - `.env.production` (42 lines)
 
 ### Modified Files
+
 - `client/App.tsx`:
   - Added Sentry imports
   - Added Sentry initialization
@@ -258,6 +273,7 @@ if (someCondition) {
   - Added Sentry configuration fields
 
 ### Dependencies Added
+
 - `@sentry/react@10.25.0`
 - `@sentry/replay@7.116.0`
 
@@ -286,17 +302,20 @@ When moving to Luccca:
 ## Next Steps
 
 ### Immediate
+
 1. Test in staging environment
 2. Verify Sentry receives errors
 3. Set up Slack integration
 
 ### Before Production
+
 1. Create error runbook
 2. Define escalation procedures
 3. Brief team on Sentry usage
 4. Configure error grouping rules
 
 ### Ongoing
+
 1. Monitor error trends weekly
 2. Review session replays for UX insights
 3. Adjust sampling rates based on volume
@@ -318,6 +337,7 @@ When moving to Luccca:
 ✅ **Production Monitoring Ready**
 
 The application now has:
+
 - Automatic error tracking via Sentry
 - Session replay on errors
 - Component-level error boundaries
@@ -329,6 +349,6 @@ The application now has:
 
 ---
 
-*Guide Created: Production Readiness Implementation*  
-*Last Updated: Session Continuation*  
-*Status: READY FOR PRODUCTION*
+_Guide Created: Production Readiness Implementation_  
+_Last Updated: Session Continuation_  
+_Status: READY FOR PRODUCTION_

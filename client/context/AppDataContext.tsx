@@ -11,7 +11,12 @@ import JSZip from "jszip";
 import mockRecipes from "@/data/mockRecipes";
 import { KITCHEN_STATIONS, CHIT_PRINTERS } from "@/data/kitchenStations";
 import { DEMO_PLACEHOLDERS, FALLBACK_GALLERY_IMAGE } from "@/lib/placeholders";
-import { clearAllImageBlobs, deleteImageBlob, loadImageBlob, saveImageBlob } from "@/lib/gallery-storage";
+import {
+  clearAllImageBlobs,
+  deleteImageBlob,
+  loadImageBlob,
+  saveImageBlob,
+} from "@/lib/gallery-storage";
 import type { Recipe } from "@shared/recipes";
 import type { RecipeCollection } from "@shared/server-notes";
 import { defaultLanguage, type LanguageCode } from "@/i18n/config";
@@ -36,7 +41,9 @@ type StoredGalleryImage = Omit<GalleryImage, "dataUrl" | "blobUrl"> & {
   hasBlob?: boolean;
 };
 
-const serializeImagesForStorage = (items: GalleryImage[]): StoredGalleryImage[] =>
+const serializeImagesForStorage = (
+  items: GalleryImage[],
+): StoredGalleryImage[] =>
   items.map((item) => ({
     id: item.id,
     name: item.name,
@@ -130,11 +137,26 @@ type AppData = {
   tileBoards: TileBoard[];
   addImages: (files: File[], opts?: { tags?: string[] }) => Promise<number>;
   restoreDemo: () => void;
-  createTileBoard: (input: { name: string; description?: string; category?: TileBoard["category"]; imageIds?: string[] }) => string;
-  updateTileBoard: (id: string, patch: Partial<Omit<TileBoard, "id" | "createdAt" | "tiles">>) => void;
+  createTileBoard: (input: {
+    name: string;
+    description?: string;
+    category?: TileBoard["category"];
+    imageIds?: string[];
+  }) => string;
+  updateTileBoard: (
+    id: string,
+    patch: Partial<Omit<TileBoard, "id" | "createdAt" | "tiles">>,
+  ) => void;
   deleteTileBoard: (id: string) => void;
-  addTileToBoard: (boardId: string, tile: Omit<TileBoardTile, "id" | "createdAt"> & { id?: string }) => string;
-  updateTileInBoard: (boardId: string, tileId: string, patch: Partial<TileBoardTile>) => void;
+  addTileToBoard: (
+    boardId: string,
+    tile: Omit<TileBoardTile, "id" | "createdAt"> & { id?: string },
+  ) => string;
+  updateTileInBoard: (
+    boardId: string,
+    tileId: string,
+    patch: Partial<TileBoardTile>,
+  ) => void;
   removeTileFromBoard: (boardId: string, tileId: string) => void;
   addDemoImages: () => Promise<number>;
   addStockFoodPhotos: () => Promise<number>;
@@ -319,7 +341,8 @@ function formatRecipeTitleCase(title: string) {
       return formatSegment(w);
     })
     .join(" ");
-  if (parts.length > 1) return [main, ...parts.slice(1).map((p) => formatSegment(p))].join(": ");
+  if (parts.length > 1)
+    return [main, ...parts.slice(1).map((p) => formatSegment(p))].join(": ");
   return main;
 }
 
@@ -330,7 +353,9 @@ function recipeTitleKey(title: string) {
 function sanitizeRecipeRecord(recipe: Recipe): Recipe {
   const id = recipe.id || uid();
   const createdAt = recipe.createdAt || Date.now();
-  const title = formatRecipeTitleCase(String(recipe.title ?? "").trim() || "Untitled");
+  const title = formatRecipeTitleCase(
+    String(recipe.title ?? "").trim() || "Untitled",
+  );
   const ingredients = Array.isArray(recipe.ingredients)
     ? recipe.ingredients.map((s) => String(s).trim()).filter(Boolean)
     : recipe.ingredients;
@@ -338,10 +363,14 @@ function sanitizeRecipeRecord(recipe: Recipe): Recipe {
     ? recipe.instructions.map((s) => String(s).trim()).filter(Boolean)
     : recipe.instructions;
   const tags = Array.isArray(recipe.tags)
-    ? Array.from(new Set(recipe.tags.map((t) => String(t).trim()).filter(Boolean)))
+    ? Array.from(
+        new Set(recipe.tags.map((t) => String(t).trim()).filter(Boolean)),
+      )
     : recipe.tags;
   const imageNames = Array.isArray(recipe.imageNames)
-    ? Array.from(new Set(recipe.imageNames.map((n) => String(n).trim()).filter(Boolean)))
+    ? Array.from(
+        new Set(recipe.imageNames.map((n) => String(n).trim()).filter(Boolean)),
+      )
     : recipe.imageNames;
 
   const sanitized: Recipe = {
@@ -350,7 +379,8 @@ function sanitizeRecipeRecord(recipe: Recipe): Recipe {
     createdAt,
     title,
     ingredients: ingredients && ingredients.length ? ingredients : undefined,
-    instructions: instructions && instructions.length ? instructions : undefined,
+    instructions:
+      instructions && instructions.length ? instructions : undefined,
     tags: tags && tags.length ? tags : undefined,
     imageNames: imageNames && imageNames.length ? imageNames : undefined,
   } as Recipe;
@@ -410,26 +440,25 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const imageObjectUrlsRef = useRef<Map<string, string>>(new Map());
   const [imagesHydrated, setImagesHydrated] = useState(false);
 
-  const createObjectUrl = useCallback(
-    (id: string, blob: Blob) => {
-      const cache = imageObjectUrlsRef.current;
-      const existing = cache.get(id);
-      if (existing) {
-        URL.revokeObjectURL(existing);
-      }
-      const url = URL.createObjectURL(blob);
-      cache.set(id, url);
-      return url;
-    },
-    [],
-  );
+  const createObjectUrl = useCallback((id: string, blob: Blob) => {
+    const cache = imageObjectUrlsRef.current;
+    const existing = cache.get(id);
+    if (existing) {
+      URL.revokeObjectURL(existing);
+    }
+    const url = URL.createObjectURL(blob);
+    cache.set(id, url);
+    return url;
+  }, []);
 
   const appendRecipes = useCallback(
     (incoming: Recipe[]) => {
       if (!incoming.length) {
         return { added: [] as Recipe[], duplicates: [] as Recipe[] };
       }
-      const sanitizedIncoming = incoming.map((recipe) => sanitizeRecipeRecord(recipe));
+      const sanitizedIncoming = incoming.map((recipe) =>
+        sanitizeRecipeRecord(recipe),
+      );
       const duplicates: Recipe[] = [];
       const added: Recipe[] = [];
       setRecipes((prev) => {
@@ -469,7 +498,9 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
     const storedRecipes = readLS<Recipe[]>(LS_RECIPES, []);
     setRecipes(
-      sanitizeRecipeCollection(storedRecipes.length ? storedRecipes : mockRecipes),
+      sanitizeRecipeCollection(
+        storedRecipes.length ? storedRecipes : mockRecipes,
+      ),
     );
     setLookbooks(readLS<LookBook[]>(LS_LOOKBOOKS, []));
     setTileBoards(readLS<TileBoard[]>(LS_TILE_BOARDS, []));
@@ -479,10 +510,24 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
     const hydrate = async () => {
       try {
-        const stored = readLS<Array<StoredGalleryImage & { dataUrl?: string }>>(LS_IMAGES, []);
-        console.debug("Loading gallery images from localStorage:", stored.length, "records");
-        const hydratedImages = await hydrateStoredImages(stored, createObjectUrl);
-        console.debug("Successfully hydrated gallery images:", hydratedImages.length, "images");
+        const stored = readLS<Array<StoredGalleryImage & { dataUrl?: string }>>(
+          LS_IMAGES,
+          [],
+        );
+        console.debug(
+          "Loading gallery images from localStorage:",
+          stored.length,
+          "records",
+        );
+        const hydratedImages = await hydrateStoredImages(
+          stored,
+          createObjectUrl,
+        );
+        console.debug(
+          "Successfully hydrated gallery images:",
+          hydratedImages.length,
+          "images",
+        );
         if (!cancelled) {
           setImages(hydratedImages);
           setImagesHydrated(true);
@@ -520,16 +565,18 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
     const seedPlaceholders = async () => {
       const timestamp = Date.now();
-      const placeholders: GalleryImage[] = DEMO_PLACEHOLDERS.map((item, index) => ({
-        id: uid(),
-        name: item.name,
-        dataUrl: item.dataUrl,
-        createdAt: timestamp + index,
-        tags: item.tags,
-        favorite: false,
-        order: index,
-        type: item.mime,
-      }));
+      const placeholders: GalleryImage[] = DEMO_PLACEHOLDERS.map(
+        (item, index) => ({
+          id: uid(),
+          name: item.name,
+          dataUrl: item.dataUrl,
+          createdAt: timestamp + index,
+          tags: item.tags,
+          favorite: false,
+          order: index,
+          type: item.mime,
+        }),
+      );
 
       if (!placeholders.length) {
         placeholders.push({
@@ -580,7 +627,11 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       try {
         const serialized = serializeImagesForStorage(images);
         writeLS(LS_IMAGES, serialized);
-        console.debug("Images persisted to localStorage:", serialized.length, "records");
+        console.debug(
+          "Images persisted to localStorage:",
+          serialized.length,
+          "records",
+        );
       } catch (error) {
         console.error("Failed to persist images to localStorage:", error);
       }
@@ -662,76 +713,81 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     });
 
   const dataUrlFromBlob = (blob: Blob): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(blob);
-  });
-
-const blobFromDataUrl = async (dataUrl: string): Promise<Blob> => {
-  const response = await fetch(dataUrl);
-  return response.blob();
-};
-
-const hydrateStoredImages = async (
-  records: Array<StoredGalleryImage & { dataUrl?: string; blobUrl?: string }>,
-  createObjectUrl: (id: string, blob: Blob) => string,
-): Promise<GalleryImage[]> => {
-  if (!records.length) {
-    return [];
-  }
-  const hydrated: GalleryImage[] = [];
-  for (const record of records) {
-    const {
-      hasBlob,
-      id,
-      name,
-      createdAt,
-      tags,
-      favorite,
-      order,
-      type,
-      unsupported,
-    } = record;
-    let dataUrl = record.dataUrl;
-    let blobUrl: string | undefined;
-    const shouldLoadBlob = hasBlob !== false || Boolean(record.dataUrl);
-    if (shouldLoadBlob) {
-      try {
-        let blob = await loadImageBlob(id);
-        if (!blob && record.dataUrl) {
-          blob = await blobFromDataUrl(record.dataUrl);
-          await saveImageBlob(id, blob);
-        }
-        if (blob) {
-          blobUrl = createObjectUrl(id, blob);
-          if (!unsupported && !dataUrl) {
-            dataUrl = await dataUrlFromBlob(blob);
-          }
-        }
-      } catch (error) {
-        console.warn("Failed to hydrate gallery image", name, error);
-      }
-    }
-    hydrated.push({
-      id,
-      name,
-      dataUrl: unsupported ? undefined : dataUrl,
-      blobUrl: blobUrl ?? (unsupported ? undefined : record.blobUrl),
-      createdAt,
-      tags,
-      favorite,
-      order,
-      type,
-      unsupported,
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(blob);
     });
-  }
-  return hydrated;
-};
 
-const createTileBoard = useCallback(
-    (input: { name: string; description?: string; category?: TileBoard["category"]; imageIds?: string[] }) => {
+  const blobFromDataUrl = async (dataUrl: string): Promise<Blob> => {
+    const response = await fetch(dataUrl);
+    return response.blob();
+  };
+
+  const hydrateStoredImages = async (
+    records: Array<StoredGalleryImage & { dataUrl?: string; blobUrl?: string }>,
+    createObjectUrl: (id: string, blob: Blob) => string,
+  ): Promise<GalleryImage[]> => {
+    if (!records.length) {
+      return [];
+    }
+    const hydrated: GalleryImage[] = [];
+    for (const record of records) {
+      const {
+        hasBlob,
+        id,
+        name,
+        createdAt,
+        tags,
+        favorite,
+        order,
+        type,
+        unsupported,
+      } = record;
+      let dataUrl = record.dataUrl;
+      let blobUrl: string | undefined;
+      const shouldLoadBlob = hasBlob !== false || Boolean(record.dataUrl);
+      if (shouldLoadBlob) {
+        try {
+          let blob = await loadImageBlob(id);
+          if (!blob && record.dataUrl) {
+            blob = await blobFromDataUrl(record.dataUrl);
+            await saveImageBlob(id, blob);
+          }
+          if (blob) {
+            blobUrl = createObjectUrl(id, blob);
+            if (!unsupported && !dataUrl) {
+              dataUrl = await dataUrlFromBlob(blob);
+            }
+          }
+        } catch (error) {
+          console.warn("Failed to hydrate gallery image", name, error);
+        }
+      }
+      hydrated.push({
+        id,
+        name,
+        dataUrl: unsupported ? undefined : dataUrl,
+        blobUrl: blobUrl ?? (unsupported ? undefined : record.blobUrl),
+        createdAt,
+        tags,
+        favorite,
+        order,
+        type,
+        unsupported,
+      });
+    }
+    return hydrated;
+  };
+
+  const createTileBoard = useCallback(
+    (input: {
+      name: string;
+      description?: string;
+      category?: TileBoard["category"];
+      imageIds?: string[];
+    }) => {
       const id = uid();
       const now = Date.now();
       const board: TileBoard = {
@@ -762,7 +818,10 @@ const createTileBoard = useCallback(
   );
 
   const updateTileBoard = useCallback(
-    (id: string, patch: Partial<Omit<TileBoard, "id" | "createdAt" | "tiles">>) => {
+    (
+      id: string,
+      patch: Partial<Omit<TileBoard, "id" | "createdAt" | "tiles">>,
+    ) => {
       setTileBoards((prev) =>
         prev.map((board) =>
           board.id === id
@@ -783,7 +842,10 @@ const createTileBoard = useCallback(
   }, []);
 
   const addTileToBoard = useCallback(
-    (boardId: string, tile: Omit<TileBoardTile, "id" | "createdAt"> & { id?: string }) => {
+    (
+      boardId: string,
+      tile: Omit<TileBoardTile, "id" | "createdAt"> & { id?: string },
+    ) => {
       const now = Date.now();
       const tileId = tile.id ?? uid();
       setTileBoards((prev) =>
@@ -852,7 +914,9 @@ const createTileBoard = useCallback(
       let added = 0;
       const existing = new Set(images.map((i) => i.name));
       const maxOrder = images.length
-        ? Math.max(...images.map((i) => (typeof i.order === "number" ? i.order : -1)))
+        ? Math.max(
+            ...images.map((i) => (typeof i.order === "number" ? i.order : -1)),
+          )
         : -1;
       let order = maxOrder + 1;
       const next: GalleryImage[] = [];
@@ -879,7 +943,11 @@ const createTileBoard = useCallback(
             try {
               await saveImageBlob(baseMeta.id, file);
             } catch (storageError) {
-              console.error("Failed to save image blob to IndexedDB", file.name, storageError);
+              console.error(
+                "Failed to save image blob to IndexedDB",
+                file.name,
+                storageError,
+              );
               throw storageError;
             }
             const blobUrl = createObjectUrl(baseMeta.id, file);
@@ -897,7 +965,11 @@ const createTileBoard = useCallback(
             try {
               await saveImageBlob(baseMeta.id, blob);
             } catch (storageError) {
-              console.error("Failed to save unsupported image blob to IndexedDB", file.name, storageError);
+              console.error(
+                "Failed to save unsupported image blob to IndexedDB",
+                file.name,
+                storageError,
+              );
               throw storageError;
             }
             const blobUrl = createObjectUrl(baseMeta.id, blob);
@@ -1157,7 +1229,9 @@ const createTileBoard = useCallback(
         id: uid(),
         name: input.name.trim() || "Untitled Collection",
         season: input.season.trim() || "All",
-        year: Number.isFinite(input.year) ? input.year : new Date().getFullYear(),
+        year: Number.isFinite(input.year)
+          ? input.year
+          : new Date().getFullYear(),
         version: Number.isFinite(input.version) ? input.version : 1,
         description: input.description?.trim() || undefined,
         recipeIds,
@@ -1183,7 +1257,8 @@ const createTileBoard = useCallback(
                 ...patch,
                 name: patch.name?.trim() || collection.name,
                 season: patch.season?.trim() || collection.season,
-                description: patch.description?.trim() || collection.description,
+                description:
+                  patch.description?.trim() || collection.description,
                 updatedAt: new Date().toISOString(),
               }
             : collection,
@@ -1197,28 +1272,16 @@ const createTileBoard = useCallback(
     setCollections((prev) => prev.filter((collection) => collection.id !== id));
   }, []);
 
-  const addRecipeToCollection = useCallback((collectionId: string, recipeId: string) => {
-    setCollections((prev) =>
-      prev.map((collection) =>
-        collection.id === collectionId
-          ? {
-              ...collection,
-              recipeIds: Array.from(new Set([...(collection.recipeIds || []), recipeId])),
-              updatedAt: new Date().toISOString(),
-            }
-          : collection,
-      ),
-    );
-  }, []);
-
-  const removeRecipeFromCollection = useCallback(
+  const addRecipeToCollection = useCallback(
     (collectionId: string, recipeId: string) => {
       setCollections((prev) =>
         prev.map((collection) =>
           collection.id === collectionId
             ? {
                 ...collection,
-                recipeIds: (collection.recipeIds || []).filter((id) => id !== recipeId),
+                recipeIds: Array.from(
+                  new Set([...(collection.recipeIds || []), recipeId]),
+                ),
                 updatedAt: new Date().toISOString(),
               }
             : collection,
@@ -1228,20 +1291,42 @@ const createTileBoard = useCallback(
     [],
   );
 
-  const setCollectionRecipes = useCallback((collectionId: string, recipeIds: string[]) => {
-    const uniqueIds = Array.from(new Set(recipeIds));
-    setCollections((prev) =>
-      prev.map((collection) =>
-        collection.id === collectionId
-          ? {
-              ...collection,
-              recipeIds: uniqueIds,
-              updatedAt: new Date().toISOString(),
-            }
-          : collection,
-      ),
-    );
-  }, []);
+  const removeRecipeFromCollection = useCallback(
+    (collectionId: string, recipeId: string) => {
+      setCollections((prev) =>
+        prev.map((collection) =>
+          collection.id === collectionId
+            ? {
+                ...collection,
+                recipeIds: (collection.recipeIds || []).filter(
+                  (id) => id !== recipeId,
+                ),
+                updatedAt: new Date().toISOString(),
+              }
+            : collection,
+        ),
+      );
+    },
+    [],
+  );
+
+  const setCollectionRecipes = useCallback(
+    (collectionId: string, recipeIds: string[]) => {
+      const uniqueIds = Array.from(new Set(recipeIds));
+      setCollections((prev) =>
+        prev.map((collection) =>
+          collection.id === collectionId
+            ? {
+                ...collection,
+                recipeIds: uniqueIds,
+                updatedAt: new Date().toISOString(),
+              }
+            : collection,
+        ),
+      );
+    },
+    [],
+  );
 
   const getCollectionById = useCallback(
     (id: string) => collections.find((collection) => collection.id === id),
@@ -1258,7 +1343,9 @@ const createTileBoard = useCallback(
         updatedAt: timestamp,
       };
       const filtered = prev.filter((entry) => entry.id !== normalized.id);
-      return [...filtered, normalized].sort((a, b) => b.updatedAt - a.updatedAt);
+      return [...filtered, normalized].sort(
+        (a, b) => b.updatedAt - a.updatedAt,
+      );
     });
   }, []);
 
@@ -1292,7 +1379,9 @@ const createTileBoard = useCallback(
         uploadedAt: timestamp,
       };
       const filtered = prev.filter((entry) => entry.id !== normalized.id);
-      return [...filtered, normalized].sort((a, b) => b.uploadedAt - a.uploadedAt);
+      return [...filtered, normalized].sort(
+        (a, b) => b.uploadedAt - a.uploadedAt,
+      );
     });
   }, []);
 
@@ -1644,12 +1733,17 @@ const createTileBoard = useCallback(
     };
 
     const hasSignificantBold = (element: Element) => {
-      const total = normalize(element.textContent || "").replace(/\s/g, "").length;
+      const total = normalize(element.textContent || "").replace(
+        /\s/g,
+        "",
+      ).length;
       if (!total) return false;
       const boldNodes = Array.from(element.querySelectorAll("strong, b"));
       if (!boldNodes.length) return false;
       const boldLength = boldNodes
-        .map((node) => normalize(node.textContent || "").replace(/\s/g, "").length)
+        .map(
+          (node) => normalize(node.textContent || "").replace(/\s/g, "").length,
+        )
         .reduce((acc, len) => acc + len, 0);
       return boldLength >= total * 0.6;
     };
@@ -1725,7 +1819,9 @@ const createTileBoard = useCallback(
 
       const upperCaseWordCount = words.filter((w) => /^[A-Z]/.test(w)).length;
       const lowerCaseWordCount = words.filter((w) => /^[a-z]/.test(w)).length;
-      const startsWithArticle = /^(a|an|the|this|that|these|those)\s/i.test(norm);
+      const startsWithArticle = /^(a|an|the|this|that|these|those)\s/i.test(
+        norm,
+      );
 
       if (startsWithArticle && lowerCaseWordCount > upperCaseWordCount) {
         return false;
@@ -1733,11 +1829,14 @@ const createTileBoard = useCallback(
 
       const uppercaseRatio = computeUppercaseRatio(norm);
       const hasTitleCaseWords =
-        words.filter((w) => /^[A-Z][a-z]{2,}/.test(w)).length >= Math.min(words.length, 2);
-      const hasAllCaps = uppercaseRatio >= 0.6 && words.some((w) => w.length > 3);
+        words.filter((w) => /^[A-Z][a-z]{2,}/.test(w)).length >=
+        Math.min(words.length, 2);
+      const hasAllCaps =
+        uppercaseRatio >= 0.6 && words.some((w) => w.length > 3);
       if (hasAllCaps) return true;
       if (hasTitleCaseWords && norm.length <= 80) return true;
-      if (uppercaseRatio >= 0.45 && norm.length <= 60 && words.length >= 2) return true;
+      if (uppercaseRatio >= 0.45 && norm.length <= 60 && words.length >= 2)
+        return true;
       return false;
     };
 
@@ -1767,7 +1866,12 @@ const createTileBoard = useCallback(
 
       if (/^H[1-4]$/.test(tag)) {
         if (isLikelyTitleText(text)) detectedTitle = { title: text };
-      } else if (tag === "P" || tag === "BLOCKQUOTE" || tag === "SPAN" || tag === "DIV") {
+      } else if (
+        tag === "P" ||
+        tag === "BLOCKQUOTE" ||
+        tag === "SPAN" ||
+        tag === "DIV"
+      ) {
         const lines = (el.textContent || "")
           .split(/\r?\n+/)
           .map((line) => normalize(line))
@@ -1785,22 +1889,25 @@ const createTileBoard = useCallback(
                   t,
                 );
               });
-            const shouldCreateSection = current !== null && current.elements.length > 0;
+            const shouldCreateSection =
+              current !== null && current.elements.length > 0;
             if (
-              shouldCreateSection && (
-                bold ||
+              shouldCreateSection &&
+              (bold ||
                 uppercaseRatio >= 0.5 ||
-                (contextHasKeyword && (uppercaseRatio >= 0.35 || candidate.split(/\s+/).length >= 2))
-              )
+                (contextHasKeyword &&
+                  (uppercaseRatio >= 0.35 ||
+                    candidate.split(/\s+/).length >= 2)))
             ) {
               const carry = createCarryParagraphs(lines.slice(1));
               detectedTitle = { title: candidate, carry };
             } else if (
-              !current && (
-                bold ||
+              !current &&
+              (bold ||
                 uppercaseRatio >= 0.5 ||
-                (contextHasKeyword && (uppercaseRatio >= 0.35 || candidate.split(/\s+/).length >= 2))
-              )
+                (contextHasKeyword &&
+                  (uppercaseRatio >= 0.35 ||
+                    candidate.split(/\s+/).length >= 2)))
             ) {
               const carry = createCarryParagraphs(lines.slice(1));
               detectedTitle = { title: candidate, carry };
@@ -1824,13 +1931,22 @@ const createTileBoard = useCallback(
     if (current) sections.push(current);
     if (!sections.length) {
       const fallbackTitle =
-        (doc.querySelector("h1,h2,h3,h4")?.textContent || baseName || "Untitled").trim() ||
-        "Untitled";
-      sections.push({ title: fallbackTitle, elements: Array.from(doc.body.children) });
+        (
+          doc.querySelector("h1,h2,h3,h4")?.textContent ||
+          baseName ||
+          "Untitled"
+        ).trim() || "Untitled";
+      sections.push({
+        title: fallbackTitle,
+        elements: Array.from(doc.body.children),
+      });
     } else {
       for (const section of sections) {
         const normTitle = normalize(section.title);
-        section.title = normTitle && !/^untitled$/i.test(normTitle) ? normTitle : baseName || "Untitled";
+        section.title =
+          normTitle && !/^untitled$/i.test(normTitle)
+            ? normTitle
+            : baseName || "Untitled";
       }
     }
 
@@ -1849,8 +1965,16 @@ const createTileBoard = useCallback(
               .map((li) => (li.textContent || "").trim())
               .filter(Boolean),
           );
-        } else if (tag === "P" || tag === "DIV" || tag === "SPAN" || tag === "BLOCKQUOTE") {
-          const lines = text.split(/\r?\n+/).map((l) => l.trim()).filter(Boolean);
+        } else if (
+          tag === "P" ||
+          tag === "DIV" ||
+          tag === "SPAN" ||
+          tag === "BLOCKQUOTE"
+        ) {
+          const lines = text
+            .split(/\r?\n+/)
+            .map((l) => l.trim())
+            .filter(Boolean);
           out.push(...lines);
         } else if (tag === "TABLE") {
           const cells = Array.from(
@@ -1880,7 +2004,14 @@ const createTileBoard = useCallback(
       const findIdx = (label: string[]) =>
         lowerTexts.findIndex((t) => label.some((l) => t.startsWith(l)));
       let ingIdx = findIdx(["ingredients", "ingredient", "what you need"]);
-      let instIdx = findIdx(["instructions", "directions", "method", "steps", "procedure", "procedures"]);
+      let instIdx = findIdx([
+        "instructions",
+        "directions",
+        "method",
+        "steps",
+        "procedure",
+        "procedures",
+      ]);
       let ingredients = ingIdx >= 0 ? extractListAfter(ingIdx, els) : [];
       let instructions = instIdx >= 0 ? extractListAfter(instIdx, els) : [];
 
@@ -1897,34 +2028,60 @@ const createTileBoard = useCallback(
 
       if (!ingredients.length && !instructions.length && texts.length > 0) {
         const allTexts = texts.join(" ").toLowerCase();
-        const hasIngredientKeywords = /ingredient|component|include|contain|require|add|mix|combine|blend|butter|flour|sugar|salt|pepper|egg|milk|water|oil|garlic|onion/.test(allTexts);
-        const hasInstructionKeywords = /instruction|direction|step|procedure|method|process|do|make|prepare|heat|cook|bake|fry|simmer|boil|roast|grill|broil|toast|sear|whisk|fold|mix/.test(allTexts);
+        const hasIngredientKeywords =
+          /ingredient|component|include|contain|require|add|mix|combine|blend|butter|flour|sugar|salt|pepper|egg|milk|water|oil|garlic|onion/.test(
+            allTexts,
+          );
+        const hasInstructionKeywords =
+          /instruction|direction|step|procedure|method|process|do|make|prepare|heat|cook|bake|fry|simmer|boil|roast|grill|broil|toast|sear|whisk|fold|mix/.test(
+            allTexts,
+          );
 
         if (hasIngredientKeywords || hasInstructionKeywords) {
           let firstInstructionIdx = -1;
           for (let i = 0; i < texts.length; i++) {
             const t = texts[i].toLowerCase().trim();
-            if (/^instruction|^direction|^step|^procedure|^method|^process/.test(t)) {
+            if (
+              /^instruction|^direction|^step|^procedure|^method|^process/.test(
+                t,
+              )
+            ) {
               firstInstructionIdx = i;
               break;
             }
-            if (i > 0 && /^(heat|cook|bake|fry|simmer|boil|roast|grill|broil|toast|sear|whisk|fold|blend|mix|stir|pour|add to|combine|arrange|place|serve|sprinkle|drizzle|brush)\b/.test(t) && !qtyRe.test(t)) {
+            if (
+              i > 0 &&
+              /^(heat|cook|bake|fry|simmer|boil|roast|grill|broil|toast|sear|whisk|fold|blend|mix|stir|pour|add to|combine|arrange|place|serve|sprinkle|drizzle|brush)\b/.test(
+                t,
+              ) &&
+              !qtyRe.test(t)
+            ) {
               firstInstructionIdx = i;
               break;
             }
           }
 
           if (firstInstructionIdx > 0) {
-            ingredients = texts.slice(0, firstInstructionIdx).filter((t) => t.trim() && t.trim().length > 2);
-            instructions = texts.slice(firstInstructionIdx).filter((t) => t.trim() && t.trim().length > 2);
+            ingredients = texts
+              .slice(0, firstInstructionIdx)
+              .filter((t) => t.trim() && t.trim().length > 2);
+            instructions = texts
+              .slice(firstInstructionIdx)
+              .filter((t) => t.trim() && t.trim().length > 2);
           } else if (firstInstructionIdx === 0) {
             instructions = texts.filter((t) => t.trim() && t.trim().length > 2);
           } else {
             const qtyLines = texts.filter((t) => qtyRe.test(t.trim()));
             if (qtyLines.length > 0) {
-              const lastQtyIdx = texts.lastIndexOf(qtyLines[qtyLines.length - 1]);
-              ingredients = texts.slice(0, lastQtyIdx + 1).filter((t) => t.trim() && t.trim().length > 2);
-              instructions = texts.slice(lastQtyIdx + 1).filter((t) => t.trim() && t.trim().length > 2);
+              const lastQtyIdx = texts.lastIndexOf(
+                qtyLines[qtyLines.length - 1],
+              );
+              ingredients = texts
+                .slice(0, lastQtyIdx + 1)
+                .filter((t) => t.trim() && t.trim().length > 2);
+              instructions = texts
+                .slice(lastQtyIdx + 1)
+                .filter((t) => t.trim() && t.trim().length > 2);
             }
           }
         }
@@ -1932,12 +2089,16 @@ const createTileBoard = useCallback(
 
       if (!ingredients.length && !instructions.length) {
         const qtyCount = texts.filter((t) => qtyRe.test(t.trim())).length;
-        const instrCount = texts.filter((t) => /^(?:\d+\.|step|heat|cook|bake)/i.test(t.trim())).length;
+        const instrCount = texts.filter((t) =>
+          /^(?:\d+\.|step|heat|cook|bake)/i.test(t.trim()),
+        ).length;
 
         if (qtyCount > instrCount && qtyCount > 0) {
           ingredients = texts.filter((t) => qtyRe.test(t.trim()));
         } else if (instrCount > 0) {
-          instructions = texts.filter((t) => /^(?:\d+\.|step|heat|cook|bake|fry|simmer)/i.test(t.trim()));
+          instructions = texts.filter((t) =>
+            /^(?:\d+\.|step|heat|cook|bake|fry|simmer)/i.test(t.trim()),
+          );
         } else if (texts.length > 1) {
           ingredients = [];
           instructions = texts.filter((t) => t.trim().length > 2);
@@ -1949,7 +2110,9 @@ const createTileBoard = useCallback(
           texts.findIndex((t) => qtyRe.test(t.trim())) + 3,
           0,
         );
-        instructions = texts.slice(start, start + 20).filter((t) => t.trim().length > 2);
+        instructions = texts
+          .slice(start, start + 20)
+          .filter((t) => t.trim().length > 2);
       }
 
       if (instructions.length) {
@@ -2000,9 +2163,11 @@ const createTileBoard = useCallback(
           titles.push(...recs.map((r) => r.title));
           try {
             const chunks = recs.map((r) =>
-              [r.title, ...(r.ingredients || []), ...(r.instructions || [])].join(
-                "\n",
-              ),
+              [
+                r.title,
+                ...(r.ingredients || []),
+                ...(r.instructions || []),
+              ].join("\n"),
             );
             learnFromTextChunks(f.name.replace(/\.[^.]+$/, ""), chunks);
           } catch {}
@@ -2066,1002 +2231,1050 @@ const createTileBoard = useCallback(
     [appendRecipes, linkImagesToRecipesByFilename],
   );
 
-  const addRecipesFromPdfFiles = useCallback(async (files: File[]) => {
-    const errors: { file: string; error: string }[] = [];
-    const collected: Recipe[] = [];
-    const titles: string[] = [];
+  const addRecipesFromPdfFiles = useCallback(
+    async (files: File[]) => {
+      const errors: { file: string; error: string }[] = [];
+      const collected: Recipe[] = [];
+      const titles: string[] = [];
 
-    const parseMeta = (text: string) => {
-      const meta: Record<string, string> = {};
-      const get = (re: RegExp) => (text.match(re)?.[1] || "").trim();
-      meta.prepTime = get(/(?:prep|preparation)\s*time\s*:?\s*([^\n]+)/i);
-      meta.cookTime = get(/cook\s*time\s*:?\s*([^\n]+)/i);
-      meta.totalTime = get(/total\s*time\s*:?\s*([^\n]+)/i);
-      meta.temperature =
-        get(/(?:temp|temperature)\s*:?\s*([^\n]+)/i) ||
-        text.match(/(\d{2,3})\s*°?\s*([FC])/i)?.[0] ||
-        "";
-      meta.yield = get(/(?:yield|makes|serves)\s*:?\s*([^\n]+)/i);
-      return meta;
-    };
-
-    const learnFromPages = (book: string, pages: string[]) => {
-      try {
-        const text = pages.join("\n").toLowerCase();
-        const knownTerms = [
-          "mise en place",
-          "bain marie",
-          "roux",
-          "ganache",
-          "emulsion",
-          "caramelize",
-          "temper chocolate",
-          "fold",
-          "simmer",
-          "whisk",
-          "sear",
-          "poach",
-          "blanch",
-          "reduce",
-          "deglaze",
-          "knead",
-          "proof",
-          "laminate",
-          "macaronage",
-          "pate a choux",
-          "sabayon",
-          "custard",
-          "meringue",
-          "pate sucree",
-          "pate brisee",
-          "ganache",
-          "frangipane",
-          "creme anglaise",
-          "streusel",
-          "simple syrup",
-          "brioche",
-        ];
-        const word = text
-          .replace(/[^a-z\s]/g, " ")
-          .split(/\s+/)
-          .filter(Boolean);
-        const bigrams: Record<string, number> = {};
-        for (let i = 0; i < word.length - 1; i++) {
-          const g = `${word[i]} ${word[i + 1]}`;
-          if (g.length < 5 || g.length > 40) continue;
-          bigrams[g] = (bigrams[g] || 0) + 1;
-        }
-        const counts: Record<string, number> = {};
-        for (const t of knownTerms) {
-          const re = new RegExp(`\\b${t.replace(/\s+/g, "\\s+")}\\b`, "gi");
-          const m = text.match(re);
-          if (m) counts[t] = (counts[t] || 0) + m.length;
-        }
-        const keepTop = (obj: Record<string, number>, n: number) =>
-          Object.fromEntries(
-            Object.entries(obj)
-              .sort((a, b) => b[1] - a[1])
-              .slice(0, n),
-          );
-        const kbRaw = localStorage.getItem("kb:cook") || "{}";
-        const kb = JSON.parse(kbRaw);
-        kb.terms = {
-          ...(kb.terms || {}),
-          ...Object.fromEntries(
-            Object.entries(counts).map(([k, v]) => [
-              k,
-              v + (kb.terms?.[k] || 0),
-            ]),
-          ),
-        };
-        kb.bigrams = { ...(kb.bigrams || {}) };
-        for (const [k, v] of Object.entries(keepTop(bigrams, 400))) {
-          kb.bigrams[k] = (kb.bigrams[k] || 0) + v;
-        }
-        kb.books = Array.from(new Set([...(kb.books || []), book]));
-        // Trim to keep storage bounded
-        kb.terms = keepTop(kb.terms, 400);
-        kb.bigrams = keepTop(kb.bigrams, 600);
-        localStorage.setItem("kb:cook", JSON.stringify(kb));
-      } catch {}
-    };
-
-    const mergeHyphenatedLines = (lines: string[]) => {
-      const merged: string[] = [];
-      for (let i = 0; i < lines.length; i++) {
-        const current = lines[i];
-        if (
-          /[A-Za-z]-$/.test(current) &&
-          i + 1 < lines.length &&
-          /^[a-z]/.test(lines[i + 1])
-        ) {
-          merged.push(current.replace(/-$/, "") + lines[i + 1].replace(/^\s+/, ""));
-          i++;
-          continue;
-        }
-        merged.push(current);
-      }
-      return merged;
-    };
-
-    const extractPageText = async (page: any) => {
-      const textContent = await page.getTextContent({ disableCombineTextItems: true });
-      const items = (textContent.items || []) as any[];
-      if (!items.length) return { text: "", lines: [] as string[], charCount: 0 };
-      type Row = {
-        y: number;
-        items: {
-          x: number;
-          xEnd: number;
-          width: number;
-          height: number;
-          str: string;
-        }[];
+      const parseMeta = (text: string) => {
+        const meta: Record<string, string> = {};
+        const get = (re: RegExp) => (text.match(re)?.[1] || "").trim();
+        meta.prepTime = get(/(?:prep|preparation)\s*time\s*:?\s*([^\n]+)/i);
+        meta.cookTime = get(/cook\s*time\s*:?\s*([^\n]+)/i);
+        meta.totalTime = get(/total\s*time\s*:?\s*([^\n]+)/i);
+        meta.temperature =
+          get(/(?:temp|temperature)\s*:?\s*([^\n]+)/i) ||
+          text.match(/(\d{2,3})\s*°?\s*([FC])/i)?.[0] ||
+          "";
+        meta.yield = get(/(?:yield|makes|serves)\s*:?\s*([^\n]+)/i);
+        return meta;
       };
-      const rowMap = new Map<number, Row>();
-      const yTolerance = 3;
-      for (const raw of items) {
-        const str = typeof raw.str === "string" ? raw.str : "";
-        if (!str.trim()) continue;
-        const transform = Array.isArray(raw.transform) ? raw.transform : [0, 0, 0, 0, raw.x || 0, raw.y || 0];
-        const x = typeof transform[4] === "number" ? transform[4] : 0;
-        const y = typeof transform[5] === "number" ? transform[5] : 0;
-        const widthCandidate =
-          typeof raw.width === "number"
-            ? raw.width
-            : typeof transform[0] === "number"
-            ? Math.abs(transform[0])
-            : str.length * 4;
-        const heightCandidate =
-          typeof raw.height === "number"
-            ? raw.height
-            : typeof transform[3] === "number"
-            ? Math.abs(transform[3])
-            : 0;
-        const key = Math.round(y / yTolerance) * yTolerance;
-        let row = rowMap.get(key);
-        if (!row) {
-          row = { y, items: [] };
-          rowMap.set(key, row);
+
+      const learnFromPages = (book: string, pages: string[]) => {
+        try {
+          const text = pages.join("\n").toLowerCase();
+          const knownTerms = [
+            "mise en place",
+            "bain marie",
+            "roux",
+            "ganache",
+            "emulsion",
+            "caramelize",
+            "temper chocolate",
+            "fold",
+            "simmer",
+            "whisk",
+            "sear",
+            "poach",
+            "blanch",
+            "reduce",
+            "deglaze",
+            "knead",
+            "proof",
+            "laminate",
+            "macaronage",
+            "pate a choux",
+            "sabayon",
+            "custard",
+            "meringue",
+            "pate sucree",
+            "pate brisee",
+            "ganache",
+            "frangipane",
+            "creme anglaise",
+            "streusel",
+            "simple syrup",
+            "brioche",
+          ];
+          const word = text
+            .replace(/[^a-z\s]/g, " ")
+            .split(/\s+/)
+            .filter(Boolean);
+          const bigrams: Record<string, number> = {};
+          for (let i = 0; i < word.length - 1; i++) {
+            const g = `${word[i]} ${word[i + 1]}`;
+            if (g.length < 5 || g.length > 40) continue;
+            bigrams[g] = (bigrams[g] || 0) + 1;
+          }
+          const counts: Record<string, number> = {};
+          for (const t of knownTerms) {
+            const re = new RegExp(`\\b${t.replace(/\s+/g, "\\s+")}\\b`, "gi");
+            const m = text.match(re);
+            if (m) counts[t] = (counts[t] || 0) + m.length;
+          }
+          const keepTop = (obj: Record<string, number>, n: number) =>
+            Object.fromEntries(
+              Object.entries(obj)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, n),
+            );
+          const kbRaw = localStorage.getItem("kb:cook") || "{}";
+          const kb = JSON.parse(kbRaw);
+          kb.terms = {
+            ...(kb.terms || {}),
+            ...Object.fromEntries(
+              Object.entries(counts).map(([k, v]) => [
+                k,
+                v + (kb.terms?.[k] || 0),
+              ]),
+            ),
+          };
+          kb.bigrams = { ...(kb.bigrams || {}) };
+          for (const [k, v] of Object.entries(keepTop(bigrams, 400))) {
+            kb.bigrams[k] = (kb.bigrams[k] || 0) + v;
+          }
+          kb.books = Array.from(new Set([...(kb.books || []), book]));
+          // Trim to keep storage bounded
+          kb.terms = keepTop(kb.terms, 400);
+          kb.bigrams = keepTop(kb.bigrams, 600);
+          localStorage.setItem("kb:cook", JSON.stringify(kb));
+        } catch {}
+      };
+
+      const mergeHyphenatedLines = (lines: string[]) => {
+        const merged: string[] = [];
+        for (let i = 0; i < lines.length; i++) {
+          const current = lines[i];
+          if (
+            /[A-Za-z]-$/.test(current) &&
+            i + 1 < lines.length &&
+            /^[a-z]/.test(lines[i + 1])
+          ) {
+            merged.push(
+              current.replace(/-$/, "") + lines[i + 1].replace(/^\s+/, ""),
+            );
+            i++;
+            continue;
+          }
+          merged.push(current);
         }
-        row.items.push({
-          x,
-          xEnd: x + widthCandidate,
-          width: widthCandidate,
-          height: heightCandidate,
-          str,
+        return merged;
+      };
+
+      const extractPageText = async (page: any) => {
+        const textContent = await page.getTextContent({
+          disableCombineTextItems: true,
         });
-      }
-      const rows = Array.from(rowMap.values()).sort((a, b) => b.y - a.y);
-      const structured: { text: string; x: number; y: number }[] = [];
-      const newColumnGap = 48;
-      const wordGap = 4;
-      for (const row of rows) {
-        const sortedItems = row.items.sort((a, b) => a.x - b.x);
-        let buffer = "";
-        let bufferStart = sortedItems[0]?.x ?? 0;
-        let bufferEnd = sortedItems[0]?.xEnd ?? bufferStart;
-        const segments: { text: string; x: number; y: number }[] = [];
-        for (let i = 0; i < sortedItems.length; i++) {
-          const current = sortedItems[i];
-          const text = current.str.replace(/\s+/g, " ").trim();
-          if (!text) continue;
-          if (!buffer) {
-            buffer = text;
-            bufferStart = current.x;
-            bufferEnd = current.xEnd;
-            continue;
+        const items = (textContent.items || []) as any[];
+        if (!items.length)
+          return { text: "", lines: [] as string[], charCount: 0 };
+        type Row = {
+          y: number;
+          items: {
+            x: number;
+            xEnd: number;
+            width: number;
+            height: number;
+            str: string;
+          }[];
+        };
+        const rowMap = new Map<number, Row>();
+        const yTolerance = 3;
+        for (const raw of items) {
+          const str = typeof raw.str === "string" ? raw.str : "";
+          if (!str.trim()) continue;
+          const transform = Array.isArray(raw.transform)
+            ? raw.transform
+            : [0, 0, 0, 0, raw.x || 0, raw.y || 0];
+          const x = typeof transform[4] === "number" ? transform[4] : 0;
+          const y = typeof transform[5] === "number" ? transform[5] : 0;
+          const widthCandidate =
+            typeof raw.width === "number"
+              ? raw.width
+              : typeof transform[0] === "number"
+                ? Math.abs(transform[0])
+                : str.length * 4;
+          const heightCandidate =
+            typeof raw.height === "number"
+              ? raw.height
+              : typeof transform[3] === "number"
+                ? Math.abs(transform[3])
+                : 0;
+          const key = Math.round(y / yTolerance) * yTolerance;
+          let row = rowMap.get(key);
+          if (!row) {
+            row = { y, items: [] };
+            rowMap.set(key, row);
           }
-          const gap = current.x - bufferEnd;
-          if (gap > newColumnGap) {
-            if (buffer.trim()) {
-              segments.push({ text: buffer.trim(), x: bufferStart, y: row.y });
+          row.items.push({
+            x,
+            xEnd: x + widthCandidate,
+            width: widthCandidate,
+            height: heightCandidate,
+            str,
+          });
+        }
+        const rows = Array.from(rowMap.values()).sort((a, b) => b.y - a.y);
+        const structured: { text: string; x: number; y: number }[] = [];
+        const newColumnGap = 48;
+        const wordGap = 4;
+        for (const row of rows) {
+          const sortedItems = row.items.sort((a, b) => a.x - b.x);
+          let buffer = "";
+          let bufferStart = sortedItems[0]?.x ?? 0;
+          let bufferEnd = sortedItems[0]?.xEnd ?? bufferStart;
+          const segments: { text: string; x: number; y: number }[] = [];
+          for (let i = 0; i < sortedItems.length; i++) {
+            const current = sortedItems[i];
+            const text = current.str.replace(/\s+/g, " ").trim();
+            if (!text) continue;
+            if (!buffer) {
+              buffer = text;
+              bufferStart = current.x;
+              bufferEnd = current.xEnd;
+              continue;
             }
-            buffer = text;
-            bufferStart = current.x;
-            bufferEnd = current.xEnd;
-            continue;
+            const gap = current.x - bufferEnd;
+            if (gap > newColumnGap) {
+              if (buffer.trim()) {
+                segments.push({
+                  text: buffer.trim(),
+                  x: bufferStart,
+                  y: row.y,
+                });
+              }
+              buffer = text;
+              bufferStart = current.x;
+              bufferEnd = current.xEnd;
+              continue;
+            }
+            if (gap > wordGap && !buffer.endsWith(" ")) buffer += " ";
+            buffer += text;
+            bufferEnd = Math.max(bufferEnd, current.xEnd);
           }
-          if (gap > wordGap && !buffer.endsWith(" ")) buffer += " ";
-          buffer += text;
-          bufferEnd = Math.max(bufferEnd, current.xEnd);
+          if (buffer.trim()) {
+            segments.push({ text: buffer.trim(), x: bufferStart, y: row.y });
+          }
+          for (const segment of segments) {
+            structured.push(segment);
+          }
         }
-        if (buffer.trim()) {
-          segments.push({ text: buffer.trim(), x: bufferStart, y: row.y });
-        }
-        for (const segment of segments) {
-          structured.push(segment);
-        }
-      }
-      structured.sort((a, b) => {
-        if (Math.abs(a.y - b.y) <= 4) {
-          return a.x - b.x;
-        }
-        return b.y - a.y;
-      });
-      const rawLines = structured
-        .map((entry) => entry.text.replace(/\s+/g, " ").trim())
-        .filter(Boolean);
-      const lines = mergeHyphenatedLines(rawLines);
-      const text = lines.join("\n");
-      const charCount = lines.reduce((acc, line) => acc + line.length, 0);
-      return { text, lines, charCount };
-    };
-
-    const normLine = (s: string) => {
-      let t = s.replace(/\s+/g, " ").trim();
-      if (/^([A-Z]\s+){2,}[A-Z][\s:]*$/.test(t) && t.length <= 60)
-        t = t.replace(/\s+/g, "");
-      return t;
-    };
-
-    type DerivedRecipeSections = {
-      title: string;
-      ingredients?: string[];
-      instructions?: string[];
-      meta: Record<string, string>;
-    };
-
-    const deriveStructuredRecipe = (
-      text: string,
-    ): DerivedRecipeSections | null => {
-      const rawLines = text
-        .split(/\n/)
-        .map((line) => line.replace(/\s+/g, " ").trim())
-        .filter((line) => line.length);
-      if (!rawLines.length) return null;
-
-      type LinePair = { original: string; normalized: string };
-
-      let pairs = rawLines
-        .map((line) => {
-          const normalized = normLine(line);
-          if (!normalized.length) return null;
-          return { original: line, normalized };
-        })
-        .filter((value): value is LinePair => value !== null);
-      if (!pairs.length) return null;
-
-      let fallbackTitle: string | undefined;
-      const tocStopWords = /^(?:contents|index|appendix|chapter|recipes?)$/i;
-      const measurementTokens =
-        /\b(?:cup|cups?|tsp|teaspoons?|tbsp|tablespoons?|grams?|gram|kg|kilograms?|g|ml|milliliters?|l|liters?|oz|ounces?|lb|lbs|pounds?|serves?|makes|yield|minutes?|minute|mins?|hours?|hour|°f|°c|step|steps?)\b/i;
-      const tocPatterns = [
-        /^.{3,160}?[.\s·•]{2,}\d{1,4}(?:\D.*)?$/i,
-        /^.{3,160}?\s[-–���]\s*\d{1,4}(?:\D.*)?$/i,
-      ];
-      const looksLikeIndexEntry = (line: string) => {
-        if (line.length > 160) return false;
-        if (tocPatterns.some((re) => re.test(line))) return true;
-        const tokens = line.split(/\s+/);
-        if (tokens.length < 3) return false;
-        const last = tokens[tokens.length - 1];
-        if (!/^\d{1,4}$/.test(last)) return false;
-        const before = tokens.slice(0, -1).join(" ").trim();
-        if (before.length < 4) return false;
-        if (measurementTokens.test(before)) return false;
-        if (/\b(?:page|pg|step)\b/i.test(before)) return false;
-        return true;
+        structured.sort((a, b) => {
+          if (Math.abs(a.y - b.y) <= 4) {
+            return a.x - b.x;
+          }
+          return b.y - a.y;
+        });
+        const rawLines = structured
+          .map((entry) => entry.text.replace(/\s+/g, " ").trim())
+          .filter(Boolean);
+        const lines = mergeHyphenatedLines(rawLines);
+        const text = lines.join("\n");
+        const charCount = lines.reduce((acc, line) => acc + line.length, 0);
+        return { text, lines, charCount };
       };
 
-      while (pairs.length) {
-        const { original, normalized } = pairs[0];
-        const lower = normalized.toLowerCase();
-        if (tocStopWords.test(lower) || /\bcandidate\b/i.test(original)) {
-          pairs.shift();
-          continue;
-        }
-        if (looksLikeIndexEntry(original)) {
-          if (!fallbackTitle) {
-            fallbackTitle = original
-              .replace(/\s*\d{1,4}\s*$/, "")
-              .replace(/[.\·•\s]+$/, "")
-              .trim();
+      const normLine = (s: string) => {
+        let t = s.replace(/\s+/g, " ").trim();
+        if (/^([A-Z]\s+){2,}[A-Z][\s:]*$/.test(t) && t.length <= 60)
+          t = t.replace(/\s+/g, "");
+        return t;
+      };
+
+      type DerivedRecipeSections = {
+        title: string;
+        ingredients?: string[];
+        instructions?: string[];
+        meta: Record<string, string>;
+      };
+
+      const deriveStructuredRecipe = (
+        text: string,
+      ): DerivedRecipeSections | null => {
+        const rawLines = text
+          .split(/\n/)
+          .map((line) => line.replace(/\s+/g, " ").trim())
+          .filter((line) => line.length);
+        if (!rawLines.length) return null;
+
+        type LinePair = { original: string; normalized: string };
+
+        let pairs = rawLines
+          .map((line) => {
+            const normalized = normLine(line);
+            if (!normalized.length) return null;
+            return { original: line, normalized };
+          })
+          .filter((value): value is LinePair => value !== null);
+        if (!pairs.length) return null;
+
+        let fallbackTitle: string | undefined;
+        const tocStopWords = /^(?:contents|index|appendix|chapter|recipes?)$/i;
+        const measurementTokens =
+          /\b(?:cup|cups?|tsp|teaspoons?|tbsp|tablespoons?|grams?|gram|kg|kilograms?|g|ml|milliliters?|l|liters?|oz|ounces?|lb|lbs|pounds?|serves?|makes|yield|minutes?|minute|mins?|hours?|hour|°f|°c|step|steps?)\b/i;
+        const tocPatterns = [
+          /^.{3,160}?[.\s·•]{2,}\d{1,4}(?:\D.*)?$/i,
+          /^.{3,160}?\s[-–���]\s*\d{1,4}(?:\D.*)?$/i,
+        ];
+        const looksLikeIndexEntry = (line: string) => {
+          if (line.length > 160) return false;
+          if (tocPatterns.some((re) => re.test(line))) return true;
+          const tokens = line.split(/\s+/);
+          if (tokens.length < 3) return false;
+          const last = tokens[tokens.length - 1];
+          if (!/^\d{1,4}$/.test(last)) return false;
+          const before = tokens.slice(0, -1).join(" ").trim();
+          if (before.length < 4) return false;
+          if (measurementTokens.test(before)) return false;
+          if (/\b(?:page|pg|step)\b/i.test(before)) return false;
+          return true;
+        };
+
+        while (pairs.length) {
+          const { original, normalized } = pairs[0];
+          const lower = normalized.toLowerCase();
+          if (tocStopWords.test(lower) || /\bcandidate\b/i.test(original)) {
+            pairs.shift();
+            continue;
           }
-          pairs.shift();
-          continue;
-        }
-        break;
-      }
-
-      pairs = pairs.filter((pair) => !/\bcandidate\b/i.test(pair.original));
-      if (!pairs.length) return null;
-
-      let lines = pairs.map((pair) => pair.normalized);
-      if (!lines.length) return null;
-      const ingredientLabels = [
-        "ingredients",
-        "ingredient list",
-        "mise en place",
-        "components",
-        "you will need",
-        "shopping list",
-        "for the dough",
-        "for the filling",
-        "for the topping",
-        "for the sauce",
-        "for the batter",
-        "for the crust",
-      ];
-      const instructionLabels = [
-        "instructions",
-        "directions",
-        "method",
-        "preparation",
-        "procedure",
-        "assembly",
-        "to assemble",
-        "to prepare",
-        "cooking directions",
-        "cooking instructions",
-        "finishing",
-        "finishing steps",
-        "to finish",
-      ];
-      const matchLabel = (line: string, labels: string[]) =>
-        labels.some(
-          (label) => line === label || line.startsWith(`${label} `),
-        );
-      const qtyRegex =
-        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[��½¾���⅔⅛⅜⅝⅞])(?:\s*(?:cups?|cup|tsp|teaspoons?|tbsp|tablespoons?|grams?|gram|kg|kilograms?|g|ml|milliliters?|l|liters?|oz|ounces?|lb|lbs|pounds?|pinch|dash|cloves?|cans?|sticks?|slices?|heads?|bunch(?:es)?|sprigs?))?\b/;
-      const metaSuppress = /^\s*(?:yield|serves|makes|prep(?:aration)?|cook|total)\b/i;
-
-      let lower = lines.map((line) => line.toLowerCase());
-      let cleaned = lower.map((line) => line.replace(/[:.\s]+$/, ""));
-
-      let coreIdx = -1;
-      for (let i = 0; i < lines.length; i++) {
-        if (
-          matchLabel(cleaned[i], ingredientLabels) ||
-          /^for the [a-z]/.test(cleaned[i]) ||
-          qtyRegex.test(lines[i]) ||
-          /^[:•\-*\u2022\u2023\u2043]\s*/.test(pairs[i].original) ||
-          matchLabel(cleaned[i], instructionLabels)
-        ) {
-          coreIdx = i;
+          if (looksLikeIndexEntry(original)) {
+            if (!fallbackTitle) {
+              fallbackTitle = original
+                .replace(/\s*\d{1,4}\s*$/, "")
+                .replace(/[.\·•\s]+$/, "")
+                .trim();
+            }
+            pairs.shift();
+            continue;
+          }
           break;
         }
-      }
-      if (coreIdx > 4) {
-        const sliceStart = Math.max(0, coreIdx - 4);
-        pairs = pairs.slice(sliceStart);
-        lines = pairs.map((pair) => pair.normalized);
+
+        pairs = pairs.filter((pair) => !/\bcandidate\b/i.test(pair.original));
+        if (!pairs.length) return null;
+
+        let lines = pairs.map((pair) => pair.normalized);
         if (!lines.length) return null;
-        lower = lines.map((line) => line.toLowerCase());
-        cleaned = lower.map((line) => line.replace(/[:.\s]+$/, ""));
-      }
-
-      let ingIdx = -1;
-      for (let i = 0; i < cleaned.length; i++) {
-        const line = cleaned[i];
-        if (matchLabel(line, ingredientLabels) || /^for the [a-z]/.test(line)) {
-          ingIdx = i;
-          break;
-        }
-      }
-      if (ingIdx < 0) {
-        for (let i = 0; i < Math.min(lines.length, 120); i++) {
-          const window = lines.slice(i, i + 6);
-          const matches = window.filter(
-            (entry) =>
-              qtyRegex.test(entry) ||
-              /^[:•\-*\u2022\u2023\u2043]\s*/.test(entry),
+        const ingredientLabels = [
+          "ingredients",
+          "ingredient list",
+          "mise en place",
+          "components",
+          "you will need",
+          "shopping list",
+          "for the dough",
+          "for the filling",
+          "for the topping",
+          "for the sauce",
+          "for the batter",
+          "for the crust",
+        ];
+        const instructionLabels = [
+          "instructions",
+          "directions",
+          "method",
+          "preparation",
+          "procedure",
+          "assembly",
+          "to assemble",
+          "to prepare",
+          "cooking directions",
+          "cooking instructions",
+          "finishing",
+          "finishing steps",
+          "to finish",
+        ];
+        const matchLabel = (line: string, labels: string[]) =>
+          labels.some(
+            (label) => line === label || line.startsWith(`${label} `),
           );
-          if (matches.length >= 3) {
-            ingIdx = Math.max(0, i - 1);
+        const qtyRegex =
+          /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[��½¾���⅔⅛⅜⅝⅞])(?:\s*(?:cups?|cup|tsp|teaspoons?|tbsp|tablespoons?|grams?|gram|kg|kilograms?|g|ml|milliliters?|l|liters?|oz|ounces?|lb|lbs|pounds?|pinch|dash|cloves?|cans?|sticks?|slices?|heads?|bunch(?:es)?|sprigs?))?\b/;
+        const metaSuppress =
+          /^\s*(?:yield|serves|makes|prep(?:aration)?|cook|total)\b/i;
+
+        let lower = lines.map((line) => line.toLowerCase());
+        let cleaned = lower.map((line) => line.replace(/[:.\s]+$/, ""));
+
+        let coreIdx = -1;
+        for (let i = 0; i < lines.length; i++) {
+          if (
+            matchLabel(cleaned[i], ingredientLabels) ||
+            /^for the [a-z]/.test(cleaned[i]) ||
+            qtyRegex.test(lines[i]) ||
+            /^[:•\-*\u2022\u2023\u2043]\s*/.test(pairs[i].original) ||
+            matchLabel(cleaned[i], instructionLabels)
+          ) {
+            coreIdx = i;
             break;
           }
         }
-      }
-
-      let instIdx = -1;
-      for (let i = Math.max(ingIdx + 1, 0); i < cleaned.length; i++) {
-        const line = cleaned[i];
-        if (
-          matchLabel(line, instructionLabels) ||
-          /^to (?:assemble|finish|serve|prepare|cook|bake)\b/.test(line)
-        ) {
-          instIdx = i;
-          break;
+        if (coreIdx > 4) {
+          const sliceStart = Math.max(0, coreIdx - 4);
+          pairs = pairs.slice(sliceStart);
+          lines = pairs.map((pair) => pair.normalized);
+          if (!lines.length) return null;
+          lower = lines.map((line) => line.toLowerCase());
+          cleaned = lower.map((line) => line.replace(/[:.\s]+$/, ""));
         }
-      }
-      if (instIdx < 0 && ingIdx >= 0) {
-        for (let i = ingIdx + 1; i < lines.length; i++) {
+
+        let ingIdx = -1;
+        for (let i = 0; i < cleaned.length; i++) {
+          const line = cleaned[i];
           if (
-            /^(?:step\s*)?\d+\b/.test(lines[i]) ||
-            /^\d+\.\s+/.test(lines[i]) ||
-            /^•\s+/.test(lines[i]) ||
-            (lines[i].length > 30 && /[\.?!]/.test(lines[i]))
+            matchLabel(line, ingredientLabels) ||
+            /^for the [a-z]/.test(line)
+          ) {
+            ingIdx = i;
+            break;
+          }
+        }
+        if (ingIdx < 0) {
+          for (let i = 0; i < Math.min(lines.length, 120); i++) {
+            const window = lines.slice(i, i + 6);
+            const matches = window.filter(
+              (entry) =>
+                qtyRegex.test(entry) ||
+                /^[:•\-*\u2022\u2023\u2043]\s*/.test(entry),
+            );
+            if (matches.length >= 3) {
+              ingIdx = Math.max(0, i - 1);
+              break;
+            }
+          }
+        }
+
+        let instIdx = -1;
+        for (let i = Math.max(ingIdx + 1, 0); i < cleaned.length; i++) {
+          const line = cleaned[i];
+          if (
+            matchLabel(line, instructionLabels) ||
+            /^to (?:assemble|finish|serve|prepare|cook|bake)\b/.test(line)
           ) {
             instIdx = i;
             break;
           }
         }
-      }
-
-      const stripBullet = (line: string) =>
-        line.replace(/^[:•\-*\u2022\u2023\u2043]\s*/, "").trim();
-      const getRange = (start: number, end: number) =>
-        lines
-          .slice(start + 1, end > start ? end : undefined)
-          .map(stripBullet)
-          .filter((entry) => entry.length && !metaSuppress.test(entry));
-
-      let ingredients =
-        ingIdx >= 0
-          ? getRange(ingIdx, instIdx >= 0 ? instIdx : lines.length)
-          : undefined;
-      if (ingredients && ingredients.length < 2) {
-        const candidates = ingredients.filter((line) => qtyRegex.test(line));
-        if (candidates.length >= 2) ingredients = candidates;
-      } else if (ingredients && ingredients.length) {
-        ingredients = ingredients.filter((line) => !metaSuppress.test(line));
-      }
-
-      let instructions =
-        instIdx >= 0 ? getRange(instIdx, lines.length) : undefined;
-      if ((!instructions || instructions.length < 2) && lines.length) {
-        const start = instIdx >= 0 ? instIdx + 1 : Math.max(ingIdx + 1, 0);
-        const fallback = lines
-          .slice(start)
-          .map(stripBullet)
-          .filter(
-            (entry) =>
-              entry.length && !qtyRegex.test(entry) && !metaSuppress.test(entry),
-          );
-        if (fallback.length >= 2) instructions = fallback;
-      }
-
-      const headingLimit = ingIdx >= 0 ? ingIdx : Math.min(lines.length, 6);
-      const headingCandidates = lines.slice(0, Math.max(headingLimit, 1));
-      let title = "";
-      for (const candidate of headingCandidates) {
-        if (metaSuppress.test(candidate) || candidate.length < 3) continue;
-        if (
-          /^[A-Z][A-Za-z0-9\-\'\s]{2,80}$/.test(candidate) ||
-          /^[A-Za-z][A-Za-z0-9\-\'\s]{2,80}$/.test(candidate)
-        ) {
-          title = candidate.replace(/[:\-\s]+$/, "").trim();
-          break;
-        }
-      }
-      if (!title && fallbackTitle) title = fallbackTitle;
-      if (!title && lines.length) title = lines[0];
-      title = title.replace(/\s+/g, " ").trim();
-
-      const meta = parseMeta(lines.join("\n"));
-      return {
-        title,
-        ingredients: ingredients && ingredients.length ? ingredients : undefined,
-        instructions: instructions && instructions.length
-          ? instructions
-          : undefined,
-        meta,
-      };
-    };
-
-    for (const f of files) {
-      if (!f.name.toLowerCase().endsWith("pdf")) {
-        errors.push({ file: f.name, error: "Unsupported PDF type" });
-        continue;
-      }
-      try {
-        const ab = await f.arrayBuffer();
-        const pdfjs: any = await import(
-          "https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs"
-        );
-        const workerSrc =
-          "https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs";
-        if (pdfjs.GlobalWorkerOptions)
-          pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
-        const doc = await pdfjs.getDocument({ data: ab }).promise;
-        const pageTexts: string[] = [];
-        const ocrEnabled = (() => {
-          try {
-            return localStorage.getItem("pdf:ocr") === "1";
-          } catch {
-            return false;
-          }
-        })();
-        let ocrBudget = Math.min(48, Math.max(24, Math.ceil(doc.numPages * 0.25)));
-        let tesseractModule: any | null = null;
-        const getTesseract = async () => {
-          if (!tesseractModule) {
-            tesseractModule = await import("https://esm.sh/tesseract.js@5.1.1");
-          }
-          return tesseractModule;
-        };
-        for (let p = 1; p <= doc.numPages; p++) {
-          const page = await doc.getPage(p);
-          const extracted = await extractPageText(page);
-          let t = extracted.text;
-          let charCount = extracted.charCount;
-          const lineCount = extracted.lines.length;
-          let wordCount = t.split(/\s+/).filter(Boolean).length;
-          const avgLineLength = lineCount ? charCount / lineCount : charCount;
-          const allowOcr = ocrEnabled || charCount === 0;
-          const shouldAttemptOcr =
-            allowOcr &&
-            ocrBudget > 0 &&
-            (charCount < 60 || wordCount < 12 || lineCount <= 3 || avgLineLength < 6);
-          if (shouldAttemptOcr) {
-            try {
-              const viewport = page.getViewport({ scale: 1.6 });
-              const canvas = document.createElement("canvas");
-              const ctx = canvas.getContext("2d");
-              if (ctx) {
-                canvas.width = viewport.width;
-                canvas.height = viewport.height;
-                await page.render({ canvasContext: ctx, viewport }).promise;
-                const dataUrl = canvas.toDataURL("image/png");
-                const Tesseract: any = await getTesseract();
-                const { data } = await Tesseract.recognize(
-                  await (await fetch(dataUrl)).arrayBuffer(),
-                  "eng",
-                );
-                const raw = String(data?.text || "").trim();
-                if (raw) {
-                  const cleaned = raw
-                    .split(/\n/)
-                    .map((line) => line.replace(/\s+/g, " ").trim())
-                    .filter(Boolean)
-                    .join("\n");
-                  const ocrWordCount = cleaned
-                    .split(/\s+/)
-                    .filter(Boolean).length;
-                  if (ocrWordCount > wordCount) {
-                    t = cleaned;
-                    wordCount = ocrWordCount;
-                    charCount = cleaned.length;
-                  }
-                }
-              }
-            } catch {}
-            ocrBudget = Math.max(0, ocrBudget - 1);
-          }
-          pageTexts.push(t);
-        }
-        const allLines = pageTexts
-          .join("\n")
-          .split(/\r?\n/)
-          .map(normLine)
-          .filter(Boolean);
-        // Learn from entire book regardless of what gets imported
-        learnFromPages(f.name.replace(/\.pdf$/i, ""), pageTexts);
-
-        // Parse appendix/TOC entries with flexible patterns
-        let indexEntries = allLines
-          .map((s) => {
-            const tests = [
-              /^(.{3,120}?)(?:[\.·•\s]{2,})(\d{1,4})(?:.*?\(\s*photo\s*(\d{1,4})\s*\))?$/i,
-              /^(.{3,120}?)\s{3,}(\d{1,4})(?:.*?\(\s*photo\s*(\d{1,4})\s*\))?$/i,
-              /^(.{3,120}?)\s+[-–—]\s*(\d{1,4})(?:.*?\(\s*photo\s*(\d{1,4})\s*\))?$/i,
-            ];
-            let m: RegExpMatchArray | null = null;
-            let photo: number | undefined;
-            for (const re of tests) {
-              const mm = s.match(re);
-              if (mm) {
-                m = mm;
-                photo = mm[3] ? parseInt(mm[3], 10) : undefined;
-                break;
-              }
-            }
-            if (!m) return null;
-            const title = m[1].trim();
-            const page = parseInt(m[2], 10);
-            const bad =
-              /^(?:contents|index|appendix|recipes?|chapter|table of contents|fig(?:\.|ures?)?(?:\s*\d+)?|plates?(?:\s*\d+)?|illustrations?(?:\s*\d+)?|photos?(?:\s*\d+)?|tables?(?:\s*\d+)?|maps?(?:\s*\d+)?|yield\b|to convert\b)/i;
-            if (!title || bad.test(title)) return null;
-            return { title, page, photoPage: photo };
-          })
-          .filter(Boolean) as {
-          title: string;
-          page: number;
-          photoPage?: number;
-        }[];
-        // de-duplicate by page number
-        const seenPages: Record<number, boolean> = {};
-        indexEntries = indexEntries.filter(
-          (e) => !seenPages[e.page] && (seenPages[e.page] = true),
-        );
-
-        // Honor 'import all' flag to skip TOC
-        let importAll = false;
-        try {
-          importAll = localStorage.getItem("pdf:index:autoAll") === "1";
-        } catch {}
-        if (importAll) {
-          try {
-            localStorage.removeItem("pdf:index:autoAll");
-          } catch {}
-          indexEntries = [];
-        }
-
-        // Heuristic: treat as appendix if we have many entries
-        const bookTag = f.name.replace(/\.pdf$/i, "");
-        let importedFromIndex = 0;
-        if (indexEntries.length >= 20) {
-          // Optional selection filter from UI
-          let allow: Set<string> | null = null;
-          try {
-            const raw = localStorage.getItem("pdf:index:allow");
-            if (raw) allow = new Set(JSON.parse(raw));
-          } catch {}
-          if (allow)
-            indexEntries = indexEntries.filter((e) => allow!.has(e.title));
-          indexEntries = indexEntries.sort((a, b) => a.page - b.page);
-          for (let i = 0; i < indexEntries.length; i++) {
-            const cur = indexEntries[i];
-            const next = indexEntries[i + 1];
-            const start = Math.min(Math.max(cur.page, 1), doc.numPages);
-            const end = Math.min(
-              next ? next.page - 1 : doc.numPages,
-              doc.numPages,
-            );
-            const textRaw = pageTexts.slice(start - 1, end).join("\n");
-            const text = textRaw.split(/\n/).map(normLine).join("\n");
-            const structured = deriveStructuredRecipe(text);
-            if (!structured) continue;
-            const {
-              title: derivedTitle,
-              ingredients,
-              instructions,
-              meta,
-            } = structured;
-            const ingredientCount = ingredients?.length ?? 0;
-            const instructionCount = instructions?.length ?? 0;
-            if (ingredientCount < 2 && instructionCount < 3) continue;
-
-            let finalTitle = derivedTitle || cur.title;
-            if (!finalTitle || finalTitle.length < 3) finalTitle = cur.title;
-
-            let imgData: string | undefined;
-            const pageToRender =
-              cur.photoPage &&
-              cur.photoPage >= 1 &&
-              cur.photoPage <= doc.numPages
-                ? cur.photoPage
-                : start;
-            try {
-              const page = await doc.getPage(pageToRender);
-              const viewport = page.getViewport({ scale: 1.2 });
-              const canvas = document.createElement("canvas");
-              const ctx = canvas.getContext("2d");
-              if (ctx) {
-                canvas.width = viewport.width;
-                canvas.height = viewport.height;
-                await page.render({ canvasContext: ctx, viewport }).promise;
-                imgData = canvas.toDataURL("image/jpeg", 0.85);
-              }
-            } catch {}
-
-            collected.push({
-              id: uid(),
-              createdAt: Date.now(),
-              title: finalTitle || cur.title,
-              ingredients,
-              instructions,
-              tags: [bookTag],
-              imageDataUrls: imgData ? [imgData] : undefined,
-              sourceFile: f.name,
-              extra: {
-                page: start,
-                endPage: end,
-                ...meta,
-                source: "pdf-appendix",
-              },
-            });
-            titles.push(finalTitle || cur.title);
-            importedFromIndex++;
-          }
-          try {
-            localStorage.removeItem("pdf:index:allow");
-          } catch {}
-          if (importedFromIndex > 0) {
-            continue;
-          }
-        }
-
-        // Fallback: try marker-based multi-recipe detection across pages
-        const isLikelyIngredientList = (txt: string) => {
-          const lines = txt
-            .split(/\n/)
-            .map((s) => s.trim())
-            .filter(Boolean)
-            .slice(0, 80);
-          const qtyRe =
-            /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
-          let cnt = 0;
-          for (const L of lines) {
-            if (qtyRe.test(L) || /^[•\-*]\s+/.test(L)) cnt++;
-          }
-          return cnt >= 3;
-        };
-        const instWord =
-          /(instructions|directions|method|steps|preparation|procedure)\b/i;
-        const markerStarts: number[] = [];
-        // Forward scan
-        for (let p = 1; p <= doc.numPages; p++) {
-          const here = pageTexts[p - 1] || "";
-          const next1 = pageTexts[p] || "";
-          const next2 = pageTexts[p + 1] || "";
-          const hasIng =
-            /\bingredients?\b/i.test(here) || isLikelyIngredientList(here);
-          const hasInstNearby =
-            instWord.test([here, next1, next2].join("\n")) ||
-            /^(?:\d+\.|Step\s*\d+)/im.test([here, next1].join("\n"));
-          if (hasIng && hasInstNearby) {
+        if (instIdx < 0 && ingIdx >= 0) {
+          for (let i = ingIdx + 1; i < lines.length; i++) {
             if (
-              markerStarts.length === 0 ||
-              p - markerStarts[markerStarts.length - 1] > 1
-            )
-              markerStarts.push(p);
-          }
-        }
-        // If none, try reverse scan from back of book
-        if (markerStarts.length === 0) {
-          const rev: number[] = [];
-          for (let p = doc.numPages; p >= 1; p--) {
-            const here = pageTexts[p - 1] || "";
-            const prev1 = pageTexts[p - 2] || "";
-            const hasIng =
-              /\bingredients?\b/i.test(here) || isLikelyIngredientList(here);
-            const hasInstNearby =
-              instWord.test([here, prev1].join("\n")) ||
-              /^(?:\d+\.|Step\s*\d+)/im.test([here, prev1].join("\n"));
-            if (hasIng && hasInstNearby) {
-              if (rev.length === 0 || rev[rev.length - 1] - p > 1) rev.push(p);
+              /^(?:step\s*)?\d+\b/.test(lines[i]) ||
+              /^\d+\.\s+/.test(lines[i]) ||
+              /^•\s+/.test(lines[i]) ||
+              (lines[i].length > 30 && /[\.?!]/.test(lines[i]))
+            ) {
+              instIdx = i;
+              break;
             }
           }
-          rev.reverse();
-          markerStarts.push(...rev);
-        }
-        if (markerStarts.length >= 1) {
-          for (let i = 0; i < markerStarts.length; i++) {
-            const start = markerStarts[i];
-            const end =
-              i + 1 < markerStarts.length
-                ? markerStarts[i + 1] - 1
-                : doc.numPages;
-            const textRaw = pageTexts.slice(start - 1, end).join("\n");
-            const text = textRaw.split(/\n/).map(normLine).join("\n");
-            const structured = deriveStructuredRecipe(text);
-            if (!structured) continue;
-            const {
-              title: derivedTitle,
-              ingredients,
-              instructions,
-              meta,
-            } = structured;
-            const ingredientCount = ingredients?.length ?? 0;
-            const instructionCount = instructions?.length ?? 0;
-            if (ingredientCount < 2 && instructionCount < 3) continue;
-
-            let title = derivedTitle;
-            if (!title || title.length < 3) {
-              title = `${bookTag} p.${start}`;
-            }
-
-            let imgData: string | undefined;
-            try {
-              const page = await doc.getPage(start);
-              const viewport = page.getViewport({ scale: 1.1 });
-              const canvas = document.createElement("canvas");
-              const ctx = canvas.getContext("2d");
-              if (ctx) {
-                canvas.width = viewport.width;
-                canvas.height = viewport.height;
-                await page.render({ canvasContext: ctx, viewport }).promise;
-                imgData = canvas.toDataURL("image/jpeg", 0.85);
-              }
-            } catch {}
-
-            collected.push({
-              id: uid(),
-              createdAt: Date.now(),
-              title,
-              ingredients,
-              instructions,
-              tags: [bookTag],
-              imageDataUrls: imgData ? [imgData] : undefined,
-              sourceFile: f.name,
-              extra: {
-                page: start,
-                endPage: end,
-                ...meta,
-                source: "pdf-markers",
-              },
-            });
-            titles.push(title);
-          }
         }
 
-        // Fallback: treat the entire document as a single recipe if it scores well
-        const text = pageTexts.join("\n").split(/\n/).map(normLine).join("\n");
-        const structured = deriveStructuredRecipe(text);
-        if (structured) {
-          const {
-            title: derivedTitle,
-            ingredients,
-            instructions,
-            meta,
-          } = structured;
-          const ingredientCount = ingredients?.length ?? 0;
-          const instructionCount = instructions?.length ?? 0;
-          if (ingredientCount >= 2 || instructionCount >= 2) {
-            const title = derivedTitle || f.name.replace(/\.pdf$/i, "");
-            collected.push({
-              id: uid(),
-              createdAt: Date.now(),
-              title,
-              ingredients,
-              instructions,
-              sourceFile: f.name,
-              extra: { ...meta, source: "pdf-single" },
-            });
-            titles.push(title);
-          }
-        }
-      } catch (e: any) {
-        errors.push({
-          file: f.name,
-          error: e?.message ?? "Failed to read PDF",
-        });
-      }
-    }
-
-    const { added } = appendRecipes(collected);
-    return { added: added.length, errors, titles };
-  }, [appendRecipes]);
-
-  const addRecipesFromExcelFiles = useCallback(async (files: File[]) => {
-    const errors: { file: string; error: string }[] = [];
-    const collected: Recipe[] = [];
-    const titles: string[] = [];
-    for (const f of files) {
-      if (!/\.(xlsx|xls|csv)$/i.test(f.name)) {
-        errors.push({ file: f.name, error: "Unsupported spreadsheet type" });
-        continue;
-      }
-      try {
-        if (/\.csv$/i.test(f.name)) {
-          const text = await f.text();
-          const rows = text.split(/\r?\n/).map((l) => l.split(/,|\t/));
-          const header = rows.shift() || [];
-          const idx = (k: string) =>
-            header.findIndex((h) => h.trim().toLowerCase() === k);
-          const it = idx("title");
-          const ii = idx("ingredients");
-          const io = idx("instructions");
-          for (const r of rows) {
-            const title = (r[it] || "").trim();
-            if (!title) continue;
-            const ingredients = (r[ii] || "")
-              .split(/\n|;|\|/)
-              .map((s) => s.trim())
-              .filter(Boolean);
-            const instructions = (r[io] || "")
-              .split(/\n|\.|;\s/)
-              .map((s) => s.trim())
-              .filter(Boolean);
-            collected.push({
-              id: uid(),
-              createdAt: Date.now(),
-              title,
-              ingredients: ingredients.length ? ingredients : undefined,
-              instructions: instructions.length ? instructions : undefined,
-              sourceFile: f.name,
-            });
-            titles.push(title);
-            try {
-              const chunk = [title, ...ingredients, ...instructions].join("\n");
-              learnFromTextChunks(f.name.replace(/\.[^.]+$/, ""), [chunk]);
-            } catch {}
-          }
-        } else {
-          const ab = await f.arrayBuffer();
-          const XLSX: any = await import("https://esm.sh/xlsx@0.18.5");
-          const wb = XLSX.read(ab, { type: "array" });
-          const ws = wb.Sheets[wb.SheetNames[0]];
-          const json = XLSX.utils.sheet_to_json(ws, { defval: "" });
-          for (const row of json) {
-            const title = String(
-              row.title ?? row.Name ?? row.Recipe ?? "",
-            ).trim();
-            if (!title) continue;
-            const ing = String(row.ingredients ?? row.Ingredients ?? "")
-              .split(/\n|;|\|/)
-              .map((s) => s.trim())
-              .filter(Boolean);
-            const ins = String(
-              row.instructions ?? row.Directions ?? row.Method ?? "",
-            )
-              .split(/\n|\.|;\s/)
-              .map((s) => s.trim())
-              .filter(Boolean);
-            collected.push({
-              id: uid(),
-              createdAt: Date.now(),
-              title,
-              ingredients: ing.length ? ing : undefined,
-              instructions: ins.length ? ins : undefined,
-              sourceFile: f.name,
-            });
-            titles.push(title);
-            try {
-              const chunk = [title, ...ing, ...ins].join("\n");
-              learnFromTextChunks(f.name.replace(/\.[^.]+$/, ""), [chunk]);
-            } catch {}
-          }
-        }
-      } catch (e: any) {
-        errors.push({
-          file: f.name,
-          error: e?.message ?? "Failed to read spreadsheet",
-        });
-      }
-    }
-    const { added } = appendRecipes(collected);
-    return { added: added.length, errors, titles };
-  }, [appendRecipes]);
-
-  const addRecipesFromImageOcr = useCallback(async (files: File[]) => {
-    const errors: { file: string; error: string }[] = [];
-    const collected: Recipe[] = [];
-    const titles: string[] = [];
-    for (const f of files) {
-      try {
-        const Tesseract: any = await import(
-          "https://esm.sh/tesseract.js@5.1.1"
-        );
-        const { data } = await Tesseract.recognize(
-          await f.arrayBuffer(),
-          "eng",
-        );
-        const raw = String(data?.text || "").trim();
-        if (!raw) {
-          errors.push({ file: f.name, error: "No text detected" });
-          continue;
-        }
-        const lines = raw
-          .split(/\r?\n/)
-          .map((s) => s.trim())
-          .filter(Boolean);
-        try {
-          learnFromTextChunks(f.name.replace(/\.[^.]+$/, ""), [raw]);
-        } catch {}
-        const title =
-          lines[0] || f.name.replace(/\.(png|jpe?g|webp|heic)$/i, "");
-        const lower = lines.map((l) => l.toLowerCase());
-        const find = (labels: string[]) =>
-          lower.findIndex((l) => labels.includes(l));
-        const ingIdx = find(["ingredients", "ingredient"]);
-        const instIdx = find(["instructions", "directions", "method", "steps"]);
+        const stripBullet = (line: string) =>
+          line.replace(/^[:•\-*\u2022\u2023\u2043]\s*/, "").trim();
         const getRange = (start: number, end: number) =>
-          lines.slice(start + 1, end > start ? end : undefined).filter(Boolean);
-        const ingredients =
+          lines
+            .slice(start + 1, end > start ? end : undefined)
+            .map(stripBullet)
+            .filter((entry) => entry.length && !metaSuppress.test(entry));
+
+        let ingredients =
           ingIdx >= 0
             ? getRange(ingIdx, instIdx >= 0 ? instIdx : lines.length)
             : undefined;
-        const instructions =
+        if (ingredients && ingredients.length < 2) {
+          const candidates = ingredients.filter((line) => qtyRegex.test(line));
+          if (candidates.length >= 2) ingredients = candidates;
+        } else if (ingredients && ingredients.length) {
+          ingredients = ingredients.filter((line) => !metaSuppress.test(line));
+        }
+
+        let instructions =
           instIdx >= 0 ? getRange(instIdx, lines.length) : undefined;
-        collected.push({
-          id: uid(),
-          createdAt: Date.now(),
+        if ((!instructions || instructions.length < 2) && lines.length) {
+          const start = instIdx >= 0 ? instIdx + 1 : Math.max(ingIdx + 1, 0);
+          const fallback = lines
+            .slice(start)
+            .map(stripBullet)
+            .filter(
+              (entry) =>
+                entry.length &&
+                !qtyRegex.test(entry) &&
+                !metaSuppress.test(entry),
+            );
+          if (fallback.length >= 2) instructions = fallback;
+        }
+
+        const headingLimit = ingIdx >= 0 ? ingIdx : Math.min(lines.length, 6);
+        const headingCandidates = lines.slice(0, Math.max(headingLimit, 1));
+        let title = "";
+        for (const candidate of headingCandidates) {
+          if (metaSuppress.test(candidate) || candidate.length < 3) continue;
+          if (
+            /^[A-Z][A-Za-z0-9\-\'\s]{2,80}$/.test(candidate) ||
+            /^[A-Za-z][A-Za-z0-9\-\'\s]{2,80}$/.test(candidate)
+          ) {
+            title = candidate.replace(/[:\-\s]+$/, "").trim();
+            break;
+          }
+        }
+        if (!title && fallbackTitle) title = fallbackTitle;
+        if (!title && lines.length) title = lines[0];
+        title = title.replace(/\s+/g, " ").trim();
+
+        const meta = parseMeta(lines.join("\n"));
+        return {
           title,
-          ingredients,
-          instructions,
-          sourceFile: f.name,
-        });
-        titles.push(title);
-      } catch (e: any) {
-        errors.push({ file: f.name, error: e?.message ?? "OCR failed" });
+          ingredients:
+            ingredients && ingredients.length ? ingredients : undefined,
+          instructions:
+            instructions && instructions.length ? instructions : undefined,
+          meta,
+        };
+      };
+
+      for (const f of files) {
+        if (!f.name.toLowerCase().endsWith("pdf")) {
+          errors.push({ file: f.name, error: "Unsupported PDF type" });
+          continue;
+        }
+        try {
+          const ab = await f.arrayBuffer();
+          const pdfjs: any = await import(
+            "https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs"
+          );
+          const workerSrc =
+            "https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs";
+          if (pdfjs.GlobalWorkerOptions)
+            pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
+          const doc = await pdfjs.getDocument({ data: ab }).promise;
+          const pageTexts: string[] = [];
+          const ocrEnabled = (() => {
+            try {
+              return localStorage.getItem("pdf:ocr") === "1";
+            } catch {
+              return false;
+            }
+          })();
+          let ocrBudget = Math.min(
+            48,
+            Math.max(24, Math.ceil(doc.numPages * 0.25)),
+          );
+          let tesseractModule: any | null = null;
+          const getTesseract = async () => {
+            if (!tesseractModule) {
+              tesseractModule = await import(
+                "https://esm.sh/tesseract.js@5.1.1"
+              );
+            }
+            return tesseractModule;
+          };
+          for (let p = 1; p <= doc.numPages; p++) {
+            const page = await doc.getPage(p);
+            const extracted = await extractPageText(page);
+            let t = extracted.text;
+            let charCount = extracted.charCount;
+            const lineCount = extracted.lines.length;
+            let wordCount = t.split(/\s+/).filter(Boolean).length;
+            const avgLineLength = lineCount ? charCount / lineCount : charCount;
+            const allowOcr = ocrEnabled || charCount === 0;
+            const shouldAttemptOcr =
+              allowOcr &&
+              ocrBudget > 0 &&
+              (charCount < 60 ||
+                wordCount < 12 ||
+                lineCount <= 3 ||
+                avgLineLength < 6);
+            if (shouldAttemptOcr) {
+              try {
+                const viewport = page.getViewport({ scale: 1.6 });
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+                if (ctx) {
+                  canvas.width = viewport.width;
+                  canvas.height = viewport.height;
+                  await page.render({ canvasContext: ctx, viewport }).promise;
+                  const dataUrl = canvas.toDataURL("image/png");
+                  const Tesseract: any = await getTesseract();
+                  const { data } = await Tesseract.recognize(
+                    await (await fetch(dataUrl)).arrayBuffer(),
+                    "eng",
+                  );
+                  const raw = String(data?.text || "").trim();
+                  if (raw) {
+                    const cleaned = raw
+                      .split(/\n/)
+                      .map((line) => line.replace(/\s+/g, " ").trim())
+                      .filter(Boolean)
+                      .join("\n");
+                    const ocrWordCount = cleaned
+                      .split(/\s+/)
+                      .filter(Boolean).length;
+                    if (ocrWordCount > wordCount) {
+                      t = cleaned;
+                      wordCount = ocrWordCount;
+                      charCount = cleaned.length;
+                    }
+                  }
+                }
+              } catch {}
+              ocrBudget = Math.max(0, ocrBudget - 1);
+            }
+            pageTexts.push(t);
+          }
+          const allLines = pageTexts
+            .join("\n")
+            .split(/\r?\n/)
+            .map(normLine)
+            .filter(Boolean);
+          // Learn from entire book regardless of what gets imported
+          learnFromPages(f.name.replace(/\.pdf$/i, ""), pageTexts);
+
+          // Parse appendix/TOC entries with flexible patterns
+          let indexEntries = allLines
+            .map((s) => {
+              const tests = [
+                /^(.{3,120}?)(?:[\.·•\s]{2,})(\d{1,4})(?:.*?\(\s*photo\s*(\d{1,4})\s*\))?$/i,
+                /^(.{3,120}?)\s{3,}(\d{1,4})(?:.*?\(\s*photo\s*(\d{1,4})\s*\))?$/i,
+                /^(.{3,120}?)\s+[-–—]\s*(\d{1,4})(?:.*?\(\s*photo\s*(\d{1,4})\s*\))?$/i,
+              ];
+              let m: RegExpMatchArray | null = null;
+              let photo: number | undefined;
+              for (const re of tests) {
+                const mm = s.match(re);
+                if (mm) {
+                  m = mm;
+                  photo = mm[3] ? parseInt(mm[3], 10) : undefined;
+                  break;
+                }
+              }
+              if (!m) return null;
+              const title = m[1].trim();
+              const page = parseInt(m[2], 10);
+              const bad =
+                /^(?:contents|index|appendix|recipes?|chapter|table of contents|fig(?:\.|ures?)?(?:\s*\d+)?|plates?(?:\s*\d+)?|illustrations?(?:\s*\d+)?|photos?(?:\s*\d+)?|tables?(?:\s*\d+)?|maps?(?:\s*\d+)?|yield\b|to convert\b)/i;
+              if (!title || bad.test(title)) return null;
+              return { title, page, photoPage: photo };
+            })
+            .filter(Boolean) as {
+            title: string;
+            page: number;
+            photoPage?: number;
+          }[];
+          // de-duplicate by page number
+          const seenPages: Record<number, boolean> = {};
+          indexEntries = indexEntries.filter(
+            (e) => !seenPages[e.page] && (seenPages[e.page] = true),
+          );
+
+          // Honor 'import all' flag to skip TOC
+          let importAll = false;
+          try {
+            importAll = localStorage.getItem("pdf:index:autoAll") === "1";
+          } catch {}
+          if (importAll) {
+            try {
+              localStorage.removeItem("pdf:index:autoAll");
+            } catch {}
+            indexEntries = [];
+          }
+
+          // Heuristic: treat as appendix if we have many entries
+          const bookTag = f.name.replace(/\.pdf$/i, "");
+          let importedFromIndex = 0;
+          if (indexEntries.length >= 20) {
+            // Optional selection filter from UI
+            let allow: Set<string> | null = null;
+            try {
+              const raw = localStorage.getItem("pdf:index:allow");
+              if (raw) allow = new Set(JSON.parse(raw));
+            } catch {}
+            if (allow)
+              indexEntries = indexEntries.filter((e) => allow!.has(e.title));
+            indexEntries = indexEntries.sort((a, b) => a.page - b.page);
+            for (let i = 0; i < indexEntries.length; i++) {
+              const cur = indexEntries[i];
+              const next = indexEntries[i + 1];
+              const start = Math.min(Math.max(cur.page, 1), doc.numPages);
+              const end = Math.min(
+                next ? next.page - 1 : doc.numPages,
+                doc.numPages,
+              );
+              const textRaw = pageTexts.slice(start - 1, end).join("\n");
+              const text = textRaw.split(/\n/).map(normLine).join("\n");
+              const structured = deriveStructuredRecipe(text);
+              if (!structured) continue;
+              const {
+                title: derivedTitle,
+                ingredients,
+                instructions,
+                meta,
+              } = structured;
+              const ingredientCount = ingredients?.length ?? 0;
+              const instructionCount = instructions?.length ?? 0;
+              if (ingredientCount < 2 && instructionCount < 3) continue;
+
+              let finalTitle = derivedTitle || cur.title;
+              if (!finalTitle || finalTitle.length < 3) finalTitle = cur.title;
+
+              let imgData: string | undefined;
+              const pageToRender =
+                cur.photoPage &&
+                cur.photoPage >= 1 &&
+                cur.photoPage <= doc.numPages
+                  ? cur.photoPage
+                  : start;
+              try {
+                const page = await doc.getPage(pageToRender);
+                const viewport = page.getViewport({ scale: 1.2 });
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+                if (ctx) {
+                  canvas.width = viewport.width;
+                  canvas.height = viewport.height;
+                  await page.render({ canvasContext: ctx, viewport }).promise;
+                  imgData = canvas.toDataURL("image/jpeg", 0.85);
+                }
+              } catch {}
+
+              collected.push({
+                id: uid(),
+                createdAt: Date.now(),
+                title: finalTitle || cur.title,
+                ingredients,
+                instructions,
+                tags: [bookTag],
+                imageDataUrls: imgData ? [imgData] : undefined,
+                sourceFile: f.name,
+                extra: {
+                  page: start,
+                  endPage: end,
+                  ...meta,
+                  source: "pdf-appendix",
+                },
+              });
+              titles.push(finalTitle || cur.title);
+              importedFromIndex++;
+            }
+            try {
+              localStorage.removeItem("pdf:index:allow");
+            } catch {}
+            if (importedFromIndex > 0) {
+              continue;
+            }
+          }
+
+          // Fallback: try marker-based multi-recipe detection across pages
+          const isLikelyIngredientList = (txt: string) => {
+            const lines = txt
+              .split(/\n/)
+              .map((s) => s.trim())
+              .filter(Boolean)
+              .slice(0, 80);
+            const qtyRe =
+              /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
+            let cnt = 0;
+            for (const L of lines) {
+              if (qtyRe.test(L) || /^[•\-*]\s+/.test(L)) cnt++;
+            }
+            return cnt >= 3;
+          };
+          const instWord =
+            /(instructions|directions|method|steps|preparation|procedure)\b/i;
+          const markerStarts: number[] = [];
+          // Forward scan
+          for (let p = 1; p <= doc.numPages; p++) {
+            const here = pageTexts[p - 1] || "";
+            const next1 = pageTexts[p] || "";
+            const next2 = pageTexts[p + 1] || "";
+            const hasIng =
+              /\bingredients?\b/i.test(here) || isLikelyIngredientList(here);
+            const hasInstNearby =
+              instWord.test([here, next1, next2].join("\n")) ||
+              /^(?:\d+\.|Step\s*\d+)/im.test([here, next1].join("\n"));
+            if (hasIng && hasInstNearby) {
+              if (
+                markerStarts.length === 0 ||
+                p - markerStarts[markerStarts.length - 1] > 1
+              )
+                markerStarts.push(p);
+            }
+          }
+          // If none, try reverse scan from back of book
+          if (markerStarts.length === 0) {
+            const rev: number[] = [];
+            for (let p = doc.numPages; p >= 1; p--) {
+              const here = pageTexts[p - 1] || "";
+              const prev1 = pageTexts[p - 2] || "";
+              const hasIng =
+                /\bingredients?\b/i.test(here) || isLikelyIngredientList(here);
+              const hasInstNearby =
+                instWord.test([here, prev1].join("\n")) ||
+                /^(?:\d+\.|Step\s*\d+)/im.test([here, prev1].join("\n"));
+              if (hasIng && hasInstNearby) {
+                if (rev.length === 0 || rev[rev.length - 1] - p > 1)
+                  rev.push(p);
+              }
+            }
+            rev.reverse();
+            markerStarts.push(...rev);
+          }
+          if (markerStarts.length >= 1) {
+            for (let i = 0; i < markerStarts.length; i++) {
+              const start = markerStarts[i];
+              const end =
+                i + 1 < markerStarts.length
+                  ? markerStarts[i + 1] - 1
+                  : doc.numPages;
+              const textRaw = pageTexts.slice(start - 1, end).join("\n");
+              const text = textRaw.split(/\n/).map(normLine).join("\n");
+              const structured = deriveStructuredRecipe(text);
+              if (!structured) continue;
+              const {
+                title: derivedTitle,
+                ingredients,
+                instructions,
+                meta,
+              } = structured;
+              const ingredientCount = ingredients?.length ?? 0;
+              const instructionCount = instructions?.length ?? 0;
+              if (ingredientCount < 2 && instructionCount < 3) continue;
+
+              let title = derivedTitle;
+              if (!title || title.length < 3) {
+                title = `${bookTag} p.${start}`;
+              }
+
+              let imgData: string | undefined;
+              try {
+                const page = await doc.getPage(start);
+                const viewport = page.getViewport({ scale: 1.1 });
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+                if (ctx) {
+                  canvas.width = viewport.width;
+                  canvas.height = viewport.height;
+                  await page.render({ canvasContext: ctx, viewport }).promise;
+                  imgData = canvas.toDataURL("image/jpeg", 0.85);
+                }
+              } catch {}
+
+              collected.push({
+                id: uid(),
+                createdAt: Date.now(),
+                title,
+                ingredients,
+                instructions,
+                tags: [bookTag],
+                imageDataUrls: imgData ? [imgData] : undefined,
+                sourceFile: f.name,
+                extra: {
+                  page: start,
+                  endPage: end,
+                  ...meta,
+                  source: "pdf-markers",
+                },
+              });
+              titles.push(title);
+            }
+          }
+
+          // Fallback: treat the entire document as a single recipe if it scores well
+          const text = pageTexts
+            .join("\n")
+            .split(/\n/)
+            .map(normLine)
+            .join("\n");
+          const structured = deriveStructuredRecipe(text);
+          if (structured) {
+            const {
+              title: derivedTitle,
+              ingredients,
+              instructions,
+              meta,
+            } = structured;
+            const ingredientCount = ingredients?.length ?? 0;
+            const instructionCount = instructions?.length ?? 0;
+            if (ingredientCount >= 2 || instructionCount >= 2) {
+              const title = derivedTitle || f.name.replace(/\.pdf$/i, "");
+              collected.push({
+                id: uid(),
+                createdAt: Date.now(),
+                title,
+                ingredients,
+                instructions,
+                sourceFile: f.name,
+                extra: { ...meta, source: "pdf-single" },
+              });
+              titles.push(title);
+            }
+          }
+        } catch (e: any) {
+          errors.push({
+            file: f.name,
+            error: e?.message ?? "Failed to read PDF",
+          });
+        }
       }
-    }
-    const { added } = appendRecipes(collected);
-    return { added: added.length, errors, titles };
-  }, [appendRecipes]);
+
+      const { added } = appendRecipes(collected);
+      return { added: added.length, errors, titles };
+    },
+    [appendRecipes],
+  );
+
+  const addRecipesFromExcelFiles = useCallback(
+    async (files: File[]) => {
+      const errors: { file: string; error: string }[] = [];
+      const collected: Recipe[] = [];
+      const titles: string[] = [];
+      for (const f of files) {
+        if (!/\.(xlsx|xls|csv)$/i.test(f.name)) {
+          errors.push({ file: f.name, error: "Unsupported spreadsheet type" });
+          continue;
+        }
+        try {
+          if (/\.csv$/i.test(f.name)) {
+            const text = await f.text();
+            const rows = text.split(/\r?\n/).map((l) => l.split(/,|\t/));
+            const header = rows.shift() || [];
+            const idx = (k: string) =>
+              header.findIndex((h) => h.trim().toLowerCase() === k);
+            const it = idx("title");
+            const ii = idx("ingredients");
+            const io = idx("instructions");
+            for (const r of rows) {
+              const title = (r[it] || "").trim();
+              if (!title) continue;
+              const ingredients = (r[ii] || "")
+                .split(/\n|;|\|/)
+                .map((s) => s.trim())
+                .filter(Boolean);
+              const instructions = (r[io] || "")
+                .split(/\n|\.|;\s/)
+                .map((s) => s.trim())
+                .filter(Boolean);
+              collected.push({
+                id: uid(),
+                createdAt: Date.now(),
+                title,
+                ingredients: ingredients.length ? ingredients : undefined,
+                instructions: instructions.length ? instructions : undefined,
+                sourceFile: f.name,
+              });
+              titles.push(title);
+              try {
+                const chunk = [title, ...ingredients, ...instructions].join(
+                  "\n",
+                );
+                learnFromTextChunks(f.name.replace(/\.[^.]+$/, ""), [chunk]);
+              } catch {}
+            }
+          } else {
+            const ab = await f.arrayBuffer();
+            const XLSX: any = await import("https://esm.sh/xlsx@0.18.5");
+            const wb = XLSX.read(ab, { type: "array" });
+            const ws = wb.Sheets[wb.SheetNames[0]];
+            const json = XLSX.utils.sheet_to_json(ws, { defval: "" });
+            for (const row of json) {
+              const title = String(
+                row.title ?? row.Name ?? row.Recipe ?? "",
+              ).trim();
+              if (!title) continue;
+              const ing = String(row.ingredients ?? row.Ingredients ?? "")
+                .split(/\n|;|\|/)
+                .map((s) => s.trim())
+                .filter(Boolean);
+              const ins = String(
+                row.instructions ?? row.Directions ?? row.Method ?? "",
+              )
+                .split(/\n|\.|;\s/)
+                .map((s) => s.trim())
+                .filter(Boolean);
+              collected.push({
+                id: uid(),
+                createdAt: Date.now(),
+                title,
+                ingredients: ing.length ? ing : undefined,
+                instructions: ins.length ? ins : undefined,
+                sourceFile: f.name,
+              });
+              titles.push(title);
+              try {
+                const chunk = [title, ...ing, ...ins].join("\n");
+                learnFromTextChunks(f.name.replace(/\.[^.]+$/, ""), [chunk]);
+              } catch {}
+            }
+          }
+        } catch (e: any) {
+          errors.push({
+            file: f.name,
+            error: e?.message ?? "Failed to read spreadsheet",
+          });
+        }
+      }
+      const { added } = appendRecipes(collected);
+      return { added: added.length, errors, titles };
+    },
+    [appendRecipes],
+  );
+
+  const addRecipesFromImageOcr = useCallback(
+    async (files: File[]) => {
+      const errors: { file: string; error: string }[] = [];
+      const collected: Recipe[] = [];
+      const titles: string[] = [];
+      for (const f of files) {
+        try {
+          const Tesseract: any = await import(
+            "https://esm.sh/tesseract.js@5.1.1"
+          );
+          const { data } = await Tesseract.recognize(
+            await f.arrayBuffer(),
+            "eng",
+          );
+          const raw = String(data?.text || "").trim();
+          if (!raw) {
+            errors.push({ file: f.name, error: "No text detected" });
+            continue;
+          }
+          const lines = raw
+            .split(/\r?\n/)
+            .map((s) => s.trim())
+            .filter(Boolean);
+          try {
+            learnFromTextChunks(f.name.replace(/\.[^.]+$/, ""), [raw]);
+          } catch {}
+          const title =
+            lines[0] || f.name.replace(/\.(png|jpe?g|webp|heic)$/i, "");
+          const lower = lines.map((l) => l.toLowerCase());
+          const find = (labels: string[]) =>
+            lower.findIndex((l) => labels.includes(l));
+          const ingIdx = find(["ingredients", "ingredient"]);
+          const instIdx = find([
+            "instructions",
+            "directions",
+            "method",
+            "steps",
+          ]);
+          const getRange = (start: number, end: number) =>
+            lines
+              .slice(start + 1, end > start ? end : undefined)
+              .filter(Boolean);
+          const ingredients =
+            ingIdx >= 0
+              ? getRange(ingIdx, instIdx >= 0 ? instIdx : lines.length)
+              : undefined;
+          const instructions =
+            instIdx >= 0 ? getRange(instIdx, lines.length) : undefined;
+          collected.push({
+            id: uid(),
+            createdAt: Date.now(),
+            title,
+            ingredients,
+            instructions,
+            sourceFile: f.name,
+          });
+          titles.push(title);
+        } catch (e: any) {
+          errors.push({ file: f.name, error: e?.message ?? "OCR failed" });
+        }
+      }
+      const { added } = appendRecipes(collected);
+      return { added: added.length, errors, titles };
+    },
+    [appendRecipes],
+  );
 
   const addFromZipArchive = useCallback(
     async (file: File) => {
@@ -3141,7 +3354,9 @@ const createTileBoard = useCallback(
       }
 
       if (nextImages.length) setImages((prev) => [...nextImages, ...prev]);
-      const addedInfo = nextRecipes.length ? appendRecipes(nextRecipes) : { added: [] as Recipe[], duplicates: [] as Recipe[] };
+      const addedInfo = nextRecipes.length
+        ? appendRecipes(nextRecipes)
+        : { added: [] as Recipe[], duplicates: [] as Recipe[] };
       if (addedInfo.added.length) {
         setTimeout(linkImagesToRecipesByFilename, 0);
       }
@@ -3222,9 +3437,7 @@ const createTileBoard = useCallback(
     );
   }, []);
   const updateRecipeTags = useCallback((id: string, tags: string[]) => {
-    setRecipes((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, tags } : r)),
-    );
+    setRecipes((prev) => prev.map((r) => (r.id === id ? { ...r, tags } : r)));
   }, []);
   const deleteRecipe = useCallback((id: string) => {
     setRecipes((prev) =>
@@ -3399,7 +3612,11 @@ const createTileBoard = useCallback(
       await pushImg(lab, (index * 25) % 360, `${lab.toLowerCase()}-demo.jpg`);
     }
     for (const [index, lab] of otherNames.entries()) {
-      await pushImg(lab, (index * 60 + 180) % 360, `${lab.toLowerCase()}-demo.jpg`);
+      await pushImg(
+        lab,
+        (index * 60 + 180) % 360,
+        `${lab.toLowerCase()}-demo.jpg`,
+      );
     }
     if (next.length) setImages((prev) => [...next, ...prev]);
     return next.length;

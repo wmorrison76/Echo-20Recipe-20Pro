@@ -23,12 +23,21 @@ if (sentryDsn) {
         blockAllMedia: true,
       }),
     ],
-    tracesSampleRate: parseFloat(import.meta.env.VITE_SENTRY_TRACES_SAMPLE_RATE || "0.1"),
-    replaysSessionSampleRate: parseFloat(import.meta.env.VITE_SENTRY_REPLAYS_SESSION_SAMPLE_RATE || "0.1"),
-    replaysOnErrorSampleRate: parseFloat(import.meta.env.VITE_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE || "1.0"),
-    environment: import.meta.env.VITE_SENTRY_ENVIRONMENT || import.meta.env.MODE,
+    tracesSampleRate: parseFloat(
+      import.meta.env.VITE_SENTRY_TRACES_SAMPLE_RATE || "0.1",
+    ),
+    replaysSessionSampleRate: parseFloat(
+      import.meta.env.VITE_SENTRY_REPLAYS_SESSION_SAMPLE_RATE || "0.1",
+    ),
+    replaysOnErrorSampleRate: parseFloat(
+      import.meta.env.VITE_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE || "1.0",
+    ),
+    environment:
+      import.meta.env.VITE_SENTRY_ENVIRONMENT || import.meta.env.MODE,
     sendDefaultPii: true,
-    enabled: import.meta.env.PROD || import.meta.env.VITE_ENABLE_ERROR_REPORTING === "true",
+    enabled:
+      import.meta.env.PROD ||
+      import.meta.env.VITE_ENABLE_ERROR_REPORTING === "true",
   });
 }
 
@@ -100,7 +109,10 @@ class ErrorBoundary extends React.Component<
           }}
         >
           <h2 style={{ marginTop: 0 }}>Something went wrong</h2>
-          <p>We've reported this error to our team. Please try refreshing the page.</p>
+          <p>
+            We've reported this error to our team. Please try refreshing the
+            page.
+          </p>
           <button
             onClick={() => window.location.reload()}
             style={{

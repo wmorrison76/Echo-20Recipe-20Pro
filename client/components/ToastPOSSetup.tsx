@@ -22,7 +22,9 @@ export const ToastPOSSetup: React.FC<ToastPOSSetupProps> = ({
   const [step, setStep] = useState<"form" | "testing" | "connected">("form");
   const [restaurantId, setRestaurantId] = useState("");
   const [apiKey, setApiKey] = useState("");
-  const [environment, setEnvironment] = useState<"production" | "staging">("production");
+  const [environment, setEnvironment] = useState<"production" | "staging">(
+    "production",
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -82,7 +84,8 @@ export const ToastPOSSetup: React.FC<ToastPOSSetupProps> = ({
             <Alert className="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
               <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
               <AlertDescription className="text-blue-800 dark:text-blue-200">
-                Get your API credentials from your Toast POS account under Settings → Developer API.
+                Get your API credentials from your Toast POS account under
+                Settings → Developer API.
               </AlertDescription>
             </Alert>
 
@@ -112,7 +115,8 @@ export const ToastPOSSetup: React.FC<ToastPOSSetupProps> = ({
                 disabled={loading}
               />
               <p className="text-xs text-muted-foreground">
-                Never share this key. It's encrypted and only stored in your session.
+                Never share this key. It's encrypted and only stored in your
+                session.
               </p>
             </div>
 
@@ -120,7 +124,9 @@ export const ToastPOSSetup: React.FC<ToastPOSSetupProps> = ({
               <label className="text-sm font-semibold">Environment</label>
               <select
                 value={environment}
-                onChange={(e) => setEnvironment(e.target.value as "production" | "staging")}
+                onChange={(e) =>
+                  setEnvironment(e.target.value as "production" | "staging")
+                }
                 className="w-full rounded border border-input px-3 py-2 text-sm"
                 disabled={loading}
               >
@@ -152,7 +158,8 @@ export const ToastPOSSetup: React.FC<ToastPOSSetupProps> = ({
             <Alert className="bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800">
               <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
               <AlertDescription className="text-green-800 dark:text-green-200">
-                Successfully connected to Toast POS! You can now sync menus and import orders.
+                Successfully connected to Toast POS! You can now sync menus and
+                import orders.
               </AlertDescription>
             </Alert>
 
@@ -181,7 +188,11 @@ export const ToastPOSSetup: React.FC<ToastPOSSetupProps> = ({
               </ul>
             </div>
 
-            <Button variant="destructive" onClick={handleDisconnect} className="w-full">
+            <Button
+              variant="destructive"
+              onClick={handleDisconnect}
+              className="w-full"
+            >
               Disconnect from Toast POS
             </Button>
           </div>
@@ -193,10 +204,12 @@ export const ToastPOSSetup: React.FC<ToastPOSSetupProps> = ({
             <p className="text-sm font-semibold">Next Steps</p>
             <div className="space-y-2 text-sm">
               <p>
-                1. Go to <strong>Menu Sync</strong> to push your recipes to Toast POS
+                1. Go to <strong>Menu Sync</strong> to push your recipes to
+                Toast POS
               </p>
               <p>
-                2. Enable <strong>Real-Time Order Sync</strong> to automatically import sales
+                2. Enable <strong>Real-Time Order Sync</strong> to automatically
+                import sales
               </p>
               <p>
                 3. View <strong>Toast Sales Dashboard</strong> for cost analysis

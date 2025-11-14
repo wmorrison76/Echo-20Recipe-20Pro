@@ -1,7 +1,17 @@
-import { useMemo, useState, useCallback, Dispatch, SetStateAction, FormEvent } from "react";
+import {
+  useMemo,
+  useState,
+  useCallback,
+  Dispatch,
+  SetStateAction,
+  FormEvent,
+} from "react";
 
 import { textureAtlas } from "@/data/textureReference";
-import { flavorConstellationLibrary, futureFoodDrivers } from "@/data/flavorMatrix";
+import {
+  flavorConstellationLibrary,
+  futureFoodDrivers,
+} from "@/data/flavorMatrix";
 import { useRDLabStore } from "@/stores/rdLabStore";
 import { cn } from "@/lib/utils";
 
@@ -46,15 +56,19 @@ export function DiscoveryPanel() {
   const [draftTags, setDraftTags] = useState("");
   const [draftLaunchWindow, setDraftLaunchWindow] = useState("");
   const [draftTextureObjectives, setDraftTextureObjectives] = useState("");
-  const [draftFlavorConstellations, setDraftFlavorConstellations] = useState("");
+  const [draftFlavorConstellations, setDraftFlavorConstellations] =
+    useState("");
   const [draftFutureAngles, setDraftFutureAngles] = useState("");
 
-  const pushDraftLine = useCallback((setter: Dispatch<SetStateAction<string>>, value: string) => {
-    setter((prev) => {
-      const trimmed = prev.trim();
-      return trimmed.length ? `${trimmed}\n${value}` : value;
-    });
-  }, []);
+  const pushDraftLine = useCallback(
+    (setter: Dispatch<SetStateAction<string>>, value: string) => {
+      setter((prev) => {
+        const trimmed = prev.trim();
+        return trimmed.length ? `${trimmed}\n${value}` : value;
+      });
+    },
+    [],
+  );
 
   const splitList = (value: string) =>
     value
@@ -114,8 +128,12 @@ export function DiscoveryPanel() {
         />
         <div className="mt-3 flex flex-wrap items-center gap-3 text-[10px] uppercase tracking-[0.35em] text-accent dark:text-cyan-100/70">
           <span className="chalk-breath">Textures {textureAtlas.length}</span>
-          <span className="chalk-breath">Constellations {flavorConstellationLibrary.length}</span>
-          <span className="chalk-breath">Drivers {futureFoodDrivers.length}</span>
+          <span className="chalk-breath">
+            Constellations {flavorConstellationLibrary.length}
+          </span>
+          <span className="chalk-breath">
+            Drivers {futureFoodDrivers.length}
+          </span>
         </div>
       </div>
 
@@ -124,9 +142,13 @@ export function DiscoveryPanel() {
           Rapid prototyping
         </div>
         <p className="mt-1 text-[11px] text-foreground dark:text-cyan-200/70">
-          Spin up a fresh experiment with hypothesis, variables, and target service window before you hit the bench.
+          Spin up a fresh experiment with hypothesis, variables, and target
+          service window before you hit the bench.
         </p>
-        <form onSubmit={handleCreateExperiment} className="mt-3 space-y-3 text-xs text-foreground dark:text-cyan-200/80">
+        <form
+          onSubmit={handleCreateExperiment}
+          className="mt-3 space-y-3 text-xs text-foreground dark:text-cyan-200/80"
+        >
           <div className="grid gap-2 md:grid-cols-2">
             <input
               value={draftTitle}
@@ -174,14 +196,18 @@ export function DiscoveryPanel() {
           <div className="grid gap-2 md:grid-cols-2">
             <textarea
               value={draftTextureObjectives}
-              onChange={(event) => setDraftTextureObjectives(event.target.value)}
+              onChange={(event) =>
+                setDraftTextureObjectives(event.target.value)
+              }
               placeholder="Texture objectives (comma or newline separated)"
               rows={2}
               className="w-full rounded-lg border border-border dark:border-cyan-500/20 bg-card dark:bg-slate-950/60 px-3 py-2 text-sm text-foreground dark:text-cyan-100 shadow-sm outline-none transition focus:border-emerald-400 dark:focus:border-emerald-400 focus:bg-card dark:focus:bg-white"
             />
             <textarea
               value={draftFlavorConstellations}
-              onChange={(event) => setDraftFlavorConstellations(event.target.value)}
+              onChange={(event) =>
+                setDraftFlavorConstellations(event.target.value)
+              }
               placeholder="Flavor constellations (comma or newline separated)"
               rows={2}
               className="w-full rounded-lg border border-border dark:border-cyan-500/20 bg-card dark:bg-slate-950/60 px-3 py-2 text-sm text-foreground dark:text-cyan-100 shadow-sm outline-none transition focus:border-rose-400 dark:focus:border-rose-400 focus:bg-card dark:focus:bg-white"
@@ -209,7 +235,9 @@ export function DiscoveryPanel() {
             />
           </div>
           <div className="flex items-center justify-between gap-3 text-[11px] uppercase tracking-[0.3em] text-muted-foreground dark:text-cyan-200/70">
-            <span>Use quick adds below or split entries with commas or new lines.</span>
+            <span>
+              Use quick adds below or split entries with commas or new lines.
+            </span>
             <button
               type="submit"
               disabled={isCreateDisabled}
@@ -258,14 +286,20 @@ export function DiscoveryPanel() {
                 <div className="mt-1 flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.3em] text-muted-foreground dark:text-cyan-300/60">
                   <span>Variables:</span>
                   {experiment.variablesUnderTest.slice(0, 3).map((variable) => (
-                    <span key={variable} className="rounded-full border border-border dark:border-cyan-400/30 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em]">
+                    <span
+                      key={variable}
+                      className="rounded-full border border-border dark:border-cyan-400/30 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em]"
+                    >
                       {variable}
                     </span>
                   ))}
                 </div>
                 <div className="flex flex-wrap gap-2 text-[11px] font-medium uppercase tracking-[0.35em] text-muted-foreground dark:text-cyan-300/70">
                   {experiment.tags.map((tag) => (
-                    <span key={tag} className="rounded-full bg-muted dark:bg-cyan-500/10 px-2 py-1">
+                    <span
+                      key={tag}
+                      className="rounded-full bg-muted dark:bg-cyan-500/10 px-2 py-1"
+                    >
                       {tag}
                     </span>
                   ))}
@@ -286,7 +320,10 @@ export function DiscoveryPanel() {
         </div>
         <div className="space-y-3">
           {textureAtlas.map((texture) => (
-            <div key={texture.id} className="rounded-xl border border-border dark:border-cyan-500/20 bg-input dark:bg-cyan-500/5 p-3">
+            <div
+              key={texture.id}
+              className="rounded-xl border border-border dark:border-cyan-500/20 bg-input dark:bg-cyan-500/5 p-3"
+            >
               <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.35em] text-muted-foreground dark:text-cyan-200/70">
                 <span>{texture.family}</span>
                 <span>{texture.descriptors.join(" • ")}</span>
@@ -314,7 +351,7 @@ export function DiscoveryPanel() {
                   onClick={() =>
                     pushDraftLine(
                       setDraftTextureObjectives,
-                      `${texture.family}: ${texture.descriptors.join(" / ")} finish`
+                      `${texture.family}: ${texture.descriptors.join(" / ")} finish`,
                     )
                   }
                   className="rounded-full border border-border dark:border-cyan-500/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-muted-foreground dark:text-cyan-200/80 transition hover:border-accent dark:hover:border-cyan-400 hover:text-foreground dark:hover:text-cyan-50"
@@ -333,7 +370,10 @@ export function DiscoveryPanel() {
         </div>
         <div className="space-y-3">
           {flavorConstellationLibrary.map((constellation) => (
-            <div key={constellation.id} className="rounded-xl border border-border dark:border-cyan-500/20 bg-input dark:bg-cyan-500/5 p-3">
+            <div
+              key={constellation.id}
+              className="rounded-xl border border-border dark:border-cyan-500/20 bg-input dark:bg-cyan-500/5 p-3"
+            >
               <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.35em] text-muted-foreground dark:text-cyan-200/70">
                 <span>{constellation.name}</span>
                 <span>{constellation.futureAngle}</span>
@@ -341,7 +381,9 @@ export function DiscoveryPanel() {
               <div className="mt-2 text-[12px] font-semibold uppercase tracking-[0.35em] text-foreground dark:text-cyan-100">
                 Texture hook
               </div>
-              <p className="text-[12px] text-foreground dark:text-cyan-100/80">{constellation.textureHook}</p>
+              <p className="text-[12px] text-foreground dark:text-cyan-100/80">
+                {constellation.textureHook}
+              </p>
               <div className="mt-2 text-[12px] font-semibold uppercase tracking-[0.35em] text-foreground dark:text-cyan-200/80">
                 Flavor drivers
               </div>
@@ -356,7 +398,7 @@ export function DiscoveryPanel() {
                   onClick={() =>
                     pushDraftLine(
                       setDraftFlavorConstellations,
-                      `${constellation.name}: ${constellation.flavorDrivers.slice(0, 2).join(" + ")}`
+                      `${constellation.name}: ${constellation.flavorDrivers.slice(0, 2).join(" + ")}`,
                     )
                   }
                   className="rounded-full border border-border dark:border-cyan-500/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-muted-foreground dark:text-cyan-200/80 transition hover:border-accent dark:hover:border-cyan-400 hover:text-foreground dark:hover:text-cyan-50"
@@ -375,11 +417,16 @@ export function DiscoveryPanel() {
         </div>
         <div className="space-y-3">
           {futureFoodDrivers.map((driver) => (
-            <div key={driver.id} className="rounded-xl border border-border dark:border-cyan-500/20 bg-input dark:bg-cyan-500/5 p-3">
+            <div
+              key={driver.id}
+              className="rounded-xl border border-border dark:border-cyan-500/20 bg-input dark:bg-cyan-500/5 p-3"
+            >
               <div className="text-[12px] font-semibold uppercase tracking-[0.35em] text-foreground dark:text-cyan-100">
                 {driver.theme}
               </div>
-              <p className="mt-1 text-[12px] text-foreground dark:text-cyan-100/80">{driver.insight}</p>
+              <p className="mt-1 text-[12px] text-foreground dark:text-cyan-100/80">
+                {driver.insight}
+              </p>
               <div className="mt-2 text-[11px] italic text-muted-foreground dark:text-cyan-200/70">
                 {driver.signal}
               </div>
@@ -392,7 +439,7 @@ export function DiscoveryPanel() {
                   onClick={() =>
                     pushDraftLine(
                       setDraftFutureAngles,
-                      `${driver.theme}: ${driver.insight}`
+                      `${driver.theme}: ${driver.insight}`,
                     )
                   }
                   className="rounded-full border border-border dark:border-cyan-500/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-muted-foreground dark:text-cyan-200/80 transition hover:border-accent dark:hover:border-cyan-400 hover:text-foreground dark:hover:text-cyan-50"

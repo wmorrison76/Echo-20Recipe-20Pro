@@ -287,7 +287,8 @@ export async function checkIngredientAvailability(
     let totalCost = 0;
 
     for (const need of needs) {
-      const requiredQuantity = (need.requiredQuantity / baseServings) * servings;
+      const requiredQuantity =
+        (need.requiredQuantity / baseServings) * servings;
       const inventoryQuantity = requiredQuantity / (need.available || 1);
 
       totalCost += need.totalCost;
@@ -349,7 +350,8 @@ export async function allocateInventoryForRecipe(
     const allocations: InventoryAllocation[] = [];
 
     for (const need of needs) {
-      const inventoryQuantity = (need.requiredQuantity / baseServings) * servings;
+      const inventoryQuantity =
+        (need.requiredQuantity / baseServings) * servings;
 
       // Create allocation record
       const { data: allocation, error: allocError } = await supabase
