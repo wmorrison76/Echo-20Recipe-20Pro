@@ -2895,9 +2895,23 @@ const RecipeInputPage = () => {
                       <span className={infoLabelClass}>
                         {t("recipe.labels.portionCost", "PORTION COST")}
                       </span>
-                      <span className={infoValuePillClass}>
-                        {`${getCurrencySymbol(currentCurrency)}${calculatePortionCost().toFixed(2)}`}
-                      </span>
+                      <div className="flex items-center gap-1">
+                        <span className={infoValuePillClass}>
+                          {`${getCurrencySymbol(currentCurrency)}${calculatePortionCost().toFixed(2)}`}
+                        </span>
+                        {(() => {
+                          const costAudit = auditRecipeCosts(ingredients);
+                          return costAudit.hasWarnings ? (
+                            <button
+                              type="button"
+                              title={`Missing costs for: ${costAudit.missingItems.join(", ")}`}
+                              className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                            >
+                              ⚠
+                            </button>
+                          ) : null;
+                        })()}
+                      </div>
                     </div>
 
                     <div className="col-span-2 flex flex-col items-center gap-0.5 md:col-span-2">
