@@ -3912,23 +3912,31 @@ const RecipeInputPage = () => {
                 <div className="text-red-500 text-sm">{nutritionError}</div>
               )}
               {nutritionDisplay && (
-                <div className="flex flex-col md:flex-row gap-3">
-                  <NutritionLabel
-                    data={nutritionDisplay}
-                    servings={servingsForLabel}
-                    perServing={nutritionPerServing}
+                <div className="space-y-4">
+                  <NutritionAuditPanel
+                    nutrition={nutritionPerServing ? nutritionDisplay.perServing : nutritionDisplay}
+                    servingSize={nutritionDisplay.servingSize}
+                    servingsPerContainer={servingsForLabel}
+                    recipeName={recipeName}
                   />
-                  <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-3 text-sm self-start">
-                    <div>
-                      <span className="font-semibold">Yield:</span> {yieldQty}{" "}
-                      {yieldUnit}
-                    </div>
-                    <div>
-                      <span className="font-semibold">Servings:</span>{" "}
-                      {servingsForLabel}
-                    </div>
-                    <div>
-                      <span className="font-semibold">Unit:</span> {portionUnit}
+                  <div className="flex flex-col md:flex-row gap-3">
+                    <NutritionLabel
+                      data={nutritionDisplay}
+                      servings={servingsForLabel}
+                      perServing={nutritionPerServing}
+                    />
+                    <div className="flex-1 grid grid-cols-2 md:grid-cols-3 gap-3 text-sm self-start">
+                      <div>
+                        <span className="font-semibold">Yield:</span> {yieldQty}{" "}
+                        {yieldUnit}
+                      </div>
+                      <div>
+                        <span className="font-semibold">Servings:</span>{" "}
+                        {servingsForLabel}
+                      </div>
+                      <div>
+                        <span className="font-semibold">Unit:</span> {portionUnit}
+                      </div>
                     </div>
                   </div>
                 </div>
