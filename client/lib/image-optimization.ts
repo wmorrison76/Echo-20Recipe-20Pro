@@ -109,7 +109,7 @@ export function lazyLoadImage(
         const image = entry.target as HTMLImageElement;
         image.src = src;
         if (srcset) {
-          image.srcSet = srcset;
+          image.srcset = srcset;
         }
         image.classList.add('loaded');
         observer.unobserve(image);
