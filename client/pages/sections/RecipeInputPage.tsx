@@ -3341,6 +3341,7 @@ const RecipeInputPage = () => {
                 onGridKeyDown={onGridKeyDown}
                 onAddSubRecipe={() => setIsSubRecipePickerOpen(true)}
                 onAddDivider={addDividerRow}
+                onIngredientSelected={handleIngredientSelected}
               />
 
               <SubRecipePicker
