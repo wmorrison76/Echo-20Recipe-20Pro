@@ -183,7 +183,7 @@ export function auditNutrition(
   const dvFields = ["vitaminA", "vitaminC", "calcium", "iron"];
   dvFields.forEach((field) => {
     const value = nutrition[field as keyof NutritionData];
-    if (value !== undefined) {
+    if (value !== undefined && typeof value === 'number') {
       if (value < 0 || value > 100) {
         warnings.push({
           field,
