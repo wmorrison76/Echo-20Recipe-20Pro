@@ -314,7 +314,6 @@ function AssignOutletRoleDialog({
             <Button
               onClick={handleAssign}
               disabled={!selectedOutlet || isSaving}
-              loading={isSaving}
             >
               Assign Role
             </Button>

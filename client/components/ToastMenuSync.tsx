@@ -11,13 +11,14 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { useAppData } from "@/context/AppDataContext";
-import {
-  syncRecipesToToast,
-  type ToastConfig,
-} from "@/lib/toast-pos-integration";
+// Toast POS integration - currently unused
+// import {
+//   syncRecipesToToast,
+//   type ToastConfig,
+// } from "@/lib/toast-pos-integration";
 
 interface ToastMenuSyncProps {
-  toastConfig: ToastConfig;
+  toastConfig: any; // TODO: Define proper type when Toast POS integration is implemented
   onSyncComplete?: (result: {
     itemsSynced: number;
     itemsFailed: number;

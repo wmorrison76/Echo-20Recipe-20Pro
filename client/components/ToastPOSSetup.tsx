@@ -3,14 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, CheckCircle, Loader2, Power } from "lucide-react";
-import {
-  initializeToastConnection,
-  clearToastConfig,
-  type ToastConfig,
-} from "@/lib/toast-pos-integration";
+// Toast POS integration - currently unused
+// import {
+//   initializeToastConnection,
+//   clearToastConfig,
+//   type ToastConfig,
+// } from "@/lib/toast-pos-integration";
 
 interface ToastPOSSetupProps {
-  onConnected?: (config: ToastConfig) => void;
+  onConnected?: (config: any) => void; // TODO: Define proper type when Toast POS integration is implemented
   onDisconnected?: () => void;
 }
 

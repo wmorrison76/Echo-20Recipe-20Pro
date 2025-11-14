@@ -147,8 +147,8 @@ export const ProductionSheetGenerator: React.FC<ProductionSheetGeneratorProps> =
     doc.save(`production-sheet-${date}.pdf`);
   }, [generatePDF, date]);
 
-  const handlePrint = useCallback(() => {
-    const doc = generatePDF();
+  const handlePrint = useCallback(async () => {
+    const doc = await generatePDF();
     const pdfString = doc.output("dataurlstring");
     const printWindow = window.open(pdfString);
     if (printWindow) {
