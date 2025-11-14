@@ -38,7 +38,6 @@ import SubRecipePicker, {
   type SubRecipeOption,
 } from "@/components/SubRecipePicker";
 import YieldLabForm from "@/components/YieldLabForm";
-import { RecipeEditorCostingPanel } from "@/components/RecipeEditorCostingPanel";
 import { useYieldStore } from "@/context/YieldContext";
 import { usePageToolbar } from "@/context/PageToolbarContext";
 import { useCollaboration } from "@/context/CollaborationContext";
