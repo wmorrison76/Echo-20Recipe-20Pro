@@ -7,6 +7,7 @@ import React, {
   useState,
   useRef,
 } from "react";
+import JSZip from "jszip";
 import mockRecipes from "@/data/mockRecipes";
 import { KITCHEN_STATIONS, CHIT_PRINTERS } from "@/data/kitchenStations";
 import { DEMO_PLACEHOLDERS, FALLBACK_GALLERY_IMAGE } from "@/lib/placeholders";
