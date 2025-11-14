@@ -207,7 +207,7 @@ export async function recordScannedItem(
     // Get inventory item
     const { data: item } = await supabase
       .from("inventory_items")
-      .select("id")
+      .select("id, quantity")
       .eq("outlet_id", outletId)
       .eq("sku", sku)
       .single();
