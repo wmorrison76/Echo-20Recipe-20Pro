@@ -240,7 +240,7 @@ describe('MobileRecipeSyncManager', () => {
 
   describe('Conflict Resolution', () => {
     it('should set conflict resolver', async () => {
-      const resolver = vi.fn(async () => 'local');
+      const resolver = vi.fn(async (): Promise<'local' | 'remote'> => 'local');
 
       mobileSync.setConflictResolver(resolver);
       expect(mobileSync).toBeDefined();
@@ -259,7 +259,7 @@ describe('MobileRecipeSyncManager', () => {
     });
 
     it('should handle last-write-wins resolution', async () => {
-      const resolver = async (conflict: any) => {
+      const resolver = async (conflict: any): Promise<'local' | 'remote'> => {
         return 'local'; // Always prefer local
       };
 
