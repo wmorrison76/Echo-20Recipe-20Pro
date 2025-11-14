@@ -326,7 +326,7 @@ class MobileRecipeSyncManager {
    */
   private startSyncInterval() {
     if (this.syncIntervalId) {
-      clearInterval(this.syncIntervalId);
+      clearInterval(this.syncIntervalId as ReturnType<typeof setInterval>);
     }
 
     this.syncIntervalId = setInterval(async () => {
@@ -556,7 +556,7 @@ class MobileRecipeSyncManager {
    */
   cleanup() {
     if (this.syncIntervalId) {
-      clearInterval(this.syncIntervalId);
+      clearInterval(this.syncIntervalId as ReturnType<typeof setInterval>);
     }
 
     window.removeEventListener('online', () => this.handleOnline());
