@@ -11,9 +11,11 @@ import RightSidebar from "./RightSidebar";
 import { useAppData } from "@/context/AppDataContext";
 import ImageEditorModal from "./ImageEditorModal";
 import NutritionLabel from "./NutritionLabel";
+import { NutritionAuditPanel } from "@/components/NutritionAuditPanel";
 import LanguageMenu from "@/components/LanguageMenu";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "@/context/LanguageContext";
+import { auditRecipeCosts } from "@/lib/ingredient-purchasing-sync";
 import { defaultSelection, TaxonomySelection } from "@/lib/taxonomy";
 import {
   RDLabProvider,
