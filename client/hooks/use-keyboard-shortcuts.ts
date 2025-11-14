@@ -64,6 +64,7 @@ export function useKeyboardShortcut(
 export function normalizeShortcut(
   keyCombo: string,
 ): KeyboardShortcutConfig["key"] {
+  if (!keyCombo) return "";
   const parts = keyCombo.toLowerCase().split("+");
   return parts[parts.length - 1];
 }
@@ -72,6 +73,14 @@ export function parseShortcut(keyCombo: string): Omit<
   KeyboardShortcutConfig,
   "key" | "handler"
 > {
+  if (!keyCombo) {
+    return {
+      meta: false,
+      ctrl: false,
+      shift: false,
+      alt: false,
+    };
+  }
   const parts = keyCombo.toLowerCase().split("+");
   return {
     meta: parts.includes("cmd") || parts.includes("meta"),
