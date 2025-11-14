@@ -36,11 +36,11 @@ function RDLabsWorkspaceContent() {
 
   if (!store) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
+      <div className="w-full h-full flex items-center justify-center bg-background dark:bg-gradient-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-foreground dark:text-white">
         <div className="text-center space-y-4">
-          <Beaker className="h-16 w-16 mx-auto text-cyan-400 opacity-50" />
+          <Beaker className="h-16 w-16 mx-auto text-accent dark:text-cyan-400 opacity-50" />
           <p className="text-xl font-bold">R&D Labs</p>
-          <p className="text-sm text-slate-400">Initializing research environment...</p>
+          <p className="text-sm text-muted-foreground dark:text-slate-400">Initializing research environment...</p>
         </div>
       </div>
     );
@@ -51,7 +51,7 @@ function RDLabsWorkspaceContent() {
 
   if (showDashboard) {
     return (
-      <div className="w-full h-full bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      <div className="w-full h-full bg-background dark:bg-gradient-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
         <ProjectDashboard
           onSelectProject={() => setShowDashboard(false)}
           onCreateProject={() => {
@@ -72,36 +72,36 @@ function RDLabsWorkspaceContent() {
   }
 
   return (
-    <div className="w-full h-full flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+    <div className="w-full h-full flex flex-col bg-background dark:bg-gradient-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-foreground dark:text-slate-100">
       {/* Professional Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-cyan-500/20 bg-slate-900/40 backdrop-blur-sm">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-accent/20 dark:border-cyan-500/20 bg-input dark:bg-slate-900/40 backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <div className={`p-2 rounded-lg border ${
             labMode === "pastry"
-              ? "bg-rose-500/10 border-rose-500/20"
-              : "bg-cyan-500/10 border-cyan-500/20"
+              ? "bg-amber-100 dark:bg-rose-500/10 border-amber-300 dark:border-rose-500/20"
+              : "bg-cyan-100 dark:bg-cyan-500/10 border-cyan-300 dark:border-cyan-500/20"
           }`}>
             {labMode === "pastry" ? (
-              <Sparkles className="h-5 w-5 text-rose-400" />
+              <Sparkles className="h-5 w-5 text-amber-700 dark:text-rose-400" />
             ) : (
-              <Beaker className="h-5 w-5 text-cyan-400" />
+              <Beaker className="h-5 w-5 text-cyan-700 dark:text-cyan-400" />
             )}
           </div>
           <div>
             <h1 className={`text-2xl font-bold ${
-              labMode === "pastry" ? "text-rose-300" : "text-cyan-300"
+              labMode === "pastry" ? "text-amber-700 dark:text-rose-300" : "text-cyan-700 dark:text-cyan-300"
             }`}>
               R&D Labs
             </h1>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-muted-foreground dark:text-slate-400">
               {labMode === "pastry" ? "Pastry Research & Development" : "Culinary Research & Development"}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <div className="text-right text-sm">
-            <p className="text-slate-300 font-medium">{experimentsCount} Active Experiments</p>
-            <p className="text-slate-500 text-xs">Research in progress</p>
+            <p className="text-foreground dark:text-slate-300 font-medium">{experimentsCount} Active Experiments</p>
+            <p className="text-muted-foreground dark:text-slate-500 text-xs">Research in progress</p>
           </div>
           <div className="flex gap-2">
             <Button
@@ -110,7 +110,7 @@ function RDLabsWorkspaceContent() {
               onClick={() => setLabMode(labMode === "pastry" ? "culinary" : "pastry")}
               className={`gap-2 ${
                 labMode === "pastry"
-                  ? "bg-rose-600 hover:bg-rose-700 text-white"
+                  ? "bg-amber-600 dark:bg-rose-600 hover:bg-amber-700 dark:hover:bg-rose-700 text-white"
                   : ""
               }`}
               title={labMode === "pastry" ? "Switch to Culinary Lab" : "Switch to Pastry Lab"}
@@ -156,10 +156,10 @@ function RDLabsWorkspaceContent() {
         )}
 
         {/* Left Panel - Context */}
-        <div className="w-80 border-r border-cyan-500/10 bg-slate-900/20 overflow-auto flex-shrink-0 flex flex-col">
-          <div className="p-4 border-b border-cyan-500/10 bg-slate-950/40">
-            <h2 className="text-sm font-semibold text-cyan-300 mb-1">Active Experiment</h2>
-            <p className="text-xs text-slate-400">
+        <div className="w-80 border-r border-accent/20 dark:border-cyan-500/10 bg-input dark:bg-slate-900/20 overflow-auto flex-shrink-0 flex flex-col">
+          <div className="p-4 border-b border-accent/20 dark:border-cyan-500/10 bg-muted dark:bg-slate-950/40">
+            <h2 className="text-sm font-semibold text-accent dark:text-cyan-300 mb-1">Active Experiment</h2>
+            <p className="text-xs text-muted-foreground dark:text-slate-400">
               {focusExperiment?.title || "Select an experiment"}
             </p>
           </div>
@@ -176,17 +176,17 @@ function RDLabsWorkspaceContent() {
             ) : (
               <div className="p-4 space-y-4">
                 <div>
-                  <h3 className="text-sm font-semibold text-cyan-300 mb-2">Quick Actions</h3>
-                  <Button className="w-full bg-cyan-600 hover:bg-cyan-700" size="sm">
+                  <h3 className="text-sm font-semibold text-accent dark:text-cyan-300 mb-2">Quick Actions</h3>
+                  <Button className="w-full bg-accent dark:bg-cyan-600 hover:bg-accent/90 dark:hover:bg-cyan-700" size="sm">
                     New Experiment
                   </Button>
                 </div>
-                <div className="border-t border-cyan-500/10 pt-4">
-                  <h3 className="text-sm font-semibold text-cyan-300 mb-2">Selected ({selectedIds.size})</h3>
+                <div className="border-t border-accent/20 dark:border-cyan-500/10 pt-4">
+                  <h3 className="text-sm font-semibold text-accent dark:text-cyan-300 mb-2">Selected ({selectedIds.size})</h3>
                   {selectedIds.size > 0 ? (
                     <BatchOperations />
                   ) : (
-                    <p className="text-xs text-slate-500">No experiments selected</p>
+                    <p className="text-xs text-muted-foreground dark:text-slate-500">No experiments selected</p>
                   )}
                 </div>
               </div>
@@ -195,10 +195,10 @@ function RDLabsWorkspaceContent() {
         </div>
 
         {/* Center Panel - Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden bg-slate-950/40">
+        <div className="flex-1 flex flex-col overflow-hidden bg-card dark:bg-slate-950/40">
           {/* Tab Navigation */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-1">
-            <TabsList className="w-full justify-start rounded-none border-b border-cyan-500/10 bg-slate-900/50 px-6 h-12">
+            <TabsList className="w-full justify-start rounded-none border-b border-accent/20 dark:border-cyan-500/10 bg-input dark:bg-slate-900/50 px-6 h-12">
               <TabsTrigger value="workbench" className="gap-2">
                 <TestTube className="h-4 w-4" />
                 Workbench
@@ -272,15 +272,15 @@ function RDLabsWorkspaceContent() {
         </div>
 
         {/* Right Panel - Session Info & Insights */}
-        <div className="w-80 border-l border-cyan-500/10 bg-slate-900/20 overflow-auto flex-shrink-0 flex flex-col">
-          <div className="p-4 border-b border-cyan-500/10 bg-slate-950/40">
-            <h2 className="text-sm font-semibold text-cyan-300 mb-1">Session Data</h2>
-            <p className="text-xs text-slate-400">Active experiment metrics</p>
+        <div className="w-80 border-l border-accent/20 dark:border-cyan-500/10 bg-input dark:bg-slate-900/20 overflow-auto flex-shrink-0 flex flex-col">
+          <div className="p-4 border-b border-accent/20 dark:border-cyan-500/10 bg-muted dark:bg-slate-950/40">
+            <h2 className="text-sm font-semibold text-accent dark:text-cyan-300 mb-1">Session Data</h2>
+            <p className="text-xs text-muted-foreground dark:text-slate-400">Active experiment metrics</p>
           </div>
           <div className="flex-1 overflow-auto p-4 space-y-6">
             {focusExperiment && (
               <RDLabSessionSidebar
-                isDarkMode={true}
+                isDarkMode={document.documentElement.classList.contains('dark')}
                 projectName={focusExperiment.title}
                 createdAt={new Date().toISOString()}
                 updatedAt={new Date().toISOString()}
@@ -290,8 +290,8 @@ function RDLabsWorkspaceContent() {
                 insights={store.insights}
               />
             )}
-            <div className="border-t border-cyan-500/10 pt-4">
-              <h3 className="text-sm font-semibold text-cyan-300 mb-3">Insights</h3>
+            <div className="border-t border-accent/20 dark:border-cyan-500/10 pt-4">
+              <h3 className="text-sm font-semibold text-accent dark:text-cyan-300 mb-3">Insights</h3>
               <InsightsPanel />
             </div>
           </div>
