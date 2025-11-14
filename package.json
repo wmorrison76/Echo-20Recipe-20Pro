@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@sentry/react": "^10.25.0",
+    "@sentry/replay": "^7.116.0",
     "@supabase/supabase-js": "^2.38.4",
     "docx": "^9.5.1",
     "dotenv": "^17.2.1",
