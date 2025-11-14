@@ -32,22 +32,24 @@ export const ToastPOSSetup: React.FC<ToastPOSSetupProps> = ({
     setLoading(true);
 
     try {
-      const config: ToastConfig = {
-        restaurantId,
-        apiKey,
-        environment,
-      };
+      // TODO: Re-enable when Toast POS integration is implemented
+      // const config: ToastConfig = {
+      //   restaurantId,
+      //   apiKey,
+      //   environment,
+      // };
 
-      const success = await initializeToastConnection(config);
+      // const success = await initializeToastConnection(config);
 
-      if (success) {
-        setStep("connected");
-        onConnected?.(config);
-      } else {
-        setError(
-          "Failed to connect to Toast POS. Please verify your credentials and try again.",
-        );
-      }
+      // if (success) {
+      //   setStep("connected");
+      //   onConnected?.(config);
+      // } else {
+      //   setError(
+      //     "Failed to connect to Toast POS. Please verify your credentials and try again.",
+      //   );
+      // }
+      setError("Toast POS integration is not yet implemented");
     } catch (err) {
       setError(`Connection error: ${String(err)}`);
     } finally {
@@ -56,7 +58,8 @@ export const ToastPOSSetup: React.FC<ToastPOSSetupProps> = ({
   };
 
   const handleDisconnect = () => {
-    clearToastConfig();
+    // TODO: Re-enable when Toast POS integration is implemented
+    // clearToastConfig();
     setStep("form");
     setRestaurantId("");
     setApiKey("");
