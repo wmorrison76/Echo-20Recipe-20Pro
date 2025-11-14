@@ -377,18 +377,14 @@ export function DiscoveryPanel() {
           {futureFoodDrivers.map((driver) => (
             <div key={driver.id} className="rounded-xl border border-border dark:border-cyan-500/20 bg-input dark:bg-cyan-500/5 p-3">
               <div className="text-[12px] font-semibold uppercase tracking-[0.35em] text-foreground dark:text-cyan-100">
-                {driver.category}
+                {driver.theme}
               </div>
-              <p className="mt-1 text-[12px] text-foreground dark:text-cyan-100/80">{driver.description}</p>
-              <div className="mt-2 flex flex-wrap gap-1">
-                {driver.keywords?.map((keyword) => (
-                  <span
-                    key={keyword}
-                    className="rounded-full bg-accent/10 dark:bg-cyan-500/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.2em] text-accent dark:text-cyan-300"
-                  >
-                    {keyword}
-                  </span>
-                ))}
+              <p className="mt-1 text-[12px] text-foreground dark:text-cyan-100/80">{driver.insight}</p>
+              <div className="mt-2 text-[11px] italic text-muted-foreground dark:text-cyan-200/70">
+                {driver.signal}
+              </div>
+              <div className="mt-2 text-[11px] text-foreground dark:text-cyan-100">
+                <strong>Action:</strong> {driver.action}
               </div>
               <div className="mt-3 flex justify-end">
                 <button
@@ -396,7 +392,7 @@ export function DiscoveryPanel() {
                   onClick={() =>
                     pushDraftLine(
                       setDraftFutureAngles,
-                      `${driver.category}: ${driver.description}`
+                      `${driver.theme}: ${driver.insight}`
                     )
                   }
                   className="rounded-full border border-border dark:border-cyan-500/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-muted-foreground dark:text-cyan-200/80 transition hover:border-accent dark:hover:border-cyan-400 hover:text-foreground dark:hover:text-cyan-50"
