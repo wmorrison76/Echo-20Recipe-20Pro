@@ -230,7 +230,7 @@ export async function calculateRecipeInventoryNeeds(
       // Calculate required quantity based on servings
       const baseQuantity = ingredient.quantity;
       const requiredQuantity = (baseQuantity / baseServings) * servings;
-      const inventoryQuantity = requiredQuantity / mapping.conversion_factor;
+      const inventoryQuantity = requiredQuantity / mapping.conversionFactor;
 
       needs.push({
         ingredientId: mapping.ingredientId,
@@ -288,7 +288,7 @@ export async function checkIngredientAvailability(
 
     for (const need of needs) {
       const requiredQuantity = (need.requiredQuantity / baseServings) * servings;
-      const inventoryQuantity = requiredQuantity / need.availableQuantity;
+      const inventoryQuantity = requiredQuantity / (need.available || 1);
 
       totalCost += need.totalCost;
 
