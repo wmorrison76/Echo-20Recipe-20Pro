@@ -12,20 +12,22 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 
 // Initialize Sentry for error tracking
-if (import.meta.env.PROD) {
+const sentryDsn = import.meta.env.VITE_SENTRY_DSN;
+if (sentryDsn) {
   Sentry.init({
-    dsn: "https://d4120668c0cafd04be9de8c62183794c@o4510361278611456.ingest.us.sentry.io/4510361279856640",
+    dsn: sentryDsn,
     integrations: [
       new Sentry.Replay({
         maskAllText: true,
         blockAllMedia: true,
       }),
     ],
-    tracesSampleRate: 1.0,
-    replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0,
-    environment: import.meta.env.MODE,
+    tracesSampleRate: parseFloat(import.meta.env.VITE_SENTRY_TRACES_SAMPLE_RATE || "0.1"),
+    replaysSessionSampleRate: parseFloat(import.meta.env.VITE_SENTRY_REPLAYS_SESSION_SAMPLE_RATE || "0.1"),
+    replaysOnErrorSampleRate: parseFloat(import.meta.env.VITE_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE || "1.0"),
+    environment: import.meta.env.VITE_SENTRY_ENVIRONMENT || import.meta.env.MODE,
     sendDefaultPii: true,
+    enabled: import.meta.env.PROD || import.meta.env.VITE_ENABLE_ERROR_REPORTING === "true",
   });
 }
 
