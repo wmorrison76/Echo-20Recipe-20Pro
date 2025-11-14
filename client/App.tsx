@@ -2,6 +2,7 @@ import "./global.css";
 import React, { Suspense, lazy } from "react";
 import "./add-recipe.styles.css";
 import * as Sentry from "@sentry/react";
+import { Replay } from "@sentry/replay";
 
 import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
@@ -17,7 +18,7 @@ if (sentryDsn) {
   Sentry.init({
     dsn: sentryDsn,
     integrations: [
-      new Sentry.Replay({
+      new Replay({
         maskAllText: true,
         blockAllMedia: true,
       }),
