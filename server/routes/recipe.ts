@@ -185,7 +185,7 @@ export async function handleRecipeImport(req: Request, res: Response) {
     if (!url || !/^https?:\/\//i.test(url))
       return res.status(400).json({ error: "Invalid url" });
 
-    let r: Response;
+    let r: globalThis.Response;
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000);
