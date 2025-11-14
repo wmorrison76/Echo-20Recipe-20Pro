@@ -1779,6 +1779,35 @@ const RecipeInputPage = () => {
     [setIngredients],
   );
 
+  const handleIngredientSelected = useCallback(
+    (index: number, inventoryId: string, inventoryItem: any) => {
+      // Import here to avoid circular dependency
+      const { getCurrentCostPerUnit } = require("@/data/inventoryItems");
+
+      setIngredients((prev) => {
+        if (index < 0 || index >= prev.length) return prev;
+        const next = prev.slice();
+        const current = ensureIngredientRowId(next[index]);
+        if (current.type === "divider") return prev;
+
+        const costPerUnit = getCurrentCostPerUnit(inventoryItem);
+
+        // Update the row with inventory linking info
+        const updated = ensureIngredientRowId({
+          ...current,
+          inventoryId,
+          inventoryName: inventoryItem.canonicalName || inventoryItem.name,
+          costPerUnit: costPerUnit,
+          mappingConfidence: 1.0, // Direct selection = perfect match
+        });
+
+        next[index] = updated;
+        return ensureIngredientRowIds(next);
+      });
+    },
+    [setIngredients],
+  );
+
   const ingredientYieldInsights = useMemo<
     (IngredientYieldInsight | null)[]
   >(() => {
