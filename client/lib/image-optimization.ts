@@ -2,6 +2,7 @@
  * Image Optimization Utilities
  * WebP conversion, LQIP (Low Quality Image Placeholder), responsive images
  */
+import React from 'react';
 
 /**
  * Generate responsive image srcset for multiple resolutions
