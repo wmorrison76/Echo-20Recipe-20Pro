@@ -35,6 +35,11 @@ type IngredientsGridProps = {
   onAddDivider: () => void;
   supplierQuotes?: SupplierQuoteMap;
   onApplySupplierQuote?: (index: number, quote: SupplierQuote) => void;
+  onIngredientSelected?: (
+    index: number,
+    inventoryId: string,
+    inventoryItem: any,
+  ) => void;
 };
 
 const inputTone = (
