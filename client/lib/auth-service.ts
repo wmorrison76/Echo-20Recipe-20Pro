@@ -475,6 +475,7 @@ export async function setupSessionRefreshListener(
 export async function resetPasswordWithToken(
   token: string,
   newPassword: string,
+  email?: string,
 ): Promise<{
   success: boolean;
   error?: string;
@@ -483,7 +484,16 @@ export async function resetPasswordWithToken(
     return { success: false, error: "Supabase is not configured" };
   }
   try {
+    // Get current session to extract email if not provided
+    const currentSession = await getCurrentSession();
+    const userEmail = email || currentSession?.user?.email;
+
+    if (!userEmail) {
+      return { success: false, error: "Email is required for password reset" };
+    }
+
     const { error } = await supabase.auth.verifyOtp({
+      email: userEmail,
       token,
       type: "recovery",
     });
