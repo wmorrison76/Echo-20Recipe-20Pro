@@ -76,19 +76,56 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
   const [selectedSelectorRow, setSelectedSelectorRow] = useState<number | null>(null);
 
   const handleIngredientSelect = (index: number, inventoryId: string, inventoryItem: any) => {
-    // Update the ingredient row with the selected inventory item
-    onFieldChange(index, "item")({
-      target: { value: inventoryItem.name || inventoryItem.id },
-    } as React.ChangeEvent<HTMLInputElement>);
-
-    // Optionally update cost if available
-    if (inventoryItem.currentPrice) {
-      onFieldChange(index, "cost")({
-        target: { value: String(inventoryItem.currentPrice) },
+    try {
+      // Update the ingredient item name from inventory
+      onFieldChange(index, "item")({
+        target: { value: inventoryItem.canonicalName || inventoryItem.name || inventoryItem.id },
       } as React.ChangeEvent<HTMLInputElement>);
-    }
 
-    setSelectedSelectorRow(null);
+      // Get the current cost per unit from the inventory item using the proper helper
+      const costPerUnit = getCurrentCostPerUnit(inventoryItem);
+
+      // Calculate total cost if quantity is available
+      if (costPerUnit && ingredients[index]?.qty) {
+        const qty = parseFloat(String(ingredients[index].qty).replace(/[^0-9.]/g, ""));
+        if (!isNaN(qty) && qty > 0) {
+          const totalCost = qty * costPerUnit;
+          onFieldChange(index, "cost")({
+            target: { value: totalCost.toFixed(2) },
+          } as React.ChangeEvent<HTMLInputElement>);
+        }
+      }
+
+      // Auto-suggest yield if not already set
+      const currentYield = ingredients[index]?.yield;
+      if (!currentYield || currentYield === "") {
+        const prep = ingredients[index]?.prep || "";
+        const yieldInfo = enrichIngredientWithYield(
+          inventoryItem.canonicalName || inventoryItem.name,
+          currentYield,
+          prep
+        );
+
+        if (yieldInfo.yieldSource === "auto-filled") {
+          onFieldChange(index, "yield")({
+            target: { value: String(yieldInfo.yield) },
+          } as React.ChangeEvent<HTMLInputElement>);
+        }
+      }
+
+      // Store inventory link info for cost calculations
+      // Note: This should be handled via a parent callback that updates the full row object
+      // For now, we're setting visible fields; inventoryId would need setIngredients to be called from parent
+
+      console.debug(
+        `Ingredient selected: ${inventoryItem.canonicalName} (${inventoryId}), cost per unit: ${costPerUnit}`
+      );
+
+      setSelectedSelectorRow(null);
+    } catch (error) {
+      console.error("Error selecting ingredient:", error);
+      setSelectedSelectorRow(null);
+    }
   };
 
   const handleDragStart = (index: number) => (event: React.DragEvent<HTMLButtonElement>) => {
