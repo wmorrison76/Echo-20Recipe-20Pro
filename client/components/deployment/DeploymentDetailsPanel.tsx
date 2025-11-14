@@ -178,7 +178,7 @@ export default function DeploymentDetailsPanel({
                       </div>
                     )}
                   <div className="text-xs text-muted-foreground">
-                    Version: {packet.new_recipe_version_hash}
+                    Version: {packet.previous_recipe_version_hash}
                   </div>
                 </CardContent>
               </Card>
