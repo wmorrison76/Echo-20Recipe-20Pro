@@ -119,9 +119,11 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
         }
       }
 
-      // Store inventory link info for cost calculations
-      // Note: This should be handled via a parent callback that updates the full row object
-      // For now, we're setting visible fields; inventoryId would need setIngredients to be called from parent
+      // Set inventory link info via parent callback
+      // This updates inventoryId, mappingConfidence, and costPerUnit in the parent state
+      if (onIngredientSelected) {
+        onIngredientSelected(index, inventoryId, inventoryItem);
+      }
 
       console.debug(
         `Ingredient selected: ${inventoryItem.canonicalName} (${inventoryId}), cost per unit: ${costPerUnit}`
