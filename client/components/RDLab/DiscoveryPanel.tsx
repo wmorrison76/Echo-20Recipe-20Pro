@@ -1,4 +1,4 @@
-import { Dispatch, FormEvent, SetStateAction, useCallback, useMemo, useState } from "react";
+import { useMemo, useState, useCallback, Dispatch, SetStateAction, FormEvent } from "react";
 
 import { textureAtlas } from "@/data/textureReference";
 import { flavorConstellationLibrary, futureFoodDrivers } from "@/data/flavorMatrix";
@@ -101,8 +101,8 @@ export function DiscoveryPanel() {
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-5 overflow-y-auto pr-1">
-      <div className="rounded-2xl border border-white/20 bg-white/6 p-4 backdrop-blur md:bg-white/10 dark:border-cyan-500/25 dark:bg-cyan-500/5">
-        <div className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-600 dark:text-cyan-200/80">
+      <div className="rounded-2xl border border-border dark:border-cyan-500/25 bg-input dark:bg-cyan-500/5 p-4 backdrop-blur">
+        <div className="text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground dark:text-cyan-200/80">
           Discovery Queue
         </div>
         <input
@@ -110,35 +110,35 @@ export function DiscoveryPanel() {
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.target.value)}
           placeholder="Search textures, owners, status"
-          className="mt-3 w-full rounded-xl border border-white/30 bg-white/40 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none ring-0 transition focus:border-sky-500 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-900/40 dark:text-cyan-100 dark:focus:border-cyan-400"
+          className="mt-3 w-full rounded-xl border border-border dark:border-cyan-500/20 bg-card dark:bg-slate-900/40 px-3 py-2 text-sm text-foreground dark:text-cyan-100 shadow-sm outline-none ring-0 transition focus:border-sky-500 dark:focus:border-cyan-400 focus:bg-card dark:focus:bg-white"
         />
-        <div className="mt-3 flex flex-wrap items-center gap-3 text-[10px] uppercase tracking-[0.35em] text-cyan-100/70">
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-[10px] uppercase tracking-[0.35em] text-accent dark:text-cyan-100/70">
           <span className="chalk-breath">Textures {textureAtlas.length}</span>
           <span className="chalk-breath">Constellations {flavorConstellationLibrary.length}</span>
           <span className="chalk-breath">Drivers {futureFoodDrivers.length}</span>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/20 bg-white/8 p-4 backdrop-blur md:bg-white/14 dark:border-cyan-500/25 dark:bg-cyan-500/10">
-        <div className="text-xs font-semibold uppercase tracking-[0.35em] text-slate-600 dark:text-cyan-200/80">
+      <div className="rounded-2xl border border-border dark:border-cyan-500/25 bg-muted dark:bg-cyan-500/10 p-4 backdrop-blur">
+        <div className="text-xs font-semibold uppercase tracking-[0.35em] text-muted-foreground dark:text-cyan-200/80">
           Rapid prototyping
         </div>
-        <p className="mt-1 text-[11px] text-slate-500 dark:text-cyan-200/70">
+        <p className="mt-1 text-[11px] text-foreground dark:text-cyan-200/70">
           Spin up a fresh experiment with hypothesis, variables, and target service window before you hit the bench.
         </p>
-        <form onSubmit={handleCreateExperiment} className="mt-3 space-y-3 text-xs text-slate-600 dark:text-cyan-200/80">
+        <form onSubmit={handleCreateExperiment} className="mt-3 space-y-3 text-xs text-foreground dark:text-cyan-200/80">
           <div className="grid gap-2 md:grid-cols-2">
             <input
               value={draftTitle}
               onChange={(event) => setDraftTitle(event.target.value)}
               placeholder="Working title"
-              className="rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-sky-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+              className="rounded-lg border border-border dark:border-cyan-500/20 bg-card dark:bg-slate-950/60 px-3 py-2 text-sm text-foreground dark:text-cyan-100 shadow-sm outline-none transition focus:border-sky-400 dark:focus:border-cyan-400 focus:bg-card dark:focus:bg-white"
             />
             <input
               value={draftOwner}
               onChange={(event) => setDraftOwner(event.target.value)}
               placeholder="Lab owner / lead"
-              className="rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-sky-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+              className="rounded-lg border border-border dark:border-cyan-500/20 bg-card dark:bg-slate-950/60 px-3 py-2 text-sm text-foreground dark:text-cyan-100 shadow-sm outline-none transition focus:border-sky-400 dark:focus:border-cyan-400 focus:bg-card dark:focus:bg-white"
             />
           </div>
           <textarea
@@ -146,7 +146,7 @@ export function DiscoveryPanel() {
             onChange={(event) => setDraftHypothesis(event.target.value)}
             placeholder="Hypothesis: what will this technique unlock?"
             rows={3}
-            className="w-full rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-sky-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+            className="w-full rounded-lg border border-border dark:border-cyan-500/20 bg-card dark:bg-slate-950/60 px-3 py-2 text-sm text-foreground dark:text-cyan-100 shadow-sm outline-none transition focus:border-sky-400 dark:focus:border-cyan-400 focus:bg-card dark:focus:bg-white"
           />
           <div className="grid gap-2 md:grid-cols-2">
             <textarea
@@ -154,14 +154,14 @@ export function DiscoveryPanel() {
               onChange={(event) => setDraftVariables(event.target.value)}
               placeholder="Variables under test (comma or newline separated)"
               rows={2}
-              className="w-full rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-sky-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+              className="w-full rounded-lg border border-border dark:border-cyan-500/20 bg-card dark:bg-slate-950/60 px-3 py-2 text-sm text-foreground dark:text-cyan-100 shadow-sm outline-none transition focus:border-sky-400 dark:focus:border-cyan-400 focus:bg-card dark:focus:bg-white"
             />
             <textarea
               value={draftTargets}
               onChange={(event) => setDraftTargets(event.target.value)}
               placeholder="Sensory targets (comma or newline separated)"
               rows={2}
-              className="w-full rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-sky-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+              className="w-full rounded-lg border border-border dark:border-cyan-500/20 bg-card dark:bg-slate-950/60 px-3 py-2 text-sm text-foreground dark:text-cyan-100 shadow-sm outline-none transition focus:border-sky-400 dark:focus:border-cyan-400 focus:bg-card dark:focus:bg-white"
             />
           </div>
           <textarea
@@ -169,7 +169,7 @@ export function DiscoveryPanel() {
             onChange={(event) => setDraftEquipment(event.target.value)}
             placeholder="Key instrumentation (comma or newline separated)"
             rows={2}
-            className="w-full rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-sky-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+            className="w-full rounded-lg border border-border dark:border-cyan-500/20 bg-card dark:bg-slate-950/60 px-3 py-2 text-sm text-foreground dark:text-cyan-100 shadow-sm outline-none transition focus:border-sky-400 dark:focus:border-cyan-400 focus:bg-card dark:focus:bg-white"
           />
           <div className="grid gap-2 md:grid-cols-2">
             <textarea
@@ -177,14 +177,14 @@ export function DiscoveryPanel() {
               onChange={(event) => setDraftTextureObjectives(event.target.value)}
               placeholder="Texture objectives (comma or newline separated)"
               rows={2}
-              className="w-full rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-emerald-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+              className="w-full rounded-lg border border-border dark:border-cyan-500/20 bg-card dark:bg-slate-950/60 px-3 py-2 text-sm text-foreground dark:text-cyan-100 shadow-sm outline-none transition focus:border-emerald-400 dark:focus:border-emerald-400 focus:bg-card dark:focus:bg-white"
             />
             <textarea
               value={draftFlavorConstellations}
               onChange={(event) => setDraftFlavorConstellations(event.target.value)}
               placeholder="Flavor constellations (comma or newline separated)"
               rows={2}
-              className="w-full rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-rose-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+              className="w-full rounded-lg border border-border dark:border-cyan-500/20 bg-card dark:bg-slate-950/60 px-3 py-2 text-sm text-foreground dark:text-cyan-100 shadow-sm outline-none transition focus:border-rose-400 dark:focus:border-rose-400 focus:bg-card dark:focus:bg-white"
             />
           </div>
           <textarea
@@ -192,30 +192,30 @@ export function DiscoveryPanel() {
             onChange={(event) => setDraftFutureAngles(event.target.value)}
             placeholder="Future-of-food angles (comma or newline separated)"
             rows={2}
-            className="w-full rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-indigo-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+            className="w-full rounded-lg border border-border dark:border-cyan-500/20 bg-card dark:bg-slate-950/60 px-3 py-2 text-sm text-foreground dark:text-cyan-100 shadow-sm outline-none transition focus:border-indigo-400 dark:focus:border-indigo-400 focus:bg-card dark:focus:bg-white"
           />
           <div className="grid gap-2 md:grid-cols-2">
             <input
               value={draftTags}
               onChange={(event) => setDraftTags(event.target.value)}
               placeholder="Tags (comma separated)"
-              className="rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-sky-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+              className="rounded-lg border border-border dark:border-cyan-500/20 bg-card dark:bg-slate-950/60 px-3 py-2 text-sm text-foreground dark:text-cyan-100 shadow-sm outline-none transition focus:border-sky-400 dark:focus:border-cyan-400 focus:bg-card dark:focus:bg-white"
             />
             <input
               value={draftLaunchWindow}
               onChange={(event) => setDraftLaunchWindow(event.target.value)}
               placeholder="Launch window or service"
-              className="rounded-lg border border-white/30 bg-white/60 px-3 py-2 text-sm text-slate-700 shadow-sm outline-none transition focus:border-sky-400 focus:bg-white focus:text-slate-900 dark:border-cyan-500/20 dark:bg-slate-950/60 dark:text-cyan-100"
+              className="rounded-lg border border-border dark:border-cyan-500/20 bg-card dark:bg-slate-950/60 px-3 py-2 text-sm text-foreground dark:text-cyan-100 shadow-sm outline-none transition focus:border-sky-400 dark:focus:border-cyan-400 focus:bg-card dark:focus:bg-white"
             />
           </div>
-          <div className="flex items-center justify-between gap-3 text-[11px] uppercase tracking-[0.3em] text-slate-500 dark:text-cyan-200/70">
+          <div className="flex items-center justify-between gap-3 text-[11px] uppercase tracking-[0.3em] text-muted-foreground dark:text-cyan-200/70">
             <span>Use quick adds below or split entries with commas or new lines.</span>
             <button
               type="submit"
               disabled={isCreateDisabled}
               className={`rounded-full px-4 py-2 text-[11px] font-semibold transition ${
                 isCreateDisabled
-                  ? "cursor-not-allowed border border-white/40 bg-white/30 text-slate-400 dark:border-cyan-500/15 dark:bg-slate-950/50 dark:text-cyan-300/40"
+                  ? "cursor-not-allowed border border-border dark:border-cyan-500/15 bg-muted dark:bg-slate-950/50 text-muted-foreground dark:text-cyan-300/40"
                   : "border border-sky-400/50 bg-sky-500/80 text-white shadow-sm hover:bg-sky-500 dark:border-cyan-400/50 dark:bg-cyan-500/80"
               }`}
             >
@@ -225,8 +225,8 @@ export function DiscoveryPanel() {
         </form>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-hidden rounded-2xl border border-white/15 bg-white/4 backdrop-blur-sm dark:border-cyan-500/20 dark:bg-slate-950/40">
-        <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 text-[11px] uppercase tracking-[0.3em] text-slate-500 dark:border-cyan-500/20 dark:text-cyan-300/70">
+      <div className="flex-1 min-h-0 overflow-hidden rounded-2xl border border-border dark:border-cyan-500/20 bg-card dark:bg-slate-950/40 backdrop-blur-sm">
+        <div className="flex items-center justify-between border-b border-border dark:border-cyan-500/20 px-4 py-3 text-[11px] uppercase tracking-[0.3em] text-muted-foreground dark:text-cyan-300/70">
           <span>Active experiments</span>
           <span>{filtered.length}</span>
         </div>
@@ -241,8 +241,8 @@ export function DiscoveryPanel() {
                 className={cn(
                   "group relative flex w-full flex-col gap-2 rounded-xl border px-3 py-3 text-left transition",
                   isActive
-                    ? "border-sky-400/60 bg-sky-500/10 text-slate-900 shadow-[0_0_24px_rgba(56,189,248,0.35)] dark:border-cyan-400/60 dark:bg-cyan-500/15 dark:text-cyan-100"
-                    : "border-transparent bg-white/20 text-slate-600 hover:border-sky-300/60 hover:bg-white/50 hover:text-slate-900 dark:bg-slate-900/40 dark:text-cyan-200/60 dark:hover:border-cyan-400/40 dark:hover:text-cyan-50",
+                    ? "border-sky-400/60 bg-sky-500/10 text-foreground dark:text-cyan-100 shadow-[0_0_24px_rgba(56,189,248,0.35)] dark:border-cyan-400/60 dark:bg-cyan-500/15"
+                    : "border-transparent bg-muted dark:bg-slate-900/40 text-foreground dark:text-cyan-200/60 hover:border-accent dark:hover:border-cyan-400/40 hover:bg-input dark:hover:text-cyan-50",
                 )}
               >
                 <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.25em]">
@@ -252,25 +252,25 @@ export function DiscoveryPanel() {
                 <div className="text-sm font-semibold tracking-tight">
                   {experiment.title}
                 </div>
-                <p className="text-[11px] leading-relaxed text-slate-500 dark:text-cyan-200/70">
+                <p className="text-[11px] leading-relaxed text-muted-foreground dark:text-cyan-200/70">
                   {experiment.hypothesis}
                 </p>
-                <div className="mt-1 flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.3em] text-slate-400 dark:text-cyan-300/60">
+                <div className="mt-1 flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.3em] text-muted-foreground dark:text-cyan-300/60">
                   <span>Variables:</span>
                   {experiment.variablesUnderTest.slice(0, 3).map((variable) => (
-                    <span key={variable} className="rounded-full border border-white/40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] dark:border-cyan-400/30">
+                    <span key={variable} className="rounded-full border border-border dark:border-cyan-400/30 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em]">
                       {variable}
                     </span>
                   ))}
                 </div>
-                <div className="flex flex-wrap gap-2 text-[11px] font-medium uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-300/70">
+                <div className="flex flex-wrap gap-2 text-[11px] font-medium uppercase tracking-[0.35em] text-muted-foreground dark:text-cyan-300/70">
                   {experiment.tags.map((tag) => (
-                    <span key={tag} className="rounded-full bg-white/60 px-2 py-1 dark:bg-cyan-500/10">
+                    <span key={tag} className="rounded-full bg-muted dark:bg-cyan-500/10 px-2 py-1">
                       {tag}
                     </span>
                   ))}
                 </div>
-                <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-slate-500 dark:text-cyan-200/70">
+                <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-muted-foreground dark:text-cyan-200/70">
                   <span>Lead: {experiment.owner}</span>
                   <span>Launch: {experiment.launchWindow}</span>
                 </div>
@@ -280,31 +280,31 @@ export function DiscoveryPanel() {
         </div>
       </div>
 
-      <div className="space-y-3 rounded-2xl border border-white/15 bg-white/6 p-4 text-xs leading-relaxed text-slate-600 backdrop-blur dark:border-cyan-500/25 dark:bg-slate-950/60 dark:text-cyan-100/80">
-        <div className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-700 dark:text-cyan-200">
+      <div className="space-y-3 rounded-2xl border border-border dark:border-cyan-500/25 bg-muted dark:bg-slate-950/60 p-4 text-xs leading-relaxed text-foreground backdrop-blur dark:text-cyan-100/80">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.35em] text-foreground dark:text-cyan-200">
           Texture Reference Index
         </div>
         <div className="space-y-3">
           {textureAtlas.map((texture) => (
-            <div key={texture.id} className="rounded-xl border border-white/20 bg-white/30 p-3 dark:border-cyan-500/20 dark:bg-cyan-500/5">
-              <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
+            <div key={texture.id} className="rounded-xl border border-border dark:border-cyan-500/20 bg-input dark:bg-cyan-500/5 p-3">
+              <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.35em] text-muted-foreground dark:text-cyan-200/70">
                 <span>{texture.family}</span>
                 <span>{texture.descriptors.join(" • ")}</span>
               </div>
-              <div className="mt-2 text-[13px] font-semibold uppercase tracking-[0.35em] text-slate-700 dark:text-cyan-100">
+              <div className="mt-2 text-[13px] font-semibold uppercase tracking-[0.35em] text-foreground dark:text-cyan-100">
                 Pairing Targets
               </div>
-              <div className="mt-1 text-[12px] leading-relaxed text-slate-600 dark:text-cyan-100/80">
+              <div className="mt-1 text-[12px] leading-relaxed text-foreground dark:text-cyan-100/80">
                 {texture.idealPairings.join(", ")}
               </div>
-              <div className="mt-2 text-[12px] font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
+              <div className="mt-2 text-[12px] font-semibold uppercase tracking-[0.35em] text-muted-foreground dark:text-cyan-200/70">
                 Techniques
               </div>
-              <div className="text-[12px] text-slate-500 dark:text-cyan-200/80">
+              <div className="text-[12px] text-foreground dark:text-cyan-200/80">
                 {texture.suggestedTechniques.join(" · ")}
               </div>
               {texture.platingNotes ? (
-                <div className="mt-2 text-[11px] italic text-slate-500/80 dark:text-cyan-200/70">
+                <div className="mt-2 text-[11px] italic text-muted-foreground/80 dark:text-cyan-200/70">
                   {texture.platingNotes}
                 </div>
               ) : null}
@@ -317,7 +317,7 @@ export function DiscoveryPanel() {
                       `${texture.family}: ${texture.descriptors.join(" / ")} finish`
                     )
                   }
-                  className="rounded-full border border-white/30 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-500 transition hover:border-sky-400 hover:text-slate-800 dark:border-cyan-500/20 dark:text-cyan-200/80 dark:hover:border-cyan-400 dark:hover:text-cyan-50"
+                  className="rounded-full border border-border dark:border-cyan-500/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-muted-foreground dark:text-cyan-200/80 transition hover:border-accent dark:hover:border-cyan-400 hover:text-foreground dark:hover:text-cyan-50"
                 >
                   Add texture cue
                 </button>
@@ -327,55 +327,41 @@ export function DiscoveryPanel() {
         </div>
       </div>
 
-      <div className="space-y-3 rounded-2xl border border-white/15 bg-white/6 p-4 text-xs leading-relaxed text-slate-600 backdrop-blur dark:border-cyan-500/25 dark:bg-slate-950/60 dark:text-cyan-100/80">
-        <div className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-700 dark:text-cyan-200">
+      <div className="space-y-3 rounded-2xl border border-border dark:border-cyan-500/25 bg-muted dark:bg-slate-950/60 p-4 text-xs leading-relaxed text-foreground backdrop-blur dark:text-cyan-100/80">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.35em] text-foreground dark:text-cyan-200">
           Flavor Constellation Library
         </div>
         <div className="space-y-3">
           {flavorConstellationLibrary.map((constellation) => (
-            <div key={constellation.id} className="rounded-xl border border-white/20 bg-white/30 p-3 dark:border-cyan-500/20 dark:bg-cyan-500/5">
-              <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
+            <div key={constellation.id} className="rounded-xl border border-border dark:border-cyan-500/20 bg-input dark:bg-cyan-500/5 p-3">
+              <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.35em] text-muted-foreground dark:text-cyan-200/70">
                 <span>{constellation.name}</span>
                 <span>{constellation.futureAngle}</span>
               </div>
-              <div className="mt-2 text-[12px] font-semibold uppercase tracking-[0.35em] text-slate-600 dark:text-cyan-100">
+              <div className="mt-2 text-[12px] font-semibold uppercase tracking-[0.35em] text-foreground dark:text-cyan-100">
                 Texture hook
               </div>
-              <p className="text-[12px] text-slate-600 dark:text-cyan-100/80">{constellation.textureHook}</p>
-              <div className="mt-2 text-[12px] font-semibold uppercase tracking-[0.35em] text-slate-600 dark:text-cyan-200/80">
+              <p className="text-[12px] text-foreground dark:text-cyan-100/80">{constellation.textureHook}</p>
+              <div className="mt-2 text-[12px] font-semibold uppercase tracking-[0.35em] text-foreground dark:text-cyan-200/80">
                 Flavor drivers
               </div>
-              <ul className="mt-1 space-y-1 text-[12px] text-slate-600 dark:text-cyan-100/80">
+              <ul className="mt-1 space-y-1 text-[12px] text-foreground dark:text-cyan-100/80">
                 {constellation.flavorDrivers.map((driver) => (
                   <li key={driver}>{driver}</li>
                 ))}
               </ul>
-              <div className="mt-2 text-[12px] font-semibold uppercase tracking-[0.35em] text-slate-600 dark:text-cyan-200/80">
-                Balancing notes
-              </div>
-              <ul className="mt-1 space-y-1 text-[12px] text-slate-600 dark:text-cyan-100/80">
-                {constellation.balancingNotes.map((note) => (
-                  <li key={note}>{note}</li>
-                ))}
-              </ul>
-              <div className="mt-2 text-[11px] uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
-                Builds
-              </div>
-              <div className="text-[11px] text-slate-500 dark:text-cyan-200/80">
-                {constellation.applications.join(" · ")}
-              </div>
               <div className="mt-3 flex justify-end">
                 <button
                   type="button"
                   onClick={() =>
                     pushDraftLine(
                       setDraftFlavorConstellations,
-                      `${constellation.name}: ${constellation.flavorDrivers.join(" + ")} | ${constellation.textureHook}`
+                      `${constellation.name}: ${constellation.flavorDrivers.slice(0, 2).join(" + ")}`
                     )
                   }
-                  className="rounded-full border border-white/30 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-500 transition hover:border-rose-400 hover:text-slate-800 dark:border-cyan-500/20 dark:text-cyan-200/80 dark:hover:border-cyan-400 dark:hover:text-cyan-50"
+                  className="rounded-full border border-border dark:border-cyan-500/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-muted-foreground dark:text-cyan-200/80 transition hover:border-accent dark:hover:border-cyan-400 hover:text-foreground dark:hover:text-cyan-50"
                 >
-                  Add flavor constellation
+                  Add constellation
                 </button>
               </div>
             </div>
@@ -383,31 +369,39 @@ export function DiscoveryPanel() {
         </div>
       </div>
 
-      <div className="space-y-3 rounded-2xl border border-white/15 bg-white/6 p-4 text-xs leading-relaxed text-slate-600 backdrop-blur dark:border-cyan-500/25 dark:bg-slate-950/60 dark:text-cyan-100/80">
-        <div className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-700 dark:text-cyan-200">
-          Future of Food Drivers
+      <div className="space-y-3 rounded-2xl border border-border dark:border-cyan-500/25 bg-muted dark:bg-slate-950/60 p-4 text-xs leading-relaxed text-foreground backdrop-blur dark:text-cyan-100/80">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.35em] text-foreground dark:text-cyan-200">
+          Future-of-Food Drivers
         </div>
         <div className="space-y-3">
           {futureFoodDrivers.map((driver) => (
-            <div key={driver.id} className="rounded-xl border border-white/20 bg-white/30 p-3 dark:border-cyan-500/20 dark:bg-cyan-500/5">
-              <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
-                <span>{driver.theme}</span>
-                <span>{driver.signal}</span>
+            <div key={driver.id} className="rounded-xl border border-border dark:border-cyan-500/20 bg-input dark:bg-cyan-500/5 p-3">
+              <div className="text-[12px] font-semibold uppercase tracking-[0.35em] text-foreground dark:text-cyan-100">
+                {driver.category}
               </div>
-              <div className="mt-2 text-[12px] text-slate-600 dark:text-cyan-100/80">
-                {driver.insight}
+              <p className="mt-1 text-[12px] text-foreground dark:text-cyan-100/80">{driver.description}</p>
+              <div className="mt-2 flex flex-wrap gap-1">
+                {driver.keywords?.map((keyword) => (
+                  <span
+                    key={keyword}
+                    className="rounded-full bg-accent/10 dark:bg-cyan-500/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.2em] text-accent dark:text-cyan-300"
+                  >
+                    {keyword}
+                  </span>
+                ))}
               </div>
-              <div className="mt-1 text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-cyan-200/70">
-                Action
-              </div>
-              <div className="text-[11px] text-slate-500 dark:text-cyan-200/80">{driver.action}</div>
               <div className="mt-3 flex justify-end">
                 <button
                   type="button"
-                  onClick={() => pushDraftLine(setDraftFutureAngles, `${driver.theme}: ${driver.action}`)}
-                  className="rounded-full border border-white/30 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-500 transition hover:border-emerald-400 hover:text-slate-800 dark:border-cyan-500/20 dark:text-cyan-200/80 dark:hover:border-cyan-400 dark:hover:text-cyan-50"
+                  onClick={() =>
+                    pushDraftLine(
+                      setDraftFutureAngles,
+                      `${driver.category}: ${driver.description}`
+                    )
+                  }
+                  className="rounded-full border border-border dark:border-cyan-500/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-muted-foreground dark:text-cyan-200/80 transition hover:border-accent dark:hover:border-cyan-400 hover:text-foreground dark:hover:text-cyan-50"
                 >
-                  Add future angle
+                  Add driver
                 </button>
               </div>
             </div>
