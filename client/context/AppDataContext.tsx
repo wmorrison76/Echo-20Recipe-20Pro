@@ -178,6 +178,7 @@ type AppData = {
   updateRecipe: (id: string, patch: Partial<Recipe>) => void;
   toggleFavorite: (id: string) => void;
   rateRecipe: (id: string, rating: number) => void;
+  updateRecipeTags: (id: string, tags: string[]) => void;
   deleteRecipe: (id: string) => void;
   restoreRecipe: (id: string) => void;
   purgeDeleted: () => void;
