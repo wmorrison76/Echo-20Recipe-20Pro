@@ -116,11 +116,15 @@ export function RecipeCard({
       <div className="grid grid-cols-[120px_1fr] gap-3 p-3 items-start">
         <div className="relative h-[110px] w-[110px] shrink-0">
           {cover ? (
-            <img
+            <ResponsiveImage
               src={cover}
               alt={r.title}
-              className="h-full w-full rounded object-cover"
-              loading="lazy"
+              width={110}
+              height={110}
+              aspectRatio="1/1"
+              blurhash={r.blurhash}
+              className="rounded"
+              objectFit="cover"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center rounded bg-muted text-muted-foreground">
