@@ -600,7 +600,7 @@ export default function TopTabs() {
                         <TabLink
                           key={item.to}
                           to={item.to}
-                          label={item.labelKey}
+                          label={item.label}
                           icon={item.icon}
                           collapsed={collapsed}
                           shortcutDisplay={
