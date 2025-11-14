@@ -41,6 +41,12 @@ export function createServer() {
   app.post("/api/recipe/import", handleRecipeImport);
   app.get("/api/recipe/image", proxyRecipeImage);
 
+  // Image Optimization Routes (WebP support, LQIP, metadata)
+  app.get("/api/images/proxy", proxyImageOptimized);
+  app.get("/api/images/recipes/:recipeId/:imageId", serveRecipeImage);
+  app.post("/api/images/blurhash", generateBlurhash);
+  app.get("/api/images/metadata", getImageMetadata);
+
   // Recipe Deployment System
   app.use(recipeDeploymentRouter);
 
