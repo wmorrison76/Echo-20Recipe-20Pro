@@ -20,6 +20,7 @@ export interface IngredientCostMatch {
 /**
  * Fuzzy search ingredients from purchasing inventory
  * Returns matches sorted by confidence
+ * Uses advanced token-based fuzzy matching for better ingredient matching
  */
 export function searchPurchasingInventory(
   query: string,
@@ -27,27 +28,24 @@ export function searchPurchasingInventory(
 ): IngredientCostMatch[] {
   if (!query.trim()) return [];
 
-  const matches = INVENTORY_ITEMS.map((item) => {
-    const confidence = calculateSimilarity(query, item.canonicalName);
-    return {
-      ...item,
-      confidence,
-    };
-  })
-    .filter((item) => item.confidence >= minConfidence)
-    .sort((a, b) => b.confidence - a.confidence)
-    .map((item) => ({
-      inventoryId: item.id,
-      name: item.canonicalName,
-      costPerUnit: getLatestCostPerUnit(item),
-      packSize: item.supplierLinks[0]?.packSize || 1,
-      packUnit: item.supplierLinks[0]?.packUnit || item.primaryUnit,
-      supplier: item.supplierLinks[0]?.supplierName || "Unknown",
-      sku: item.supplierLinks[0]?.sku || "",
-      confidence: item.confidence,
-    }));
+  // Use the advanced fuzzy search with ingredientSimilarity
+  const results = fuzzySearch(
+    query,
+    INVENTORY_ITEMS,
+    (item) => item.canonicalName,
+    minConfidence
+  );
 
-  return matches;
+  return results.map((result) => ({
+    inventoryId: result.item.id,
+    name: result.item.canonicalName,
+    costPerUnit: getLatestCostPerUnit(result.item),
+    packSize: result.item.supplierLinks[0]?.packSize || 1,
+    packUnit: result.item.supplierLinks[0]?.packUnit || result.item.primaryUnit,
+    supplier: result.item.supplierLinks[0]?.supplierName || "Unknown",
+    sku: result.item.supplierLinks[0]?.sku || "",
+    confidence: result.score,
+  }));
 }
 
 /**
