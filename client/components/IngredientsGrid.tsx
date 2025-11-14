@@ -6,6 +6,8 @@ import type { SupplierQuote } from "@/lib/supplier-pricing";
 import type { IngredientRow } from "@/types/ingredients";
 import { IngredientSelector } from "@/components/IngredientSelector";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { getCurrentCostPerUnit } from "@/data/inventoryItems";
+import { enrichIngredientWithYield, getYieldMethodsForIngredient } from "@/lib/yield-lookup";
 
 type IngredientsGridProps = {
   isDarkMode: boolean;
