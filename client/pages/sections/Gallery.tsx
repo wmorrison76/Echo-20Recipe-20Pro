@@ -16,6 +16,7 @@ import {
 import { GalleryLightbox } from "@/components/GalleryLightbox";
 import { LookBookShowcase } from "@/components/LookBookShowcase";
 import { GalleryOverlay } from "@/components/gallery/GalleryOverlay";
+import { ResponsiveImage as ResponsiveGalleryImage } from "@/components/ResponsiveImage";
 import { GallerySidebar } from "@/components/gallery/GallerySidebar";
 import { GalleryTileBoards } from "@/components/gallery/GalleryTileBoards";
 import { PhotoStudioPanel } from "@/components/gallery/PhotoStudioPanel";
