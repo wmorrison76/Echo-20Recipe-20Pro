@@ -26,6 +26,9 @@ import {
   UtensilsCrossed,
   Beaker,
   Atom,
+  Palette,
+  Cake,
+  Wind,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -113,6 +116,38 @@ const navGroups: NavGroup[] = [
         labelKey: "nav.rdlabs",
         fallback: "R&D LABS",
         icon: Atom,
+      },
+    ],
+  },
+  {
+    id: "pastry-bakery",
+    labelKey: "nav.group.pastryBakery",
+    fallback: "PASTRY & BAKERY",
+    items: [
+      {
+        to: "/?tab=pastry",
+        labelKey: "nav.pastryModule",
+        fallback: "PASTRY MODULE",
+        icon: Cake,
+        shortcut: { key: "KeyP", display: "P" },
+      },
+      {
+        to: "/?tab=echo-canvas",
+        labelKey: "nav.echoCanvas",
+        fallback: "ECHO CANVAS",
+        icon: Palette,
+      },
+      {
+        to: "/?tab=cake-builder",
+        labelKey: "nav.cakeBuilder",
+        fallback: "CAKE BUILDER",
+        icon: Cake,
+      },
+      {
+        to: "/?tab=bakery",
+        labelKey: "nav.bakeryModule",
+        fallback: "BAKERY",
+        icon: Wind,
       },
     ],
   },
