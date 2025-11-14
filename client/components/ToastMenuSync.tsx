@@ -68,6 +68,7 @@ export const ToastMenuSync: React.FC<ToastMenuSyncProps> = ({
     setSyncResult(null);
 
     try {
+      // TODO: Re-enable when Toast POS integration is implemented
       const recipesToSync = recipes
         .filter((r) => selectedRecipes.has(r.id))
         .map((r) => ({
@@ -79,17 +80,22 @@ export const ToastMenuSync: React.FC<ToastMenuSyncProps> = ({
           price: 35.0, // Placeholder - would come from pricing
         }));
 
-      const result = await syncRecipesToToast(toastConfig, recipesToSync);
-      setSyncResult(result);
-      onSyncComplete?.({
-        itemsSynced: result.itemsSynced,
-        itemsFailed: result.itemsFailed,
-      });
+      // const result = await syncRecipesToToast(toastConfig, recipesToSync);
+      // setSyncResult(result);
+      // onSyncComplete?.({
+      //   itemsSynced: result.itemsSynced,
+      //   itemsFailed: result.itemsFailed,
+      // });
 
-      if (result.success) {
-        // Clear selection on successful sync
-        setSelectedRecipes(new Set());
-      }
+      // if (result.success) {
+      //   // Clear selection on successful sync
+      //   setSelectedRecipes(new Set());
+      // }
+      setSyncResult({
+        itemsSynced: 0,
+        itemsFailed: 0,
+        message: "Toast POS integration is not yet implemented",
+      });
     } catch (error) {
       setSyncResult({
         itemsSynced: 0,
