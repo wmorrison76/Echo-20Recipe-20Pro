@@ -670,6 +670,7 @@ export default function TopTabs() {
                               ? `${shortcutLabel}+${item.shortcut.display}`
                               : undefined
                           }
+                          onNavigate={() => setCollapsedManual(true)}
                         />
                       ))}
                     </div>
