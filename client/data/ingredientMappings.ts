@@ -116,24 +116,37 @@ export function searchInventoryItems(
 
   const results: IngredientMapping[] = [];
 
-  for (const item of INVENTORY_ITEMS) {
-    const similarity = calculateSimilarity(normalizedQuery, item.canonicalName);
-    if (similarity >= minConfidence) {
-      results.push({
-        recipeText: item.canonicalName,
-        inventoryId: item.id,
-        confidence: similarity,
-      });
-    }
+  // Search against canonical names
+  const canonicalResults = fuzzySearch(
+    query,
+    INVENTORY_ITEMS,
+    (item) => item.canonicalName,
+    minConfidence,
+  );
 
-    // Also check description
-    if (item.description) {
-      const descSimilarity = calculateSimilarity(normalizedQuery, item.description);
-      if (descSimilarity >= minConfidence && descSimilarity > similarity) {
+  for (const result of canonicalResults) {
+    results.push({
+      recipeText: result.item.canonicalName,
+      inventoryId: result.item.id,
+      confidence: result.score,
+    });
+  }
+
+  // Also search descriptions for items not already in results
+  const resultsMap = new Set(results.map((r) => r.inventoryId));
+  for (const item of INVENTORY_ITEMS) {
+    if (!resultsMap.has(item.id) && item.description) {
+      const descResults = fuzzySearch(
+        query,
+        [item],
+        (i) => i.description || "",
+        minConfidence,
+      );
+      if (descResults.length > 0) {
         results.push({
           recipeText: item.description,
           inventoryId: item.id,
-          confidence: descSimilarity,
+          confidence: descResults[0].score,
         });
       }
     }
