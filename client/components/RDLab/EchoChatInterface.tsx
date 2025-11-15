@@ -229,7 +229,11 @@ What are you thinking about today? A new technique? A flavor combination? Produc
           await speakAssistantMessage(assistantMessage.content);
         } catch (speakErr) {
           // Log but don't interrupt the chat flow
-          console.warn("TTS failed, continuing without audio:", speakErr);
+          // Voice is optional - chat continues normally
+          if (speakErr instanceof Error && !speakErr.message.includes("401") && !speakErr.message.includes("not configured")) {
+            console.warn("TTS failed, continuing without audio:", speakErr);
+          }
+          // For auth/config errors, silently continue - voice just unavailable
         }
       }
 
