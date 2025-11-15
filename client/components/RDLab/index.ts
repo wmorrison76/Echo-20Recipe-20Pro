@@ -31,3 +31,4 @@ export { CollaborationHub } from "./CollaborationHub";
 export { EchoChatInterface } from "./EchoChatInterface";
 export { LabDoorTransition } from "./LabDoorTransition";
 export { LabSetupPanel } from "./LabSetupPanel";
+export { LabWhiteboard } from "./LabWhiteboard";
