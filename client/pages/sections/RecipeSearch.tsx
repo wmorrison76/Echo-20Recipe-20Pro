@@ -152,17 +152,30 @@ export function RecipeCard({
           )}
         </div>
         <div className="prose prose-sm dark:prose-invert max-w-none">
-          <div className="flex items-start justify-between gap-2">
-            <h2 className="m-0 text-base font-semibold line-clamp-1">
+          <div className="flex items-start justify-between gap-1">
+            <h2 className="m-0 text-sm font-semibold line-clamp-1">
               {r.title}
             </h2>
-            <button
-              className={`shrink-0 p-1 rounded ${r.favorite ? "text-yellow-500" : "text-muted-foreground"} hover:bg-black/5`}
-              onClick={onFav}
-              aria-label="Favorite"
-            >
-              <Star className={r.favorite ? "fill-current" : ""} />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                className={`shrink-0 px-1.5 py-0.5 rounded text-xs font-medium transition-colors ${
+                  r.isGlobal
+                    ? "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/60"
+                    : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                }`}
+                onClick={() => onToggleGlobal?.(r.id, !r.isGlobal)}
+                title={r.isGlobal ? "Click to make private" : "Click to make global"}
+              >
+                {r.isGlobal ? "Global" : "Private"}
+              </button>
+              <button
+                className={`shrink-0 p-1 rounded ${r.favorite ? "text-yellow-500" : "text-muted-foreground"} hover:bg-black/5`}
+                onClick={onFav}
+                aria-label="Favorite"
+              >
+                <Star className={r.favorite ? "fill-current" : ""} size={16} />
+              </button>
+            </div>
           </div>
           <div className="flex items-center gap-1">
             {stars.map((on, i) => (
