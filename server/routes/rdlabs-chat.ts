@@ -85,7 +85,7 @@ async function callOpenAI(messages: ChatMessage[]): Promise<string> {
  * POST /api/rdlabs/chat
  * Send a message to ECHO Ai for R&D dialogue
  */
-router.post("/api/rdlabs/chat", requireAuth, async (req: Request, res: Response) => {
+router.post("/api/rdlabs/chat", async (req: Request, res: Response) => {
   try {
     const { messages, track, labMode } = req.body as ChatRequest;
 
