@@ -58,7 +58,7 @@ export interface CookingMethodStats {
 
 export interface RegionalPattern {
   region: string;
-  keyCharacteristics: string[];
+  characteristics: string[];
   signature: {
     ingredients: string[];
     flavorProfile: Record<string, number>;
