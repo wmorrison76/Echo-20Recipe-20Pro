@@ -97,6 +97,37 @@ export function AIExperimentDesigner() {
         </div>
       </div>
 
+      {/* Recipe Similarity Search */}
+      {user && (
+        <div className="space-y-2">
+          <button
+            onClick={() => setShowSimilarRecipes(!showSimilarRecipes)}
+            className="flex items-center gap-2 text-sm font-semibold text-cyan-300 hover:text-cyan-200 transition-colors"
+          >
+            <BookOpen className="h-4 w-4" />
+            {showSimilarRecipes ? "Hide Inspiration" : "Find Recipe Inspiration"}
+          </button>
+          {showSimilarRecipes && (
+            <>
+              <RecipeSimilaritySearch
+                recipeText={goal}
+                userTrack={recipeTrack}
+                chefId={user.id}
+                organizationId={user.organization_id}
+                limit={5}
+              />
+              {recipeTrack === "manufacturing" && (
+                <CrossTrackLearning
+                  recipeText={goal}
+                  organizationId={user.organization_id}
+                  limit={3}
+                />
+              )}
+            </>
+          )}
+        </div>
+      )}
+
       {/* Input Area */}
       <div className="space-y-3">
         <div className="flex gap-2">
