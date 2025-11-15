@@ -85,6 +85,13 @@ What are you thinking about today? A new technique? A flavor combination? Produc
     };
 
     setMessages((prev) => [...prev, userMessage]);
+    chatHistory.addMessage({
+      id: userMessage.id,
+      role: userMessage.role,
+      content: userMessage.content,
+      timestamp: userMessage.timestamp.toISOString(),
+    });
+
     setInput("");
     setError(null);
     setIsLoading(true);
@@ -115,6 +122,12 @@ What are you thinking about today? A new technique? A flavor combination? Produc
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
+      chatHistory.addMessage({
+        id: assistantMessage.id,
+        role: assistantMessage.role,
+        content: assistantMessage.content,
+        timestamp: assistantMessage.timestamp.toISOString(),
+      });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An error occurred";
       setError(errorMessage);
