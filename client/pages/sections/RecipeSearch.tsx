@@ -1099,8 +1099,8 @@ const onFiles = async (files: File[]) => {
       className="mx-auto w-full max-w-[1400px] space-y-3 px-4 py-3 sm:px-6 lg:px-8"
       data-echo-key="page:recipes:search"
     >
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="flex items-center gap-1 rounded-lg bg-muted p-1">
+      <div className="flex flex-wrap items-center gap-1">
+        <div className="flex items-center gap-0.5 rounded-lg bg-muted p-0.5">
           {(
             [
               "all",
@@ -1115,7 +1115,7 @@ const onFiles = async (files: File[]) => {
             <button
               key={c}
               onClick={() => setCat(c)}
-              className={`px-3 py-1 rounded-md text-sm ${cat === c ? "bg-background shadow" : "text-foreground/80"}`}
+              className={`px-2 py-0.5 rounded-md text-xs ${cat === c ? "bg-background shadow" : "text-foreground/80"}`}
             >
               {t(`recipes.filter.${c}`, c.replace(/^[a-z]/, (s) => s.toUpperCase()))}
             </button>
