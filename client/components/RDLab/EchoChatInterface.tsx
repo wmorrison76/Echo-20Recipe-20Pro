@@ -243,6 +243,22 @@ What are you thinking about today? A new technique? A flavor combination? Produc
               </div>
             </div>
             <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant={voiceEnabled ? "default" : "outline"}
+                onClick={handleToggleSpeaking}
+                title={voiceEnabled ? "Voice enabled (click to disable)" : "Voice disabled (click to enable)"}
+                className="gap-1"
+              >
+                {isSpeaking ? (
+                  <Loader className="h-4 w-4 animate-spin" />
+                ) : voiceEnabled ? (
+                  <Volume2 className="h-4 w-4" />
+                ) : (
+                  <VolumeX className="h-4 w-4" />
+                )}
+                <span className="text-xs">{voiceEnabled ? "Voice" : "Muted"}</span>
+              </Button>
               {messages.length > 1 && (
                 <Button
                   size="sm"
