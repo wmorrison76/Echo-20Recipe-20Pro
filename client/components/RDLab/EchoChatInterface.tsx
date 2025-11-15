@@ -52,10 +52,13 @@ export function EchoChatInterface({ onEnterLab }: EchoChatInterfaceProps) {
 
     const checkTTSAndInit = async () => {
       // Check if TTS service is available
-      const isHealthy = await checkServiceHealth();
-      if (!isHealthy) {
-        console.warn("TTS service not available, disabling voice");
+      const health = await checkServiceHealth();
+      if (!health.configured) {
+        console.warn("TTS service not available:", health.message);
         setVoiceEnabled(false);
+        setError(
+          "Voice not available: " + (health.message || "TTS service not configured"),
+        );
       }
     };
 
