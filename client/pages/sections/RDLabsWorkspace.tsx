@@ -53,6 +53,7 @@ import {
   Target,
   Plus,
   ChevronDown,
+  Notebook,
 } from "lucide-react";
 
 export default function RDLabsWorkspace() {
