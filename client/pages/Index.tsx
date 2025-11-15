@@ -50,6 +50,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+function LanguageSelector() {
+  const { language, setLanguage, options } = useLanguage();
+
+  return (
+    <Select value={language} onValueChange={setLanguage}>
+      <SelectTrigger className="w-[140px]">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {options.map((option) => (
+          <SelectItem key={option.code} value={option.code}>
+            {option.flag} {option.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
 export default function Index() {
   return (
     <PageToolbarProvider>
