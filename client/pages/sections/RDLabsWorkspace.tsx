@@ -51,11 +51,11 @@ function RDLabsWorkspaceContent() {
 
   if (!store) {
     return (
-      <div className="w-full h-full flex items-center justify-center rdlabs-container relative">
-        <div className="text-center space-y-4 relative z-20">
-          <Beaker className="h-16 w-16 mx-auto neon-cyan opacity-75" />
-          <p className="text-xl font-bold neon-cyan">R&D Labs</p>
-          <p className="text-sm text-slate-400">Initializing research environment...</p>
+      <div className="w-full h-full flex items-center justify-center bg-background dark:bg-slate-950">
+        <div className="text-center space-y-4">
+          <Beaker className="h-16 w-16 mx-auto text-slate-400" />
+          <p className="text-xl font-bold text-foreground">R&D Labs</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Initializing research environment...</p>
         </div>
       </div>
     );
