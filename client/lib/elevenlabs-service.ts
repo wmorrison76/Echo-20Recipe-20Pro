@@ -70,18 +70,20 @@ export async function textToSpeech(
   }
 
   try {
+    const requestBody = {
+      text: trimmedText,
+      voiceId,
+      stability: options.stability ?? DEFAULT_STABILITY,
+      similarityBoost: options.similarityBoost ?? DEFAULT_SIMILARITY_BOOST,
+      speakerBoost: options.speakerBoost ?? true,
+    };
+
     const response = await fetch(`/api/elevenlabs/text-to-speech`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        text,
-        voiceId,
-        stability: options.stability ?? DEFAULT_STABILITY,
-        similarityBoost: options.similarityBoost ?? DEFAULT_SIMILARITY_BOOST,
-        speakerBoost: options.speakerBoost ?? true,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
