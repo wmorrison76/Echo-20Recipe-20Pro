@@ -22,6 +22,7 @@ import {
   AIProductionReadiness,
   AIRecommendations,
   AITeamInsights,
+  AIPredictiveAnalytics,
 } from "@/components/RDLab";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
