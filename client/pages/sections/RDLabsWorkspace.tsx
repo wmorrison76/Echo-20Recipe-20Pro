@@ -83,6 +83,7 @@ function RDLabsWorkspaceContent() {
     conversation: string;
     theme: string;
   } | null>(null);
+  const [showWhiteboard, setShowWhiteboard] = useState(true);
 
   if (!store) {
     return (
