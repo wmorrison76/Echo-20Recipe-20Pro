@@ -359,36 +359,36 @@ function MetricCard({
 }: MetricCardProps) {
   return (
     <Card
-      className={`bg-gradient-to-br ${bgGradient} border-0 shadow-sm hover:shadow-md transition-shadow p-5`}
+      className={`bg-gradient-to-br ${bgGradient} border border-border dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow p-5`}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             {title}
           </p>
-          <p className="text-2xl font-bold text-slate-900 dark:text-slate-200 mt-2">
+          <p className="text-2xl font-bold text-foreground mt-2">
             {value}
           </p>
-          <p className="text-xs text-slate-600 dark:text-slate-400 mt-2">
+          <p className="text-xs text-muted-foreground mt-2">
             {subtitle}
           </p>
         </div>
-        <div className={`p-3 rounded-lg bg-white/60 dark:bg-slate-800/40`}>
+        <div className="p-3 rounded-lg bg-background/60 dark:bg-slate-800/40">
           <Icon className={`h-5 w-5 ${iconColor}`} />
         </div>
       </div>
       {trend !== "neutral" && (
         <div className="flex items-center gap-1 mt-3">
           {trend === "up" ? (
-            <TrendingUp className="h-3 w-3 text-green-600 dark:text-green-400" />
+            <TrendingUp className="h-3 w-3 text-green-600" />
           ) : (
-            <TrendingDown className="h-3 w-3 text-red-600 dark:text-red-400" />
+            <TrendingDown className="h-3 w-3 text-red-600" />
           )}
           <span
             className={`text-xs font-medium ${
               trend === "up"
-                ? "text-green-600 dark:text-green-400"
-                : "text-red-600 dark:text-red-400"
+                ? "text-green-600"
+                : "text-red-600"
             }`}
           >
             {trendValue}
