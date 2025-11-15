@@ -473,9 +473,6 @@ export default function RecipeSearchSection() {
     }
   }, [q, searchRecipes, cat, fcuisine, ftech, fcourse, fdiet]);
 
-  useEffect(() => {
-    setMenuExportLanguage(appLanguage);
-  }, [appLanguage]);
 
   const [status, setStatus] = useState<string | null>(null);
   const [mode, setMode] = useState<"cards" | "grid4" | "rows">("cards");
