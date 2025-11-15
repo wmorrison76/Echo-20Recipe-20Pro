@@ -223,13 +223,13 @@ export async function getCrossTrackLearning(
 }
 
 /**
- * Generate an embedding for text
+ * Generate an embedding for text (works with Pinecone or pgvector)
  */
 export async function generateEmbedding(
   text: string
 ): Promise<{ success: boolean; embedding?: number[]; error?: string }> {
   try {
-    const response = await fetch("/api/pinecone/embedding", {
+    const response = await fetch("/api/vector/embedding", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text }),
