@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sparkles, Send, Loader, AlertCircle, ChevronRight, Beaker, TrendingUp } from "lucide-react";
+import { Sparkles, Send, Loader, AlertCircle, ChevronRight, Beaker, TrendingUp, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useEchoChatHistory } from "@/hooks/use-echo-chat-history";
 
 interface Message {
   id: string;
