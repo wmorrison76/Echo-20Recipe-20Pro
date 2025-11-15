@@ -78,8 +78,8 @@ function RDLabsWorkspaceContent() {
   >("fine-dining");
   const [hasEnteredLab, setHasEnteredLab] = useState(false);
   const [transitionStage, setTransitionStage] = useState<
-    "chat" | "door-animation" | "setup" | "workspace"
-  >("chat");
+    "integrated-entrance" | "chat" | "door-animation" | "setup" | "workspace"
+  >("integrated-entrance");
   const [projectContext, setProjectContext] = useState<{
     projectName: string;
     conversation: string;
@@ -101,7 +101,26 @@ function RDLabsWorkspaceContent() {
     );
   }
 
-  // Transition states
+  // Integrated entrance with refined transition sequence
+  if (transitionStage === "integrated-entrance") {
+    return (
+      <IntegratedLabEntrance
+        onLabEnter={(projectInfo) => {
+          setRecipeTrack("fine-dining");
+          setLabMode("culinary");
+          setProjectContext({
+            projectName: projectInfo.projectName,
+            conversation: projectInfo.conversationContext,
+            theme: "culinary",
+          });
+          setHasEnteredLab(true);
+          setTransitionStage("workspace");
+        }}
+      />
+    );
+  }
+
+  // Legacy transition states (kept for backward compatibility)
   if (transitionStage === "chat") {
     return (
       <EchoChatInterface
