@@ -71,13 +71,13 @@ export function DashboardQuickAccessPanel({
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
       {/* Quick Actions */}
       <Card className="border border-border dark:border-slate-800 bg-card p-6 lg:col-span-1">
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-cyan-200 mb-4">
+        <h3 className="text-lg font-semibold text-foreground mb-4">
           Quick Actions
         </h3>
         <div className="space-y-3">
           <Button
             onClick={onNewExperiment}
-            className="w-full gap-2 bg-cyan-600 hover:bg-cyan-700 dark:bg-cyan-600 dark:hover:bg-cyan-500 text-white"
+            className="w-full gap-2"
             size="sm"
           >
             <PlusCircle className="h-4 w-4" />
@@ -86,7 +86,7 @@ export function DashboardQuickAccessPanel({
           <Button
             onClick={onViewAnalytics}
             variant="outline"
-            className="w-full gap-2 border-slate-300 dark:border-cyan-500/30"
+            className="w-full gap-2"
             size="sm"
           >
             <BarChart3 className="h-4 w-4" />
@@ -94,7 +94,7 @@ export function DashboardQuickAccessPanel({
           </Button>
           <Button
             variant="outline"
-            className="w-full gap-2 border-slate-300 dark:border-cyan-500/30"
+            className="w-full gap-2"
             size="sm"
           >
             <Calendar className="h-4 w-4" />
@@ -164,7 +164,7 @@ export function DashboardQuickAccessPanel({
             {
               icon: Clock,
               title: "Pipeline Velocity",
-              detail: `Avg ${metrics.experiments.averageTimeToReady} days ideation → ready`,
+              detail: `Avg ${metrics.experiments.averageTimeToReady} days ideation ��� ready`,
               highlight: "bg-blue-50 dark:bg-blue-900/20",
               textColor: "text-blue-700 dark:text-blue-300",
             },
