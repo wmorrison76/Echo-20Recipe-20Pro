@@ -104,11 +104,11 @@ function RDLabsWorkspaceContent() {
           </div>
           <div>
             <h1 className={`text-2xl font-bold ${
-              labMode === "pastry" ? "text-amber-700 dark:text-rose-300" : "text-cyan-700 dark:text-cyan-300"
+              labMode === "pastry" ? "neon-pink" : "neon-cyan"
             }`}>
               R&D Labs
             </h1>
-            <p className="text-xs text-muted-foreground dark:text-slate-400">
+            <p className="text-xs text-slate-400">
               {labMode === "pastry" ? "Pastry Research & Development" : "Culinary Research & Development"}
             </p>
           </div>
