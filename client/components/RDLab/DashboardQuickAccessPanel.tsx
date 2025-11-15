@@ -271,24 +271,24 @@ export function DashboardQuickAccessPanel({
       </Card>
 
       {/* Team Performance Snapshot */}
-      <Card className="border-slate-200/50 dark:border-cyan-500/20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 lg:col-span-1">
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-cyan-200 mb-4">
+      <Card className="border border-border dark:border-slate-800 bg-card p-6 lg:col-span-1">
+        <h3 className="text-lg font-semibold text-foreground mb-4">
           Team Performance
         </h3>
         <div className="space-y-4">
           <div>
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              <span className="text-sm font-medium text-muted-foreground">
                 Task Status
               </span>
-              <span className="text-xs text-slate-500 dark:text-slate-400">
+              <span className="text-xs text-muted-foreground opacity-75">
                 {metrics.teamPerformance.tasksOnTrack}/{" "}
                 {metrics.teamPerformance.tasksOnTrack + metrics.teamPerformance.tasksOverdue}
               </span>
             </div>
-            <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+            <div className="h-2 bg-muted rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-green-400 to-green-600"
+                className="h-full bg-green-600"
                 style={{
                   width: `${
                     (metrics.teamPerformance.tasksOnTrack /
@@ -301,7 +301,7 @@ export function DashboardQuickAccessPanel({
             </div>
           </div>
           <div>
-            <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+            <p className="text-sm font-medium text-muted-foreground mb-2">
               Top Contributors
             </p>
             <div className="space-y-1">
@@ -310,10 +310,10 @@ export function DashboardQuickAccessPanel({
                   key={contributor.name}
                   className="flex items-center justify-between text-xs"
                 >
-                  <span className="text-slate-600 dark:text-slate-400">
+                  <span className="text-muted-foreground">
                     {contributor.name}
                   </span>
-                  <span className="font-medium text-slate-900 dark:text-slate-200">
+                  <span className="font-medium text-foreground">
                     {contributor.experimentsOwned}
                   </span>
                 </div>
