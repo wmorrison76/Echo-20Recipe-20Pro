@@ -120,7 +120,7 @@ export async function searchSimilarRecipes(
 }
 
 /**
- * Get recipes by track
+ * Get recipes by track (works with Pinecone or pgvector)
  */
 export async function getRecipesByTrack(
   track: RecipeTrack,
@@ -129,7 +129,7 @@ export async function getRecipesByTrack(
 ): Promise<{ success: boolean; recipes: RecipeSimilarityMatch[]; error?: string }> {
   try {
     const response = await fetch(
-      `/api/pinecone/recipes/by-track?track=${track}&organizationId=${organizationId}&limit=${limit}`
+      `/api/vector/recipes/by-track?track=${track}&organizationId=${organizationId}&limit=${limit}`
     );
 
     if (!response.ok) {
