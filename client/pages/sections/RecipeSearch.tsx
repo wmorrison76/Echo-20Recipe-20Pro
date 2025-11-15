@@ -1204,30 +1204,30 @@ const onFiles = async (files: File[]) => {
             </div>
           </div>
         </Dropzone>
-        <div className="flex flex-col space-y-4 rounded-xl border border-primary/30 bg-background/90 p-4 shadow-sm dark:bg-zinc-900/70">
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex min-w-[220px] flex-1 flex-col gap-2">
+        <div className="flex flex-col space-y-2 rounded-xl border border-primary/30 bg-background/90 p-3 shadow-sm dark:bg-zinc-900/70">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex min-w-[220px] flex-1 flex-col gap-1">
               <div className="flex items-center gap-2">
-                <div className="text-xs font-semibold uppercase tracking-[0.32em] text-muted-foreground">
+                <div className="text-[10px] font-semibold uppercase tracking-[0.25em] text-muted-foreground">
                   {t("recipes.menuCollection", "Menu Collection")}
                 </div>
                 {activeCollectionId && (
-                  <span className="rounded-full bg-primary/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                  <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-primary">
                     {t("recipes.editing", "Editing")}
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-3 rounded-full border border-primary/20 bg-background px-4 py-2 shadow-inner dark:bg-zinc-950/60">
+              <div className="flex items-center gap-2 rounded-full border border-primary/20 bg-background px-3 py-1.5 shadow-inner dark:bg-zinc-950/60">
                 <input
                   ref={collectionNameRef}
                   value={collectionDraftName}
                   onChange={(event) => setCollectionDraftName(event.target.value)}
                   placeholder={t("recipes.collectionName.placeholder", "Collection Name")}
-                  className="flex-1 bg-transparent text-sm font-medium text-foreground outline-none placeholder:text-muted-foreground"
+                  className="flex-1 bg-transparent text-xs font-medium text-foreground outline-none placeholder:text-muted-foreground"
                 />
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <Button
                 type="button"
                 variant="outline"
