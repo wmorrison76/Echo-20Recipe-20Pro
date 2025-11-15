@@ -26,16 +26,16 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: 
-    linear-gradient(90deg, transparent 0%, rgba(34, 211, 238, 0.03) 50%, transparent 100%);
-  animation: scanlines 8s linear infinite;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(34, 211, 238, 0.03) 0px,
+      rgba(34, 211, 238, 0.03) 1px,
+      transparent 1px,
+      transparent 2px
+    );
   pointer-events: none;
   z-index: 1;
-}
-
-@keyframes scanlines {
-  0% { background-position: 0 0; }
-  100% { background-position: 0 100%; }
 }
 
 /* Glassmorphism effect for panels */
