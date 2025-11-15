@@ -1176,7 +1176,7 @@ const onFiles = async (files: File[]) => {
 
       <div className="grid gap-2 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
         <Dropzone
-          className="glow flex min-h-[160px] flex-col items-center justify-center rounded-xl border border-dashed border-primary/35 bg-background/90 p-6 text-center shadow-sm transition-all hover:border-primary/60 hover:shadow-md dark:bg-zinc-900/70"
+          className="glow flex min-h-[120px] flex-col items-center justify-center rounded-xl border border-dashed border-primary/35 bg-background/90 p-4 text-center shadow-sm transition-all hover:border-primary/60 hover:shadow-md dark:bg-zinc-900/70"
           accept=".json,application/json,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.html,.htm,text/html,.pdf,application/pdf,.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.xls,application/vnd.ms-excel,.csv,text/csv,application/zip,application/x-zip-compressed,.zip,image/*"
           multiple
           onFiles={onFiles}
