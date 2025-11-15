@@ -241,16 +241,16 @@ export function DashboardOverviewPanel({
           <div className="space-y-4">
             <div>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-slate-700 dark:text-slate-300">
+                <span className="text-sm text-muted-foreground">
                   Avg. Carbon/Serving
                 </span>
-                <span className="text-sm font-bold text-slate-900 dark:text-cyan-200">
+                <span className="text-sm font-bold text-foreground">
                   {metrics.sustainability.averageCarbonPerServing} kg CO₂e
                 </span>
               </div>
-              <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div className="h-2 bg-muted rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-green-400 to-green-600"
+                  className="h-full bg-green-600"
                   style={{
                     width: `${Math.min(
                       (metrics.sustainability.averageCarbonPerServing / 3) *
@@ -263,16 +263,16 @@ export function DashboardOverviewPanel({
             </div>
             <div>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-slate-700 dark:text-slate-300">
+                <span className="text-sm text-muted-foreground">
                   Local Sourcing
                 </span>
-                <span className="text-sm font-bold text-slate-900 dark:text-cyan-200">
+                <span className="text-sm font-bold text-foreground">
                   {metrics.sustainability.localSourcingPercentage}%
                 </span>
               </div>
-              <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div className="h-2 bg-muted rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600"
+                  className="h-full bg-emerald-600"
                   style={{
                     width: `${metrics.sustainability.localSourcingPercentage}%`,
                   }}
@@ -281,16 +281,16 @@ export function DashboardOverviewPanel({
             </div>
             <div>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-slate-700 dark:text-slate-300">
+                <span className="text-sm text-muted-foreground">
                   Waste Recovery Rate
                 </span>
-                <span className="text-sm font-bold text-slate-900 dark:text-cyan-200">
+                <span className="text-sm font-bold text-foreground">
                   {metrics.sustainability.wasteRecoveryRate}%
                 </span>
               </div>
-              <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div className="h-2 bg-muted rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-teal-400 to-teal-600"
+                  className="h-full bg-teal-600"
                   style={{
                     width: `${metrics.sustainability.wasteRecoveryRate}%`,
                   }}
