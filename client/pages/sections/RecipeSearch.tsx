@@ -39,6 +39,7 @@ import {
   X,
   Package,
   Pencil,
+  Eye,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { axisOptions } from "@/lib/taxonomy";
@@ -708,7 +709,7 @@ const [scanOpen, setScanOpen] = useState(false);
     let tocEntries = norm
       .map((s) => {
         const tests = [
-          /^(.{3,120}?)(?:[\.·•\s]{2,})(\d{1,4})$/,
+          /^(.{3,120}?)(?:[\.·���\s]{2,})(\d{1,4})$/,
           /^(.{3,120}?)\s{3,}(\d{1,4})$/,
           /^(.{3,120}?)\s+[-–—]\s*(\d{1,4})$/,
         ];
@@ -2353,7 +2354,7 @@ const onFiles = async (files: File[]) => {
                     ]);
                     if (ingIdx < 0) {
                       const qty =
-                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾��⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
+                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
                       for (let j = 0; j < Math.min(lines.length, 80); j++) {
                         if (qty.test(lines[j]) || /^[•\-*]\s+/.test(lines[j])) {
                           ingIdx = j - 1;
