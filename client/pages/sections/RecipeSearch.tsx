@@ -2002,7 +2002,7 @@ const onFiles = async (files: File[]) => {
                         .filter(Boolean)
                         .slice(0, 80);
                       const qty =
-                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝��])(?:\s*[a-zA-Z]+)?\b/;
+                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼��¾⅓⅔⅛⅜⅝��])(?:\s*[a-zA-Z]+)?\b/;
                       let c = 0;
                       for (const L of ls) {
                         if (qty.test(L) || /^[•\-*]\s+/.test(L)) c++;
@@ -2602,119 +2602,6 @@ const onFiles = async (files: File[]) => {
               onToggleGlobal={toggleRecipeGlobal}
             />
           ))}
-        </div>
-      ) : mode === "rows" ? (
-        <div
-          className="space-y-2"
-          data-echo-key="section:recipes:results"
-        >
-          {results.filter(Boolean).map((r) => {
-            const selected = selectedRecipeIds.includes(r.id);
-            const cover = r.imageDataUrls?.[0] ?? r.image ?? undefined;
-            return (
-              <div
-                key={r.id}
-                className={cn(
-                  "flex items-center gap-3 rounded border p-3 glow transition-colors",
-                  isCollectionSelectionEnabled && selected
-                    ? "border-primary bg-primary/5 dark:bg-primary/15"
-                    : undefined,
-                )}
-                data-echo-key="card:recipes:result"
-              >
-                {isCollectionSelectionEnabled && (
-                  <button
-                    type="button"
-                    aria-pressed={selected}
-                    onClick={() => toggleRecipeSelection(r.id)}
-                    className={cn(
-                      "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold shadow focus-visible:outline-none focus-visible:ring",
-                      selected
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground",
-                    )}
-                  >
-                    {selected ? t("recipeSearch.selected") : t("recipeSearch.select")}
-                  </button>
-                )}
-                <div className="relative h-12 w-16 shrink-0 overflow-hidden rounded bg-muted">
-                  {cover ? (
-                    <img
-                      src={cover}
-                      alt=""
-                      className="h-full w-full object-cover"
-                      loading="lazy"
-                    />
-                  ) : null}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium text-sm line-clamp-1" title={r.title}>
-                    {r.title}
-                  </div>
-                  <div className="text-xs text-muted-foreground line-clamp-1">
-                    {r.tags?.join(" · ")}
-                  </div>
-                </div>
-                <div className="flex items-center gap-1 flex-wrap justify-end">
-                  {r.favorite && <Star size={14} className="text-yellow-500 fill-current" />}
-                  {r.rating && <span className="text-xs font-medium">{r.rating}★</span>}
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-7 w-7 p-0"
-                    onClick={() => setPreview(r)}
-                    title="Preview"
-                  >
-                    <Eye size={14} />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-7 w-7 p-0"
-                    asChild
-                  >
-                    <a href={`/recipe/${r.id}/view`} title="Open">
-                      <ExternalLink size={14} />
-                    </a>
-                  </Button>
-                  {inTrashView ? (
-                    <>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-7 w-7 p-0"
-                        onClick={() => restoreRecipe(r.id)}
-                        title={t("recipeSearch.restore")}
-                      >
-                        <RotateCcw size={14} />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-7 w-7 p-0 text-destructive hover:text-destructive"
-                        onClick={() => {
-                          if (confirm("Delete forever?")) destroyRecipe(r.id);
-                        }}
-                        title={t("recipeSearch.deleteForever")}
-                      >
-                        <Trash2 size={14} />
-                      </Button>
-                    </>
-                  ) : (
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
-                      onClick={() => deleteRecipe(r.id)}
-                      title="Move to trash"
-                    >
-                      <Trash2 size={14} />
-                    </Button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
         </div>
       ) : mode === "grid4" ? (
         <div
