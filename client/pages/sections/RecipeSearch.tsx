@@ -1128,7 +1128,7 @@ const onFiles = async (files: File[]) => {
       className="mx-auto w-full max-w-[1400px] space-y-3 px-4 py-3 sm:px-6 lg:px-8"
       data-echo-key="page:recipes:search"
     >
-      <div className="flex flex-wrap items-center gap-1">
+      <div className="flex flex-wrap items-center gap-2 mb-4">
         <div className="flex items-center gap-0.5 rounded-lg bg-muted p-0.5">
           {(
             [
@@ -1151,25 +1151,6 @@ const onFiles = async (files: File[]) => {
           ))}
         </div>
         <div className="ml-auto flex flex-wrap items-center gap-2">
-          <Select
-            value={menuExportLanguage}
-            onValueChange={(value) => {
-              const code = value as LanguageCode;
-              setMenuExportLanguage(code);
-              setLanguage(code);
-            }}
-          >
-            <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder={t("recipes.exportLanguage", "Export language")} />
-            </SelectTrigger>
-            <SelectContent>
-              {languageOptions.map((option) => (
-                <SelectItem key={option.code} value={option.code}>
-                  {option.flag} {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
           <Button
             variant="outline"
             size="sm"
@@ -2372,7 +2353,7 @@ const onFiles = async (files: File[]) => {
                     ]);
                     if (ingIdx < 0) {
                       const qty =
-                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
+                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾��⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
                       for (let j = 0; j < Math.min(lines.length, 80); j++) {
                         if (qty.test(lines[j]) || /^[•\-*]\s+/.test(lines[j])) {
                           ingIdx = j - 1;
@@ -2489,7 +2470,7 @@ const onFiles = async (files: File[]) => {
         </div>
       )}
       <div
-        className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3"
+        className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-4"
         data-echo-key="section:recipes:filters"
       >
         <div className="flex-1 relative" data-echo-key="field:recipes:query">
@@ -2572,13 +2553,44 @@ const onFiles = async (files: File[]) => {
         </div>
       </div>
 
+      {recipes.length > 0 && (
+        <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-1 rounded-lg bg-muted p-0.5">
+            <button
+              onClick={() => setMode("cards")}
+              className={`p-1 rounded text-sm ${mode === "cards" ? "bg-background shadow" : "text-foreground/70 hover:text-foreground"}`}
+              title="Card view"
+              aria-label="Card view"
+            >
+              <LayoutGrid size={16} />
+            </button>
+            <button
+              onClick={() => setMode("grid4")}
+              className={`p-1 rounded text-sm ${mode === "grid4" ? "bg-background shadow" : "text-foreground/70 hover:text-foreground"}`}
+              title="Compact grid view"
+              aria-label="Compact grid view"
+            >
+              <Rows size={16} />
+            </button>
+            <button
+              onClick={() => setMode("rows")}
+              className={`p-1 rounded text-sm ${mode === "rows" ? "bg-background shadow" : "text-foreground/70 hover:text-foreground"}`}
+              title="List view"
+              aria-label="List view"
+            >
+              <List size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+
       {recipes.length === 0 ? (
         <div className="rounded-md border p-6 text-center text-sm text-muted-foreground">
           No recipes yet. Drop files above or import from URL.
         </div>
       ) : mode === "cards" ? (
         <div
-          className="grid gap-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
+          className="grid gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6"
           data-echo-key="section:recipes:results"
         >
           {results.map((r) => (
@@ -2602,6 +2614,119 @@ const onFiles = async (files: File[]) => {
               onToggleGlobal={toggleRecipeGlobal}
             />
           ))}
+        </div>
+      ) : mode === "rows" ? (
+        <div
+          className="space-y-2"
+          data-echo-key="section:recipes:results"
+        >
+          {results.filter(Boolean).map((r) => {
+            const selected = selectedRecipeIds.includes(r.id);
+            const cover = r.imageDataUrls?.[0] ?? r.image ?? undefined;
+            return (
+              <div
+                key={r.id}
+                className={cn(
+                  "flex items-center gap-3 rounded border p-3 glow transition-colors",
+                  isCollectionSelectionEnabled && selected
+                    ? "border-primary bg-primary/5 dark:bg-primary/15"
+                    : undefined,
+                )}
+                data-echo-key="card:recipes:result"
+              >
+                {isCollectionSelectionEnabled && (
+                  <button
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => toggleRecipeSelection(r.id)}
+                    className={cn(
+                      "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold shadow focus-visible:outline-none focus-visible:ring",
+                      selected
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground",
+                    )}
+                  >
+                    {selected ? t("recipeSearch.selected") : t("recipeSearch.select")}
+                  </button>
+                )}
+                <div className="relative h-12 w-16 shrink-0 overflow-hidden rounded bg-muted">
+                  {cover ? (
+                    <img
+                      src={cover}
+                      alt=""
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                  ) : null}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium text-sm line-clamp-1" title={r.title}>
+                    {r.title}
+                  </div>
+                  <div className="text-xs text-muted-foreground line-clamp-1">
+                    {r.tags?.join(" · ")}
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 flex-wrap justify-end">
+                  {r.favorite && <Star size={14} className="text-yellow-500 fill-current" />}
+                  {r.rating && <span className="text-xs font-medium">{r.rating}★</span>}
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-7 w-7 p-0"
+                    onClick={() => setPreview(r)}
+                    title="Preview"
+                  >
+                    <Eye size={14} />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-7 w-7 p-0"
+                    asChild
+                  >
+                    <a href={`/recipe/${r.id}/view`} title="Open">
+                      <ExternalLink size={14} />
+                    </a>
+                  </Button>
+                  {inTrashView ? (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 w-7 p-0"
+                        onClick={() => restoreRecipe(r.id)}
+                        title={t("recipeSearch.restore")}
+                      >
+                        <RotateCcw size={14} />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                        onClick={() => {
+                          if (confirm("Delete forever?")) destroyRecipe(r.id);
+                        }}
+                        title={t("recipeSearch.deleteForever")}
+                      >
+                        <Trash2 size={14} />
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                      onClick={() => deleteRecipe(r.id)}
+                      title="Move to trash"
+                    >
+                      <Trash2 size={14} />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       ) : mode === "grid4" ? (
         <div
