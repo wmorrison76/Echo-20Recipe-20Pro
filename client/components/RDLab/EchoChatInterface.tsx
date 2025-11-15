@@ -19,23 +19,50 @@ interface EchoChatInterfaceProps {
 }
 
 export function EchoChatInterface({ onEnterLab }: EchoChatInterfaceProps) {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "welcome",
-      role: "assistant",
-      content: `Welcome to R&D Labs. I'm ECHO Ai, your culinary research assistant. 
+  const chatHistory = useEchoChatHistory();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Initialize messages from stored history or show welcome message
+  useEffect(() => {
+    if (!chatHistory.isLoaded) return;
+
+    const storedHistory = chatHistory.getHistory();
+    if (storedHistory.length > 0) {
+      setMessages(
+        storedHistory.map((m) => ({
+          id: m.id,
+          role: m.role,
+          content: m.content,
+          timestamp: new Date(m.timestamp),
+        }))
+      );
+    } else {
+      // Show welcome message for new users
+      const welcomeMessage: Message = {
+        id: "welcome",
+        role: "assistant",
+        content: `Welcome to R&D Labs. I'm ECHO Ai, your culinary research assistant.
 
 I'm here to help you explore new ideas, design experiments, and push the boundaries of your craft. Whether you're working on fine dining innovation, pastry artistry, or scaling production—let's collaborate freely.
 
 What are you thinking about today? A new technique? A flavor combination? Production challenges? Or maybe you want to brainstorm something completely new?`,
-      timestamp: new Date(),
-    },
-  ]);
-  const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+        timestamp: new Date(),
+      };
+      setMessages([welcomeMessage]);
+      chatHistory.addMessage({
+        id: welcomeMessage.id,
+        role: welcomeMessage.role,
+        content: welcomeMessage.content,
+        timestamp: welcomeMessage.timestamp.toISOString(),
+      });
+    }
+  }, [chatHistory.isLoaded]);
 
   const scrollToBottom = () => {
     if (scrollRef.current) {
