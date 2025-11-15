@@ -11,6 +11,7 @@ import { rdLabsRouter } from "./routes/rdlabs";
 import { rdLabsAdvancedRouter } from "./routes/rdlabs-advanced";
 import rdLabsAIRouter from "./routes/rdlabs-ai";
 import { rdLabsChatRouter } from "./routes/rdlabs-chat";
+import { elevenLabsRouter } from "./routes/elevenlabs";
 import vectorRouter from "./routes/vector-recipes";
 import {
   proxyRecipeImage as proxyImageOptimized,
