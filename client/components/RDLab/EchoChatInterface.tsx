@@ -30,6 +30,7 @@ interface EchoChatInterfaceProps {
   onEnterLab?: (
     track: "fine-dining" | "manufacturing",
     mode: "culinary" | "pastry",
+    context: { projectName: string; conversation: string; theme: string },
   ) => void;
 }
 
