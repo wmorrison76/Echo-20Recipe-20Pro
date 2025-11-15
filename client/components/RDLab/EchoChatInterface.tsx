@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useEchoChatHistory } from "@/hooks/use-echo-chat-history";
-import { speakText, stopAudio } from "@/lib/elevenlabs-service";
+import { speakText, stopAudio, checkServiceHealth } from "@/lib/elevenlabs-service";
 
 interface Message {
   id: string;
