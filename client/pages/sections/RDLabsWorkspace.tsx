@@ -115,8 +115,8 @@ function RDLabsWorkspaceContent() {
         </div>
         <div className="flex items-center gap-3">
           <div className="text-right text-sm">
-            <p className="text-foreground dark:text-slate-300 font-medium">{experimentsCount} Active Experiments</p>
-            <p className="text-muted-foreground dark:text-slate-500 text-xs">Research in progress</p>
+            <p className="text-slate-200 neon-cyan font-medium">{experimentsCount} Active Experiments</p>
+            <p className="text-slate-400 text-xs">Research in progress</p>
           </div>
           <div className="flex gap-2">
             <Button
