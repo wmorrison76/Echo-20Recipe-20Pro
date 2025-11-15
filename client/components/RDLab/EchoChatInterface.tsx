@@ -224,6 +224,22 @@ What are you thinking about today? A new technique? A flavor combination? Produc
           console.warn("TTS failed, continuing without audio:", speakErr);
         }
       }
+
+      // Check for lab trigger in user or assistant message
+      if (labTriggerMatch) {
+        // Delay lab entry slightly to let UI update
+        setTimeout(() => {
+          triggerLabEntry(labTriggerMatch);
+        }, 500);
+      } else {
+        // Also check assistant response for lab triggers
+        const assistantTrigger = detectLabTrigger(assistantMessage.content);
+        if (assistantTrigger) {
+          setTimeout(() => {
+            triggerLabEntry(assistantTrigger);
+          }, 500);
+        }
+      }
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "An error occurred";
