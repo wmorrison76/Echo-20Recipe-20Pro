@@ -220,10 +220,10 @@ function RDLabsWorkspaceContent() {
         </div>
 
         {/* Center Panel - Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden bg-card dark:bg-slate-950/40">
+        <div className="flex-1 flex flex-col overflow-hidden rdlabs-content">
           {/* Tab Navigation */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-1">
-            <TabsList className="w-full justify-start rounded-none border-b border-accent/20 dark:border-cyan-500/10 bg-input dark:bg-slate-900/50 px-6 h-12 overflow-x-auto">
+            <TabsList className="w-full justify-start rounded-none rdlabs-tablist h-12 overflow-x-auto">
               <TabsTrigger value="overview" className="gap-2">
                 <BarChart3 className="h-4 w-4" />
                 Overview
