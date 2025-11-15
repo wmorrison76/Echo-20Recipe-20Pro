@@ -48,6 +48,7 @@ interface EchoChatInterfaceProps {
 export function EchoChatInterface({
   onEnterLab,
   onLabTrigger,
+  onTransitionStateChange,
 }: EchoChatInterfaceProps) {
   const chatHistory = useEchoChatHistory();
   const [messages, setMessages] = useState<Message[]>([]);
