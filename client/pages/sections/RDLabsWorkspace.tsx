@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { RDLabProvider, useOptionalRDLabStore } from "@/stores/rdLabStore";
 import {
+  LabDoorEntrance,
+  TrackDashboards,
+  CollaborationHub,
   ProjectDashboard,
   DiscoveryPanel,
   WorkbenchPanel,
@@ -13,9 +16,6 @@ import {
   RecipeLinkingPanel,
   ExportImport,
   RDLabsHelpPanel,
-  DashboardOverviewPanel,
-  DashboardQuickAccessPanel,
-  DashboardAnalyticsPanel,
   AIExperimentDesigner,
   AIValidationPanel,
   AISOPGenerator,
@@ -28,8 +28,8 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { LayoutGrid, Beaker, TestTube, Search, Settings, Home, HelpCircle, Sparkles, BarChart3, Zap, Wand2, CheckCircle, FileText, AlertTriangle, Lightbulb, Users, Target, Plus } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { LayoutGrid, Beaker, TestTube, Search, Settings, Home, HelpCircle, Sparkles, BarChart3, Zap, Wand2, CheckCircle, FileText, AlertTriangle, Lightbulb, Users, Target, Plus, ChevronDown } from "lucide-react";
 
 export default function RDLabsWorkspace() {
   return (
@@ -48,6 +48,7 @@ function RDLabsWorkspaceContent() {
   const [showHelp, setShowHelp] = useState(false);
   const [labMode, setLabMode] = useState<"culinary" | "pastry">("culinary");
   const [recipeTrack, setRecipeTrack] = useState<"fine-dining" | "manufacturing">("fine-dining");
+  const [hasEnteredLab, setHasEnteredLab] = useState(false);
 
   if (!store) {
     return (
@@ -58,6 +59,19 @@ function RDLabsWorkspaceContent() {
           <p className="text-sm text-slate-500 dark:text-slate-400">Initializing research environment...</p>
         </div>
       </div>
+    );
+  }
+
+  // Show lab door entrance on first load
+  if (!hasEnteredLab) {
+    return (
+      <LabDoorEntrance
+        onTrackSelected={(track, mode) => {
+          setRecipeTrack(track);
+          setLabMode(mode);
+          setHasEnteredLab(true);
+        }}
+      />
     );
   }
 
@@ -104,12 +118,19 @@ function RDLabsWorkspaceContent() {
           <div>
             <h1 className="text-2xl font-bold text-foreground">R&D Labs</h1>
             <p className="text-xs text-muted-foreground">
-              {labMode === "pastry" ? "Pastry Research & Development" : "Culinary Research & Development"}
+              {labMode === "pastry" 
+                ? recipeTrack === "manufacturing" 
+                  ? "Pastry Manufacturing Lab"
+                  : "Pastry Fine Dining Lab"
+                : recipeTrack === "manufacturing"
+                  ? "Culinary Manufacturing Lab"
+                  : "Fine Dining Innovation Lab"
+              }
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <div className="text-right text-sm">
+          <div className="text-right text-sm hidden md:block">
             <p className="font-medium text-foreground">{experimentsCount} Active Experiments</p>
             <p className="text-xs text-muted-foreground">Research in progress</p>
           </div>
@@ -117,16 +138,12 @@ function RDLabsWorkspaceContent() {
             <Button
               size="sm"
               variant="outline"
-              onClick={() => setLabMode(labMode === "pastry" ? "culinary" : "pastry")}
+              onClick={() => setHasEnteredLab(false)}
               className="gap-2"
-              title={labMode === "pastry" ? "Switch to Culinary Lab" : "Switch to Pastry Lab"}
+              title="Switch Lab Focus"
             >
-              {labMode === "pastry" ? (
-                <Sparkles className="h-4 w-4" />
-              ) : (
-                <Beaker className="h-4 w-4" />
-              )}
-              {labMode === "pastry" ? "Pastry Lab" : "Culinary Lab"}
+              <ChevronDown className="h-4 w-4" />
+              Switch Focus
             </Button>
             <Button
               size="sm"
@@ -143,10 +160,10 @@ function RDLabsWorkspaceContent() {
               variant="outline"
               onClick={() => setShowDashboard(true)}
               className="gap-2"
-              title="Back to Dashboard"
+              title="Projects Dashboard"
             >
               <Home className="h-4 w-4" />
-              Dashboard
+              Projects
             </Button>
           </div>
         </div>
@@ -180,35 +197,25 @@ function RDLabsWorkspaceContent() {
             </div>
           )}
 
-          <div className="flex-1 overflow-auto">
-            {activeTab === "workbench" || activeTab === "discovery" ? (
-              <div className="p-4">
-                <DiscoveryPanel />
-              </div>
-            ) : activeTab === "search" ? (
-              <div className="p-4">
-                <GlobalExperimentSearch />
-              </div>
-            ) : (
-              <div className="p-4 space-y-4">
-                <div>
-                  <h3 className="text-sm font-semibold mb-2 text-foreground">Quick Actions</h3>
-                  <Button className="w-full gap-2" size="sm">
-                    <Plus className="h-4 w-4" />
-                    New Experiment
-                  </Button>
-                </div>
-                <div className="border-t border-border dark:border-slate-700 my-2"></div>
-                <div className="pt-2">
-                  <h3 className="text-sm font-semibold mb-2 text-foreground">Selected ({selectedIds.size})</h3>
-                  {selectedIds.size > 0 ? (
-                    <BatchOperations />
-                  ) : (
-                    <p className="text-xs text-muted-foreground">No experiments selected</p>
-                  )}
+          <div className="flex-1 overflow-auto p-4 space-y-4">
+            <div>
+              <h3 className="text-sm font-semibold mb-2 text-foreground">Quick Actions</h3>
+              <Button className="w-full gap-2" size="sm">
+                <Plus className="h-4 w-4" />
+                New Experiment
+              </Button>
+            </div>
+            <div className="border-t border-border dark:border-slate-700 my-2"></div>
+            <div className="pt-2">
+              <h3 className="text-sm font-semibold mb-2 text-foreground">Lab Focus</h3>
+              <div className="space-y-2 text-xs">
+                <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
+                  <p className="font-medium text-blue-900 dark:text-blue-200 capitalize">
+                    {labMode} - {recipeTrack.replace("-", " ")}
+                  </p>
                 </div>
               </div>
-            )}
+            </div>
           </div>
         </div>
 
@@ -241,22 +248,6 @@ function RDLabsWorkspaceContent() {
                 <FileText className="h-4 w-4" />
                 AI SOP
               </TabsTrigger>
-              <TabsTrigger value="ai-production" className="gap-2">
-                <AlertTriangle className="h-4 w-4" />
-                Production Check
-              </TabsTrigger>
-              <TabsTrigger value="ai-recommendations" className="gap-2">
-                <Lightbulb className="h-4 w-4" />
-                AI Insights
-              </TabsTrigger>
-              <TabsTrigger value="ai-team" className="gap-2">
-                <Users className="h-4 w-4" />
-                Team
-              </TabsTrigger>
-              <TabsTrigger value="ai-predict" className="gap-2">
-                <Target className="h-4 w-4" />
-                Predictions
-              </TabsTrigger>
               <TabsTrigger value="workbench" className="gap-2">
                 <TestTube className="h-4 w-4" />
                 Workbench
@@ -269,33 +260,31 @@ function RDLabsWorkspaceContent() {
                 <Search className="h-4 w-4" />
                 Search
               </TabsTrigger>
-              <TabsTrigger value="tools" className="gap-2">
-                <Settings className="h-4 w-4" />
-                Tools
-              </TabsTrigger>
             </TabsList>
 
             {/* Tab Content */}
             <div className="flex-1 overflow-auto">
               <TabsContent value="overview" className="m-0">
                 <div className="p-6">
-                  <DashboardOverviewPanel period="30d" />
+                  <TrackDashboards track={recipeTrack} labMode={labMode} />
                 </div>
               </TabsContent>
 
               <TabsContent value="insights" className="m-0">
                 <div className="p-6">
-                  <DashboardQuickAccessPanel
-                    period="30d"
-                    onNewExperiment={() => setActiveTab("workbench")}
-                    onViewAnalytics={() => setActiveTab("analytics")}
-                  />
+                  <div className="space-y-4">
+                    <h2 className="text-2xl font-bold text-foreground">Lab Insights</h2>
+                    <p className="text-muted-foreground">Real-time analysis of your experiments</p>
+                  </div>
                 </div>
               </TabsContent>
 
               <TabsContent value="analytics" className="m-0">
                 <div className="p-6">
-                  <DashboardAnalyticsPanel period="30d" />
+                  <div className="space-y-4">
+                    <h2 className="text-2xl font-bold text-foreground">Lab Analytics</h2>
+                    <p className="text-muted-foreground">Detailed performance metrics</p>
+                  </div>
                 </div>
               </TabsContent>
 
@@ -317,30 +306,6 @@ function RDLabsWorkspaceContent() {
                 </div>
               </TabsContent>
 
-              <TabsContent value="ai-production" className="m-0">
-                <div className="p-6">
-                  <AIProductionReadiness />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="ai-recommendations" className="m-0">
-                <div className="p-6">
-                  <AIRecommendations />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="ai-team" className="m-0">
-                <div className="p-6">
-                  <AITeamInsights />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="ai-predict" className="m-0">
-                <div className="p-6">
-                  <AIPredictiveAnalytics />
-                </div>
-              </TabsContent>
-
               <TabsContent value="workbench" className="m-0">
                 <div className="p-6">
                   <WorkbenchPanel />
@@ -358,56 +323,33 @@ function RDLabsWorkspaceContent() {
                   <GlobalExperimentSearch />
                 </div>
               </TabsContent>
-
-              <TabsContent value="tools" className="m-0">
-                <div className="grid grid-cols-2 gap-6 p-6">
-                  <div className="col-span-1">
-                    <h3 className="text-lg font-semibold mb-4 text-foreground">Templates</h3>
-                    <ExperimentTemplates />
-                  </div>
-                  <div className="col-span-1 space-y-6">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-4 text-foreground">Collaboration</h3>
-                      <CollaborationPanel />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold mb-4 text-foreground">Recipe Linking</h3>
-                      <RecipeLinkingPanel />
-                    </div>
-                  </div>
-                  <div className="col-span-2">
-                    <h3 className="text-lg font-semibold mb-4 text-foreground">Data Management</h3>
-                    <ExportImport />
-                  </div>
-                </div>
-              </TabsContent>
             </div>
           </Tabs>
         </div>
 
-        {/* Right Panel - Session Info & Insights */}
+        {/* Right Panel - Collaboration & Session */}
         <div className="w-80 border-l border-border dark:border-slate-800 overflow-auto flex-shrink-0 flex flex-col bg-muted/50 dark:bg-slate-900/50">
-          <div className="p-4 border-b border-border dark:border-slate-800">
-            <h2 className="text-sm font-semibold mb-1 text-foreground">Session Data</h2>
-            <p className="text-xs text-muted-foreground">Active experiment metrics</p>
-          </div>
-          <div className="flex-1 overflow-auto p-4 space-y-6">
-            {focusExperiment && (
-              <RDLabSessionSidebar
-                isDarkMode={document.documentElement.classList.contains('dark')}
-                projectName={focusExperiment.title}
-                createdAt={new Date().toISOString()}
-                updatedAt={new Date().toISOString()}
-                experimentsCount={experimentsCount}
-                discoveryQueue={store.experiments.slice(0, 3)}
-                backlog={store.backlog}
-                insights={store.insights}
-              />
-            )}
-            <div className="border-t border-border dark:border-slate-700 my-4"></div>
-            <div className="pt-4">
-              <h3 className="text-sm font-semibold mb-3 text-foreground">Insights</h3>
-              <InsightsPanel />
+          <div className="p-4 space-y-6">
+            <CollaborationHub 
+              track={recipeTrack} 
+              labMode={labMode}
+              currentUser={user ? { id: user.id, name: user.name || "Chef" } : undefined}
+            />
+            
+            <div className="border-t border-border dark:border-slate-700 pt-6">
+              <h3 className="text-sm font-semibold mb-3 text-foreground">Session Info</h3>
+              {focusExperiment && (
+                <RDLabSessionSidebar
+                  isDarkMode={document.documentElement.classList.contains('dark')}
+                  projectName={focusExperiment.title}
+                  createdAt={new Date().toISOString()}
+                  updatedAt={new Date().toISOString()}
+                  experimentsCount={experimentsCount}
+                  discoveryQueue={store.experiments.slice(0, 3)}
+                  backlog={store.backlog}
+                  insights={store.insights}
+                />
+              )}
             </div>
           </div>
         </div>
