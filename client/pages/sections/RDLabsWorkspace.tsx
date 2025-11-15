@@ -245,6 +245,10 @@ function RDLabsWorkspaceContent() {
                 <Users className="h-4 w-4" />
                 Team
               </TabsTrigger>
+              <TabsTrigger value="ai-predict" className="gap-2 bg-gradient-to-r from-indigo-500/10 to-purple-500/10">
+                <Target className="h-4 w-4" />
+                Predictions
+              </TabsTrigger>
               <TabsTrigger value="workbench" className="gap-2">
                 <TestTube className="h-4 w-4" />
                 Workbench
