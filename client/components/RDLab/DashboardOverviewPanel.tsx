@@ -18,10 +18,15 @@ export function DashboardOverviewPanel({
   period = "30d",
 }: DashboardOverviewPanelProps) {
   const { experiments } = useRDLabStore();
-  const metrics = useMemo(
-    () => calculateDashboardMetrics(experiments, period),
-    [experiments, period]
-  );
+
+  const metrics = useMemo(() => {
+    try {
+      return calculateDashboardMetrics(experiments || [], period);
+    } catch (error) {
+      console.error("Dashboard metrics error:", error);
+      return calculateDashboardMetrics([], period);
+    }
+  }, [experiments, period]);
 
   return (
     <div className="space-y-6 w-full">
