@@ -123,12 +123,12 @@ function calculateExperimentMetrics(
     ideation: experiments.filter((e) => e.status === "ideation").length,
     testing: experiments.filter((e) => e.status === "testing").length,
     ready: experiments.filter((e) => e.status === "ready").length,
-    deployed: experiments.filter((e) => e.status === "archived").length,
+    deployed: experiments.filter((e) => e.status === "ready").length,
     archived: experiments.filter((e) => e.status === "archived").length,
   };
 
   const totalCount = experiments.length;
-  const readyAndDeployed = byStatus.ready + byStatus.deployed;
+  const readyAndDeployed = byStatus.ready;
   const successRate =
     totalCount > 0 ? (readyAndDeployed / totalCount) * 100 : 0;
 
