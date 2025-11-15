@@ -182,11 +182,9 @@ router.post(
       if (!apiKey) {
         return res.status(500).json({
           success: false,
-          error: "OpenAI API key not configured",
+          error: "API key not configured",
         });
       }
-
-      const client = new OpenAI({ apiKey });
 
       const systemPrompt = `You are a lab whiteboard assistant for culinary R&D. Generate initial whiteboard entries for a new project.
 
@@ -207,20 +205,35 @@ Context: ${context || "No additional context provided"}
 
 Generate 3-4 relevant entries to start the whiteboard.`;
 
-      const response = await client.messages.create({
-        model: "claude-3-5-sonnet-20241022",
-        max_tokens: 800,
-        system: systemPrompt,
-        messages: [
-          {
-            role: "user",
-            content: userPrompt,
-          },
-        ],
+      // Use fetch-based API call
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          max_tokens: 800,
+          system: systemPrompt,
+          messages: [
+            {
+              role: "user",
+              content: userPrompt,
+            },
+          ],
+        }),
       });
 
-      const content = response.content[0];
-      if (!content || content.type !== "text") {
+      if (!response.ok) {
+        const error = await response.text();
+        console.error("API error:", error);
+        throw new Error(`API request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content;
+      if (!content) {
         throw new Error("Unexpected response format");
       }
 
