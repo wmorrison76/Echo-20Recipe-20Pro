@@ -197,10 +197,22 @@ router.get("/api/elevenlabs/voices", async (_req: Request, res: Response) => {
  */
 router.get("/api/elevenlabs/health", (_req: Request, res: Response) => {
   const hasApiKey = !!process.env.ELEVENLABS_API_KEY;
+  const message = hasApiKey
+    ? "ElevenLabs configured and ready"
+    : "ELEVENLABS_API_KEY environment variable not set";
+
+  console.log("Health check - ElevenLabs configured:", hasApiKey);
+
   res.json({
     success: true,
     service: "elevenlabs",
     configured: hasApiKey,
+    message,
+    debug: {
+      nodeEnv: process.env.NODE_ENV,
+      hasOpenAI: !!process.env.OPENAI_API_KEY,
+      hasElevenLabs: !!process.env.ELEVENLABS_API_KEY,
+    },
   });
 });
 
