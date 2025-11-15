@@ -245,4 +245,5 @@ router.get("/api/rdlabs/chat/health", (_req: Request, res: Response) => {
   });
 });
 
+export const rdLabsChatRouter = router;
 export default router;
