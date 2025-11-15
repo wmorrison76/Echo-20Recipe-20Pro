@@ -1,4 +1,5 @@
 import "./global.css";
+import "./rdlabs-aesthetic.css";
 import React, { Suspense, lazy } from "react";
 import "./add-recipe.styles.css";
 import * as Sentry from "@sentry/react";
