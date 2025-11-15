@@ -17,3 +17,5 @@ export { DashboardQuickAccessPanel } from "./DashboardQuickAccessPanel";
 export { DashboardAnalyticsPanel } from "./DashboardAnalyticsPanel";
 export { AIExperimentDesigner } from "./AIExperimentDesigner";
 export { AIValidationPanel } from "./AIValidationPanel";
+export { AISOPGenerator } from "./AISOPGenerator";
+export { AIProductionReadiness } from "./AIProductionReadiness";
