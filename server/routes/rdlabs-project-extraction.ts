@@ -86,8 +86,11 @@ Please provide a structured JSON response with the extracted information.`;
         body: JSON.stringify({
           model: "gpt-4o-mini",
           max_tokens: 1024,
-          system: systemPrompt,
           messages: [
+            {
+              role: "system",
+              content: systemPrompt,
+            },
             {
               role: "user",
               content: userPrompt,
