@@ -87,9 +87,9 @@ function RDLabsWorkspaceContent() {
   }
 
   return (
-    <div className="w-full h-full flex flex-col bg-background dark:bg-gradient-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-foreground dark:text-slate-100">
+    <div className="w-full h-full flex flex-col rdlabs-container text-slate-100 relative">
       {/* Professional Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-accent/20 dark:border-cyan-500/20 bg-input dark:bg-slate-900/40 backdrop-blur-sm">
+      <div className="flex items-center justify-between px-6 py-4 rdlabs-header relative z-10">
         <div className="flex items-center gap-3">
           <div className={`p-2 rounded-lg border ${
             labMode === "pastry"
