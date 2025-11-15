@@ -2002,7 +2002,7 @@ const onFiles = async (files: File[]) => {
                         .filter(Boolean)
                         .slice(0, 80);
                       const qty =
-                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼��¾⅓⅔⅛⅜⅝��])(?:\s*[a-zA-Z]+)?\b/;
+                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝��])(?:\s*[a-zA-Z]+)?\b/;
                       let c = 0;
                       for (const L of ls) {
                         if (qty.test(L) || /^[•\-*]\s+/.test(L)) c++;
@@ -2559,14 +2559,6 @@ const onFiles = async (files: File[]) => {
               aria-label="Compact grid view"
             >
               <Rows size={16} />
-            </button>
-            <button
-              onClick={() => setMode("rows")}
-              className={`p-1 rounded text-sm ${mode === "rows" ? "bg-background shadow" : "text-foreground/70 hover:text-foreground"}`}
-              title="List view"
-              aria-label="List view"
-            >
-              <List size={16} />
             </button>
           </div>
         </div>
