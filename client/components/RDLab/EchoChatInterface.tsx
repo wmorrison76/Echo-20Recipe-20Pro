@@ -313,7 +313,29 @@ What are you thinking about today? A new technique? A flavor combination? Produc
                   setMessages((prev) => [...prev, newMessage]);
                   setTimeout(() => {
                     if (onEnterLab) {
-                      onEnterLab("fine-dining", "culinary");
+                      // Extract project name from conversation
+                      const conversationText = messages
+                        .map((m) => m.content)
+                        .join("\n");
+                      const projectNameMatch =
+                        conversationText.match(
+                          /(?:spherification|recipe|technique|dish|experiment|project)[\s:]+([^.\n]+)/i,
+                        ) || [];
+                      const projectName =
+                        projectNameMatch[1] ||
+                        "R&D Experiment";
+
+                      const theme = messages.some((m) =>
+                        m.content.toLowerCase().includes("pastry"),
+                      )
+                        ? "pastry"
+                        : "culinary";
+
+                      onEnterLab("fine-dining", theme as "culinary" | "pastry", {
+                        projectName: projectName.trim(),
+                        conversation: conversationText,
+                        theme,
+                      });
                     }
                   }, 500);
                 }}
