@@ -215,16 +215,16 @@ export function DashboardOverviewPanel({
             ].map((spec) => (
               <div key={spec.label}>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  <span className="text-sm font-medium text-muted-foreground">
                     {spec.label}
                   </span>
-                  <span className="text-sm font-bold text-slate-900 dark:text-cyan-200">
+                  <span className="text-sm font-bold text-foreground">
                     {spec.value} ({spec.percentage}%)
                   </span>
                 </div>
-                <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-cyan-400 to-cyan-600 dark:from-cyan-500 dark:to-cyan-400"
+                    className="h-full bg-cyan-500"
                     style={{ width: `${spec.percentage}%` }}
                   />
                 </div>
