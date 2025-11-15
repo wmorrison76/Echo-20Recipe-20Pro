@@ -2575,7 +2575,7 @@ const onFiles = async (files: File[]) => {
         </div>
       ) : mode === "grid4" ? (
         <div
-          className="grid gap-3 grid-cols-2 md:grid-cols-3 xl:grid-cols-4"
+          className="grid gap-2 grid-cols-2 md:grid-cols-3 xl:grid-cols-4"
           data-echo-key="section:recipes:results"
         >
           {results.filter(Boolean).map((r) => {
