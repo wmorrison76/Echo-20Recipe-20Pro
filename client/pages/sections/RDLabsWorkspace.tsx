@@ -29,6 +29,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LayoutGrid, Beaker, TestTube, Search, Settings, Home, HelpCircle, Sparkles, BarChart3, Zap, Wand2, CheckCircle, FileText, AlertTriangle, Lightbulb, Users, Target } from "lucide-react";
+import "@/rdlabs-aesthetic.css";
 
 export default function RDLabsWorkspace() {
   return (
