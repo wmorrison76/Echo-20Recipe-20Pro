@@ -163,6 +163,7 @@ function IndexContent() {
                 </motion.div>
               ) : null}
             </AnimatePresence>
+            <LanguageSelector />
             <Button
               variant="ghost"
               size="sm"
