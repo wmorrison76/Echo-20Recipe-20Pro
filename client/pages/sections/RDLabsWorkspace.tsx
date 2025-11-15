@@ -25,6 +25,8 @@ import {
   AIPredictiveAnalytics,
   TrackSelector,
   EchoChatInterface,
+  LabDoorTransition,
+  LabSetupPanel,
 } from "@/components/RDLab";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
