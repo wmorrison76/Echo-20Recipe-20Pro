@@ -61,5 +61,8 @@ export function createServer() {
   // R&D Labs AI Features (Experiment Design, Validation, Production Bridge)
   app.use("/api/rdlabs/ai", rdLabsAIRouter);
 
+  // Pinecone Vector Search for Recipes
+  app.use("/api/pinecone", pineconeRouter);
+
   return app;
 }
