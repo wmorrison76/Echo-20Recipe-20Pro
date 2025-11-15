@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -14,12 +13,11 @@ import {
   Factory,
   Users,
   Sparkles,
-  Settings,
+  ChevronDown,
 } from "lucide-react";
 import {
   type RecipeTrack,
   useRecipeTrack,
-  getTrackDisplayName,
   getTrackDescription,
 } from "@/hooks/use-recipe-track";
 
@@ -54,119 +52,125 @@ export function TrackSelector({ chefId, onTrackChange }: TrackSelectorProps) {
   }
 
   return (
-    <div className="space-y-4">
-      {/* Main Track Selector */}
-      <Card className="p-4 border border-accent/20 dark:border-cyan-500/20 bg-input dark:bg-slate-900/40">
-        <div className="space-y-4">
-          {/* Track Selection */}
-          <div>
-            <label className="text-sm font-semibold text-foreground dark:text-white mb-2 block">
-              R&D Track
-            </label>
-            <Select value={track} onValueChange={handleTrackChange}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="fine-dining">
-                  <div className="flex items-center gap-2">
-                    <ChefHat className="h-4 w-4 text-cyan-500" />
-                    Fine Dining Innovation
-                  </div>
-                </SelectItem>
-                {showAdvanced && (
-                  <SelectItem value="manufacturing">
-                    <div className="flex items-center gap-2">
-                      <Factory className="h-4 w-4 text-amber-500" />
-                      Manufacturing Excellence
-                    </div>
-                  </SelectItem>
-                )}
-              </SelectContent>
-            </Select>
-          </div>
+    <div className="space-y-3">
+      {/* Track Selection */}
+      <div>
+        <label className="text-xs font-semibold text-foreground dark:text-cyan-300 mb-2 block">
+          R&D Track
+        </label>
+        <Select value={track} onValueChange={handleTrackChange}>
+          <SelectTrigger className="w-full h-9 text-sm">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="fine-dining">
+              <div className="flex items-center gap-2">
+                <ChefHat className="h-4 w-4 text-cyan-500" />
+                Fine Dining
+              </div>
+            </SelectItem>
+            {showAdvanced && (
+              <SelectItem value="manufacturing">
+                <div className="flex items-center gap-2">
+                  <Factory className="h-4 w-4 text-amber-500" />
+                  Manufacturing
+                </div>
+              </SelectItem>
+            )}
+          </SelectContent>
+        </Select>
+      </div>
 
-          {/* Track Description */}
-          <div className="p-3 rounded-lg bg-accent/5 dark:bg-cyan-500/5 border border-accent/10 dark:border-cyan-500/10">
-            <p className="text-sm text-muted-foreground dark:text-slate-400">
-              {getTrackDescription(track)}
-            </p>
-          </div>
+      {/* Track Badge */}
+      <div className="flex items-center justify-between gap-2">
+        <Badge
+          variant="outline"
+          className={`text-xs py-1 ${
+            track === "fine-dining"
+              ? "bg-cyan-100 dark:bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border-cyan-300 dark:border-cyan-500/40"
+              : "bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-500/40"
+          }`}
+        >
+          {track === "fine-dining" ? (
+            <>
+              <Sparkles className="h-3 w-3 mr-1" />
+              Premium
+            </>
+          ) : (
+            <>
+              <Factory className="h-3 w-3 mr-1" />
+              Industrial
+            </>
+          )}
+        </Badge>
 
-          {/* Track Badge */}
-          <div className="flex items-center justify-between">
-            <Badge
-              variant="outline"
-              className={`${
-                track === "fine-dining"
-                  ? "bg-cyan-100 dark:bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border-cyan-300 dark:border-cyan-500/30"
-                  : "bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-500/30"
-              }`}
-            >
-              {track === "fine-dining" ? (
-                <>
-                  <Sparkles className="h-3 w-3 mr-1" />
-                  Premium
-                </>
-              ) : (
-                <>
-                  <Factory className="h-3 w-3 mr-1" />
-                  Industrial
-                </>
-              )}
-            </Badge>
+        {/* Advanced Toggle */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={toggleAdvanced}
+          className="h-8 px-2 text-xs gap-1"
+        >
+          <ChevronDown className={`h-3 w-3 transition-transform ${showAdvanced ? "rotate-180" : ""}`} />
+          {showAdvanced ? "Less" : "More"}
+        </Button>
+      </div>
 
-            {/* Advanced Options Toggle */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleAdvanced}
-              className="gap-2"
-            >
-              <Settings className="h-4 w-4" />
-              {showAdvanced ? "Hide" : "Show"} Advanced
-            </Button>
-          </div>
-        </div>
-      </Card>
+      {/* Track Description */}
+      <p className="text-xs text-muted-foreground dark:text-slate-400 leading-tight">
+        {getTrackDescription(track)}
+      </p>
 
-      {/* Collaboration Section */}
+      {/* Advanced Options */}
       {showAdvanced && (
-        <Card className="p-4 border border-accent/20 dark:border-cyan-500/20 bg-input dark:bg-slate-900/40">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-cyan-500" />
-              <h3 className="text-sm font-semibold text-foreground dark:text-white">
-                Collaborating Chefs
+        <div className="space-y-3 pt-2 border-t border-accent/20 dark:border-cyan-500/20">
+          {/* Collaborators */}
+          <div>
+            <div className="flex items-center gap-1 mb-2">
+              <Users className="h-3 w-3 text-cyan-500" />
+              <h3 className="text-xs font-semibold text-foreground dark:text-white">
+                Team ({collaborators.length})
               </h3>
             </div>
 
-            {/* Collaborators List */}
             {collaborators.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {collaborators.map((collaboratorId) => (
+              <div className="flex flex-wrap gap-1 mb-2">
+                {collaborators.slice(0, 2).map((collaboratorId) => (
                   <Badge
                     key={collaboratorId}
                     variant="secondary"
-                    className="cursor-pointer hover:opacity-75"
+                    className="text-xs cursor-pointer hover:opacity-75"
                     onClick={() => removeCollaborator(collaboratorId)}
                   >
-                    {collaboratorId}
+                    {collaboratorId.slice(0, 8)}...
                     <span className="ml-1">×</span>
                   </Badge>
                 ))}
+                {collaborators.length > 2 && (
+                  <Badge variant="secondary" className="text-xs">
+                    +{collaborators.length - 2}
+                  </Badge>
+                )}
               </div>
             )}
 
-            {/* Add Collaborator */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowCollaborators(!showCollaborators)}
+              className="w-full h-8 text-xs"
+            >
+              {showCollaborators ? "Done" : "Add Chef"}
+            </Button>
+
             {showCollaborators && (
-              <div className="flex gap-2">
+              <div className="flex gap-1 mt-2">
                 <input
                   type="text"
-                  placeholder="Chef ID or email"
+                  placeholder="Email"
                   value={newCollaborator}
                   onChange={(e) => setNewCollaborator(e.target.value)}
-                  className="flex-1 px-3 py-2 text-sm rounded-md border border-accent/20 dark:border-cyan-500/20 bg-background dark:bg-slate-950"
+                  className="flex-1 px-2 py-1 text-xs rounded border border-accent/20 dark:border-cyan-500/20 bg-background dark:bg-slate-950"
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && newCollaborator.trim()) {
                       addCollaborator(newCollaborator.trim());
@@ -176,6 +180,7 @@ export function TrackSelector({ chefId, onTrackChange }: TrackSelectorProps) {
                 />
                 <Button
                   size="sm"
+                  className="h-8 px-2 text-xs"
                   onClick={() => {
                     if (newCollaborator.trim()) {
                       addCollaborator(newCollaborator.trim());
@@ -187,38 +192,17 @@ export function TrackSelector({ chefId, onTrackChange }: TrackSelectorProps) {
                 </Button>
               </div>
             )}
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowCollaborators(!showCollaborators)}
-              className="w-full"
-            >
-              {showCollaborators ? "Done" : "Add Collaborator"}
-            </Button>
           </div>
-        </Card>
-      )}
 
-      {/* Cross-Track Learning Indicator (for Manufacturing) */}
-      {track === "manufacturing" && showAdvanced && (
-        <Card className="p-4 border border-amber-500/30 dark:border-amber-500/30 bg-amber-50/5 dark:bg-amber-500/5">
-          <div className="flex items-start gap-3">
-            <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-500/10">
-              <Sparkles className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-            </div>
-            <div className="flex-1">
-              <h4 className="text-sm font-semibold text-foreground dark:text-white mb-1">
-                Learning from Fine Dining
-              </h4>
-              <p className="text-xs text-muted-foreground dark:text-slate-400">
-                Access precision techniques and consistency methods from fine
-                dining innovations to improve manufacturing efficiency and
-                quality.
+          {/* Manufacturing Learning Tip */}
+          {track === "manufacturing" && (
+            <div className="p-2 rounded bg-amber-500/10 border border-amber-500/20">
+              <p className="text-xs text-amber-700 dark:text-amber-300">
+                💡 Learn precision techniques from fine dining innovations
               </p>
             </div>
-          </div>
-        </Card>
+          )}
+        </div>
       )}
     </div>
   );
