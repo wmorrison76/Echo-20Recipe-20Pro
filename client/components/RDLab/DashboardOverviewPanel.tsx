@@ -179,8 +179,8 @@ export function DashboardOverviewPanel({
 
       {/* Specialization & Financial Impact */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card className="border-slate-200/50 dark:border-cyan-500/20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm p-6">
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-cyan-200 mb-4">
+        <Card className="border border-border dark:border-slate-800 bg-card p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">
             By Specialization
           </h3>
           <div className="space-y-3">
