@@ -139,12 +139,15 @@ function RDLabsWorkspaceContent() {
             <Button
               size="sm"
               variant="outline"
-              onClick={() => setHasEnteredLab(false)}
+              onClick={() => {
+                setHasEnteredLab(false);
+                // Show the chat interface to re-discuss focus
+              }}
               className="gap-2"
               title="Switch Lab Focus"
             >
               <ChevronDown className="h-4 w-4" />
-              Switch Focus
+              Discuss with ECHO
             </Button>
             <Button
               size="sm"
