@@ -408,9 +408,6 @@ export default function RecipeSearchSection() {
   const { language: appLanguage, setLanguage, options: languageOptions } =
     useLanguage();
   const { t } = useTranslation();
-  const [menuExportLanguage, setMenuExportLanguage] = useState<LanguageCode>(
-    appLanguage,
-  );
   // Taxonomy filters
   const [fcuisine, setFCuisine] = useState<string>("");
   const [ftech, setFTech] = useState<string>("");
@@ -709,7 +706,7 @@ const [scanOpen, setScanOpen] = useState(false);
     let tocEntries = norm
       .map((s) => {
         const tests = [
-          /^(.{3,120}?)(?:[\.·���\s]{2,})(\d{1,4})$/,
+          /^(.{3,120}?)(?:[\.·•\s]{2,})(\d{1,4})$/,
           /^(.{3,120}?)\s{3,}(\d{1,4})$/,
           /^(.{3,120}?)\s+[-–—]\s*(\d{1,4})$/,
         ];
