@@ -161,8 +161,14 @@ What are you thinking about today? A new technique? A flavor combination? Produc
       });
 
       // Speak the response if voice is enabled
-      if (voiceEnabled) {
-        await speakAssistantMessage(assistantMessage.content);
+      // Skip TTS for very long responses to avoid timeout
+      if (voiceEnabled && assistantMessage.content.length < 2000) {
+        try {
+          await speakAssistantMessage(assistantMessage.content);
+        } catch (speakErr) {
+          // Log but don't interrupt the chat flow
+          console.warn("TTS failed, continuing without audio:", speakErr);
+        }
       }
     } catch (err) {
       const errorMessage =
