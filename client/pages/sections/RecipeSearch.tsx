@@ -1497,7 +1497,7 @@ const onFiles = async (files: File[]) => {
                     /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
                   let c = 0;
                   for (const L of ls) {
-                    if (qty.test(L) || /^[•\-*]\s+/.test(L)) c++;
+                    if (qty.test(L) || /^[���\-*]\s+/.test(L)) c++;
                   }
                   return c >= 3;
                 };
@@ -2598,6 +2598,7 @@ const onFiles = async (files: File[]) => {
               selectMode={isCollectionSelectionEnabled}
               selected={selectedRecipeIds.includes(r.id)}
               onToggleSelect={() => toggleRecipeSelection(r.id)}
+              onToggleGlobal={toggleRecipeGlobal}
             />
           ))}
         </div>
