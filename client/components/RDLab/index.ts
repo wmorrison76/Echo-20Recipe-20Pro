@@ -15,3 +15,5 @@ export { RDLabsHelpPanel } from "./RDLabsHelpPanel";
 export { DashboardOverviewPanel } from "./DashboardOverviewPanel";
 export { DashboardQuickAccessPanel } from "./DashboardQuickAccessPanel";
 export { DashboardAnalyticsPanel } from "./DashboardAnalyticsPanel";
+export { AIExperimentDesigner } from "./AIExperimentDesigner";
+export { AIValidationPanel } from "./AIValidationPanel";
