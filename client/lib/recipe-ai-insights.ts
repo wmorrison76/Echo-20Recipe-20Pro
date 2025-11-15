@@ -653,7 +653,7 @@ function extractRegionalPatterns(recipes: Recipe[]): Map<string, RegionalPattern
 
       regions.set(region, {
         region,
-        keyCharacteristics: getRegionCharacteristics(region),
+        characteristics: getRegionCharacteristics(region),
         signature: {
           ingredients: Array.from(new Set(allIngredients))
             .map((i) => i.split(" ").pop() || i)
