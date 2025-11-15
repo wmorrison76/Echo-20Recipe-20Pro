@@ -122,10 +122,21 @@ router.post(
         res.send(Buffer.from(audioBuffer));
       } catch (error) {
         console.error("ElevenLabs request error:", error);
+
+        let errorMsg = "Failed to generate speech";
+        if (error instanceof Error) {
+          if (error.name === "AbortError") {
+            errorMsg = "Text-to-speech request timeout";
+          } else {
+            errorMsg = error.message;
+          }
+        }
+
         res.status(500).json({
           success: false,
-          error: "Failed to generate speech",
-          details: error instanceof Error ? error.message : String(error),
+          error: errorMsg,
+          details:
+            error instanceof Error ? error.message : String(error),
         });
       }
     } catch (error) {
