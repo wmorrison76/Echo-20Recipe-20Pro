@@ -32,7 +32,7 @@ export interface CrossTrackSuggestion {
 }
 
 /**
- * Store a recipe vector in Pinecone
+ * Store a recipe vector (works with Pinecone or pgvector)
  */
 export async function storeRecipeVector(
   recipe: Recipe,
@@ -42,7 +42,7 @@ export async function storeRecipeVector(
   collaborators?: string[]
 ): Promise<{ success: boolean; recipeId: string; error?: string }> {
   try {
-    const response = await fetch("/api/pinecone/recipes/store", {
+    const response = await fetch("/api/vector/recipes/store", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
