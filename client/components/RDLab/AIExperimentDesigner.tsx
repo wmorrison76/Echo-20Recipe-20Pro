@@ -2,10 +2,13 @@
 
 import React, { useState } from 'react';
 import { useRDLabStore } from '@/stores/rdLabStore';
+import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Loader2, Sparkles, AlertTriangle, CheckCircle2, Info, TrendingUp } from 'lucide-react';
+import { Loader2, Sparkles, AlertTriangle, CheckCircle2, Info, TrendingUp, BookOpen } from 'lucide-react';
 import { ExperimentDesignResponse } from '@/server/lib/ai-llm-service';
+import { RecipeSimilaritySearch } from './RecipeSimilaritySearch';
+import { CrossTrackLearning } from './CrossTrackLearning';
 
 export function AIExperimentDesigner() {
   const [goal, setGoal] = useState('');
