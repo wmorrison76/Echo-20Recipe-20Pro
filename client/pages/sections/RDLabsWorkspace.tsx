@@ -178,6 +178,16 @@ function RDLabsWorkspaceContent() {
             </p>
           </div>
 
+          {/* Track Selector */}
+          {user && (
+            <div className="px-4 pt-4 border-b border-accent/20 dark:border-cyan-500/10">
+              <TrackSelector
+                chefId={user.id}
+                onTrackChange={(track) => setRecipeTrack(track)}
+              />
+            </div>
+          )}
+
           <div className="flex-1 overflow-auto">
             {activeTab === "workbench" || activeTab === "discovery" ? (
               <div className="p-4">
