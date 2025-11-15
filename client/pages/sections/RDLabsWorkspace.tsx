@@ -66,11 +66,10 @@ function RDLabsWorkspaceContent() {
 
   if (showDashboard) {
     return (
-      <div className="w-full h-full bg-background dark:bg-gradient-to-br dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <div className="w-full h-full bg-background dark:bg-slate-950 flex flex-col">
         <ProjectDashboard
           onSelectProject={() => setShowDashboard(false)}
           onCreateProject={() => {
-            // Create new project workflow
             const newProjectId = store.createExperiment({
               title: "New Research Project",
               hypothesis: "Define your research hypothesis",
