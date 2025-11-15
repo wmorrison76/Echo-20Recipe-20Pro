@@ -66,6 +66,9 @@ export function createServer() {
   // R&D Labs Chat (ECHO Ai integration)
   app.use(rdLabsChatRouter);
 
+  // ElevenLabs Text-to-Speech
+  app.use(elevenLabsRouter);
+
   // Vector Search for Recipes (supports Pinecone and pgvector)
   app.use("/api/vector", vectorRouter);
 
