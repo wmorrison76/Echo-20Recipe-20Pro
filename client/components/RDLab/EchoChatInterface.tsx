@@ -131,6 +131,11 @@ What are you thinking about today? A new technique? A flavor combination? Produc
         content: assistantMessage.content,
         timestamp: assistantMessage.timestamp.toISOString(),
       });
+
+      // Speak the response if voice is enabled
+      if (voiceEnabled) {
+        await speakAssistantMessage(assistantMessage.content);
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An error occurred";
       setError(errorMessage);
@@ -138,6 +143,27 @@ What are you thinking about today? A new technique? A flavor combination? Produc
     } finally {
       setIsLoading(false);
       inputRef.current?.focus();
+    }
+  };
+
+  const speakAssistantMessage = async (text: string) => {
+    setIsSpeaking(true);
+    try {
+      await speakText(text);
+    } catch (err) {
+      console.error("Error speaking message:", err);
+      toast.error("Failed to play audio");
+    } finally {
+      setIsSpeaking(false);
+    }
+  };
+
+  const handleToggleSpeaking = () => {
+    if (isSpeaking) {
+      stopAudio();
+      setIsSpeaking(false);
+    } else {
+      setVoiceEnabled(!voiceEnabled);
     }
   };
 
