@@ -503,7 +503,7 @@ function updateCuisinePattern(
       avgDifficulty: estimateDifficulty(
         ingredients.length,
         (recipe.instructions || []).length,
-        (recipe.prepTime || 0) + (recipe.cookTime || 0) + (recipe.restTime || 0)
+        (recipe.prepTime || 0) + (recipe.cookTime || 0)
       ),
     });
   }
