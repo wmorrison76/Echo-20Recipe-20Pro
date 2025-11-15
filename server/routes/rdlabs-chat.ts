@@ -129,7 +129,7 @@ router.post("/api/rdlabs/chat", async (req: Request, res: Response) => {
  * POST /api/rdlabs/chat/stream
  * Stream a message from ECHO Ai (useful for long responses)
  */
-router.post("/api/rdlabs/chat/stream", requireAuth, async (req: Request, res: Response) => {
+router.post("/api/rdlabs/chat/stream", async (req: Request, res: Response) => {
   try {
     const { messages } = req.body as ChatRequest;
 
