@@ -980,6 +980,10 @@ const onFiles = async (files: File[]) => {
   }, [recipes, selectedRecipeIds.length]);
 
   useEffect(() => {
+    updateRecipeInsights(recipes);
+  }, [recipes]);
+
+  useEffect(() => {
     if (typeof window === "undefined") return;
     const key = "serverNotes:presetSelection";
     if (!selectedRecipeIds.length) {
@@ -2033,7 +2037,7 @@ const onFiles = async (files: File[]) => {
                         .filter(Boolean)
                         .slice(0, 80);
                       const qty =
-                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝��])(?:\s*[a-zA-Z]+)?\b/;
+                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼��¾⅓⅔⅛⅜⅝��])(?:\s*[a-zA-Z]+)?\b/;
                       let c = 0;
                       for (const L of ls) {
                         if (qty.test(L) || /^[•\-*]\s+/.test(L)) c++;
