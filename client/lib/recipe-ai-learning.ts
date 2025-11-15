@@ -14,8 +14,6 @@ export interface RecipeLearningData {
   nutritionEstimate: NutritionEstimate;
   difficulty: "easy" | "medium" | "hard";
   totalTime: number;
-  servingSize: number;
-  totalTime: number;
   cuisine: string[];
   diet: string[];
   embedding?: number[]; // For vector storage in Pinecone
