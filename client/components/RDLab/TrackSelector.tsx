@@ -14,7 +14,7 @@ import {
   Factory,
   Users,
   Sparkles,
-  AdvancedSettings,
+  Settings,
 } from "lucide-react";
 import {
   type RecipeTrack,
