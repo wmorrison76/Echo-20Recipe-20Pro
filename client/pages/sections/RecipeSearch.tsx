@@ -387,6 +387,7 @@ export default function RecipeSearchSection() {
     toggleFavorite,
     rateRecipe,
     updateRecipeTags,
+    updateRecipe,
     deleteRecipe,
     restoreRecipe,
     exportAllZip,
