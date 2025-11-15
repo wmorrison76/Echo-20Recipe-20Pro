@@ -234,61 +234,48 @@ function RDLabsWorkspaceContent() {
 
             {/* Tab Content */}
             <div className="flex-1 overflow-auto">
-              <TabsContent value="overview" className="h-full m-0">
-                <div className="h-full overflow-auto">
-                  <div className="p-6">
-                    <DashboardOverviewPanel period="30d" />
-                  </div>
+              <TabsContent value="overview" className="m-0">
+                <div className="p-6">
+                  <DashboardOverviewPanel period="30d" />
                 </div>
               </TabsContent>
 
-              <TabsContent value="insights" className="h-full m-0">
-                <div className="h-full overflow-auto">
-                  <div className="p-6">
-                    <DashboardQuickAccessPanel
-                      period="30d"
-                      onNewExperiment={() => setActiveTab("workbench")}
-                      onViewAnalytics={() => setActiveTab("analytics")}
-                    />
-                  </div>
+              <TabsContent value="insights" className="m-0">
+                <div className="p-6">
+                  <DashboardQuickAccessPanel
+                    period="30d"
+                    onNewExperiment={() => setActiveTab("workbench")}
+                    onViewAnalytics={() => setActiveTab("analytics")}
+                  />
                 </div>
               </TabsContent>
 
-              <TabsContent value="analytics" className="h-full m-0">
-                <div className="h-full overflow-auto">
-                  <div className="p-6">
-                    <DashboardAnalyticsPanel period="30d" />
-                  </div>
+              <TabsContent value="analytics" className="m-0">
+                <div className="p-6">
+                  <DashboardAnalyticsPanel period="30d" />
                 </div>
               </TabsContent>
 
-              <TabsContent value="workbench" className="h-full m-0">
-                <div className="h-full overflow-auto">
-                  <div className="p-6">
-                    <WorkbenchPanel />
-                  </div>
+              <TabsContent value="workbench" className="m-0">
+                <div className="p-6">
+                  <WorkbenchPanel />
                 </div>
               </TabsContent>
 
-              <TabsContent value="discovery" className="h-full m-0">
-                <div className="h-full overflow-auto">
-                  <div className="p-6">
-                    <DiscoveryPanel />
-                  </div>
+              <TabsContent value="discovery" className="m-0">
+                <div className="p-6">
+                  <DiscoveryPanel />
                 </div>
               </TabsContent>
 
-              <TabsContent value="search" className="h-full m-0">
-                <div className="h-full overflow-auto">
-                  <div className="p-6">
-                    <GlobalExperimentSearch />
-                  </div>
+              <TabsContent value="search" className="m-0">
+                <div className="p-6">
+                  <GlobalExperimentSearch />
                 </div>
               </TabsContent>
 
-              <TabsContent value="tools" className="h-full m-0">
-                <div className="h-full overflow-auto">
-                  <div className="grid grid-cols-2 gap-6 p-6">
+              <TabsContent value="tools" className="m-0">
+                <div className="grid grid-cols-2 gap-6 p-6">
                     <div className="col-span-1">
                       <h3 className="text-lg font-semibold text-cyan-300 mb-4">Templates</h3>
                       <ExperimentTemplates />
@@ -307,7 +294,6 @@ function RDLabsWorkspaceContent() {
                       <h3 className="text-lg font-semibold text-cyan-300 mb-4">Data Management</h3>
                       <ExportImport />
                     </div>
-                  </div>
                 </div>
               </TabsContent>
             </div>
