@@ -126,14 +126,6 @@ const RecipeEditor = lazyWithErrorBoundary(() => import("./pages/RecipeEditor"))
 const RecipeTemplate = lazyWithErrorBoundary(() => import("./pages/RecipeTemplate"));
 const Login = lazyWithErrorBoundary(() => import("./pages/Login"));
 const PasswordReset = lazyWithErrorBoundary(() => import("./pages/PasswordReset"));
-import { AppDataProvider } from "@/context/AppDataContext";
-import { LanguageProvider } from "@/context/LanguageContext";
-import { YieldProvider } from "@/context/YieldContext";
-import { CollaborationProvider } from "@/context/CollaborationContext";
-import { FuzzySuggestionManager } from "@/components/FuzzySuggestionManager";
-import { KeyboardShortcutsProvider } from "@/context/KeyboardShortcutsContext";
-import { AuthProvider } from "@/context/AuthContext";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
