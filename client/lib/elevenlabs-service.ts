@@ -166,6 +166,17 @@ export async function speakText(
   options: SpeechOptions = {},
 ): Promise<void> {
   try {
+    // Validate input early
+    if (!text || typeof text !== "string") {
+      const errorMsg = `Invalid text parameter: expected string, got ${typeof text}. Value: ${String(text)}`;
+      console.error("speakText validation error:", {
+        textType: typeof text,
+        textValue: text,
+        errorMsg,
+      });
+      throw new Error(errorMsg);
+    }
+
     const blob = await textToSpeech(text, options);
     await playAudio(blob);
   } catch (error) {
@@ -187,6 +198,13 @@ export async function speakText(
         );
       } else if (error.message.includes("not configured")) {
         console.error("⚠️ ElevenLabs API key not set in server environment.");
+      } else if (
+        error.message.includes("Invalid text") ||
+        error.message.includes("cannot be empty")
+      ) {
+        console.error(
+          "⚠️ Invalid text input provided to text-to-speech service.",
+        );
       }
     }
     throw error;
