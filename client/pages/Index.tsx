@@ -41,6 +41,14 @@ import { CommandPalette } from "@/components/CommandPalette";
 import { useRegisterShortcut } from "@/context/KeyboardShortcutsContext";
 import { HelpCircle } from "lucide-react";
 import ErrorBoundaryWrapper from "@/components/ErrorBoundaryWrapper";
+import { useLanguage } from "@/context/LanguageContext";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function Index() {
   return (
