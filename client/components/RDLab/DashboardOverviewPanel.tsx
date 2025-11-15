@@ -303,27 +303,27 @@ export function DashboardOverviewPanel({
 
       {/* Recent Approvals */}
       {metrics.experiments.recentApprovals.length > 0 && (
-        <Card className="border-slate-200/50 dark:border-cyan-500/20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm p-6">
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-cyan-200 mb-4">
+        <Card className="border border-border dark:border-slate-800 bg-card p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4">
             Recent Approvals
           </h3>
           <div className="space-y-3">
             {metrics.experiments.recentApprovals.map((exp) => (
               <div
                 key={exp.id}
-                className="flex items-start justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200/30 dark:border-cyan-500/10"
+                className="flex items-start justify-between p-3 bg-muted/50 dark:bg-slate-800/30 rounded-lg border border-border dark:border-slate-700"
               >
                 <div className="flex-1">
-                  <h4 className="font-medium text-slate-900 dark:text-cyan-200">
+                  <h4 className="font-medium text-foreground">
                     {exp.title}
                   </h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     by {exp.owner} • {exp.lastUpdated}
                   </p>
                 </div>
                 <Badge
                   variant="outline"
-                  className="ml-2 text-xs bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-500/30"
+                  className="ml-2 text-xs"
                 >
                   Ready
                 </Badge>
