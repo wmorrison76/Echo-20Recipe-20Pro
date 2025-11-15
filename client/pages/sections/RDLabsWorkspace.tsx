@@ -74,6 +74,14 @@ function RDLabsWorkspaceContent() {
     "fine-dining" | "manufacturing"
   >("fine-dining");
   const [hasEnteredLab, setHasEnteredLab] = useState(false);
+  const [transitionStage, setTransitionStage] = useState<
+    "chat" | "door-animation" | "setup" | "workspace"
+  >("chat");
+  const [projectContext, setProjectContext] = useState<{
+    projectName: string;
+    conversation: string;
+    theme: string;
+  } | null>(null);
 
   if (!store) {
     return (
