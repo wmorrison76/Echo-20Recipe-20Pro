@@ -97,14 +97,43 @@ function RDLabsWorkspaceContent() {
     );
   }
 
-  // Show ECHO Ai chat on first load instead of track selection boxes
-  if (!hasEnteredLab) {
+  // Transition states
+  if (transitionStage === "chat") {
     return (
       <EchoChatInterface
-        onEnterLab={(track, mode) => {
+        onEnterLab={(track, mode, context) => {
           setRecipeTrack(track);
           setLabMode(mode);
+          setProjectContext(context);
+          setTransitionStage("door-animation");
+        }}
+      />
+    );
+  }
+
+  if (transitionStage === "door-animation") {
+    return (
+      <>
+        <LabDoorTransition
+          isOpen={true}
+          labMode={labMode}
+          onComplete={() => setTransitionStage("setup")}
+        />
+      </>
+    );
+  }
+
+  if (transitionStage === "setup" && projectContext) {
+    return (
+      <LabSetupPanel
+        isVisible={true}
+        projectName={projectContext.projectName}
+        recipeTrack={recipeTrack}
+        labMode={labMode}
+        chatContext={projectContext.conversation}
+        onSetupComplete={() => {
           setHasEnteredLab(true);
+          setTransitionStage("workspace");
         }}
       />
     );
