@@ -40,7 +40,9 @@ interface EchoChatInterfaceProps {
     projectName: string;
     projectId: string;
     conversationContext: string;
+    extractedData?: any;
   }) => void;
+  onTransitionStateChange?: (state: "collecting_data" | "collected") => void;
 }
 
 export function EchoChatInterface({
