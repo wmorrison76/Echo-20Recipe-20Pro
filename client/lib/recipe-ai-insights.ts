@@ -387,24 +387,27 @@ function extractIngredientRatios(
   ratios: Map<string, IngredientRatio>
 ) {
   // Find key ratios: flour:liquid, eggs:flour, leavening:flour, etc.
-  const keyRatios = [
-    ["flour", "liquid"],
-    ["eggs", "flour"],
-    ["leavening", "flour"],
-    ["sugar", "flour"],
-    ["salt", "flour"],
+  const keyPairs = [
+    { name1: "flour", name2: "liquid", variants2: ["water", "milk", "buttermilk", "egg", "oil"] },
+    { name1: "eggs", name2: "flour", variants2: [] },
+    { name1: "leavening", name2: "flour", variants2: ["baking powder", "baking soda", "yeast"] },
+    { name1: "sugar", name2: "flour", variants2: [] },
+    { name1: "salt", name2: "flour", variants2: [] },
+    { name1: "butter", name2: "sugar", variants2: [] },
   ];
 
-  keyRatios.forEach(([ing1Name, ing2Name]) => {
-    const ing1 = ingredients.find((i) =>
-      i.name.includes(ing1Name) || i.name.includes(ing1Name)
-    );
-    const ing2 = ingredients.find((i) =>
-      i.name.includes(ing2Name) || i.name.includes(ing2Name)
-    );
+  keyPairs.forEach(({ name1, name2, variants2 }) => {
+    const ing1 = ingredients.find((i) => i.name.includes(name1));
+
+    let ing2 = ingredients.find((i) => i.name.includes(name2));
+    if (!ing2 && variants2.length > 0) {
+      ing2 = ingredients.find((i) =>
+        variants2.some((v) => i.name.includes(v))
+      );
+    }
 
     if (ing1?.amount && ing2?.amount) {
-      const key = `${ing1Name}:${ing2Name}`;
+      const key = `${name1}:${name2}`;
       const ratio = ing1.amount / ing2.amount;
       const existing = ratios.get(key);
 
@@ -414,8 +417,8 @@ function extractIngredientRatios(
         existing.count += 1;
       } else {
         ratios.set(key, {
-          ingredient1: ing1Name,
-          ingredient2: ing2Name,
+          ingredient1: name1,
+          ingredient2: name2,
           ratio,
           count: 1,
           unit1: ing1.unit,
