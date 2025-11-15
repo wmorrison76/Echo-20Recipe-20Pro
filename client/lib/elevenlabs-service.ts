@@ -1,0 +1,142 @@
+export interface SpeechOptions {
+  voiceId?: string;
+  stability?: number;
+  similarityBoost?: number;
+  speakerBoost?: boolean;
+}
+
+const DEFAULT_VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; // Rachel voice
+const DEFAULT_STABILITY = 0.5;
+const DEFAULT_SIMILARITY_BOOST = 0.75;
+
+class AudioCache {
+  private cache = new Map<string, string>();
+  private maxSize = 50;
+
+  set(key: string, dataUrl: string) {
+    if (this.cache.size >= this.maxSize) {
+      const firstKey = this.cache.keys().next().value;
+      this.cache.delete(firstKey);
+    }
+    this.cache.set(key, dataUrl);
+  }
+
+  get(key: string): string | undefined {
+    return this.cache.get(key);
+  }
+
+  has(key: string): boolean {
+    return this.cache.has(key);
+  }
+
+  clear() {
+    this.cache.clear();
+  }
+}
+
+const audioCache = new AudioCache();
+
+export async function textToSpeech(
+  text: string,
+  options: SpeechOptions = {}
+): Promise<Blob> {
+  const voiceId = options.voiceId || DEFAULT_VOICE_ID;
+  const cacheKey = `${voiceId}:${text}`;
+
+  // Check cache first
+  const cachedDataUrl = audioCache.get(cacheKey);
+  if (cachedDataUrl) {
+    const binaryString = atob(cachedDataUrl.split(",")[1]);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return new Blob([bytes], { type: "audio/mpeg" });
+  }
+
+  try {
+    const response = await fetch(`/api/elevenlabs/text-to-speech`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        text,
+        voiceId,
+        stability: options.stability ?? DEFAULT_STABILITY,
+        similarityBoost: options.similarityBoost ?? DEFAULT_SIMILARITY_BOOST,
+        speakerBoost: options.speakerBoost ?? true,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`ElevenLabs API error: ${response.status}`);
+    }
+
+    const blob = await response.blob();
+
+    // Cache the result
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    await new Promise((resolve) => {
+      reader.onloadend = () => {
+        const dataUrl = reader.result as string;
+        audioCache.set(cacheKey, dataUrl);
+        resolve(null);
+      };
+    });
+
+    return blob;
+  } catch (error) {
+    console.error("Text-to-speech error:", error);
+    throw error;
+  }
+}
+
+export function playAudio(blob: Blob): Promise<void> {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+
+      audio.onended = () => {
+        URL.revokeObjectURL(url);
+        resolve();
+      };
+
+      audio.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error("Failed to play audio"));
+      };
+
+      audio.play().catch(reject);
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+export function stopAudio() {
+  const audios = document.querySelectorAll("audio");
+  audios.forEach((audio) => {
+    audio.pause();
+    audio.currentTime = 0;
+  });
+}
+
+export function clearAudioCache() {
+  audioCache.clear();
+}
+
+export async function speakText(
+  text: string,
+  options: SpeechOptions = {}
+): Promise<void> {
+  try {
+    const blob = await textToSpeech(text, options);
+    await playAudio(blob);
+  } catch (error) {
+    console.error("Error speaking text:", error);
+    throw error;
+  }
+}
