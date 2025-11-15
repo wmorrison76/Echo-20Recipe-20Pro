@@ -29,3 +29,5 @@ export { LabDoorEntrance } from "./LabDoorEntrance";
 export { TrackDashboards } from "./TrackDashboards";
 export { CollaborationHub } from "./CollaborationHub";
 export { EchoChatInterface } from "./EchoChatInterface";
+export { LabDoorTransition } from "./LabDoorTransition";
+export { LabSetupPanel } from "./LabSetupPanel";
