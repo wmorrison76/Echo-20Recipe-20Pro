@@ -145,6 +145,24 @@ What are you thinking about today? A new technique? A flavor combination? Produc
     }
   };
 
+  const handleClearHistory = () => {
+    chatHistory.clearHistory();
+    setMessages([
+      {
+        id: "welcome",
+        role: "assistant",
+        content: `Welcome to R&D Labs. I'm ECHO Ai, your culinary research assistant.
+
+I'm here to help you explore new ideas, design experiments, and push the boundaries of your craft. Whether you're working on fine dining innovation, pastry artistry, or scaling production—let's collaborate freely.
+
+What are you thinking about today? A new technique? A flavor combination? Production challenges? Or maybe you want to brainstorm something completely new?`,
+        timestamp: new Date(),
+      },
+    ]);
+    setShowClearConfirm(false);
+    toast.success("Chat history cleared");
+  };
+
   return (
     <div className="fixed inset-0 bg-background dark:bg-slate-950 flex items-center justify-center z-50 overflow-hidden">
       {/* Background animated element */}
@@ -152,6 +170,34 @@ What are you thinking about today? A new technique? A flavor combination? Produc
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyan-500 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500 rounded-full blur-3xl animate-pulse" />
       </div>
+
+      {/* Clear History Confirmation */}
+      {showClearConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className="bg-card border-border p-6 max-w-sm">
+            <h3 className="text-lg font-semibold text-foreground mb-2">Clear chat history?</h3>
+            <p className="text-sm text-muted-foreground mb-6">
+              This will delete all your previous conversations. You can't undo this action.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowClearConfirm(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={handleClearHistory}
+              >
+                Clear History
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
 
       {/* Main Chat Container */}
       <div className="relative z-10 w-full max-w-2xl h-[90vh] mx-4 flex flex-col rounded-xl border border-border dark:border-slate-800 bg-card dark:bg-slate-900 shadow-lg overflow-hidden">
