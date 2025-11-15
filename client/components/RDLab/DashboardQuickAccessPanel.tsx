@@ -1,0 +1,294 @@
+import React, { useMemo } from "react";
+import { useRDLabStore } from "@/stores/rdLabStore";
+import {
+  calculateDashboardMetrics,
+  type MetricsPeriod,
+} from "@/lib/dashboard-metrics";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  AlertTriangle,
+  TrendingUp,
+  Zap,
+  Calendar,
+  PlusCircle,
+  BarChart3,
+  Clock,
+  CheckCircle,
+} from "lucide-react";
+
+interface DashboardQuickAccessPanelProps {
+  period?: MetricsPeriod;
+  onNewExperiment?: () => void;
+  onViewAnalytics?: () => void;
+}
+
+export function DashboardQuickAccessPanel({
+  period = "30d",
+  onNewExperiment,
+  onViewAnalytics,
+}: DashboardQuickAccessPanelProps) {
+  const { experiments } = useRDLabStore();
+  const metrics = useMemo(
+    () => calculateDashboardMetrics(experiments, period),
+    [experiments, period]
+  );
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
+      {/* Quick Actions */}
+      <Card className="border-slate-200/50 dark:border-cyan-500/20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 lg:col-span-1">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-cyan-200 mb-4">
+          Quick Actions
+        </h3>
+        <div className="space-y-3">
+          <Button
+            onClick={onNewExperiment}
+            className="w-full gap-2 bg-cyan-600 hover:bg-cyan-700 dark:bg-cyan-600 dark:hover:bg-cyan-500 text-white"
+            size="sm"
+          >
+            <PlusCircle className="h-4 w-4" />
+            New Experiment
+          </Button>
+          <Button
+            onClick={onViewAnalytics}
+            variant="outline"
+            className="w-full gap-2 border-slate-300 dark:border-cyan-500/30"
+            size="sm"
+          >
+            <BarChart3 className="h-4 w-4" />
+            Full Analytics
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full gap-2 border-slate-300 dark:border-cyan-500/30"
+            size="sm"
+          >
+            <Calendar className="h-4 w-4" />
+            View Timeline
+          </Button>
+        </div>
+      </Card>
+
+      {/* Supply Risk Alerts */}
+      <Card className="border-slate-200/50 dark:border-cyan-500/20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 lg:col-span-1">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-cyan-200 mb-4 flex items-center gap-2">
+          <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+          Supply Alerts
+        </h3>
+        {metrics.ingredients.supplyRisks.length > 0 ? (
+          <div className="space-y-3">
+            {metrics.ingredients.supplyRisks.slice(0, 3).map((risk, idx) => (
+              <div
+                key={idx}
+                className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200/50 dark:border-amber-500/30 rounded-lg"
+              >
+                <p className="text-sm font-medium text-amber-900 dark:text-amber-200">
+                  {risk.name}
+                </p>
+                <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
+                  {risk.mitigation}
+                </p>
+                <div className="mt-2 text-xs">
+                  <span
+                    className={`inline-block px-2 py-1 rounded font-medium ${
+                      risk.riskLevel === "high"
+                        ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                        : "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300"
+                    }`}
+                  >
+                    {risk.riskLevel.charAt(0).toUpperCase() + risk.riskLevel.slice(1)} Risk
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200/50 dark:border-green-500/30 rounded-lg text-center">
+            <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400 mx-auto mb-2" />
+            <p className="text-sm text-green-700 dark:text-green-300">
+              No supply risks detected
+            </p>
+          </div>
+        )}
+      </Card>
+
+      {/* Trending Insights */}
+      <Card className="border-slate-200/50 dark:border-cyan-500/20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 lg:col-span-1">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-cyan-200 mb-4 flex items-center gap-2">
+          <Zap className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
+          Trending Insights
+        </h3>
+        <div className="space-y-3">
+          {[
+            {
+              icon: TrendingUp,
+              title: "Deployment Momentum",
+              detail: `${metrics.experiments.deploymentRate.toFixed(1)}% of ready experiments deployed`,
+              highlight: "bg-green-50 dark:bg-green-900/20",
+              textColor: "text-green-700 dark:text-green-300",
+            },
+            {
+              icon: Clock,
+              title: "Pipeline Velocity",
+              detail: `Avg ${metrics.experiments.averageTimeToReady} days ideation → ready`,
+              highlight: "bg-blue-50 dark:bg-blue-900/20",
+              textColor: "text-blue-700 dark:text-blue-300",
+            },
+            {
+              icon: TrendingUp,
+              title: "Cost Optimization",
+              detail: `${metrics.financialImpact.avgPortionCostReduction.toFixed(1)}% avg portion cost reduction`,
+              highlight: "bg-amber-50 dark:bg-amber-900/20",
+              textColor: "text-amber-700 dark:text-amber-300",
+            },
+          ].map((insight, idx) => {
+            const Icon = insight.icon;
+            return (
+              <div
+                key={idx}
+                className={`p-3 ${insight.highlight} border border-slate-200/30 dark:border-cyan-500/10 rounded-lg`}
+              >
+                <div className="flex items-start gap-3">
+                  <Icon className={`h-5 w-5 ${insight.textColor} flex-shrink-0 mt-0.5`} />
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm font-medium ${insight.textColor}`}>
+                      {insight.title}
+                    </p>
+                    <p className={`text-xs ${insight.textColor} opacity-75 mt-1`}>
+                      {insight.detail}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+
+      {/* Top Ingredients by Usage */}
+      <Card className="border-slate-200/50 dark:border-cyan-500/20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 lg:col-span-1">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-cyan-200 mb-4">
+          Most Used Ingredients
+        </h3>
+        <div className="space-y-2">
+          {metrics.ingredients.mostUsed.slice(0, 5).map((ingredient, idx) => (
+            <div
+              key={idx}
+              className="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-800/50 rounded-lg"
+            >
+              <div className="flex-1">
+                <p className="text-sm font-medium text-slate-900 dark:text-slate-200">
+                  {ingredient.name}
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {ingredient.count} experiments
+                </p>
+              </div>
+              <span
+                className={`inline-block px-2 py-1 text-xs font-medium rounded ${
+                  ingredient.volatilityTier === "critical"
+                    ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                    : ingredient.volatilityTier === "high"
+                      ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300"
+                      : ingredient.volatilityTier === "moderate"
+                        ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300"
+                        : "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                }`}
+              >
+                {ingredient.volatilityTier}
+              </span>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Upcoming Milestones */}
+      <Card className="border-slate-200/50 dark:border-cyan-500/20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 lg:col-span-1">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-cyan-200 mb-4">
+          Upcoming Milestones
+        </h3>
+        {metrics.timeline.projectedCompletionDates.length > 0 ? (
+          <div className="space-y-2">
+            {metrics.timeline.projectedCompletionDates.slice(0, 3).map((milestone) => {
+              const daysUntil = Math.ceil(
+                (milestone.estimatedDate.getTime() - new Date().getTime()) /
+                  (1000 * 60 * 60 * 24)
+              );
+              return (
+                <div
+                  key={milestone.experimentId}
+                  className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200/30 dark:border-cyan-500/10"
+                >
+                  <p className="text-sm font-medium text-slate-900 dark:text-slate-200 line-clamp-1">
+                    {milestone.title}
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    {daysUntil > 0 ? `In ${daysUntil} days` : "Due soon"}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-4">
+            No active milestones
+          </p>
+        )}
+      </Card>
+
+      {/* Team Performance Snapshot */}
+      <Card className="border-slate-200/50 dark:border-cyan-500/20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 lg:col-span-1">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-cyan-200 mb-4">
+          Team Performance
+        </h3>
+        <div className="space-y-4">
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                Task Status
+              </span>
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                {metrics.teamPerformance.tasksOnTrack}/{" "}
+                {metrics.teamPerformance.tasksOnTrack + metrics.teamPerformance.tasksOverdue}
+              </span>
+            </div>
+            <div className="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-green-400 to-green-600"
+                style={{
+                  width: `${
+                    (metrics.teamPerformance.tasksOnTrack /
+                      (metrics.teamPerformance.tasksOnTrack +
+                        metrics.teamPerformance.tasksOverdue)) *
+                    100
+                  }%`,
+                }}
+              />
+            </div>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              Top Contributors
+            </p>
+            <div className="space-y-1">
+              {metrics.teamPerformance.topContributors.slice(0, 3).map((contributor) => (
+                <div
+                  key={contributor.name}
+                  className="flex items-center justify-between text-xs"
+                >
+                  <span className="text-slate-600 dark:text-slate-400">
+                    {contributor.name}
+                  </span>
+                  <span className="font-medium text-slate-900 dark:text-slate-200">
+                    {contributor.experimentsOwned}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+}
