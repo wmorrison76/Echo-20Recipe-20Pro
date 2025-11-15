@@ -40,8 +40,23 @@ export async function textToSpeech(
   text: string,
   options: SpeechOptions = {},
 ): Promise<Blob> {
+  // Validate input
+  if (!text || typeof text !== "string") {
+    const errorMsg = `Invalid text input: expected string, got ${typeof text}`;
+    console.error("TTS validation error:", {
+      textType: typeof text,
+      textValue: text,
+    });
+    throw new Error(errorMsg);
+  }
+
+  const trimmedText = text.trim();
+  if (trimmedText.length === 0) {
+    throw new Error("Text cannot be empty");
+  }
+
   const voiceId = options.voiceId || DEFAULT_VOICE_ID;
-  const cacheKey = `${voiceId}:${text}`;
+  const cacheKey = `${voiceId}:${trimmedText}`;
 
   // Check cache first
   const cachedDataUrl = audioCache.get(cacheKey);
