@@ -211,7 +211,8 @@ function RDLabsWorkspaceContent() {
               variant="outline"
               onClick={() => {
                 setHasEnteredLab(false);
-                // Show the chat interface to re-discuss focus
+                setTransitionStage("chat");
+                setProjectContext(null);
               }}
               className="gap-2"
               title="Switch Lab Focus"
