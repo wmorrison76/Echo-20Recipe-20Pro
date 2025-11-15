@@ -562,38 +562,43 @@ function findCommonCombinations(recipes: Recipe[]): IngredientCombination[] {
     );
     const cuisines = detectCuisine(recipe);
 
-    // Find pairs and triplets of key ingredients
+    // Find pairs of key ingredients (more granular combinations)
     const mainIngredients = ingredients
       .filter(
         (i) =>
           i.type === "protein" ||
           i.type === "carb" ||
           i.type === "vegetable" ||
-          i.type === "dairy"
+          i.type === "dairy" ||
+          i.type === "spice"
       )
-      .map((i) => i.name)
-      .slice(0, 5);
+      .map((i) => i.name);
 
-    if (mainIngredients.length >= 2) {
-      const key = mainIngredients.sort().join("|");
-      const existing = combinationMap.get(key);
+    // Create pairs
+    for (let i = 0; i < mainIngredients.length; i++) {
+      for (let j = i + 1; j < Math.min(i + 3, mainIngredients.length); j++) {
+        const pair = [mainIngredients[i], mainIngredients[j]].sort();
+        const key = pair.join("|");
+        const existing = combinationMap.get(key);
 
-      if (existing) {
-        existing.frequency += 1;
-        existing.cuisines = Array.from(new Set([...existing.cuisines, ...cuisines]));
-        existing.recipeCount += 1;
-      } else {
-        combinationMap.set(key, {
-          ingredients: mainIngredients,
-          frequency: 1,
-          cuisines,
-          recipeCount: 1,
-        });
+        if (existing) {
+          existing.frequency += 1;
+          existing.cuisines = Array.from(new Set([...existing.cuisines, ...cuisines]));
+          existing.recipeCount += 1;
+        } else {
+          combinationMap.set(key, {
+            ingredients: pair,
+            frequency: 1,
+            cuisines,
+            recipeCount: 1,
+          });
+        }
       }
     }
   });
 
   return Array.from(combinationMap.values())
+    .filter((c) => c.frequency >= 2) // Only show combinations seen at least twice
     .sort((a, b) => b.frequency - a.frequency)
     .slice(0, 20);
 }
