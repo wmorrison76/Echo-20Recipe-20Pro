@@ -2711,7 +2711,7 @@ const onFiles = async (files: File[]) => {
         </div>
       ) : (
         <div
-          className="divide-y rounded-lg border glow"
+          className="grid grid-cols-1 md:grid-cols-2 gap-3 rounded-lg border glow p-3"
           data-echo-key="section:recipes:results"
         >
           {results.filter(Boolean).map((r) => {
@@ -2721,22 +2721,26 @@ const onFiles = async (files: File[]) => {
               <div
                 key={key}
                 className={cn(
-                  "flex items-start gap-3 p-3 transition-colors",
+                  "flex items-start gap-3 p-3 rounded border transition-colors",
                   isCollectionSelectionEnabled && selected
-                    ? "bg-primary/5 dark:bg-primary/15"
-                    : undefined,
+                    ? "bg-primary/5 dark:bg-primary/15 border-primary"
+                    : "border-border/40",
                 )}
                 data-echo-key="card:recipes:result"
               >
-                <div className="relative h-16 w-20 overflow-hidden rounded bg-muted">
+                <div className="relative h-24 w-32 shrink-0 overflow-hidden rounded bg-muted">
                   {r.imageDataUrls?.[0] ? (
                     <img
                       src={r.imageDataUrls[0]}
-                      alt=""
+                      alt={r.title}
                       className="h-full w-full object-cover"
                       loading="lazy"
                     />
-                  ) : null}
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center text-xs text-muted-foreground">
+                      No image
+                    </div>
+                  )}
                   {isCollectionSelectionEnabled && (
                     <button
                       type="button"
