@@ -29,10 +29,15 @@ export function DashboardQuickAccessPanel({
   onViewAnalytics,
 }: DashboardQuickAccessPanelProps) {
   const { experiments } = useRDLabStore();
-  const metrics = useMemo(
-    () => calculateDashboardMetrics(experiments, period),
-    [experiments, period]
-  );
+
+  const metrics = useMemo(() => {
+    try {
+      return calculateDashboardMetrics(experiments || [], period);
+    } catch (error) {
+      console.error("Quick access metrics error:", error);
+      return calculateDashboardMetrics([], period);
+    }
+  }, [experiments, period]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
