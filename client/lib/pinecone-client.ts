@@ -185,7 +185,7 @@ export async function deleteRecipeVector(
 }
 
 /**
- * Get cross-track learning suggestions
+ * Get cross-track learning suggestions (works with Pinecone or pgvector)
  */
 export async function getCrossTrackLearning(
   recipeText: string,
@@ -193,7 +193,7 @@ export async function getCrossTrackLearning(
   limit: number = 5
 ): Promise<{ success: boolean; suggestions: CrossTrackSuggestion[]; error?: string }> {
   try {
-    const response = await fetch("/api/pinecone/cross-track-learning", {
+    const response = await fetch("/api/vector/cross-track-learning", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
