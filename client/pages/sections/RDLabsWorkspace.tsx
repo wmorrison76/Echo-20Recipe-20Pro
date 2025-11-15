@@ -266,6 +266,18 @@ function RDLabsWorkspaceContent() {
                 </div>
               </TabsContent>
 
+              <TabsContent value="ai-design" className="m-0">
+                <div className="p-6">
+                  <AIExperimentDesigner />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="ai-validate" className="m-0">
+                <div className="p-6">
+                  <AIValidationPanel />
+                </div>
+              </TabsContent>
+
               <TabsContent value="workbench" className="m-0">
                 <div className="p-6">
                   <WorkbenchPanel />
