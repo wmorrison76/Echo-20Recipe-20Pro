@@ -159,18 +159,38 @@ export async function speakText(
         message: error.message,
         stack: error.stack,
       });
+
+      // Provide helpful context
+      if (error.message.includes("401") || error.message.includes("Unauthorized")) {
+        console.error("⚠️ ElevenLabs API authentication failed. Check your API key.");
+      } else if (error.message.includes("not configured")) {
+        console.error("⚠️ ElevenLabs API key not set in server environment.");
+      }
     }
     throw error;
   }
 }
 
-export async function checkServiceHealth(): Promise<boolean> {
+export async function checkServiceHealth(): Promise<{
+  success: boolean;
+  configured: boolean;
+  message?: string;
+}> {
   try {
     const response = await fetch("/api/elevenlabs/health");
     const data = await response.json();
-    return data.success && data.configured;
+    console.log("TTS Health check:", data);
+    return {
+      success: data.success,
+      configured: data.configured,
+      message: data.message,
+    };
   } catch (error) {
     console.error("Health check failed:", error);
-    return false;
+    return {
+      success: false,
+      configured: false,
+      message: "Unable to check TTS service",
+    };
   }
 }
