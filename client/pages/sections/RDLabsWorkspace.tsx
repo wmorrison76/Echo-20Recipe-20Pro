@@ -21,7 +21,7 @@ import {
 } from "@/components/RDLab";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LayoutGrid, Beaker, TestTube, Search, Settings, Home, HelpCircle, Sparkles, BarChart3, Zap } from "lucide-react";
+import { LayoutGrid, Beaker, TestTube, Search, Settings, Home, HelpCircle, Sparkles, BarChart3, Zap, Wand2, CheckCircle } from "lucide-react";
 
 export default function RDLabsWorkspace() {
   return (
