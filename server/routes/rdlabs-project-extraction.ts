@@ -48,11 +48,9 @@ router.post(
         console.error("OPENAI_API_KEY not found in environment variables");
         return res.status(500).json({
           success: false,
-          error: "OpenAI API key not configured",
+          error: "API key not configured for project extraction",
         });
       }
-
-      const client = new OpenAI({ apiKey });
 
       // Build the extraction prompt
       const systemPrompt = `You are an expert culinary researcher and lab assistant. Your job is to extract and structure project information from conversations about culinary experiments.
@@ -78,22 +76,36 @@ ${conversationContext}
 
 Please provide a structured JSON response with the extracted information.`;
 
-      const response = await client.messages.create({
-        model: "claude-3-5-sonnet-20241022",
-        max_tokens: 1024,
-        system: systemPrompt,
-        messages: [
-          {
-            role: "user",
-            content: userPrompt,
-          },
-        ],
+      // Use fetch-based API call to OpenAI
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          max_tokens: 1024,
+          system: systemPrompt,
+          messages: [
+            {
+              role: "user",
+              content: userPrompt,
+            },
+          ],
+        }),
       });
 
-      // Parse the response
-      const content = response.content[0];
-      if (!content || content.type !== "text") {
-        throw new Error("Unexpected response format from OpenAI");
+      if (!response.ok) {
+        const error = await response.text();
+        console.error("API error:", error);
+        throw new Error(`API request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content;
+      if (!content) {
+        throw new Error("Unexpected response format from API");
       }
 
       let extracted: ExtractionResponse;
