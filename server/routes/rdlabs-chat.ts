@@ -249,6 +249,101 @@ router.post("/api/rdlabs/chat/stream", async (req: Request, res: Response) => {
 });
 
 /**
+ * POST /api/rdlabs/extract-steps
+ * Extract scientific steps from conversation context
+ */
+router.post(
+  "/api/rdlabs/extract-steps",
+  async (req: Request, res: Response) => {
+    try {
+      const { context, projectName, labMode, recipeTrack } = req.body;
+
+      if (!context) {
+        return res.status(400).json({
+          success: false,
+          message: "Context is required",
+        });
+      }
+
+      const extractionPrompt = `You are an expert at extracting structured laboratory procedures from conversations about culinary research.
+
+Given the following conversation context about a culinary R&D project:
+
+"""
+${context}
+"""
+
+Extract the key scientific steps that should be followed. Format the response as a JSON array of steps with this structure:
+[
+  {
+    "id": "1",
+    "number": 1,
+    "title": "Step title",
+    "description": "Clear description of what to do",
+    "equipment": ["item1", "item2"],
+    "duration": "time estimate",
+    "notes": "Optional tips or considerations"
+  }
+]
+
+Rules:
+- Extract 4-6 practical steps from the conversation
+- If action items are mentioned, use them as steps
+- Include realistic time estimates
+- Be specific about equipment mentioned
+- Focus on execution-ready procedures
+- Return ONLY valid JSON, no markdown
+
+If no clear steps can be extracted, return an empty array: []`;
+
+      const response = await callOpenAI([
+        {
+          role: "user",
+          content: extractionPrompt,
+        },
+      ]);
+
+      // Parse the response - it should be JSON
+      let steps = [];
+      try {
+        // Try to extract JSON from the response
+        const jsonMatch = response.match(/\[[\s\S]*\]/);
+        if (jsonMatch) {
+          steps = JSON.parse(jsonMatch[0]);
+        }
+      } catch (parseError) {
+        console.warn("Failed to parse steps JSON, using empty array", {
+          error: parseError,
+          response,
+        });
+      }
+
+      res.json({
+        success: true,
+        steps,
+        meta: {
+          timestamp: new Date().toISOString(),
+          projectName,
+          labMode,
+          recipeTrack,
+        },
+      });
+    } catch (error) {
+      console.error("Extract steps endpoint error:", error);
+      // Return empty steps instead of error to allow graceful fallback
+      res.json({
+        success: true,
+        steps: [],
+        message:
+          error instanceof Error
+            ? error.message
+            : "Could not extract steps",
+      });
+    }
+  },
+);
+
+/**
  * GET /api/rdlabs/chat/health
  * Health check for chat service
  */
