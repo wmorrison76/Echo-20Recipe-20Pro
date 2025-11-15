@@ -651,6 +651,19 @@ What are you thinking about today? A new technique? A flavor combination? Produc
               className="flex-1"
             />
             <Button
+              onClick={() => {
+                const projectName = input.trim() || "R&D Experiment";
+                triggerLabEntry(projectName);
+              }}
+              disabled={isLoading}
+              size="sm"
+              variant="outline"
+              title="Manually open lab (or say 'let's go to the lab')"
+              className="gap-2"
+            >
+              <Beaker className="h-4 w-4" />
+            </Button>
+            <Button
               onClick={handleSendMessage}
               disabled={isLoading || !input.trim()}
               size="sm"
