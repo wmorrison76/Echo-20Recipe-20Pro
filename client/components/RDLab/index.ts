@@ -32,3 +32,7 @@ export { EchoChatInterface } from "./EchoChatInterface";
 export { LabDoorTransition } from "./LabDoorTransition";
 export { LabSetupPanel } from "./LabSetupPanel";
 export { LabWhiteboard } from "./LabWhiteboard";
+export { EnhancedLabWhiteboard, type FontStyle } from "./EnhancedLabWhiteboard";
+export { SlidingDoorPanels } from "./SlidingDoorPanels";
+export { LabSettingsPopup } from "./LabSettingsPopup";
+export { IntegratedLabEntrance } from "./IntegratedLabEntrance";
