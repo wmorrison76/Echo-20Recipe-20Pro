@@ -25,3 +25,6 @@ export { AIPredictiveAnalytics } from "./AIPredictiveAnalytics";
 export { TrackSelector } from "./TrackSelector";
 export { RecipeSimilaritySearch } from "./RecipeSimilaritySearch";
 export { CrossTrackLearning } from "./CrossTrackLearning";
+export { LabDoorEntrance } from "./LabDoorEntrance";
+export { TrackDashboards } from "./TrackDashboards";
+export { CollaborationHub } from "./CollaborationHub";
