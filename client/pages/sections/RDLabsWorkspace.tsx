@@ -180,7 +180,7 @@ function RDLabsWorkspaceContent() {
 
           {/* Track Selector */}
           {user && (
-            <div className="px-4 pt-4 border-b border-accent/20 dark:border-cyan-500/10">
+            <div className="px-3 py-3 border-b border-accent/20 dark:border-cyan-500/20 bg-accent/5 dark:bg-cyan-500/5">
               <TrackSelector
                 chefId={user.id}
                 onTrackChange={(track) => setRecipeTrack(track)}
