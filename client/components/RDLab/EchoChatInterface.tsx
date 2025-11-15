@@ -170,6 +170,11 @@ What are you thinking about today? A new technique? A flavor combination? Produc
     setError(null);
     setIsLoading(true);
 
+    // Emit collecting_data state if lab trigger detected
+    if (labTriggerMatch) {
+      onTransitionStateChange?.("collecting_data");
+    }
+
     try {
       const response = await fetch("/api/rdlabs/chat", {
         method: "POST",
@@ -230,17 +235,20 @@ What are you thinking about today? A new technique? A flavor combination? Produc
 
       // Check for lab trigger in user or assistant message
       if (labTriggerMatch) {
-        // Delay lab entry slightly to let UI update
+        // Emit collected state before triggering lab entry
+        onTransitionStateChange?.("collected");
+        // Delay lab entry to allow UI to update
         setTimeout(() => {
-          triggerLabEntry(labTriggerMatch);
-        }, 500);
+          triggerLabEntry(labTriggerMatch, messages.concat([userMessage, assistantMessage]));
+        }, 300);
       } else {
         // Also check assistant response for lab triggers
         const assistantTrigger = detectLabTrigger(assistantMessage.content);
         if (assistantTrigger) {
+          onTransitionStateChange?.("collected");
           setTimeout(() => {
-            triggerLabEntry(assistantTrigger);
-          }, 500);
+            triggerLabEntry(assistantTrigger, messages.concat([userMessage, assistantMessage]));
+          }, 300);
         }
       }
     } catch (err) {
@@ -248,6 +256,10 @@ What are you thinking about today? A new technique? A flavor combination? Produc
         err instanceof Error ? err.message : "An error occurred";
       setError(errorMessage);
       toast.error(errorMessage);
+      if (labTriggerMatch) {
+        // Reset transition state on error
+        onTransitionStateChange?.("collected");
+      }
     } finally {
       setIsLoading(false);
       inputRef.current?.focus();
