@@ -239,7 +239,7 @@ Generate 3-4 relevant entries to start the whiteboard.`;
 
       let entries: Array<{ type: string; content: string }> = [];
       try {
-        const jsonMatch = content.text.match(/\[[\s\S]*\]/);
+        const jsonMatch = content.match(/\[[\s\S]*\]/);
         if (jsonMatch) {
           entries = JSON.parse(jsonMatch[0]);
         }
