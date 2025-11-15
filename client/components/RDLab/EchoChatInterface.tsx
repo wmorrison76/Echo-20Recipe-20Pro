@@ -170,7 +170,13 @@ What are you thinking about today? A new technique? A flavor combination? Produc
       await speakText(text);
     } catch (err) {
       console.error("Error speaking message:", err);
-      toast.error("Failed to play audio");
+      const errorMsg =
+        err instanceof Error ? err.message : "Failed to play audio";
+
+      // Only show toast for actual failures, not for user interruption
+      if (!errorMsg.includes("abort")) {
+        toast.error(`Audio error: ${errorMsg.substring(0, 50)}...`);
+      }
     } finally {
       setIsSpeaking(false);
     }
