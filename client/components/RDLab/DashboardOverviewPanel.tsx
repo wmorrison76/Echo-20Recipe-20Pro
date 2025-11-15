@@ -97,7 +97,7 @@ export function DashboardOverviewPanel({
           icon={TrendingDown}
           trend={metrics.experiments.averageTimeToReady < 60 ? "up" : "down"}
           trendValue={metrics.experiments.averageTimeToReady < 60 ? "-8 days" : "+5 days"}
-          bgGradient="from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/20"
+          bgGradient="from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900/40"
           iconColor="text-purple-600 dark:text-purple-400"
         />
 
@@ -108,7 +108,7 @@ export function DashboardOverviewPanel({
           icon={Users}
           trend="neutral"
           trendValue="4 this month"
-          bgGradient="from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-800/20"
+          bgGradient="from-emerald-50 to-emerald-100 dark:from-emerald-950 dark:to-emerald-900/40"
           iconColor="text-emerald-600 dark:text-emerald-400"
         />
 
@@ -119,7 +119,7 @@ export function DashboardOverviewPanel({
           icon={DollarSign}
           trend="up"
           trendValue="+2.1% this period"
-          bgGradient="from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-800/20"
+          bgGradient="from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900/40"
           iconColor="text-amber-600 dark:text-amber-400"
         />
       </div>
