@@ -236,6 +236,14 @@ function RDLabsWorkspaceContent() {
                 <AlertTriangle className="h-4 w-4" />
                 Production Check
               </TabsTrigger>
+              <TabsTrigger value="ai-recommendations" className="gap-2 bg-gradient-to-r from-blue-500/10 to-cyan-500/10">
+                <Lightbulb className="h-4 w-4" />
+                AI Insights
+              </TabsTrigger>
+              <TabsTrigger value="ai-team" className="gap-2 bg-gradient-to-r from-rose-500/10 to-pink-500/10">
+                <Users className="h-4 w-4" />
+                Team
+              </TabsTrigger>
               <TabsTrigger value="workbench" className="gap-2">
                 <TestTube className="h-4 w-4" />
                 Workbench
