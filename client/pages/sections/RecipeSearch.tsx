@@ -74,6 +74,7 @@ export function RecipeCard({
   selected?: boolean;
   onToggleSelect?: () => void;
   onUpdateTags?: (tags: string[]) => void;
+  onToggleGlobal?: (recipeId: string, isGlobal: boolean) => void;
 }) {
   const { t } = useTranslation();
   const cover = r.imageDataUrls?.[0] ?? r.image ?? undefined;
