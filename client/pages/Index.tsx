@@ -42,31 +42,22 @@ import { useRegisterShortcut } from "@/context/KeyboardShortcutsContext";
 import { HelpCircle } from "lucide-react";
 import ErrorBoundaryWrapper from "@/components/ErrorBoundaryWrapper";
 import { useLanguage } from "@/context/LanguageContext";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 function LanguageSelector() {
   const { language, setLanguage, options } = useLanguage();
-  const currentOption = options.find(opt => opt.code === language);
 
   return (
-    <Select value={language} onValueChange={setLanguage}>
-      <SelectTrigger className="w-[140px]">
-        <SelectValue placeholder={currentOption ? `${currentOption.flag} ${currentOption.label}` : "Language"} />
-      </SelectTrigger>
-      <SelectContent>
-        {options.map((option) => (
-          <SelectItem key={option.code} value={option.code}>
-            {option.flag} {option.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <select
+      value={language}
+      onChange={(e) => setLanguage(e.target.value as any)}
+      className="rounded-md border bg-background px-2 py-1.5 text-sm"
+    >
+      {options.map((option) => (
+        <option key={option.code} value={option.code}>
+          {option.flag} {option.label}
+        </option>
+      ))}
+    </select>
   );
 }
 
