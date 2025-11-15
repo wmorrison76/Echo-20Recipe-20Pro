@@ -186,18 +186,48 @@ export async function speakText(
   options: SpeechOptions = {},
 ): Promise<void> {
   try {
-    // Validate input early
-    if (!text || typeof text !== "string") {
-      const errorMsg = `Invalid text parameter: expected string, got ${typeof text}. Value: ${String(text)}`;
+    // Validate input early and thoroughly
+    if (!text) {
+      const errorMsg = "Text parameter is null, undefined, or falsy";
       console.error("speakText validation error:", {
+        text,
         textType: typeof text,
-        textValue: text,
-        errorMsg,
       });
       throw new Error(errorMsg);
     }
 
-    const blob = await textToSpeech(text, options);
+    if (typeof text !== "string") {
+      const errorMsg = `Invalid text parameter: expected string, got ${typeof text}`;
+      console.error("speakText type error:", {
+        textType: typeof text,
+        textConstructor: (text as any)?.constructor?.name,
+        textValue: String(text).substring(0, 100),
+      });
+      throw new Error(errorMsg);
+    }
+
+    // Ensure text is a clean string (not a proxy or special object)
+    const cleanText = String(text);
+    if (!cleanText.trim()) {
+      throw new Error("Text cannot be empty");
+    }
+
+    // Validate options object
+    const cleanOptions: SpeechOptions = {};
+    if (options.voiceId && typeof options.voiceId === "string") {
+      cleanOptions.voiceId = options.voiceId;
+    }
+    if (typeof options.stability === "number") {
+      cleanOptions.stability = options.stability;
+    }
+    if (typeof options.similarityBoost === "number") {
+      cleanOptions.similarityBoost = options.similarityBoost;
+    }
+    if (typeof options.speakerBoost === "boolean") {
+      cleanOptions.speakerBoost = options.speakerBoost;
+    }
+
+    const blob = await textToSpeech(cleanText, cleanOptions);
     await playAudio(blob);
   } catch (error) {
     console.error("Error speaking text:", error);
@@ -205,7 +235,7 @@ export async function speakText(
     if (error instanceof Error) {
       console.error("Error details:", {
         message: error.message,
-        stack: error.stack,
+        stack: error.stack?.substring(0, 500),
       });
 
       // Provide helpful context
@@ -224,6 +254,10 @@ export async function speakText(
       ) {
         console.error(
           "⚠️ Invalid text input provided to text-to-speech service.",
+        );
+      } else if (error.message.includes("Failed to serialize")) {
+        console.error(
+          "⚠️ Text data could not be serialized for API request.",
         );
       }
     }
