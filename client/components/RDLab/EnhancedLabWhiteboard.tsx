@@ -327,11 +327,16 @@ export function EnhancedLabWhiteboard({
                       {entry.type.toUpperCase()}
                     </span>
                     <span className="text-xs text-amber-100/40 drop-shadow">
-                      {entry.timestamp.toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                      })}
+                      {(() => {
+                        const timestamp = entry.timestamp instanceof Date
+                          ? entry.timestamp
+                          : (typeof entry.timestamp === 'string' ? new Date(entry.timestamp) : new Date());
+                        return timestamp.toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        });
+                      })()}
                     </span>
                   </div>
                   <Button
