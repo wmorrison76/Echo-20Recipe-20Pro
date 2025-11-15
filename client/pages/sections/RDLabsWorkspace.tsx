@@ -63,11 +63,11 @@ function RDLabsWorkspaceContent() {
     );
   }
 
-  // Show lab door entrance on first load
+  // Show ECHO Ai chat on first load instead of track selection boxes
   if (!hasEnteredLab) {
     return (
-      <LabDoorEntrance
-        onTrackSelected={(track, mode) => {
+      <EchoChatInterface
+        onEnterLab={(track, mode) => {
           setRecipeTrack(track);
           setLabMode(mode);
           setHasEnteredLab(true);
