@@ -73,13 +73,25 @@ export function LabWhiteboard({
           const data = await response.json();
           if (data.entries) {
             // Add entries with staggered animation
-            data.entries.forEach((entry: WhiteboardEntry, index: number) => {
+            data.entries.forEach((entry: any, index: number) => {
               setTimeout(() => {
-                setEntries((prev) => [
-                  ...prev,
-                  { ...entry, id: `entry_${Date.now()}_${index}` },
-                ]);
-                setAnimatingId(`entry_${Date.now()}_${index}`);
+                // Ensure timestamp is a Date object
+                const timestamp = entry.timestamp
+                  ? (typeof entry.timestamp === 'string'
+                      ? new Date(entry.timestamp)
+                      : entry.timestamp)
+                  : new Date();
+
+                const processedEntry: WhiteboardEntry = {
+                  id: `entry_${Date.now()}_${index}`,
+                  type: entry.type || "note",
+                  content: entry.content || "",
+                  timestamp,
+                  animated: false,
+                };
+
+                setEntries((prev) => [...prev, processedEntry]);
+                setAnimatingId(processedEntry.id);
               }, index * 800);
             });
           }
