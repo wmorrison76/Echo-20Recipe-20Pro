@@ -152,7 +152,7 @@ export async function getRecipesByTrack(
 }
 
 /**
- * Delete a recipe vector
+ * Delete a recipe vector (works with Pinecone or pgvector)
  */
 export async function deleteRecipeVector(
   recipeId: string,
@@ -160,7 +160,7 @@ export async function deleteRecipeVector(
   chefId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const response = await fetch("/api/pinecone/recipes/delete", {
+    const response = await fetch("/api/vector/recipes/delete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
