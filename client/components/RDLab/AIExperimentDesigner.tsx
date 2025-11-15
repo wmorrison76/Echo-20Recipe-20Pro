@@ -16,7 +16,10 @@ export function AIExperimentDesigner() {
   const [design, setDesign] = useState<ExperimentDesignResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showDraft, setShowDraft] = useState(false);
+  const [showSimilarRecipes, setShowSimilarRecipes] = useState(false);
+  const [recipeTrack, setRecipeTrack] = useState<"fine-dining" | "manufacturing">("fine-dining");
   const { createExperiment } = useRDLabStore();
+  const { user } = useAuth();
 
   const handleDesign = async () => {
     if (!goal.trim()) {
