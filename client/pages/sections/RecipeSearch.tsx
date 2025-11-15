@@ -62,6 +62,7 @@ export function RecipeCard({
   selected,
   onToggleSelect,
   onUpdateTags,
+  onToggleGlobal,
 }: {
   r: ReturnType<typeof useAppData>["recipes"][number];
   onPreview: () => void;
