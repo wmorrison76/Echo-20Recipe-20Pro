@@ -107,22 +107,26 @@ export async function textToSpeech(
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
+      let errorBody = "";
+      try {
+        errorBody = await response.text();
+      } catch {
+        errorBody = `Unable to read error body (status: ${response.status})`;
+      }
       console.error("ElevenLabs API response:", {
         status: response.status,
         statusText: response.statusText,
-        body: errorText,
+        body: errorBody,
       });
       throw new Error(
-        `ElevenLabs API error: ${response.status} - ${errorText || response.statusText}`,
+        `ElevenLabs API error: ${response.status} - ${errorBody || response.statusText}`,
       );
     }
 
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("audio")) {
-      const text = await response.text();
       throw new Error(
-        `Invalid response type: expected audio, got ${contentType}. Response: ${text}`,
+        `Invalid response type: expected audio, got ${contentType}`,
       );
     }
 
