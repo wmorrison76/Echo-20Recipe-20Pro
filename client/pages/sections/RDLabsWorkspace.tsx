@@ -153,7 +153,7 @@ function RDLabsWorkspaceContent() {
       </div>
 
       {/* Main Content with Tabs */}
-      <div className="flex-1 flex overflow-hidden relative">
+      <div className="flex-1 flex overflow-hidden">
         {/* Help Panel Overlay */}
         {showHelp && (
           <div className="absolute right-0 top-0 bottom-0 z-50">
@@ -162,17 +162,17 @@ function RDLabsWorkspaceContent() {
         )}
 
         {/* Left Panel - Context */}
-        <div className="w-80 rdlabs-sidebar overflow-auto flex-shrink-0 flex flex-col">
-          <div className="p-4 rdlabs-sidebar-section rdlabs-sidebar-header">
-            <h2 className="text-sm font-semibold neon-cyan mb-1">Active Experiment</h2>
-            <p className="text-xs text-slate-400">
+        <div className="w-80 border-r border-border dark:border-slate-800 overflow-auto flex-shrink-0 flex flex-col bg-muted/50 dark:bg-slate-900/50">
+          <div className="p-4 border-b border-border dark:border-slate-800">
+            <h2 className="text-sm font-semibold mb-1 text-foreground">Active Experiment</h2>
+            <p className="text-xs text-muted-foreground">
               {focusExperiment?.title || "Select an experiment"}
             </p>
           </div>
 
           {/* Track Selector */}
           {user && (
-            <div className="px-3 py-3 rdlabs-track-selector">
+            <div className="px-4 py-3 border-b border-border dark:border-slate-800">
               <TrackSelector
                 chefId={user.id}
                 onTrackChange={(track) => setRecipeTrack(track)}
@@ -192,18 +192,19 @@ function RDLabsWorkspaceContent() {
             ) : (
               <div className="p-4 space-y-4">
                 <div>
-                  <h3 className="text-sm font-semibold neon-cyan mb-2">Quick Actions</h3>
-                  <Button className="w-full rdlabs-button-primary neon-cyan" size="sm">
+                  <h3 className="text-sm font-semibold mb-2 text-foreground">Quick Actions</h3>
+                  <Button className="w-full gap-2" size="sm">
+                    <Plus className="h-4 w-4" />
                     New Experiment
                   </Button>
                 </div>
-                <div className="rdlabs-divider my-2"></div>
+                <div className="border-t border-border dark:border-slate-700 my-2"></div>
                 <div className="pt-2">
-                  <h3 className="text-sm font-semibold neon-cyan mb-2">Selected ({selectedIds.size})</h3>
+                  <h3 className="text-sm font-semibold mb-2 text-foreground">Selected ({selectedIds.size})</h3>
                   {selectedIds.size > 0 ? (
                     <BatchOperations />
                   ) : (
-                    <p className="text-xs text-slate-500">No experiments selected</p>
+                    <p className="text-xs text-muted-foreground">No experiments selected</p>
                   )}
                 </div>
               </div>
@@ -212,10 +213,10 @@ function RDLabsWorkspaceContent() {
         </div>
 
         {/* Center Panel - Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden rdlabs-content">
+        <div className="flex-1 flex flex-col overflow-hidden">
           {/* Tab Navigation */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-1">
-            <TabsList className="w-full justify-start rounded-none rdlabs-tablist h-12 overflow-x-auto">
+            <TabsList className="w-full justify-start rounded-none h-12 overflow-x-auto border-b border-border dark:border-slate-800 bg-muted/30 dark:bg-slate-900/30">
               <TabsTrigger value="overview" className="gap-2">
                 <BarChart3 className="h-4 w-4" />
                 Overview
@@ -228,31 +229,31 @@ function RDLabsWorkspaceContent() {
                 <BarChart3 className="h-4 w-4" />
                 Analytics
               </TabsTrigger>
-              <TabsTrigger value="ai-design" className="gap-2 ai-tab-trigger ai-tab-design neon-cyan">
+              <TabsTrigger value="ai-design" className="gap-2">
                 <Wand2 className="h-4 w-4" />
                 AI Design
               </TabsTrigger>
-              <TabsTrigger value="ai-validate" className="gap-2 ai-tab-trigger ai-tab-validate neon-purple">
+              <TabsTrigger value="ai-validate" className="gap-2">
                 <CheckCircle className="h-4 w-4" />
                 AI Validate
               </TabsTrigger>
-              <TabsTrigger value="ai-sop" className="gap-2 ai-tab-trigger ai-tab-sop neon-cyan">
+              <TabsTrigger value="ai-sop" className="gap-2">
                 <FileText className="h-4 w-4" />
                 AI SOP
               </TabsTrigger>
-              <TabsTrigger value="ai-production" className="gap-2 ai-tab-trigger ai-tab-production">
+              <TabsTrigger value="ai-production" className="gap-2">
                 <AlertTriangle className="h-4 w-4" />
                 Production Check
               </TabsTrigger>
-              <TabsTrigger value="ai-recommendations" className="gap-2 ai-tab-trigger ai-tab-insights neon-cyan">
+              <TabsTrigger value="ai-recommendations" className="gap-2">
                 <Lightbulb className="h-4 w-4" />
                 AI Insights
               </TabsTrigger>
-              <TabsTrigger value="ai-team" className="gap-2 ai-tab-trigger ai-tab-team neon-pink">
+              <TabsTrigger value="ai-team" className="gap-2">
                 <Users className="h-4 w-4" />
                 Team
               </TabsTrigger>
-              <TabsTrigger value="ai-predict" className="gap-2 ai-tab-trigger ai-tab-predict neon-indigo">
+              <TabsTrigger value="ai-predict" className="gap-2">
                 <Target className="h-4 w-4" />
                 Predictions
               </TabsTrigger>
