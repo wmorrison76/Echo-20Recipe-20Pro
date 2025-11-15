@@ -40,11 +40,13 @@ export default function RDLabsWorkspace() {
 
 function RDLabsWorkspaceContent() {
   const store = useOptionalRDLabStore();
+  const { user } = useAuth();
   const [showDashboard, setShowDashboard] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showHelp, setShowHelp] = useState(false);
   const [labMode, setLabMode] = useState<"culinary" | "pastry">("culinary");
+  const [recipeTrack, setRecipeTrack] = useState<"fine-dining" | "manufacturing">("fine-dining");
 
   if (!store) {
     return (
