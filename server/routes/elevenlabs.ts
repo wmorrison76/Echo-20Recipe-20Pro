@@ -54,6 +54,12 @@ router.post(
       const truncatedText = text.slice(0, 5000);
 
       try {
+        console.log("Calling ElevenLabs API with:", {
+          voiceId,
+          textLength: truncatedText.length,
+          hasApiKey: !!apiKey,
+        });
+
         const response = await fetch(
           `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?optimize_streaming_latency=0`,
           {
@@ -75,16 +81,31 @@ router.post(
           },
         );
 
+        console.log("ElevenLabs API response status:", response.status);
+
         if (!response.ok) {
           const error = await response.text();
-          console.error("ElevenLabs API error:", error);
+          console.error("ElevenLabs API error response:", {
+            status: response.status,
+            statusText: response.statusText,
+            body: error,
+          });
           return res.status(response.status).json({
             success: false,
-            error: `ElevenLabs API error: ${response.status}`,
+            error: `ElevenLabs API error: ${response.status} - ${response.statusText}`,
+            details: error,
           });
         }
 
         const audioBuffer = await response.arrayBuffer();
+
+        if (!audioBuffer || audioBuffer.byteLength === 0) {
+          console.error("Empty audio buffer received from ElevenLabs");
+          return res.status(500).json({
+            success: false,
+            error: "Empty audio buffer received",
+          });
+        }
 
         // Set appropriate headers for audio response
         res.setHeader("Content-Type", "audio/mpeg");
@@ -97,6 +118,7 @@ router.post(
         res.status(500).json({
           success: false,
           error: "Failed to generate speech",
+          details: error instanceof Error ? error.message : String(error),
         });
       }
     } catch (error) {
