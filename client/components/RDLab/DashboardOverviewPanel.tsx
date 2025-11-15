@@ -164,12 +164,12 @@ export function DashboardOverviewPanel({
           ].map((status) => (
             <div
               key={status.label}
-              className={`${status.color} rounded-lg p-4 text-center transition-all`}
+              className="rounded-lg p-4 text-center transition-all bg-muted/50 dark:bg-slate-800/50 border border-border dark:border-slate-700"
             >
-              <div className={`text-2xl font-bold ${status.textColor}`}>
+              <div className="text-2xl font-bold text-foreground">
                 {status.value}
               </div>
-              <div className={`text-xs ${status.textColor} opacity-75 mt-1`}>
+              <div className="text-xs text-muted-foreground opacity-75 mt-1">
                 {status.label}
               </div>
             </div>
