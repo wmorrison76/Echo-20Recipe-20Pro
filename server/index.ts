@@ -57,5 +57,8 @@ export function createServer() {
   // R&D Labs Advanced Features (Molecular Gastronomy)
   app.use(rdLabsAdvancedRouter);
 
+  // R&D Labs AI Features (Experiment Design, Validation, Production Bridge)
+  app.use("/api/rdlabs/ai", rdLabsAIRouter);
+
   return app;
 }
