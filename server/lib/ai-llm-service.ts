@@ -66,7 +66,8 @@ export interface ExperimentDesignResponse {
   confidenceScore: number;
 }
 
-const client = new Anthropic();
+// const client = new Anthropic();
+// NOTE: Anthropic client instantiation disabled
 
 const systemPrompt = `You are an elite culinary scientist and R&D director with deep expertise in:
 - Food chemistry and molecular gastronomy
