@@ -113,8 +113,8 @@ export function RecipeCard({
       )}
       data-echo-key="card:recipes:result"
     >
-      <div className="grid grid-cols-[120px_1fr] gap-3 p-3 items-start">
-        <div className="relative h-[110px] w-[110px] shrink-0">
+      <div className="grid grid-cols-[90px_1fr] gap-2 p-2 items-start">
+        <div className="relative h-[85px] w-[85px] shrink-0">
           {cover ? (
             <ResponsiveImage
               src={cover}
