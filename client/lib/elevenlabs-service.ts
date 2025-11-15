@@ -153,6 +153,24 @@ export async function speakText(
     await playAudio(blob);
   } catch (error) {
     console.error("Error speaking text:", error);
+    // Log detailed error info for debugging
+    if (error instanceof Error) {
+      console.error("Error details:", {
+        message: error.message,
+        stack: error.stack,
+      });
+    }
     throw error;
+  }
+}
+
+export async function checkServiceHealth(): Promise<boolean> {
+  try {
+    const response = await fetch("/api/elevenlabs/health");
+    const data = await response.json();
+    return data.success && data.configured;
+  } catch (error) {
+    console.error("Health check failed:", error);
+    return false;
   }
 }
