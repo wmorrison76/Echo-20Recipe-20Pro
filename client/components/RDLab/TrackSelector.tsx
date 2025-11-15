@@ -123,7 +123,7 @@ export function TrackSelector({ chefId, onTrackChange }: TrackSelectorProps) {
               onClick={toggleAdvanced}
               className="gap-2"
             >
-              <AdvancedSettings className="h-4 w-4" />
+              <Settings className="h-4 w-4" />
               {showAdvanced ? "Hide" : "Show"} Advanced
             </Button>
           </div>
