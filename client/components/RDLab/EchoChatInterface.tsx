@@ -250,6 +250,57 @@ What are you thinking about today? A new technique? A flavor combination? Produc
     }
   };
 
+  const triggerLabEntry = async (projectName: string) => {
+    try {
+      const projectId = `proj_${Date.now()}`;
+      const conversationContext = messages
+        .map((m) => `${m.role}: ${m.content}`)
+        .join("\n");
+
+      // Call the AI extraction endpoint to get structured project info
+      const response = await fetch("/api/rdlabs/extract-project-info", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          projectName,
+          conversationContext,
+          messages: messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      });
+
+      if (response.ok) {
+        const extracted = await response.json();
+        onLabTrigger?.({
+          projectName: extracted.projectName || projectName,
+          projectId,
+          conversationContext,
+        });
+      } else {
+        // Fallback if extraction fails
+        onLabTrigger?.({
+          projectName,
+          projectId,
+          conversationContext,
+        });
+      }
+    } catch (err) {
+      console.error("Lab trigger error:", err);
+      // Still trigger lab even if extraction fails
+      const projectId = `proj_${Date.now()}`;
+      const conversationContext = messages
+        .map((m) => `${m.role}: ${m.content}`)
+        .join("\n");
+      onLabTrigger?.({
+        projectName,
+        projectId,
+        conversationContext,
+      });
+    }
+  };
+
   const handleToggleSpeaking = () => {
     if (isSpeaking) {
       stopAudio();
