@@ -466,7 +466,7 @@ export default function RecipeSearchSection() {
 
 
   const [status, setStatus] = useState<string | null>(null);
-  const [mode, setMode] = useState<"cards" | "grid4" | "rows">("cards");
+  const [mode, setMode] = useState<"cards" | "grid4">("cards");
   const [query, setQuery] = useState("");
   const [errors, setErrors] = useState<{ file: string; error: string }[]>([]);
   const [url, setUrl] = useState("");
