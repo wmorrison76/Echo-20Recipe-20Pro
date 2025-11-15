@@ -62,6 +62,9 @@ export function createServer() {
   // R&D Labs AI Features (Experiment Design, Validation, Production Bridge)
   app.use("/api/rdlabs/ai", rdLabsAIRouter);
 
+  // R&D Labs Chat (ECHO Ai integration)
+  app.use(rdLabsChatRouter);
+
   // Vector Search for Recipes (supports Pinecone and pgvector)
   app.use("/api/vector", vectorRouter);
 
