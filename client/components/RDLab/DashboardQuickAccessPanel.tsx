@@ -264,7 +264,7 @@ export function DashboardQuickAccessPanel({
             })}
           </div>
         ) : (
-          <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-4">
+          <p className="text-sm text-muted-foreground text-center py-4">
             No active milestones
           </p>
         )}
