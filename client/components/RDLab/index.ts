@@ -12,3 +12,6 @@ export { ExperimentTemplates } from "./ExperimentTemplates";
 export { ExportImport } from "./ExportImport";
 export { PastryLabPortal } from "./PastryLabPortal";
 export { RDLabsHelpPanel } from "./RDLabsHelpPanel";
+export { DashboardOverviewPanel } from "./DashboardOverviewPanel";
+export { DashboardQuickAccessPanel } from "./DashboardQuickAccessPanel";
+export { DashboardAnalyticsPanel } from "./DashboardAnalyticsPanel";
