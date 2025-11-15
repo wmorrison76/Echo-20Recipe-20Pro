@@ -1494,7 +1494,7 @@ const onFiles = async (files: File[]) => {
                     .filter(Boolean)
                     .slice(0, 80);
                   const qty =
-                    /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
+                    /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔���⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
                   let c = 0;
                   for (const L of ls) {
                     if (qty.test(L) || /^[���\-*]\s+/.test(L)) c++;
@@ -2833,53 +2833,116 @@ const onFiles = async (files: File[]) => {
 
       <details className="rounded-md border p-3 text-sm">
         <summary className="cursor-pointer select-none">
-          Knowledge learned from imports
+          🧠 AI Knowledge Learned from Recipes
         </summary>
-        <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="mt-4 space-y-4">
           {(() => {
             try {
-              const raw = localStorage.getItem("kb:cook");
-              if (!raw)
+              const raw = localStorage.getItem("kb:insights");
+              if (!raw || recipes.length === 0)
                 return (
-                  <div className="text-xs text-muted-foreground col-span-2">
-                    No knowledge yet.
+                  <div className="text-xs text-muted-foreground">
+                    Import recipes to start learning ingredient ratios, flavor profiles, and regional cooking patterns.
                   </div>
                 );
-              const kb = JSON.parse(raw) || {};
-              const top = (obj: any, n: number) =>
-                Object.entries(obj || {})
-                  .sort((a: any, b: any) => b[1] - a[1])
-                  .slice(0, n);
+
+              const insights = JSON.parse(raw);
+
               return (
                 <>
-                  <div>
-                    <div className="font-medium mb-1">Top terms</div>
-                    <ul className="list-disc pl-5 space-y-0.5 text-xs">
-                      {top(kb.terms, 20).map(([k, v]: any) => (
-                        <li key={k}>
-                          {k}{" "}
-                          <span className="text-muted-foreground">({v})</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <div className="font-medium mb-1">Top phrases</div>
-                    <ul className="list-disc pl-5 space-y-0.5 text-xs">
-                      {top(kb.bigrams, 20).map(([k, v]: any) => (
-                        <li key={k}>
-                          {k}{" "}
-                          <span className="text-muted-foreground">({v})</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  {/* Ingredient Ratios */}
+                  {insights.ingredientRatios && Object.keys(insights.ingredientRatios).length > 0 && (
+                    <div className="border-t pt-3">
+                      <div className="font-medium mb-2">📊 Key Ingredient Ratios</div>
+                      <ul className="space-y-1 text-xs">
+                        {Object.entries(insights.ingredientRatios).slice(0, 8).map(([key, ratio]: any) => (
+                          <li key={key} className="text-muted-foreground">
+                            <span className="font-mono">{ratio.ingredient1} : {ratio.ingredient2}</span>
+                            {" "}≈ <span className="font-semibold">{(ratio.ratio).toFixed(2)}:1</span>
+                            {" "}({ratio.count}x seen)
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Flavor Profiles */}
+                  {insights.flavorProfiles && insights.flavorProfiles.length > 0 && (
+                    <div className="border-t pt-3">
+                      <div className="font-medium mb-2">🌶️ Flavor Profile Analysis</div>
+                      <div className="space-y-1 text-xs">
+                        <div className="text-muted-foreground">
+                          <span className="font-semibold">Sweet:</span> {(insights.avgFlavorSweet || 0).toFixed(1)}/10
+                        </div>
+                        <div className="text-muted-foreground">
+                          <span className="font-semibold">Salty:</span> {(insights.avgFlavorSalty || 0).toFixed(1)}/10
+                        </div>
+                        <div className="text-muted-foreground">
+                          <span className="font-semibold">Umami:</span> {(insights.avgFlavorUmami || 0).toFixed(1)}/10
+                        </div>
+                        <div className="text-muted-foreground">
+                          <span className="font-semibold">Spicy:</span> {(insights.avgFlavorSpicy || 0).toFixed(1)}/10
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Regional Cooking Styles */}
+                  {insights.regionalPatterns && Object.keys(insights.regionalPatterns).length > 0 && (
+                    <div className="border-t pt-3">
+                      <div className="font-medium mb-2">🌍 Regional Cooking Styles</div>
+                      <div className="space-y-2">
+                        {Object.entries(insights.regionalPatterns).slice(0, 5).map(([region, pattern]: any) => (
+                          <div key={region} className="text-xs">
+                            <div className="font-semibold text-foreground">{region}</div>
+                            <div className="text-muted-foreground ml-2">
+                              {pattern.characteristics?.slice(0, 3).join(" • ")}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Common Ingredient Combinations */}
+                  {insights.commonCombinations && insights.commonCombinations.length > 0 && (
+                    <div className="border-t pt-3">
+                      <div className="font-medium mb-2">👨‍🍳 Common Ingredient Pairs</div>
+                      <ul className="space-y-1 text-xs">
+                        {insights.commonCombinations.slice(0, 6).map((combo: any, idx: number) => (
+                          <li key={idx} className="text-muted-foreground">
+                            {combo.ingredients.slice(0, 3).join(" + ")}
+                            {combo.cuisines?.length > 0 && (
+                              <span className="ml-1 text-xs">({combo.cuisines[0]})</span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Cooking Methods */}
+                  {insights.cookingMethods && Object.keys(insights.cookingMethods).length > 0 && (
+                    <div className="border-t pt-3">
+                      <div className="font-medium mb-2">🔥 Preferred Cooking Methods</div>
+                      <div className="flex flex-wrap gap-1">
+                        {Object.entries(insights.cookingMethods)
+                          .sort((a: any, b: any) => b[1].frequency - a[1].frequency)
+                          .slice(0, 6)
+                          .map(([method, stats]: any) => (
+                            <span key={method} className="px-2 py-1 bg-muted rounded text-xs">
+                              {method} ({stats.frequency}x)
+                            </span>
+                          ))}
+                      </div>
+                    </div>
+                  )}
                 </>
               );
-            } catch {
+            } catch (e) {
               return (
                 <div className="text-xs text-muted-foreground">
-                  Unable to read knowledge store.
+                  Learning system initialized. Import more recipes to see insights.
                 </div>
               );
             }
