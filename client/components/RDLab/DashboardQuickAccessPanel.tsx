@@ -104,9 +104,9 @@ export function DashboardQuickAccessPanel({
       </Card>
 
       {/* Supply Risk Alerts */}
-      <Card className="border-slate-200/50 dark:border-cyan-500/20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 lg:col-span-1">
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-cyan-200 mb-4 flex items-center gap-2">
-          <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+      <Card className="border border-border dark:border-slate-800 bg-card p-6 lg:col-span-1">
+        <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+          <AlertTriangle className="h-5 w-5 text-amber-600" />
           Supply Alerts
         </h3>
         {metrics.ingredients.supplyRisks.length > 0 ? (
@@ -164,7 +164,7 @@ export function DashboardQuickAccessPanel({
             {
               icon: Clock,
               title: "Pipeline Velocity",
-              detail: `Avg ${metrics.experiments.averageTimeToReady} days ideation ��� ready`,
+              detail: `Avg ${metrics.experiments.averageTimeToReady} days ideation → ready`,
               highlight: "bg-blue-50 dark:bg-blue-900/20",
               textColor: "text-blue-700 dark:text-blue-300",
             },
