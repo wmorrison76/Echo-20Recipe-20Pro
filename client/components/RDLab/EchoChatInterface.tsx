@@ -43,7 +43,10 @@ interface EchoChatInterfaceProps {
   }) => void;
 }
 
-export function EchoChatInterface({ onEnterLab }: EchoChatInterfaceProps) {
+export function EchoChatInterface({
+  onEnterLab,
+  onLabTrigger,
+}: EchoChatInterfaceProps) {
   const chatHistory = useEchoChatHistory();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -54,6 +57,29 @@ export function EchoChatInterface({ onEnterLab }: EchoChatInterfaceProps) {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Lab entry trigger keywords and phrases
+  const labTriggerPatterns = [
+    /want to (create|design|make|build|start|develop|experiment with)\s+(?:a\s+)?([^\.!?]+)/i,
+    /let'?s?\s+(create|design|make|build|start|develop)\s+(?:a\s+)?([^\.!?]+)/i,
+    /i'?m?\s+(creating|designing|making|building|starting|developing)\s+(?:a\s+)?([^\.!?]+)/i,
+    /new\s+(project|experiment|recipe|idea)(?:\s+(?:for|about|with))?\s+([^\.!?]+)/i,
+    /enter the lab/i,
+    /start an experiment/i,
+    /open the lab/i,
+  ];
+
+  const detectLabTrigger = (text: string): string | null => {
+    for (const pattern of labTriggerPatterns) {
+      const match = text.match(pattern);
+      if (match) {
+        // Extract the project name from the match
+        const projectName = match[2]?.trim() || match[1]?.trim() || "Unnamed Project";
+        return projectName;
+      }
+    }
+    return null;
+  };
 
   // Initialize messages from stored history or show welcome message
   useEffect(() => {
