@@ -218,8 +218,11 @@ Generate 3-4 relevant entries to start the whiteboard.`;
         body: JSON.stringify({
           model: "gpt-4o-mini",
           max_tokens: 800,
-          system: systemPrompt,
           messages: [
+            {
+              role: "system",
+              content: systemPrompt,
+            },
             {
               role: "user",
               content: userPrompt,
