@@ -36,6 +36,11 @@ interface EchoChatInterfaceProps {
     mode: "culinary" | "pastry",
     context: { projectName: string; conversation: string; theme: string },
   ) => void;
+  onLabTrigger?: (projectInfo: {
+    projectName: string;
+    projectId: string;
+    conversationContext: string;
+  }) => void;
 }
 
 export function EchoChatInterface({ onEnterLab }: EchoChatInterfaceProps) {
