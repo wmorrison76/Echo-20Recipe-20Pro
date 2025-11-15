@@ -41,34 +41,6 @@ if (sentryDsn) {
   });
 }
 
-// Lazy load route components to reduce initial bundle size
-const lazyWithErrorBoundary = (
-  loader: () => Promise<{ default: React.ComponentType<any> }>
-) => {
-  return lazy(() =>
-    loader().catch((err) => {
-      console.error("Failed to load module:", err);
-      return {
-        default: () => (
-          <ErrorFallback
-            error={
-              err instanceof Error
-                ? err
-                : new Error(String(err))
-            }
-          />
-        ),
-      };
-    })
-  );
-};
-
-const Index = lazyWithErrorBoundary(() => import("./pages/Index"));
-const RecipeEditor = lazyWithErrorBoundary(() => import("./pages/RecipeEditor"));
-const RecipeTemplate = lazyWithErrorBoundary(() => import("./pages/RecipeTemplate"));
-const Login = lazyWithErrorBoundary(() => import("./pages/Login"));
-const PasswordReset = lazyWithErrorBoundary(() => import("./pages/PasswordReset"));
-
 const LoadingFallback = () => (
   <div
     style={{
@@ -118,6 +90,34 @@ const ErrorFallback = ({ error }: { error: Error }) => (
     </button>
   </div>
 );
+
+// Lazy load route components to reduce initial bundle size
+const lazyWithErrorBoundary = (
+  loader: () => Promise<{ default: React.ComponentType<any> }>
+) => {
+  return lazy(() =>
+    loader().catch((err) => {
+      console.error("Failed to load module:", err);
+      return {
+        default: () => (
+          <ErrorFallback
+            error={
+              err instanceof Error
+                ? err
+                : new Error(String(err))
+            }
+          />
+        ),
+      };
+    })
+  );
+};
+
+const Index = lazyWithErrorBoundary(() => import("./pages/Index"));
+const RecipeEditor = lazyWithErrorBoundary(() => import("./pages/RecipeEditor"));
+const RecipeTemplate = lazyWithErrorBoundary(() => import("./pages/RecipeTemplate"));
+const Login = lazyWithErrorBoundary(() => import("./pages/Login"));
+const PasswordReset = lazyWithErrorBoundary(() => import("./pages/PasswordReset"));
 import { AppDataProvider } from "@/context/AppDataContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { YieldProvider } from "@/context/YieldContext";
