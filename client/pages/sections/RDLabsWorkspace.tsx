@@ -198,17 +198,18 @@ function RDLabsWorkspaceContent() {
             ) : (
               <div className="p-4 space-y-4">
                 <div>
-                  <h3 className="text-sm font-semibold text-accent dark:text-cyan-300 mb-2">Quick Actions</h3>
-                  <Button className="w-full bg-accent dark:bg-cyan-600 hover:bg-accent/90 dark:hover:bg-cyan-700" size="sm">
+                  <h3 className="text-sm font-semibold neon-cyan mb-2">Quick Actions</h3>
+                  <Button className="w-full rdlabs-button-primary neon-cyan" size="sm">
                     New Experiment
                   </Button>
                 </div>
-                <div className="border-t border-accent/20 dark:border-cyan-500/10 pt-4">
-                  <h3 className="text-sm font-semibold text-accent dark:text-cyan-300 mb-2">Selected ({selectedIds.size})</h3>
+                <div className="rdlabs-divider my-2"></div>
+                <div className="pt-2">
+                  <h3 className="text-sm font-semibold neon-cyan mb-2">Selected ({selectedIds.size})</h3>
                   {selectedIds.size > 0 ? (
                     <BatchOperations />
                   ) : (
-                    <p className="text-xs text-muted-foreground dark:text-slate-500">No experiments selected</p>
+                    <p className="text-xs text-slate-500">No experiments selected</p>
                   )}
                 </div>
               </div>
