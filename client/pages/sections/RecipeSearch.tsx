@@ -1024,6 +1024,19 @@ const onFiles = async (files: File[]) => {
     [isCollectionSelectionEnabled],
   );
 
+  const toggleRecipeGlobal = useCallback(
+    (recipeId: string, isGlobal: boolean) => {
+      updateRecipe(recipeId, { isGlobal });
+      toast({
+        title: isGlobal ? "Recipe shared globally" : "Recipe made private",
+        description: isGlobal
+          ? "This recipe is now available to all chefs in your organization."
+          : "This recipe is now private to your location.",
+      });
+    },
+    [updateRecipe, toast],
+  );
+
   const handleEditCollection = useCallback(
     (collection: RecipeCollection) => {
       setActiveCollectionId(collection.id);
