@@ -208,13 +208,13 @@ export function DashboardQuickAccessPanel({
           {metrics.ingredients.mostUsed.slice(0, 5).map((ingredient, idx) => (
             <div
               key={idx}
-              className="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-800/50 rounded-lg"
+              className="flex items-center justify-between p-2 bg-muted/50 dark:bg-slate-800/30 rounded-lg"
             >
               <div className="flex-1">
-                <p className="text-sm font-medium text-slate-900 dark:text-slate-200">
+                <p className="text-sm font-medium text-foreground">
                   {ingredient.name}
                 </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-muted-foreground">
                   {ingredient.count} experiments
                 </p>
               </div>
