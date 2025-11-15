@@ -151,7 +151,10 @@ export function LabWhiteboard({
   const handleExport = () => {
     const text = entries
       .map((e) => {
-        const time = e.timestamp.toLocaleTimeString([], {
+        const timestamp = e.timestamp instanceof Date
+          ? e.timestamp
+          : (typeof e.timestamp === 'string' ? new Date(e.timestamp) : new Date());
+        const time = timestamp.toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
         });
