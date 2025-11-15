@@ -18,6 +18,8 @@ import {
   DashboardAnalyticsPanel,
   AIExperimentDesigner,
   AIValidationPanel,
+  AISOPGenerator,
+  AIProductionReadiness,
 } from "@/components/RDLab";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
