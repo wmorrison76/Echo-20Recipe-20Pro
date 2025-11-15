@@ -67,6 +67,9 @@ export function createServer() {
   // R&D Labs Chat (ECHO Ai integration)
   app.use(rdLabsChatRouter);
 
+  // R&D Labs Project Extraction (AI-powered info extraction)
+  app.use(rdLabsProjectExtractionRouter);
+
   // ElevenLabs Text-to-Speech
   app.use(elevenLabsRouter);
 
