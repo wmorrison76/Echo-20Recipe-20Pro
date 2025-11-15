@@ -24,6 +24,7 @@ import {
   AITeamInsights,
   AIPredictiveAnalytics,
   TrackSelector,
+  EchoChatInterface,
 } from "@/components/RDLab";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
