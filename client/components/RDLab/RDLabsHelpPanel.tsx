@@ -198,7 +198,8 @@ export function RDLabsHelpPanel({ isOpen, onClose }: RDLabsHelpPanelProps) {
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 hover:bg-cyan-500/20 text-cyan-400 hover:text-cyan-300 transition-colors"
+            title="Close (Esc)"
           >
             ✕
           </Button>
