@@ -268,10 +268,8 @@ export async function speakText(
         );
       }
     }
-    // For non-authentication errors, still throw so caller knows about the issue
-    if (!error instanceof Error || (!error.message.includes("401") && !error.message.includes("Unauthorized") && !error.message.includes("not configured"))) {
-      throw error;
-    }
+    // Don't re-throw authentication/config errors - voice is just disabled
+    // Other errors would have been handled above
   }
 }
 
