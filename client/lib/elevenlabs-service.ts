@@ -70,7 +70,23 @@ export async function textToSpeech(
     });
 
     if (!response.ok) {
-      throw new Error(`ElevenLabs API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error("ElevenLabs API response:", {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorText,
+      });
+      throw new Error(
+        `ElevenLabs API error: ${response.status} - ${errorText || response.statusText}`,
+      );
+    }
+
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("audio")) {
+      const text = await response.text();
+      throw new Error(
+        `Invalid response type: expected audio, got ${contentType}. Response: ${text}`,
+      );
     }
 
     const blob = await response.blob();
