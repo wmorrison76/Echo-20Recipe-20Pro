@@ -10,7 +10,7 @@ import { recipeDeploymentRouter } from "./routes/recipe-deployment";
 import { rdLabsRouter } from "./routes/rdlabs";
 import { rdLabsAdvancedRouter } from "./routes/rdlabs-advanced";
 import rdLabsAIRouter from "./routes/rdlabs-ai";
-import rdLabsChatRouter from "./routes/rdlabs-chat";
+import { rdLabsChatRouter } from "./routes/rdlabs-chat";
 import vectorRouter from "./routes/vector-recipes";
 import {
   proxyRecipeImage as proxyImageOptimized,
