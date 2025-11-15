@@ -22,3 +22,6 @@ export { AIProductionReadiness } from "./AIProductionReadiness";
 export { AIRecommendations } from "./AIRecommendations";
 export { AITeamInsights } from "./AITeamInsights";
 export { AIPredictiveAnalytics } from "./AIPredictiveAnalytics";
+export { TrackSelector } from "./TrackSelector";
+export { RecipeSimilaritySearch } from "./RecipeSimilaritySearch";
+export { CrossTrackLearning } from "./CrossTrackLearning";
