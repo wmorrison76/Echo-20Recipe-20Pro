@@ -2884,7 +2884,7 @@ const onFiles = async (files: File[]) => {
       </details>
 
       <Dialog open={!!preview} onOpenChange={(o) => !o && setPreview(null)}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl drop-shadow-2xl shadow-2xl">
           <DialogHeader>
             <DialogTitle>{preview?.title}</DialogTitle>
           </DialogHeader>
