@@ -234,6 +234,34 @@ function RDLabsWorkspaceContent() {
 
             {/* Tab Content */}
             <div className="flex-1 overflow-auto">
+              <TabsContent value="overview" className="h-full m-0">
+                <div className="h-full overflow-auto">
+                  <div className="p-6">
+                    <DashboardOverviewPanel period="30d" />
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="insights" className="h-full m-0">
+                <div className="h-full overflow-auto">
+                  <div className="p-6">
+                    <DashboardQuickAccessPanel
+                      period="30d"
+                      onNewExperiment={() => setActiveTab("workbench")}
+                      onViewAnalytics={() => setActiveTab("analytics")}
+                    />
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="analytics" className="h-full m-0">
+                <div className="h-full overflow-auto">
+                  <div className="p-6">
+                    <DashboardAnalyticsPanel period="30d" />
+                  </div>
+                </div>
+              </TabsContent>
+
               <TabsContent value="workbench" className="h-full m-0">
                 <div className="h-full overflow-auto">
                   <div className="p-6">
