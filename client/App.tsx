@@ -11,6 +11,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NotFound from "./pages/NotFound";
+import { AppDataProvider } from "@/context/AppDataContext";
+import { LanguageProvider } from "@/context/LanguageContext";
+import { YieldProvider } from "@/context/YieldContext";
+import { CollaborationProvider } from "@/context/CollaborationContext";
+import { FuzzySuggestionManager } from "@/components/FuzzySuggestionManager";
+import { KeyboardShortcutsProvider } from "@/context/KeyboardShortcutsContext";
+import { AuthProvider } from "@/context/AuthContext";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 // Initialize Sentry for error tracking
 const sentryDsn = import.meta.env.VITE_SENTRY_DSN;
