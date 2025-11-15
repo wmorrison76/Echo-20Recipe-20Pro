@@ -355,11 +355,10 @@ export function createRecipeLearningData(recipe: Recipe): RecipeLearningData {
     difficulty: estimateDifficulty(
       (recipe.ingredients || []).length,
       (recipe.instructions || []).length,
-      (recipe.prepTime || 0) + (recipe.cookTime || 0) + (recipe.restTime || 0)
+      (recipe.prepTime || 0) + (recipe.cookTime || 0)
     ),
     totalTime:
-      (recipe.prepTime || 0) + (recipe.cookTime || 0) + (recipe.restTime || 0),
-    servingSize: recipe.servingSize || 1,
+      (recipe.prepTime || 0) + (recipe.cookTime || 0),
     cuisine: detectCuisine(recipe),
     diet: detectDiet(recipe),
   };
