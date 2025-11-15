@@ -44,7 +44,9 @@ async function callOpenAI(messages: ChatMessage[]): Promise<string> {
       hasOpenAI: !!process.env.OPENAI_API_KEY,
       hasElevenLabs: !!process.env.ELEVENLABS_API_KEY,
     });
-    throw new Error("OpenAI API key not configured. Set OPENAI_API_KEY environment variable.");
+    throw new Error(
+      "OpenAI API key not configured. Set OPENAI_API_KEY environment variable.",
+    );
   }
 
   const controller = new AbortController();
