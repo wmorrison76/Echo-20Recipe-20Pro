@@ -8,6 +8,14 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 
+type TransitionState =
+  | "idle"
+  | "collecting_data"
+  | "preloading"
+  | "dissolving_chat"
+  | "opening_doors"
+  | "lab_active";
+
 interface IntegratedLabEntranceProps {
   onLabEnter?: (projectInfo: {
     projectName: string;
@@ -21,8 +29,13 @@ export function IntegratedLabEntrance({
   blackboardImageUrl,
 }: IntegratedLabEntranceProps) {
   const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
+  const [transitionState, setTransitionState] = useState<TransitionState>("idle");
   const [doorsOpen, setDoorsOpen] = useState(false);
   const [fontStyle, setFontStyle] = useState<FontStyle>("chalkboard");
+  const [chatOpacity, setChatOpacity] = useState(1);
+  const [whiteboardOpacity, setWhiteboardOpacity] = useState(0);
+  const [whiteboardVisible, setWhiteboardVisible] = useState(false);
+  const [extractedData, setExtractedData] = useState<any>(null);
 
   // Load or create session
   const {
@@ -34,27 +47,85 @@ export function IntegratedLabEntrance({
     setDoorsOpen: saveDoorsOpen,
   } = useLabSession(currentProjectId || "default");
 
+  // Manage transition sequence
+  useEffect(() => {
+    if (transitionState === "idle") {
+      setChatOpacity(1);
+      setWhiteboardOpacity(0);
+      setWhiteboardVisible(false);
+    } else if (transitionState === "collecting_data") {
+      // AI is collecting data - show visual feedback
+      setChatOpacity(1);
+      setWhiteboardOpacity(0);
+    } else if (transitionState === "preloading") {
+      // Preload whiteboard to 50% visibility
+      setWhiteboardVisible(true);
+      const preloadInterval = setInterval(() => {
+        setWhiteboardOpacity((prev) => {
+          const newVal = Math.min(prev + 0.1, 0.5);
+          if (newVal >= 0.5) {
+            clearInterval(preloadInterval);
+            setTransitionState("dissolving_chat");
+          }
+          return newVal;
+        });
+      }, 50);
+      return () => clearInterval(preloadInterval);
+    } else if (transitionState === "dissolving_chat") {
+      // Fade out chat window
+      const dissolveInterval = setInterval(() => {
+        setChatOpacity((prev) => {
+          const newVal = Math.max(prev - 0.08, 0);
+          if (newVal <= 0) {
+            clearInterval(dissolveInterval);
+            setTransitionState("opening_doors");
+          }
+          return newVal;
+        });
+      }, 50);
+      return () => clearInterval(dissolveInterval);
+    } else if (transitionState === "opening_doors") {
+      // Continue revealing whiteboard as doors open
+      setDoorsOpen(true);
+      saveDoorsOpen(true);
+      const revealInterval = setInterval(() => {
+        setWhiteboardOpacity((prev) => {
+          const newVal = Math.min(prev + 0.08, 1);
+          if (newVal >= 1) {
+            clearInterval(revealInterval);
+            setTransitionState("lab_active");
+          }
+          return newVal;
+        });
+      }, 50);
+      return () => clearInterval(revealInterval);
+    }
+  }, [transitionState, saveDoorsOpen]);
+
   // Handle lab trigger from chat
   const handleLabTrigger = (projectInfo: {
     projectName: string;
     projectId: string;
     conversationContext: string;
+    extractedData?: any;
   }) => {
     try {
       setCurrentProjectId(projectInfo.projectId);
+      setExtractedData(projectInfo.extractedData || null);
       updateProject(
         projectInfo.projectName,
         "culinary",
         "fine-dining"
       );
-      setDoorsOpen(true);
-      saveDoorsOpen(true);
       onLabEnter?.(projectInfo);
 
+      // Start transition sequence
+      setTransitionState("preloading");
       toast.success(`${projectInfo.projectName} lab activated!`);
     } catch (err) {
       console.error("Failed to activate lab:", err);
       toast.error("Failed to activate lab. Please try again.");
+      setTransitionState("idle");
     }
   };
 
