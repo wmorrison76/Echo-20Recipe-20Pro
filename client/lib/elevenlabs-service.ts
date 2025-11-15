@@ -242,16 +242,19 @@ export async function speakText(
         stack: error.stack?.substring(0, 500),
       });
 
-      // Provide helpful context
+      // Provide helpful context and gracefully degrade
       if (
         error.message.includes("401") ||
         error.message.includes("Unauthorized")
       ) {
-        console.error(
-          "⚠️ ElevenLabs API authentication failed. Check your API key.",
+        console.warn(
+          "⚠️ ElevenLabs API authentication failed. Voice feature unavailable. Update ELEVENLABS_API_KEY environment variable.",
         );
+        // Gracefully degrade - don't throw, just log warning
+        return;
       } else if (error.message.includes("not configured")) {
-        console.error("⚠️ ElevenLabs API key not set in server environment.");
+        console.warn("⚠️ ElevenLabs API key not set in server environment. Voice feature disabled.");
+        return;
       } else if (
         error.message.includes("Invalid text") ||
         error.message.includes("cannot be empty")
@@ -265,7 +268,10 @@ export async function speakText(
         );
       }
     }
-    throw error;
+    // For non-authentication errors, still throw so caller knows about the issue
+    if (!error instanceof Error || (!error.message.includes("401") && !error.message.includes("Unauthorized") && !error.message.includes("not configured"))) {
+      throw error;
+    }
   }
 }
 
