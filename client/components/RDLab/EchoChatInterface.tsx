@@ -152,6 +152,9 @@ What are you thinking about today? A new technique? A flavor combination? Produc
       timestamp: new Date(),
     };
 
+    // Check for lab trigger in user message
+    const labTriggerMatch = detectLabTrigger(input);
+
     setMessages((prev) => [...prev, userMessage]);
     chatHistory.addMessage({
       id: userMessage.id,
