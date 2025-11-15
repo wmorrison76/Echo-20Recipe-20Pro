@@ -120,13 +120,12 @@ function RDLabsWorkspaceContent() {
           </div>
           <div className="flex gap-2">
             <Button
-              variant={labMode === "pastry" ? "default" : "outline"}
               size="sm"
               onClick={() => setLabMode(labMode === "pastry" ? "culinary" : "pastry")}
-              className={`gap-2 ${
+              className={`gap-2 rdlabs-button-primary ${
                 labMode === "pastry"
-                  ? "bg-amber-600 dark:bg-rose-600 hover:bg-amber-700 dark:hover:bg-rose-700 text-white"
-                  : ""
+                  ? "neon-pink"
+                  : "neon-cyan"
               }`}
               title={labMode === "pastry" ? "Switch to Culinary Lab" : "Switch to Pastry Lab"}
             >
@@ -138,20 +137,18 @@ function RDLabsWorkspaceContent() {
               {labMode === "pastry" ? "Pastry Lab" : "Culinary Lab"}
             </Button>
             <Button
-              variant="outline"
               size="sm"
               onClick={() => setShowHelp(!showHelp)}
-              className="gap-2"
+              className="gap-2 rdlabs-button-primary neon-cyan"
               title="R&D Labs Guide"
             >
               <HelpCircle className="h-4 w-4" />
               Guide
             </Button>
             <Button
-              variant="outline"
               size="sm"
               onClick={() => setShowDashboard(true)}
-              className="gap-2"
+              className="gap-2 rdlabs-button-primary neon-cyan"
               title="Back to Dashboard"
             >
               <Home className="h-4 w-4" />
