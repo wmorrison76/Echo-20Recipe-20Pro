@@ -161,8 +161,13 @@ export async function speakText(
       });
 
       // Provide helpful context
-      if (error.message.includes("401") || error.message.includes("Unauthorized")) {
-        console.error("⚠️ ElevenLabs API authentication failed. Check your API key.");
+      if (
+        error.message.includes("401") ||
+        error.message.includes("Unauthorized")
+      ) {
+        console.error(
+          "⚠️ ElevenLabs API authentication failed. Check your API key.",
+        );
       } else if (error.message.includes("not configured")) {
         console.error("⚠️ ElevenLabs API key not set in server environment.");
       }

@@ -73,7 +73,8 @@ export function LabSetupPanel({
         const data = await response.json();
         setSteps(data.steps || []);
       } catch (err) {
-        const message = err instanceof Error ? err.message : "An error occurred";
+        const message =
+          err instanceof Error ? err.message : "An error occurred";
         setError(message);
         // Provide default steps as fallback
         setSteps(getDefaultSteps());
@@ -91,7 +92,8 @@ export function LabSetupPanel({
         id: "1",
         number: 1,
         title: "Prepare Materials & Ingredients",
-        description: "Gather and measure all required ingredients and materials",
+        description:
+          "Gather and measure all required ingredients and materials",
         duration: "15-20 mins",
         notes: "Ensure all ingredients are at proper temperature",
       },
@@ -107,8 +109,7 @@ export function LabSetupPanel({
         id: "3",
         number: 3,
         title: "Initial Testing & Documentation",
-        description:
-          "Begin initial tests and document baseline measurements",
+        description: "Begin initial tests and document baseline measurements",
         duration: "20-30 mins",
         notes: "Take detailed notes and photos of initial state",
       },

@@ -258,14 +258,18 @@ export function LabWhiteboard({
         <div className="space-y-3 p-4">
           {entries.length === 0 ? (
             <div className="flex items-center justify-center h-32 text-cyan-300/40">
-              <p className="text-sm">Whiteboard initialized. Add notes as you work...</p>
+              <p className="text-sm">
+                Whiteboard initialized. Add notes as you work...
+              </p>
             </div>
           ) : (
             entries.map((entry, index) => (
               <div
                 key={entry.id}
                 className={`group relative p-3 rounded-lg border border-cyan-500/20 bg-slate-900/40 backdrop-blur-sm transition-all duration-500 ${
-                  animatingId === entry.id ? "animate-in fade-in slide-in-from-bottom-2" : ""
+                  animatingId === entry.id
+                    ? "animate-in fade-in slide-in-from-bottom-2"
+                    : ""
                 }`}
                 style={{
                   animation:

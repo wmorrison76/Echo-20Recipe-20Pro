@@ -59,7 +59,9 @@ export function LabDoorTransition({
         <div
           className="absolute inset-y-0 left-0 w-1/2 origin-right"
           style={{
-            animation: isOpen ? "slideOutLeftGlass 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards" : "none",
+            animation: isOpen
+              ? "slideOutLeftGlass 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards"
+              : "none",
           }}
         >
           {/* Glass panel appearance */}
@@ -84,7 +86,9 @@ export function LabDoorTransition({
         <div
           className="absolute inset-y-0 right-0 w-1/2 origin-left"
           style={{
-            animation: isOpen ? "slideOutRightGlass 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards" : "none",
+            animation: isOpen
+              ? "slideOutRightGlass 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards"
+              : "none",
           }}
         >
           {/* Glass panel appearance */}

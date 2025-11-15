@@ -335,9 +335,7 @@ If no clear steps can be extracted, return an empty array: []`;
         success: true,
         steps: [],
         message:
-          error instanceof Error
-            ? error.message
-            : "Could not extract steps",
+          error instanceof Error ? error.message : "Could not extract steps",
       });
     }
   },

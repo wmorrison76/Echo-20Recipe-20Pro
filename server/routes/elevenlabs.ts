@@ -43,10 +43,16 @@ router.post(
       const apiKey = process.env.ELEVENLABS_API_KEY;
       if (!apiKey) {
         console.error("ELEVENLABS_API_KEY not found in environment variables");
-        console.error("Available env vars:", Object.keys(process.env).filter(k => k.includes('ELEVEN') || k.includes('ELEVEN')));
+        console.error(
+          "Available env vars:",
+          Object.keys(process.env).filter(
+            (k) => k.includes("ELEVEN") || k.includes("ELEVEN"),
+          ),
+        );
         return res.status(500).json({
           success: false,
-          error: "ElevenLabs API key not configured. Please set ELEVENLABS_API_KEY environment variable.",
+          error:
+            "ElevenLabs API key not configured. Please set ELEVENLABS_API_KEY environment variable.",
         });
       }
 
@@ -135,8 +141,7 @@ router.post(
         res.status(500).json({
           success: false,
           error: errorMsg,
-          details:
-            error instanceof Error ? error.message : String(error),
+          details: error instanceof Error ? error.message : String(error),
         });
       }
     } catch (error) {

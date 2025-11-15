@@ -17,7 +17,11 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useEchoChatHistory } from "@/hooks/use-echo-chat-history";
-import { speakText, stopAudio, checkServiceHealth } from "@/lib/elevenlabs-service";
+import {
+  speakText,
+  stopAudio,
+  checkServiceHealth,
+} from "@/lib/elevenlabs-service";
 
 interface Message {
   id: string;
@@ -57,7 +61,8 @@ export function EchoChatInterface({ onEnterLab }: EchoChatInterfaceProps) {
         console.warn("TTS service not available:", health.message);
         setVoiceEnabled(false);
         setError(
-          "Voice not available: " + (health.message || "TTS service not configured"),
+          "Voice not available: " +
+            (health.message || "TTS service not configured"),
         );
       }
     };
@@ -348,8 +353,7 @@ What are you thinking about today? A new technique? A flavor combination? Produc
                           /(?:spherification|recipe|technique|dish|experiment|project)[\s:]+([^.\n]+)/i,
                         ) || [];
                       const projectName =
-                        projectNameMatch[1] ||
-                        "R&D Experiment";
+                        projectNameMatch[1] || "R&D Experiment";
 
                       const theme = messages.some((m) =>
                         m.content.toLowerCase().includes("pastry"),
@@ -357,11 +361,15 @@ What are you thinking about today? A new technique? A flavor combination? Produc
                         ? "pastry"
                         : "culinary";
 
-                      onEnterLab("fine-dining", theme as "culinary" | "pastry", {
-                        projectName: projectName.trim(),
-                        conversation: conversationText,
-                        theme,
-                      });
+                      onEnterLab(
+                        "fine-dining",
+                        theme as "culinary" | "pastry",
+                        {
+                          projectName: projectName.trim(),
+                          conversation: conversationText,
+                          theme,
+                        },
+                      );
                     }
                   }, 500);
                 }}

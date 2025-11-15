@@ -75,10 +75,10 @@ const ErrorFallback = ({ error }: { error: Error }) => (
     }}
   >
     <h2 style={{ marginTop: 0 }}>Failed to load page</h2>
-    <p>
-      There was an error loading this page. Please try refreshing.
-    </p>
-    <details style={{ marginTop: 12, whiteSpace: "pre-wrap", fontSize: "12px" }}>
+    <p>There was an error loading this page. Please try refreshing.</p>
+    <details
+      style={{ marginTop: 12, whiteSpace: "pre-wrap", fontSize: "12px" }}
+    >
       <summary>Error details</summary>
       {error?.message || String(error)}
     </details>
@@ -101,7 +101,7 @@ const ErrorFallback = ({ error }: { error: Error }) => (
 
 // Lazy load route components to reduce initial bundle size
 const lazyWithErrorBoundary = (
-  loader: () => Promise<{ default: React.ComponentType<any> }>
+  loader: () => Promise<{ default: React.ComponentType<any> }>,
 ) => {
   return lazy(() =>
     loader().catch((err) => {
@@ -109,23 +109,25 @@ const lazyWithErrorBoundary = (
       return {
         default: () => (
           <ErrorFallback
-            error={
-              err instanceof Error
-                ? err
-                : new Error(String(err))
-            }
+            error={err instanceof Error ? err : new Error(String(err))}
           />
         ),
       };
-    })
+    }),
   );
 };
 
 const Index = lazyWithErrorBoundary(() => import("./pages/Index"));
-const RecipeEditor = lazyWithErrorBoundary(() => import("./pages/RecipeEditor"));
-const RecipeTemplate = lazyWithErrorBoundary(() => import("./pages/RecipeTemplate"));
+const RecipeEditor = lazyWithErrorBoundary(
+  () => import("./pages/RecipeEditor"),
+);
+const RecipeTemplate = lazyWithErrorBoundary(
+  () => import("./pages/RecipeTemplate"),
+);
 const Login = lazyWithErrorBoundary(() => import("./pages/Login"));
-const PasswordReset = lazyWithErrorBoundary(() => import("./pages/PasswordReset"));
+const PasswordReset = lazyWithErrorBoundary(
+  () => import("./pages/PasswordReset"),
+);
 
 const queryClient = new QueryClient();
 
