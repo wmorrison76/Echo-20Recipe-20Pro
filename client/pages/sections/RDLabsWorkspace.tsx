@@ -327,6 +327,12 @@ function RDLabsWorkspaceContent() {
                 </div>
               </TabsContent>
 
+              <TabsContent value="ai-predict" className="m-0">
+                <div className="p-6">
+                  <AIPredictiveAnalytics />
+                </div>
+              </TabsContent>
+
               <TabsContent value="workbench" className="m-0">
                 <div className="p-6">
                   <WorkbenchPanel />
