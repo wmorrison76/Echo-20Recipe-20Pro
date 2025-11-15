@@ -284,10 +284,11 @@ What are you thinking about today? A new technique? A flavor combination? Produc
     }
   };
 
-  const triggerLabEntry = async (projectName: string) => {
+  const triggerLabEntry = async (projectName: string, allMessages?: Message[]) => {
     try {
       const projectId = `proj_${Date.now()}`;
-      const conversationContext = messages
+      const messagesToUse = allMessages || messages;
+      const conversationContext = messagesToUse
         .map((m) => `${m.role}: ${m.content}`)
         .join("\n");
 
@@ -298,7 +299,7 @@ What are you thinking about today? A new technique? A flavor combination? Produc
         body: JSON.stringify({
           projectName,
           conversationContext,
-          messages: messages.map((m) => ({
+          messages: messagesToUse.map((m) => ({
             role: m.role,
             content: m.content,
           })),
@@ -306,13 +307,16 @@ What are you thinking about today? A new technique? A flavor combination? Produc
       });
 
       if (response.ok) {
-        const extracted = await response.json();
+        const result = await response.json();
+        const extracted = result.data || result;
         onLabTrigger?.({
           projectName: extracted.projectName || projectName,
           projectId,
           conversationContext,
+          extractedData: extracted,
         });
       } else {
+        console.warn("Extraction endpoint returned non-ok status:", response.status);
         // Fallback if extraction fails
         onLabTrigger?.({
           projectName,
@@ -324,7 +328,8 @@ What are you thinking about today? A new technique? A flavor combination? Produc
       console.error("Lab trigger error:", err);
       // Still trigger lab even if extraction fails
       const projectId = `proj_${Date.now()}`;
-      const conversationContext = messages
+      const messagesToUse = allMessages || messages;
+      const conversationContext = messagesToUse
         .map((m) => `${m.role}: ${m.content}`)
         .join("\n");
       onLabTrigger?.({
