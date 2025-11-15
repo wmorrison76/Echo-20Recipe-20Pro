@@ -2549,7 +2549,7 @@ const onFiles = async (files: File[]) => {
         </div>
       ) : mode === "cards" ? (
         <div
-          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
+          className="grid gap-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
           data-echo-key="section:recipes:results"
         >
           {results.map((r) => (
