@@ -58,7 +58,11 @@ router.post(
           voiceId,
           textLength: truncatedText.length,
           hasApiKey: !!apiKey,
+          apiKeyPrefix: apiKey ? apiKey.substring(0, 20) : "none",
         });
+
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
         const response = await fetch(
           `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?optimize_streaming_latency=0`,
@@ -78,8 +82,11 @@ router.post(
                 use_speaker_boost: speakerBoost,
               },
             }),
+            signal: controller.signal as any,
           },
         );
+
+        clearTimeout(timeout);
 
         console.log("ElevenLabs API response status:", response.status);
 
