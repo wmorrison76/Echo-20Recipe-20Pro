@@ -27,6 +27,7 @@ import {
   EchoChatInterface,
   LabDoorTransition,
   LabSetupPanel,
+  LabWhiteboard,
 } from "@/components/RDLab";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
