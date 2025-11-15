@@ -15,6 +15,7 @@ import {
   BarChart3,
   Clock,
   CheckCircle,
+  Beaker,
 } from "lucide-react";
 
 interface DashboardQuickAccessPanelProps {
