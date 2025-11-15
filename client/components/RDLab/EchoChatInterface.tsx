@@ -303,8 +303,19 @@ What are you thinking about today? A new technique? A flavor combination? Produc
                 key={message.id}
                 className={`flex ${
                   message.role === "user" ? "justify-end" : "justify-start"
-                }`}
+                } gap-2`}
               >
+                {message.role === "assistant" && voiceEnabled && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => speakAssistantMessage(message.content)}
+                    className="mt-auto"
+                    title="Replay audio"
+                  >
+                    <Volume2 className="h-4 w-4" />
+                  </Button>
+                )}
                 <div
                   className={`max-w-md px-4 py-3 rounded-lg ${
                     message.role === "user"
