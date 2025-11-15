@@ -233,9 +233,9 @@ export function DashboardOverviewPanel({
           </div>
         </Card>
 
-        <Card className="border-slate-200/50 dark:border-cyan-500/20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm p-6">
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-cyan-200 mb-4 flex items-center gap-2">
-            <Leaf className="h-5 w-5 text-green-600 dark:text-green-400" />
+        <Card className="border border-border dark:border-slate-800 bg-card p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+            <Leaf className="h-5 w-5 text-green-600" />
             Sustainability Impact
           </h3>
           <div className="space-y-4">
