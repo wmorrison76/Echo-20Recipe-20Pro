@@ -1,4 +1,5 @@
-import Anthropic from "@anthropic-ai/sdk";
+// import Anthropic from "@anthropic-ai/sdk";
+// NOTE: Anthropic SDK temporarily disabled - install with: pnpm add @anthropic-ai/sdk
 
 interface ExperimentDesignRequest {
   goal: string;
