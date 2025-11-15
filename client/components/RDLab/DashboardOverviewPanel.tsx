@@ -28,23 +28,50 @@ export function DashboardOverviewPanel({
     }
   }, [experiments, period]);
 
+  // Empty state
+  if (!experiments || experiments.length === 0) {
+    return (
+      <div className="space-y-6 w-full">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-foreground">R&D Dashboard</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Real-time metrics and experiment analytics
+            </p>
+          </div>
+        </div>
+        <Card className="border border-border dark:border-slate-800 bg-muted/50 dark:bg-slate-900/50 p-12 text-center">
+          <div className="space-y-4">
+            <Target className="h-12 w-12 mx-auto text-muted-foreground opacity-50" />
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">
+                No experiments yet
+              </h3>
+              <p className="text-sm text-muted-foreground mt-2">
+                Start by creating your first experiment to see metrics and analytics here
+              </p>
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 w-full">
       {/* Header Section */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-cyan-200">
-            R&D Dashboard
-          </h2>
-          <p className="text-sm text-slate-500 dark:text-cyan-300/70 mt-1">
+          <h2 className="text-2xl font-bold text-foreground">R&D Dashboard</h2>
+          <p className="text-sm text-muted-foreground mt-1">
             Real-time metrics and experiment analytics
           </p>
         </div>
         <div className="text-right">
-          <p className="text-sm text-slate-500 dark:text-cyan-300/70">
+          <p className="text-sm text-muted-foreground">
             {experiments.length} experiments tracked
           </p>
-          <p className="text-xs text-slate-400 dark:text-cyan-300/50 mt-1">
+          <p className="text-xs text-muted-foreground opacity-75 mt-1">
             Last updated: {new Date().toLocaleTimeString()}
           </p>
         </div>
