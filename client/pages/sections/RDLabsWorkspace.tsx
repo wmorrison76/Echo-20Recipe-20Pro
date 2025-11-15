@@ -226,6 +226,14 @@ function RDLabsWorkspaceContent() {
                 <CheckCircle className="h-4 w-4" />
                 AI Validate
               </TabsTrigger>
+              <TabsTrigger value="ai-sop" className="gap-2 bg-gradient-to-r from-emerald-500/10 to-teal-500/10">
+                <FileText className="h-4 w-4" />
+                AI SOP
+              </TabsTrigger>
+              <TabsTrigger value="ai-production" className="gap-2 bg-gradient-to-r from-amber-500/10 to-orange-500/10">
+                <AlertTriangle className="h-4 w-4" />
+                Production Check
+              </TabsTrigger>
               <TabsTrigger value="workbench" className="gap-2">
                 <TestTube className="h-4 w-4" />
                 Workbench
