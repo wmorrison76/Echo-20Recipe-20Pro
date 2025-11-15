@@ -21,3 +21,4 @@ export { AISOPGenerator } from "./AISOPGenerator";
 export { AIProductionReadiness } from "./AIProductionReadiness";
 export { AIRecommendations } from "./AIRecommendations";
 export { AITeamInsights } from "./AITeamInsights";
+export { AIPredictiveAnalytics } from "./AIPredictiveAnalytics";
