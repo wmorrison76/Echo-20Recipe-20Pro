@@ -19,3 +19,5 @@ export { AIExperimentDesigner } from "./AIExperimentDesigner";
 export { AIValidationPanel } from "./AIValidationPanel";
 export { AISOPGenerator } from "./AISOPGenerator";
 export { AIProductionReadiness } from "./AIProductionReadiness";
+export { AIRecommendations } from "./AIRecommendations";
+export { AITeamInsights } from "./AITeamInsights";
