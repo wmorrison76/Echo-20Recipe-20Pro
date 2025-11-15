@@ -1376,7 +1376,7 @@ const onFiles = async (files: File[]) => {
         </div>
         <div
           className={cn(
-            "rounded-xl border bg-background/85 p-4 shadow-sm transition-colors dark:bg-zinc-900/70 lg:col-span-2",
+            "rounded-xl border bg-background/85 p-3 shadow-sm transition-colors dark:bg-zinc-900/70 lg:col-span-2",
             bookDropActive &&
               "border-primary/60 bg-primary/10 shadow-[0_0_0_1px_rgba(56,189,248,0.35)]",
           )}
@@ -1394,8 +1394,8 @@ const onFiles = async (files: File[]) => {
             }
           }}
         >
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <div className="text-sm font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+            <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
               Library (Book PDF) Import
             </div>
             <div className="text-xs text-muted-foreground">
