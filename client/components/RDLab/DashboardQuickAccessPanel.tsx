@@ -251,12 +251,12 @@ export function DashboardQuickAccessPanel({
               return (
                 <div
                   key={milestone.experimentId}
-                  className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200/30 dark:border-cyan-500/10"
+                  className="p-3 bg-muted/50 dark:bg-slate-800/30 rounded-lg border border-border dark:border-slate-700"
                 >
-                  <p className="text-sm font-medium text-slate-900 dark:text-slate-200 line-clamp-1">
+                  <p className="text-sm font-medium text-foreground line-clamp-1">
                     {milestone.title}
                   </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {daysUntil > 0 ? `In ${daysUntil} days` : "Due soon"}
                   </p>
                 </div>
