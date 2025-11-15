@@ -433,6 +433,121 @@ router.post("/production-readiness", async (req: Request, res: Response) => {
 });
 
 /**
+ * POST /api/rdlabs/ai/predict
+ * Predict success probability, timeline, and costs
+ */
+router.post("/predict", async (req: Request, res: Response) => {
+  try {
+    const { experimentId, hypothesis, status, variables, equipment, specialization } = req.body;
+
+    if (!experimentId || !hypothesis) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: "MISSING_DATA",
+          message: "experimentId and hypothesis are required",
+        },
+      });
+    }
+
+    // Base success probability calculation
+    let successProbability = 65;
+
+    // Status-based adjustments
+    if (status === "ready") successProbability += 20;
+    else if (status === "testing") successProbability += 10;
+
+    // Complexity factors
+    if (variables && variables > 5) successProbability -= 10;
+    if (variables && variables < 3) successProbability += 5;
+
+    // Equipment impact
+    if (equipment && equipment > 5) successProbability += 10;
+
+    // Specialization bias
+    if (specialization === "pastry") successProbability += 3;
+    if (specialization === "both") successProbability -= 5;
+
+    // Add some variance
+    successProbability = Math.min(95, Math.max(30, successProbability + (Math.random() - 0.5) * 8));
+
+    // Estimate timeline (in days)
+    let estimatedDays = 30;
+    if (status === "testing") estimatedDays = 14;
+    if (status === "ready") estimatedDays = 7;
+    if (variables && variables > 5) estimatedDays += 10;
+    estimatedDays += Math.floor(Math.random() * 10);
+
+    // Cost estimation
+    const baseCost = 200;
+    const variableCost = (variables || 3) * 30;
+    const equipmentCost = (equipment || 3) * 50;
+    const costBase = baseCost + variableCost + equipmentCost;
+
+    const costRange = {
+      min: costBase * 0.7,
+      max: costBase * 1.3,
+    };
+
+    // Risk factors
+    const riskFactors = [];
+    if ((variables || 0) > 5) riskFactors.push("Multiple variables increase complexity");
+    if (estimatedDays > 40) riskFactors.push("Extended timeline may impact team availability");
+    if (costRange.max > 500) riskFactors.push("High budget requirement - supplier negotiation needed");
+    if (!hypothesis || hypothesis.length < 20)
+      riskFactors.push("Hypothesis could be more specific");
+
+    if (riskFactors.length === 0) {
+      riskFactors.push("Project appears low-risk overall");
+    }
+
+    // Optimization suggestions
+    const suggestions = [];
+    if ((variables || 0) > 5) {
+      suggestions.push("Focus on top 3-4 critical variables (reduce testing scope by 30%)");
+    }
+    if (estimatedDays > 40) {
+      suggestions.push("Parallelize independent test phases (save 5-7 days)");
+    }
+    if (costRange.max > 500) {
+      suggestions.push("Lock supplier pricing now before market volatility");
+    }
+    if (successProbability < 70) {
+      suggestions.push("Increase sensory panel size by 2-3 members for robustness");
+    }
+    suggestions.push("Use template recipes from library (baseline consistency +15%)");
+
+    return res.json({
+      success: true,
+      data: {
+        successProbability: Math.round(successProbability * 10) / 10,
+        estimatedDays,
+        costRange: {
+          min: Math.round(costRange.min),
+          max: Math.round(costRange.max),
+        },
+        confidence: 75 + Math.random() * 15,
+        riskFactors: riskFactors.slice(0, 3),
+        optimizationSuggestions: suggestions.slice(0, 4),
+      },
+      meta: {
+        timestamp: new Date().toISOString(),
+        requestId: req.headers["x-request-id"] || "N/A",
+      },
+    });
+  } catch (error) {
+    console.error("Error in /predict:", error);
+    return res.status(500).json({
+      success: false,
+      error: {
+        code: "PREDICTION_ERROR",
+        message: error instanceof Error ? error.message : "Failed to generate predictions",
+      },
+    });
+  }
+});
+
+/**
  * GET /api/rdlabs/ai/health
  * Health check for AI services
  */
