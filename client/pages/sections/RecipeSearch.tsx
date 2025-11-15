@@ -23,7 +23,6 @@ import {
   Star,
   LayoutGrid,
   Rows,
-  List,
   Trash2,
   RotateCcw,
   ExternalLink,
@@ -32,7 +31,6 @@ import {
   X,
   Package,
   Pencil,
-  Eye,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { axisOptions } from "@/lib/taxonomy";
