@@ -86,7 +86,7 @@ export function DashboardOverviewPanel({
           icon={Target}
           trend={metrics.experiments.successRate > 75 ? "up" : "neutral"}
           trendValue={metrics.experiments.successRate > 75 ? "+5%" : "baseline"}
-          bgGradient="from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/20"
+          bgGradient="from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900/40"
           iconColor="text-blue-600 dark:text-blue-400"
         />
 
