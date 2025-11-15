@@ -216,6 +216,14 @@ function RDLabsWorkspaceContent() {
                 <BarChart3 className="h-4 w-4" />
                 Analytics
               </TabsTrigger>
+              <TabsTrigger value="ai-design" className="gap-2 bg-gradient-to-r from-cyan-500/10 to-blue-500/10">
+                <Wand2 className="h-4 w-4" />
+                AI Design
+              </TabsTrigger>
+              <TabsTrigger value="ai-validate" className="gap-2 bg-gradient-to-r from-violet-500/10 to-purple-500/10">
+                <CheckCircle className="h-4 w-4" />
+                AI Validate
+              </TabsTrigger>
               <TabsTrigger value="workbench" className="gap-2">
                 <TestTube className="h-4 w-4" />
                 Workbench
