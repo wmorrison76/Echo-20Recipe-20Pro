@@ -369,9 +369,11 @@ function classifyIngredient(ingredient: string): IngredientType {
   ) {
     return "spice";
   }
-  if (["oil", "olive", "vegetable", "coconut", "butter"].some((w) =>
-    lower.includes(w)
-  )) {
+  if (
+    ["oil", "olive", "vegetable", "coconut", "ghee", "lard"].some((w) =>
+      lower.includes(w)
+    )
+  ) {
     return "oil";
   }
   return "other";
