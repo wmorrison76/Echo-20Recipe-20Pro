@@ -119,8 +119,8 @@ export function RecipeCard({
             <ResponsiveImage
               src={cover}
               alt={r.title}
-              width={110}
-              height={110}
+              width={85}
+              height={85}
               aspectRatio="1/1"
               blurhash={r.blurhash}
               className="rounded"
