@@ -170,8 +170,8 @@ function RDLabsWorkspaceContent() {
         {/* Left Panel - Context */}
         <div className="w-80 rdlabs-sidebar overflow-auto flex-shrink-0 flex flex-col">
           <div className="p-4 rdlabs-sidebar-section rdlabs-sidebar-header">
-            <h2 className="text-sm font-semibold text-accent dark:text-cyan-300 mb-1">Active Experiment</h2>
-            <p className="text-xs text-muted-foreground dark:text-slate-400">
+            <h2 className="text-sm font-semibold neon-cyan mb-1">Active Experiment</h2>
+            <p className="text-xs text-slate-400">
               {focusExperiment?.title || "Select an experiment"}
             </p>
           </div>
