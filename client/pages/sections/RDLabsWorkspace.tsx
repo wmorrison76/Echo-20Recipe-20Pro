@@ -86,59 +86,53 @@ function RDLabsWorkspaceContent() {
   }
 
   return (
-    <div className="w-full h-full flex flex-col rdlabs-container text-slate-100 relative">
-      {/* Professional Header */}
-      <div className="flex items-center justify-between px-6 py-4 rdlabs-header relative z-10">
+    <div className="w-full h-full flex flex-col bg-background dark:bg-slate-950">
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-border dark:border-slate-800">
         <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-lg border ${
+          <div className={`p-2 rounded-lg ${
             labMode === "pastry"
-              ? "bg-amber-100 dark:bg-rose-500/10 border-amber-300 dark:border-rose-500/20"
-              : "bg-cyan-100 dark:bg-cyan-500/10 border-cyan-300 dark:border-cyan-500/20"
+              ? "bg-rose-500/10 border border-rose-500/30"
+              : "bg-cyan-500/10 border border-cyan-500/30"
           }`}>
             {labMode === "pastry" ? (
-              <Sparkles className="h-5 w-5 text-amber-700 dark:text-rose-400" />
+              <Sparkles className="h-5 w-5 text-rose-500" />
             ) : (
-              <Beaker className="h-5 w-5 text-cyan-700 dark:text-cyan-400" />
+              <Beaker className="h-5 w-5 text-cyan-600" />
             )}
           </div>
           <div>
-            <h1 className={`text-2xl font-bold ${
-              labMode === "pastry" ? "neon-pink" : "neon-cyan"
-            }`}>
-              R&D Labs
-            </h1>
-            <p className="text-xs text-slate-400">
+            <h1 className="text-2xl font-bold text-foreground">R&D Labs</h1>
+            <p className="text-xs text-muted-foreground">
               {labMode === "pastry" ? "Pastry Research & Development" : "Culinary Research & Development"}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <div className="text-right text-sm">
-            <p className="text-slate-200 neon-cyan font-medium">{experimentsCount} Active Experiments</p>
-            <p className="text-slate-400 text-xs">Research in progress</p>
+            <p className="font-medium text-foreground">{experimentsCount} Active Experiments</p>
+            <p className="text-xs text-muted-foreground">Research in progress</p>
           </div>
           <div className="flex gap-2">
             <Button
               size="sm"
+              variant="outline"
               onClick={() => setLabMode(labMode === "pastry" ? "culinary" : "pastry")}
-              className={`gap-2 rdlabs-button-primary ${
-                labMode === "pastry"
-                  ? "neon-pink"
-                  : "neon-cyan"
-              }`}
+              className="gap-2"
               title={labMode === "pastry" ? "Switch to Culinary Lab" : "Switch to Pastry Lab"}
             >
               {labMode === "pastry" ? (
                 <Sparkles className="h-4 w-4" />
               ) : (
-                <Sparkles className="h-4 w-4" />
+                <Beaker className="h-4 w-4" />
               )}
               {labMode === "pastry" ? "Pastry Lab" : "Culinary Lab"}
             </Button>
             <Button
               size="sm"
+              variant="outline"
               onClick={() => setShowHelp(!showHelp)}
-              className="gap-2 rdlabs-button-primary neon-cyan"
+              className="gap-2"
               title="R&D Labs Guide"
             >
               <HelpCircle className="h-4 w-4" />
@@ -146,8 +140,9 @@ function RDLabsWorkspaceContent() {
             </Button>
             <Button
               size="sm"
+              variant="outline"
               onClick={() => setShowDashboard(true)}
-              className="gap-2 rdlabs-button-primary neon-cyan"
+              className="gap-2"
               title="Back to Dashboard"
             >
               <Home className="h-4 w-4" />
