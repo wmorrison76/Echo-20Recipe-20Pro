@@ -2571,29 +2571,6 @@ const onFiles = async (files: File[]) => {
         </div>
       </div>
 
-      {recipes.length > 0 && (
-        <div className="flex items-center gap-2 mb-3">
-          <div className="flex items-center gap-1 rounded-lg bg-muted p-0.5">
-            <button
-              onClick={() => setMode("cards")}
-              className={`p-1 rounded text-sm ${mode === "cards" ? "bg-background shadow" : "text-foreground/70 hover:text-foreground"}`}
-              title="Card view"
-              aria-label="Card view"
-            >
-              <LayoutGrid size={16} />
-            </button>
-            <button
-              onClick={() => setMode("grid4")}
-              className={`p-1 rounded text-sm ${mode === "grid4" ? "bg-background shadow" : "text-foreground/70 hover:text-foreground"}`}
-              title="Compact grid view"
-              aria-label="Compact grid view"
-            >
-              <Rows size={16} />
-            </button>
-          </div>
-        </div>
-      )}
-
       {recipes.length === 0 ? (
         <div className="rounded-md border p-6 text-center text-sm text-muted-foreground">
           No recipes yet. Drop files above or import from URL.
