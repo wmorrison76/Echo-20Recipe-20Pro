@@ -70,20 +70,40 @@ export async function textToSpeech(
   }
 
   try {
+    // Ensure all parameters are properly typed primitives
+    const stability = typeof options.stability === "number" ? options.stability : DEFAULT_STABILITY;
+    const similarityBoost = typeof options.similarityBoost === "number" ? options.similarityBoost : DEFAULT_SIMILARITY_BOOST;
+    const speakerBoost = typeof options.speakerBoost === "boolean" ? options.speakerBoost : true;
+
     const requestBody = {
-      text: trimmedText,
-      voiceId,
-      stability: options.stability ?? DEFAULT_STABILITY,
-      similarityBoost: options.similarityBoost ?? DEFAULT_SIMILARITY_BOOST,
-      speakerBoost: options.speakerBoost ?? true,
+      text: String(trimmedText),
+      voiceId: String(voiceId),
+      stability: Number(stability),
+      similarityBoost: Number(similarityBoost),
+      speakerBoost: Boolean(speakerBoost),
     };
+
+    let jsonBody: string;
+    try {
+      jsonBody = JSON.stringify(requestBody);
+    } catch (stringifyErr) {
+      console.error("Failed to stringify request body:", {
+        error: stringifyErr,
+        requestBody,
+        textType: typeof trimmedText,
+        textLength: String(trimmedText).length,
+      });
+      throw new Error(
+        `Failed to serialize text-to-speech request: ${stringifyErr instanceof Error ? stringifyErr.message : String(stringifyErr)}`
+      );
+    }
 
     const response = await fetch(`/api/elevenlabs/text-to-speech`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(requestBody),
+      body: jsonBody,
     });
 
     if (!response.ok) {
