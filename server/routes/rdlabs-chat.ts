@@ -344,6 +344,114 @@ If no clear steps can be extracted, return an empty array: []`;
 );
 
 /**
+ * POST /api/rdlabs/whiteboard/init
+ * Initialize whiteboard with project data extracted from conversation
+ */
+router.post(
+  "/api/rdlabs/whiteboard/init",
+  async (req: Request, res: Response) => {
+    try {
+      const { projectName, context, track, mode } = req.body;
+
+      if (!projectName || !context) {
+        return res.status(400).json({
+          success: false,
+          message: "projectName and context are required",
+        });
+      }
+
+      const initPrompt = `You are a scientific lab notebook assistant. Based on a culinary R&D conversation, create a structured whiteboard initialization with entries.
+
+Conversation context:
+"""
+${context}
+"""
+
+Generate a JSON response with this exact structure:
+{
+  "entries": [
+    {
+      "type": "hypothesis",
+      "content": "Brief research hypothesis or goal derived from the conversation"
+    },
+    {
+      "type": "observation",
+      "content": "Key observation or insight from the discussion"
+    }
+  ]
+}
+
+Rules:
+- Return 2-3 entries max (hypothesis is first)
+- Type can be: hypothesis, step, observation, measurement, note
+- Content should be concise and actionable
+- Base everything on the conversation context
+- Return ONLY valid JSON`;
+
+      const response = await callOpenAI([
+        {
+          role: "user",
+          content: initPrompt,
+        },
+      ]);
+
+      // Parse the response
+      let entries = [];
+      try {
+        const jsonMatch = response.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          entries = parsed.entries || [];
+        }
+      } catch (parseError) {
+        console.warn("Failed to parse whiteboard init JSON", {
+          error: parseError,
+          response,
+        });
+      }
+
+      // If parsing failed, create default entries
+      if (entries.length === 0) {
+        entries = [
+          {
+            type: "hypothesis",
+            content: `Research and develop ${projectName} for ${mode} ${track}`,
+          },
+          {
+            type: "observation",
+            content: "Lab initialized and ready for experimentation",
+          },
+        ];
+      }
+
+      res.json({
+        success: true,
+        entries,
+        meta: {
+          timestamp: new Date().toISOString(),
+          projectName,
+          track,
+          mode,
+        },
+      });
+    } catch (error) {
+      console.error("Whiteboard init endpoint error:", error);
+      res.json({
+        success: true,
+        entries: [
+          {
+            type: "hypothesis",
+            content: "Research project initialized",
+          },
+        ],
+        message:
+          error instanceof Error ? error.message : "Using default whiteboard",
+      });
+    }
+  },
+);
+
+/**
  * GET /api/rdlabs/chat/health
  * Health check for chat service
  */
