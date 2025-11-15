@@ -70,6 +70,9 @@ export function EchoChatInterface({
     /enter the lab/i,
     /start an experiment/i,
     /open the lab/i,
+    /(?:let'?s\s+)?go\s+(?:to\s+)?(?:the\s+)?lab/i,
+    /go to the lab/i,
+    /let's go to lab/i,
   ];
 
   const detectLabTrigger = (text: string): string | null => {
