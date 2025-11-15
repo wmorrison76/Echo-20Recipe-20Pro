@@ -361,24 +361,24 @@ function RDLabsWorkspaceContent() {
 
               <TabsContent value="tools" className="m-0">
                 <div className="grid grid-cols-2 gap-6 p-6">
-                    <div className="col-span-1">
-                      <h3 className="text-lg font-semibold text-cyan-300 mb-4">Templates</h3>
-                      <ExperimentTemplates />
+                  <div className="col-span-1">
+                    <h3 className="text-lg font-semibold mb-4 text-foreground">Templates</h3>
+                    <ExperimentTemplates />
+                  </div>
+                  <div className="col-span-1 space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-4 text-foreground">Collaboration</h3>
+                      <CollaborationPanel />
                     </div>
-                    <div className="col-span-1 space-y-6">
-                      <div>
-                        <h3 className="text-lg font-semibold text-cyan-300 mb-4">Collaboration</h3>
-                        <CollaborationPanel />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-cyan-300 mb-4">Recipe Linking</h3>
-                        <RecipeLinkingPanel />
-                      </div>
+                    <div>
+                      <h3 className="text-lg font-semibold mb-4 text-foreground">Recipe Linking</h3>
+                      <RecipeLinkingPanel />
                     </div>
-                    <div className="col-span-2">
-                      <h3 className="text-lg font-semibold text-cyan-300 mb-4">Data Management</h3>
-                      <ExportImport />
-                    </div>
+                  </div>
+                  <div className="col-span-2">
+                    <h3 className="text-lg font-semibold mb-4 text-foreground">Data Management</h3>
+                    <ExportImport />
+                  </div>
                 </div>
               </TabsContent>
             </div>
@@ -386,10 +386,10 @@ function RDLabsWorkspaceContent() {
         </div>
 
         {/* Right Panel - Session Info & Insights */}
-        <div className="w-80 rdlabs-right-panel overflow-auto flex-shrink-0 flex flex-col">
-          <div className="p-4 rdlabs-sidebar-section rdlabs-sidebar-header">
-            <h2 className="text-sm font-semibold neon-cyan mb-1">Session Data</h2>
-            <p className="text-xs text-slate-400">Active experiment metrics</p>
+        <div className="w-80 border-l border-border dark:border-slate-800 overflow-auto flex-shrink-0 flex flex-col bg-muted/50 dark:bg-slate-900/50">
+          <div className="p-4 border-b border-border dark:border-slate-800">
+            <h2 className="text-sm font-semibold mb-1 text-foreground">Session Data</h2>
+            <p className="text-xs text-muted-foreground">Active experiment metrics</p>
           </div>
           <div className="flex-1 overflow-auto p-4 space-y-6">
             {focusExperiment && (
@@ -404,9 +404,9 @@ function RDLabsWorkspaceContent() {
                 insights={store.insights}
               />
             )}
-            <div className="rdlabs-divider my-4"></div>
+            <div className="border-t border-border dark:border-slate-700 my-4"></div>
             <div className="pt-4">
-              <h3 className="text-sm font-semibold neon-cyan mb-3">Insights</h3>
+              <h3 className="text-sm font-semibold mb-3 text-foreground">Insights</h3>
               <InsightsPanel />
             </div>
           </div>
