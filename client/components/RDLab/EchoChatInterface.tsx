@@ -153,6 +153,13 @@ What are you thinking about today? A new technique? A flavor combination? Produc
 
       const data = await response.json();
 
+      // Validate response data
+      if (!data.message || typeof data.message !== "string") {
+        throw new Error(
+          `Invalid response format: expected string message, got ${typeof data.message}`,
+        );
+      }
+
       const assistantMessage: Message = {
         id: `msg_${Date.now()}`,
         role: "assistant",
@@ -170,7 +177,12 @@ What are you thinking about today? A new technique? A flavor combination? Produc
 
       // Speak the response if voice is enabled
       // Skip TTS for very long responses to avoid timeout
-      if (voiceEnabled && assistantMessage.content.length < 2000) {
+      if (
+        voiceEnabled &&
+        assistantMessage.content &&
+        assistantMessage.content.length > 0 &&
+        assistantMessage.content.length < 2000
+      ) {
         try {
           await speakAssistantMessage(assistantMessage.content);
         } catch (speakErr) {
