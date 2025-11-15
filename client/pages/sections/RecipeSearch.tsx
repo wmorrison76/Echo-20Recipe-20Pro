@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { useAppData } from "@/context/AppDataContext";
 import { Dropzone } from "@/components/Dropzone";
 import { Button } from "@/components/ui/button";
+import { updateRecipeInsights } from "@/lib/recipe-insights-storage";
 import {
   Dialog,
   DialogContent,
