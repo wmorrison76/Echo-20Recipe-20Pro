@@ -60,6 +60,43 @@ const LoadingFallback = () => (
     <div>Loading...</div>
   </div>
 );
+
+const ErrorFallback = ({ error }: { error: Error }) => (
+  <div
+    role="alert"
+    style={{
+      padding: 16,
+      margin: 16,
+      border: "1px solid #ff6b6b",
+      borderRadius: 8,
+      backgroundColor: "#ffe0e0",
+      color: "#c92a2a",
+    }}
+  >
+    <h2 style={{ marginTop: 0 }}>Failed to load page</h2>
+    <p>
+      There was an error loading this page. Please try refreshing.
+    </p>
+    <details style={{ marginTop: 12, whiteSpace: "pre-wrap", fontSize: "12px" }}>
+      <summary>Error details</summary>
+      {error?.message || String(error)}
+    </details>
+    <button
+      onClick={() => window.location.reload()}
+      style={{
+        marginTop: 12,
+        padding: "8px 16px",
+        backgroundColor: "#c92a2a",
+        color: "white",
+        border: "none",
+        borderRadius: 4,
+        cursor: "pointer",
+      }}
+    >
+      Refresh Page
+    </button>
+  </div>
+);
 import { AppDataProvider } from "@/context/AppDataContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { YieldProvider } from "@/context/YieldContext";
