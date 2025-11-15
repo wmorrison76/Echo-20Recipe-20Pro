@@ -393,8 +393,8 @@ function RDLabsWorkspaceContent() {
         {/* Right Panel - Session Info & Insights */}
         <div className="w-80 rdlabs-right-panel overflow-auto flex-shrink-0 flex flex-col">
           <div className="p-4 rdlabs-sidebar-section rdlabs-sidebar-header">
-            <h2 className="text-sm font-semibold text-accent dark:text-cyan-300 mb-1">Session Data</h2>
-            <p className="text-xs text-muted-foreground dark:text-slate-400">Active experiment metrics</p>
+            <h2 className="text-sm font-semibold neon-cyan mb-1">Session Data</h2>
+            <p className="text-xs text-slate-400">Active experiment metrics</p>
           </div>
           <div className="flex-1 overflow-auto p-4 space-y-6">
             {focusExperiment && (
