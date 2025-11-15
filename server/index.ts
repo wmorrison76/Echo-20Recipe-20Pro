@@ -9,6 +9,7 @@ import { proxyRecipeImage } from "./routes/recipeImage";
 import { recipeDeploymentRouter } from "./routes/recipe-deployment";
 import { rdLabsRouter } from "./routes/rdlabs";
 import { rdLabsAdvancedRouter } from "./routes/rdlabs-advanced";
+import rdLabsAIRouter from "./routes/rdlabs-ai";
 import {
   proxyRecipeImage as proxyImageOptimized,
   serveRecipeImage,
