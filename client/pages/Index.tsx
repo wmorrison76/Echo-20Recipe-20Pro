@@ -52,11 +52,12 @@ import {
 
 function LanguageSelector() {
   const { language, setLanguage, options } = useLanguage();
+  const currentOption = options.find(opt => opt.code === language);
 
   return (
     <Select value={language} onValueChange={setLanguage}>
       <SelectTrigger className="w-[140px]">
-        <SelectValue />
+        <SelectValue placeholder={currentOption ? `${currentOption.flag} ${currentOption.label}` : "Language"} />
       </SelectTrigger>
       <SelectContent>
         {options.map((option) => (
