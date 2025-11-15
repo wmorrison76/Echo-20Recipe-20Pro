@@ -1195,15 +1195,12 @@ const onFiles = async (files: File[]) => {
                 : undefined
           }
         >
-          <div className="flex flex-col items-center gap-2">
-            <div className="text-2xl font-semibold uppercase tracking-[0.55em] text-primary">
+          <div className="flex flex-col items-center gap-1">
+            <div className="text-lg font-semibold uppercase tracking-[0.4em] text-primary">
               {t("recipes.recipeDrop.title", "Recipe Drop")}
             </div>
-            <div className="text-sm font-medium text-foreground">
+            <div className="text-xs font-medium text-foreground">
               {t("recipes.recipeDrop.description", "Drag or upload recipes and images (Word, PDF, Excel, HTML, JSON, ZIP).")}
-            </div>
-            <div className="text-xs text-muted-foreground">
-              {t("recipes.recipeDrop.autoDetect", "We auto-detect titles, ingredients, yields, and instructions.")}
             </div>
           </div>
         </Dropzone>
