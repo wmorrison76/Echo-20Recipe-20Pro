@@ -411,8 +411,9 @@ function RDLabsWorkspaceContent() {
                 insights={store.insights}
               />
             )}
-            <div className="border-t border-accent/20 dark:border-cyan-500/10 pt-4">
-              <h3 className="text-sm font-semibold text-accent dark:text-cyan-300 mb-3">Insights</h3>
+            <div className="rdlabs-divider my-4"></div>
+            <div className="pt-4">
+              <h3 className="text-sm font-semibold neon-cyan mb-3">Insights</h3>
               <InsightsPanel />
             </div>
           </div>
