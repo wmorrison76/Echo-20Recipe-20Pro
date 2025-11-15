@@ -31,8 +31,8 @@ export default function RDLabsWorkspace() {
 
 function RDLabsWorkspaceContent() {
   const store = useOptionalRDLabStore();
-  const [showDashboard, setShowDashboard] = useState(true);
-  const [activeTab, setActiveTab] = useState("workbench");
+  const [showDashboard, setShowDashboard] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showHelp, setShowHelp] = useState(false);
   const [labMode, setLabMode] = useState<"culinary" | "pastry">("culinary");
