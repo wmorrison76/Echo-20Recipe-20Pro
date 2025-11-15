@@ -74,7 +74,7 @@ export async function storeRecipeVector(
 }
 
 /**
- * Search for similar recipes
+ * Search for similar recipes (works with Pinecone or pgvector)
  */
 export async function searchSimilarRecipes(
   recipeText: string,
@@ -87,7 +87,7 @@ export async function searchSimilarRecipes(
   }
 ): Promise<{ success: boolean; matches: RecipeSimilarityMatch[]; error?: string }> {
   try {
-    const response = await fetch("/api/pinecone/recipes/search", {
+    const response = await fetch("/api/vector/recipes/search", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
