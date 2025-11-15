@@ -458,6 +458,20 @@ function RDLabsWorkspaceContent() {
           </div>
         </div>
       </div>
+
+      {/* Lab Whiteboard */}
+      {hasEnteredLab && projectContext && (
+        <LabWhiteboard
+          isVisible={showWhiteboard}
+          projectName={projectContext.projectName}
+          onClose={() => setShowWhiteboard(false)}
+          projectContext={{
+            conversation: projectContext.conversation,
+            track: recipeTrack,
+            mode: labMode,
+          }}
+        />
+      )}
     </div>
   );
 }
