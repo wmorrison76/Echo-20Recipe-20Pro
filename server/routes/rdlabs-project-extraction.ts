@@ -111,20 +111,20 @@ Please provide a structured JSON response with the extracted information.`;
       let extracted: ExtractionResponse;
       try {
         // Try to extract JSON from the response
-        const jsonMatch = content.text.match(/\{[\s\S]*\}/);
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           extracted = JSON.parse(jsonMatch[0]);
         } else {
           // Fallback: create basic extraction
           extracted = {
             projectName: projectName,
-            description: content.text.substring(0, 200),
+            description: content.substring(0, 200),
             objectives: ["Research and experimentation"],
             keyTechniques: [],
             ingredients: [],
             estimatedDuration: "To be determined",
             difficulty: "intermediate",
-            notes: content.text,
+            notes: content,
           };
         }
       } catch (parseErr) {
