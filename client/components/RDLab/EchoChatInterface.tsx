@@ -168,6 +168,17 @@ What are you thinking about today? A new technique? A flavor combination? Produc
               </div>
             </div>
             <div className="flex gap-2">
+              {messages.length > 1 && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setShowClearConfirm(true)}
+                  title="Clear conversation"
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
               <Button
                 size="sm"
                 variant="ghost"
