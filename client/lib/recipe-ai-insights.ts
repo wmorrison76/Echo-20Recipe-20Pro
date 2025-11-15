@@ -222,20 +222,33 @@ type IngredientType =
 
 function parseIngredientsWithQuantities(ingredients: string[]): ParsedIngredient[] {
   return ingredients.map((ing) => {
-    const match = ing.match(/^([\d./]+)\s*(\w+)\s+(.+)$/);
+    const match = ing.match(/^([\d.\s/]+)\s*(\w+)\s+(.+)$/);
     let amount: number | undefined;
     let unit: string | undefined;
     let name = ing;
 
     if (match) {
-      // Parse amount (handle fractions like 1/2, 1 1/2)
-      const amountStr = match[1];
-      if (amountStr.includes("/")) {
-        const parts = amountStr.split("/").map(Number);
-        amount = parts[0] / parts[1];
+      const amountStr = match[1].trim();
+      const parts = amountStr.split(/\s+/).filter(p => p);
+
+      // Handle mixed numbers like "1 1/2"
+      if (parts.length === 2) {
+        const whole = parseFloat(parts[0]);
+        const fraction = parts[1].split("/").map(Number);
+        if (fraction.length === 2 && !isNaN(whole) && !isNaN(fraction[0]) && !isNaN(fraction[1])) {
+          amount = whole + fraction[0] / fraction[1];
+        } else {
+          amount = parseFloat(amountStr);
+        }
+      } else if (parts[0].includes("/")) {
+        const fraction = parts[0].split("/").map(Number);
+        if (fraction.length === 2 && !isNaN(fraction[0]) && !isNaN(fraction[1])) {
+          amount = fraction[0] / fraction[1];
+        }
       } else {
         amount = parseFloat(amountStr);
       }
+
       unit = match[2];
       name = match[3];
     }
