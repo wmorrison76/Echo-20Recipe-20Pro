@@ -20,18 +20,20 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  Star,
-  LayoutGrid,
-  Rows,
-  Trash2,
-  RotateCcw,
-  ExternalLink,
-  Search,
-  Save,
-  X,
-  Package,
-  Pencil,
-} from "lucide-react";
+    Star,
+    LayoutGrid,
+    Rows,
+    List,
+    Eye,
+    Trash2,
+    RotateCcw,
+    ExternalLink,
+    Search,
+    Save,
+    X,
+    Package,
+    Pencil,
+  } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { axisOptions } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
@@ -466,7 +468,7 @@ export default function RecipeSearchSection() {
 
 
   const [status, setStatus] = useState<string | null>(null);
-  const [mode, setMode] = useState<"cards" | "grid4">("cards");
+  const [mode, setMode] = useState<"cards" | "grid4" | "rows">("cards");
   const [query, setQuery] = useState("");
   const [errors, setErrors] = useState<{ file: string; error: string }[]>([]);
   const [url, setUrl] = useState("");
@@ -1115,26 +1117,56 @@ const onFiles = async (files: File[]) => {
       data-echo-key="page:recipes:search"
     >
       <div className="flex flex-wrap items-center gap-2 mb-4">
-        <div className="flex items-center gap-0.5 rounded-lg bg-muted p-0.5">
-          {(
-            [
-              "all",
-              "recent",
-              "top",
-              "favorites",
-              "uncategorized",
-              "global",
-              "trash",
-            ] as Cat[]
-          ).map((c) => (
-            <button
-              key={c}
-              onClick={() => setCat(c)}
-              className={`px-2 py-0.5 rounded-md text-xs ${cat === c ? "bg-background shadow" : "text-foreground/80"}`}
-            >
-              {t(`recipes.filter.${c}`, c.replace(/^[a-z]/, (s) => s.toUpperCase()))}
-            </button>
-          ))}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-0.5 rounded-lg bg-muted p-0.5">
+            {(
+              [
+                "all",
+                "recent",
+                "top",
+                "favorites",
+                "uncategorized",
+                "global",
+                "trash",
+              ] as Cat[]
+            ).map((c) => (
+              <button
+                key={c}
+                onClick={() => setCat(c)}
+                className={`px-2 py-0.5 rounded-md text-xs ${cat === c ? "bg-background shadow" : "text-foreground/80"}`}
+              >
+                {t(`recipes.filter.${c}`, c.replace(/^[a-z]/, (s) => s.toUpperCase()))}
+              </button>
+            ))}
+          </div>
+          {recipes.length > 0 && (
+            <div className="flex items-center gap-1 rounded-lg bg-muted p-0.5">
+              <button
+                onClick={() => setMode("cards")}
+                className={`p-1 rounded text-sm ${mode === "cards" ? "bg-background shadow" : "text-foreground/70 hover:text-foreground"}`}
+                title="Card view"
+                aria-label="Card view"
+              >
+                <LayoutGrid size={16} />
+              </button>
+              <button
+                onClick={() => setMode("grid4")}
+                className={`p-1 rounded text-sm ${mode === "grid4" ? "bg-background shadow" : "text-foreground/70 hover:text-foreground"}`}
+                title="Compact grid view"
+                aria-label="Compact grid view"
+              >
+                <Rows size={16} />
+              </button>
+              <button
+                onClick={() => setMode("rows")}
+                className={`p-1 rounded text-sm ${mode === "rows" ? "bg-background shadow" : "text-foreground/70 hover:text-foreground"}`}
+                title="List view"
+                aria-label="List view"
+              >
+                <List size={16} />
+              </button>
+            </div>
+          )}
         </div>
         <div className="ml-auto flex flex-wrap items-center gap-2">
           <Button
