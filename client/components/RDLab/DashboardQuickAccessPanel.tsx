@@ -138,7 +138,7 @@ export function DashboardQuickAccessPanel({
           </div>
         ) : (
           <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200/50 dark:border-green-500/30 rounded-lg text-center">
-            <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400 mx-auto mb-2" />
+            <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
             <p className="text-sm text-green-700 dark:text-green-300">
               No supply risks detected
             </p>
