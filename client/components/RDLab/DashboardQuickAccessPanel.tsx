@@ -39,10 +39,37 @@ export function DashboardQuickAccessPanel({
     }
   }, [experiments, period]);
 
+  // Empty state
+  if (!experiments || experiments.length === 0) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
+        <Card className="border border-border dark:border-slate-800 bg-card p-6 lg:col-span-3">
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <Beaker className="h-12 w-12 text-muted-foreground opacity-50 mb-4" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">
+              Ready to start experimenting?
+            </h3>
+            <p className="text-sm text-muted-foreground mb-6">
+              Create your first experiment to unlock the full power of R&D Labs
+            </p>
+            <Button
+              onClick={onNewExperiment}
+              className="gap-2"
+              size="sm"
+            >
+              <PlusCircle className="h-4 w-4" />
+              Create First Experiment
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
       {/* Quick Actions */}
-      <Card className="border-slate-200/50 dark:border-cyan-500/20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm p-6 lg:col-span-1">
+      <Card className="border border-border dark:border-slate-800 bg-card p-6 lg:col-span-1">
         <h3 className="text-lg font-semibold text-slate-900 dark:text-cyan-200 mb-4">
           Quick Actions
         </h3>
