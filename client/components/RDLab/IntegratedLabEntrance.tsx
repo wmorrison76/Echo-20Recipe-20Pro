@@ -137,49 +137,117 @@ export function IntegratedLabEntrance({
   const handleCloseLab = () => {
     setDoorsOpen(false);
     saveDoorsOpen(false);
+    setTransitionState("idle");
+    setCurrentProjectId(null);
+    setChatOpacity(1);
+    setWhiteboardOpacity(0);
+    setWhiteboardVisible(false);
   };
 
   if (!currentProjectId) {
-    // Initial chat interface
+    // Initial chat interface - always shows during idle state
     return (
       <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-black">
-        <EchoChatInterface onLabTrigger={handleLabTrigger} />
+        <div
+          style={{
+            opacity: chatOpacity,
+            transition: "opacity 0.3s ease-out",
+          }}
+        >
+          <EchoChatInterface onLabTrigger={handleLabTrigger} />
+        </div>
       </div>
     );
   }
 
-  // Active lab with doors and whiteboard
+  // During and after transition - composite view
   return (
     <div className="w-full h-full relative bg-gradient-to-br from-slate-950 via-slate-900 to-black overflow-hidden">
-      {/* Chat interface always visible on sides */}
-      <div className="absolute bottom-4 left-4 z-30 max-w-xs max-h-96 rounded-lg shadow-2xl bg-slate-900/90 border border-slate-700/50 backdrop-blur-md overflow-hidden">
-        <div className="p-4 flex flex-col h-96">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-slate-100">ECHO Chat</h3>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={handleCloseLab}
-              className="text-slate-400 hover:text-slate-200"
-            >
-              <X className="h-4 w-4" />
-            </Button>
+      {/* Chat interface with dissolution animation */}
+      {chatOpacity > 0 && (
+        <div
+          className="absolute bottom-4 left-4 z-30 max-w-xs max-h-96 rounded-lg shadow-2xl bg-slate-900/90 border border-slate-700/50 backdrop-blur-md overflow-hidden"
+          style={{
+            opacity: chatOpacity,
+            transition: "opacity 0.6s ease-in-out",
+            pointerEvents: chatOpacity > 0 ? "auto" : "none",
+          }}
+        >
+          <div className="p-4 flex flex-col h-96">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold text-slate-100">ECHO Chat</h3>
+              {transitionState === "idle" && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleCloseLab}
+                  className="text-slate-400 hover:text-slate-200"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+            {transitionState === "idle" && (
+              <EchoChatInterface onLabTrigger={handleLabTrigger} />
+            )}
           </div>
-          <EchoChatInterface onLabTrigger={handleLabTrigger} />
         </div>
-      </div>
+      )}
+
+      {/* Preloading whiteboard - appears before doors open */}
+      {whiteboardVisible && transitionState !== "idle" && (
+        <div
+          className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none"
+          style={{
+            opacity: whiteboardOpacity,
+            transition: "opacity 0.3s ease-out",
+          }}
+        >
+          <div className="w-5/6 h-5/6 rounded-lg overflow-hidden">
+            <div className="w-full h-full bg-slate-900/80 border border-slate-700/50 rounded-lg p-6">
+              {isLoading ? (
+                <div className="flex items-center justify-center h-full text-slate-400">
+                  <span className="text-sm">Loading whiteboard...</span>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-bold text-amber-100">
+                      {sessionData?.projectName || "Lab Whiteboard"}
+                    </h2>
+                    <p className="text-xs text-amber-100/60">
+                      {sessionData?.entries?.length || 0} entries
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Sliding door panels with whiteboard */}
       <SlidingDoorPanels
         isOpen={doorsOpen}
-        onToggle={setDoorsOpen}
+        onToggle={(isOpen) => {
+          setDoorsOpen(isOpen);
+          if (!isOpen) {
+            handleCloseLab();
+          }
+        }}
         labMode="culinary"
       >
         <div className="w-full h-full flex items-center justify-center p-8">
           {isLoading ? (
             <div className="text-slate-400">Loading lab...</div>
           ) : (
-            <div className="w-full h-full flex flex-col gap-4">
+            <div
+              className="w-full h-full flex flex-col gap-4"
+              style={{
+                opacity: whiteboardOpacity,
+                transition: "opacity 0.4s ease-out",
+              }}
+            >
               {/* Top controls */}
               <div className="flex items-center justify-between px-6 py-4 bg-slate-900/50 rounded-lg border border-slate-700/30">
                 <div>
@@ -214,8 +282,8 @@ export function IntegratedLabEntrance({
         </div>
       </SlidingDoorPanels>
 
-      {/* Quick access toolbar - visible when doors closed */}
-      {!doorsOpen && (
+      {/* Quick access toolbar - visible when doors closed after transition */}
+      {!doorsOpen && transitionState === "idle" && (
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-40 bg-slate-900/80 border border-slate-700/50 rounded-lg p-4 backdrop-blur-md">
           <div className="text-center space-y-3">
             <p className="text-sm text-slate-300">Lab minimized</p>
