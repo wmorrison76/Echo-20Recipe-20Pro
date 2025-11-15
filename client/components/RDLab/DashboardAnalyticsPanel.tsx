@@ -32,10 +32,15 @@ export function DashboardAnalyticsPanel({
   period = "30d",
 }: DashboardAnalyticsPanelProps) {
   const { experiments } = useRDLabStore();
-  const metrics = useMemo(
-    () => calculateDashboardMetrics(experiments, period),
-    [experiments, period]
-  );
+
+  const metrics = useMemo(() => {
+    try {
+      return calculateDashboardMetrics(experiments || [], period);
+    } catch (error) {
+      console.error("Analytics dashboard metrics error:", error);
+      return calculateDashboardMetrics([], period);
+    }
+  }, [experiments, period]);
 
   // Prepare chart data
   const pipelineData = useMemo(() => {
