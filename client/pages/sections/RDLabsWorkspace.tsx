@@ -209,6 +209,20 @@ function RDLabsWorkspaceContent() {
             </p>
           </div>
           <div className="flex gap-2">
+            {hasEnteredLab && (
+              <Button
+                size="sm"
+                variant={showWhiteboard ? "default" : "outline"}
+                onClick={() => setShowWhiteboard(!showWhiteboard)}
+                className="gap-2"
+                title="Lab Whiteboard"
+              >
+                <Notebook className="h-4 w-4" />
+                <span className="hidden sm:inline">
+                  {showWhiteboard ? "Hide" : "Show"} Whiteboard
+                </span>
+              </Button>
+            )}
             <Button
               size="sm"
               variant="outline"
