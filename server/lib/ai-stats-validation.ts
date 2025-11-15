@@ -101,7 +101,7 @@ function calculateSummary(data: number[]): StatisticalSummary {
  */
 function detectOutliers(
   data: number[],
-  summary: StatisticalSummary
+  summary: StatisticalSummary,
 ): OutlierAnalysis {
   const outliers: number[] = [];
   const outlierIndices: number[] = [];
@@ -131,7 +131,7 @@ function detectOutliers(
  */
 function calculateCohensD(
   results: StatisticalSummary,
-  baseline: StatisticalSummary
+  baseline: StatisticalSummary,
 ): string {
   // Pooled standard deviation
   const n1 = results.count;
@@ -139,7 +139,7 @@ function calculateCohensD(
   const sp = Math.sqrt(
     ((n1 - 1) * Math.pow(results.standardDeviation, 2) +
       (n2 - 1) * Math.pow(baseline.standardDeviation, 2)) /
-      (n1 + n2 - 2)
+      (n1 + n2 - 2),
   );
 
   // Cohen's d
@@ -154,9 +154,7 @@ function calculateCohensD(
 /**
  * Calculate reproducibility score based on CV and consistency
  */
-function calculateReproducibility(
-  data: number[]
-): ReproducibilityScore {
+function calculateReproducibility(data: number[]): ReproducibilityScore {
   const summary = calculateSummary(data);
   const cv = summary.coefficientOfVariation;
 
@@ -197,12 +195,15 @@ function calculateReproducibility(
 export function validateExperimentalResults(
   results: number[],
   baseline: number[],
-  sampleSize_minimum: number = 3
+  sampleSize_minimum: number = 3,
 ): ValidationDetails & { isValid: boolean; confidenceScore: number } {
   // Validate input
-  if (results.length < sampleSize_minimum || baseline.length < sampleSize_minimum) {
+  if (
+    results.length < sampleSize_minimum ||
+    baseline.length < sampleSize_minimum
+  ) {
     throw new Error(
-      `Insufficient data: need minimum ${sampleSize_minimum} samples, got ${results.length} results and ${baseline.length} baseline`
+      `Insufficient data: need minimum ${sampleSize_minimum} samples, got ${results.length} results and ${baseline.length} baseline`,
     );
   }
 
@@ -221,9 +222,10 @@ export function validateExperimentalResults(
   const pooledStd = Math.sqrt(
     ((results.length - 1) * Math.pow(resultsSummary.standardDeviation, 2) +
       (baseline.length - 1) * Math.pow(baselineSummary.standardDeviation, 2)) /
-      (results.length + baseline.length - 2)
+      (results.length + baseline.length - 2),
   );
-  const standardError = pooledStd * Math.sqrt(1 / results.length + 1 / baseline.length);
+  const standardError =
+    pooledStd * Math.sqrt(1 / results.length + 1 / baseline.length);
   const tStat = (resultsSummary.mean - baselineSummary.mean) / standardError;
 
   // 95% Confidence Interval
@@ -266,8 +268,13 @@ export function validateExperimentalResults(
       mean_difference: meanDifference,
       percent_difference: percentDifference,
       tStatistic: tStat,
-      effectSize_cohens_d: Math.abs(tStat / Math.sqrt(results.length + baseline.length)), // Approximation
-      effectSize_interpretation: calculateCohensD(resultsSummary, baselineSummary),
+      effectSize_cohens_d: Math.abs(
+        tStat / Math.sqrt(results.length + baseline.length),
+      ), // Approximation
+      effectSize_interpretation: calculateCohensD(
+        resultsSummary,
+        baselineSummary,
+      ),
       pooledStandardError: standardError,
       upperCI_95: resultsSummary.mean + ci_margin,
       lowerCI_95: resultsSummary.mean - ci_margin,
@@ -275,10 +282,17 @@ export function validateExperimentalResults(
     reproducibility,
     assumptions: {
       normality_check:
-        results.length < 5 ? "Unable to assess (small sample)" : "Assumed normal (large n)",
+        results.length < 5
+          ? "Unable to assess (small sample)"
+          : "Assumed normal (large n)",
       equal_variance:
-        Math.abs(resultsSummary.standardDeviation - baselineSummary.standardDeviation) /
-          Math.max(resultsSummary.standardDeviation, baselineSummary.standardDeviation) <
+        Math.abs(
+          resultsSummary.standardDeviation - baselineSummary.standardDeviation,
+        ) /
+          Math.max(
+            resultsSummary.standardDeviation,
+            baselineSummary.standardDeviation,
+          ) <
         0.5,
     },
     isValid,
@@ -293,7 +307,7 @@ export function estimateTimeline(
   similarExperiments: Array<{
     title: string;
     daysToCompletion: number;
-  }>
+  }>,
 ): {
   estimatedDays: number;
   range: { min: number; max: number };
@@ -315,7 +329,7 @@ export function estimateTimeline(
   const median = sorted[Math.floor(sorted.length / 2)];
   const std =
     Math.sqrt(
-      days.reduce((sum, d) => sum + Math.pow(d - avg, 2), 0) / days.length
+      days.reduce((sum, d) => sum + Math.pow(d - avg, 2), 0) / days.length,
     ) || 0;
 
   return {
@@ -333,17 +347,25 @@ export function estimateTimeline(
  * Calculate cost impact based on ingredient volatility
  */
 export function calculateCostImpact(
-  ingredients: Array<{ name: string; costPer100g: number; volatilityPercent: number }>,
-  batchSize: number = 100 // grams
+  ingredients: Array<{
+    name: string;
+    costPer100g: number;
+    volatilityPercent: number;
+  }>,
+  batchSize: number = 100, // grams
 ): {
   estimatedCost: number;
   costRange: { min: number; max: number };
   volatilityLevel: "stable" | "moderate" | "high" | "critical";
   riskAssessment: string;
 } {
-  const totalCost = ingredients.reduce((sum, ing) => sum + ing.costPer100g, 0) * (batchSize / 100);
+  const totalCost =
+    ingredients.reduce((sum, ing) => sum + ing.costPer100g, 0) *
+    (batchSize / 100);
 
-  const volatilityRisk = Math.max(...ingredients.map((i) => i.volatilityPercent));
+  const volatilityRisk = Math.max(
+    ...ingredients.map((i) => i.volatilityPercent),
+  );
 
   let volatilityLevel: "stable" | "moderate" | "high" | "critical" = "stable";
   if (volatilityRisk < 5) volatilityLevel = "stable";
@@ -360,7 +382,8 @@ export function calculateCostImpact(
   if (volatilityLevel === "critical") {
     riskAssessment = "HIGH RISK: Lock in supplier pricing now or delay start";
   } else if (volatilityLevel === "high") {
-    riskAssessment = "MEDIUM-HIGH RISK: Negotiate volume discounts with suppliers";
+    riskAssessment =
+      "MEDIUM-HIGH RISK: Negotiate volume discounts with suppliers";
   } else if (volatilityLevel === "moderate") {
     riskAssessment = "MODERATE RISK: Monitor prices weekly";
   }

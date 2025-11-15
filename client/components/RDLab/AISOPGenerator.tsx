@@ -1,9 +1,15 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Loader2, FileText, Download, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Loader2,
+  FileText,
+  Download,
+  AlertTriangle,
+  CheckCircle2,
+} from "lucide-react";
 
 interface SOPResponse {
   title: string;
@@ -11,7 +17,12 @@ interface SOPResponse {
   safetyNotes: string[];
   ingredients: Array<{ item: string; amount: string; notes: string }>;
   equipment: string[];
-  procedure: Array<{ step: number; description: string; duration?: string; notes?: string }>;
+  procedure: Array<{
+    step: number;
+    description: string;
+    duration?: string;
+    notes?: string;
+  }>;
   qualityChecks: string[];
   storage: string;
   troubleshooting: Array<{ issue: string; solution: string }>;
@@ -19,43 +30,43 @@ interface SOPResponse {
 }
 
 export function AISOPGenerator() {
-  const [title, setTitle] = useState('');
-  const [hypothesis, setHypothesis] = useState('');
-  const [procedure, setProcedure] = useState('');
-  const [ingredientsInput, setIngredientsInput] = useState('');
-  const [equipmentInput, setEquipmentInput] = useState('');
-  const [successCriteriaInput, setSuccessCriteriaInput] = useState('');
+  const [title, setTitle] = useState("");
+  const [hypothesis, setHypothesis] = useState("");
+  const [procedure, setProcedure] = useState("");
+  const [ingredientsInput, setIngredientsInput] = useState("");
+  const [equipmentInput, setEquipmentInput] = useState("");
+  const [successCriteriaInput, setSuccessCriteriaInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [sop, setSOP] = useState<SOPResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleGenerate = async () => {
     if (!title.trim() || !hypothesis.trim() || !procedure.trim()) {
-      setError('Title, hypothesis, and procedure are required');
+      setError("Title, hypothesis, and procedure are required");
       return;
     }
 
     // Parse comma-separated lists
     const ingredients = ingredientsInput
-      .split(';')
+      .split(";")
       .map((line) => {
-        const [item, rest] = line.split(':');
-        const [amount, notes] = (rest || '').split('|');
+        const [item, rest] = line.split(":");
+        const [amount, notes] = (rest || "").split("|");
         return {
-          item: item?.trim() || '',
-          amount: amount?.trim() || '',
-          notes: notes?.trim() || '',
+          item: item?.trim() || "",
+          amount: amount?.trim() || "",
+          notes: notes?.trim() || "",
         };
       })
       .filter((ing) => ing.item);
 
     const equipment = equipmentInput
-      .split(',')
+      .split(",")
       .map((e) => e.trim())
       .filter(Boolean);
 
     const successCriteria = successCriteriaInput
-      .split(';')
+      .split(";")
       .map((c) => c.trim())
       .filter(Boolean);
 
@@ -64,9 +75,9 @@ export function AISOPGenerator() {
     setSOP(null);
 
     try {
-      const response = await fetch('/api/rdlabs/ai/sop', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/rdlabs/ai/sop", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: title.trim(),
           hypothesis: hypothesis.trim(),
@@ -80,13 +91,13 @@ export function AISOPGenerator() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error?.message || 'Failed to generate SOP');
+        throw new Error(errorData.error?.message || "Failed to generate SOP");
       }
 
       const { data } = await response.json();
       setSOP(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setIsLoading(false);
     }
@@ -104,44 +115,53 @@ Introduction:
 ${sop.introduction}
 
 SAFETY NOTES:
-${sop.safetyNotes.map((note) => `• ${note}`).join('\n')}
+${sop.safetyNotes.map((note) => `• ${note}`).join("\n")}
 
 INGREDIENTS:
 ${sop.ingredients
-  .map((ing) => `• ${ing.amount} ${ing.item}${ing.notes ? ` (${ing.notes})` : ''}`)
-  .join('\n')}
+  .map(
+    (ing) => `• ${ing.amount} ${ing.item}${ing.notes ? ` (${ing.notes})` : ""}`,
+  )
+  .join("\n")}
 
 EQUIPMENT REQUIRED:
-${sop.equipment.map((eq) => `• ${eq}`).join('\n')}
+${sop.equipment.map((eq) => `• ${eq}`).join("\n")}
 
 PROCEDURE:
 ${sop.procedure
-  .map((step) =>
-    `${step.step}. ${step.description}${step.duration ? ` [${step.duration}]` : ''}${step.notes ? `\n   Note: ${step.notes}` : ''}`
+  .map(
+    (step) =>
+      `${step.step}. ${step.description}${step.duration ? ` [${step.duration}]` : ""}${step.notes ? `\n   Note: ${step.notes}` : ""}`,
   )
-  .join('\n\n')}
+  .join("\n\n")}
 
 QUALITY CHECKS:
-${sop.qualityChecks.map((check) => `• ${check}`).join('\n')}
+${sop.qualityChecks.map((check) => `• ${check}`).join("\n")}
 
 STORAGE & SHELF LIFE:
 ${sop.storage}
 
 TROUBLESHOOTING:
-${sop.troubleshooting.map((ts) => `\nProblem: ${ts.issue}\nSolution: ${ts.solution}`).join('\n')}
+${sop.troubleshooting.map((ts) => `\nProblem: ${ts.issue}\nSolution: ${ts.solution}`).join("\n")}
 
 ALLERGEN WARNING:
 ${sop.allergenWarning}
 
 =====================================
 Generated by AI SOP Generator
-Date: ${new Date().toISOString().split('T')[0]}
+Date: ${new Date().toISOString().split("T")[0]}
 `;
 
-    const element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
-    element.setAttribute('download', `SOP-${sop.title.replace(/\s+/g, '-')}.txt`);
-    element.style.display = 'none';
+    const element = document.createElement("a");
+    element.setAttribute(
+      "href",
+      "data:text/plain;charset=utf-8," + encodeURIComponent(content),
+    );
+    element.setAttribute(
+      "download",
+      `SOP-${sop.title.replace(/\s+/g, "-")}.txt`,
+    );
+    element.style.display = "none";
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
@@ -156,8 +176,12 @@ Date: ${new Date().toISOString().split('T')[0]}
             <FileText className="h-5 w-5 text-emerald-400" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-white">AI SOP Generator</h2>
-            <p className="text-xs text-slate-400">Production-ready documentation</p>
+            <h2 className="text-lg font-semibold text-white">
+              AI SOP Generator
+            </h2>
+            <p className="text-xs text-slate-400">
+              Production-ready documentation
+            </p>
           </div>
         </div>
       </div>
@@ -166,7 +190,9 @@ Date: ${new Date().toISOString().split('T')[0]}
       {!sop && (
         <div className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-white">Recipe/Technique Title *</label>
+            <label className="text-sm font-medium text-white">
+              Recipe/Technique Title *
+            </label>
             <Input
               placeholder="e.g., Smoked Koji Custard"
               value={title}
@@ -177,7 +203,9 @@ Date: ${new Date().toISOString().split('T')[0]}
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-white">Hypothesis *</label>
+            <label className="text-sm font-medium text-white">
+              Hypothesis *
+            </label>
             <textarea
               placeholder="What are you trying to achieve?"
               value={hypothesis}
@@ -188,7 +216,9 @@ Date: ${new Date().toISOString().split('T')[0]}
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-white">Procedure *</label>
+            <label className="text-sm font-medium text-white">
+              Procedure *
+            </label>
             <textarea
               placeholder="Step-by-step procedure (e.g., 1. Heat to 65°C. 2. Add koji. 3. Chill for 12h.)"
               value={procedure}
@@ -199,7 +229,9 @@ Date: ${new Date().toISOString().split('T')[0]}
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-white">Ingredients</label>
+            <label className="text-sm font-medium text-white">
+              Ingredients
+            </label>
             <textarea
               placeholder="Format: amount ingredient: notes (semicolon separated)&#10;e.g.: 500g koji: from supplier; 200ml cream: organic"
               value={ingredientsInput}
@@ -221,7 +253,9 @@ Date: ${new Date().toISOString().split('T')[0]}
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-white">Success Criteria</label>
+            <label className="text-sm font-medium text-white">
+              Success Criteria
+            </label>
             <textarea
               placeholder="Semicolon-separated criteria&#10;e.g.: Satin wobble at 1.2 Hz; Smoke intensity 6/10; Residual sweetness under 12° Brix"
               value={successCriteriaInput}
@@ -282,7 +316,9 @@ Date: ${new Date().toISOString().split('T')[0]}
 
           {/* Allergen Warning */}
           <div className="p-4 rounded-lg bg-orange-500/10 border border-orange-500/20">
-            <h4 className="font-semibold text-orange-300 mb-2">Allergen Warning</h4>
+            <h4 className="font-semibold text-orange-300 mb-2">
+              Allergen Warning
+            </h4>
             <p className="text-sm text-slate-300">{sop.allergenWarning}</p>
           </div>
 
@@ -293,7 +329,9 @@ Date: ${new Date().toISOString().split('T')[0]}
               {sop.ingredients.map((ing, i) => (
                 <li key={i} className="text-sm text-slate-300">
                   <strong>{ing.amount}</strong> {ing.item}
-                  {ing.notes && <span className="text-slate-500"> — {ing.notes}</span>}
+                  {ing.notes && (
+                    <span className="text-slate-500"> — {ing.notes}</span>
+                  )}
                 </li>
               ))}
             </ul>
@@ -302,16 +340,22 @@ Date: ${new Date().toISOString().split('T')[0]}
           {/* Procedure Preview (first 3 steps) */}
           {sop.procedure.length > 0 && (
             <div className="p-4 rounded-lg bg-slate-800/40 border border-slate-700/30">
-              <h4 className="font-semibold text-cyan-300 mb-2">Procedure (Preview)</h4>
+              <h4 className="font-semibold text-cyan-300 mb-2">
+                Procedure (Preview)
+              </h4>
               <ol className="space-y-2 list-decimal list-inside">
                 {sop.procedure.slice(0, 3).map((step) => (
                   <li key={step.step} className="text-sm text-slate-300">
                     {step.description}
-                    {step.duration && <span className="text-slate-500"> [{step.duration}]</span>}
+                    {step.duration && (
+                      <span className="text-slate-500"> [{step.duration}]</span>
+                    )}
                   </li>
                 ))}
                 {sop.procedure.length > 3 && (
-                  <li className="text-sm text-slate-500 italic">... and {sop.procedure.length - 3} more steps</li>
+                  <li className="text-sm text-slate-500 italic">
+                    ... and {sop.procedure.length - 3} more steps
+                  </li>
                 )}
               </ol>
             </div>
@@ -319,7 +363,9 @@ Date: ${new Date().toISOString().split('T')[0]}
 
           {/* Quality Checks */}
           <div className="p-4 rounded-lg bg-slate-800/40 border border-slate-700/30">
-            <h4 className="font-semibold text-emerald-300 mb-2">Quality Checks</h4>
+            <h4 className="font-semibold text-emerald-300 mb-2">
+              Quality Checks
+            </h4>
             <ul className="space-y-1">
               {sop.qualityChecks.map((check, i) => (
                 <li key={i} className="text-sm text-slate-300 flex gap-2">
@@ -332,7 +378,9 @@ Date: ${new Date().toISOString().split('T')[0]}
 
           {/* Storage */}
           <div className="p-4 rounded-lg bg-slate-800/40 border border-slate-700/30">
-            <h4 className="font-semibold text-blue-300 mb-2">Storage & Shelf Life</h4>
+            <h4 className="font-semibold text-blue-300 mb-2">
+              Storage & Shelf Life
+            </h4>
             <p className="text-sm text-slate-300">{sop.storage}</p>
           </div>
         </div>
@@ -351,9 +399,9 @@ Date: ${new Date().toISOString().split('T')[0]}
           <Button
             onClick={() => {
               setSOP(null);
-              setTitle('');
-              setHypothesis('');
-              setProcedure('');
+              setTitle("");
+              setHypothesis("");
+              setProcedure("");
             }}
             variant="outline"
           >

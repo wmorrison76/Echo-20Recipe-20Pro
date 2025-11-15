@@ -14,87 +14,98 @@ interface TextToSpeechRequest {
  * POST /api/elevenlabs/text-to-speech
  * Convert text to speech using ElevenLabs
  */
-router.post("/api/elevenlabs/text-to-speech", async (req: Request, res: Response) => {
-  try {
-    const { text, voiceId = "21m00Tcm4TlvDq8ikWAM", stability = 0.5, similarityBoost = 0.75, speakerBoost = true } =
-      req.body as TextToSpeechRequest;
-
-    if (!text || typeof text !== "string" || text.trim().length === 0) {
-      return res.status(400).json({
-        success: false,
-        error: "Text is required and must be a non-empty string",
-      });
-    }
-
-    if (!voiceId || typeof voiceId !== "string") {
-      return res.status(400).json({
-        success: false,
-        error: "Voice ID is required",
-      });
-    }
-
-    const apiKey = process.env.ELEVENLABS_API_KEY;
-    if (!apiKey) {
-      return res.status(500).json({
-        success: false,
-        error: "ElevenLabs API key not configured",
-      });
-    }
-
-    // Truncate text to 5000 characters to avoid API limits
-    const truncatedText = text.slice(0, 5000);
-
+router.post(
+  "/api/elevenlabs/text-to-speech",
+  async (req: Request, res: Response) => {
     try {
-      const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?optimize_streaming_latency=0`, {
-        method: "POST",
-        headers: {
-          "xi-api-key": apiKey,
-          "Content-Type": "application/json",
-          Accept: "audio/mpeg",
-        },
-        body: JSON.stringify({
-          text: truncatedText,
-          model_id: "eleven_monolingual_v1",
-          voice_settings: {
-            stability,
-            similarity_boost: similarityBoost,
-            use_speaker_boost: speakerBoost,
-          },
-        }),
-      });
+      const {
+        text,
+        voiceId = "21m00Tcm4TlvDq8ikWAM",
+        stability = 0.5,
+        similarityBoost = 0.75,
+        speakerBoost = true,
+      } = req.body as TextToSpeechRequest;
 
-      if (!response.ok) {
-        const error = await response.text();
-        console.error("ElevenLabs API error:", error);
-        return res.status(response.status).json({
+      if (!text || typeof text !== "string" || text.trim().length === 0) {
+        return res.status(400).json({
           success: false,
-          error: `ElevenLabs API error: ${response.status}`,
+          error: "Text is required and must be a non-empty string",
         });
       }
 
-      const audioBuffer = await response.arrayBuffer();
+      if (!voiceId || typeof voiceId !== "string") {
+        return res.status(400).json({
+          success: false,
+          error: "Voice ID is required",
+        });
+      }
 
-      // Set appropriate headers for audio response
-      res.setHeader("Content-Type", "audio/mpeg");
-      res.setHeader("Cache-Control", "public, max-age=86400"); // Cache for 24 hours
-      res.setHeader("Content-Length", audioBuffer.byteLength);
+      const apiKey = process.env.ELEVENLABS_API_KEY;
+      if (!apiKey) {
+        return res.status(500).json({
+          success: false,
+          error: "ElevenLabs API key not configured",
+        });
+      }
 
-      res.send(Buffer.from(audioBuffer));
+      // Truncate text to 5000 characters to avoid API limits
+      const truncatedText = text.slice(0, 5000);
+
+      try {
+        const response = await fetch(
+          `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?optimize_streaming_latency=0`,
+          {
+            method: "POST",
+            headers: {
+              "xi-api-key": apiKey,
+              "Content-Type": "application/json",
+              Accept: "audio/mpeg",
+            },
+            body: JSON.stringify({
+              text: truncatedText,
+              model_id: "eleven_monolingual_v1",
+              voice_settings: {
+                stability,
+                similarity_boost: similarityBoost,
+                use_speaker_boost: speakerBoost,
+              },
+            }),
+          },
+        );
+
+        if (!response.ok) {
+          const error = await response.text();
+          console.error("ElevenLabs API error:", error);
+          return res.status(response.status).json({
+            success: false,
+            error: `ElevenLabs API error: ${response.status}`,
+          });
+        }
+
+        const audioBuffer = await response.arrayBuffer();
+
+        // Set appropriate headers for audio response
+        res.setHeader("Content-Type", "audio/mpeg");
+        res.setHeader("Cache-Control", "public, max-age=86400"); // Cache for 24 hours
+        res.setHeader("Content-Length", audioBuffer.byteLength);
+
+        res.send(Buffer.from(audioBuffer));
+      } catch (error) {
+        console.error("ElevenLabs request error:", error);
+        res.status(500).json({
+          success: false,
+          error: "Failed to generate speech",
+        });
+      }
     } catch (error) {
-      console.error("ElevenLabs request error:", error);
+      console.error("TTS endpoint error:", error);
       res.status(500).json({
         success: false,
-        error: "Failed to generate speech",
+        error: error instanceof Error ? error.message : "Unknown error",
       });
     }
-  } catch (error) {
-    console.error("TTS endpoint error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  },
+);
 
 /**
  * GET /api/elevenlabs/voices

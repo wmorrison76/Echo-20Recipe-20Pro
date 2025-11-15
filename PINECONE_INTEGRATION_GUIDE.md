@@ -49,6 +49,7 @@ OPENAI_API_KEY=your-openai-api-key
 ### Server-Side Components
 
 #### `server/lib/pinecone-service.ts`
+
 - Handles all Pinecone vector operations
 - Functions:
   - `generateEmbedding()`: Creates vectors from recipe text using OpenAI
@@ -58,6 +59,7 @@ OPENAI_API_KEY=your-openai-api-key
   - `getCrossTrackLearning()`: Manufacturing chefs access fine dining innovations
 
 #### `server/routes/pinecone-recipes.ts`
+
 - REST API endpoints for vector operations
 - Endpoints:
   - `POST /api/pinecone/recipes/store`: Store recipe vector
@@ -72,6 +74,7 @@ OPENAI_API_KEY=your-openai-api-key
 #### Track Management
 
 **`client/hooks/use-recipe-track.ts`**
+
 - Manages chef's track preference
 - Features:
   - Fine Dining as default
@@ -81,6 +84,7 @@ OPENAI_API_KEY=your-openai-api-key
   - Cross-track visibility toggle
 
 **`client/components/RDLab/TrackSelector.tsx`**
+
 - UI for selecting tracks
 - Shows current track info
 - Manages collaborators
@@ -89,12 +93,14 @@ OPENAI_API_KEY=your-openai-api-key
 #### Recipe Discovery
 
 **`client/components/RDLab/RecipeSimilaritySearch.tsx`**
+
 - Search for similar recipes using Pinecone
 - Cross-track matching option
 - Similarity scoring
 - Recipe metadata display
 
 **`client/components/RDLab/CrossTrackLearning.tsx`**
+
 - Suggestions for manufacturing chefs
 - Shows fine dining techniques applicable to manufacturing
 - Auto-loads relevant fine dining recipes
@@ -104,6 +110,7 @@ OPENAI_API_KEY=your-openai-api-key
 ## Track System Explanation
 
 ### Fine Dining Track (Default)
+
 - **Focus**: Ultra-premium culinary innovations
 - **Audience**: Fine dining chefs, molecular gastronomy experts
 - **Techniques**: Molecular gastronomy, precision plating, sensory design
@@ -114,6 +121,7 @@ OPENAI_API_KEY=your-openai-api-key
   - Production Readiness: Scaling premium recipes
 
 ### Manufacturing Track (Advanced)
+
 - **Focus**: Consistency, scalability, shelf-life
 - **Audience**: Production chefs, manufacturing specialists
 - **Techniques**: Standardization, cost optimization, preservation
@@ -251,8 +259,8 @@ const response = await fetch("/api/pinecone/recipes/search", {
     chefId: "chef-001",
     organizationId: "org-001",
     limit: 10,
-    includeCrossTrack: true
-  })
+    includeCrossTrack: true,
+  }),
 });
 ```
 
@@ -265,8 +273,8 @@ const response = await fetch("/api/pinecone/cross-track-learning", {
   body: JSON.stringify({
     recipeText: "Manufacturing recipe for consistent shelf-life",
     organizationId: "org-001",
-    limit: 5
-  })
+    limit: 5,
+  }),
 });
 ```
 
@@ -326,6 +334,7 @@ curl -X POST http://localhost:5000/api/pinecone/embedding \
 ```
 
 Expected response:
+
 ```json
 {
   "success": true,
@@ -357,6 +366,7 @@ Expected response:
 ### Issue: No cross-track suggestions appearing
 
 **Possible causes**:
+
 1. Fine dining recipes not marked as `crossTrackViable`
 2. No relevant technique tags in recipes
 3. Recipes from different organizations (each org has isolated vectors)
@@ -392,6 +402,7 @@ Expected response:
 ## Support
 
 For issues or questions:
+
 1. Check environment variables are correctly set
 2. Verify Pinecone API key is active
 3. Ensure OpenAI API key is valid

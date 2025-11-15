@@ -60,7 +60,9 @@ export function CrossTrackLearning({
       const data = await response.json();
       setSuggestions(data.data?.suggestions || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load suggestions");
+      setError(
+        err instanceof Error ? err.message : "Failed to load suggestions",
+      );
       setSuggestions([]);
     } finally {
       setIsLoading(false);
@@ -153,19 +155,20 @@ export function CrossTrackLearning({
               </div>
 
               {/* Tags */}
-              {suggestion.metadata?.tags && suggestion.metadata.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {suggestion.metadata.tags.slice(0, 3).map((tag) => (
-                    <Badge
-                      key={tag}
-                      variant="outline"
-                      className="text-xs bg-cyan-100 dark:bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border-cyan-300 dark:border-cyan-500/30"
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              )}
+              {suggestion.metadata?.tags &&
+                suggestion.metadata.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {suggestion.metadata.tags.slice(0, 3).map((tag) => (
+                      <Badge
+                        key={tag}
+                        variant="outline"
+                        className="text-xs bg-cyan-100 dark:bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border-cyan-300 dark:border-cyan-500/30"
+                      >
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
             </Card>
           ))}
         </div>

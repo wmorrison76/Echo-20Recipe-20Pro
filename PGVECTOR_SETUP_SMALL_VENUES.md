@@ -30,6 +30,7 @@ supabase migration up
 ```
 
 This:
+
 - Enables pgvector extension
 - Creates `recipe_vectors` table
 - Adds similarity search functions
@@ -73,6 +74,7 @@ curl http://localhost:5173/api/vector/health
 ## Usage: It's Automatic
 
 The system now:
+
 - Stores recipes in pgvector automatically
 - Searches recipes using pgvector
 - Works with R&D Labs AI Design tab
@@ -97,6 +99,7 @@ POST /api/vector/recipes/store {
 ```
 
 System:
+
 1. Converts recipe description to 1536-dim vector (using OpenAI)
 2. Stores in Supabase `recipe_vectors` table
 3. Indexes by organization + track for fast lookup
@@ -112,6 +115,7 @@ POST /api/vector/recipes/search {
 ```
 
 System:
+
 1. Converts search text to vector
 2. Runs pgvector similarity search
 3. Returns top 10 matching recipes
@@ -120,6 +124,7 @@ System:
 ### Cross-Track Learning
 
 For manufacturing chefs, also returns fine dining recipes tagged with:
+
 - "precision" (apply fine dining exactness to manufacturing)
 - "consistency" (maintain quality at scale)
 - "technique" (replicable methods)
@@ -129,11 +134,11 @@ For manufacturing chefs, also returns fine dining recipes tagged with:
 ## Performance Expectations
 
 | Recipes | Search Time | Storage |
-|---------|------------|---------|
-| 100 | 10ms | 1MB |
-| 1,000 | 30ms | 10MB |
-| 5,000 | 50ms | 50MB |
-| 10,000+ | 100-200ms | 100MB+ |
+| ------- | ----------- | ------- |
+| 100     | 10ms        | 1MB     |
+| 1,000   | 30ms        | 10MB    |
+| 5,000   | 50ms        | 50MB    |
+| 10,000+ | 100-200ms   | 100MB+  |
 
 **Note:** For 5000+ recipes, consider Pinecone for guaranteed fast performance.
 
@@ -142,26 +147,33 @@ For manufacturing chefs, also returns fine dining recipes tagged with:
 ## Troubleshooting
 
 ### Issue: "pgvector extension not found"
+
 ```
 Error: pgvector extension not enabled
 ```
+
 **Solution:** Run `supabase migration up` again, or manually enable in Supabase console:
+
 ```sql
 CREATE EXTENSION IF NOT EXISTS vector;
 ```
 
 ### Issue: "Search returns no results"
+
 **Cause:** No recipes stored yet  
 **Solution:** Store a recipe first via `/api/vector/recipes/store`
 
 ### Issue: "Slow search on first run"
+
 **Cause:** Index needs initialization  
 **Solution:** Wait 10 seconds, index builds automatically
 
 ### Issue: Want to switch to Pinecone later
+
 ```bash
 PINECONE_API_KEY=your-key
 ```
+
 **Then:** Restart server. System auto-detects and switches. No migration needed.
 
 ---
@@ -171,6 +183,7 @@ PINECONE_API_KEY=your-key
 **File:** `supabase/migrations/004_pgvector_recipes.sql`
 
 Creates:
+
 - `recipe_vectors` table (recipes + vectors)
 - `recipe_vector_collaborators` table (team tracking)
 - `search_similar_recipes()` function (semantic search)
@@ -178,10 +191,12 @@ Creates:
 - Row-level security policies (organization isolation)
 
 **Services:**
+
 - `server/lib/pgvector-service.ts` - All pgvector operations
 - `server/lib/vector-engine.ts` - Auto-detection + abstraction
 
 **API Endpoints:**
+
 - `POST /api/vector/recipes/store` - Store recipe
 - `POST /api/vector/recipes/search` - Find similar recipes
 - `GET /api/vector/recipes/by-track` - Get recipes by track
@@ -194,20 +209,22 @@ Creates:
 ## Costs Comparison
 
 ### With pgvector (what you're using now)
-| Item | Cost |
-|------|------|
-| Supabase | $25/month (you already pay this) |
-| Vector storage | **$0** (included) |
-| Recipe search | **$0** (included) |
-| **Total additional cost** | **$0** |
+
+| Item                      | Cost                             |
+| ------------------------- | -------------------------------- |
+| Supabase                  | $25/month (you already pay this) |
+| Vector storage            | **$0** (included)                |
+| Recipe search             | **$0** (included)                |
+| **Total additional cost** | **$0**                           |
 
 ### With Pinecone (if you upgrade later)
-| Item | Cost |
-|------|------|
-| Supabase | $25/month |
-| Pinecone starter | $30-100/month |
-| Recipe search | $30-100/month |
-| **Total additional cost** | **$30-100** |
+
+| Item                      | Cost          |
+| ------------------------- | ------------- |
+| Supabase                  | $25/month     |
+| Pinecone starter          | $30-100/month |
+| Recipe search             | $30-100/month |
+| **Total additional cost** | **$30-100**   |
 
 **Annual savings with pgvector: $360-1,200/year per venue**
 
@@ -219,7 +236,7 @@ Creates:
 ✅ < 5000 recipes  
 ✅ < 100 concurrent chefs  
 ✅ 100-200ms search latency acceptable  
-✅ Budget-conscious venues  
+✅ Budget-conscious venues
 
 ---
 
@@ -229,23 +246,26 @@ Creates:
 ❌ 10,000+ recipes  
 ❌ Need < 50ms search guaranteed  
 ❌ Multiple simultaneous searches  
-❌ Performance is critical  
+❌ Performance is critical
 
 ---
 
 ## Next Steps
 
 ### Immediate (Done! ✅)
+
 1. Run migration: `supabase migration up`
 2. Verify: Check `/api/vector/health`
 3. Use: R&D Labs works automatically
 
 ### Soon (Optional)
+
 1. Start storing recipes via AI Designer
 2. Monitor search performance
 3. If slow, switch to Pinecone (just set env var)
 
 ### Future (If Needed)
+
 - Pinecone upgrade: Set API key + restart
 - Scaling: Add database indexes
 - Analytics: Track which recipes used most
@@ -276,6 +296,7 @@ A: Yes, disable migration or remove pgvector tables. pgvector won't interfere.
 🎉 **You now have $0/month vector storage for recipes.**
 
 The system automatically:
+
 - Stores recipe vectors
 - Searches for similar recipes
 - Enables cross-track learning

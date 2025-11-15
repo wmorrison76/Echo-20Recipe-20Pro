@@ -3,7 +3,13 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { AlertCircle, Search, Sparkles, TrendingUp, Loader2 } from "lucide-react";
+import {
+  AlertCircle,
+  Search,
+  Sparkles,
+  TrendingUp,
+  Loader2,
+} from "lucide-react";
 import { type RecipeTrack } from "@/hooks/use-recipe-track";
 
 export interface SimilarRecipeMatch {
@@ -81,7 +87,14 @@ export function RecipeSimilaritySearch({
     } finally {
       setIsLoading(false);
     }
-  }, [searchQuery, userTrack, chefId, organizationId, limit, includeCrossTrack]);
+  }, [
+    searchQuery,
+    userTrack,
+    chefId,
+    organizationId,
+    limit,
+    includeCrossTrack,
+  ]);
 
   return (
     <div className="space-y-4">
@@ -99,11 +112,7 @@ export function RecipeSimilaritySearch({
           />
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         </div>
-        <Button
-          onClick={handleSearch}
-          disabled={isLoading}
-          className="gap-2"
-        >
+        <Button onClick={handleSearch} disabled={isLoading} className="gap-2">
           {isLoading ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />

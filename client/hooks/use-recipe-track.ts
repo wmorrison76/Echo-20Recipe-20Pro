@@ -41,22 +41,28 @@ export function useRecipeTrack(chefId: string) {
   }, [chefId]);
 
   // Save preference to localStorage
-  const savePreference = useCallback((newTrack: RecipeTrack) => {
-    const preference: ChefTrackPreference = {
-      chefId,
-      track: newTrack,
-      showAdvanced,
-      collaborators,
-      updatedAt: Date.now(),
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(preference));
-    setTrack(newTrack);
-  }, [chefId, showAdvanced, collaborators]);
+  const savePreference = useCallback(
+    (newTrack: RecipeTrack) => {
+      const preference: ChefTrackPreference = {
+        chefId,
+        track: newTrack,
+        showAdvanced,
+        collaborators,
+        updatedAt: Date.now(),
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(preference));
+      setTrack(newTrack);
+    },
+    [chefId, showAdvanced, collaborators],
+  );
 
   // Switch track
-  const switchTrack = useCallback((newTrack: RecipeTrack) => {
-    savePreference(newTrack);
-  }, [savePreference]);
+  const switchTrack = useCallback(
+    (newTrack: RecipeTrack) => {
+      savePreference(newTrack);
+    },
+    [savePreference],
+  );
 
   // Toggle advanced options
   const toggleAdvanced = useCallback(() => {
@@ -73,37 +79,43 @@ export function useRecipeTrack(chefId: string) {
   }, [chefId, track, showAdvanced, collaborators]);
 
   // Add collaborator
-  const addCollaborator = useCallback((collaboratorId: string) => {
-    setCollaborators((prev) => {
-      if (prev.includes(collaboratorId)) return prev;
-      const newCollaborators = [...prev, collaboratorId];
-      const preference: ChefTrackPreference = {
-        chefId,
-        track,
-        showAdvanced,
-        collaborators: newCollaborators,
-        updatedAt: Date.now(),
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(preference));
-      return newCollaborators;
-    });
-  }, [chefId, track, showAdvanced]);
+  const addCollaborator = useCallback(
+    (collaboratorId: string) => {
+      setCollaborators((prev) => {
+        if (prev.includes(collaboratorId)) return prev;
+        const newCollaborators = [...prev, collaboratorId];
+        const preference: ChefTrackPreference = {
+          chefId,
+          track,
+          showAdvanced,
+          collaborators: newCollaborators,
+          updatedAt: Date.now(),
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(preference));
+        return newCollaborators;
+      });
+    },
+    [chefId, track, showAdvanced],
+  );
 
   // Remove collaborator
-  const removeCollaborator = useCallback((collaboratorId: string) => {
-    setCollaborators((prev) => {
-      const newCollaborators = prev.filter((id) => id !== collaboratorId);
-      const preference: ChefTrackPreference = {
-        chefId,
-        track,
-        showAdvanced,
-        collaborators: newCollaborators,
-        updatedAt: Date.now(),
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(preference));
-      return newCollaborators;
-    });
-  }, [chefId, track, showAdvanced]);
+  const removeCollaborator = useCallback(
+    (collaboratorId: string) => {
+      setCollaborators((prev) => {
+        const newCollaborators = prev.filter((id) => id !== collaboratorId);
+        const preference: ChefTrackPreference = {
+          chefId,
+          track,
+          showAdvanced,
+          collaborators: newCollaborators,
+          updatedAt: Date.now(),
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(preference));
+        return newCollaborators;
+      });
+    },
+    [chefId, track, showAdvanced],
+  );
 
   return {
     track,

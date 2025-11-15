@@ -1,6 +1,6 @@
 /**
  * Vector Engine Abstraction Layer
- * 
+ *
  * Supports switching between:
  * - Pinecone (high-performance, paid, for large venues)
  * - pgvector/Supabase (free, embedded in existing database, for small venues)
@@ -57,7 +57,8 @@ function getActiveEngine(): VectorEngine {
 
   // Auto-detect based on available credentials
   const hasPinecone = !!process.env.PINECONE_API_KEY;
-  const hasSupabase = !!process.env.SUPABASE_URL && !!process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const hasSupabase =
+    !!process.env.SUPABASE_URL && !!process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   // Prefer Pinecone if both are available (better performance)
   if (hasPinecone) {
@@ -134,7 +135,7 @@ export async function storeRecipeVector(
   track: RecipeTrack,
   chefId: string,
   organizationId: string,
-  collaborators?: string[]
+  collaborators?: string[],
 ): Promise<void> {
   const engine = getActiveEngine();
 
@@ -144,7 +145,7 @@ export async function storeRecipeVector(
       track,
       chefId,
       organizationId,
-      collaborators
+      collaborators,
     );
   } else {
     return pgvectorService.storeRecipeVector(
@@ -152,7 +153,7 @@ export async function storeRecipeVector(
       track,
       chefId,
       organizationId,
-      collaborators
+      collaborators,
     );
   }
 }
@@ -166,7 +167,7 @@ export async function searchSimilarRecipes(
   chefId: string,
   organizationId: string,
   limit: number = 10,
-  includeCrossTrack: boolean = true
+  includeCrossTrack: boolean = true,
 ): Promise<RecipeSimilarityMatch[]> {
   const engine = getActiveEngine();
 
@@ -177,7 +178,7 @@ export async function searchSimilarRecipes(
       chefId,
       organizationId,
       limit,
-      includeCrossTrack
+      includeCrossTrack,
     );
   } else {
     return pgvectorService.searchSimilarRecipes(
@@ -186,7 +187,7 @@ export async function searchSimilarRecipes(
       chefId,
       organizationId,
       limit,
-      includeCrossTrack
+      includeCrossTrack,
     );
   }
 }
@@ -197,7 +198,7 @@ export async function searchSimilarRecipes(
 export async function getRecipesByTrack(
   track: RecipeTrack,
   organizationId: string,
-  limit: number = 50
+  limit: number = 50,
 ): Promise<RecipeSimilarityMatch[]> {
   const engine = getActiveEngine();
 
@@ -214,7 +215,7 @@ export async function getRecipesByTrack(
 export async function deleteRecipeVector(
   recipeId: string,
   track: RecipeTrack,
-  chefId: string
+  chefId: string,
 ): Promise<void> {
   const engine = getActiveEngine();
 
@@ -231,7 +232,7 @@ export async function deleteRecipeVector(
 export async function getCrossTrackLearning(
   recipeText: string,
   organizationId: string,
-  limit: number = 5
+  limit: number = 5,
 ): Promise<RecipeSimilarityMatch[]> {
   const engine = getActiveEngine();
 
@@ -239,13 +240,13 @@ export async function getCrossTrackLearning(
     return pineconeService.getCrossTrackLearning(
       recipeText,
       organizationId,
-      limit
+      limit,
     );
   } else {
     return pgvectorService.getCrossTrackLearning(
       recipeText,
       organizationId,
-      limit
+      limit,
     );
   }
 }

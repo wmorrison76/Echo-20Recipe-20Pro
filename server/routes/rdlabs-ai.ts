@@ -5,7 +5,11 @@ import {
   generateSOP,
   getExperimentRecommendations,
 } from "../lib/ai-llm-service";
-import { validateExperimentalResults, estimateTimeline, calculateCostImpact } from "../lib/ai-stats-validation";
+import {
+  validateExperimentalResults,
+  estimateTimeline,
+  calculateCostImpact,
+} from "../lib/ai-stats-validation";
 
 const router = Router();
 
@@ -47,7 +51,10 @@ router.post("/design", async (req: Request, res: Response) => {
       success: false,
       error: {
         code: "DESIGN_ERROR",
-        message: error instanceof Error ? error.message : "Failed to design experiment",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to design experiment",
       },
     });
   }
@@ -109,7 +116,8 @@ router.post("/validate", async (req: Request, res: Response) => {
       success: false,
       error: {
         code: "VALIDATION_ERROR",
-        message: error instanceof Error ? error.message : "Failed to validate results",
+        message:
+          error instanceof Error ? error.message : "Failed to validate results",
       },
     });
   }
@@ -121,7 +129,15 @@ router.post("/validate", async (req: Request, res: Response) => {
  */
 router.post("/sop", async (req: Request, res: Response) => {
   try {
-    const { title, hypothesis, variables, procedure, ingredients, equipment, successCriteria } = req.body;
+    const {
+      title,
+      hypothesis,
+      variables,
+      procedure,
+      ingredients,
+      equipment,
+      successCriteria,
+    } = req.body;
 
     if (!title || !hypothesis || !procedure || !ingredients) {
       return res.status(400).json({
@@ -157,7 +173,8 @@ router.post("/sop", async (req: Request, res: Response) => {
       success: false,
       error: {
         code: "SOP_ERROR",
-        message: error instanceof Error ? error.message : "Failed to generate SOP",
+        message:
+          error instanceof Error ? error.message : "Failed to generate SOP",
       },
     });
   }
@@ -181,11 +198,13 @@ router.get("/recommendations", async (req: Request, res: Response) => {
       });
     }
 
-    const experiments = Array.isArray(recentExperiments) ? recentExperiments : [];
+    const experiments = Array.isArray(recentExperiments)
+      ? recentExperiments
+      : [];
 
     const recommendations = await getExperimentRecommendations(
       goal as string,
-      experiments as string[]
+      experiments as string[],
     );
 
     return res.json({
@@ -206,7 +225,10 @@ router.get("/recommendations", async (req: Request, res: Response) => {
       success: false,
       error: {
         code: "RECOMMENDATIONS_ERROR",
-        message: error instanceof Error ? error.message : "Failed to get recommendations",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to get recommendations",
       },
     });
   }
@@ -246,7 +268,10 @@ router.post("/timeline", async (req: Request, res: Response) => {
       success: false,
       error: {
         code: "TIMELINE_ERROR",
-        message: error instanceof Error ? error.message : "Failed to estimate timeline",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to estimate timeline",
       },
     });
   }
@@ -286,7 +311,8 @@ router.post("/cost-analysis", async (req: Request, res: Response) => {
       success: false,
       error: {
         code: "COST_ERROR",
-        message: error instanceof Error ? error.message : "Failed to analyze costs",
+        message:
+          error instanceof Error ? error.message : "Failed to analyze costs",
       },
     });
   }
@@ -326,7 +352,9 @@ router.post("/production-readiness", async (req: Request, res: Response) => {
     checks.push({
       name: "Experiment Status",
       passed: statusCheck,
-      message: statusCheck ? "Experiment is in appropriate status" : "Experiment not in testing or ready status",
+      message: statusCheck
+        ? "Experiment is in appropriate status"
+        : "Experiment not in testing or ready status",
     });
 
     // Check 2: Sensory evaluation
@@ -356,7 +384,9 @@ router.post("/production-readiness", async (req: Request, res: Response) => {
     checks.push({
       name: "Cost Lock Status",
       passed: costCheck,
-      message: costCheck ? "Ingredient costs locked with suppliers" : "Need to lock supplier pricing",
+      message: costCheck
+        ? "Ingredient costs locked with suppliers"
+        : "Need to lock supplier pricing",
     });
     if (!costCheck) score -= 10;
 
@@ -384,12 +414,22 @@ router.post("/production-readiness", async (req: Request, res: Response) => {
 
     // Generate allergen statement
     const allergenIngredients = Array.isArray(ingredients) ? ingredients : [];
-    const allergens = ["eggs", "dairy", "peanuts", "tree nuts", "soy", "fish", "shellfish", "wheat"];
+    const allergens = [
+      "eggs",
+      "dairy",
+      "peanuts",
+      "tree nuts",
+      "soy",
+      "fish",
+      "shellfish",
+      "wheat",
+    ];
     const foundAllergens = allergens.filter((a) =>
       allergenIngredients.some((i) =>
-        typeof i === 'string' ? i.toLowerCase().includes(a) :
-        i.name?.toLowerCase().includes(a)
-      )
+        typeof i === "string"
+          ? i.toLowerCase().includes(a)
+          : i.name?.toLowerCase().includes(a),
+      ),
     );
 
     const allergenStatement =
@@ -398,9 +438,16 @@ router.post("/production-readiness", async (req: Request, res: Response) => {
         : `Contains: ${foundAllergens.join(", ")}. May also contain traces from shared equipment.`;
 
     const recommendations = [];
-    if (!sensoryCheck) recommendations.push(`Get ${3 - sensoryTargets.length} more sensory evaluations`);
-    if (!costCheck) recommendations.push("Lock ingredient costs with suppliers");
-    if (!equipmentCheck) recommendations.push("Verify all equipment requirements with kitchen staff");
+    if (!sensoryCheck)
+      recommendations.push(
+        `Get ${3 - sensoryTargets.length} more sensory evaluations`,
+      );
+    if (!costCheck)
+      recommendations.push("Lock ingredient costs with suppliers");
+    if (!equipmentCheck)
+      recommendations.push(
+        "Verify all equipment requirements with kitchen staff",
+      );
 
     return res.json({
       success: true,
@@ -411,7 +458,8 @@ router.post("/production-readiness", async (req: Request, res: Response) => {
         documentation: {
           sop: sop.introduction,
           allergenStatement,
-          nutritionLabel: "Serving Size: 1 portion\nCalories: 250\nProtein: 8g\nFat: 12g\nCarbs: 28g",
+          nutritionLabel:
+            "Serving Size: 1 portion\nCalories: 250\nProtein: 8g\nFat: 12g\nCarbs: 28g",
         },
         recommendations,
       },
@@ -426,7 +474,8 @@ router.post("/production-readiness", async (req: Request, res: Response) => {
       success: false,
       error: {
         code: "READINESS_ERROR",
-        message: error instanceof Error ? error.message : "Failed to check readiness",
+        message:
+          error instanceof Error ? error.message : "Failed to check readiness",
       },
     });
   }
@@ -438,7 +487,14 @@ router.post("/production-readiness", async (req: Request, res: Response) => {
  */
 router.post("/predict", async (req: Request, res: Response) => {
   try {
-    const { experimentId, hypothesis, status, variables, equipment, specialization } = req.body;
+    const {
+      experimentId,
+      hypothesis,
+      status,
+      variables,
+      equipment,
+      specialization,
+    } = req.body;
 
     if (!experimentId || !hypothesis) {
       return res.status(400).json({
@@ -469,7 +525,10 @@ router.post("/predict", async (req: Request, res: Response) => {
     if (specialization === "both") successProbability -= 5;
 
     // Add some variance
-    successProbability = Math.min(95, Math.max(30, successProbability + (Math.random() - 0.5) * 8));
+    successProbability = Math.min(
+      95,
+      Math.max(30, successProbability + (Math.random() - 0.5) * 8),
+    );
 
     // Estimate timeline (in days)
     let estimatedDays = 30;
@@ -491,9 +550,12 @@ router.post("/predict", async (req: Request, res: Response) => {
 
     // Risk factors
     const riskFactors = [];
-    if ((variables || 0) > 5) riskFactors.push("Multiple variables increase complexity");
-    if (estimatedDays > 40) riskFactors.push("Extended timeline may impact team availability");
-    if (costRange.max > 500) riskFactors.push("High budget requirement - supplier negotiation needed");
+    if ((variables || 0) > 5)
+      riskFactors.push("Multiple variables increase complexity");
+    if (estimatedDays > 40)
+      riskFactors.push("Extended timeline may impact team availability");
+    if (costRange.max > 500)
+      riskFactors.push("High budget requirement - supplier negotiation needed");
     if (!hypothesis || hypothesis.length < 20)
       riskFactors.push("Hypothesis could be more specific");
 
@@ -504,7 +566,9 @@ router.post("/predict", async (req: Request, res: Response) => {
     // Optimization suggestions
     const suggestions = [];
     if ((variables || 0) > 5) {
-      suggestions.push("Focus on top 3-4 critical variables (reduce testing scope by 30%)");
+      suggestions.push(
+        "Focus on top 3-4 critical variables (reduce testing scope by 30%)",
+      );
     }
     if (estimatedDays > 40) {
       suggestions.push("Parallelize independent test phases (save 5-7 days)");
@@ -513,9 +577,13 @@ router.post("/predict", async (req: Request, res: Response) => {
       suggestions.push("Lock supplier pricing now before market volatility");
     }
     if (successProbability < 70) {
-      suggestions.push("Increase sensory panel size by 2-3 members for robustness");
+      suggestions.push(
+        "Increase sensory panel size by 2-3 members for robustness",
+      );
     }
-    suggestions.push("Use template recipes from library (baseline consistency +15%)");
+    suggestions.push(
+      "Use template recipes from library (baseline consistency +15%)",
+    );
 
     return res.json({
       success: true,
@@ -541,7 +609,10 @@ router.post("/predict", async (req: Request, res: Response) => {
       success: false,
       error: {
         code: "PREDICTION_ERROR",
-        message: error instanceof Error ? error.message : "Failed to generate predictions",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to generate predictions",
       },
     });
   }

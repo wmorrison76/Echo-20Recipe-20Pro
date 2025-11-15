@@ -96,7 +96,7 @@ When designing experiments:
 Response format: Return ONLY valid JSON (no markdown, no code blocks).`;
 
 export async function designExperiment(
-  request: ExperimentDesignRequest
+  request: ExperimentDesignRequest,
 ): Promise<ExperimentDesignResponse> {
   const userPrompt = `Design a rigorous experiment for this goal:
 "${request.goal}"
@@ -200,7 +200,7 @@ Return a complete experiment design as JSON with this exact structure (no markdo
   } catch (error) {
     console.error("Error designing experiment:", error);
     throw new Error(
-      `Failed to design experiment: ${error instanceof Error ? error.message : "Unknown error"}`
+      `Failed to design experiment: ${error instanceof Error ? error.message : "Unknown error"}`,
     );
   }
 }
@@ -230,7 +230,7 @@ export interface ValidationResponse {
 }
 
 export async function validateExperimentResults(
-  request: ValidationRequest
+  request: ValidationRequest,
 ): Promise<ValidationResponse> {
   const userPrompt = `Review and validate these experimental results:
 
@@ -289,7 +289,7 @@ Return ONLY valid JSON (no markdown, no code blocks):
   } catch (error) {
     console.error("Error validating experiment:", error);
     throw new Error(
-      `Failed to validate experiment: ${error instanceof Error ? error.message : "Unknown error"}`
+      `Failed to validate experiment: ${error instanceof Error ? error.message : "Unknown error"}`,
     );
   }
 }
@@ -310,16 +310,19 @@ export interface SOPResponse {
   safetyNotes: string[];
   ingredients: Array<{ item: string; amount: string; notes: string }>;
   equipment: string[];
-  procedure: Array<{ step: number; description: string; duration?: string; notes?: string }>;
+  procedure: Array<{
+    step: number;
+    description: string;
+    duration?: string;
+    notes?: string;
+  }>;
   qualityChecks: string[];
   storage: string;
   troubleshooting: Array<{ issue: string; solution: string }>;
   allergenWarning: string;
 }
 
-export async function generateSOP(
-  request: SOPRequest
-): Promise<SOPResponse> {
+export async function generateSOP(request: SOPRequest): Promise<SOPResponse> {
   const userPrompt = `Generate a professional Standard Operating Procedure (SOP) for this recipe/technique:
 
 Title: ${request.title}
@@ -397,14 +400,14 @@ Return ONLY valid JSON (no markdown):
   } catch (error) {
     console.error("Error generating SOP:", error);
     throw new Error(
-      `Failed to generate SOP: ${error instanceof Error ? error.message : "Unknown error"}`
+      `Failed to generate SOP: ${error instanceof Error ? error.message : "Unknown error"}`,
     );
   }
 }
 
 export async function getExperimentRecommendations(
   goal: string,
-  recentExperiments: string[]
+  recentExperiments: string[],
 ): Promise<string[]> {
   const userPrompt = `Based on this research goal: "${goal}"
 

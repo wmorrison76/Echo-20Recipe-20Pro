@@ -65,7 +65,7 @@ export function useEchoChatHistory() {
 
   const getRecentSummary = useCallback(() => {
     if (history.length === 0) return "";
-    
+
     const recent = history.slice(-10);
     return recent
       .filter((m) => m.role === "user")

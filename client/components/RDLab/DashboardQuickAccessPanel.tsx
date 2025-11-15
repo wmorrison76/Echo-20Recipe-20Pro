@@ -53,11 +53,7 @@ export function DashboardQuickAccessPanel({
             <p className="text-sm text-muted-foreground mb-6">
               Create your first experiment to unlock the full power of R&D Labs
             </p>
-            <Button
-              onClick={onNewExperiment}
-              className="gap-2"
-              size="sm"
-            >
+            <Button onClick={onNewExperiment} className="gap-2" size="sm">
               <PlusCircle className="h-4 w-4" />
               Create First Experiment
             </Button>
@@ -75,11 +71,7 @@ export function DashboardQuickAccessPanel({
           Quick Actions
         </h3>
         <div className="space-y-3">
-          <Button
-            onClick={onNewExperiment}
-            className="w-full gap-2"
-            size="sm"
-          >
+          <Button onClick={onNewExperiment} className="w-full gap-2" size="sm">
             <PlusCircle className="h-4 w-4" />
             New Experiment
           </Button>
@@ -92,11 +84,7 @@ export function DashboardQuickAccessPanel({
             <BarChart3 className="h-4 w-4" />
             Full Analytics
           </Button>
-          <Button
-            variant="outline"
-            className="w-full gap-2"
-            size="sm"
-          >
+          <Button variant="outline" className="w-full gap-2" size="sm">
             <Calendar className="h-4 w-4" />
             View Timeline
           </Button>
@@ -130,7 +118,9 @@ export function DashboardQuickAccessPanel({
                         : "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300"
                     }`}
                   >
-                    {risk.riskLevel.charAt(0).toUpperCase() + risk.riskLevel.slice(1)} Risk
+                    {risk.riskLevel.charAt(0).toUpperCase() +
+                      risk.riskLevel.slice(1)}{" "}
+                    Risk
                   </span>
                 </div>
               </div>
@@ -183,12 +173,16 @@ export function DashboardQuickAccessPanel({
                 className={`p-3 ${insight.highlight} border border-slate-200/30 dark:border-cyan-500/10 rounded-lg`}
               >
                 <div className="flex items-start gap-3">
-                  <Icon className={`h-5 w-5 ${insight.textColor} flex-shrink-0 mt-0.5`} />
+                  <Icon
+                    className={`h-5 w-5 ${insight.textColor} flex-shrink-0 mt-0.5`}
+                  />
                   <div className="flex-1 min-w-0">
                     <p className={`text-sm font-medium ${insight.textColor}`}>
                       {insight.title}
                     </p>
-                    <p className={`text-xs ${insight.textColor} opacity-75 mt-1`}>
+                    <p
+                      className={`text-xs ${insight.textColor} opacity-75 mt-1`}
+                    >
                       {insight.detail}
                     </p>
                   </div>
@@ -243,25 +237,27 @@ export function DashboardQuickAccessPanel({
         </h3>
         {metrics.timeline.projectedCompletionDates.length > 0 ? (
           <div className="space-y-2">
-            {metrics.timeline.projectedCompletionDates.slice(0, 3).map((milestone) => {
-              const daysUntil = Math.ceil(
-                (milestone.estimatedDate.getTime() - new Date().getTime()) /
-                  (1000 * 60 * 60 * 24)
-              );
-              return (
-                <div
-                  key={milestone.experimentId}
-                  className="p-3 bg-muted/50 dark:bg-slate-800/30 rounded-lg border border-border dark:border-slate-700"
-                >
-                  <p className="text-sm font-medium text-foreground line-clamp-1">
-                    {milestone.title}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {daysUntil > 0 ? `In ${daysUntil} days` : "Due soon"}
-                  </p>
-                </div>
-              );
-            })}
+            {metrics.timeline.projectedCompletionDates
+              .slice(0, 3)
+              .map((milestone) => {
+                const daysUntil = Math.ceil(
+                  (milestone.estimatedDate.getTime() - new Date().getTime()) /
+                    (1000 * 60 * 60 * 24),
+                );
+                return (
+                  <div
+                    key={milestone.experimentId}
+                    className="p-3 bg-muted/50 dark:bg-slate-800/30 rounded-lg border border-border dark:border-slate-700"
+                  >
+                    <p className="text-sm font-medium text-foreground line-clamp-1">
+                      {milestone.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {daysUntil > 0 ? `In ${daysUntil} days` : "Due soon"}
+                    </p>
+                  </div>
+                );
+              })}
           </div>
         ) : (
           <p className="text-sm text-muted-foreground text-center py-4">
@@ -283,7 +279,8 @@ export function DashboardQuickAccessPanel({
               </span>
               <span className="text-xs text-muted-foreground opacity-75">
                 {metrics.teamPerformance.tasksOnTrack}/{" "}
-                {metrics.teamPerformance.tasksOnTrack + metrics.teamPerformance.tasksOverdue}
+                {metrics.teamPerformance.tasksOnTrack +
+                  metrics.teamPerformance.tasksOverdue}
               </span>
             </div>
             <div className="h-2 bg-muted rounded-full overflow-hidden">
@@ -305,19 +302,21 @@ export function DashboardQuickAccessPanel({
               Top Contributors
             </p>
             <div className="space-y-1">
-              {metrics.teamPerformance.topContributors.slice(0, 3).map((contributor) => (
-                <div
-                  key={contributor.name}
-                  className="flex items-center justify-between text-xs"
-                >
-                  <span className="text-muted-foreground">
-                    {contributor.name}
-                  </span>
-                  <span className="font-medium text-foreground">
-                    {contributor.experimentsOwned}
-                  </span>
-                </div>
-              ))}
+              {metrics.teamPerformance.topContributors
+                .slice(0, 3)
+                .map((contributor) => (
+                  <div
+                    key={contributor.name}
+                    className="flex items-center justify-between text-xs"
+                  >
+                    <span className="text-muted-foreground">
+                      {contributor.name}
+                    </span>
+                    <span className="font-medium text-foreground">
+                      {contributor.experimentsOwned}
+                    </span>
+                  </div>
+                ))}
             </div>
           </div>
         </div>

@@ -1,29 +1,39 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useRDLabStore } from '@/stores/rdLabStore';
-import { useAuth } from '@/context/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Loader2, Sparkles, AlertTriangle, CheckCircle2, Info, TrendingUp, BookOpen } from 'lucide-react';
-import { ExperimentDesignResponse } from '@/server/lib/ai-llm-service';
-import { RecipeSimilaritySearch } from './RecipeSimilaritySearch';
-import { CrossTrackLearning } from './CrossTrackLearning';
+import React, { useState } from "react";
+import { useRDLabStore } from "@/stores/rdLabStore";
+import { useAuth } from "@/context/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Loader2,
+  Sparkles,
+  AlertTriangle,
+  CheckCircle2,
+  Info,
+  TrendingUp,
+  BookOpen,
+} from "lucide-react";
+import { ExperimentDesignResponse } from "@/server/lib/ai-llm-service";
+import { RecipeSimilaritySearch } from "./RecipeSimilaritySearch";
+import { CrossTrackLearning } from "./CrossTrackLearning";
 
 export function AIExperimentDesigner() {
-  const [goal, setGoal] = useState('');
+  const [goal, setGoal] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [design, setDesign] = useState<ExperimentDesignResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showDraft, setShowDraft] = useState(false);
   const [showSimilarRecipes, setShowSimilarRecipes] = useState(false);
-  const [recipeTrack, setRecipeTrack] = useState<"fine-dining" | "manufacturing">("fine-dining");
+  const [recipeTrack, setRecipeTrack] = useState<
+    "fine-dining" | "manufacturing"
+  >("fine-dining");
   const { createExperiment } = useRDLabStore();
   const { user } = useAuth();
 
   const handleDesign = async () => {
     if (!goal.trim()) {
-      setError('Please describe your research goal');
+      setError("Please describe your research goal");
       return;
     }
 
@@ -32,27 +42,29 @@ export function AIExperimentDesigner() {
     setDesign(null);
 
     try {
-      const response = await fetch('/api/rdlabs/ai/design', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/rdlabs/ai/design", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           goal,
           context: {
-            specialization: 'culinary',
+            specialization: "culinary",
           },
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error?.message || 'Failed to design experiment');
+        throw new Error(
+          errorData.error?.message || "Failed to design experiment",
+        );
       }
 
       const { data } = await response.json();
       setDesign(data);
       setShowDraft(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setIsLoading(false);
     }
@@ -64,9 +76,11 @@ export function AIExperimentDesigner() {
     const experimentId = createExperiment({
       title: goal,
       hypothesis: design.hypothesis,
-      owner: 'Current User',
-      tags: ['ai-designed', 'v1'],
-      variablesUnderTest: design.variables.map((v) => `${v.name} (${v.min}-${v.max} ${v.unit})`),
+      owner: "Current User",
+      tags: ["ai-designed", "v1"],
+      variablesUnderTest: design.variables.map(
+        (v) => `${v.name} (${v.min}-${v.max} ${v.unit})`,
+      ),
       sensoryTargets: design.successCriteria.map((c) => c.metric),
       testPlan: design.estimatedTimeline.phases,
       equipment: design.equipmentNeeded,
@@ -77,7 +91,7 @@ export function AIExperimentDesigner() {
     });
 
     // Reset form
-    setGoal('');
+    setGoal("");
     setDesign(null);
     setError(null);
   };
@@ -91,8 +105,12 @@ export function AIExperimentDesigner() {
             <Sparkles className="h-5 w-5 text-cyan-400" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-white">AI Experiment Designer</h2>
-            <p className="text-xs text-slate-400">Design rigorous experiments in seconds</p>
+            <h2 className="text-lg font-semibold text-white">
+              AI Experiment Designer
+            </h2>
+            <p className="text-xs text-slate-400">
+              Design rigorous experiments in seconds
+            </p>
           </div>
         </div>
       </div>
@@ -105,7 +123,9 @@ export function AIExperimentDesigner() {
             className="flex items-center gap-2 text-sm font-semibold text-cyan-300 hover:text-cyan-200 transition-colors"
           >
             <BookOpen className="h-4 w-4" />
-            {showSimilarRecipes ? "Hide Inspiration" : "Find Recipe Inspiration"}
+            {showSimilarRecipes
+              ? "Hide Inspiration"
+              : "Find Recipe Inspiration"}
           </button>
           {showSimilarRecipes && (
             <>
@@ -138,7 +158,7 @@ export function AIExperimentDesigner() {
             disabled={isLoading}
             className="bg-slate-800/50 border-cyan-500/20 text-white placeholder:text-slate-500 focus:border-cyan-500/50"
             onKeyDown={(e) => {
-              if (e.key === 'Enter' && !isLoading) {
+              if (e.key === "Enter" && !isLoading) {
                 handleDesign();
               }
             }}
@@ -176,15 +196,21 @@ export function AIExperimentDesigner() {
           <div className="grid grid-cols-3 gap-3">
             <div className="p-3 rounded-lg bg-slate-800/40 border border-slate-700/50">
               <p className="text-xs text-slate-400">Confidence</p>
-              <p className="text-xl font-bold text-cyan-300">{design.confidenceScore}%</p>
+              <p className="text-xl font-bold text-cyan-300">
+                {design.confidenceScore}%
+              </p>
             </div>
             <div className="p-3 rounded-lg bg-slate-800/40 border border-slate-700/50">
               <p className="text-xs text-slate-400">Est. Duration</p>
-              <p className="text-xl font-bold text-cyan-300">{design.testMatrix.duration_days}d</p>
+              <p className="text-xl font-bold text-cyan-300">
+                {design.testMatrix.duration_days}d
+              </p>
             </div>
             <div className="p-3 rounded-lg bg-slate-800/40 border border-slate-700/50">
               <p className="text-xs text-slate-400">Sample Size</p>
-              <p className="text-xl font-bold text-cyan-300">{design.testMatrix.sampleSize}</p>
+              <p className="text-xl font-bold text-cyan-300">
+                {design.testMatrix.sampleSize}
+              </p>
             </div>
           </div>
 
@@ -198,7 +224,9 @@ export function AIExperimentDesigner() {
 
           {/* Variables Section */}
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-cyan-300">Test Variables</h3>
+            <h3 className="text-sm font-semibold text-cyan-300">
+              Test Variables
+            </h3>
             <div className="grid gap-2">
               {design.variables.map((variable, idx) => (
                 <div
@@ -207,16 +235,20 @@ export function AIExperimentDesigner() {
                 >
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="font-medium text-white text-sm">{variable.name}</p>
-                      <p className="text-xs text-slate-400">{variable.rationale}</p>
+                      <p className="font-medium text-white text-sm">
+                        {variable.name}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        {variable.rationale}
+                      </p>
                     </div>
                     <span
                       className={`text-xs font-semibold px-2 py-1 rounded ${
-                        variable.importance === 'critical'
-                          ? 'bg-red-500/20 text-red-300'
-                          : variable.importance === 'important'
-                          ? 'bg-yellow-500/20 text-yellow-300'
-                          : 'bg-blue-500/20 text-blue-300'
+                        variable.importance === "critical"
+                          ? "bg-red-500/20 text-red-300"
+                          : variable.importance === "important"
+                            ? "bg-yellow-500/20 text-yellow-300"
+                            : "bg-blue-500/20 text-blue-300"
                       }`}
                     >
                       {variable.importance}
@@ -232,7 +264,9 @@ export function AIExperimentDesigner() {
 
           {/* Success Criteria */}
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-cyan-300">Success Criteria</h3>
+            <h3 className="text-sm font-semibold text-cyan-300">
+              Success Criteria
+            </h3>
             <div className="space-y-2">
               {design.successCriteria.map((criteria, idx) => (
                 <div
@@ -241,10 +275,15 @@ export function AIExperimentDesigner() {
                 >
                   <CheckCircle2 className="h-4 w-4 text-green-400 flex-shrink-0 mt-0.5" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white">{criteria.metric}</p>
-                    <p className="text-xs text-slate-400">{criteria.how_measured}</p>
+                    <p className="text-sm font-medium text-white">
+                      {criteria.metric}
+                    </p>
+                    <p className="text-xs text-slate-400">
+                      {criteria.how_measured}
+                    </p>
                     <p className="text-sm text-cyan-300 font-mono mt-1">
-                      Target: {criteria.target} {criteria.unit ? `(${criteria.unit})` : ''}
+                      Target: {criteria.target}{" "}
+                      {criteria.unit ? `(${criteria.unit})` : ""}
                     </p>
                   </div>
                 </div>
@@ -255,31 +294,35 @@ export function AIExperimentDesigner() {
           {/* Risk Flags */}
           {design.riskFlags.length > 0 && (
             <div className="space-y-2">
-              <h3 className="text-sm font-semibold text-cyan-300">Risk Assessment</h3>
+              <h3 className="text-sm font-semibold text-cyan-300">
+                Risk Assessment
+              </h3>
               <div className="space-y-2">
                 {design.riskFlags.map((flag, idx) => (
                   <div
                     key={idx}
                     className={`p-3 rounded-lg border ${
-                      flag.severity === 'high'
-                        ? 'bg-red-500/10 border-red-500/20'
-                        : flag.severity === 'medium'
-                        ? 'bg-yellow-500/10 border-yellow-500/20'
-                        : 'bg-blue-500/10 border-blue-500/20'
+                      flag.severity === "high"
+                        ? "bg-red-500/10 border-red-500/20"
+                        : flag.severity === "medium"
+                          ? "bg-yellow-500/10 border-yellow-500/20"
+                          : "bg-blue-500/10 border-blue-500/20"
                     }`}
                   >
                     <div className="flex items-start gap-3">
                       <AlertTriangle
                         className={`h-4 w-4 flex-shrink-0 mt-0.5 ${
-                          flag.severity === 'high'
-                            ? 'text-red-400'
-                            : flag.severity === 'medium'
-                            ? 'text-yellow-400'
-                            : 'text-blue-400'
+                          flag.severity === "high"
+                            ? "text-red-400"
+                            : flag.severity === "medium"
+                              ? "text-yellow-400"
+                              : "text-blue-400"
                         }`}
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-white">{flag.risk}</p>
+                        <p className="text-sm font-medium text-white">
+                          {flag.risk}
+                        </p>
                         <p className="text-xs text-slate-400 mt-1">
                           <strong>Mitigation:</strong> {flag.mitigation}
                         </p>
@@ -293,15 +336,22 @@ export function AIExperimentDesigner() {
 
           {/* Timeline */}
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-cyan-300">Timeline & Phases</h3>
+            <h3 className="text-sm font-semibold text-cyan-300">
+              Timeline & Phases
+            </h3>
             <div className="p-3 rounded-lg bg-slate-800/40 border border-slate-700/30 space-y-2">
               <p className="text-sm text-slate-300">
                 <strong>Total:</strong> {design.estimatedTimeline.days} days
               </p>
-              <p className="text-xs text-slate-400">{design.estimatedTimeline.critical_path}</p>
+              <p className="text-xs text-slate-400">
+                {design.estimatedTimeline.critical_path}
+              </p>
               <div className="grid grid-cols-2 gap-2 mt-2">
                 {design.estimatedTimeline.phases.map((phase, idx) => (
-                  <div key={idx} className="text-xs p-2 bg-slate-700/40 rounded border border-slate-600/30">
+                  <div
+                    key={idx}
+                    className="text-xs p-2 bg-slate-700/40 rounded border border-slate-600/30"
+                  >
                     {phase}
                   </div>
                 ))}
@@ -311,7 +361,9 @@ export function AIExperimentDesigner() {
 
           {/* Equipment */}
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-cyan-300">Equipment Required</h3>
+            <h3 className="text-sm font-semibold text-cyan-300">
+              Equipment Required
+            </h3>
             <div className="flex flex-wrap gap-2">
               {design.equipmentNeeded.map((item, idx) => (
                 <span
@@ -336,7 +388,7 @@ export function AIExperimentDesigner() {
             <Button
               onClick={() => {
                 setDesign(null);
-                setGoal('');
+                setGoal("");
               }}
               variant="outline"
               className="flex-1"

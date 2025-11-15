@@ -38,7 +38,7 @@ const audioCache = new AudioCache();
 
 export async function textToSpeech(
   text: string,
-  options: SpeechOptions = {}
+  options: SpeechOptions = {},
 ): Promise<Blob> {
   const voiceId = options.voiceId || DEFAULT_VOICE_ID;
   const cacheKey = `${voiceId}:${text}`;
@@ -130,7 +130,7 @@ export function clearAudioCache() {
 
 export async function speakText(
   text: string,
-  options: SpeechOptions = {}
+  options: SpeechOptions = {},
 ): Promise<void> {
   try {
     const blob = await textToSpeech(text, options);

@@ -1,6 +1,21 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, TrendingUp, Zap, Target, FlaskConical, Lightbulb, Flame, Droplet } from "lucide-react";
+import {
+  BarChart3,
+  TrendingUp,
+  Zap,
+  Target,
+  FlaskConical,
+  Lightbulb,
+  Flame,
+  Droplet,
+} from "lucide-react";
 
 interface TrackDashboardProps {
   track: "fine-dining" | "manufacturing";
@@ -14,7 +29,7 @@ export function TrackDashboards({ track, labMode }: TrackDashboardProps) {
     }
     return <FineDiningDashboard />;
   }
-  
+
   if (track === "manufacturing") {
     return <ManufacturingDashboard labMode={labMode} />;
   }
@@ -27,7 +42,9 @@ function FineDiningDashboard() {
     <div className="space-y-6">
       <div className="space-y-2">
         <h2 className="text-3xl font-bold text-foreground">Fine Dining Lab</h2>
-        <p className="text-muted-foreground">Innovation & Culinary Masterpieces</p>
+        <p className="text-muted-foreground">
+          Innovation & Culinary Masterpieces
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -72,20 +89,24 @@ function FineDiningDashboard() {
             <CardDescription>Your latest experiment creations</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {["Spherified Beet Essence", "Deconstructed Tortilla", "Liquid Nitrogen Foam"].map(
-              (item, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-start justify-between p-3 bg-muted/50 dark:bg-slate-800/30 rounded-lg"
-                >
-                  <div>
-                    <p className="font-medium text-foreground">{item}</p>
-                    <p className="text-xs text-muted-foreground">Technique: Molecular</p>
-                  </div>
-                  <Badge>In Progress</Badge>
+            {[
+              "Spherified Beet Essence",
+              "Deconstructed Tortilla",
+              "Liquid Nitrogen Foam",
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                className="flex items-start justify-between p-3 bg-muted/50 dark:bg-slate-800/30 rounded-lg"
+              >
+                <div>
+                  <p className="font-medium text-foreground">{item}</p>
+                  <p className="text-xs text-muted-foreground">
+                    Technique: Molecular
+                  </p>
                 </div>
-              )
-            )}
+                <Badge>In Progress</Badge>
+              </div>
+            ))}
           </CardContent>
         </Card>
 
@@ -96,16 +117,28 @@ function FineDiningDashboard() {
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-              <p className="font-medium text-blue-900 dark:text-blue-200">Plating Guides</p>
-              <p className="text-xs text-blue-700 dark:text-blue-300">Visual presentation specifications</p>
+              <p className="font-medium text-blue-900 dark:text-blue-200">
+                Plating Guides
+              </p>
+              <p className="text-xs text-blue-700 dark:text-blue-300">
+                Visual presentation specifications
+              </p>
             </div>
             <div className="p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
-              <p className="font-medium text-purple-900 dark:text-purple-200">Technique Videos</p>
-              <p className="text-xs text-purple-700 dark:text-purple-300">Step-by-step execution guides</p>
+              <p className="font-medium text-purple-900 dark:text-purple-200">
+                Technique Videos
+              </p>
+              <p className="text-xs text-purple-700 dark:text-purple-300">
+                Step-by-step execution guides
+              </p>
             </div>
             <div className="p-3 bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800 rounded-lg">
-              <p className="font-medium text-pink-900 dark:text-pink-200">Recipe Documentation</p>
-              <p className="text-xs text-pink-700 dark:text-pink-300">Detailed ingredient & method specs</p>
+              <p className="font-medium text-pink-900 dark:text-pink-200">
+                Recipe Documentation
+              </p>
+              <p className="text-xs text-pink-700 dark:text-pink-300">
+                Detailed ingredient & method specs
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -118,8 +151,12 @@ function PastryFineDiningDashboard() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-3xl font-bold text-foreground">Pastry Fine Dining Lab</h2>
-        <p className="text-muted-foreground">Artistic Expression in Every Bite</p>
+        <h2 className="text-3xl font-bold text-foreground">
+          Pastry Fine Dining Lab
+        </h2>
+        <p className="text-muted-foreground">
+          Artistic Expression in Every Bite
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -165,9 +202,21 @@ function PastryFineDiningDashboard() {
           </CardHeader>
           <CardContent className="space-y-4">
             {[
-              { name: "Rose-Pistachio Macaron", texture: "5 Layers", flavor: "3 Notes" },
-              { name: "Chocolate Elegance", texture: "4 Layers", flavor: "4 Notes" },
-              { name: "Lavender Meditation", texture: "3 Layers", flavor: "2 Notes" },
+              {
+                name: "Rose-Pistachio Macaron",
+                texture: "5 Layers",
+                flavor: "3 Notes",
+              },
+              {
+                name: "Chocolate Elegance",
+                texture: "4 Layers",
+                flavor: "4 Notes",
+              },
+              {
+                name: "Lavender Meditation",
+                texture: "3 Layers",
+                flavor: "2 Notes",
+              },
             ].map((item, idx) => (
               <div
                 key={idx}
@@ -192,16 +241,28 @@ function PastryFineDiningDashboard() {
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="p-3 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-lg">
-              <p className="font-medium text-rose-900 dark:text-rose-200">Recipe Cards</p>
-              <p className="text-xs text-rose-700 dark:text-rose-300">Precision measurements & timing</p>
+              <p className="font-medium text-rose-900 dark:text-rose-200">
+                Recipe Cards
+              </p>
+              <p className="text-xs text-rose-700 dark:text-rose-300">
+                Precision measurements & timing
+              </p>
             </div>
             <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-              <p className="font-medium text-amber-900 dark:text-amber-200">Flavor Pairing Charts</p>
-              <p className="text-xs text-amber-700 dark:text-amber-300">Sensory profile documentation</p>
+              <p className="font-medium text-amber-900 dark:text-amber-200">
+                Flavor Pairing Charts
+              </p>
+              <p className="text-xs text-amber-700 dark:text-amber-300">
+                Sensory profile documentation
+              </p>
             </div>
             <div className="p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
-              <p className="font-medium text-purple-900 dark:text-purple-200">Plating Diagrams</p>
-              <p className="text-xs text-purple-700 dark:text-purple-300">Visual presentation & assembly</p>
+              <p className="font-medium text-purple-900 dark:text-purple-200">
+                Plating Diagrams
+              </p>
+              <p className="text-xs text-purple-700 dark:text-purple-300">
+                Visual presentation & assembly
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -210,13 +271,21 @@ function PastryFineDiningDashboard() {
   );
 }
 
-function ManufacturingDashboard({ labMode }: { labMode: "culinary" | "pastry" }) {
+function ManufacturingDashboard({
+  labMode,
+}: {
+  labMode: "culinary" | "pastry";
+}) {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-3xl font-bold text-foreground">Manufacturing Lab</h2>
+        <h2 className="text-3xl font-bold text-foreground">
+          Manufacturing Lab
+        </h2>
         <p className="text-muted-foreground">
-          {labMode === "pastry" ? "Pastry Production & Scaling" : "Culinary Product Development"}
+          {labMode === "pastry"
+            ? "Pastry Production & Scaling"
+            : "Culinary Product Development"}
         </p>
       </div>
 
@@ -259,13 +328,27 @@ function ManufacturingDashboard({ labMode }: { labMode: "culinary" | "pastry" })
         <Card className="border border-border dark:border-slate-800">
           <CardHeader>
             <CardTitle>Scaling Tests</CardTitle>
-            <CardDescription>Recipe scaling & production trials</CardDescription>
+            <CardDescription>
+              Recipe scaling & production trials
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {[
-              { name: "Signature Sauce v2.1", batch: "500L Batch", status: "Approved" },
-              { name: "Dessert Topping Beta", batch: "250L Batch", status: "Testing" },
-              { name: "Marinade Formula", batch: "1000L Batch", status: "Scaling" },
+              {
+                name: "Signature Sauce v2.1",
+                batch: "500L Batch",
+                status: "Approved",
+              },
+              {
+                name: "Dessert Topping Beta",
+                batch: "250L Batch",
+                status: "Testing",
+              },
+              {
+                name: "Marinade Formula",
+                batch: "1000L Batch",
+                status: "Scaling",
+              },
             ].map((item, idx) => (
               <div
                 key={idx}
@@ -288,16 +371,28 @@ function ManufacturingDashboard({ labMode }: { labMode: "culinary" | "pastry" })
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-              <p className="font-medium text-blue-900 dark:text-blue-200">Production Specs</p>
-              <p className="text-xs text-blue-700 dark:text-blue-300">Equipment & batch requirements</p>
+              <p className="font-medium text-blue-900 dark:text-blue-200">
+                Production Specs
+              </p>
+              <p className="text-xs text-blue-700 dark:text-blue-300">
+                Equipment & batch requirements
+              </p>
             </div>
             <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-              <p className="font-medium text-green-900 dark:text-green-200">Scaling Calculations</p>
-              <p className="text-xs text-green-700 dark:text-green-300">Ingredient ratios & yields</p>
+              <p className="font-medium text-green-900 dark:text-green-200">
+                Scaling Calculations
+              </p>
+              <p className="text-xs text-green-700 dark:text-green-300">
+                Ingredient ratios & yields
+              </p>
             </div>
             <div className="p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
-              <p className="font-medium text-purple-900 dark:text-purple-200">QA Checklist</p>
-              <p className="text-xs text-purple-700 dark:text-purple-300">Testing & compliance protocols</p>
+              <p className="font-medium text-purple-900 dark:text-purple-200">
+                QA Checklist
+              </p>
+              <p className="text-xs text-purple-700 dark:text-purple-300">
+                Testing & compliance protocols
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -315,13 +410,24 @@ interface MetricCardProps {
   color: string;
 }
 
-function MetricCard({ icon: Icon, title, value, description, trend, color }: MetricCardProps) {
+function MetricCard({
+  icon: Icon,
+  title,
+  value,
+  description,
+  trend,
+  color,
+}: MetricCardProps) {
   return (
-    <Card className={`bg-gradient-to-br ${color} bg-opacity-10 border border-border dark:border-slate-800`}>
+    <Card
+      className={`bg-gradient-to-br ${color} bg-opacity-10 border border-border dark:border-slate-800`}
+    >
       <CardContent className="pt-6">
         <div className="flex items-start justify-between">
           <div className="space-y-2">
-            <p className="text-xs font-semibold text-muted-foreground uppercase">{title}</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase">
+              {title}
+            </p>
             <p className="text-2xl font-bold text-foreground">{value}</p>
             <p className="text-xs text-muted-foreground">{description}</p>
           </div>
@@ -329,8 +435,11 @@ function MetricCard({ icon: Icon, title, value, description, trend, color }: Met
         </div>
         {trend && (
           <div className="mt-3 pt-3 border-t border-border/50">
-            <p className={`text-xs font-semibold ${trend > 0 ? "text-green-600" : "text-red-600"}`}>
-              {trend > 0 ? "+" : ""}{trend}% vs last period
+            <p
+              className={`text-xs font-semibold ${trend > 0 ? "text-green-600" : "text-red-600"}`}
+            >
+              {trend > 0 ? "+" : ""}
+              {trend}% vs last period
             </p>
           </div>
         )}

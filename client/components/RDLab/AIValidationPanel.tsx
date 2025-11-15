@@ -1,9 +1,15 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Loader2, CheckCircle2, AlertTriangle, BarChart3, TrendingUp } from 'lucide-react';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Loader2,
+  CheckCircle2,
+  AlertTriangle,
+  BarChart3,
+  TrendingUp,
+} from "lucide-react";
 
 interface ValidationResult {
   isValid: boolean;
@@ -23,9 +29,9 @@ interface ValidationResult {
 }
 
 export function AIValidationPanel() {
-  const [results, setResults] = useState<string>('');
-  const [baseline, setBaseline] = useState<string>('');
-  const [notes, setNotes] = useState<string>('');
+  const [results, setResults] = useState<string>("");
+  const [baseline, setBaseline] = useState<string>("");
+  const [notes, setNotes] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [validation, setValidation] = useState<ValidationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -33,17 +39,17 @@ export function AIValidationPanel() {
   const handleValidate = async () => {
     // Parse input
     const resultsArray = results
-      .split(',')
+      .split(",")
       .map((v) => parseFloat(v.trim()))
       .filter((v) => !isNaN(v));
 
     const baselineArray = baseline
-      .split(',')
+      .split(",")
       .map((v) => parseFloat(v.trim()))
       .filter((v) => !isNaN(v));
 
     if (resultsArray.length < 3 || baselineArray.length < 3) {
-      setError('Each dataset must have at least 3 values');
+      setError("Each dataset must have at least 3 values");
       return;
     }
 
@@ -52,9 +58,9 @@ export function AIValidationPanel() {
     setValidation(null);
 
     try {
-      const response = await fetch('/api/rdlabs/ai/validate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/rdlabs/ai/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           results: resultsArray,
           baseline: baselineArray,
@@ -64,13 +70,13 @@ export function AIValidationPanel() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error?.message || 'Validation failed');
+        throw new Error(errorData.error?.message || "Validation failed");
       }
 
       const { data } = await response.json();
       setValidation(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setIsLoading(false);
     }
@@ -85,8 +91,12 @@ export function AIValidationPanel() {
             <BarChart3 className="h-5 w-5 text-violet-400" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-white">AI Result Validation</h2>
-            <p className="text-xs text-slate-400">Statistical analysis & validation</p>
+            <h2 className="text-lg font-semibold text-white">
+              AI Result Validation
+            </h2>
+            <p className="text-xs text-slate-400">
+              Statistical analysis & validation
+            </p>
           </div>
         </div>
       </div>
@@ -169,8 +179,8 @@ export function AIValidationPanel() {
           <div
             className={`p-4 rounded-lg border ${
               validation.isValid
-                ? 'bg-green-500/10 border-green-500/20'
-                : 'bg-orange-500/10 border-orange-500/20'
+                ? "bg-green-500/10 border-green-500/20"
+                : "bg-orange-500/10 border-orange-500/20"
             }`}
           >
             <div className="flex items-start gap-3">
@@ -180,9 +190,14 @@ export function AIValidationPanel() {
                 <AlertTriangle className="h-5 w-5 text-orange-400 flex-shrink-0 mt-0.5" />
               )}
               <div className="flex-1">
-                <h3 className="font-semibold text-white">{validation.summary}</h3>
+                <h3 className="font-semibold text-white">
+                  {validation.summary}
+                </h3>
                 <p className="text-sm text-slate-300 mt-1">
-                  Confidence: <span className="font-bold text-cyan-300">{validation.confidence}%</span>
+                  Confidence:{" "}
+                  <span className="font-bold text-cyan-300">
+                    {validation.confidence}%
+                  </span>
                 </p>
               </div>
             </div>
@@ -192,7 +207,9 @@ export function AIValidationPanel() {
           <div className="grid grid-cols-2 gap-3">
             <div className="p-3 rounded-lg bg-slate-800/40 border border-slate-700/30">
               <p className="text-xs text-slate-400">Sample Size</p>
-              <p className="text-lg font-bold text-cyan-300">{validation.details.sampleSize}</p>
+              <p className="text-lg font-bold text-cyan-300">
+                {validation.details.sampleSize}
+              </p>
             </div>
             <div className="p-3 rounded-lg bg-slate-800/40 border border-slate-700/30">
               <p className="text-xs text-slate-400">Mean Value</p>
@@ -222,16 +239,16 @@ export function AIValidationPanel() {
             </div>
             <div className="space-y-1">
               <p className="text-sm">
-                <span className="text-slate-400">Absolute:</span>{' '}
+                <span className="text-slate-400">Absolute:</span>{" "}
                 <span className="font-bold text-cyan-300">
-                  {validation.details.changeFromBaseline > 0 ? '+' : ''}
+                  {validation.details.changeFromBaseline > 0 ? "+" : ""}
                   {validation.details.changeFromBaseline.toFixed(2)}
                 </span>
               </p>
               <p className="text-sm">
-                <span className="text-slate-400">Percent:</span>{' '}
+                <span className="text-slate-400">Percent:</span>{" "}
                 <span className="font-bold text-cyan-300">
-                  {validation.details.changePercent > 0 ? '+' : ''}
+                  {validation.details.changePercent > 0 ? "+" : ""}
                   {validation.details.changePercent.toFixed(1)}%
                 </span>
               </p>
@@ -245,7 +262,8 @@ export function AIValidationPanel() {
                 <AlertTriangle className="h-4 w-4 text-yellow-400 flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="font-medium text-white text-sm">
-                    {validation.details.outlierCount} outlier{validation.details.outlierCount !== 1 ? 's' : ''} detected
+                    {validation.details.outlierCount} outlier
+                    {validation.details.outlierCount !== 1 ? "s" : ""} detected
                   </p>
                   <p className="text-xs text-slate-400">Review data quality</p>
                 </div>
@@ -256,7 +274,9 @@ export function AIValidationPanel() {
           {/* Concerns */}
           {validation.concerns.length > 0 && (
             <div className="space-y-2">
-              <h3 className="text-sm font-semibold text-yellow-300">Concerns</h3>
+              <h3 className="text-sm font-semibold text-yellow-300">
+                Concerns
+              </h3>
               <ul className="space-y-1">
                 {validation.concerns.map((concern, idx) => (
                   <li key={idx} className="text-sm text-slate-300 flex gap-2">
@@ -271,7 +291,9 @@ export function AIValidationPanel() {
           {/* Recommendations */}
           {validation.recommendations.length > 0 && (
             <div className="space-y-2">
-              <h3 className="text-sm font-semibold text-green-300">Recommendations</h3>
+              <h3 className="text-sm font-semibold text-green-300">
+                Recommendations
+              </h3>
               <ul className="space-y-1">
                 {validation.recommendations.map((rec, idx) => (
                   <li key={idx} className="text-sm text-slate-300 flex gap-2">
@@ -288,9 +310,9 @@ export function AIValidationPanel() {
             <Button
               onClick={() => {
                 setValidation(null);
-                setResults('');
-                setBaseline('');
-                setNotes('');
+                setResults("");
+                setBaseline("");
+                setNotes("");
               }}
               variant="outline"
               className="flex-1"

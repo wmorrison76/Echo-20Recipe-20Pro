@@ -8,13 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  ChefHat,
-  Factory,
-  Users,
-  Sparkles,
-  ChevronDown,
-} from "lucide-react";
+import { ChefHat, Factory, Users, Sparkles, ChevronDown } from "lucide-react";
 import {
   type RecipeTrack,
   useRecipeTrack,
@@ -37,7 +31,7 @@ export function TrackSelector({ chefId, onTrackChange }: TrackSelectorProps) {
     addCollaborator,
     removeCollaborator,
   } = useRecipeTrack(chefId);
-  
+
   const [showCollaborators, setShowCollaborators] = useState(false);
   const [newCollaborator, setNewCollaborator] = useState("");
 
@@ -111,7 +105,9 @@ export function TrackSelector({ chefId, onTrackChange }: TrackSelectorProps) {
           onClick={toggleAdvanced}
           className="h-8 px-2 text-xs gap-1"
         >
-          <ChevronDown className={`h-3 w-3 transition-transform ${showAdvanced ? "rotate-180" : ""}`} />
+          <ChevronDown
+            className={`h-3 w-3 transition-transform ${showAdvanced ? "rotate-180" : ""}`}
+          />
           {showAdvanced ? "Less" : "More"}
         </Button>
       </div>

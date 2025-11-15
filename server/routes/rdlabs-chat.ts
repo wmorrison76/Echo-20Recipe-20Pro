@@ -46,15 +46,12 @@ async function callOpenAI(messages: ChatMessage[]): Promise<string> {
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         model: "gpt-4o",
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          ...messages,
-        ],
+        messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
         temperature: 0.7,
         max_tokens: 2048,
         top_p: 0.95,
@@ -69,7 +66,7 @@ async function callOpenAI(messages: ChatMessage[]): Promise<string> {
 
     const data: any = await response.json();
     const assistantMessage = data.choices?.[0]?.message?.content;
-    
+
     if (!assistantMessage) {
       throw new Error("No response from OpenAI");
     }
@@ -120,7 +117,10 @@ router.post("/api/rdlabs/chat", async (req: Request, res: Response) => {
     console.error("Chat endpoint error:", error);
     res.status(500).json({
       success: false,
-      message: error instanceof Error ? error.message : "Failed to process chat message",
+      message:
+        error instanceof Error
+          ? error.message
+          : "Failed to process chat message",
     });
   }
 });
@@ -153,24 +153,24 @@ router.post("/api/rdlabs/chat/stream", async (req: Request, res: Response) => {
     res.setHeader("Connection", "keep-alive");
 
     try {
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "gpt-4o",
+            messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
+            temperature: 0.7,
+            max_tokens: 2048,
+            top_p: 0.95,
+            stream: true,
+          }),
         },
-        body: JSON.stringify({
-          model: "gpt-4o",
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            ...messages,
-          ],
-          temperature: 0.7,
-          max_tokens: 2048,
-          top_p: 0.95,
-          stream: true,
-        }),
-      });
+      );
 
       if (!response.ok) {
         res.write(`data: ${JSON.stringify({ error: "API error" })}\n\n`);

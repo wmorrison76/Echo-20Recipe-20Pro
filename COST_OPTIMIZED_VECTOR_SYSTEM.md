@@ -29,6 +29,7 @@ The system **automatically selects** the right engine based on available credent
 ```
 
 **Selection Priority:**
+
 1. If `VECTOR_ENGINE=pinecone` explicitly set → use Pinecone
 2. If `PINECONE_API_KEY` present → use Pinecone
 3. If `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` present → use pgvector
@@ -39,32 +40,35 @@ The system **automatically selects** the right engine based on available credent
 ## Cost Comparison
 
 ### Small Venue (1 restaurant)
+
 **Expected:** 100-500 recipes, 3-5 chefs
 
-| Engine | Monthly Cost | Setup Time | Features |
-|--------|-------------|-----------|----------|
-| **pgvector** | $0 | 5 min (just migrate DB) | Full similarity search, cross-track learning |
-| **Pinecone** | $30-100 | 10 min | Same, but faster for 100k+ recipes |
+| Engine       | Monthly Cost | Setup Time              | Features                                     |
+| ------------ | ------------ | ----------------------- | -------------------------------------------- |
+| **pgvector** | $0           | 5 min (just migrate DB) | Full similarity search, cross-track learning |
+| **Pinecone** | $30-100      | 10 min                  | Same, but faster for 100k+ recipes           |
 
 **Recommendation:** pgvector (100% cost savings)
 
 ### Medium Venue (3-5 restaurants)
+
 **Expected:** 500-2000 recipes, 10-20 chefs
 
-| Engine | Monthly Cost | Setup Time | Performance |
-|--------|-------------|-----------|-----------|
-| **pgvector** | $0 | 5 min | Good (< 100ms queries) |
-| **Pinecone** | $100-300 | 10 min | Excellent (< 50ms queries) |
+| Engine       | Monthly Cost | Setup Time | Performance                |
+| ------------ | ------------ | ---------- | -------------------------- |
+| **pgvector** | $0           | 5 min      | Good (< 100ms queries)     |
+| **Pinecone** | $100-300     | 10 min     | Excellent (< 50ms queries) |
 
 **Recommendation:** pgvector initially, upgrade to Pinecone if search speeds matter
 
 ### Large Resort Chain (10+ locations)
+
 **Expected:** 5000+ recipes, 50+ chefs
 
-| Engine | Monthly Cost | Setup Time | Performance |
-|--------|-------------|-----------|-----------|
-| **pgvector** | $0 | 5 min | Acceptable (< 500ms for 5000 recipes) |
-| **Pinecone** | $300-1000+ | 10 min | Excellent (< 50ms guaranteed) |
+| Engine       | Monthly Cost | Setup Time | Performance                           |
+| ------------ | ------------ | ---------- | ------------------------------------- |
+| **pgvector** | $0           | 5 min      | Acceptable (< 500ms for 5000 recipes) |
+| **Pinecone** | $300-1000+   | 10 min     | Excellent (< 50ms guaranteed)         |
 
 **Recommendation:** Pinecone (performance justifies cost at scale)
 
@@ -73,6 +77,7 @@ The system **automatically selects** the right engine based on available credent
 ## What's Included in Both Systems
 
 ✅ **Identical Features:**
+
 - Recipe vector storage with metadata
 - Semantic similarity search
 - Track-aware filtering (fine-dining vs manufacturing)
@@ -82,6 +87,7 @@ The system **automatically selects** the right engine based on available credent
 - OpenAI embeddings (text-embedding-3-small)
 
 ✅ **Same API:**
+
 - `/api/vector/recipes/store`
 - `/api/vector/recipes/search`
 - `/api/vector/recipes/by-track`
@@ -90,6 +96,7 @@ The system **automatically selects** the right engine based on available credent
 - `/api/vector/health`
 
 ❌ **No Code Changes Needed:**
+
 - Client code works with either engine
 - API responses identical
 - Automatic engine detection
@@ -110,6 +117,7 @@ supabase migration up
 ### Step 2: Ensure Supabase is Configured
 
 Verify environment variables:
+
 ```bash
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
@@ -229,6 +237,7 @@ Every response includes the engine being used:
 ### Pinecone → pgvector Fallback
 
 If Pinecone API key expires or service disrupted:
+
 1. Remove `PINECONE_API_KEY` from environment
 2. System automatically falls back to pgvector
 3. All data still there in Supabase
@@ -244,9 +253,10 @@ If Pinecone API key expires or service disrupted:
 **Extension:** pgvector with IVFFlat indexing  
 **Vector Dimension:** 1536 (OpenAI text-embedding-3-small)  
 **Indexes:** Organization + track filtering for fast lookups  
-**Query Performance:** < 100ms for < 5000 recipes  
+**Query Performance:** < 100ms for < 5000 recipes
 
 **Table Structure:**
+
 ```sql
 recipe_vectors (
   id UUID,
@@ -263,6 +273,7 @@ recipe_vectors (
 ```
 
 **Search Function:**
+
 ```sql
 search_similar_recipes(
   query_embedding vector(1536),
@@ -279,7 +290,7 @@ search_similar_recipes(
 **Index:** echo-recipes (1536-dim vectors)  
 **Metadata:** Stored with vectors, filterable  
 **Query Performance:** < 50ms guaranteed  
-**Scaling:** Auto-scales to millions of vectors  
+**Scaling:** Auto-scales to millions of vectors
 
 ---
 
@@ -287,24 +298,24 @@ search_similar_recipes(
 
 ### Recipe Search (1000 recipes)
 
-| Operation | pgvector | Pinecone |
-|-----------|----------|----------|
-| Store recipe | 50ms | 100ms |
-| Search similar (10 results) | 30ms | 10ms |
-| Cross-track suggestions (5 results) | 40ms | 15ms |
-| Get by track (50 recipes) | 20ms | 5ms |
+| Operation                           | pgvector | Pinecone |
+| ----------------------------------- | -------- | -------- |
+| Store recipe                        | 50ms     | 100ms    |
+| Search similar (10 results)         | 30ms     | 10ms     |
+| Cross-track suggestions (5 results) | 40ms     | 15ms     |
+| Get by track (50 recipes)           | 20ms     | 5ms      |
 
 **Note:** pgvector performance improves with indexing; scales well up to 10K recipes.
 
 ### Cost at Scale
 
 | Recipes | Monthly Cost (pgvector) | Monthly Cost (Pinecone) |
-|---------|----------------------|----------------------|
-| 100 | $0 | $30 |
-| 1,000 | $0 | $35 |
-| 5,000 | $0 | $50 |
-| 10,000 | $0 | $75 |
-| 50,000+ | $0 | $300+ |
+| ------- | ----------------------- | ----------------------- |
+| 100     | $0                      | $30                     |
+| 1,000   | $0                      | $35                     |
+| 5,000   | $0                      | $50                     |
+| 10,000  | $0                      | $75                     |
+| 50,000+ | $0                      | $300+                   |
 
 ---
 
@@ -316,7 +327,7 @@ search_similar_recipes(
 server/lib/
   ├── pgvector-service.ts (401 lines) - Supabase pgvector operations
   ├── vector-engine.ts (277 lines) - Abstraction layer + auto-selection
-  
+
 server/routes/
   └── vector-recipes.ts (335 lines) - Unified API endpoints
 
@@ -339,18 +350,22 @@ server/index.ts - Register vector routes (backward compatible)
 ## Troubleshooting
 
 ### Issue: "Supabase credentials not configured"
+
 **Cause:** Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY  
 **Solution:** Set both environment variables
 
 ### Issue: pgvector extension not found
+
 **Cause:** Supabase project doesn't have pgvector enabled  
 **Solution:** Run migration: `supabase migration up`
 
 ### Issue: Getting slow responses
+
 **Cause:** pgvector with 10K+ recipes without proper indexing  
 **Solution:** Consider Pinecone for > 5000 recipes, or add database indexes
 
 ### Issue: Want to use Pinecone but system uses pgvector
+
 **Cause:** `PINECONE_API_KEY` not set  
 **Solution:** Verify API key in environment, run `npm run dev` to restart
 
@@ -359,15 +374,19 @@ server/index.ts - Register vector routes (backward compatible)
 ## Making Sense for Your Use Case
 
 ### Small Independent Restaurant
+
 → Use pgvector, save $30-100/month
 
 ### Multi-Unit Operator (3-5 locations)
+
 → Start with pgvector, upgrade to Pinecone when needed
 
 ### Large Resort Chain (10+ locations)
+
 → Pinecone recommended for consistent performance and scale
 
 ### Development/Testing
+
 → Always pgvector (free, no API keys needed)
 
 ---
@@ -416,11 +435,11 @@ A: Yes! Set `VECTOR_ENGINE=pgvector` or `VECTOR_ENGINE=pinecone` to override.
 
 ## Cost Savings Summary
 
-| Scenario | Annual Savings with pgvector |
-|----------|------------------------------|
-| Small venue (pgvector) | $360 - $1,200 |
-| Medium venue (pgvector) | $360 - $1,200 |
-| Large venue (until 1000 recipes) | $360 - $1,200 |
+| Scenario                         | Annual Savings with pgvector |
+| -------------------------------- | ---------------------------- |
+| Small venue (pgvector)           | $360 - $1,200                |
+| Medium venue (pgvector)          | $360 - $1,200                |
+| Large venue (until 1000 recipes) | $360 - $1,200                |
 
 **Total potential savings for small customers: $360-$1,200/year per location.**
 

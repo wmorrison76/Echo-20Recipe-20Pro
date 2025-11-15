@@ -1,10 +1,16 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Loader2, TrendingUp, Calendar, DollarSign, Target } from 'lucide-react';
-import { useRDLabStore } from '@/stores/rdLabStore';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Loader2,
+  TrendingUp,
+  Calendar,
+  DollarSign,
+  Target,
+} from "lucide-react";
+import { useRDLabStore } from "@/stores/rdLabStore";
 
 interface PredictionResult {
   successProbability: number;
@@ -17,14 +23,14 @@ interface PredictionResult {
 
 export function AIPredictiveAnalytics() {
   const { experiments } = useRDLabStore();
-  const [selectedExperiment, setSelectedExperiment] = useState<string>('');
+  const [selectedExperiment, setSelectedExperiment] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [predictions, setPredictions] = useState<PredictionResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handlePredict = async () => {
     if (!selectedExperiment) {
-      setError('Please select an experiment');
+      setError("Please select an experiment");
       return;
     }
 
@@ -34,11 +40,11 @@ export function AIPredictiveAnalytics() {
 
     try {
       const experiment = experiments.find((e) => e.id === selectedExperiment);
-      if (!experiment) throw new Error('Experiment not found');
+      if (!experiment) throw new Error("Experiment not found");
 
-      const response = await fetch('/api/rdlabs/ai/predict', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/rdlabs/ai/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           experimentId: experiment.id,
           hypothesis: experiment.hypothesis,
@@ -51,13 +57,13 @@ export function AIPredictiveAnalytics() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error?.message || 'Prediction failed');
+        throw new Error(errorData.error?.message || "Prediction failed");
       }
 
       const { data } = await response.json();
       setPredictions(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      setError(err instanceof Error ? err.message : "Unknown error");
       // Generate mock predictions for demo
       setPredictions(generateMockPredictions());
     } finally {
@@ -76,28 +82,28 @@ export function AIPredictiveAnalytics() {
       },
       confidence: 78 + Math.random() * 15,
       riskFactors: [
-        'Complex variable interactions',
-        'Ingredient sourcing volatility',
-        'Equipment calibration time',
+        "Complex variable interactions",
+        "Ingredient sourcing volatility",
+        "Equipment calibration time",
       ],
       optimizationSuggestions: [
-        'Reduce test variables by 20% (focus on critical factors)',
-        'Use pre-calibrated equipment to save 2-3 days',
-        'Batch similar experiments together',
-        'Lock supplier pricing now (ingredient costs rising)',
+        "Reduce test variables by 20% (focus on critical factors)",
+        "Use pre-calibrated equipment to save 2-3 days",
+        "Batch similar experiments together",
+        "Lock supplier pricing now (ingredient costs rising)",
       ],
     };
   };
 
   const readyExperiments = experiments.filter(
-    (e) => e.status === 'ideation' || e.status === 'testing'
+    (e) => e.status === "ideation" || e.status === "testing",
   );
 
   const getSuccessColor = (probability: number) => {
-    if (probability >= 80) return 'text-green-400 bg-green-500/10';
-    if (probability >= 70) return 'text-blue-400 bg-blue-500/10';
-    if (probability >= 60) return 'text-yellow-400 bg-yellow-500/10';
-    return 'text-red-400 bg-red-500/10';
+    if (probability >= 80) return "text-green-400 bg-green-500/10";
+    if (probability >= 70) return "text-blue-400 bg-blue-500/10";
+    if (probability >= 60) return "text-yellow-400 bg-yellow-500/10";
+    return "text-red-400 bg-red-500/10";
   };
 
   return (
@@ -109,8 +115,12 @@ export function AIPredictiveAnalytics() {
             <Target className="h-5 w-5 text-indigo-400" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-white">Predictive Analytics</h2>
-            <p className="text-xs text-slate-400">Success probability, timeline, and cost forecasting</p>
+            <h2 className="text-lg font-semibold text-white">
+              Predictive Analytics
+            </h2>
+            <p className="text-xs text-slate-400">
+              Success probability, timeline, and cost forecasting
+            </p>
           </div>
         </div>
       </div>
@@ -119,7 +129,9 @@ export function AIPredictiveAnalytics() {
       {!predictions && (
         <div className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-white">Select Experiment</label>
+            <label className="text-sm font-medium text-white">
+              Select Experiment
+            </label>
             <select
               value={selectedExperiment}
               onChange={(e) => setSelectedExperiment(e.target.value)}
@@ -168,8 +180,12 @@ export function AIPredictiveAnalytics() {
       {predictions && (
         <div className="space-y-4">
           {/* Success Probability */}
-          <div className={`p-6 rounded-lg border bg-gradient-to-br ${getSuccessColor(predictions.successProbability)} border-indigo-500/20`}>
-            <h3 className="text-sm font-semibold text-slate-300 mb-2">Success Probability</h3>
+          <div
+            className={`p-6 rounded-lg border bg-gradient-to-br ${getSuccessColor(predictions.successProbability)} border-indigo-500/20`}
+          >
+            <h3 className="text-sm font-semibold text-slate-300 mb-2">
+              Success Probability
+            </h3>
             <div className="flex items-end gap-4">
               <div>
                 <div className="text-4xl font-bold">
@@ -195,9 +211,13 @@ export function AIPredictiveAnalytics() {
             <div className="p-4 rounded-lg bg-slate-800/40 border border-slate-700/30">
               <div className="flex items-center gap-2 mb-2">
                 <Calendar className="h-4 w-4 text-cyan-400" />
-                <h4 className="font-semibold text-white text-sm">Est. Timeline</h4>
+                <h4 className="font-semibold text-white text-sm">
+                  Est. Timeline
+                </h4>
               </div>
-              <p className="text-2xl font-bold text-cyan-300">{predictions.estimatedDays}d</p>
+              <p className="text-2xl font-bold text-cyan-300">
+                {predictions.estimatedDays}d
+              </p>
               <p className="text-xs text-slate-400 mt-1">Days to completion</p>
             </div>
 
@@ -207,7 +227,8 @@ export function AIPredictiveAnalytics() {
                 <h4 className="font-semibold text-white text-sm">Cost Range</h4>
               </div>
               <p className="text-lg font-bold text-emerald-300">
-                ${predictions.costRange.min.toFixed(0)} - ${predictions.costRange.max.toFixed(0)}
+                ${predictions.costRange.min.toFixed(0)} - $
+                {predictions.costRange.max.toFixed(0)}
               </p>
               <p className="text-xs text-slate-400 mt-1">Estimated budget</p>
             </div>
@@ -215,10 +236,15 @@ export function AIPredictiveAnalytics() {
 
           {/* Risk Factors */}
           <div className="space-y-2">
-            <h4 className="text-sm font-semibold text-orange-300">Risk Factors</h4>
+            <h4 className="text-sm font-semibold text-orange-300">
+              Risk Factors
+            </h4>
             <div className="space-y-2">
               {predictions.riskFactors.map((factor, idx) => (
-                <div key={idx} className="flex gap-2 p-3 rounded-lg bg-orange-500/10 border border-orange-500/20">
+                <div
+                  key={idx}
+                  className="flex gap-2 p-3 rounded-lg bg-orange-500/10 border border-orange-500/20"
+                >
                   <span className="text-orange-400 font-bold">⚠</span>
                   <span className="text-sm text-slate-300">{factor}</span>
                 </div>
@@ -228,10 +254,15 @@ export function AIPredictiveAnalytics() {
 
           {/* Optimization Suggestions */}
           <div className="space-y-2">
-            <h4 className="text-sm font-semibold text-green-300">Optimization Suggestions</h4>
+            <h4 className="text-sm font-semibold text-green-300">
+              Optimization Suggestions
+            </h4>
             <div className="space-y-2">
               {predictions.optimizationSuggestions.map((suggestion, idx) => (
-                <div key={idx} className="flex gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                <div
+                  key={idx}
+                  className="flex gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/20"
+                >
                   <span className="text-green-400 font-bold">✓</span>
                   <span className="text-sm text-slate-300">{suggestion}</span>
                 </div>
@@ -241,7 +272,9 @@ export function AIPredictiveAnalytics() {
 
           {/* Metrics Summary */}
           <div className="p-4 rounded-lg bg-slate-800/40 border border-slate-700/30">
-            <h4 className="font-semibold text-cyan-300 mb-3">Prediction Metrics</h4>
+            <h4 className="font-semibold text-cyan-300 mb-3">
+              Prediction Metrics
+            </h4>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <p className="text-slate-400">Success Rate</p>
@@ -258,7 +291,8 @@ export function AIPredictiveAnalytics() {
               <div>
                 <p className="text-slate-400">Avg Cost</p>
                 <p className="font-bold text-emerald-300 text-lg">
-                  ${(
+                  $
+                  {(
                     (predictions.costRange.min + predictions.costRange.max) /
                     2
                   ).toFixed(0)}
@@ -276,7 +310,7 @@ export function AIPredictiveAnalytics() {
             <Button
               onClick={() => {
                 setPredictions(null);
-                setSelectedExperiment('');
+                setSelectedExperiment("");
               }}
               variant="outline"
               className="flex-1"

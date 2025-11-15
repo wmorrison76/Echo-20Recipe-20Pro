@@ -39,7 +39,7 @@ export async function storeRecipeVector(
   track: RecipeTrack,
   chefId: string,
   organizationId: string,
-  collaborators?: string[]
+  collaborators?: string[],
 ): Promise<{ success: boolean; recipeId: string; error?: string }> {
   try {
     const response = await fetch("/api/vector/recipes/store", {
@@ -84,8 +84,12 @@ export async function searchSimilarRecipes(
   options?: {
     limit?: number;
     includeCrossTrack?: boolean;
-  }
-): Promise<{ success: boolean; matches: RecipeSimilarityMatch[]; error?: string }> {
+  },
+): Promise<{
+  success: boolean;
+  matches: RecipeSimilarityMatch[];
+  error?: string;
+}> {
   try {
     const response = await fetch("/api/vector/recipes/search", {
       method: "POST",
@@ -125,11 +129,15 @@ export async function searchSimilarRecipes(
 export async function getRecipesByTrack(
   track: RecipeTrack,
   organizationId: string,
-  limit: number = 50
-): Promise<{ success: boolean; recipes: RecipeSimilarityMatch[]; error?: string }> {
+  limit: number = 50,
+): Promise<{
+  success: boolean;
+  recipes: RecipeSimilarityMatch[];
+  error?: string;
+}> {
   try {
     const response = await fetch(
-      `/api/vector/recipes/by-track?track=${track}&organizationId=${organizationId}&limit=${limit}`
+      `/api/vector/recipes/by-track?track=${track}&organizationId=${organizationId}&limit=${limit}`,
     );
 
     if (!response.ok) {
@@ -157,7 +165,7 @@ export async function getRecipesByTrack(
 export async function deleteRecipeVector(
   recipeId: string,
   track: RecipeTrack,
-  chefId: string
+  chefId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const response = await fetch("/api/vector/recipes/delete", {
@@ -190,8 +198,12 @@ export async function deleteRecipeVector(
 export async function getCrossTrackLearning(
   recipeText: string,
   organizationId: string,
-  limit: number = 5
-): Promise<{ success: boolean; suggestions: CrossTrackSuggestion[]; error?: string }> {
+  limit: number = 5,
+): Promise<{
+  success: boolean;
+  suggestions: CrossTrackSuggestion[];
+  error?: string;
+}> {
   try {
     const response = await fetch("/api/vector/cross-track-learning", {
       method: "POST",
@@ -226,7 +238,7 @@ export async function getCrossTrackLearning(
  * Generate an embedding for text (works with Pinecone or pgvector)
  */
 export async function generateEmbedding(
-  text: string
+  text: string,
 ): Promise<{ success: boolean; embedding?: number[]; error?: string }> {
   try {
     const response = await fetch("/api/vector/embedding", {
@@ -237,7 +249,9 @@ export async function generateEmbedding(
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.error?.message || "Failed to generate embedding");
+      throw new Error(
+        errorData.error?.message || "Failed to generate embedding",
+      );
     }
 
     const data = await response.json();

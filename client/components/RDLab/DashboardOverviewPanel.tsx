@@ -8,7 +8,14 @@ import {
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown, Target, Users, Leaf, DollarSign } from "lucide-react";
+import {
+  TrendingUp,
+  TrendingDown,
+  Target,
+  Users,
+  Leaf,
+  DollarSign,
+} from "lucide-react";
 
 interface DashboardOverviewPanelProps {
   period?: MetricsPeriod;
@@ -34,7 +41,9 @@ export function DashboardOverviewPanel({
       <div className="space-y-6 w-full">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-foreground">R&D Dashboard</h2>
+            <h2 className="text-2xl font-bold text-foreground">
+              R&D Dashboard
+            </h2>
             <p className="text-sm text-muted-foreground mt-1">
               Real-time metrics and experiment analytics
             </p>
@@ -48,7 +57,8 @@ export function DashboardOverviewPanel({
                 No experiments yet
               </h3>
               <p className="text-sm text-muted-foreground mt-2">
-                Start by creating your first experiment to see metrics and analytics here
+                Start by creating your first experiment to see metrics and
+                analytics here
               </p>
             </div>
           </div>
@@ -96,7 +106,9 @@ export function DashboardOverviewPanel({
           subtitle="Median time from ideation to approval"
           icon={TrendingDown}
           trend={metrics.experiments.averageTimeToReady < 60 ? "up" : "down"}
-          trendValue={metrics.experiments.averageTimeToReady < 60 ? "-8 days" : "+5 days"}
+          trendValue={
+            metrics.experiments.averageTimeToReady < 60 ? "-8 days" : "+5 days"
+          }
           bgGradient="from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900/40"
           iconColor="text-purple-600 dark:text-purple-400"
         />
@@ -191,7 +203,7 @@ export function DashboardOverviewPanel({
                 percentage: Math.round(
                   (metrics.experiments.culinaryVsPastry.culinary /
                     metrics.experiments.totalCount) *
-                    100
+                    100,
                 ),
               },
               {
@@ -200,7 +212,7 @@ export function DashboardOverviewPanel({
                 percentage: Math.round(
                   (metrics.experiments.culinaryVsPastry.pastry /
                     metrics.experiments.totalCount) *
-                    100
+                    100,
                 ),
               },
               {
@@ -209,7 +221,7 @@ export function DashboardOverviewPanel({
                 percentage: Math.round(
                   (metrics.experiments.culinaryVsPastry.both /
                     metrics.experiments.totalCount) *
-                    100
+                    100,
                 ),
               },
             ].map((spec) => (
@@ -255,7 +267,7 @@ export function DashboardOverviewPanel({
                     width: `${Math.min(
                       (metrics.sustainability.averageCarbonPerServing / 3) *
                         100,
-                      100
+                      100,
                     )}%`,
                   }}
                 />
@@ -314,17 +326,12 @@ export function DashboardOverviewPanel({
                 className="flex items-start justify-between p-3 bg-muted/50 dark:bg-slate-800/30 rounded-lg border border-border dark:border-slate-700"
               >
                 <div className="flex-1">
-                  <h4 className="font-medium text-foreground">
-                    {exp.title}
-                  </h4>
+                  <h4 className="font-medium text-foreground">{exp.title}</h4>
                   <p className="text-xs text-muted-foreground mt-1">
                     by {exp.owner} • {exp.lastUpdated}
                   </p>
                 </div>
-                <Badge
-                  variant="outline"
-                  className="ml-2 text-xs"
-                >
+                <Badge variant="outline" className="ml-2 text-xs">
                   Ready
                 </Badge>
               </div>
@@ -366,12 +373,8 @@ function MetricCard({
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             {title}
           </p>
-          <p className="text-2xl font-bold text-foreground mt-2">
-            {value}
-          </p>
-          <p className="text-xs text-muted-foreground mt-2">
-            {subtitle}
-          </p>
+          <p className="text-2xl font-bold text-foreground mt-2">{value}</p>
+          <p className="text-xs text-muted-foreground mt-2">{subtitle}</p>
         </div>
         <div className="p-3 rounded-lg bg-background/60 dark:bg-slate-800/40">
           <Icon className={`h-5 w-5 ${iconColor}`} />
@@ -386,9 +389,7 @@ function MetricCard({
           )}
           <span
             className={`text-xs font-medium ${
-              trend === "up"
-                ? "text-green-600"
-                : "text-red-600"
+              trend === "up" ? "text-green-600" : "text-red-600"
             }`}
           >
             {trendValue}

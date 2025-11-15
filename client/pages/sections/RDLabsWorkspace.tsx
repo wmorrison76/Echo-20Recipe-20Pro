@@ -30,7 +30,27 @@ import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
-import { LayoutGrid, Beaker, TestTube, Search, Settings, Home, HelpCircle, Sparkles, BarChart3, Zap, Wand2, CheckCircle, FileText, AlertTriangle, Lightbulb, Users, Target, Plus, ChevronDown } from "lucide-react";
+import {
+  LayoutGrid,
+  Beaker,
+  TestTube,
+  Search,
+  Settings,
+  Home,
+  HelpCircle,
+  Sparkles,
+  BarChart3,
+  Zap,
+  Wand2,
+  CheckCircle,
+  FileText,
+  AlertTriangle,
+  Lightbulb,
+  Users,
+  Target,
+  Plus,
+  ChevronDown,
+} from "lucide-react";
 
 export default function RDLabsWorkspace() {
   return (
@@ -48,7 +68,9 @@ function RDLabsWorkspaceContent() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [showHelp, setShowHelp] = useState(false);
   const [labMode, setLabMode] = useState<"culinary" | "pastry">("culinary");
-  const [recipeTrack, setRecipeTrack] = useState<"fine-dining" | "manufacturing">("fine-dining");
+  const [recipeTrack, setRecipeTrack] = useState<
+    "fine-dining" | "manufacturing"
+  >("fine-dining");
   const [hasEnteredLab, setHasEnteredLab] = useState(false);
 
   if (!store) {
@@ -57,7 +79,9 @@ function RDLabsWorkspaceContent() {
         <div className="text-center space-y-4">
           <Beaker className="h-16 w-16 mx-auto text-slate-400" />
           <p className="text-xl font-bold text-foreground">R&D Labs</p>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Initializing research environment...</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Initializing research environment...
+          </p>
         </div>
       </div>
     );
@@ -77,7 +101,9 @@ function RDLabsWorkspaceContent() {
   }
 
   const experimentsCount = store.experiments.length;
-  const focusExperiment = store.experiments.find(e => e.id === store.focusExperimentId);
+  const focusExperiment = store.experiments.find(
+    (e) => e.id === store.focusExperimentId,
+  );
 
   if (showDashboard) {
     return (
@@ -105,11 +131,13 @@ function RDLabsWorkspaceContent() {
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-border dark:border-slate-800">
         <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-lg ${
-            labMode === "pastry"
-              ? "bg-rose-500/10 border border-rose-500/30"
-              : "bg-cyan-500/10 border border-cyan-500/30"
-          }`}>
+          <div
+            className={`p-2 rounded-lg ${
+              labMode === "pastry"
+                ? "bg-rose-500/10 border border-rose-500/30"
+                : "bg-cyan-500/10 border border-cyan-500/30"
+            }`}
+          >
             {labMode === "pastry" ? (
               <Sparkles className="h-5 w-5 text-rose-500" />
             ) : (
@@ -119,21 +147,24 @@ function RDLabsWorkspaceContent() {
           <div>
             <h1 className="text-2xl font-bold text-foreground">R&D Labs</h1>
             <p className="text-xs text-muted-foreground">
-              {labMode === "pastry" 
-                ? recipeTrack === "manufacturing" 
+              {labMode === "pastry"
+                ? recipeTrack === "manufacturing"
                   ? "Pastry Manufacturing Lab"
                   : "Pastry Fine Dining Lab"
                 : recipeTrack === "manufacturing"
                   ? "Culinary Manufacturing Lab"
-                  : "Fine Dining Innovation Lab"
-              }
+                  : "Fine Dining Innovation Lab"}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <div className="text-right text-sm hidden md:block">
-            <p className="font-medium text-foreground">{experimentsCount} Active Experiments</p>
-            <p className="text-xs text-muted-foreground">Research in progress</p>
+            <p className="font-medium text-foreground">
+              {experimentsCount} Active Experiments
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Research in progress
+            </p>
           </div>
           <div className="flex gap-2">
             <Button
@@ -178,14 +209,19 @@ function RDLabsWorkspaceContent() {
         {/* Help Panel Overlay */}
         {showHelp && (
           <div className="absolute right-0 top-0 bottom-0 z-50">
-            <RDLabsHelpPanel isOpen={showHelp} onClose={() => setShowHelp(false)} />
+            <RDLabsHelpPanel
+              isOpen={showHelp}
+              onClose={() => setShowHelp(false)}
+            />
           </div>
         )}
 
         {/* Left Panel - Context */}
         <div className="w-80 border-r border-border dark:border-slate-800 overflow-auto flex-shrink-0 flex flex-col bg-muted/50 dark:bg-slate-900/50">
           <div className="p-4 border-b border-border dark:border-slate-800">
-            <h2 className="text-sm font-semibold mb-1 text-foreground">Active Experiment</h2>
+            <h2 className="text-sm font-semibold mb-1 text-foreground">
+              Active Experiment
+            </h2>
             <p className="text-xs text-muted-foreground">
               {focusExperiment?.title || "Select an experiment"}
             </p>
@@ -203,7 +239,9 @@ function RDLabsWorkspaceContent() {
 
           <div className="flex-1 overflow-auto p-4 space-y-4">
             <div>
-              <h3 className="text-sm font-semibold mb-2 text-foreground">Quick Actions</h3>
+              <h3 className="text-sm font-semibold mb-2 text-foreground">
+                Quick Actions
+              </h3>
               <Button className="w-full gap-2" size="sm">
                 <Plus className="h-4 w-4" />
                 New Experiment
@@ -211,7 +249,9 @@ function RDLabsWorkspaceContent() {
             </div>
             <div className="border-t border-border dark:border-slate-700 my-2"></div>
             <div className="pt-2">
-              <h3 className="text-sm font-semibold mb-2 text-foreground">Lab Focus</h3>
+              <h3 className="text-sm font-semibold mb-2 text-foreground">
+                Lab Focus
+              </h3>
               <div className="space-y-2 text-xs">
                 <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
                   <p className="font-medium text-blue-900 dark:text-blue-200 capitalize">
@@ -226,7 +266,11 @@ function RDLabsWorkspaceContent() {
         {/* Center Panel - Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Tab Navigation */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col flex-1">
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="flex flex-col flex-1"
+          >
             <TabsList className="w-full justify-start rounded-none h-12 overflow-x-auto border-b border-border dark:border-slate-800 bg-muted/30 dark:bg-slate-900/30">
               <TabsTrigger value="overview" className="gap-2">
                 <BarChart3 className="h-4 w-4" />
@@ -277,8 +321,12 @@ function RDLabsWorkspaceContent() {
               <TabsContent value="insights" className="m-0">
                 <div className="p-6">
                   <div className="space-y-4">
-                    <h2 className="text-2xl font-bold text-foreground">Lab Insights</h2>
-                    <p className="text-muted-foreground">Real-time analysis of your experiments</p>
+                    <h2 className="text-2xl font-bold text-foreground">
+                      Lab Insights
+                    </h2>
+                    <p className="text-muted-foreground">
+                      Real-time analysis of your experiments
+                    </p>
                   </div>
                 </div>
               </TabsContent>
@@ -286,8 +334,12 @@ function RDLabsWorkspaceContent() {
               <TabsContent value="analytics" className="m-0">
                 <div className="p-6">
                   <div className="space-y-4">
-                    <h2 className="text-2xl font-bold text-foreground">Lab Analytics</h2>
-                    <p className="text-muted-foreground">Detailed performance metrics</p>
+                    <h2 className="text-2xl font-bold text-foreground">
+                      Lab Analytics
+                    </h2>
+                    <p className="text-muted-foreground">
+                      Detailed performance metrics
+                    </p>
                   </div>
                 </div>
               </TabsContent>
@@ -334,17 +386,23 @@ function RDLabsWorkspaceContent() {
         {/* Right Panel - Collaboration & Session */}
         <div className="w-80 border-l border-border dark:border-slate-800 overflow-auto flex-shrink-0 flex flex-col bg-muted/50 dark:bg-slate-900/50">
           <div className="p-4 space-y-6">
-            <CollaborationHub 
-              track={recipeTrack} 
+            <CollaborationHub
+              track={recipeTrack}
               labMode={labMode}
-              currentUser={user ? { id: user.id, name: user.name || "Chef" } : undefined}
+              currentUser={
+                user ? { id: user.id, name: user.name || "Chef" } : undefined
+              }
             />
-            
+
             <div className="border-t border-border dark:border-slate-700 pt-6">
-              <h3 className="text-sm font-semibold mb-3 text-foreground">Session Info</h3>
+              <h3 className="text-sm font-semibold mb-3 text-foreground">
+                Session Info
+              </h3>
               {focusExperiment && (
                 <RDLabSessionSidebar
-                  isDarkMode={document.documentElement.classList.contains('dark')}
+                  isDarkMode={document.documentElement.classList.contains(
+                    "dark",
+                  )}
                   projectName={focusExperiment.title}
                   createdAt={new Date().toISOString()}
                   updatedAt={new Date().toISOString()}

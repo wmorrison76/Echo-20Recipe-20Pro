@@ -4,11 +4,16 @@ import { Card } from "@/components/ui/card";
 import { Beaker, Sparkles, ChefHat } from "lucide-react";
 
 interface LabDoorEntranceProps {
-  onTrackSelected: (track: "fine-dining" | "manufacturing", labMode: "culinary" | "pastry") => void;
+  onTrackSelected: (
+    track: "fine-dining" | "manufacturing",
+    labMode: "culinary" | "pastry",
+  ) => void;
 }
 
 export function LabDoorEntrance({ onTrackSelected }: LabDoorEntranceProps) {
-  const [stage, setStage] = useState<"greeting" | "doors-opening" | "ready">("greeting");
+  const [stage, setStage] = useState<"greeting" | "doors-opening" | "ready">(
+    "greeting",
+  );
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
   useEffect(() => {
@@ -21,7 +26,7 @@ export function LabDoorEntrance({ onTrackSelected }: LabDoorEntranceProps) {
   const handleSelection = (option: string) => {
     setSelectedOption(option);
     setStage("doors-opening");
-    
+
     // Parse selection and notify parent
     setTimeout(() => {
       if (option === "fine-dining") {
@@ -65,7 +70,7 @@ export function LabDoorEntrance({ onTrackSelected }: LabDoorEntranceProps) {
               <p className="text-center font-semibold text-foreground">
                 What will be your focus today?
               </p>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Button
                   onClick={() => handleSelection("fine-dining")}
@@ -74,7 +79,9 @@ export function LabDoorEntrance({ onTrackSelected }: LabDoorEntranceProps) {
                   <ChefHat className="h-8 w-8" />
                   <div className="text-center">
                     <div className="font-semibold">Fine Dining</div>
-                    <div className="text-xs opacity-90">Innovation & Experience</div>
+                    <div className="text-xs opacity-90">
+                      Innovation & Experience
+                    </div>
                   </div>
                 </Button>
 
@@ -85,7 +92,9 @@ export function LabDoorEntrance({ onTrackSelected }: LabDoorEntranceProps) {
                   <Sparkles className="h-8 w-8" />
                   <div className="text-center">
                     <div className="font-semibold">Pastry Fine Dining</div>
-                    <div className="text-xs opacity-90">Artistic Expression</div>
+                    <div className="text-xs opacity-90">
+                      Artistic Expression
+                    </div>
                   </div>
                 </Button>
 
@@ -96,7 +105,9 @@ export function LabDoorEntrance({ onTrackSelected }: LabDoorEntranceProps) {
                   <Beaker className="h-8 w-8" />
                   <div className="text-center">
                     <div className="font-semibold">Pastry Manufacturing</div>
-                    <div className="text-xs opacity-90">Scaling & Shelf Life</div>
+                    <div className="text-xs opacity-90">
+                      Scaling & Shelf Life
+                    </div>
                   </div>
                 </Button>
 
@@ -107,7 +118,9 @@ export function LabDoorEntrance({ onTrackSelected }: LabDoorEntranceProps) {
                   <Beaker className="h-8 w-8" />
                   <div className="text-center">
                     <div className="font-semibold">Manufacturing</div>
-                    <div className="text-xs opacity-90">Mass Market Products</div>
+                    <div className="text-xs opacity-90">
+                      Mass Market Products
+                    </div>
                   </div>
                 </Button>
               </div>

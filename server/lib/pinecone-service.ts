@@ -65,8 +65,9 @@ function getPineconeClient(): Pinecone {
  * Generate embeddings using OpenAI API (simulated for Pinecone compatibility)
  */
 export async function generateEmbedding(text: string): Promise<number[]> {
-  const openaiKey = process.env.OPENAI_API_KEY || process.env.ECHO_OPENAI_API_KEY;
-  
+  const openaiKey =
+    process.env.OPENAI_API_KEY || process.env.ECHO_OPENAI_API_KEY;
+
   if (!openaiKey) {
     console.warn("OpenAI API key not found, using mock embedding");
     return generateMockEmbedding(text);
@@ -134,7 +135,7 @@ export async function storeRecipeVector(
   track: RecipeTrack,
   chefId: string,
   organizationId: string,
-  collaborators?: string[]
+  collaborators?: string[],
 ): Promise<void> {
   if (!PINECONE_API_KEY) {
     console.warn("Pinecone API key not configured, skipping vector storage");
@@ -209,8 +210,8 @@ function isCrossTrackViable(recipe: {
   ];
   return techniqueTags.some((tag) =>
     crossTrackTechniques.some((tech) =>
-      tag.toLowerCase().includes(tech.toLowerCase())
-    )
+      tag.toLowerCase().includes(tech.toLowerCase()),
+    ),
   );
 }
 
@@ -223,7 +224,7 @@ export async function searchSimilarRecipes(
   chefId: string,
   organizationId: string,
   limit: number = 10,
-  includeCrossTrack: boolean = true
+  includeCrossTrack: boolean = true,
 ): Promise<RecipeSimilarityMatch[]> {
   if (!PINECONE_API_KEY) {
     console.warn("Pinecone API key not configured, returning empty results");
@@ -285,7 +286,7 @@ export async function searchSimilarRecipes(
 export async function getRecipesByTrack(
   track: RecipeTrack,
   organizationId: string,
-  limit: number = 50
+  limit: number = 50,
 ): Promise<RecipeSimilarityMatch[]> {
   if (!PINECONE_API_KEY) {
     console.warn("Pinecone API key not configured, returning empty results");
@@ -328,7 +329,7 @@ export async function getRecipesByTrack(
 export async function deleteRecipeVector(
   recipeId: string,
   track: RecipeTrack,
-  chefId: string
+  chefId: string,
 ): Promise<void> {
   if (!PINECONE_API_KEY) {
     return;
@@ -351,7 +352,7 @@ export async function deleteRecipeVector(
 export async function getCrossTrackLearning(
   recipeText: string,
   organizationId: string,
-  limit: number = 5
+  limit: number = 5,
 ): Promise<RecipeSimilarityMatch[]> {
   if (!PINECONE_API_KEY) {
     return [];

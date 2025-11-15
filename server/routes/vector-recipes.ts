@@ -48,20 +48,15 @@ router.get("/health", async (req: Request, res: Response) => {
  */
 router.post("/recipes/store", async (req: Request, res: Response) => {
   try {
-    const {
-      recipe,
-      track,
-      chefId,
-      organizationId,
-      collaborators,
-    } = req.body;
+    const { recipe, track, chefId, organizationId, collaborators } = req.body;
 
     if (!recipe || !track || !chefId || !organizationId) {
       return res.status(400).json({
         success: false,
         error: {
           code: "INVALID_INPUT",
-          message: "Missing required fields: recipe, track, chefId, organizationId",
+          message:
+            "Missing required fields: recipe, track, chefId, organizationId",
         },
       });
     }
@@ -76,7 +71,13 @@ router.post("/recipes/store", async (req: Request, res: Response) => {
       });
     }
 
-    await storeRecipeVector(recipe, track, chefId, organizationId, collaborators);
+    await storeRecipeVector(
+      recipe,
+      track,
+      chefId,
+      organizationId,
+      collaborators,
+    );
 
     return res.json({
       success: true,
@@ -93,7 +94,10 @@ router.post("/recipes/store", async (req: Request, res: Response) => {
       success: false,
       error: {
         code: "STORAGE_ERROR",
-        message: error instanceof Error ? error.message : "Failed to store recipe vector",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to store recipe vector",
       },
     });
   }
@@ -119,7 +123,8 @@ router.post("/recipes/search", async (req: Request, res: Response) => {
         success: false,
         error: {
           code: "INVALID_INPUT",
-          message: "Missing required fields: recipeText, userTrack, chefId, organizationId",
+          message:
+            "Missing required fields: recipeText, userTrack, chefId, organizationId",
         },
       });
     }
@@ -130,7 +135,7 @@ router.post("/recipes/search", async (req: Request, res: Response) => {
       chefId,
       organizationId,
       limit,
-      includeCrossTrack
+      includeCrossTrack,
     );
 
     return res.json({
@@ -147,7 +152,8 @@ router.post("/recipes/search", async (req: Request, res: Response) => {
       success: false,
       error: {
         code: "SEARCH_ERROR",
-        message: error instanceof Error ? error.message : "Failed to search recipes",
+        message:
+          error instanceof Error ? error.message : "Failed to search recipes",
       },
     });
   }
@@ -184,7 +190,7 @@ router.get("/recipes/by-track", async (req: Request, res: Response) => {
     const recipes = await getRecipesByTrack(
       track as RecipeTrack,
       organizationId as string,
-      parseInt(limit as string, 10)
+      parseInt(limit as string, 10),
     );
 
     return res.json({
@@ -201,7 +207,8 @@ router.get("/recipes/by-track", async (req: Request, res: Response) => {
       success: false,
       error: {
         code: "FETCH_ERROR",
-        message: error instanceof Error ? error.message : "Failed to fetch recipes",
+        message:
+          error instanceof Error ? error.message : "Failed to fetch recipes",
       },
     });
   }
@@ -241,7 +248,10 @@ router.post("/recipes/delete", async (req: Request, res: Response) => {
       success: false,
       error: {
         code: "DELETE_ERROR",
-        message: error instanceof Error ? error.message : "Failed to delete recipe vector",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to delete recipe vector",
       },
     });
   }
@@ -268,7 +278,7 @@ router.post("/cross-track-learning", async (req: Request, res: Response) => {
     const suggestions = await getCrossTrackLearning(
       recipeText,
       organizationId,
-      limit
+      limit,
     );
 
     return res.json({
@@ -285,7 +295,10 @@ router.post("/cross-track-learning", async (req: Request, res: Response) => {
       success: false,
       error: {
         code: "LEARNING_ERROR",
-        message: error instanceof Error ? error.message : "Failed to get cross-track learning",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to get cross-track learning",
       },
     });
   }
@@ -325,7 +338,10 @@ router.post("/embedding", async (req: Request, res: Response) => {
       success: false,
       error: {
         code: "EMBEDDING_ERROR",
-        message: error instanceof Error ? error.message : "Failed to generate embedding",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to generate embedding",
       },
     });
   }

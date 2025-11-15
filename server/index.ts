@@ -17,7 +17,7 @@ import {
   proxyRecipeImage as proxyImageOptimized,
   serveRecipeImage,
   generateBlurhash,
-  getImageMetadata
+  getImageMetadata,
 } from "./routes/images";
 
 export function createServer() {

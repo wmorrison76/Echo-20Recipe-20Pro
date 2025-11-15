@@ -1,9 +1,10 @@
 # AI Research Assistant - Technical Implementation Guide
+
 ## Code Patterns & Integration Architecture
 
 **Version**: 1.0  
 **Target Audience**: Full-stack developers  
-**Technology Stack**: React + TypeScript + Express + Supabase + OpenAI  
+**Technology Stack**: React + TypeScript + Express + Supabase + OpenAI
 
 ---
 
@@ -83,8 +84,8 @@ VITE_AI_PRODUCTION_BRIDGE=true
 
 **File**: `server/lib/llm-service.ts`
 
-```typescript
-import OpenAI from 'openai';
+````typescript
+import OpenAI from "openai";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -111,7 +112,7 @@ interface ExperimentDesignResponse {
     min: number;
     max: number;
     unit: string;
-    importance: 'critical' | 'important' | 'nice-to-have';
+    importance: "critical" | "important" | "nice-to-have";
   }>;
   controls: {
     baselineIngredients: string[];
@@ -129,7 +130,7 @@ interface ExperimentDesignResponse {
   }>;
   riskFlags: Array<{
     risk: string;
-    severity: 'low' | 'medium' | 'high';
+    severity: "low" | "medium" | "high";
     mitigation: string;
   }>;
   estimatedTimeline: {
@@ -139,7 +140,7 @@ interface ExperimentDesignResponse {
 }
 
 export async function designExperiment(
-  request: ExperimentDesignRequest
+  request: ExperimentDesignRequest,
 ): Promise<ExperimentDesignResponse> {
   const systemPrompt = `You are an expert culinary scientist and R&D director. 
 Your role is to design rigorous food experiments that are:
@@ -157,15 +158,23 @@ When designing experiments:
   const userPrompt = `Design an experiment for this goal:
 "${request.goal}"
 
-${request.constraints ? `Constraints:
-- Ingredients available: ${request.constraints.ingredients?.join(', ')}
-- Equipment: ${request.constraints.equipment?.join(', ')}
+${
+  request.constraints
+    ? `Constraints:
+- Ingredients available: ${request.constraints.ingredients?.join(", ")}
+- Equipment: ${request.constraints.equipment?.join(", ")}
 - Timeline: ${request.constraints.timeline} days max
-- Budget: $${request.constraints.budget}` : ''}
+- Budget: $${request.constraints.budget}`
+    : ""
+}
 
-${request.context ? `Context:
-- Recent experiments: ${request.context.recentExperiments?.join(', ')}
-- Team expertise in: ${request.context.teamExpertise?.join(', ')}` : ''}
+${
+  request.context
+    ? `Context:
+- Recent experiments: ${request.context.recentExperiments?.join(", ")}
+- Team expertise in: ${request.context.teamExpertise?.join(", ")}`
+    : ""
+}
 
 Return your design as a JSON object with this structure:
 {
@@ -180,11 +189,11 @@ Return your design as a JSON object with this structure:
 
   try {
     const message = await openai.messages.create({
-      model: 'gpt-4-turbo-preview',
+      model: "gpt-4-turbo-preview",
       max_tokens: 2000,
       messages: [
         {
-          role: 'user',
+          role: "user",
           content: userPrompt,
         },
       ],
@@ -192,8 +201,8 @@ Return your design as a JSON object with this structure:
     });
 
     const content = message.content[0];
-    if (content.type !== 'text') {
-      throw new Error('Unexpected response type from OpenAI');
+    if (content.type !== "text") {
+      throw new Error("Unexpected response type from OpenAI");
     }
 
     // Extract JSON from response (may be wrapped in markdown code blocks)
@@ -206,18 +215,18 @@ Return your design as a JSON object with this structure:
     const design = JSON.parse(jsonString) as ExperimentDesignResponse;
     return design;
   } catch (error) {
-    console.error('Error designing experiment:', error);
-    throw new Error(`Failed to design experiment: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.error("Error designing experiment:", error);
+    throw new Error(
+      `Failed to design experiment: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
   }
 }
 
-export async function validateExperiment(
-  experimentData: {
-    results: number[];
-    baseline: number[];
-    notes: string;
-  }
-): Promise<{
+export async function validateExperiment(experimentData: {
+  results: number[];
+  baseline: number[];
+  notes: string;
+}): Promise<{
   isValid: boolean;
   confidence: number;
   recommendations: string[];
@@ -244,11 +253,11 @@ Provide assessment in JSON:
 }`;
 
   const message = await openai.messages.create({
-    model: 'gpt-4-turbo-preview',
+    model: "gpt-4-turbo-preview",
     max_tokens: 1000,
     messages: [
       {
-        role: 'user',
+        role: "user",
         content: userPrompt,
       },
     ],
@@ -256,8 +265,8 @@ Provide assessment in JSON:
   });
 
   const content = message.content[0];
-  if (content.type !== 'text') {
-    throw new Error('Unexpected response type from OpenAI');
+  if (content.type !== "text") {
+    throw new Error("Unexpected response type from OpenAI");
   }
 
   let jsonString = content.text;
@@ -269,15 +278,13 @@ Provide assessment in JSON:
   return JSON.parse(jsonString);
 }
 
-export async function generateSOP(
-  experimentData: {
-    title: string;
-    hypothesis: string;
-    variables: Array<{ name: string; value: string }>;
-    procedure: string;
-    ingredients: Array<{ name: string; amount: string }>;
-  }
-): Promise<string> {
+export async function generateSOP(experimentData: {
+  title: string;
+  hypothesis: string;
+  variables: Array<{ name: string; value: string }>;
+  procedure: string;
+  ingredients: Array<{ name: string; amount: string }>;
+}): Promise<string> {
   const systemPrompt = `You are an expert at writing Standard Operating Procedures (SOPs).
 Create clear, step-by-step procedures that production staff can follow.
 Format:
@@ -293,16 +300,16 @@ Format:
   const userPrompt = `Generate an SOP for this recipe experiment:
 Title: ${experimentData.title}
 Hypothesis: ${experimentData.hypothesis}
-Key variables: ${experimentData.variables.map(v => `${v.name}=${v.value}`).join(', ')}
+Key variables: ${experimentData.variables.map((v) => `${v.name}=${v.value}`).join(", ")}
 Procedure: ${experimentData.procedure}
-Ingredients: ${experimentData.ingredients.map(i => `${i.amount} ${i.name}`).join(', ')}`;
+Ingredients: ${experimentData.ingredients.map((i) => `${i.amount} ${i.name}`).join(", ")}`;
 
   const message = await openai.messages.create({
-    model: 'gpt-4-turbo-preview',
+    model: "gpt-4-turbo-preview",
     max_tokens: 2000,
     messages: [
       {
-        role: 'user',
+        role: "user",
         content: userPrompt,
       },
     ],
@@ -310,13 +317,13 @@ Ingredients: ${experimentData.ingredients.map(i => `${i.amount} ${i.name}`).join
   });
 
   const content = message.content[0];
-  if (content.type !== 'text') {
-    throw new Error('Unexpected response type from OpenAI');
+  if (content.type !== "text") {
+    throw new Error("Unexpected response type from OpenAI");
   }
 
   return content.text;
 }
-```
+````
 
 ---
 
@@ -327,8 +334,8 @@ Ingredients: ${experimentData.ingredients.map(i => `${i.amount} ${i.name}`).join
 **File**: `server/lib/vector-db.ts`
 
 ```typescript
-import { Pinecone } from '@pinecone-database/pinecone';
-import OpenAI from 'openai';
+import { Pinecone } from "@pinecone-database/pinecone";
+import OpenAI from "openai";
 
 const pinecone = new Pinecone({
   apiKey: process.env.PINECONE_API_KEY,
@@ -349,7 +356,7 @@ interface ExperimentEmbedding {
 
 export async function generateEmbedding(text: string): Promise<number[]> {
   const response = await openai.embeddings.create({
-    model: 'text-embedding-3-small',
+    model: "text-embedding-3-small",
     input: text,
   });
   return response.data[0].embedding;
@@ -359,7 +366,7 @@ export async function indexExperiment(
   experimentId: string,
   title: string,
   hypothesis: string,
-  specialization: string
+  specialization: string,
 ): Promise<void> {
   const index = pinecone.Index(process.env.PINECONE_INDEX_NAME!);
 
@@ -382,13 +389,15 @@ export async function indexExperiment(
 
 export async function findSimilarExperiments(
   goal: string,
-  limit: number = 5
-): Promise<Array<{
-  id: string;
-  title: string;
-  hypothesis: string;
-  score: number;
-}>> {
+  limit: number = 5,
+): Promise<
+  Array<{
+    id: string;
+    title: string;
+    hypothesis: string;
+    score: number;
+  }>
+> {
   const index = pinecone.Index(process.env.PINECONE_INDEX_NAME!);
 
   const queryEmbedding = await generateEmbedding(goal);
@@ -399,10 +408,10 @@ export async function findSimilarExperiments(
     includeMetadata: true,
   });
 
-  return results.matches.map(match => ({
+  return results.matches.map((match) => ({
     id: match.id,
-    title: (match.metadata?.title as string) || '',
-    hypothesis: (match.metadata?.hypothesis as string) || '',
+    title: (match.metadata?.title as string) || "",
+    hypothesis: (match.metadata?.hypothesis as string) || "",
     score: match.score || 0,
   }));
 }
@@ -413,7 +422,7 @@ export async function rebuildIndexFromDatabase(
     title: string;
     hypothesis: string;
     specialization: string;
-  }>
+  }>,
 ): Promise<void> {
   console.log(`Rebuilding index with ${experiments.length} experiments...`);
 
@@ -422,9 +431,9 @@ export async function rebuildIndexFromDatabase(
     const batch = experiments.slice(i, i + batchSize);
 
     const vectors = await Promise.all(
-      batch.map(async exp => {
+      batch.map(async (exp) => {
         const embedding = await generateEmbedding(
-          `${exp.title} ${exp.hypothesis}`
+          `${exp.title} ${exp.hypothesis}`,
         );
         return {
           id: exp.id,
@@ -436,7 +445,7 @@ export async function rebuildIndexFromDatabase(
             indexed_at: new Date().toISOString(),
           },
         };
-      })
+      }),
     );
 
     const index = pinecone.Index(process.env.PINECONE_INDEX_NAME!);
@@ -445,7 +454,7 @@ export async function rebuildIndexFromDatabase(
     console.log(`Indexed ${i + batch.length}/${experiments.length}`);
   }
 
-  console.log('Index rebuild complete');
+  console.log("Index rebuild complete");
 }
 ```
 
@@ -454,11 +463,11 @@ export async function rebuildIndexFromDatabase(
 **File**: `server/lib/embedding-cache.ts`
 
 ```typescript
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
 interface CachedEmbedding {
@@ -468,11 +477,13 @@ interface CachedEmbedding {
   created_at: string;
 }
 
-export async function getCachedEmbedding(textHash: string): Promise<number[] | null> {
+export async function getCachedEmbedding(
+  textHash: string,
+): Promise<number[] | null> {
   const { data } = await supabase
-    .from('embedding_cache')
-    .select('embedding')
-    .eq('text_hash', textHash)
+    .from("embedding_cache")
+    .select("embedding")
+    .eq("text_hash", textHash)
     .single();
 
   return data?.embedding || null;
@@ -480,9 +491,9 @@ export async function getCachedEmbedding(textHash: string): Promise<number[] | n
 
 export async function cacheEmbedding(
   textHash: string,
-  embedding: number[]
+  embedding: number[],
 ): Promise<void> {
-  await supabase.from('embedding_cache').insert({
+  await supabase.from("embedding_cache").insert({
     text_hash: textHash,
     embedding,
   });
@@ -498,15 +509,15 @@ export async function cacheEmbedding(
 **File**: `server/routes/rdlabs-ai.ts` (new file)
 
 ```typescript
-import { Router, Request, Response } from 'express';
-import { designExperiment } from '../lib/llm-service';
-import { findSimilarExperiments } from '../lib/vector-db';
-import { createClient } from '@supabase/supabase-js';
+import { Router, Request, Response } from "express";
+import { designExperiment } from "../lib/llm-service";
+import { findSimilarExperiments } from "../lib/vector-db";
+import { createClient } from "@supabase/supabase-js";
 
 const router = Router();
 const supabase = createClient(
   process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
 interface DesignRequest {
@@ -520,14 +531,14 @@ interface DesignRequest {
   includeContext?: boolean;
 }
 
-router.post('/design', async (req: Request, res: Response) => {
+router.post("/design", async (req: Request, res: Response) => {
   try {
     const { goal, constraints, includeContext } = req.body as DesignRequest;
 
     if (!goal) {
       return res.status(400).json({
         success: false,
-        error: 'Goal is required',
+        error: "Goal is required",
       });
     }
 
@@ -537,16 +548,18 @@ router.post('/design', async (req: Request, res: Response) => {
 
     if (includeContext) {
       const similar = await findSimilarExperiments(goal, 3);
-      recentExperiments = similar.map(e => `${e.title}: ${e.hypothesis}`);
+      recentExperiments = similar.map((e) => `${e.title}: ${e.hypothesis}`);
 
       // Get team expertise (can be enhanced with actual team data)
       const { data: experiments } = await supabase
-        .from('experiments')
-        .select('specialization')
+        .from("experiments")
+        .select("specialization")
         .limit(100);
 
       if (experiments) {
-        const specializations = [...new Set(experiments.map(e => e.specialization))];
+        const specializations = [
+          ...new Set(experiments.map((e) => e.specialization)),
+        ];
         teamExpertise = specializations as string[];
       }
     }
@@ -562,10 +575,10 @@ router.post('/design', async (req: Request, res: Response) => {
     });
 
     // Store design proposal in cache (optional, for audit trail)
-    await supabase.from('ai_design_proposals').insert({
+    await supabase.from("ai_design_proposals").insert({
       goal,
       proposal: design,
-      created_by: req.headers['x-user-id'],
+      created_by: req.headers["x-user-id"],
       created_at: new Date().toISOString(),
     });
 
@@ -574,28 +587,28 @@ router.post('/design', async (req: Request, res: Response) => {
       data: design,
     });
   } catch (error) {
-    console.error('Error in experiment design:', error);
+    console.error("Error in experiment design:", error);
     return res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
 
-router.get('/similar', async (req: Request, res: Response) => {
+router.get("/similar", async (req: Request, res: Response) => {
   try {
     const { goal, limit = 5 } = req.query;
 
     if (!goal) {
       return res.status(400).json({
         success: false,
-        error: 'Goal query parameter is required',
+        error: "Goal query parameter is required",
       });
     }
 
     const similar = await findSimilarExperiments(
       goal as string,
-      parseInt(limit as string, 10)
+      parseInt(limit as string, 10),
     );
 
     return res.json({
@@ -603,10 +616,10 @@ router.get('/similar', async (req: Request, res: Response) => {
       data: similar,
     });
   } catch (error) {
-    console.error('Error finding similar experiments:', error);
+    console.error("Error finding similar experiments:", error);
     return res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -619,10 +632,10 @@ export default router;
 **File**: `server/index.ts` (add this import and router registration)
 
 ```typescript
-import rdLabsAIRoutes from './routes/rdlabs-ai';
+import rdLabsAIRoutes from "./routes/rdlabs-ai";
 
 // After existing rdlabs router
-app.use('/api/rdlabs/ai', rdLabsAIRoutes);
+app.use("/api/rdlabs/ai", rdLabsAIRoutes);
 ```
 
 ---
@@ -632,7 +645,7 @@ app.use('/api/rdlabs/ai', rdLabsAIRoutes);
 **File**: `server/lib/stats-service.ts`
 
 ```typescript
-import { ttest, mean, std, variance } from 'simple-statistics';
+import { ttest, mean, std, variance } from "simple-statistics";
 
 interface ValidationResult {
   isValid: boolean;
@@ -657,14 +670,14 @@ interface ValidationResult {
 export function validateResults(
   results: number[],
   baseline: number[],
-  threshold: number = 0.05
+  threshold: number = 0.05,
 ): ValidationResult {
   // Check sample size
   if (results.length < 3) {
     return {
       isValid: false,
       confidenceScore: 0,
-      summary: 'Insufficient sample size (minimum 3)',
+      summary: "Insufficient sample size (minimum 3)",
       details: {
         sampleSize: results.length,
         mean: mean(results),
@@ -674,8 +687,8 @@ export function validateResults(
         outlierCount: 0,
         reproducibilityScore: 0,
       },
-      recommendations: ['Conduct more replicates (3-5 minimum)'],
-      concerns: ['Sample size is too small for statistical validity'],
+      recommendations: ["Conduct more replicates (3-5 minimum)"],
+      concerns: ["Sample size is too small for statistical validity"],
     };
   }
 
@@ -690,11 +703,17 @@ export function validateResults(
   const q1 = sorted[Math.floor(sorted.length * 0.25)];
   const q3 = sorted[Math.floor(sorted.length * 0.75)];
   const iqr = q3 - q1;
-  const outliers = results.filter(v => v < q1 - 1.5 * iqr || v > q3 + 1.5 * iqr);
+  const outliers = results.filter(
+    (v) => v < q1 - 1.5 * iqr || v > q3 + 1.5 * iqr,
+  );
 
   // Calculate effect size (Cohen's d)
   const baselineStd = std(baseline);
-  const pooledStd = Math.sqrt(((results.length - 1) * resultVar + (baseline.length - 1) * variance(baseline)) / (results.length + baseline.length - 2));
+  const pooledStd = Math.sqrt(
+    ((results.length - 1) * resultVar +
+      (baseline.length - 1) * variance(baseline)) /
+      (results.length + baseline.length - 2),
+  );
   const effectSize = Math.abs(resultMean - baselineMean) / pooledStd;
 
   // Calculate reproducibility score
@@ -702,7 +721,8 @@ export function validateResults(
   const reproducibilityScore = Math.max(0, 100 - coefficientOfVariation * 5); // CV < 20% is good
 
   // Simple t-test approximation
-  const tStat = (resultMean - baselineMean) / (resultStd / Math.sqrt(results.length));
+  const tStat =
+    (resultMean - baselineMean) / (resultStd / Math.sqrt(results.length));
 
   // Confidence score based on multiple factors
   let confidenceScore = 100;
@@ -723,27 +743,37 @@ export function validateResults(
   const concerns: string[] = [];
 
   if (outliers.length > 0) {
-    concerns.push(`Found ${outliers.length} outlier(s): ${outliers.join(', ')}`);
-    recommendations.push('Review outlier samples for errors or contamination');
+    concerns.push(
+      `Found ${outliers.length} outlier(s): ${outliers.join(", ")}`,
+    );
+    recommendations.push("Review outlier samples for errors or contamination");
   }
 
   if (reproducibilityScore < 70) {
-    concerns.push('Reproducibility is low (high variability between replicates)');
-    recommendations.push('Improve protocol consistency, control conditions more tightly');
+    concerns.push(
+      "Reproducibility is low (high variability between replicates)",
+    );
+    recommendations.push(
+      "Improve protocol consistency, control conditions more tightly",
+    );
   }
 
   if (Math.abs(effectSize) > 2) {
-    recommendations.push('Large effect size detected - results are substantial');
+    recommendations.push(
+      "Large effect size detected - results are substantial",
+    );
   }
 
   if (results.length < 5) {
-    recommendations.push('Consider conducting 2-3 more replicates for statistical robustness');
+    recommendations.push(
+      "Consider conducting 2-3 more replicates for statistical robustness",
+    );
   }
 
   return {
     isValid,
     confidenceScore,
-    summary: `${isValid ? '✓ Valid' : '✗ Issues found'} - Confidence: ${confidenceScore.toFixed(0)}%`,
+    summary: `${isValid ? "✓ Valid" : "✗ Issues found"} - Confidence: ${confidenceScore.toFixed(0)}%`,
     details: {
       sampleSize: results.length,
       mean: resultMean,
@@ -765,7 +795,7 @@ export function estimateTimelineImprovements(
   similarExperiments: Array<{
     title: string;
     daysToReady: number;
-  }>
+  }>,
 ): {
   estimatedDays: number;
   range: { min: number; max: number };
@@ -775,11 +805,11 @@ export function estimateTimelineImprovements(
     return {
       estimatedDays: 45, // Default
       range: { min: 30, max: 60 },
-      baselineComparison: 'No similar experiments to compare',
+      baselineComparison: "No similar experiments to compare",
     };
   }
 
-  const days = similarExperiments.map(e => e.daysToReady);
+  const days = similarExperiments.map((e) => e.daysToReady);
   const avg = mean(days);
   const stdev = std(days);
 
@@ -789,7 +819,7 @@ export function estimateTimelineImprovements(
       min: Math.round(avg - stdev),
       max: Math.round(avg + stdev),
     },
-    baselineComparison: `Based on ${similarExperiments.length} similar experiments (${similarExperiments.map(e => e.title).join(', ')})`,
+    baselineComparison: `Based on ${similarExperiments.length} similar experiments (${similarExperiments.map((e) => e.title).join(", ")})`,
   };
 }
 ```
@@ -801,12 +831,12 @@ export function estimateTimelineImprovements(
 **File**: `server/lib/production-bridge.ts`
 
 ```typescript
-import { generateSOP } from './llm-service';
-import { createClient } from '@supabase/supabase-js';
+import { generateSOP } from "./llm-service";
+import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
 interface ProductionCheckResult {
@@ -826,17 +856,17 @@ interface ProductionCheckResult {
 }
 
 export async function checkProductionReadiness(
-  experimentId: string
+  experimentId: string,
 ): Promise<ProductionCheckResult> {
   // Fetch experiment details
   const { data: experiment } = await supabase
-    .from('experiments')
-    .select('*')
-    .eq('id', experimentId)
+    .from("experiments")
+    .select("*")
+    .eq("id", experimentId)
     .single();
 
   if (!experiment) {
-    throw new Error('Experiment not found');
+    throw new Error("Experiment not found");
   }
 
   const checks = [];
@@ -844,70 +874,78 @@ export async function checkProductionReadiness(
   const recommendations: string[] = [];
 
   // Check 1: Status
-  const statusCheck = experiment.status === 'ready';
+  const statusCheck = experiment.status === "ready";
   checks.push({
-    name: 'Status Ready',
+    name: "Status Ready",
     passed: statusCheck,
-    message: statusCheck ? 'Experiment marked as ready' : 'Experiment not ready for production',
+    message: statusCheck
+      ? "Experiment marked as ready"
+      : "Experiment not ready for production",
   });
   if (!statusCheck) score -= 15;
 
   // Check 2: Sensory validation
   const sensoryCheck = (experiment.sensory_feedback?.length || 0) >= 3;
   checks.push({
-    name: 'Sensory Evaluation',
+    name: "Sensory Evaluation",
     passed: sensoryCheck,
     message: sensoryCheck
       ? `${experiment.sensory_feedback.length} sensory evaluations completed`
-      : 'Need minimum 3 sensory evaluations',
+      : "Need minimum 3 sensory evaluations",
   });
   if (!sensoryCheck) {
     score -= 20;
-    recommendations.push(`Get ${3 - (experiment.sensory_feedback?.length || 0)} more sensory evaluations`);
+    recommendations.push(
+      `Get ${3 - (experiment.sensory_feedback?.length || 0)} more sensory evaluations`,
+    );
   }
 
   // Check 3: Cost lock
   const costLocked = experiment.cost_locked === true;
   checks.push({
-    name: 'Cost Locked',
+    name: "Cost Locked",
     passed: costLocked,
     message: costLocked
       ? `Cost locked at $${experiment.cost_per_portion}`
-      : 'Ingredient costs need to be locked',
+      : "Ingredient costs need to be locked",
   });
   if (!costLocked) {
     score -= 10;
-    recommendations.push('Lock ingredient costs with suppliers');
+    recommendations.push("Lock ingredient costs with suppliers");
   }
 
   // Check 4: Equipment verified
-  const equipmentVerified = (experiment.equipment_verified || false);
+  const equipmentVerified = experiment.equipment_verified || false;
   checks.push({
-    name: 'Equipment Verified',
+    name: "Equipment Verified",
     passed: equipmentVerified,
     message: equipmentVerified
-      ? 'Equipment capacity confirmed'
-      : 'Need to verify kitchen equipment can handle recipe',
+      ? "Equipment capacity confirmed"
+      : "Need to verify kitchen equipment can handle recipe",
   });
   if (!equipmentVerified) {
     score -= 15;
-    recommendations.push('Verify all equipment requirements with kitchen staff');
+    recommendations.push(
+      "Verify all equipment requirements with kitchen staff",
+    );
   }
 
   // Check 5: Documentation complete
   const docsComplete = !!(experiment.procedure && experiment.ingredients);
   checks.push({
-    name: 'Documentation',
+    name: "Documentation",
     passed: docsComplete,
-    message: docsComplete ? 'Full procedure and ingredients documented' : 'Missing procedure or ingredients',
+    message: docsComplete
+      ? "Full procedure and ingredients documented"
+      : "Missing procedure or ingredients",
   });
   if (!docsComplete) {
     score -= 20;
-    recommendations.push('Complete procedure and ingredients documentation');
+    recommendations.push("Complete procedure and ingredients documentation");
   }
 
   // Generate SOP if ready
-  let sopText = '';
+  let sopText = "";
   if (score >= 60) {
     sopText = await generateSOP({
       title: experiment.title,
@@ -919,7 +957,9 @@ export async function checkProductionReadiness(
   }
 
   // Generate allergen statement (placeholder)
-  const allergenStatement = generateAllergenStatement(experiment.ingredients || []);
+  const allergenStatement = generateAllergenStatement(
+    experiment.ingredients || [],
+  );
 
   // Generate nutrition label (placeholder)
   const nutritionLabel = generateNutritionLabel(experiment.ingredients || []);
@@ -937,22 +977,33 @@ export async function checkProductionReadiness(
   };
 }
 
-function generateAllergenStatement(ingredients: Array<{ name: string }>): string {
-  const allergens = ['eggs', 'dairy', 'peanuts', 'tree nuts', 'soy', 'fish', 'shellfish', 'wheat'];
-  const found = allergens.filter(a =>
-    ingredients.some(i => i.name.toLowerCase().includes(a))
+function generateAllergenStatement(
+  ingredients: Array<{ name: string }>,
+): string {
+  const allergens = [
+    "eggs",
+    "dairy",
+    "peanuts",
+    "tree nuts",
+    "soy",
+    "fish",
+    "shellfish",
+    "wheat",
+  ];
+  const found = allergens.filter((a) =>
+    ingredients.some((i) => i.name.toLowerCase().includes(a)),
   );
 
   if (found.length === 0) {
-    return 'This product contains no major FDA allergens.';
+    return "This product contains no major FDA allergens.";
   }
 
-  return `Contains: ${found.join(', ')}. May also contain traces from shared equipment.`;
+  return `Contains: ${found.join(", ")}. May also contain traces from shared equipment.`;
 }
 
 function generateNutritionLabel(ingredients: Array<{ name: string }>): string {
   // Placeholder - would integrate with nutrition database
-  return 'Serving Size: 1 portion\nCalories: 250\nProtein: 8g\nFat: 12g\nCarbs: 28g';
+  return "Serving Size: 1 portion\nCalories: 250\nProtein: 8g\nFat: 12g\nCarbs: 28g";
 }
 ```
 
@@ -1262,10 +1313,10 @@ export function AIValidationPanel({ experimentId }: AIValidationPanelProps) {
 **File**: `client/lib/__tests__/stats-service.test.ts`
 
 ```typescript
-import { validateResults } from '@/server/lib/stats-service';
+import { validateResults } from "@/server/lib/stats-service";
 
-describe('Statistical Validation', () => {
-  it('should identify invalid results with low sample size', () => {
+describe("Statistical Validation", () => {
+  it("should identify invalid results with low sample size", () => {
     const results = [10, 12];
     const baseline = [8, 9];
 
@@ -1274,7 +1325,7 @@ describe('Statistical Validation', () => {
     expect(validation.details.sampleSize).toBe(2);
   });
 
-  it('should detect outliers', () => {
+  it("should detect outliers", () => {
     const results = [100, 102, 101, 99, 500]; // 500 is outlier
     const baseline = [95, 96, 97];
 
@@ -1283,7 +1334,7 @@ describe('Statistical Validation', () => {
     expect(validation.confidenceScore).toBeLessThan(100);
   });
 
-  it('should validate consistent results', () => {
+  it("should validate consistent results", () => {
     const results = [100, 101, 99, 100, 102];
     const baseline = [85, 86, 84];
 
@@ -1299,27 +1350,27 @@ describe('Statistical Validation', () => {
 **File**: `server/__tests__/rdlabs-ai.test.ts`
 
 ```typescript
-import request from 'supertest';
-import app from '../index';
+import request from "supertest";
+import app from "../index";
 
-describe('R&D Labs AI Routes', () => {
-  it('POST /api/rdlabs/ai/design should return experiment design', async () => {
-    const response = await request(app).post('/api/rdlabs/ai/design').send({
-      goal: 'Create a stable emulsion for saucing',
+describe("R&D Labs AI Routes", () => {
+  it("POST /api/rdlabs/ai/design should return experiment design", async () => {
+    const response = await request(app).post("/api/rdlabs/ai/design").send({
+      goal: "Create a stable emulsion for saucing",
       includeContext: false,
     });
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
-    expect(response.body.data).toHaveProperty('hypothesis');
-    expect(response.body.data).toHaveProperty('variables');
-    expect(response.body.data).toHaveProperty('riskFlags');
+    expect(response.body.data).toHaveProperty("hypothesis");
+    expect(response.body.data).toHaveProperty("variables");
+    expect(response.body.data).toHaveProperty("riskFlags");
   });
 
-  it('GET /api/rdlabs/ai/similar should find similar experiments', async () => {
+  it("GET /api/rdlabs/ai/similar should find similar experiments", async () => {
     const response = await request(app)
-      .get('/api/rdlabs/ai/similar')
-      .query({ goal: 'foams', limit: 3 });
+      .get("/api/rdlabs/ai/similar")
+      .query({ goal: "foams", limit: 3 });
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
@@ -1356,13 +1407,13 @@ describe('R&D Labs AI Routes', () => {
 
 ## Troubleshooting
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| "Invalid API key" | OPENAI_API_KEY not set | Add key to .env and restart server |
-| 429 Rate Limited | Too many requests | Implement exponential backoff, queue requests |
-| Slow responses | Large embeddings | Use smaller batch sizes, cache results |
-| Poor design quality | Weak prompt | Improve system prompt with examples |
-| Vector search no results | Empty index | Run rebuildIndexFromDatabase() |
+| Issue                    | Cause                  | Solution                                      |
+| ------------------------ | ---------------------- | --------------------------------------------- |
+| "Invalid API key"        | OPENAI_API_KEY not set | Add key to .env and restart server            |
+| 429 Rate Limited         | Too many requests      | Implement exponential backoff, queue requests |
+| Slow responses           | Large embeddings       | Use smaller batch sizes, cache results        |
+| Poor design quality      | Weak prompt            | Improve system prompt with examples           |
+| Vector search no results | Empty index            | Run rebuildIndexFromDatabase()                |
 
 ---
 

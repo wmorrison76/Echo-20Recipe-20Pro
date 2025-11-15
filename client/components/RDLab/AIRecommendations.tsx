@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Loader2, Lightbulb, TrendingUp, Zap, ArrowRight } from 'lucide-react';
-import { useRDLabStore } from '@/stores/rdLabStore';
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Loader2, Lightbulb, TrendingUp, Zap, ArrowRight } from "lucide-react";
+import { useRDLabStore } from "@/stores/rdLabStore";
 
 interface Recommendation {
   suggestion: string;
   rationale: string;
   confidence: number;
-  category: 'ingredient' | 'technique' | 'combination' | 'next-step';
+  category: "ingredient" | "technique" | "combination" | "next-step";
   relatedExperiment?: string;
   estimatedDays?: number;
 }
@@ -34,11 +34,14 @@ export function AIRecommendations() {
       // Get recommendations based on recent experiments
       const recentExperiments = experiments.slice(0, 5).map((e) => e.title);
 
-      const response = await fetch('/api/rdlabs/ai/recommendations?goal=next-step-suggestions', {
-        method: 'GET',
-      });
+      const response = await fetch(
+        "/api/rdlabs/ai/recommendations?goal=next-step-suggestions",
+        {
+          method: "GET",
+        },
+      );
 
-      if (!response.ok) throw new Error('Failed to load recommendations');
+      if (!response.ok) throw new Error("Failed to load recommendations");
 
       const { data } = await response.json();
 
@@ -48,37 +51,48 @@ export function AIRecommendations() {
           suggestion: rec,
           rationale: `Based on ${experiments.length} experiments in your lab`,
           confidence: 75 + Math.random() * 20,
-          category: idx % 4 === 0 ? 'ingredient' : idx % 4 === 1 ? 'technique' : idx % 4 === 2 ? 'combination' : 'next-step',
+          category:
+            idx % 4 === 0
+              ? "ingredient"
+              : idx % 4 === 1
+                ? "technique"
+                : idx % 4 === 2
+                  ? "combination"
+                  : "next-step",
           estimatedDays: 14 + Math.floor(Math.random() * 21),
-        })
+        }),
       );
 
       setRecommendations(formattedRecs);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load recommendations');
+      setError(
+        err instanceof Error ? err.message : "Failed to load recommendations",
+      );
       setRecommendations(generateDefaultRecommendations(experiments));
     } finally {
       setIsLoading(false);
     }
   };
 
-  const generateDefaultRecommendations = (exps: typeof experiments): Recommendation[] => {
-    const readyExperiments = exps.filter((e) => e.status === 'ready');
+  const generateDefaultRecommendations = (
+    exps: typeof experiments,
+  ): Recommendation[] => {
+    const readyExperiments = exps.filter((e) => e.status === "ready");
 
     if (readyExperiments.length === 0) {
       return [
         {
-          suggestion: 'Start with a molecular foam emulsion experiment',
-          rationale: 'High success rate in fine dining establishments',
+          suggestion: "Start with a molecular foam emulsion experiment",
+          rationale: "High success rate in fine dining establishments",
           confidence: 82,
-          category: 'technique',
+          category: "technique",
           estimatedDays: 14,
         },
         {
-          suggestion: 'Experiment with koji fermentation',
-          rationale: 'Trending ingredient with multiple applications',
+          suggestion: "Experiment with koji fermentation",
+          rationale: "Trending ingredient with multiple applications",
           confidence: 78,
-          category: 'ingredient',
+          category: "ingredient",
           estimatedDays: 21,
         },
       ];
@@ -86,25 +100,25 @@ export function AIRecommendations() {
 
     const suggestions = [
       {
-        suggestion: `Scale ${readyExperiments[0]?.title || 'successful recipe'} to 1kg batches`,
-        rationale: 'Ready for production testing',
+        suggestion: `Scale ${readyExperiments[0]?.title || "successful recipe"} to 1kg batches`,
+        rationale: "Ready for production testing",
         confidence: 85,
-        category: 'next-step',
+        category: "next-step",
         relatedExperiment: readyExperiments[0]?.id,
         estimatedDays: 7,
       },
       {
-        suggestion: 'Explore dairy alternative pairings',
-        rationale: 'Complements current research direction',
+        suggestion: "Explore dairy alternative pairings",
+        rationale: "Complements current research direction",
         confidence: 76,
-        category: 'ingredient',
+        category: "ingredient",
         estimatedDays: 16,
       },
       {
-        suggestion: 'Document sensory standards for your signature techniques',
-        rationale: 'Standardization enables replication and team training',
+        suggestion: "Document sensory standards for your signature techniques",
+        rationale: "Standardization enables replication and team training",
         confidence: 88,
-        category: 'next-step',
+        category: "next-step",
         estimatedDays: 3,
       },
     ];
@@ -113,17 +127,17 @@ export function AIRecommendations() {
   };
 
   const categoryColors = {
-    ingredient: 'from-amber-500/10 border-amber-500/20 text-amber-300',
-    technique: 'from-cyan-500/10 border-cyan-500/20 text-cyan-300',
-    combination: 'from-purple-500/10 border-purple-500/20 text-purple-300',
-    'next-step': 'from-green-500/10 border-green-500/20 text-green-300',
+    ingredient: "from-amber-500/10 border-amber-500/20 text-amber-300",
+    technique: "from-cyan-500/10 border-cyan-500/20 text-cyan-300",
+    combination: "from-purple-500/10 border-purple-500/20 text-purple-300",
+    "next-step": "from-green-500/10 border-green-500/20 text-green-300",
   };
 
   const categoryLabels = {
-    ingredient: '🧂 Ingredient',
-    technique: '🔬 Technique',
-    combination: '✨ Combination',
-    'next-step': '→ Next Step',
+    ingredient: "🧂 Ingredient",
+    technique: "🔬 Technique",
+    combination: "✨ Combination",
+    "next-step": "→ Next Step",
   };
 
   return (
@@ -135,8 +149,12 @@ export function AIRecommendations() {
             <Lightbulb className="h-5 w-5 text-blue-400" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-white">Smart Recommendations</h2>
-            <p className="text-xs text-slate-400">AI-powered next-step suggestions</p>
+            <h2 className="text-lg font-semibold text-white">
+              Smart Recommendations
+            </h2>
+            <p className="text-xs text-slate-400">
+              AI-powered next-step suggestions
+            </p>
           </div>
         </div>
       </div>
@@ -159,21 +177,33 @@ export function AIRecommendations() {
             >
               <div className="flex items-start gap-3">
                 <div className="mt-1">
-                  {rec.category === 'ingredient' && <span className="text-xl">🧂</span>}
-                  {rec.category === 'technique' && <span className="text-xl">🔬</span>}
-                  {rec.category === 'combination' && <span className="text-xl">✨</span>}
-                  {rec.category === 'next-step' && <span className="text-xl">→</span>}
+                  {rec.category === "ingredient" && (
+                    <span className="text-xl">🧂</span>
+                  )}
+                  {rec.category === "technique" && (
+                    <span className="text-xl">🔬</span>
+                  )}
+                  {rec.category === "combination" && (
+                    <span className="text-xl">✨</span>
+                  )}
+                  {rec.category === "next-step" && (
+                    <span className="text-xl">→</span>
+                  )}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-start justify-between mb-1">
-                    <h3 className="font-semibold text-white">{rec.suggestion}</h3>
-                    <span className={`text-xs font-bold px-2 py-1 rounded-full ${
-                      rec.confidence >= 85
-                        ? 'bg-green-500/30 text-green-300'
-                        : rec.confidence >= 75
-                        ? 'bg-blue-500/30 text-blue-300'
-                        : 'bg-slate-500/30 text-slate-300'
-                    }`}>
+                    <h3 className="font-semibold text-white">
+                      {rec.suggestion}
+                    </h3>
+                    <span
+                      className={`text-xs font-bold px-2 py-1 rounded-full ${
+                        rec.confidence >= 85
+                          ? "bg-green-500/30 text-green-300"
+                          : rec.confidence >= 75
+                            ? "bg-blue-500/30 text-blue-300"
+                            : "bg-slate-500/30 text-slate-300"
+                      }`}
+                    >
                       {rec.confidence.toFixed(0)}%
                     </span>
                   </div>
@@ -187,18 +217,10 @@ export function AIRecommendations() {
                 </div>
               </div>
               <div className="mt-3 flex gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="text-xs h-7"
-                >
+                <Button size="sm" variant="outline" className="text-xs h-7">
                   Create Experiment
                 </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="text-xs h-7"
-                >
+                <Button size="sm" variant="ghost" className="text-xs h-7">
                   Learn More
                 </Button>
               </div>
@@ -213,7 +235,9 @@ export function AIRecommendations() {
           <Lightbulb className="h-8 w-8 text-blue-400 mx-auto opacity-50" />
           <div>
             <p className="text-slate-300">No recommendations yet</p>
-            <p className="text-xs text-slate-500">Complete an experiment to see AI-powered suggestions</p>
+            <p className="text-xs text-slate-500">
+              Complete an experiment to see AI-powered suggestions
+            </p>
           </div>
         </div>
       )}

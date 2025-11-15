@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Users, UserPlus, Clock, Zap, Video, Share2 } from "lucide-react";
@@ -18,7 +24,11 @@ interface CollaborationHubProps {
   currentUser?: { id: string; name: string };
 }
 
-export function CollaborationHub({ track, labMode, currentUser }: CollaborationHubProps) {
+export function CollaborationHub({
+  track,
+  labMode,
+  currentUser,
+}: CollaborationHubProps) {
   const [teamMembers, setTeamMembers] = useState<Team[]>([
     { id: "1", name: "You", role: "Chef", status: "online" },
   ]);
@@ -46,7 +56,9 @@ export function CollaborationHub({ track, labMode, currentUser }: CollaborationH
       <CardContent className="space-y-6">
         {/* Team Members */}
         <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-foreground">Current Team</h3>
+          <h3 className="text-sm font-semibold text-foreground">
+            Current Team
+          </h3>
           <div className="space-y-2">
             {teamMembers.map((member) => (
               <div
@@ -58,8 +70,12 @@ export function CollaborationHub({ track, labMode, currentUser }: CollaborationH
                     {member.name.charAt(0)}
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground">{member.name}</p>
-                    <p className="text-xs text-muted-foreground">{member.role}</p>
+                    <p className="text-sm font-medium text-foreground">
+                      {member.name}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {member.role}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -87,7 +103,9 @@ export function CollaborationHub({ track, labMode, currentUser }: CollaborationH
             <div className="flex items-start gap-3">
               <Clock className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="font-medium text-blue-900 dark:text-blue-200">Waiting for Others</p>
+                <p className="font-medium text-blue-900 dark:text-blue-200">
+                  Waiting for Others
+                </p>
                 <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
                   {track === "fine-dining"
                     ? "Invite fellow chefs to collaborate on this innovation"
@@ -105,17 +123,23 @@ export function CollaborationHub({ track, labMode, currentUser }: CollaborationH
             <div className="flex items-center gap-2 p-2 text-muted-foreground">
               <Video className="h-4 w-4" />
               <span className="text-sm">Video Chat</span>
-              <Badge variant="secondary" className="ml-auto">Soon</Badge>
+              <Badge variant="secondary" className="ml-auto">
+                Soon
+              </Badge>
             </div>
             <div className="flex items-center gap-2 p-2 text-muted-foreground">
               <Share2 className="h-4 w-4" />
               <span className="text-sm">Screen Sharing</span>
-              <Badge variant="secondary" className="ml-auto">Soon</Badge>
+              <Badge variant="secondary" className="ml-auto">
+                Soon
+              </Badge>
             </div>
             <div className="flex items-center gap-2 p-2 text-muted-foreground">
               <Zap className="h-4 w-4" />
               <span className="text-sm">Shared Experience</span>
-              <Badge variant="secondary" className="ml-auto">Soon</Badge>
+              <Badge variant="secondary" className="ml-auto">
+                Soon
+              </Badge>
             </div>
           </div>
         </div>

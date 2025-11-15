@@ -3,7 +3,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sparkles, Send, Loader, AlertCircle, ChevronRight, Beaker, TrendingUp, Trash2, Volume2, VolumeX } from "lucide-react";
+import {
+  Sparkles,
+  Send,
+  Loader,
+  AlertCircle,
+  ChevronRight,
+  Beaker,
+  TrendingUp,
+  Trash2,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useEchoChatHistory } from "@/hooks/use-echo-chat-history";
 import { speakText, stopAudio } from "@/lib/elevenlabs-service";
@@ -16,7 +27,10 @@ interface Message {
 }
 
 interface EchoChatInterfaceProps {
-  onEnterLab?: (track: "fine-dining" | "manufacturing", mode: "culinary" | "pastry") => void;
+  onEnterLab?: (
+    track: "fine-dining" | "manufacturing",
+    mode: "culinary" | "pastry",
+  ) => void;
 }
 
 export function EchoChatInterface({ onEnterLab }: EchoChatInterfaceProps) {
@@ -43,7 +57,7 @@ export function EchoChatInterface({ onEnterLab }: EchoChatInterfaceProps) {
           role: m.role,
           content: m.content,
           timestamp: new Date(m.timestamp),
-        }))
+        })),
       );
     } else {
       // Show welcome message for new users
@@ -104,10 +118,12 @@ What are you thinking about today? A new technique? A flavor combination? Produc
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: messages.map((m) => ({
-            role: m.role,
-            content: m.content,
-          })).concat([userMessage]),
+          messages: messages
+            .map((m) => ({
+              role: m.role,
+              content: m.content,
+            }))
+            .concat([userMessage]),
         }),
       });
 
@@ -137,7 +153,8 @@ What are you thinking about today? A new technique? A flavor combination? Produc
         await speakAssistantMessage(assistantMessage.content);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "An error occurred";
+      const errorMessage =
+        err instanceof Error ? err.message : "An error occurred";
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -204,9 +221,12 @@ What are you thinking about today? A new technique? A flavor combination? Produc
       {showClearConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <Card className="bg-card border-border p-6 max-w-sm">
-            <h3 className="text-lg font-semibold text-foreground mb-2">Clear chat history?</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-2">
+              Clear chat history?
+            </h3>
             <p className="text-sm text-muted-foreground mb-6">
-              This will delete all your previous conversations. You can't undo this action.
+              This will delete all your previous conversations. You can't undo
+              this action.
             </p>
             <div className="flex gap-3 justify-end">
               <Button
@@ -239,7 +259,9 @@ What are you thinking about today? A new technique? A flavor combination? Produc
               </div>
               <div>
                 <h1 className="text-lg font-bold text-foreground">ECHO Ai</h1>
-                <p className="text-xs text-muted-foreground">Culinary Research Assistant</p>
+                <p className="text-xs text-muted-foreground">
+                  Culinary Research Assistant
+                </p>
               </div>
             </div>
             <div className="flex gap-2">
@@ -247,7 +269,11 @@ What are you thinking about today? A new technique? A flavor combination? Produc
                 size="sm"
                 variant={voiceEnabled ? "default" : "outline"}
                 onClick={handleToggleSpeaking}
-                title={voiceEnabled ? "Voice enabled (click to disable)" : "Voice disabled (click to enable)"}
+                title={
+                  voiceEnabled
+                    ? "Voice enabled (click to disable)"
+                    : "Voice disabled (click to enable)"
+                }
                 className="gap-1"
               >
                 {isSpeaking ? (
@@ -257,7 +283,9 @@ What are you thinking about today? A new technique? A flavor combination? Produc
                 ) : (
                   <VolumeX className="h-4 w-4" />
                 )}
-                <span className="text-xs">{voiceEnabled ? "Voice" : "Muted"}</span>
+                <span className="text-xs">
+                  {voiceEnabled ? "Voice" : "Muted"}
+                </span>
               </Button>
               {messages.length > 1 && (
                 <Button
@@ -277,7 +305,8 @@ What are you thinking about today? A new technique? A flavor combination? Produc
                   const newMessage: Message = {
                     id: `msg_${Date.now()}`,
                     role: "user",
-                    content: "Ready to enter the lab. What track would you recommend based on our conversation?",
+                    content:
+                      "Ready to enter the lab. What track would you recommend based on our conversation?",
                     timestamp: new Date(),
                   };
                   setMessages((prev) => [...prev, newMessage]);
@@ -380,12 +409,18 @@ What are you thinking about today? A new technique? A flavor combination? Produc
         {/* Quick Actions (optional) */}
         {messages.length === 1 && (
           <div className="border-t border-border dark:border-slate-800 px-6 py-4 bg-muted/50 dark:bg-slate-800/50">
-            <p className="text-xs text-muted-foreground mb-3">Suggested topics:</p>
+            <p className="text-xs text-muted-foreground mb-3">
+              Suggested topics:
+            </p>
             <div className="grid grid-cols-2 gap-2">
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => setInput("I want to design a new dish for fine dining. What should I consider?")}
+                onClick={() =>
+                  setInput(
+                    "I want to design a new dish for fine dining. What should I consider?",
+                  )
+                }
                 className="justify-start text-xs"
               >
                 <Beaker className="h-3 w-3 mr-1" />
@@ -394,7 +429,9 @@ What are you thinking about today? A new technique? A flavor combination? Produc
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => setInput("Help me scale up a recipe for production.")}
+                onClick={() =>
+                  setInput("Help me scale up a recipe for production.")
+                }
                 className="justify-start text-xs"
               >
                 <TrendingUp className="h-3 w-3 mr-1" />

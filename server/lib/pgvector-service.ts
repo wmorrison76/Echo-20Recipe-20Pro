@@ -49,8 +49,9 @@ function getSupabaseClient() {
  * Generate embeddings using OpenAI API
  */
 export async function generateEmbedding(text: string): Promise<number[]> {
-  const openaiKey = process.env.OPENAI_API_KEY || process.env.ECHO_OPENAI_API_KEY;
-  
+  const openaiKey =
+    process.env.OPENAI_API_KEY || process.env.ECHO_OPENAI_API_KEY;
+
   if (!openaiKey) {
     console.warn("OpenAI API key not found, using mock embedding");
     return generateMockEmbedding(text);
@@ -73,7 +74,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
       throw new Error(`OpenAI API error: ${response.statusText}`);
     }
 
-    const data = await response.json() as any;
+    const data = (await response.json()) as any;
     return data.data[0]?.embedding || generateMockEmbedding(text);
   } catch (error) {
     console.error("Error generating embedding:", error);
@@ -118,7 +119,7 @@ export async function storeRecipeVector(
   track: RecipeTrack,
   chefId: string,
   organizationId: string,
-  collaborators?: string[]
+  collaborators?: string[],
 ): Promise<void> {
   try {
     const client = getSupabaseClient();
@@ -150,23 +151,21 @@ export async function storeRecipeVector(
       createdAt: new Date().toISOString(),
     };
 
-    const { error: vectorError } = await client
-      .from("recipe_vectors")
-      .upsert(
-        {
-          recipe_id: recipe.id,
-          title: recipe.title,
-          organization_id: organizationId,
-          chef_id: chefId,
-          track,
-          embedding,
-          metadata,
-          cross_track_viable: isCrossTrackViable(recipe),
-        },
-        {
-          onConflict: "recipe_id,chef_id,track",
-        }
-      );
+    const { error: vectorError } = await client.from("recipe_vectors").upsert(
+      {
+        recipe_id: recipe.id,
+        title: recipe.title,
+        organization_id: organizationId,
+        chef_id: chefId,
+        track,
+        embedding,
+        metadata,
+        cross_track_viable: isCrossTrackViable(recipe),
+      },
+      {
+        onConflict: "recipe_id,chef_id,track",
+      },
+    );
 
     if (vectorError) {
       throw vectorError;
@@ -219,8 +218,8 @@ function isCrossTrackViable(recipe: {
   ];
   return techniqueTags.some((tag) =>
     crossTrackTechniques.some((tech) =>
-      tag.toLowerCase().includes(tech.toLowerCase())
-    )
+      tag.toLowerCase().includes(tech.toLowerCase()),
+    ),
   );
 }
 
@@ -233,7 +232,7 @@ export async function searchSimilarRecipes(
   chefId: string,
   organizationId: string,
   limit: number = 10,
-  includeCrossTrack: boolean = true
+  includeCrossTrack: boolean = true,
 ): Promise<RecipeSimilarityMatch[]> {
   try {
     const client = getSupabaseClient();
@@ -272,7 +271,7 @@ export async function searchSimilarRecipes(
 export async function getRecipesByTrack(
   track: RecipeTrack,
   organizationId: string,
-  limit: number = 50
+  limit: number = 50,
 ): Promise<RecipeSimilarityMatch[]> {
   try {
     const client = getSupabaseClient();
@@ -308,7 +307,7 @@ export async function getRecipesByTrack(
 export async function deleteRecipeVector(
   recipeId: string,
   track: RecipeTrack,
-  chefId: string
+  chefId: string,
 ): Promise<void> {
   try {
     const client = getSupabaseClient();
@@ -334,7 +333,7 @@ export async function deleteRecipeVector(
 export async function getCrossTrackLearning(
   recipeText: string,
   organizationId: string,
-  limit: number = 5
+  limit: number = 5,
 ): Promise<RecipeSimilarityMatch[]> {
   try {
     const client = getSupabaseClient();
