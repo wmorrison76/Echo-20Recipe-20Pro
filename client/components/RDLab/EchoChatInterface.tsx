@@ -50,6 +50,17 @@ export function EchoChatInterface({ onEnterLab }: EchoChatInterfaceProps) {
   useEffect(() => {
     if (!chatHistory.isLoaded) return;
 
+    const checkTTSAndInit = async () => {
+      // Check if TTS service is available
+      const isHealthy = await checkServiceHealth();
+      if (!isHealthy) {
+        console.warn("TTS service not available, disabling voice");
+        setVoiceEnabled(false);
+      }
+    };
+
+    checkTTSAndInit();
+
     const storedHistory = chatHistory.getHistory();
     if (storedHistory.length > 0) {
       setMessages(
