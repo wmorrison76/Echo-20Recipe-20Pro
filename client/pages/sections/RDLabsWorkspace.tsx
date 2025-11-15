@@ -236,31 +236,31 @@ function RDLabsWorkspaceContent() {
                 <BarChart3 className="h-4 w-4" />
                 Analytics
               </TabsTrigger>
-              <TabsTrigger value="ai-design" className="gap-2 bg-gradient-to-r from-cyan-500/10 to-blue-500/10">
+              <TabsTrigger value="ai-design" className="gap-2 ai-tab-trigger ai-tab-design neon-cyan">
                 <Wand2 className="h-4 w-4" />
                 AI Design
               </TabsTrigger>
-              <TabsTrigger value="ai-validate" className="gap-2 bg-gradient-to-r from-violet-500/10 to-purple-500/10">
+              <TabsTrigger value="ai-validate" className="gap-2 ai-tab-trigger ai-tab-validate neon-purple">
                 <CheckCircle className="h-4 w-4" />
                 AI Validate
               </TabsTrigger>
-              <TabsTrigger value="ai-sop" className="gap-2 bg-gradient-to-r from-emerald-500/10 to-teal-500/10">
+              <TabsTrigger value="ai-sop" className="gap-2 ai-tab-trigger ai-tab-sop neon-cyan">
                 <FileText className="h-4 w-4" />
                 AI SOP
               </TabsTrigger>
-              <TabsTrigger value="ai-production" className="gap-2 bg-gradient-to-r from-amber-500/10 to-orange-500/10">
+              <TabsTrigger value="ai-production" className="gap-2 ai-tab-trigger ai-tab-production">
                 <AlertTriangle className="h-4 w-4" />
                 Production Check
               </TabsTrigger>
-              <TabsTrigger value="ai-recommendations" className="gap-2 bg-gradient-to-r from-blue-500/10 to-cyan-500/10">
+              <TabsTrigger value="ai-recommendations" className="gap-2 ai-tab-trigger ai-tab-insights neon-cyan">
                 <Lightbulb className="h-4 w-4" />
                 AI Insights
               </TabsTrigger>
-              <TabsTrigger value="ai-team" className="gap-2 bg-gradient-to-r from-rose-500/10 to-pink-500/10">
+              <TabsTrigger value="ai-team" className="gap-2 ai-tab-trigger ai-tab-team neon-pink">
                 <Users className="h-4 w-4" />
                 Team
               </TabsTrigger>
-              <TabsTrigger value="ai-predict" className="gap-2 bg-gradient-to-r from-indigo-500/10 to-purple-500/10">
+              <TabsTrigger value="ai-predict" className="gap-2 ai-tab-trigger ai-tab-predict neon-indigo">
                 <Target className="h-4 w-4" />
                 Predictions
               </TabsTrigger>
