@@ -142,8 +142,12 @@ export function TopToolbar({
           onPaste={onPaste || (() => {})}
           onDelete={() => alert("Delete: Use Delete key or select element")}
           onSelectAll={() => alert("Select All: Coming soon")}
-          onShowGrid={() => alert("Grid toggle: Use View menu")}
-          onShowRulers={() => alert("Rulers: Coming soon")}
+          onShowGrid={(show) => {
+            onCanvasSettingsChange?.({ showGrid: show });
+          }}
+          onShowRulers={(show) => {
+            onCanvasSettingsChange?.({ showMargins: show });
+          }}
           onShowGuides={() => alert("Guides: Coming soon")}
           onZoomFit={() => alert("Zoom fit: Coming soon")}
           onZoom100={() => alert("Zoom 100%: Coming soon")}
@@ -153,8 +157,8 @@ export function TopToolbar({
           onAddDivider={() => onAddElement("divider")}
           canUndo={canUndo}
           canRedo={canRedo}
-          showGrid={false}
-          showRulers={false}
+          showGrid={canvasSettings?.showGrid || false}
+          showRulers={canvasSettings?.showMargins || false}
           showGuides={false}
         />
       </div>
