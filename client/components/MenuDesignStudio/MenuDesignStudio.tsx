@@ -253,6 +253,19 @@ export function MenuDesignStudio({
     [state, addElement, historyPush]
   );
 
+  const handleApplyTemplate = useCallback(
+    (templateElements: Omit<DesignerElement, "id">[]) => {
+      // Clear existing elements and add template elements
+      setElements(templateElements as DesignerElement[]);
+      historyPush(state);
+      toast({
+        title: "Template Applied",
+        description: "Template elements have been added to your canvas",
+      });
+    },
+    [setElements, state, historyPush, toast]
+  );
+
   const selectedElement = getSelectedElement();
 
   return (
