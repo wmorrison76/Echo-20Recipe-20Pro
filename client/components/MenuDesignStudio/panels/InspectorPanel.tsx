@@ -35,6 +35,11 @@ export function InspectorPanel({
     new Set(["position", "appearance"])
   );
 
+  const spellCheckResults = useMemo(() => {
+    const text = element.text || element.description || "";
+    return checkSpelling(text);
+  }, [element.text, element.description]);
+
   const toggleSection = (section: string) => {
     const newExpanded = new Set(expandedSections);
     if (newExpanded.has(section)) {
