@@ -350,7 +350,7 @@ export const AI3SuggestionsPanel: React.FC<AI3SuggestionsPanelProps> = ({
         <div className="flex h-16 w-full">
           {colors.map((color: string, idx: number) => (
             <div
-              key={idx}
+              key={`color-${color}-${idx}`}
               className="flex-1 transition-opacity hover:opacity-80"
               style={{ backgroundColor: color }}
               title={color}
