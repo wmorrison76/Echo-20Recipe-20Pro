@@ -185,11 +185,16 @@ export function TopToolbar({
           )}
         </div>
 
-        {/* Center: Page Size Selector */}
-        <div className="hidden lg:flex items-center">
+        {/* Center: Page Size & Color Selectors */}
+        <div className="hidden lg:flex items-center gap-4">
           <PageSizeSelector
             pageSize={pageSize}
             onPageSizeChange={onPageSizeChange}
+          />
+          <div className="h-6 w-px bg-gray-200 dark:bg-gray-700" />
+          <PageColorSelector
+            backgroundColor={backgroundColor}
+            onColorChange={onBackgroundColorChange}
           />
         </div>
 
