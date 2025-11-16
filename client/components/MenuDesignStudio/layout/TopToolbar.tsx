@@ -24,6 +24,7 @@ import {
 import { cn } from "@/lib/utils";
 import { MenuBar } from "./MenuBar";
 import { PageSizeSelector } from "./PageSizeSelector";
+import { PageColorSelector } from "./PageColorSelector";
 import type { PageSize } from "../hooks";
 
 interface TopToolbarProps {
