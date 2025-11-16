@@ -236,6 +236,163 @@ function designerReducer(state: DesignerState, action: DesignerAction): Designer
         isDirty: true,
       };
 
+    case "GROUP_ELEMENTS": {
+      const { elementIds, groupName } = action.payload;
+      if (elementIds.length < 2) return state;
+
+      const elementsToGroup = state.elements.filter((el) => elementIds.includes(el.id));
+      const minX = Math.min(...elementsToGroup.map((el) => el.x));
+      const minY = Math.min(...elementsToGroup.map((el) => el.y));
+      const maxX = Math.max(...elementsToGroup.map((el) => el.x + el.width));
+      const maxY = Math.max(...elementsToGroup.map((el) => el.y + el.height));
+
+      const groupId = `group-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const groupElement: DesignerElement = {
+        id: groupId,
+        type: "group",
+        name: groupName,
+        x: minX,
+        y: minY,
+        width: maxX - minX,
+        height: maxY - minY,
+        rotation: 0,
+        opacity: 1,
+        zIndex: Math.max(...elementsToGroup.map((el) => el.zIndex)) + 1,
+        childElementIds: elementIds,
+        locked: false,
+      };
+
+      const updatedElements = state.elements.map((el) =>
+        elementIds.includes(el.id)
+          ? { ...el, parentGroupId: groupId }
+          : el
+      );
+
+      return {
+        ...state,
+        elements: [...updatedElements, groupElement],
+        selectedElementIds: [groupId],
+        selectedElementId: groupId,
+        isDirty: true,
+      };
+    }
+
+    case "UNGROUP_ELEMENTS": {
+      const groupId = action.payload;
+      const groupElement = state.elements.find((el) => el.id === groupId && el.type === "group");
+      if (!groupElement || !groupElement.childElementIds) return state;
+
+      const updatedElements = state.elements
+        .filter((el) => el.id !== groupId)
+        .map((el) =>
+          el.parentGroupId === groupId
+            ? { ...el, parentGroupId: undefined }
+            : el
+        );
+
+      return {
+        ...state,
+        elements: updatedElements,
+        selectedElementIds: groupElement.childElementIds,
+        selectedElementId: null,
+        isDirty: true,
+      };
+    }
+
+    case "CREATE_COMPONENT": {
+      const elementId = action.payload.elementId;
+      const element = state.elements.find((el) => el.id === elementId);
+      if (!element) return state;
+
+      const componentId = `comp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const componentDef: ComponentDefinition = {
+        id: componentId,
+        name: action.payload.componentName,
+        baseElement: {
+          ...element,
+          id: undefined as any,
+          componentId: undefined,
+          componentOverrides: undefined,
+        },
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      };
+
+      return {
+        ...state,
+        components: [...state.components, componentDef],
+        elements: state.elements.map((el) =>
+          el.id === elementId
+            ? { ...el, componentId }
+            : el
+        ),
+        isDirty: true,
+      };
+    }
+
+    case "DELETE_COMPONENT": {
+      const componentId = action.payload;
+      return {
+        ...state,
+        components: state.components.filter((c) => c.id !== componentId),
+        elements: state.elements.map((el) =>
+          el.componentId === componentId
+            ? { ...el, componentId: undefined }
+            : el
+        ),
+        isDirty: true,
+      };
+    }
+
+    case "CREATE_COMPONENT_INSTANCE": {
+      const { componentId, x, y } = action.payload;
+      const component = state.components.find((c) => c.id === componentId);
+      if (!component) return state;
+
+      const newElement: DesignerElement = {
+        ...component.baseElement,
+        id: `element-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        x,
+        y,
+        componentId,
+        componentOverrides: {},
+      };
+
+      return {
+        ...state,
+        elements: [...state.elements, newElement],
+        selectedElementIds: [newElement.id],
+        selectedElementId: newElement.id,
+        isDirty: true,
+      };
+    }
+
+    case "UPDATE_COMPONENT_OVERRIDE": {
+      const { instanceId, propertyPath, value } = action.payload;
+      return {
+        ...state,
+        elements: state.elements.map((el) =>
+          el.id === instanceId && el.componentId
+            ? {
+                ...el,
+                componentOverrides: {
+                  ...el.componentOverrides,
+                  [propertyPath]: value,
+                },
+              }
+            : el
+        ),
+        isDirty: true,
+      };
+    }
+
+    case "SET_COMPONENTS":
+      return {
+        ...state,
+        components: action.payload,
+        isDirty: true,
+      };
+
     case "SET_ELEMENTS":
       return {
         ...state,
