@@ -262,6 +262,65 @@ export function MenuDesignStudio({
     }
   }, [pasteElements, selectMultiple, historyPush, state, toast]);
 
+  const handleGroupElements = useCallback(() => {
+    const selected = getSelectedElements();
+    if (selected.length < 2) {
+      toast({
+        title: "Cannot Group",
+        description: "Select at least 2 elements to group",
+        variant: "destructive",
+      });
+      return;
+    }
+    const groupName = `Group ${state.elements.filter((el) => el.type === "group").length + 1}`;
+    groupElements(
+      selected.map((el) => el.id),
+      groupName
+    );
+    historyPush(state);
+    toast({
+      title: "Grouped",
+      description: `${selected.length} elements grouped as "${groupName}"`,
+    });
+  }, [state, getSelectedElements, groupElements, historyPush, toast]);
+
+  const handleUngroupElements = useCallback(() => {
+    const selectedEl = getSelectedElement();
+    if (!selectedEl || selectedEl.type !== "group") {
+      toast({
+        title: "Cannot Ungroup",
+        description: "Select a group to ungroup",
+        variant: "destructive",
+      });
+      return;
+    }
+    ungroupElements(selectedEl.id);
+    historyPush(state);
+    toast({
+      title: "Ungrouped",
+      description: "Group has been ungrouped",
+    });
+  }, [state, getSelectedElement, ungroupElements, historyPush, toast]);
+
+  const handleCreateComponent = useCallback(() => {
+    const selected = getSelectedElement();
+    if (!selected) {
+      toast({
+        title: "Cannot Create Component",
+        description: "Select an element to create a component",
+        variant: "destructive",
+      });
+      return;
+    }
+    const componentName = `Component ${state.components.length + 1}`;
+    createComponent(selected.id, componentName);
+    historyPush(state);
+    toast({
+      title: "Component Created",
+      description: `Component "${componentName}" has been created`,
+    });
+  }, [state, getSelectedElement, createComponent, historyPush, toast]);
+
   const handleLoadDesign = useCallback(
     (loadedState: typeof state) => {
       setElements(loadedState.elements);
