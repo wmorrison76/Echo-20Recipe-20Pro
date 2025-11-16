@@ -46,9 +46,11 @@ export function CanvasElement({
   }, [isEditing]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (isEditing) return;
+    if (isEditing || isDragging) return;
     e.stopPropagation();
-    onSelect();
+    if (!isSelected) {
+      onSelect();
+    }
     onStartDrag(e.clientX, e.clientY);
   };
 
