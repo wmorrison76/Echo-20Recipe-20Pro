@@ -23,6 +23,7 @@ const RESIZE_HANDLES = ["nw", "ne", "sw", "se", "n", "s", "e", "w"] as const;
 export function CanvasElement({
   element,
   isSelected,
+  isMultiSelected,
   isEditing,
   isDragging,
   isResizing,
