@@ -268,15 +268,21 @@ export function TopToolbar({
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onOpenSettings}
-              title="Settings"
-              className="h-8 w-8 p-0"
+            <DocumentSettingsDialog
+              pageSize={pageSize}
+              canvasSettings={canvasSettings || { background: "#ffffff", margin: 24, bleed: 18, columns: 1, gutter: 24, showGrid: false, showMargins: true, showBleed: false, showColumns: false, zoom: 1, gridSize: 16 }}
+              onPageSizeChange={onPageSizeChange}
+              onCanvasSettingsChange={onCanvasSettingsChange || (() => {})}
             >
-              <Settings className="h-4 w-4" />
-            </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                title="Settings"
+                className="h-8 w-8 p-0"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+            </DocumentSettingsDialog>
           </div>
 
           {/* Mobile Menu Button */}
