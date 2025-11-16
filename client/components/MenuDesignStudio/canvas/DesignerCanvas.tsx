@@ -341,6 +341,23 @@ export function DesignerCanvas({
         </div>
       </div>
 
+      {/* Drag-select box visualization */}
+      {dragSelectBox && isSelectingBox && (
+        <div
+          style={{
+            position: "absolute",
+            left: Math.min(dragSelectBox.startX, dragSelectBox.endX),
+            top: Math.min(dragSelectBox.startY, dragSelectBox.endY),
+            width: Math.abs(dragSelectBox.endX - dragSelectBox.startX),
+            height: Math.abs(dragSelectBox.endY - dragSelectBox.startY),
+            border: "2px dashed rgba(0, 122, 255, 0.5)",
+            backgroundColor: "rgba(0, 122, 255, 0.1)",
+            pointerEvents: "none",
+            zIndex: 9999,
+          }}
+        />
+      )}
+
       {/* Position Tooltip during drag */}
       {dragPosition && (
         <div
