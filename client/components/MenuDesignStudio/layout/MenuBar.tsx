@@ -7,6 +7,7 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { KeyboardShortcutsDialog } from "./KeyboardShortcutsDialog";
 
 interface MenuBarProps {
   onNew: () => void;
