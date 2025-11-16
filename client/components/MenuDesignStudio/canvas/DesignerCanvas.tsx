@@ -81,23 +81,107 @@ export function DesignerCanvas({
   return (
     <div
       ref={canvasRef}
-      className="relative h-full w-full overflow-auto bg-gray-200 p-8 dark:bg-gray-900"
+      className="relative h-full w-full overflow-auto bg-gray-200 dark:bg-gray-900"
       onClick={() => onSelectElement(null)}
       style={{
         position: "relative",
         zIndex: 1,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "100%",
+        minWidth: "100%",
       }}
     >
+      {/* Rulers Container */}
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, pointerEvents: "none" }}>
+        {/* Top Ruler */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: "24px",
+            background: "#f0f0f0",
+            borderBottom: "1px solid #ccc",
+            display: "flex",
+            pointerEvents: "none",
+          }}
+        >
+          {Array.from({ length: Math.ceil((pageSize.width * scale) / 50) }).map((_, i) => (
+            <div
+              key={`top-${i}`}
+              style={{
+                position: "absolute",
+                left: `${i * 50}px`,
+                width: "50px",
+                height: "24px",
+                borderRight: "1px solid #ddd",
+                fontSize: "10px",
+                color: "#666",
+                display: "flex",
+                alignItems: "flex-end",
+                paddingBottom: "2px",
+                paddingLeft: "2px",
+              }}
+            >
+              {i * 50}
+            </div>
+          ))}
+        </div>
+
+        {/* Left Ruler */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "24px",
+            bottom: 0,
+            background: "#f0f0f0",
+            borderRight: "1px solid #ccc",
+            display: "flex",
+            flexDirection: "column",
+            pointerEvents: "none",
+          }}
+        >
+          {Array.from({ length: Math.ceil((pageSize.height * scale) / 50) }).map((_, i) => (
+            <div
+              key={`left-${i}`}
+              style={{
+                position: "absolute",
+                top: `${i * 50}px`,
+                height: "50px",
+                width: "24px",
+                borderBottom: "1px solid #ddd",
+                fontSize: "10px",
+                color: "#666",
+                display: "flex",
+                alignItems: "flex-start",
+                justifyContent: "flex-end",
+                paddingRight: "2px",
+                paddingTop: "2px",
+              }}
+            >
+              {i * 50}
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Canvas Container */}
       <div
-        className="relative bg-white shadow-xl inline-block"
+        className="relative bg-white shadow-xl"
         style={{
           width: pageSize.width * scale,
           height: pageSize.height * scale,
-          transformOrigin: "top left",
+          transformOrigin: "center",
           overflow: "visible",
-          zIndex: 1,
+          zIndex: 2,
           position: "relative",
+          marginTop: "24px",
+          marginLeft: "24px",
         }}
       >
         {/* Grid Background (optional) */}
