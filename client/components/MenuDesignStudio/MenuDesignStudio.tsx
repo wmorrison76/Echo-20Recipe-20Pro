@@ -462,6 +462,7 @@ export function MenuDesignStudio({
       handleCut,
       handlePaste,
       setIsFindReplaceOpen,
+      setIsVersioningOpen,
     ]
   );
 
