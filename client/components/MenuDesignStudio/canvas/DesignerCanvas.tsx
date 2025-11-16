@@ -6,10 +6,16 @@ import { CanvasElement } from "./CanvasElement";
 interface DesignerCanvasProps {
   elements: DesignerElement[];
   selectedElementId: string | null;
+  selectedElementIds: string[];
   pageSize: PageSize;
   canvasSettings: CanvasSettings;
   onSelectElement: (id: string | null) => void;
+  onSelectMultiple: (ids: string[]) => void;
+  onAddToSelection: (id: string) => void;
+  onToggleSelection: (id: string) => void;
+  onClearSelection: () => void;
   onUpdateElement: (id: string, updates: Partial<DesignerElement>) => void;
+  onUpdateMultiple: (ids: string[], updates: Partial<DesignerElement>) => void;
   onStartDrag: (element: DesignerElement, clientX: number, clientY: number) => void;
   onUpdateDrag: (clientX: number, clientY: number) => { x: number; y: number };
   onEndDrag: () => void;
