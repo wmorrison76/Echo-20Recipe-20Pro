@@ -154,8 +154,20 @@ export function MenuDesignStudio({
             handleSave();
           },
         },
+        {
+          label: "Select All",
+          key: "a",
+          modifiers: ["meta"],
+          callback: () => {
+            selectMultiple(state.elements.map((el) => el.id));
+            toast({
+              title: "Select All",
+              description: `${state.elements.length} elements selected`,
+            });
+          },
+        },
       ]),
-    [undo, redo, getSelectedElement, removeElement, addElement, state, historyPush, toast]
+    [undo, redo, getSelectedElement, removeElement, addElement, state, historyPush, toast, selectMultiple, deleteMultiple]
   );
 
   useKeyboardShortcuts(shortcuts);
