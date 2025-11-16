@@ -39,6 +39,7 @@ export function MenuDesignStudio({
   const [rightPanelTab, setRightPanelTab] = useState<"inspector" | "ai" | "dishes">("inspector");
   const [snapToGridEnabled, setSnapToGridEnabled] = useState(true);
   const [snapToElementsEnabled, setSnapToElementsEnabled] = useState(true);
+  const [isFindReplaceOpen, setIsFindReplaceOpen] = useState(false);
 
   const {
     state,
