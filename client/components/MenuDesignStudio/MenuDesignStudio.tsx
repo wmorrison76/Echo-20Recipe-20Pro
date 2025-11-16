@@ -655,6 +655,9 @@ export function MenuDesignStudio({
         onExportPDF={handleExportPDF}
         onExportSVG={handleExportSVG}
         onSave={handleSave}
+        onCopy={handleCopy}
+        onCut={handleCut}
+        onPaste={handlePaste}
         onOpenSettings={() => {
           toast({
             title: "Settings",
