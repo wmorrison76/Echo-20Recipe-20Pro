@@ -698,5 +698,8 @@ export function useDesignerState(initialState?: Partial<DesignerState>) {
     createComponentInstance,
     updateComponentOverride,
     setComponents,
+    copyElements,
+    cutElements,
+    pasteElements,
   };
 }
