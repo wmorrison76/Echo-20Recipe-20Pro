@@ -83,6 +83,9 @@ export function DesignerCanvas({
   const [dragSelectBox, setDragSelectBox] = useState<{ startX: number; startY: number; endX: number; endY: number } | null>(null);
   const [isSelectingBox, setIsSelectingBox] = useState(false);
   const [showRulers, setShowRulers] = useState(true);
+  const [guides, setGuides] = useState<Guide[]>([]);
+  const [activeGuides, setActiveGuides] = useState<Guide[]>([]);
+  const [snapToGridEnabled, setSnapToGridEnabled] = useState(true);
 
   // Handle canvas drag
   useEffect(() => {
