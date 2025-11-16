@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useMemo } from "react";
+import { useEffect, useCallback, useMemo, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import {
@@ -20,14 +20,18 @@ interface MenuDesignStudioProps {
   initialState?: any;
   onSave?: (state: any) => void;
   onExport?: (format: "pdf" | "svg", data: any) => void;
+  onBack?: () => void;
 }
 
 export function MenuDesignStudio({
   initialState,
   onSave,
   onExport,
+  onBack,
 }: MenuDesignStudioProps) {
   const { toast } = useToast();
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const {
     state,
     addElement,
@@ -37,6 +41,7 @@ export function MenuDesignStudio({
     getSelectedElement,
     updateCanvasSettings,
     setDocumentName,
+    setPageSize,
     setDirty,
   } = useDesignerState(initialState);
 
@@ -251,11 +256,13 @@ export function MenuDesignStudio({
   const selectedElement = getSelectedElement();
 
   return (
-    <div className="flex h-screen flex-col bg-gray-50 dark:bg-gray-950">
-      {/* Top Toolbar */}
+    <div ref={containerRef} className="flex h-screen flex-col bg-gray-50 dark:bg-gray-950 overflow-hidden">
+      {/* Top Toolbar with Menu Bar and Page Selector */}
       <TopToolbar
         documentName={state.documentName}
         onDocumentNameChange={setDocumentName}
+        pageSize={state.pageSize}
+        onPageSizeChange={setPageSize}
         canUndo={canUndo}
         canRedo={canRedo}
         onUndo={undo}
@@ -271,25 +278,24 @@ export function MenuDesignStudio({
           });
         }}
         isDirty={state.isDirty}
+        onBack={onBack}
       />
 
-      {/* Main Content Area */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Left Sidebar - Tool Panels */}
-        <div className="hidden w-64 border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 lg:flex lg:flex-col">
-          <div className="flex-1 overflow-auto">
-            <LayersPanel
-              elements={state.elements}
-              selectedElementId={state.selectedElementId}
-              onSelectElement={selectElement}
-              onRemoveElement={removeElement}
-              onUpdateElement={updateElement}
-            />
-          </div>
+      {/* Main Content Area - Fixed sizing */}
+      <div className="flex flex-1 overflow-hidden min-h-0">
+        {/* Left Sidebar - Layers Panel */}
+        <div className="hidden w-64 border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 lg:flex lg:flex-col overflow-y-auto">
+          <LayersPanel
+            elements={state.elements}
+            selectedElementId={state.selectedElementId}
+            onSelectElement={selectElement}
+            onRemoveElement={removeElement}
+            onUpdateElement={updateElement}
+          />
         </div>
 
         {/* Center - Canvas */}
-        <div className="flex-1 overflow-auto bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-950">
+        <div className="flex-1 overflow-auto bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-950 min-w-0">
           <DesignerCanvas
             elements={state.elements}
             selectedElementId={state.selectedElementId}
@@ -312,24 +318,22 @@ export function MenuDesignStudio({
         </div>
 
         {/* Right Sidebar - Inspector Panel */}
-        <div className="hidden w-80 border-l border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 xl:flex xl:flex-col">
-          <div className="flex-1 overflow-auto">
-            {selectedElement && (
-              <InspectorPanel
-                element={selectedElement}
-                pageSize={state.pageSize}
-                canvasSettings={state.canvasSettings}
-                onUpdateElement={(updates) => {
-                  updateElement(selectedElement.id, updates);
-                  historyPush(state);
-                }}
-                onUpdateCanvasSettings={(settings) => {
-                  updateCanvasSettings(settings);
-                  historyPush(state);
-                }}
-              />
-            )}
-          </div>
+        <div className="hidden w-80 border-l border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 xl:flex xl:flex-col overflow-y-auto">
+          {selectedElement && (
+            <InspectorPanel
+              element={selectedElement}
+              pageSize={state.pageSize}
+              canvasSettings={state.canvasSettings}
+              onUpdateElement={(updates) => {
+                updateElement(selectedElement.id, updates);
+                historyPush(state);
+              }}
+              onUpdateCanvasSettings={(settings) => {
+                updateCanvasSettings(settings);
+                historyPush(state);
+              }}
+            />
+          )}
         </div>
       </div>
 
