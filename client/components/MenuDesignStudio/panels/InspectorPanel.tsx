@@ -518,11 +518,10 @@ export function InspectorPanel({
                                     className="text-xs h-6"
                                     onClick={() => {
                                       const text = element.text || "";
-                                      // Safely escape regex special characters
-                                      const escapedWord = result.word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-                                      const corrected = text.replace(
-                                        new RegExp(`\\b${escapedWord}\\b`, "g"),
-                                        suggestion
+                                      // Safe word-boundary replacement using split/join
+                                      const wordRegex = /\b\w+\b/g;
+                                      const corrected = text.replace(wordRegex, (match) =>
+                                        match.toLowerCase() === result.word.toLowerCase() ? suggestion : match
                                       );
                                       onUpdateElement({ text: corrected });
                                     }}
