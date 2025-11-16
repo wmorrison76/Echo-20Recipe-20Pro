@@ -35,6 +35,8 @@ interface TopToolbarProps {
   onPageSizeChange: (size: PageSize) => void;
   backgroundColor: string;
   onBackgroundColorChange: (color: string) => void;
+  canvasSettings?: CanvasSettings;
+  onCanvasSettingsChange?: (settings: Partial<CanvasSettings>) => void;
   canUndo: boolean;
   canRedo: boolean;
   onUndo: () => void;
