@@ -1,16 +1,8 @@
-import { generateEmbedding } from "./pinecone-client";
-
 export interface CulinaryProcedure {
   id: string;
   title: string;
   source_book: string;
-  category:
-    | "butchery"
-    | "pastry"
-    | "cooking"
-    | "preparation"
-    | "technique"
-    | "general";
+  category: "butchery" | "pastry" | "cooking" | "preparation" | "technique" | "general";
   steps: Array<{
     number: number;
     instruction: string;
@@ -21,7 +13,7 @@ export interface CulinaryProcedure {
   time_estimate?: string;
   difficulty?: "beginner" | "intermediate" | "advanced";
   related_keywords?: string[];
-  created_at: number;
+  created_at?: string;
   embedding?: number[];
 }
 
@@ -30,75 +22,57 @@ export interface ProcedureSearchResult {
   relevance_score: number;
 }
 
+const API_BASE = "/api/procedures";
+
 /**
- * Generate semantic embedding for a procedure using OpenAI
+ * Store culinary procedure in database via backend API
  */
-async function generateProcedureEmbedding(
-  procedureText: string,
-): Promise<number[]> {
+export async function storeProcedure(
+  procedure: Omit<CulinaryProcedure, "id" | "created_at" | "embedding">,
+): Promise<CulinaryProcedure> {
   try {
-    const embedding = await generateEmbedding(procedureText);
-    return embedding;
+    const response = await fetch(`${API_BASE}/store`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(procedure),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to store procedure: ${response.statusText}`);
+    }
+
+    const { data } = await response.json();
+    return data;
   } catch (error) {
-    console.error("Error generating embedding:", error);
+    console.error("Error storing procedure:", error);
     throw error;
   }
 }
 
 /**
- * Store culinary procedures in localStorage (persists across sessions)
- * In production, this would be stored in Pinecone via backend
- */
-export async function storeProcedure(
-  procedure: Omit<CulinaryProcedure, "id" | "created_at" | "embedding">,
-): Promise<CulinaryProcedure> {
-  const id = `proc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-  // Generate embedding for semantic search
-  const procedureText = `${procedure.title} ${procedure.steps.map((s) => s.instruction).join(" ")}`;
-  const embedding = await generateProcedureEmbedding(procedureText);
-
-  const fullProcedure: CulinaryProcedure = {
-    ...procedure,
-    id,
-    created_at: Date.now(),
-    embedding,
-  };
-
-  // Store in localStorage
-  const existing = getAllProcedures();
-  existing.push(fullProcedure);
-  localStorage.setItem("procedures:culinary", JSON.stringify(existing));
-
-  return fullProcedure;
-}
-
-/**
- * Search procedures semantically
+ * Search procedures semantically using backend API
  */
 export async function searchProcedures(
   query: string,
   limit: number = 5,
 ): Promise<ProcedureSearchResult[]> {
   try {
-    // Get embedding for the query
-    const queryEmbedding = await generateEmbedding(query);
+    const response = await fetch(`${API_BASE}/search`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        query,
+        limit,
+        min_similarity: 0.3,
+      }),
+    });
 
-    // Get all procedures
-    const procedures = getAllProcedures();
+    if (!response.ok) {
+      throw new Error(`Failed to search procedures: ${response.statusText}`);
+    }
 
-    // Calculate similarity scores using cosine similarity
-    const results = procedures
-      .map((proc) => {
-        const embedding = proc.embedding || [];
-        const score = cosineSimilarity(queryEmbedding, embedding);
-        return { procedure: proc, relevance_score: score };
-      })
-      .filter((r) => r.relevance_score > 0.3) // Filter by relevance threshold
-      .sort((a, b) => b.relevance_score - a.relevance_score)
-      .slice(0, limit);
-
-    return results;
+    const { data } = await response.json();
+    return data || [];
   } catch (error) {
     console.error("Error searching procedures:", error);
     return [];
@@ -108,11 +82,18 @@ export async function searchProcedures(
 /**
  * Get all stored procedures
  */
-export function getAllProcedures(): CulinaryProcedure[] {
+export async function getAllProcedures(): Promise<CulinaryProcedure[]> {
   try {
-    const raw = localStorage.getItem("procedures:culinary") || "[]";
-    return JSON.parse(raw);
-  } catch {
+    const response = await fetch(`${API_BASE}/all`);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch procedures: ${response.statusText}`);
+    }
+
+    const { data } = await response.json();
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching procedures:", error);
     return [];
   }
 }
@@ -120,67 +101,96 @@ export function getAllProcedures(): CulinaryProcedure[] {
 /**
  * Get procedure by ID
  */
-export function getProcedureById(id: string): CulinaryProcedure | null {
-  const procedures = getAllProcedures();
-  return procedures.find((p) => p.id === id) || null;
+export async function getProcedureById(id: string): Promise<CulinaryProcedure | null> {
+  try {
+    const response = await fetch(`${API_BASE}/${id}`);
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const { data } = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching procedure:", error);
+    return null;
+  }
 }
 
 /**
  * Get procedures by category
  */
-export function getProceduresByCategory(
+export async function getProceduresByCategory(
   category: CulinaryProcedure["category"],
-): CulinaryProcedure[] {
-  const procedures = getAllProcedures();
-  return procedures.filter((p) => p.category === category);
+): Promise<CulinaryProcedure[]> {
+  try {
+    const response = await fetch(`${API_BASE}/by-category/${category}`);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch procedures: ${response.statusText}`);
+    }
+
+    const { data } = await response.json();
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching procedures by category:", error);
+    return [];
+  }
 }
 
 /**
  * Get procedures from a specific book
  */
-export function getProceduresByBook(bookName: string): CulinaryProcedure[] {
-  const procedures = getAllProcedures();
-  return procedures.filter(
-    (p) => p.source_book.toLowerCase() === bookName.toLowerCase(),
-  );
+export async function getProceduresByBook(bookName: string): Promise<CulinaryProcedure[]> {
+  try {
+    const response = await fetch(`${API_BASE}/by-book/${encodeURIComponent(bookName)}`);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch procedures: ${response.statusText}`);
+    }
+
+    const { data } = await response.json();
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching procedures by book:", error);
+    return [];
+  }
 }
 
 /**
  * Delete a procedure
  */
-export function deleteProcedure(id: string): boolean {
-  const existing = getAllProcedures();
-  const filtered = existing.filter((p) => p.id !== id);
-  if (filtered.length < existing.length) {
-    localStorage.setItem("procedures:culinary", JSON.stringify(filtered));
-    return true;
+export async function deleteProcedure(id: string): Promise<boolean> {
+  try {
+    const response = await fetch(`${API_BASE}/${id}`, {
+      method: "DELETE",
+    });
+
+    return response.ok;
+  } catch (error) {
+    console.error("Error deleting procedure:", error);
+    return false;
   }
-  return false;
 }
 
 /**
- * Clear all procedures (destructive - use with caution)
+ * Search procedures by full text
  */
-export function clearAllProcedures(): void {
-  localStorage.removeItem("procedures:culinary");
-}
+export async function searchProceduresFulltext(
+  query: string,
+  limit: number = 20,
+): Promise<CulinaryProcedure[]> {
+  try {
+    const response = await fetch(`${API_BASE}/search-text/${encodeURIComponent(query)}?limit=${limit}`);
 
-/**
- * Cosine similarity between two vectors
- */
-function cosineSimilarity(a: number[], b: number[]): number {
-  if (a.length === 0 || b.length === 0) return 0;
+    if (!response.ok) {
+      throw new Error(`Failed to search procedures: ${response.statusText}`);
+    }
 
-  let dotProduct = 0;
-  let normA = 0;
-  let normB = 0;
-
-  for (let i = 0; i < Math.min(a.length, b.length); i++) {
-    dotProduct += a[i] * b[i];
-    normA += a[i] * a[i];
-    normB += b[i] * b[i];
+    const { data } = await response.json();
+    return data || [];
+  } catch (error) {
+    console.error("Error searching procedures:", error);
+    return [];
   }
-
-  const denominator = Math.sqrt(normA) * Math.sqrt(normB);
-  return denominator === 0 ? 0 : dotProduct / denominator;
 }
