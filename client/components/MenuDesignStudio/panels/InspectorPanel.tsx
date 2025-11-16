@@ -474,6 +474,69 @@ export function InspectorPanel({
                   )}
                 </div>
               )}
+
+              {/* Spell Check Section */}
+              {(element.text || element.description) && spellCheckResults.length > 0 && (
+                <div>
+                  <button
+                    onClick={() => toggleSection("spellcheck")}
+                    className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4" />
+                      Spelling Issues
+                      <Badge variant="destructive" className="ml-1 text-xs">
+                        {spellCheckResults.length}
+                      </Badge>
+                    </div>
+                    <ChevronDown
+                      className={cn(
+                        "h-4 w-4 transition-transform",
+                        expandedSections.has("spellcheck") && "rotate-180"
+                      )}
+                    />
+                  </button>
+                  {expandedSections.has("spellcheck") && (
+                    <div className="space-y-2 px-4 py-3 bg-amber-50 dark:bg-amber-950/10">
+                      {spellCheckResults.map((result, index) => (
+                        <div
+                          key={index}
+                          className="p-2 bg-white dark:bg-gray-800 rounded border border-amber-200 dark:border-amber-900"
+                        >
+                          <div className="font-mono text-sm text-red-600 dark:text-red-400">
+                            "{result.word}"
+                          </div>
+                          {result.suggestions.length > 0 && (
+                            <div className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+                              Did you mean:
+                              <div className="flex gap-1 mt-1 flex-wrap">
+                                {result.suggestions.map((suggestion) => (
+                                  <Button
+                                    key={suggestion}
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-xs h-6"
+                                    onClick={() => {
+                                      const text = element.text || "";
+                                      const corrected = text.replace(
+                                        new RegExp(`\\b${result.word}\\b`, "g"),
+                                        suggestion
+                                      );
+                                      onUpdateElement({ text: corrected });
+                                    }}
+                                  >
+                                    {suggestion}
+                                  </Button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </ScrollArea>
         </TabsContent>
