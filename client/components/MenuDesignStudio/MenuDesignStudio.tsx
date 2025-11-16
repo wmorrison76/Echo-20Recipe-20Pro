@@ -415,51 +415,93 @@ export function MenuDesignStudio({
           />
         </div>
 
-        {/* Right Sidebar - Inspector Panel */}
-        <div className="hidden w-80 border-l border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 xl:flex xl:flex-col overflow-y-auto">
-          {selectedElement && (
-            <InspectorPanel
-              element={selectedElement}
-              pageSize={state.pageSize}
-              canvasSettings={state.canvasSettings}
-              onUpdateElement={(updates) => {
-                updateElement(selectedElement.id, updates);
-                historyPush(state);
-              }}
-              onUpdateCanvasSettings={(settings) => {
-                updateCanvasSettings(settings);
-                historyPush(state);
-              }}
-              onApplyTemplate={handleApplyTemplate}
-            />
-          )}
-          {!selectedElement && (
-            <InspectorPanel
-              element={{
-                id: "placeholder",
-                type: "heading",
-                name: "No Element Selected",
-                x: 0,
-                y: 0,
-                width: 100,
-                height: 100,
-                rotation: 0,
-                opacity: 1,
-                zIndex: 0,
-                text: "",
-                fontSize: 16,
-                fontWeight: 400,
-                fontFamily: "'Inter', sans-serif",
-                color: "#000000",
-                align: "left",
-              }}
-              pageSize={state.pageSize}
-              canvasSettings={state.canvasSettings}
-              onUpdateElement={() => {}}
-              onUpdateCanvasSettings={() => {}}
-              onApplyTemplate={handleApplyTemplate}
-            />
-          )}
+        {/* Right Sidebar - Tabbed Panel with Inspector, AI³, and Dishes */}
+        <div className="hidden w-96 border-l border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 xl:flex xl:flex-col overflow-hidden">
+          <Tabs value={rightPanelTab} onValueChange={(val) => setRightPanelTab(val as any)} className="flex flex-col h-full">
+            <TabsList className="grid w-full grid-cols-3 bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+              <TabsTrigger value="inspector" className="text-xs">
+                Inspector
+              </TabsTrigger>
+              <TabsTrigger value="ai" className="text-xs">
+                AI³
+              </TabsTrigger>
+              <TabsTrigger value="dishes" className="text-xs">
+                Dishes
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Inspector Tab */}
+            <TabsContent value="inspector" className="flex-1 overflow-y-auto">
+              {selectedElement && (
+                <InspectorPanel
+                  element={selectedElement}
+                  pageSize={state.pageSize}
+                  canvasSettings={state.canvasSettings}
+                  onUpdateElement={(updates) => {
+                    updateElement(selectedElement.id, updates);
+                    historyPush(state);
+                  }}
+                  onUpdateCanvasSettings={(settings) => {
+                    updateCanvasSettings(settings);
+                    historyPush(state);
+                  }}
+                  onApplyTemplate={handleApplyTemplate}
+                />
+              )}
+              {!selectedElement && (
+                <InspectorPanel
+                  element={{
+                    id: "placeholder",
+                    type: "heading",
+                    name: "No Element Selected",
+                    x: 0,
+                    y: 0,
+                    width: 100,
+                    height: 100,
+                    rotation: 0,
+                    opacity: 1,
+                    zIndex: 0,
+                    text: "",
+                    fontSize: 16,
+                    fontWeight: 400,
+                    fontFamily: "'Inter', sans-serif",
+                    color: "#000000",
+                    align: "left",
+                  }}
+                  pageSize={state.pageSize}
+                  canvasSettings={state.canvasSettings}
+                  onUpdateElement={() => {}}
+                  onUpdateCanvasSettings={() => {}}
+                  onApplyTemplate={handleApplyTemplate}
+                />
+              )}
+            </TabsContent>
+
+            {/* AI³ Suggestions Tab */}
+            <TabsContent value="ai" className="flex-1 overflow-hidden">
+              <AI3SuggestionsPanel
+                elements={state.elements}
+                selectedElementId={state.selectedElementId}
+                onApplySuggestion={handleApplySuggestion}
+                onGenerateLayouts={handleGenerateLayoutsFromDishes}
+                onEnhanceContent={(elementId) => {
+                  toast({
+                    title: "Content Enhancement",
+                    description: "AI-generated content suggestions coming soon",
+                  });
+                }}
+              />
+            </TabsContent>
+
+            {/* Completed Dishes Tab */}
+            <TabsContent value="dishes" className="flex-1 overflow-hidden">
+              <CompletedDishesGallery
+                dishes={[]}
+                onGenerateDesign={handleGenerateMenuDesign}
+                onSelectDish={handleSelectDish}
+              />
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 
