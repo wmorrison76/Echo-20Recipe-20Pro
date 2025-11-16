@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { DesignerElement, CanvasSettings, PageSize } from "../hooks";
 import { CanvasElement } from "./CanvasElement";
+import { AlignmentToolbar } from "../layout/AlignmentToolbar";
 
 interface DesignerCanvasProps {
   elements: DesignerElement[];
