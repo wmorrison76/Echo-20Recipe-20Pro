@@ -833,6 +833,9 @@ export function MenuDesignStudio({
         onPaste={handlePaste}
         onFindReplace={() => setIsFindReplaceOpen(true)}
         onVersionHistory={() => setIsVersioningOpen(true)}
+        onGroup={handleGroupElements}
+        onUngroup={handleUngroupElements}
+        onCreateComponent={handleCreateComponent}
         onOpenSettings={() => {
           toast({
             title: "Settings",
