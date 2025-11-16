@@ -8,6 +8,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { KeyboardShortcutsDialog } from "./KeyboardShortcutsDialog";
+import { FileDialog } from "./FileDialog";
+import type { DesignerState } from "../hooks";
 
 interface MenuBarProps {
   onNew: () => void;
