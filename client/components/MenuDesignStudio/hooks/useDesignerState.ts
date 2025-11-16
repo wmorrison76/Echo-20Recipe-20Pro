@@ -484,6 +484,8 @@ export function useDesignerState(initialState?: Partial<DesignerState>) {
     ...initialState,
   });
 
+  const clipboardRef = { current: null as DesignerElement[] | null };
+
   const addElement = useCallback(
     (element: Omit<DesignerElement, "id">) => {
       dispatch({
@@ -503,6 +505,48 @@ export function useDesignerState(initialState?: Partial<DesignerState>) {
 
   const updateElement = useCallback((id: string, updates: Partial<DesignerElement>) => {
     dispatch({ type: "UPDATE_ELEMENT", payload: { id, updates } });
+  }, []);
+
+  const copyElements = useCallback((ids: string[]) => {
+    const elementsToCopy = state.elements.filter((el) => ids.includes(el.id));
+    if (elementsToCopy.length > 0) {
+      clipboardRef.current = JSON.parse(JSON.stringify(elementsToCopy));
+      return true;
+    }
+    return false;
+  }, [state.elements]);
+
+  const cutElements = useCallback((ids: string[]) => {
+    const success = copyElements(ids);
+    if (success) {
+      dispatch({ type: "DELETE_MULTIPLE", payload: ids });
+    }
+    return success;
+  }, [copyElements]);
+
+  const pasteElements = useCallback(() => {
+    if (!clipboardRef.current || clipboardRef.current.length === 0) {
+      return [];
+    }
+
+    const pastedIds: string[] = [];
+    clipboardRef.current.forEach((element) => {
+      const newElement: DesignerElement = {
+        ...element,
+        id: `element-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        x: element.x + 20,
+        y: element.y + 20,
+        parentGroupId: undefined,
+        childElementIds: element.type === "group" ? [...(element.childElementIds || [])] : undefined,
+      };
+      dispatch({
+        type: "ADD_ELEMENT",
+        payload: newElement,
+      });
+      pastedIds.push(newElement.id);
+    });
+
+    return pastedIds;
   }, []);
 
   const selectElement = useCallback((id: string | null) => {
