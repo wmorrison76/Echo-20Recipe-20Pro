@@ -7,7 +7,9 @@ export type DesignerElementType =
   | "menu-item"
   | "image"
   | "shape"
-  | "divider";
+  | "divider"
+  | "group"
+  | "component";
 
 export type DesignerElement = {
   id: string;
