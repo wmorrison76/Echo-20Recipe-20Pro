@@ -16,4 +16,3 @@ export { useHistory } from "./useHistory";
 export { useKeyboardShortcuts } from "./useKeyboardShortcuts";
 
 export { useAutoSave, getSavedDesigns, saveDesignToStorage, deleteDesign, checkStorageQuota } from "./useAutoSave";
-export type { SavedDesign } from "./useAutoSave";
