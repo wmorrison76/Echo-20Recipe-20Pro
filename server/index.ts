@@ -80,5 +80,8 @@ export function createServer() {
   // Legacy Pinecone endpoint (redirects to vector endpoint)
   app.use("/api/pinecone", vectorRouter);
 
+  // Culinary Procedures API (semantic search with pgvector)
+  app.use("/api/procedures", proceduresRouter);
+
   return app;
 }
