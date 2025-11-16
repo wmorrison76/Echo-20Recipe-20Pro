@@ -32,10 +32,16 @@ interface DesignerCanvasProps {
 export function DesignerCanvas({
   elements,
   selectedElementId,
+  selectedElementIds,
   pageSize,
   canvasSettings,
   onSelectElement,
+  onSelectMultiple,
+  onAddToSelection,
+  onToggleSelection,
+  onClearSelection,
   onUpdateElement,
+  onUpdateMultiple,
   onStartDrag,
   onUpdateDrag,
   onEndDrag,
@@ -51,6 +57,8 @@ export function DesignerCanvas({
   const canvasRef = useRef<HTMLDivElement>(null);
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
   const [dragPosition, setDragPosition] = useState<{ x: number; y: number; clientX: number; clientY: number } | null>(null);
+  const [dragSelectBox, setDragSelectBox] = useState<{ startX: number; startY: number; endX: number; endY: number } | null>(null);
+  const [isSelectingBox, setIsSelectingBox] = useState(false);
 
   // Handle canvas drag
   useEffect(() => {
