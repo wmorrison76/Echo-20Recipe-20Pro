@@ -117,7 +117,7 @@ export function DesignerCanvas({
         >
           {Array.from({ length: Math.ceil((pageSize.width * scale) / 50) }).map((_, i) => (
             <div
-              key={`top-${i}`}
+              key={`ruler-top-${i}`}
               style={{
                 position: "absolute",
                 left: `${i * 50}px`,
@@ -154,7 +154,7 @@ export function DesignerCanvas({
         >
           {Array.from({ length: Math.ceil((pageSize.height * scale) / 50) }).map((_, i) => (
             <div
-              key={`left-${i}`}
+              key={`ruler-left-${i}`}
               style={{
                 position: "absolute",
                 top: `${i * 50}px`,
