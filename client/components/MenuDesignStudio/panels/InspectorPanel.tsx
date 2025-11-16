@@ -425,6 +425,44 @@ export function InspectorPanel({
                           step="0.1"
                         />
                       </div>
+                      <div>
+                        <Label className="text-xs text-gray-600 dark:text-gray-400">
+                          Text Transform
+                        </Label>
+                        <select
+                          value={element.textTransform || "none"}
+                          onChange={(e) =>
+                            onUpdateElement({
+                              textTransform: e.target.value as "none" | "uppercase" | "lowercase" | "capitalize",
+                            })
+                          }
+                          className="h-8 text-sm mt-1 w-full px-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                        >
+                          <option value="none">None</option>
+                          <option value="uppercase">UPPERCASE</option>
+                          <option value="lowercase">lowercase</option>
+                          <option value="capitalize">Capitalize</option>
+                        </select>
+                      </div>
+                      <div>
+                        <Label className="text-xs text-gray-600 dark:text-gray-400">
+                          Text Decoration
+                        </Label>
+                        <select
+                          value={element.textDecoration || "none"}
+                          onChange={(e) =>
+                            onUpdateElement({
+                              textDecoration: e.target.value as "none" | "underline" | "line-through" | "overline",
+                            })
+                          }
+                          className="h-8 text-sm mt-1 w-full px-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                        >
+                          <option value="none">None</option>
+                          <option value="underline">Underline</option>
+                          <option value="line-through">Line Through</option>
+                          <option value="overline">Overline</option>
+                        </select>
+                      </div>
                     </div>
                   )}
                 </div>
