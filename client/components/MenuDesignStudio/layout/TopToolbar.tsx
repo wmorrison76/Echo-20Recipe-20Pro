@@ -74,6 +74,8 @@ export function TopToolbar({
   onExportPDF,
   onExportSVG,
   onSave,
+  onLoadDesign,
+  currentState,
   onCopy,
   onCut,
   onPaste,
