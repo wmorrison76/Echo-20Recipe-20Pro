@@ -186,6 +186,21 @@ export function MenuBar({
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
+          <DropdownMenuLabel>Grouping & Components</DropdownMenuLabel>
+          <DropdownMenuItem onClick={onGroup || (() => {})}>
+            <span>Group</span>
+            <span className="ml-auto text-xs text-gray-500">Cmd+G</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={onUngroup || (() => {})}>
+            <span>Ungroup</span>
+            <span className="ml-auto text-xs text-gray-500">Cmd+Shift+G</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={onCreateComponent || (() => {})}>
+            <span>Create Component</span>
+            <span className="ml-auto text-xs text-gray-500">Cmd+K</span>
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
           <DropdownMenuItem onClick={onFindReplace || (() => {})}>
             <span>Find & Replace</span>
             <span className="ml-auto text-xs text-gray-500">Cmd+H</span>
