@@ -103,13 +103,13 @@ export function DesignerCanvas({
         {/* Grid Background (optional) */}
         {canvasSettings.showGrid && (
           <div
-            className="absolute inset-0 opacity-5"
+            className="absolute inset-0 opacity-5 pointer-events-none"
             style={{
               backgroundImage: `
-                linear-gradient(0deg, transparent calc(${canvasSettings.gridSize}px - 1px), #888 calc(${canvasSettings.gridSize}px - 1px)),
-                linear-gradient(90deg, transparent calc(${canvasSettings.gridSize}px - 1px), #888 calc(${canvasSettings.gridSize}px - 1px))
+                linear-gradient(0deg, transparent calc(${canvasSettings.gridSize * scale}px - 1px), #888 calc(${canvasSettings.gridSize * scale}px - 1px)),
+                linear-gradient(90deg, transparent calc(${canvasSettings.gridSize * scale}px - 1px), #888 calc(${canvasSettings.gridSize * scale}px - 1px))
               `,
-              backgroundSize: `${canvasSettings.gridSize}px ${canvasSettings.gridSize}px`,
+              backgroundSize: `${canvasSettings.gridSize * scale}px ${canvasSettings.gridSize * scale}px`,
             }}
           />
         )}
@@ -119,10 +119,10 @@ export function DesignerCanvas({
           <div
             className="absolute border border-dashed border-blue-300 pointer-events-none"
             style={{
-              top: canvasSettings.margin,
-              left: canvasSettings.margin,
-              right: canvasSettings.margin,
-              bottom: canvasSettings.margin,
+              top: canvasSettings.margin * scale,
+              left: canvasSettings.margin * scale,
+              right: canvasSettings.margin * scale,
+              bottom: canvasSettings.margin * scale,
             }}
           />
         )}
@@ -132,21 +132,23 @@ export function DesignerCanvas({
           <div
             className="absolute border border-dashed border-red-300 pointer-events-none"
             style={{
-              top: -canvasSettings.bleed,
-              left: -canvasSettings.bleed,
-              right: -canvasSettings.bleed,
-              bottom: -canvasSettings.bleed,
+              top: -canvasSettings.bleed * scale,
+              left: -canvasSettings.bleed * scale,
+              right: -canvasSettings.bleed * scale,
+              bottom: -canvasSettings.bleed * scale,
             }}
           />
         )}
 
         {/* Canvas Content */}
         <div
-          className="relative w-full h-full overflow-hidden"
+          className="relative overflow-hidden"
           style={{
             backgroundColor: canvasSettings.background,
             position: "relative",
             zIndex: 2,
+            width: "100%",
+            height: "100%",
           }}
         >
           {/* Render Elements */}
