@@ -96,6 +96,7 @@ export type DesignerAction =
 const INITIAL_STATE: DesignerState = {
   elements: [],
   selectedElementId: null,
+  selectedElementIds: [],
   canvasSettings: {
     background: "#ffffff",
     margin: 24,
