@@ -57,6 +57,9 @@ export function MenuDesignStudio({
     setPageSize,
     setDirty,
     setElements,
+    copyElements,
+    cutElements,
+    pasteElements,
   } = useDesignerState(initialState);
 
   const {
