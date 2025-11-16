@@ -248,6 +248,21 @@ export function MenuDesignStudio({
     }
   }, [pasteElements, selectMultiple, historyPush, state, toast]);
 
+  const handleLoadDesign = useCallback(
+    (loadedState: typeof state) => {
+      setElements(loadedState.elements);
+      setPageSize(loadedState.pageSize);
+      setDocumentName(loadedState.documentName);
+      updateCanvasSettings(loadedState.canvasSettings);
+      clearSelection();
+      toast({
+        title: "Design Loaded",
+        description: `"${loadedState.documentName}" has been loaded`,
+      });
+    },
+    [setElements, setPageSize, setDocumentName, updateCanvasSettings, clearSelection, toast]
+  );
+
   // Setup keyboard shortcuts
   const shortcuts = useMemo(
     () =>
