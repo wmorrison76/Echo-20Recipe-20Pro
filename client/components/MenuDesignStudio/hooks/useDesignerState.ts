@@ -151,6 +151,44 @@ function designerReducer(state: DesignerState, action: DesignerAction): Designer
       return {
         ...state,
         selectedElementId: action.payload,
+        selectedElementIds: action.payload ? [action.payload] : [],
+      };
+
+    case "SELECT_MULTIPLE":
+      return {
+        ...state,
+        selectedElementIds: action.payload,
+        selectedElementId: action.payload.length === 1 ? action.payload[0] : null,
+      };
+
+    case "ADD_TO_SELECTION":
+      return {
+        ...state,
+        selectedElementIds: [...new Set([...state.selectedElementIds, action.payload])],
+        selectedElementId: null,
+      };
+
+    case "REMOVE_FROM_SELECTION":
+      return {
+        ...state,
+        selectedElementIds: state.selectedElementIds.filter((id) => id !== action.payload),
+        selectedElementId: state.selectedElementIds.length === 1 ? null : state.selectedElementId,
+      };
+
+    case "TOGGLE_SELECTION":
+      return {
+        ...state,
+        selectedElementIds: state.selectedElementIds.includes(action.payload)
+          ? state.selectedElementIds.filter((id) => id !== action.payload)
+          : [...state.selectedElementIds, action.payload],
+        selectedElementId: null,
+      };
+
+    case "CLEAR_SELECTION":
+      return {
+        ...state,
+        selectedElementId: null,
+        selectedElementIds: [],
       };
 
     case "SET_ELEMENTS":
