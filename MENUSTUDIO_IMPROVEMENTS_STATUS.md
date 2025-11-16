@@ -203,6 +203,7 @@ All elements support full rotation:
 
 ## Testing Checklist
 
+- [x] Drop shadows visible on sidebar panels
 - [x] Drop shadows visible on shapes
 - [x] Outlines NOT visible on text
 - [x] Templates prevent text selection
