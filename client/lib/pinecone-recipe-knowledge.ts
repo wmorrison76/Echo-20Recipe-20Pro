@@ -162,7 +162,7 @@ export async function searchImportedRecipes(
   }>
 > {
   try {
-    const results = await searchSimilarRecipes(
+    const result = await searchSimilarRecipes(
       query,
       "manufacturing",
       "echo-system",
@@ -170,14 +170,24 @@ export async function searchImportedRecipes(
       { limit }
     );
 
-    return results.map((result) => ({
-      title: result.metadata?.title || "Unknown Recipe",
-      ingredients: result.metadata?.ingredients || [],
-      instructions: result.metadata?.instructions || [],
-      sourceBook: result.metadata?.sourceBook || "Unknown Book",
-      sourcePage: result.metadata?.sourcePage || 0,
-      similarity: result.similarity,
-    }));
+    if (!result.success || !result.matches) {
+      return [];
+    }
+
+    return result.matches.map((match) => {
+      // Extract source book and page from tags or metadata
+      const sourceBook = match.metadata?.sourceBook || "Unknown Book";
+      const sourcePage = match.metadata?.sourcePage || 0;
+
+      return {
+        title: match.metadata?.title || "Unknown Recipe",
+        ingredients: match.metadata?.ingredients || [],
+        instructions: match.metadata?.instructions || [],
+        sourceBook,
+        sourcePage,
+        similarity: match.score || 0,
+      };
+    });
   } catch (error) {
     console.error("Failed to search imported recipes:", error);
     return [];
