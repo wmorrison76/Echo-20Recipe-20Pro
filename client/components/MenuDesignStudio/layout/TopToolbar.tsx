@@ -61,6 +61,8 @@ export function TopToolbar({
   onPageSizeChange,
   backgroundColor,
   onBackgroundColorChange,
+  canvasSettings,
+  onCanvasSettingsChange,
   canUndo,
   canRedo,
   onUndo,
