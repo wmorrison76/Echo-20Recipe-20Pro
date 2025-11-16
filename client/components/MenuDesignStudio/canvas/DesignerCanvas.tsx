@@ -153,22 +153,34 @@ export function DesignerCanvas({
         >
           {/* Render Elements */}
           {elements.map((element) => (
-            <CanvasElement
+            <div
               key={element.id}
-              element={element}
-              isSelected={selectedElementId === element.id}
-              isEditing={editingId === element.id}
-              isDragging={dragState?.id === element.id}
-              isResizing={resizeState?.id === element.id}
-              onSelect={() => onSelectElement(element.id)}
-              onUpdateElement={(updates) => onUpdateElement(element.id, updates)}
-              onStartDrag={(clientX, clientY) => onStartDrag(element, clientX, clientY)}
-              onStartResize={(handle, clientX, clientY) =>
-                onStartResize(element, handle, clientX, clientY)
-              }
-              onStartEditingText={() => onStartEditingText(element.id)}
-              onEndEditingText={onEndEditingText}
-            />
+              style={{
+                position: "absolute",
+                left: element.x * scale,
+                top: element.y * scale,
+                width: element.width * scale,
+                height: element.height * scale,
+                transformOrigin: "top left",
+              }}
+            >
+              <CanvasElement
+                element={element}
+                isSelected={selectedElementId === element.id}
+                isEditing={editingId === element.id}
+                isDragging={dragState?.id === element.id}
+                isResizing={resizeState?.id === element.id}
+                onSelect={() => onSelectElement(element.id)}
+                onUpdateElement={(updates) => onUpdateElement(element.id, updates)}
+                onStartDrag={(clientX, clientY) => onStartDrag(element, clientX, clientY)}
+                onStartResize={(handle, clientX, clientY) =>
+                  onStartResize(element, handle, clientX, clientY)
+                }
+                onStartEditingText={() => onStartEditingText(element.id)}
+                onEndEditingText={onEndEditingText}
+                scale={scale}
+              />
+            </div>
           ))}
         </div>
       </div>
