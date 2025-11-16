@@ -35,6 +35,7 @@ export function MenuDesignStudio({
 }: MenuDesignStudioProps) {
   const { toast } = useToast();
   const containerRef = useRef<HTMLDivElement>(null);
+  const [rightPanelTab, setRightPanelTab] = useState<"inspector" | "ai" | "dishes">("inspector");
 
   const {
     state,
