@@ -157,6 +157,7 @@ router.get("/by-category/:category", async (req: Request, res: Response) => {
   try {
     const { category } = req.params;
     const { limit = 20 } = req.query;
+    const supabase = getSupabaseClient();
 
     const { data, error } = await supabase.rpc("get_procedures_by_category", {
       p_category: category,
@@ -192,6 +193,7 @@ router.get("/by-book/:book", async (req: Request, res: Response) => {
   try {
     const { book } = req.params;
     const { limit = 50 } = req.query;
+    const supabase = getSupabaseClient();
 
     const { data, error } = await supabase.rpc("get_procedures_by_book", {
       p_book: decodeURIComponent(book),
@@ -227,6 +229,7 @@ router.get("/search-text/:query", async (req: Request, res: Response) => {
   try {
     const { query } = req.params;
     const { limit = 20 } = req.query;
+    const supabase = getSupabaseClient();
 
     const { data, error } = await supabase.rpc("search_procedures_fulltext", {
       p_query: decodeURIComponent(query),
@@ -261,6 +264,7 @@ router.get("/search-text/:query", async (req: Request, res: Response) => {
 router.get("/all", async (req: Request, res: Response) => {
   try {
     const { limit = 100, offset = 0 } = req.query;
+    const supabase = getSupabaseClient();
 
     const { data, error, count } = await supabase
       .from("culinary_procedures")
@@ -302,6 +306,7 @@ router.get("/all", async (req: Request, res: Response) => {
 router.get("/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const supabase = getSupabaseClient();
 
     const { data, error } = await supabase
       .from("culinary_procedures")
@@ -337,6 +342,7 @@ router.get("/:id", async (req: Request, res: Response) => {
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const supabase = getSupabaseClient();
 
     const { error } = await supabase
       .from("culinary_procedures")
