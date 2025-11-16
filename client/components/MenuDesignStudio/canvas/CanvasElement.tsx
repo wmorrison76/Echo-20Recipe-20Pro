@@ -31,6 +31,7 @@ export function CanvasElement({
   onStartResize,
   onStartEditingText,
   onEndEditingText,
+  scale = 1,
 }: CanvasElementProps) {
   const [localText, setLocalText] = useState(element.text || "");
   const elementRef = useRef<HTMLDivElement>(null);
