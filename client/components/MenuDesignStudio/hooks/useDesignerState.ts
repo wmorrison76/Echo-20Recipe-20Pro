@@ -120,6 +120,7 @@ const INITIAL_STATE: DesignerState = {
   elements: [],
   selectedElementId: null,
   selectedElementIds: [],
+  components: [],
   canvasSettings: {
     background: "#ffffff",
     margin: 24,
