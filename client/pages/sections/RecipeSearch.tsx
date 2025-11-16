@@ -2969,6 +2969,96 @@ const onFiles = async (files: File[]) => {
         </div>
       </details>
 
+      <details className="rounded-md border p-3 text-sm mt-4">
+        <summary className="cursor-pointer select-none">
+          📚 Culinary Terminology & Definitions Learned
+        </summary>
+        <div className="mt-4 space-y-4 text-xs">
+          {(() => {
+            try {
+              const raw = localStorage.getItem("kb:cook") || "{}";
+              const kb = JSON.parse(raw);
+              const definitions = kb.definitions || {};
+              const terms = kb.terms || {};
+              const books = kb.books || [];
+
+              if (Object.keys(definitions).length === 0 && Object.keys(terms).length === 0) {
+                return (
+                  <div className="text-muted-foreground">
+                    Import textbooks or reference books to learn culinary terminology and definitions.
+                  </div>
+                );
+              }
+
+              return (
+                <>
+                  {books.length > 0 && (
+                    <div className="border-t pt-3">
+                      <div className="font-medium mb-2">📖 Books Imported</div>
+                      <div className="flex flex-wrap gap-2">
+                        {books.map((book) => (
+                          <span key={book} className="px-2 py-1 bg-muted rounded text-xs">
+                            {book}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {Object.keys(definitions).length > 0 && (
+                    <div className="border-t pt-3">
+                      <div className="font-medium mb-2">📖 Culinary Definitions</div>
+                      <div className="max-h-48 overflow-auto hide-scrollbar space-y-2">
+                        {Object.entries(definitions)
+                          .sort((a, b) => (a[0] as string).localeCompare(b[0] as string))
+                          .slice(0, 15)
+                          .map(([term, def]) => (
+                            <div key={term} className="text-xs border-l-2 border-muted pl-2">
+                              <div className="font-semibold text-foreground capitalize">{term}</div>
+                              <div className="text-muted-foreground line-clamp-2">{def}</div>
+                            </div>
+                          ))}
+                        {Object.keys(definitions).length > 15 && (
+                          <div className="text-muted-foreground italic">
+                            +{Object.keys(definitions).length - 15} more definitions...
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {Object.keys(terms).length > 0 && (
+                    <div className="border-t pt-3">
+                      <div className="font-medium mb-2">🔤 Top Culinary Terms</div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {Object.entries(terms)
+                          .sort((a: any, b: any) => b[1] - a[1])
+                          .slice(0, 20)
+                          .map(([term, count]) => (
+                            <span key={term} className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                              {term} <span className="text-muted-foreground">({count})</span>
+                            </span>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="border-t pt-3 text-xs text-muted-foreground italic">
+                    💡 <strong>Note:</strong> This knowledge base is retained even when recipes are deleted, preserving your culinary learning across all areas of the application including R&D, General Knowledge, and AI training.
+                  </div>
+                </>
+              );
+            } catch (e) {
+              return (
+                <div className="text-xs text-muted-foreground">
+                  Knowledge base system ready. Import textbooks to learn terminology.
+                </div>
+              );
+            }
+          })()}
+        </div>
+      </details>
+
       <Dialog open={!!preview} onOpenChange={(o) => !o && setPreview(null)}>
         <DialogContent className="max-w-2xl drop-shadow-2xl shadow-2xl">
           <DialogHeader>
