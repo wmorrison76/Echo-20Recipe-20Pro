@@ -603,7 +603,7 @@ const [scanOpen, setScanOpen] = useState(false);
         /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
       let c = 0;
       for (const L of ls) {
-        if (qty.test(L) || /^[•\-*]\s+/.test(L)) c++;
+        if (qty.test(L) || /^[���\-*]\s+/.test(L)) c++;
       }
       return c >= 3;
     };
@@ -3074,8 +3074,23 @@ const onFiles = async (files: File[]) => {
                           .sort((a: any, b: any) => b[1] - a[1])
                           .slice(0, 20)
                           .map(([term, count]) => (
-                            <span key={term} className="px-1.5 py-0.5 bg-muted rounded text-xs">
+                            <span key={term} className="px-1.5 py-0.5 bg-muted rounded text-xs group relative cursor-default hover:bg-muted/80 transition-colors">
                               {term} <span className="text-muted-foreground">({count})</span>
+                              <button
+                                onClick={() => {
+                                  const raw = localStorage.getItem("kb:cook") || "{}";
+                                  const kb = JSON.parse(raw);
+                                  if (kb.terms && kb.terms[term]) {
+                                    delete kb.terms[term];
+                                    localStorage.setItem("kb:cook", JSON.stringify(kb));
+                                    window.location.reload();
+                                  }
+                                }}
+                                className="opacity-0 group-hover:opacity-100 transition-opacity absolute -right-2 -top-2 p-0.5 bg-destructive text-white rounded-full text-xs"
+                                title="Delete this term"
+                              >
+                                <X className="h-2.5 w-2.5" />
+                              </button>
                             </span>
                           ))}
                       </div>
