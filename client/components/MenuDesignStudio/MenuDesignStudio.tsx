@@ -416,7 +416,7 @@ export function MenuDesignStudio({
         </div>
 
         {/* Right Sidebar - Tabbed Panel with Inspector, AI³, and Dishes */}
-        <div className="hidden w-96 border-l border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 xl:flex xl:flex-col overflow-hidden">
+        <div className="hidden w-80 border-l border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 xl:flex xl:flex-col overflow-hidden">
           <Tabs value={rightPanelTab} onValueChange={(val) => setRightPanelTab(val as any)} className="flex flex-col h-full">
             <TabsList className="grid w-full grid-cols-3 bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
               <TabsTrigger value="inspector" className="text-xs">
