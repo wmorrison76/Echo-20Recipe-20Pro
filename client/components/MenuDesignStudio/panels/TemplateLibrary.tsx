@@ -81,7 +81,7 @@ export function TemplateLibrary({ onApplyTemplate }: TemplateLibraryProps) {
                 getTemplatesForCategory(category).map((template) => (
                   <Card
                     key={template.id}
-                    className={`cursor-pointer transition-all ${
+                    className={`cursor-pointer transition-all select-none ${
                       selectedTemplate?.id === template.id
                         ? "ring-2 ring-cyan-500 bg-cyan-50 dark:bg-cyan-950/30"
                         : "hover:shadow-md dark:hover:border-gray-600"
