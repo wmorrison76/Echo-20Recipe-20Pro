@@ -647,6 +647,8 @@ export function MenuDesignStudio({
         onBackgroundColorChange={(color) => {
           updateCanvasSettings({ background: color });
         }}
+        canvasSettings={state.canvasSettings}
+        onCanvasSettingsChange={updateCanvasSettings}
         canUndo={canUndo}
         canRedo={canRedo}
         onUndo={undo}
