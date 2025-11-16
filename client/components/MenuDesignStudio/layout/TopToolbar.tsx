@@ -53,6 +53,8 @@ export function TopToolbar({
   onDocumentNameChange,
   pageSize,
   onPageSizeChange,
+  backgroundColor,
+  onBackgroundColorChange,
   canUndo,
   canRedo,
   onUndo,
