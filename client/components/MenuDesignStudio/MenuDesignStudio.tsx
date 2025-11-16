@@ -517,6 +517,51 @@ export function MenuDesignStudio({
     }
   }, [state, onExport, toast]);
 
+  const handleSaveVersion = useCallback(
+    (name: string, description: string) => {
+      const newVersion: DesignVersion = {
+        id: `version-${Date.now()}`,
+        name,
+        description,
+        timestamp: Date.now(),
+        state: JSON.parse(JSON.stringify(state)),
+      };
+      setDesignVersions([newVersion, ...designVersions]);
+      toast({
+        title: "Version Saved",
+        description: `"${name}" has been saved`,
+      });
+    },
+    [state, designVersions, toast]
+  );
+
+  const handleLoadVersion = useCallback(
+    (version: DesignVersion) => {
+      setElements(version.state.elements);
+      setPageSize(version.state.pageSize);
+      setDocumentName(version.state.documentName);
+      updateCanvasSettings(version.state.canvasSettings);
+      clearSelection();
+      historyPush(state);
+      toast({
+        title: "Version Loaded",
+        description: `"${version.name}" has been loaded`,
+      });
+    },
+    [setElements, setPageSize, setDocumentName, updateCanvasSettings, clearSelection, historyPush, state, toast]
+  );
+
+  const handleDeleteVersion = useCallback(
+    (versionId: string) => {
+      setDesignVersions(designVersions.filter((v) => v.id !== versionId));
+      toast({
+        title: "Version Deleted",
+        description: "Version has been removed",
+      });
+    },
+    [designVersions, toast]
+  );
+
   const handleAddElement = useCallback(
     (type: string) => {
       const baseElement = {
