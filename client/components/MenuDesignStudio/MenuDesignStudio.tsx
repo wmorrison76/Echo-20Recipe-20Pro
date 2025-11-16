@@ -912,6 +912,17 @@ export function MenuDesignStudio({
         isOpen={isFindReplaceOpen}
         onClose={() => setIsFindReplaceOpen(false)}
       />
+
+      {/* Versioning Dialog */}
+      <VersioningDialog
+        versions={designVersions}
+        onSaveVersion={handleSaveVersion}
+        onLoadVersion={handleLoadVersion}
+        onDeleteVersion={handleDeleteVersion}
+        isOpen={isVersioningOpen}
+        onClose={() => setIsVersioningOpen(false)}
+        currentState={state}
+      />
     </div>
   );
 }
