@@ -1,215 +1,131 @@
 import { useEffect, useRef, useCallback } from "react";
-import { DesignState } from "./useDesignerState";
+import type { DesignerState } from "./useDesignerState";
 
-interface UseAutoSaveOptions {
-  enabled?: boolean;
-  intervalMs?: number;
-  onSave?: (design: DesignState) => Promise<void>;
-  onError?: (error: Error) => void;
-}
-
-interface SavedDesign extends DesignState {
+export type SavedDesign = {
   id: string;
+  name: string;
+  state: DesignerState;
   savedAt: number;
-}
+  updatedAt: number;
+};
 
-// LocalStorage helper
-const STORAGE_KEY = "menu-designs";
-const AUTO_SAVE_KEY = "menu-designs-autosave";
+const STORAGE_KEY = "menu-studio-designs";
+const AUTO_SAVE_INTERVAL = 30000; // 30 seconds
+
+export function useAutoSave(
+  state: DesignerState,
+  enabled: boolean = true,
+  interval: number = AUTO_SAVE_INTERVAL
+) {
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const lastSavedRef = useRef<string>("");
+
+  const save = useCallback((designId: string, designName: string) => {
+    try {
+      const designs = getSavedDesigns();
+      const existingIndex = designs.findIndex((d) => d.id === designId);
+
+      const savedDesign: SavedDesign = {
+        id: designId,
+        name: designName,
+        state: JSON.parse(JSON.stringify(state)),
+        savedAt: existingIndex >= 0 ? designs[existingIndex].savedAt : Date.now(),
+        updatedAt: Date.now(),
+      };
+
+      if (existingIndex >= 0) {
+        designs[existingIndex] = savedDesign;
+      } else {
+        designs.push(savedDesign);
+      }
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(designs));
+      lastSavedRef.current = JSON.stringify(state);
+      return savedDesign;
+    } catch (error) {
+      console.error("Failed to save design:", error);
+      return null;
+    }
+  }, [state]);
+
+  const autoSave = useCallback(() => {
+    if (state.isDirty) {
+      const designId = `auto-save-${Date.now()}`;
+      save(designId, `Auto-saved: ${new Date().toLocaleString()}`);
+    }
+  }, [state.isDirty, save]);
+
+  useEffect(() => {
+    if (!enabled) {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      return;
+    }
+
+    timerRef.current = setInterval(autoSave, interval);
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [enabled, interval, autoSave]);
+
+  return { save, autoSave };
+}
 
 export function getSavedDesigns(): SavedDesign[] {
   try {
     const data = localStorage.getItem(STORAGE_KEY);
     return data ? JSON.parse(data) : [];
   } catch (error) {
-    console.error("Failed to read saved designs:", error);
+    console.error("Failed to load saved designs:", error);
     return [];
   }
 }
 
-export function saveDesignToStorage(design: DesignState): SavedDesign {
+export function getSavedDesign(designId: string): SavedDesign | null {
+  const designs = getSavedDesigns();
+  return designs.find((d) => d.id === designId) || null;
+}
+
+export function deleteSavedDesign(designId: string): boolean {
   try {
-    const saved: SavedDesign = {
-      ...design,
-      id: design.createdAt.toString(),
-      savedAt: Date.now(),
-    };
-
-    const designs = getSavedDesigns();
-    const index = designs.findIndex((d) => d.id === saved.id);
-
-    if (index > -1) {
-      designs[index] = saved;
-    } else {
-      designs.push(saved);
-    }
-
-    // Keep only last 20 designs to avoid storage bloat
-    if (designs.length > 20) {
-      designs.sort((a, b) => b.savedAt - a.savedAt);
-      designs.splice(20);
-    }
-
+    const designs = getSavedDesigns().filter((d) => d.id !== designId);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(designs));
-    return saved;
-  } catch (error) {
-    console.error("Failed to save design:", error);
-    throw error;
-  }
-}
-
-export function getAutoSavedDesign(): SavedDesign | null {
-  try {
-    const data = localStorage.getItem(AUTO_SAVE_KEY);
-    return data ? JSON.parse(data) : null;
-  } catch (error) {
-    console.error("Failed to read auto-saved design:", error);
-    return null;
-  }
-}
-
-export function saveAutoSaveDesign(design: DesignState): void {
-  try {
-    const saved: SavedDesign = {
-      ...design,
-      id: `autosave-${Date.now()}`,
-      savedAt: Date.now(),
-    };
-
-    localStorage.setItem(AUTO_SAVE_KEY, JSON.stringify(saved));
-  } catch (error) {
-    console.error("Failed to auto-save design:", error);
-  }
-}
-
-export function deleteDesign(id: string): void {
-  try {
-    const designs = getSavedDesigns();
-    const filtered = designs.filter((d) => d.id !== id);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+    return true;
   } catch (error) {
     console.error("Failed to delete design:", error);
+    return false;
   }
 }
 
-export function checkStorageQuota(): {
-  usage: number;
-  quota: number;
-  percentUsed: number;
-  usedMB: number;
-  quotaMB: number;
-} {
+export function renameSavedDesign(designId: string, newName: string): boolean {
   try {
-    if (!navigator.storage?.estimate) {
-      return {
-        usage: 0,
-        quota: 0,
-        percentUsed: 0,
-        usedMB: 0,
-        quotaMB: 0,
-      };
+    const designs = getSavedDesigns();
+    const design = designs.find((d) => d.id === designId);
+    if (design) {
+      design.name = newName;
+      design.updatedAt = Date.now();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(designs));
+      return true;
     }
-
-    let result = { usage: 0, quota: 0, percentUsed: 0, usedMB: 0, quotaMB: 0 };
-
-    navigator.storage.estimate().then((estimate) => {
-      result.usage = estimate.usage || 0;
-      result.quota = estimate.quota || 0;
-      result.percentUsed = result.usage / result.quota;
-      result.usedMB = Math.round(result.usage / 1024 / 1024);
-      result.quotaMB = Math.round(result.quota / 1024 / 1024);
-    });
-
-    return result;
+    return false;
   } catch (error) {
-    console.warn("Could not check storage quota:", error);
-    return {
-      usage: 0,
-      quota: 0,
-      percentUsed: 0,
-      usedMB: 0,
-      quotaMB: 0,
-    };
+    console.error("Failed to rename design:", error);
+    return false;
   }
 }
 
-export function useAutoSave(
-  design: DesignState,
-  options: UseAutoSaveOptions = {}
-) {
-  const {
-    enabled = true,
-    intervalMs = 30000, // 30 seconds
-    onSave,
-    onError,
-  } = options;
-
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const lastSaveRef = useRef<string>("");
-
-  const performSave = useCallback(async () => {
-    try {
-      const designString = JSON.stringify(design);
-
-      // Only save if design changed
-      if (designString === lastSaveRef.current) {
-        return;
-      }
-
-      lastSaveRef.current = designString;
-
-      // Save auto-save copy
-      saveAutoSaveDesign(design);
-
-      // Call custom save handler if provided
-      if (onSave) {
-        await onSave(design);
-      }
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      onError?.(err);
-      console.error("Auto-save failed:", err);
-    }
-  }, [design, onSave, onError]);
-
-  useEffect(() => {
-    if (!enabled) return;
-
-    // Clear existing timeout
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    // Set new timeout
-    timeoutRef.current = setTimeout(() => {
-      performSave();
-    }, intervalMs);
-
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, [enabled, intervalMs, performSave]);
-
-  // Save immediately on unmount if needed
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      // Don't force save on unmount as it could be destructive
-    };
-  }, []);
-
-  const manualSave = useCallback(async () => {
-    return performSave();
-  }, [performSave]);
-
-  return {
-    manualSave,
-    savedDesigns: getSavedDesigns(),
-    autoSavedDesign: getAutoSavedDesign(),
-    checkQuota: checkStorageQuota,
-  };
+export function clearAllSavedDesigns(): boolean {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+    return true;
+  } catch (error) {
+    console.error("Failed to clear designs:", error);
+    return false;
+  }
 }
