@@ -201,6 +201,8 @@ export function CanvasElement({
     letterSpacing: element.letterSpacing,
     color: element.color,
     textAlign: element.align,
+    textTransform: element.textTransform as any,
+    textDecoration: element.textDecoration as any,
   };
 
   if (element.type === "shape") {
