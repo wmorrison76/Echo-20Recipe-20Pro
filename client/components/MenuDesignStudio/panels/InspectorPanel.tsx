@@ -157,38 +157,64 @@ export function InspectorPanel({
                         />
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
                         <Label className="text-xs text-gray-600 dark:text-gray-400">
                           Rotation
                         </Label>
-                        <Input
-                          type="number"
-                          value={Math.round(element.rotation)}
-                          onChange={(e) =>
-                            onUpdateElement({ rotation: parseFloat(e.target.value) })
-                          }
-                          className="h-8 text-sm mt-1"
-                          min="0"
-                          max="360"
-                        />
+                        <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                          {Math.round(element.rotation)}°
+                        </span>
                       </div>
-                      <div>
-                        <Label className="text-xs text-gray-600 dark:text-gray-400">
-                          Opacity
-                        </Label>
+                      <Slider
+                        min={0}
+                        max={360}
+                        step={1}
+                        value={[element.rotation || 0]}
+                        onValueChange={(value) =>
+                          onUpdateElement({ rotation: value[0] })
+                        }
+                        className="mb-2"
+                      />
+                      <Input
+                        type="number"
+                        value={Math.round(element.rotation)}
+                        onChange={(e) =>
+                          onUpdateElement({ rotation: parseFloat(e.target.value) % 360 })
+                        }
+                        className="h-8 text-sm"
+                        min="0"
+                        max="360"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-gray-600 dark:text-gray-400">
+                        Opacity
+                      </Label>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Slider
+                          min={0}
+                          max={100}
+                          step={1}
+                          value={[Math.round(element.opacity * 100)]}
+                          onValueChange={(value) =>
+                            onUpdateElement({ opacity: value[0] / 100 })
+                          }
+                          className="flex-1"
+                        />
                         <Input
                           type="number"
                           value={Math.round(element.opacity * 100)}
                           onChange={(e) =>
                             onUpdateElement({
-                              opacity: parseFloat(e.target.value) / 100,
+                              opacity: Math.min(100, Math.max(0, parseFloat(e.target.value))) / 100,
                             })
                           }
-                          className="h-8 text-sm mt-1"
+                          className="h-8 text-sm w-16"
                           min="0"
                           max="100"
                         />
+                        <span className="text-xs text-gray-500 dark:text-gray-400">%</span>
                       </div>
                     </div>
                   </div>
