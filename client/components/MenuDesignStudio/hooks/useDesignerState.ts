@@ -192,6 +192,26 @@ function designerReducer(state: DesignerState, action: DesignerAction): Designer
         selectedElementIds: [],
       };
 
+    case "UPDATE_MULTIPLE":
+      return {
+        ...state,
+        elements: state.elements.map((el) =>
+          action.payload.ids.includes(el.id)
+            ? { ...el, ...action.payload.updates }
+            : el
+        ),
+        isDirty: true,
+      };
+
+    case "DELETE_MULTIPLE":
+      return {
+        ...state,
+        elements: state.elements.filter((el) => !action.payload.includes(el.id)),
+        selectedElementId: null,
+        selectedElementIds: [],
+        isDirty: true,
+      };
+
     case "SET_ELEMENTS":
       return {
         ...state,
