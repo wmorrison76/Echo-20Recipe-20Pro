@@ -289,22 +289,74 @@ export function InspectorPanel({
                       </div>
                     )}
 
-                    {element.type === "shape" && element.borderRadius !== undefined && (
-                      <div>
-                        <Label className="text-xs text-gray-600 dark:text-gray-400">
-                          Border Radius
-                        </Label>
-                        <Input
-                          type="number"
-                          value={element.borderRadius}
-                          onChange={(e) =>
-                            onUpdateElement({
-                              borderRadius: parseFloat(e.target.value),
-                            })
-                          }
-                          className="h-8 text-sm mt-1"
-                        />
-                      </div>
+                    {element.type === "shape" && (
+                      <>
+                        {element.borderRadius !== undefined && (
+                          <div>
+                            <Label className="text-xs text-gray-600 dark:text-gray-400">
+                              Border Radius
+                            </Label>
+                            <Input
+                              type="number"
+                              value={element.borderRadius}
+                              onChange={(e) =>
+                                onUpdateElement({
+                                  borderRadius: parseFloat(e.target.value),
+                                })
+                              }
+                              className="h-8 text-sm mt-1"
+                            />
+                          </div>
+                        )}
+
+                        {element.borderColor && (
+                          <div>
+                            <Label className="text-xs text-gray-600 dark:text-gray-400">
+                              Outline Color
+                            </Label>
+                            <div className="flex items-center gap-2 mt-1">
+                              <input
+                                type="color"
+                                value={element.borderColor}
+                                onChange={(e) =>
+                                  onUpdateElement({ borderColor: e.target.value })
+                                }
+                                className="h-8 w-8 rounded cursor-pointer"
+                              />
+                              <Input
+                                type="text"
+                                value={element.borderColor}
+                                onChange={(e) =>
+                                  onUpdateElement({ borderColor: e.target.value })
+                                }
+                                className="h-8 text-sm flex-1"
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {element.borderWidth !== undefined && (
+                          <div>
+                            <div className="flex items-center justify-between mb-2">
+                              <Label className="text-xs text-gray-600 dark:text-gray-400">
+                                Outline Thickness
+                              </Label>
+                              <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                                {element.borderWidth}px
+                              </span>
+                            </div>
+                            <Slider
+                              min={0}
+                              max={10}
+                              step={0.5}
+                              value={[element.borderWidth || 0]}
+                              onValueChange={(value) =>
+                                onUpdateElement({ borderWidth: value[0] })
+                              }
+                            />
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 )}
