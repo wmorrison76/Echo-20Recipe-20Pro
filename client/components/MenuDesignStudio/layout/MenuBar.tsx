@@ -28,6 +28,9 @@ interface MenuBarProps {
   onSelectAll: () => void;
   onFindReplace?: () => void;
   onVersionHistory?: () => void;
+  onGroup?: () => void;
+  onUngroup?: () => void;
+  onCreateComponent?: () => void;
   onShowGrid: (show: boolean) => void;
   onShowRulers: (show: boolean) => void;
   onShowGuides: (show: boolean) => void;
