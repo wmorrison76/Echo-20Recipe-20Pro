@@ -103,6 +103,7 @@ router.post("/search", async (req: Request, res: Response) => {
     const queryEmbedding = await generateEmbedding(query);
 
     // Call the search function
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase.rpc("search_culinary_procedures", {
       query_embedding: queryEmbedding,
       p_limit: limit,
