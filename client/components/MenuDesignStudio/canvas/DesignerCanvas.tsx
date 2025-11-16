@@ -395,6 +395,33 @@ export function DesignerCanvas({
         </div>
       </div>
 
+      {/* Alignment Toolbar */}
+      {selectedElementIds.length > 1 && (
+        <div
+          style={{
+            position: "absolute",
+            top: "10px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 10001,
+          }}
+        >
+          <AlignmentToolbar
+            selectedElements={elements.filter((el) => selectedElementIds.includes(el.id))}
+            onAlignLeft={onAlignLeft || (() => {})}
+            onAlignCenter={onAlignCenter || (() => {})}
+            onAlignRight={onAlignRight || (() => {})}
+            onAlignTop={onAlignTop || (() => {})}
+            onAlignMiddle={onAlignMiddle || (() => {})}
+            onAlignBottom={onAlignBottom || (() => {})}
+            onDistributeHorizontally={onDistributeHorizontally || (() => {})}
+            onDistributeVertically={onDistributeVertically || (() => {})}
+            onMatchWidth={onMatchWidth || (() => {})}
+            onMatchHeight={onMatchHeight || (() => {})}
+          />
+        </div>
+      )}
+
       {/* Drag-select box visualization */}
       {dragSelectBox && isSelectingBox && (
         <div
