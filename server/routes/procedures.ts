@@ -44,6 +44,7 @@ router.post("/store", async (req: Request, res: Response) => {
     const embedding = await generateEmbedding(procedureText);
 
     // Store in Supabase
+    const supabase = getSupabaseClient();
     const { data, error } = await supabase
       .from("culinary_procedures")
       .insert([
