@@ -94,7 +94,7 @@ export function AlignmentToolbar({
           onClick={onAlignTop}
           title="Align Top (Alt+T)"
         >
-          <AlignTop className="h-4 w-4" />
+          <div className="h-4 w-4 border-t-2 border-current" style={{ opacity: 0.6 }} />
         </Button>
         <Button
           variant="ghost"
