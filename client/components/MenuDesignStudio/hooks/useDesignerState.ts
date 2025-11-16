@@ -100,7 +100,14 @@ export type DesignerAction =
   | { type: "CLEAR_SELECTION"; payload: void }
   | { type: "UPDATE_MULTIPLE"; payload: { ids: string[]; updates: Partial<DesignerElement> } }
   | { type: "DELETE_MULTIPLE"; payload: string[] }
+  | { type: "GROUP_ELEMENTS"; payload: { elementIds: string[]; groupName: string } }
+  | { type: "UNGROUP_ELEMENTS"; payload: string }
+  | { type: "CREATE_COMPONENT"; payload: { elementId: string; componentName: string } }
+  | { type: "DELETE_COMPONENT"; payload: string }
+  | { type: "CREATE_COMPONENT_INSTANCE"; payload: { componentId: string; x: number; y: number } }
+  | { type: "UPDATE_COMPONENT_OVERRIDE"; payload: { instanceId: string; propertyPath: string; value: any } }
   | { type: "SET_ELEMENTS"; payload: DesignerElement[] }
+  | { type: "SET_COMPONENTS"; payload: ComponentDefinition[] }
   | { type: "UPDATE_CANVAS_SETTINGS"; payload: Partial<CanvasSettings> }
   | { type: "SET_PAGE_SIZE"; payload: PageSize }
   | { type: "SET_DOCUMENT_NAME"; payload: string }
