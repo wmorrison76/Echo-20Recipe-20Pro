@@ -108,18 +108,35 @@ export async function textToSpeech(
 
     if (!response.ok) {
       let errorBody = "";
+      let errorDetails = "";
       try {
-        errorBody = await response.text();
+        const jsonResponse = await response.json();
+        errorBody = jsonResponse.error || `HTTP ${response.status}`;
+        errorDetails = jsonResponse.details || "";
       } catch {
-        errorBody = `Unable to read error body (status: ${response.status})`;
+        try {
+          errorBody = await response.text();
+        } catch {
+          errorBody = `Unable to read error body (status: ${response.status})`;
+        }
       }
+
       console.error("ElevenLabs API response:", {
         status: response.status,
         statusText: response.statusText,
-        body: errorBody,
+        error: errorBody,
+        details: errorDetails,
       });
+
+      // Provide helpful error message for 401
+      let userFriendlyError = errorBody;
+      if (response.status === 401) {
+        userFriendlyError =
+          "Text-to-speech unavailable: Invalid API key. Please configure ELEVENLABS_API_KEY.";
+      }
+
       throw new Error(
-        `ElevenLabs API error: ${response.status} - ${errorBody || response.statusText}`,
+        `ElevenLabs API error: ${response.status} - ${userFriendlyError || response.statusText}`,
       );
     }
 
