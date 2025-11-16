@@ -184,6 +184,10 @@ export function MenuBar({
             <span>Find & Replace</span>
             <span className="ml-auto text-xs text-gray-500">Cmd+H</span>
           </DropdownMenuItem>
+          <DropdownMenuItem onClick={onVersionHistory || (() => {})}>
+            <span>Version History</span>
+            <span className="ml-auto text-xs text-gray-500">Cmd+Shift+H</span>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
