@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useMemo, useRef } from "react";
+import { useEffect, useCallback, useMemo, useRef, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import {
@@ -15,6 +15,10 @@ import { DesignerCanvas } from "./canvas/DesignerCanvas";
 import { LayersPanel } from "./panels/LayersPanel";
 import { InspectorPanel } from "./panels/InspectorPanel";
 import { StatusBar } from "./layout/StatusBar";
+import { AI3SuggestionsPanel } from "./panels/AI3SuggestionsPanel";
+import { CompletedDishesGallery } from "./panels/CompletedDishesGallery";
+import { DishAssemblyBridge, type DishData, type AI3Suggestion } from "./integration/DishAssemblyBridge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface MenuDesignStudioProps {
   initialState?: any;
