@@ -81,30 +81,23 @@ export function DesignerCanvas({
   return (
     <div
       ref={canvasRef}
-      className="relative flex h-full w-full items-center justify-center overflow-auto bg-gray-200 p-8 dark:bg-gray-900"
+      className="relative h-full w-full overflow-auto bg-gray-200 p-8 dark:bg-gray-900"
       onClick={() => onSelectElement(null)}
       style={{
         position: "relative",
         zIndex: 1,
-        display: "flex",
-        alignItems: "flex-start",
-        justifyContent: "flex-start",
-        overflow: "auto",
       }}
     >
       {/* Canvas Container */}
       <div
-        className="relative bg-white shadow-xl flex-shrink-0"
+        className="relative bg-white shadow-xl inline-block"
         style={{
-          width: pageSize.width,
-          height: pageSize.height,
-          transform: `scale(${scale})`,
+          width: pageSize.width * scale,
+          height: pageSize.height * scale,
           transformOrigin: "top left",
-          overflow: "hidden",
+          overflow: "visible",
           zIndex: 1,
           position: "relative",
-          minWidth: pageSize.width,
-          minHeight: pageSize.height,
         }}
       >
         {/* Grid Background (optional) */}
