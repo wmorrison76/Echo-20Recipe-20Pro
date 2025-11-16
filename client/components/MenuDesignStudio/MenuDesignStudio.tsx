@@ -660,11 +660,15 @@ export function MenuDesignStudio({
 
   const handleAddElement = useCallback(
     (type: string) => {
+      // Position new elements in center-top area of canvas for better visibility
+      const centerX = Math.max(50, (state.pageSize.width - 200) / 2);
+      const centerY = 50;
+
       const baseElement = {
         type: type as DesignerElement["type"],
         name: `${type.charAt(0).toUpperCase()}${type.slice(1)}`,
-        x: 100,
-        y: 100,
+        x: centerX,
+        y: centerY,
         width: 200,
         height: 60,
         rotation: 0,
