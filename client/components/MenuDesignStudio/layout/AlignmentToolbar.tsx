@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, AlignLeft, AlignCenter, AlignRight, AlignBottom, Grid2X2 } from "lucide-react";
+import { ChevronDown, AlignLeft, AlignCenter, AlignRight, Grid2X2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
