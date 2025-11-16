@@ -101,7 +101,9 @@ export function CanvasElement({
             onChange={handleTextChange}
             onBlur={handleTextBlur}
             onKeyDown={handleTextKeyDown}
-            className="w-full h-full bg-transparent border border-cyan-500 p-1 text-inherit font-inherit resize-none"
+            onMouseDown={(e) => e.stopPropagation()}
+            className="w-full h-full bg-transparent border-2 border-cyan-500 p-1 text-inherit font-inherit resize-none"
+            style={{ outline: "none", zIndex: 1001 }}
           />
         ) : (
           <div className="truncate">{element.text}</div>
