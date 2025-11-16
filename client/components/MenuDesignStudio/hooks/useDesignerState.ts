@@ -367,6 +367,41 @@ export function useDesignerState(initialState?: Partial<DesignerState>) {
     return state.elements.find((el) => el.id === state.selectedElementId);
   }, [state.elements, state.selectedElementId]);
 
+  const selectMultiple = useCallback((ids: string[]) => {
+    dispatch({ type: "SELECT_MULTIPLE", payload: ids });
+  }, []);
+
+  const addToSelection = useCallback((id: string) => {
+    dispatch({ type: "ADD_TO_SELECTION", payload: id });
+  }, []);
+
+  const removeFromSelection = useCallback((id: string) => {
+    dispatch({ type: "REMOVE_FROM_SELECTION", payload: id });
+  }, []);
+
+  const toggleSelection = useCallback((id: string) => {
+    dispatch({ type: "TOGGLE_SELECTION", payload: id });
+  }, []);
+
+  const clearSelection = useCallback(() => {
+    dispatch({ type: "CLEAR_SELECTION", payload: undefined });
+  }, []);
+
+  const updateMultiple = useCallback(
+    (ids: string[], updates: Partial<DesignerElement>) => {
+      dispatch({ type: "UPDATE_MULTIPLE", payload: { ids, updates } });
+    },
+    []
+  );
+
+  const deleteMultiple = useCallback((ids: string[]) => {
+    dispatch({ type: "DELETE_MULTIPLE", payload: ids });
+  }, []);
+
+  const getSelectedElements = useCallback(() => {
+    return state.elements.filter((el) => state.selectedElementIds.includes(el.id));
+  }, [state.elements, state.selectedElementIds]);
+
   return {
     state,
     dispatch,
@@ -383,5 +418,13 @@ export function useDesignerState(initialState?: Partial<DesignerState>) {
     duplicateElement,
     resetState,
     getSelectedElement,
+    selectMultiple,
+    addToSelection,
+    removeFromSelection,
+    toggleSelection,
+    clearSelection,
+    updateMultiple,
+    deleteMultiple,
+    getSelectedElements,
   };
 }
