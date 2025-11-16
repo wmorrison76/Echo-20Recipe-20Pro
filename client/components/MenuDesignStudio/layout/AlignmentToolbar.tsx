@@ -112,7 +112,7 @@ export function AlignmentToolbar({
           onClick={onAlignBottom}
           title="Align Bottom (Alt+B)"
         >
-          <AlignBottom className="h-4 w-4" />
+          <div className="h-4 w-4 border-b-2 border-current" style={{ opacity: 0.6 }} />
         </Button>
       </div>
 
