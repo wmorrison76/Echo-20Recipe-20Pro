@@ -208,6 +208,46 @@ export function MenuDesignStudio({
     }
   }, [state, getSelectedElements, matchHeight, updateElement, historyPush]);
 
+  const handleCopy = useCallback(() => {
+    if (state.selectedElementIds.length > 0) {
+      copyElements(state.selectedElementIds);
+      toast({
+        title: "Copied",
+        description: `${state.selectedElementIds.length} element${state.selectedElementIds.length !== 1 ? "s" : ""} copied to clipboard`,
+      });
+    }
+  }, [state.selectedElementIds, copyElements, toast]);
+
+  const handleCut = useCallback(() => {
+    if (state.selectedElementIds.length > 0) {
+      cutElements(state.selectedElementIds);
+      clearSelection();
+      historyPush(state);
+      toast({
+        title: "Cut",
+        description: `${state.selectedElementIds.length} element${state.selectedElementIds.length !== 1 ? "s" : ""} cut to clipboard`,
+      });
+    }
+  }, [state, state.selectedElementIds, cutElements, clearSelection, historyPush, toast]);
+
+  const handlePaste = useCallback(() => {
+    const pastedIds = pasteElements();
+    if (pastedIds.length > 0) {
+      selectMultiple(pastedIds);
+      historyPush(state);
+      toast({
+        title: "Pasted",
+        description: `${pastedIds.length} element${pastedIds.length !== 1 ? "s" : ""} pasted`,
+      });
+    } else {
+      toast({
+        title: "Paste Failed",
+        description: "Nothing to paste",
+        variant: "destructive",
+      });
+    }
+  }, [pasteElements, selectMultiple, historyPush, state, toast]);
+
   // Setup keyboard shortcuts
   const shortcuts = useMemo(
     () =>
