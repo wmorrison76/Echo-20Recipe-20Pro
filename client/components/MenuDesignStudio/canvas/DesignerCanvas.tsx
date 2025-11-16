@@ -311,6 +311,8 @@ export function DesignerCanvas({
           {elements.map((element) => (
             <div
               key={element.id}
+              data-canvas-element="true"
+              data-element-id={element.id}
               style={{
                 position: "absolute",
                 left: element.x * scale,
@@ -322,11 +324,20 @@ export function DesignerCanvas({
             >
               <CanvasElement
                 element={element}
-                isSelected={selectedElementId === element.id}
+                isSelected={selectedElementId === element.id || selectedElementIds.includes(element.id)}
+                isMultiSelected={selectedElementIds.includes(element.id) && selectedElementIds.length > 1}
                 isEditing={editingId === element.id}
                 isDragging={dragState?.id === element.id}
                 isResizing={resizeState?.id === element.id}
-                onSelect={() => onSelectElement(element.id)}
+                onSelect={(e) => {
+                  if (e.shiftKey) {
+                    onAddToSelection(element.id);
+                  } else if (e.ctrlKey || e.metaKey) {
+                    onToggleSelection(element.id);
+                  } else {
+                    onSelectElement(element.id);
+                  }
+                }}
                 onUpdateElement={(updates) => onUpdateElement(element.id, updates)}
                 onStartDrag={(clientX, clientY) => onStartDrag(element, clientX, clientY)}
                 onStartResize={(handle, clientX, clientY) =>
