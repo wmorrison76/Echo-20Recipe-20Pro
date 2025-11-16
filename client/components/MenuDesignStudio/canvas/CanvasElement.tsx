@@ -14,6 +14,7 @@ interface CanvasElementProps {
   onStartResize: (handle: string, clientX: number, clientY: number) => void;
   onStartEditingText: () => void;
   onEndEditingText: () => void;
+  scale?: number;
 }
 
 const RESIZE_HANDLES = ["nw", "ne", "sw", "se", "n", "s", "e", "w"] as const;
