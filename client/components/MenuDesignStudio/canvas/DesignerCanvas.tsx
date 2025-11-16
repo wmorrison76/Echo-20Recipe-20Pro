@@ -161,6 +161,16 @@ export function DesignerCanvas({
   const paddingX = 40;
   const paddingY = 40;
 
+  const handleCreateGuideFromRuler = (position: number, type: "horizontal" | "vertical") => {
+    const newGuide: Guide = {
+      id: `guide-${Date.now()}`,
+      type,
+      position: Math.round(position / canvasSettings.gridSize) * canvasSettings.gridSize,
+      name: type === "horizontal" ? `Horizontal ${guides.filter(g => g.type === "horizontal").length + 1}` : `Vertical ${guides.filter(g => g.type === "vertical").length + 1}`,
+    };
+    setGuides([...guides, newGuide]);
+  };
+
   const handleCanvasMouseDown = (e: React.MouseEvent) => {
     if (e.button !== 0) return;
     if ((e.target as HTMLElement).closest('[data-canvas-element="true"]')) return;
