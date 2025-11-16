@@ -2058,7 +2058,7 @@ const onFiles = async (files: File[]) => {
                         .filter(Boolean)
                         .slice(0, 80);
                       const qty =
-                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼����¾⅓⅔⅛⅜⅝��])(?:\s*[a-zA-Z]+)?\b/;
+                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼������¾⅓⅔⅛⅜⅝��])(?:\s*[a-zA-Z]+)?\b/;
                       let c = 0;
                       for (const L of ls) {
                         if (qty.test(L) || /^[•\-*]\s+/.test(L)) c++;
@@ -2145,6 +2145,31 @@ const onFiles = async (files: File[]) => {
                           }
                         }
                       }
+
+                      // Extract procedures for semantic knowledge (Echo learning)
+                      const fullText = pageTexts.join("\n");
+                      const extractedProcedures = identifyProcedures(fullText);
+                      const bookName = f.name.replace(/\.[^.]+$/, "");
+
+                      // Store procedures in Pinecone-backed system
+                      for (const proc of extractedProcedures) {
+                        try {
+                          await storeProcedure({
+                            title: proc.title,
+                            source_book: bookName,
+                            category: proc.category,
+                            steps: proc.steps,
+                            materials: proc.materials,
+                            tools: proc.tools,
+                            time_estimate: proc.time_estimate,
+                            difficulty: proc.difficulty,
+                            related_keywords: proc.related_keywords,
+                          });
+                        } catch (procError) {
+                          console.warn("Failed to store procedure:", procError);
+                        }
+                      }
+
                       const raw = localStorage.getItem("kb:cook") || "{}";
                       const kb = JSON.parse(raw);
                       kb.terms = keepTop({ ...kb.terms, ...words }, 400);
@@ -2153,11 +2178,17 @@ const onFiles = async (files: File[]) => {
                       kb.books = Array.from(
                         new Set([
                           ...(kb.books || []),
-                          f.name.replace(/\.[^.]+$/, ""),
+                          bookName,
                         ]),
                       );
                       localStorage.setItem("kb:cook", JSON.stringify(kb));
-                    } catch {}
+
+                      if (extractedProcedures.length > 0) {
+                        console.log(`Extracted ${extractedProcedures.length} procedures from ${bookName}`);
+                      }
+                    } catch (error) {
+                      console.error("Error processing book knowledge:", error);
+                    }
                     const starts = candidates.sort((a, b) => a - b);
                     const items: any[] = [];
                     for (let i = 0; i < starts.length; i++) {
@@ -2414,7 +2445,7 @@ const onFiles = async (files: File[]) => {
                     ]);
                     if (ingIdx < 0) {
                       const qty =
-                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
+                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔��⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
                       for (let j = 0; j < Math.min(lines.length, 80); j++) {
                         if (qty.test(lines[j]) || /^[•\-*]\s+/.test(lines[j])) {
                           ingIdx = j - 1;
