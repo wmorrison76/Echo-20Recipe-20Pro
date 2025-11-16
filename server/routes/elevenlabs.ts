@@ -119,11 +119,33 @@ router.post(
             status: response.status,
             statusText: response.statusText,
             body: error,
+            apiKeyPrefix: apiKey.substring(0, 10),
+            apiKeyLength: apiKey.length,
           });
+
+          // Provide helpful error messages based on status
+          let errorMessage = `ElevenLabs API error: ${response.status} - ${response.statusText}`;
+          let helpfulDetails = error;
+
+          if (response.status === 401) {
+            errorMessage =
+              "ElevenLabs authentication failed (401). Invalid or expired API key.";
+            helpfulDetails =
+              "Please check your API key at https://elevenlabs.io/app/settings/api-keys and ensure it's set correctly in ELEVENLABS_API_KEY environment variable.";
+          } else if (response.status === 403) {
+            errorMessage =
+              "ElevenLabs permission denied (403). Your API key may not have text-to-speech permissions.";
+            helpfulDetails =
+              "Check your ElevenLabs subscription plan and API key permissions.";
+          } else if (response.status === 429) {
+            errorMessage = "ElevenLabs rate limit exceeded (429).";
+            helpfulDetails = "Too many requests. Please try again later.";
+          }
+
           return res.status(response.status).json({
             success: false,
-            error: `ElevenLabs API error: ${response.status} - ${response.statusText}`,
-            details: error,
+            error: errorMessage,
+            details: helpfulDetails,
           });
         }
 
