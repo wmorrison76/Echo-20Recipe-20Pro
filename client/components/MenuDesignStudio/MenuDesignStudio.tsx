@@ -41,6 +41,8 @@ export function MenuDesignStudio({
   const [snapToGridEnabled, setSnapToGridEnabled] = useState(true);
   const [snapToElementsEnabled, setSnapToElementsEnabled] = useState(true);
   const [isFindReplaceOpen, setIsFindReplaceOpen] = useState(false);
+  const [isVersioningOpen, setIsVersioningOpen] = useState(false);
+  const [designVersions, setDesignVersions] = useState<DesignVersion[]>([]);
 
   const {
     state,
