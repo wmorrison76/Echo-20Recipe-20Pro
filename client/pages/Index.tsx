@@ -89,6 +89,7 @@ function IndexContent() {
   return (
     <TronBackdrop>
       <CommandPalette />
+      <EchoFloatingButton />
       <div
         className="relative min-h-screen text-foreground"
         style={{
