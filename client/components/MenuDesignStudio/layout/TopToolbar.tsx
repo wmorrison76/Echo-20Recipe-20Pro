@@ -52,6 +52,7 @@ interface TopToolbarProps {
   onCut?: () => void;
   onPaste?: () => void;
   onFindReplace?: () => void;
+  onVersionHistory?: () => void;
   onOpenSettings: () => void;
   isDirty: boolean;
   onBack?: () => void;
