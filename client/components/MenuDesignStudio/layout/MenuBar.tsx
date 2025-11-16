@@ -70,11 +70,15 @@ export function MenuBar({
   onAddImage,
   onAddShape,
   onAddDivider,
+  onToggleSnapToGrid,
+  onToggleSnapToElements,
   canUndo,
   canRedo,
   showGrid,
   showRulers,
   showGuides,
+  snapToGridEnabled = true,
+  snapToElementsEnabled = true,
 }: MenuBarProps) {
   return (
     <div className="flex items-center gap-0 border-r border-gray-200 dark:border-gray-800">
