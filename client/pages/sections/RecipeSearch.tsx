@@ -52,6 +52,9 @@ import { DollarSign } from "lucide-react";
 import { ResponsiveImage } from "@/components/ResponsiveImage";
 import { storeProcedure } from "@/lib/echo-procedures-service";
 import { identifyProcedures } from "@/lib/procedure-extraction";
+import { RecipeImportSelectionModal, type DetectedRecipe } from "@/components/RecipeImportSelectionModal";
+import { storeBookImportInPinecone, type ImportedRecipeKnowledge } from "@/lib/pinecone-recipe-knowledge";
+import { Zap } from "lucide-react";
 
 // Common English stop words to exclude from knowledge base
 const STOP_WORDS = new Set([
