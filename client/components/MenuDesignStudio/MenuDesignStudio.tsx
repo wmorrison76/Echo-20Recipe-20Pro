@@ -688,6 +688,7 @@ export function MenuDesignStudio({
         onCopy={handleCopy}
         onCut={handleCut}
         onPaste={handlePaste}
+        onFindReplace={() => setIsFindReplaceOpen(true)}
         onOpenSettings={() => {
           toast({
             title: "Settings",
