@@ -295,8 +295,75 @@ export function MenuDesignStudio({
             });
           },
         },
+        {
+          label: "Align Left",
+          key: "l",
+          modifiers: ["alt"],
+          callback: handleAlignLeft,
+        },
+        {
+          label: "Align Center",
+          key: "c",
+          modifiers: ["alt"],
+          callback: handleAlignCenter,
+        },
+        {
+          label: "Align Right",
+          key: "r",
+          modifiers: ["alt"],
+          callback: handleAlignRight,
+        },
+        {
+          label: "Align Top",
+          key: "t",
+          modifiers: ["alt"],
+          callback: handleAlignTop,
+        },
+        {
+          label: "Align Middle",
+          key: "m",
+          modifiers: ["alt"],
+          callback: handleAlignMiddle,
+        },
+        {
+          label: "Align Bottom",
+          key: "b",
+          modifiers: ["alt"],
+          callback: handleAlignBottom,
+        },
+        {
+          label: "Distribute Horizontally",
+          key: "h",
+          modifiers: ["alt", "shift"],
+          callback: handleDistributeHorizontally,
+        },
+        {
+          label: "Distribute Vertically",
+          key: "v",
+          modifiers: ["alt", "shift"],
+          callback: handleDistributeVertically,
+        },
       ]),
-    [undo, redo, getSelectedElement, removeElement, addElement, state, historyPush, toast, selectMultiple, deleteMultiple]
+    [
+      undo,
+      redo,
+      getSelectedElement,
+      removeElement,
+      addElement,
+      state,
+      historyPush,
+      toast,
+      selectMultiple,
+      deleteMultiple,
+      handleAlignLeft,
+      handleAlignCenter,
+      handleAlignRight,
+      handleAlignTop,
+      handleAlignMiddle,
+      handleAlignBottom,
+      handleDistributeHorizontally,
+      handleDistributeVertically,
+    ]
   );
 
   useKeyboardShortcuts(shortcuts);
