@@ -1,5 +1,12 @@
 export { useDesignerState } from "./useDesignerState";
-export type { DesignerState, DesignerElement, DesignerAction, CanvasSettings, PageSize } from "./useDesignerState";
+export type {
+  DesignerState,
+  DesignerElement,
+  DesignerAction,
+  CanvasSettings,
+  PageSize,
+  ComponentDefinition,
+} from "./useDesignerState";
 
 export { useCanvasOperations } from "./useCanvasOperations";
 
