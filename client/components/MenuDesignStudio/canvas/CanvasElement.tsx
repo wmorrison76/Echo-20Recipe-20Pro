@@ -143,7 +143,7 @@ export function CanvasElement({
 
       case "menu-item":
         return (
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 w-full h-full">
             {isEditing ? (
               <input
                 ref={textInputRef as React.Ref<HTMLInputElement>}
@@ -152,13 +152,15 @@ export function CanvasElement({
                 onBlur={handleTextBlur}
                 onKeyDown={handleTextKeyDown}
                 onMouseDown={(e) => e.stopPropagation()}
-                className="w-full bg-transparent border-2 border-cyan-500 px-1 text-inherit font-inherit"
-                style={{ outline: "none", zIndex: 1001 }}
+                onDoubleClick={(e) => e.stopPropagation()}
+                className="w-full bg-transparent border-2 border-cyan-500 px-2 py-1 text-inherit font-inherit font-semibold"
+                style={{ outline: "none", zIndex: 1001, display: "block" }}
+                spellCheck="false"
               />
             ) : (
-              <div className="font-semibold">{element.text}</div>
+              <div className="font-semibold break-words">{element.text}</div>
             )}
-            <div className="text-sm opacity-75">{element.description}</div>
+            <div className="text-sm opacity-75 break-words">{element.description}</div>
             {element.price && (
               <div className="text-sm font-semibold">${element.price.toFixed(2)}</div>
             )}
