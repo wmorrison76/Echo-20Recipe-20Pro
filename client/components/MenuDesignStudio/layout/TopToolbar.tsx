@@ -132,9 +132,9 @@ export function TopToolbar({
           onPrint={() => window.print()}
           onUndo={onUndo}
           onRedo={onRedo}
-          onCut={() => alert("Cut: Coming soon")}
-          onCopy={() => alert("Copy: Coming soon")}
-          onPaste={() => alert("Paste: Coming soon")}
+          onCut={onCut || (() => {})}
+          onCopy={onCopy || (() => {})}
+          onPaste={onPaste || (() => {})}
           onDelete={() => alert("Delete: Use Delete key or select element")}
           onSelectAll={() => alert("Select All: Coming soon")}
           onShowGrid={() => alert("Grid toggle: Use View menu")}
