@@ -290,6 +290,36 @@ export function useCanvasOperations() {
     return updates;
   }, []);
 
+  const matchWidth = useCallback((elements: DesignerElement[]) => {
+    if (elements.length < 2) return {};
+
+    const targetWidth = elements[0].width;
+    const updates: Record<string, Partial<DesignerElement>> = {};
+
+    elements.forEach((el) => {
+      if (el.width !== targetWidth) {
+        updates[el.id] = { width: targetWidth };
+      }
+    });
+
+    return updates;
+  }, []);
+
+  const matchHeight = useCallback((elements: DesignerElement[]) => {
+    if (elements.length < 2) return {};
+
+    const targetHeight = elements[0].height;
+    const updates: Record<string, Partial<DesignerElement>> = {};
+
+    elements.forEach((el) => {
+      if (el.height !== targetHeight) {
+        updates[el.id] = { height: targetHeight };
+      }
+    });
+
+    return updates;
+  }, []);
+
   return {
     dragState,
     resizeState,
@@ -310,5 +340,7 @@ export function useCanvasOperations() {
     alignTop,
     alignMiddle,
     alignBottom,
+    matchWidth,
+    matchHeight,
   };
 }
