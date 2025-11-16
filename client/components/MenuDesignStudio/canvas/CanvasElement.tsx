@@ -259,6 +259,54 @@ export function CanvasElement({
     );
   }
 
+  if (element.type === "group") {
+    return (
+      <div
+        ref={elementRef}
+        className={cn(
+          "absolute cursor-move transition-shadow",
+          isMultiSelected && "ring-2 ring-purple-500 ring-offset-1",
+          isSelected && !isMultiSelected && "ring-2 ring-cyan-500 ring-offset-1"
+        )}
+        style={baseStyles}
+        onClick={onSelect}
+        onMouseDown={handleMouseDown}
+      >
+        {renderGroupElement(element, isSelected, isMultiSelected, scale)}
+        {isSelected && (
+          <>
+            {RESIZE_HANDLES.map((handle) => {
+              const handleSize = 8 * scale;
+              return (
+                <div
+                  key={handle}
+                  className={cn(
+                    "absolute bg-cyan-500 border border-white cursor-pointer",
+                    handle.includes("n") && "top-[-4px]",
+                    handle.includes("s") && "bottom-[-4px]",
+                    handle.includes("e") && "right-[-4px]",
+                    handle.includes("w") && "left-[-4px]"
+                  )}
+                  onMouseDown={(e) => handleResizeStart(handle, e)}
+                  style={{
+                    width: handleSize,
+                    height: handleSize,
+                    ...(handle.includes("n") && !handle.includes("s") && { top: -handleSize / 2 }),
+                    ...(handle.includes("s") && { bottom: -handleSize / 2 }),
+                    ...(handle.includes("e") && { right: -handleSize / 2 }),
+                    ...(handle.includes("w") && { left: -handleSize / 2 }),
+                    ...(handle.includes("e") && handle.includes("w") && { left: "50%", marginLeft: -handleSize / 2 }),
+                    ...(!handle.includes("e") && !handle.includes("w") && { left: "50%", marginLeft: -handleSize / 2 }),
+                  }}
+                />
+              );
+            })}
+          </>
+        )}
+      </div>
+    );
+  }
+
   if (element.type === "divider") {
     return (
       <div
