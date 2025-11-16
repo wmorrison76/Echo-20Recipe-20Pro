@@ -89,7 +89,6 @@ export function DesignerCanvas({
   const [showRulers, setShowRulers] = useState(true);
   const [guides, setGuides] = useState<Guide[]>([]);
   const [activeGuides, setActiveGuides] = useState<Guide[]>([]);
-  const [snapToGridEnabled, setSnapToGridEnabled] = useState(true);
 
   // Handle canvas drag
   useEffect(() => {
