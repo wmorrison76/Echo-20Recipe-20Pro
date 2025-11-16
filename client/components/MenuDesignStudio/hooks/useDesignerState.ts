@@ -81,6 +81,7 @@ export type DesignerState = {
   elements: DesignerElement[];
   selectedElementId: string | null;
   selectedElementIds: string[];
+  components: ComponentDefinition[];
   canvasSettings: CanvasSettings;
   pageSize: PageSize;
   documentName: string;
