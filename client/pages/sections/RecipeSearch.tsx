@@ -45,6 +45,25 @@ import { Badge } from "@/components/ui/badge";
 import { DollarSign } from "lucide-react";
 import { ResponsiveImage } from "@/components/ResponsiveImage";
 
+// Common English stop words to exclude from knowledge base
+const STOP_WORDS = new Set([
+  "the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for",
+  "of", "by", "with", "from", "is", "are", "was", "were", "be", "been",
+  "being", "have", "has", "had", "do", "does", "did", "will", "would",
+  "could", "should", "may", "might", "must", "can", "shall", "this",
+  "that", "these", "those", "i", "you", "he", "she", "it", "we", "they",
+  "what", "which", "who", "when", "where", "why", "how", "all", "each",
+  "every", "both", "either", "neither", "some", "any", "no", "not", "as",
+  "if", "than", "then", "because", "while", "during", "before", "after",
+  "above", "below", "under", "over", "between", "among", "through", "within",
+  "without", "about", "against", "along", "around", "since", "until", "unless",
+  "my", "your", "his", "her", "its", "our", "their", "mine", "yours", "his",
+  "hers", "ours", "theirs", "myself", "yourself", "himself", "herself", "itself",
+  "ourselves", "yourselves", "themselves", "me", "him", "us", "am", "such",
+  "so", "just", "also", "very", "not", "only", "own", "same", "more", "most",
+  "other", "another", "any", "none", "nor", "up", "down", "out", "off", "up",
+]);
+
 export function RecipeCard({
   r,
   onPreview,
