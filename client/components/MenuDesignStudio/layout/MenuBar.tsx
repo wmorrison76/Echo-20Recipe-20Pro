@@ -221,6 +221,23 @@ export function MenuBar({
             <span>Show Guides</span>
             {showGuides && <span className="ml-auto">✓</span>}
           </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel>Snapping</DropdownMenuLabel>
+          <DropdownMenuItem
+            onClick={() => onToggleSnapToGrid?.(!snapToGridEnabled)}
+            className="flex items-center justify-between"
+          >
+            <span>Snap to Grid</span>
+            {snapToGridEnabled && <span className="ml-auto">✓</span>}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => onToggleSnapToElements?.(!snapToElementsEnabled)}
+            className="flex items-center justify-between"
+          >
+            <span>Snap to Elements</span>
+            {snapToElementsEnabled && <span className="ml-auto">✓</span>}
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
