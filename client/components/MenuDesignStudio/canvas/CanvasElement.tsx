@@ -156,7 +156,7 @@ export function CanvasElement({
     top: element.y,
     width: element.width,
     height: element.height,
-    zIndex: element.zIndex,
+    zIndex: isSelected ? 1000 : isEditing ? 999 : element.zIndex,
     opacity: element.opacity,
     transform: `rotate(${element.rotation}deg)`,
     fontFamily: element.fontFamily,
