@@ -19,6 +19,7 @@ import { AI3SuggestionsPanel } from "./panels/AI3SuggestionsPanel";
 import { CompletedDishesGallery } from "./panels/CompletedDishesGallery";
 import { DishAssemblyBridge, type DishData, type AI3Suggestion } from "./integration/DishAssemblyBridge";
 import { FindReplaceDialog } from "./layout/FindReplaceDialog";
+import { VersioningDialog, type DesignVersion } from "./layout/VersioningDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface MenuDesignStudioProps {
