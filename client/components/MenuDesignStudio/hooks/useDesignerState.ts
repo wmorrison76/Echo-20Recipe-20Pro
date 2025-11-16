@@ -133,6 +133,7 @@ function designerReducer(state: DesignerState, action: DesignerAction): Designer
         elements: state.elements.filter((el) => el.id !== action.payload),
         selectedElementId:
           state.selectedElementId === action.payload ? null : state.selectedElementId,
+        selectedElementIds: state.selectedElementIds.filter((id) => id !== action.payload),
         isDirty: true,
       };
 
