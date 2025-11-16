@@ -970,6 +970,30 @@ export function MenuDesignStudio({
               )}
             </TabsContent>
 
+            {/* Components Tab */}
+            <TabsContent value="components" className="flex-1 overflow-hidden">
+              <ComponentsPanel
+                components={state.components}
+                elements={state.elements}
+                onCreateInstance={(componentId) => {
+                  createComponentInstance(componentId, 100, 100);
+                  historyPush(state);
+                  toast({
+                    title: "Instance Created",
+                    description: "Component instance has been created on the canvas",
+                  });
+                }}
+                onDeleteComponent={(componentId) => {
+                  deleteComponent(componentId);
+                  historyPush(state);
+                  toast({
+                    title: "Component Deleted",
+                    description: "Component has been deleted",
+                  });
+                }}
+              />
+            </TabsContent>
+
             {/* AI³ Suggestions Tab */}
             <TabsContent value="ai" className="flex-1 overflow-hidden">
               <AI3SuggestionsPanel
