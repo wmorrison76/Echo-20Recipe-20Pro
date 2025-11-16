@@ -71,6 +71,16 @@ export function MenuDesignStudio({
     endResize,
     startEditingText,
     endEditingText,
+    alignLeft,
+    alignCenter,
+    alignRight,
+    alignTop,
+    alignMiddle,
+    alignBottom,
+    distributeHorizontally,
+    distributeVertically,
+    matchWidth,
+    matchHeight,
   } = useCanvasOperations();
 
   const { push: historyPush, undo, redo, canUndo, canRedo } = useHistory();
