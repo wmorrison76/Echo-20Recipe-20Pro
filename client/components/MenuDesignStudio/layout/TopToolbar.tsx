@@ -289,6 +289,27 @@ export function TopToolbar({
               </DropdownMenuContent>
             </DropdownMenu>
 
+            {/* Hidden FileDialog triggers */}
+            <div className="hidden">
+              <FileDialog
+                mode="open"
+                onSelect={onLoadDesign || (() => {})}
+              >
+                <button data-file-dialog="open" />
+              </FileDialog>
+
+              <FileDialog
+                mode="save"
+                currentDesign={currentState}
+                onSave={(name) => {
+                  onDocumentNameChange(name);
+                  onSave();
+                }}
+              >
+                <button data-file-dialog="save" />
+              </FileDialog>
+            </div>
+
             <DocumentSettingsDialog
               pageSize={pageSize}
               canvasSettings={canvasSettings || { background: "#ffffff", margin: 24, bleed: 18, columns: 1, gutter: 24, showGrid: false, showMargins: true, showBleed: false, showColumns: false, zoom: 1, gridSize: 16 }}
