@@ -189,27 +189,32 @@ export function CanvasElement({
       >
         {isSelected && (
           <>
-            {RESIZE_HANDLES.map((handle) => (
-              <div
-                key={handle}
-                className={cn(
-                  "absolute w-2 h-2 bg-cyan-500 border border-white cursor-pointer",
-                  handle.includes("n") && "top-[-4px]",
-                  handle.includes("s") && "bottom-[-4px]",
-                  handle.includes("e") && "right-[-4px]",
-                  handle.includes("w") && "left-[-4px]"
-                )}
-                onMouseDown={(e) => handleResizeStart(handle, e)}
-                style={{
-                  ...(handle.includes("n") && !handle.includes("s") && { top: -4 }),
-                  ...(handle.includes("s") && { bottom: -4 }),
-                  ...(handle.includes("e") && { right: -4 }),
-                  ...(handle.includes("w") && { left: -4 }),
-                  ...(handle.includes("e") && handle.includes("w") && { left: "50%", marginLeft: -4 }),
-                  ...(!handle.includes("e") && !handle.includes("w") && { left: "50%", marginLeft: -4 }),
-                }}
-              />
-            ))}
+            {RESIZE_HANDLES.map((handle) => {
+              const handleSize = 8 * scale;
+              return (
+                <div
+                  key={handle}
+                  className={cn(
+                    "absolute bg-cyan-500 border border-white cursor-pointer",
+                    handle.includes("n") && "top-[-4px]",
+                    handle.includes("s") && "bottom-[-4px]",
+                    handle.includes("e") && "right-[-4px]",
+                    handle.includes("w") && "left-[-4px]"
+                  )}
+                  onMouseDown={(e) => handleResizeStart(handle, e)}
+                  style={{
+                    width: handleSize,
+                    height: handleSize,
+                    ...(handle.includes("n") && !handle.includes("s") && { top: -handleSize / 2 }),
+                    ...(handle.includes("s") && { bottom: -handleSize / 2 }),
+                    ...(handle.includes("e") && { right: -handleSize / 2 }),
+                    ...(handle.includes("w") && { left: -handleSize / 2 }),
+                    ...(handle.includes("e") && handle.includes("w") && { left: "50%", marginLeft: -handleSize / 2 }),
+                    ...(!handle.includes("e") && !handle.includes("w") && { left: "50%", marginLeft: -handleSize / 2 }),
+                  }}
+                />
+              );
+            })}
           </>
         )}
       </div>
