@@ -176,6 +176,12 @@ export function MenuBar({
             <span>Delete</span>
             <span className="ml-auto text-xs text-gray-500">Delete</span>
           </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={onFindReplace || (() => {})}>
+            <span>Find & Replace</span>
+            <span className="ml-auto text-xs text-gray-500">Cmd+H</span>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
