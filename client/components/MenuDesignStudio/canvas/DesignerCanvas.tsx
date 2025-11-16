@@ -4,6 +4,7 @@ import type { DesignerElement, CanvasSettings, PageSize } from "../hooks";
 import { CanvasElement } from "./CanvasElement";
 import { AlignmentToolbar } from "../layout/AlignmentToolbar";
 import { HorizontalRuler, VerticalRuler, RulerCorner } from "./Ruler";
+import { applySnapping, type Guide } from "./snapUtils";
 
 interface DesignerCanvasProps {
   elements: DesignerElement[];
