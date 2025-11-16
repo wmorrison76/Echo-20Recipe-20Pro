@@ -77,6 +77,13 @@ export type DesignerAction =
   | { type: "REMOVE_ELEMENT"; payload: string }
   | { type: "UPDATE_ELEMENT"; payload: { id: string; updates: Partial<DesignerElement> } }
   | { type: "SELECT_ELEMENT"; payload: string | null }
+  | { type: "SELECT_MULTIPLE"; payload: string[] }
+  | { type: "ADD_TO_SELECTION"; payload: string }
+  | { type: "REMOVE_FROM_SELECTION"; payload: string }
+  | { type: "TOGGLE_SELECTION"; payload: string }
+  | { type: "CLEAR_SELECTION"; payload: void }
+  | { type: "UPDATE_MULTIPLE"; payload: { ids: string[]; updates: Partial<DesignerElement> } }
+  | { type: "DELETE_MULTIPLE"; payload: string[] }
   | { type: "SET_ELEMENTS"; payload: DesignerElement[] }
   | { type: "UPDATE_CANVAS_SETTINGS"; payload: Partial<CanvasSettings> }
   | { type: "SET_PAGE_SIZE"; payload: PageSize }
