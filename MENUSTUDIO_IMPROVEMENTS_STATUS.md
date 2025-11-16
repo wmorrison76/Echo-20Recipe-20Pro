@@ -179,6 +179,7 @@ All elements support full rotation:
 ## Feature Comparison
 
 ### ✅ Fully Implemented
+- Drop shadows on sidebar panels
 - Drop shadows & outlines on shapes
 - Rulers (top & left)
 - Canvas centering
