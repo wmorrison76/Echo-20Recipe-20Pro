@@ -988,6 +988,60 @@ export default function RecipeSearchSection() {
     }
   };
 
+  const handleImportRecipesToKnowledge = async (
+    selectedRecipes: DetectedRecipe[]
+  ) => {
+    if (!importingBook) return;
+
+    setIsImportingToKnowledge(true);
+    try {
+      // Convert detected recipes to knowledge base format
+      const kbRecipes: ImportedRecipeKnowledge[] = selectedRecipes.map(
+        (recipe) => ({
+          recipeId: `${importingBook}-p${recipe.page}-${Date.now()}`,
+          title: recipe.title || `Recipe from page ${recipe.page}`,
+          ingredients: recipe.ingredients || [],
+          instructions: recipe.instructions || [],
+          prepTime: recipe.prepTime,
+          cookTime: recipe.cookTime,
+          yield: recipe.yield,
+          difficulty: recipe.difficulty,
+          sourceBook: importingBook,
+          sourcePage: recipe.page,
+          importedAt: new Date().toISOString(),
+          tags: [
+            "imported",
+            "cookbook",
+            recipe.difficulty ? recipe.difficulty.toLowerCase() : "medium",
+          ],
+        })
+      );
+
+      // Store in Pinecone for Echo knowledge base
+      const result = await storeBookImportInPinecone(kbRecipes, importingBook);
+
+      toast({
+        title: "Knowledge Base Updated",
+        description: `${result.success} recipe${result.success !== 1 ? "s" : ""} stored for Echo AI. Echo can now recall these recipes instantly.`,
+        variant: "default",
+      });
+
+      // Reset state
+      setImportModalOpen(false);
+      setImportModalRecipes([]);
+      setImportingBook(null);
+    } catch (error) {
+      console.error("Failed to import recipes to knowledge base:", error);
+      toast({
+        title: "Import Failed",
+        description: "Could not store recipes in knowledge base. Try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsImportingToKnowledge(false);
+    }
+  };
+
   const onFiles = async (files: File[]) => {
     const list = files.slice(0, 100);
     const jsonFiles = list.filter(
