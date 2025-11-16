@@ -64,6 +64,7 @@ export function MenuBar({
   onDelete,
   onSelectAll,
   onFindReplace,
+  onVersionHistory,
   onShowGrid,
   onShowRulers,
   onShowGuides,
