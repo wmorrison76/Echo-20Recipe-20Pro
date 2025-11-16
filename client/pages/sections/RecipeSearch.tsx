@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useSearchParams } from "react-router-dom";
 import { useAppData } from "@/context/AppDataContext";
 import { Dropzone } from "@/components/Dropzone";
@@ -21,20 +27,20 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-    Star,
-    LayoutGrid,
-    Rows,
-    List,
-    Eye,
-    Trash2,
-    RotateCcw,
-    ExternalLink,
-    Search,
-    Save,
-    X,
-    Package,
-    Pencil,
-  } from "lucide-react";
+  Star,
+  LayoutGrid,
+  Rows,
+  List,
+  Eye,
+  Trash2,
+  RotateCcw,
+  ExternalLink,
+  Search,
+  Save,
+  X,
+  Package,
+  Pencil,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { axisOptions } from "@/lib/taxonomy";
 import { cn } from "@/lib/utils";
@@ -49,21 +55,142 @@ import { identifyProcedures } from "@/lib/procedure-extraction";
 
 // Common English stop words to exclude from knowledge base
 const STOP_WORDS = new Set([
-  "the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for",
-  "of", "by", "with", "from", "is", "are", "was", "were", "be", "been",
-  "being", "have", "has", "had", "do", "does", "did", "will", "would",
-  "could", "should", "may", "might", "must", "can", "shall", "this",
-  "that", "these", "those", "i", "you", "he", "she", "it", "we", "they",
-  "what", "which", "who", "when", "where", "why", "how", "all", "each",
-  "every", "both", "either", "neither", "some", "any", "no", "not", "as",
-  "if", "than", "then", "because", "while", "during", "before", "after",
-  "above", "below", "under", "over", "between", "among", "through", "within",
-  "without", "about", "against", "along", "around", "since", "until", "unless",
-  "my", "your", "his", "her", "its", "our", "their", "mine", "yours", "his",
-  "hers", "ours", "theirs", "myself", "yourself", "himself", "herself", "itself",
-  "ourselves", "yourselves", "themselves", "me", "him", "us", "am", "such",
-  "so", "just", "also", "very", "not", "only", "own", "same", "more", "most",
-  "other", "another", "any", "none", "nor", "up", "down", "out", "off", "up",
+  "the",
+  "a",
+  "an",
+  "and",
+  "or",
+  "but",
+  "in",
+  "on",
+  "at",
+  "to",
+  "for",
+  "of",
+  "by",
+  "with",
+  "from",
+  "is",
+  "are",
+  "was",
+  "were",
+  "be",
+  "been",
+  "being",
+  "have",
+  "has",
+  "had",
+  "do",
+  "does",
+  "did",
+  "will",
+  "would",
+  "could",
+  "should",
+  "may",
+  "might",
+  "must",
+  "can",
+  "shall",
+  "this",
+  "that",
+  "these",
+  "those",
+  "i",
+  "you",
+  "he",
+  "she",
+  "it",
+  "we",
+  "they",
+  "what",
+  "which",
+  "who",
+  "when",
+  "where",
+  "why",
+  "how",
+  "all",
+  "each",
+  "every",
+  "both",
+  "either",
+  "neither",
+  "some",
+  "any",
+  "no",
+  "not",
+  "as",
+  "if",
+  "than",
+  "then",
+  "because",
+  "while",
+  "during",
+  "before",
+  "after",
+  "above",
+  "below",
+  "under",
+  "over",
+  "between",
+  "among",
+  "through",
+  "within",
+  "without",
+  "about",
+  "against",
+  "along",
+  "around",
+  "since",
+  "until",
+  "unless",
+  "my",
+  "your",
+  "his",
+  "her",
+  "its",
+  "our",
+  "their",
+  "mine",
+  "yours",
+  "his",
+  "hers",
+  "ours",
+  "theirs",
+  "myself",
+  "yourself",
+  "himself",
+  "herself",
+  "itself",
+  "ourselves",
+  "yourselves",
+  "themselves",
+  "me",
+  "him",
+  "us",
+  "am",
+  "such",
+  "so",
+  "just",
+  "also",
+  "very",
+  "not",
+  "only",
+  "own",
+  "same",
+  "more",
+  "most",
+  "other",
+  "another",
+  "any",
+  "none",
+  "nor",
+  "up",
+  "down",
+  "out",
+  "off",
+  "up",
 ]);
 
 export function RecipeCard({
@@ -181,7 +308,9 @@ export function RecipeCard({
                     : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
                 }`}
                 onClick={() => onToggleGlobal?.(r.id, !r.isGlobal)}
-                title={r.isGlobal ? "Click to make private" : "Click to make global"}
+                title={
+                  r.isGlobal ? "Click to make private" : "Click to make global"
+                }
               >
                 {r.isGlobal ? "Global" : "Private"}
               </button>
@@ -212,7 +341,9 @@ export function RecipeCard({
                 {r.tags.slice(0, 5).join(" · ")}
               </p>
             ) : (
-              <p className="m-0 text-xs text-muted-foreground italic">No categories</p>
+              <p className="m-0 text-xs text-muted-foreground italic">
+                No categories
+              </p>
             )}
             <Button
               size="sm"
@@ -224,7 +355,10 @@ export function RecipeCard({
               <Pencil className="h-3 w-3" />
             </Button>
           </div>
-          <Dialog open={showCategoryDialog} onOpenChange={setShowCategoryDialog}>
+          <Dialog
+            open={showCategoryDialog}
+            onOpenChange={setShowCategoryDialog}
+          >
             <DialogContent className="max-w-sm">
               <DialogHeader>
                 <DialogTitle>Edit Categories for {r.title}</DialogTitle>
@@ -241,7 +375,10 @@ export function RecipeCard({
                       className="flex-1 rounded-md border bg-background px-3 py-2 outline-none focus:ring-2 focus:ring-ring text-sm"
                       onKeyPress={(e) => {
                         if (e.key === "Enter" && categoryInput.trim()) {
-                          const newTags = [...(r.tags || []), categoryInput.trim()];
+                          const newTags = [
+                            ...(r.tags || []),
+                            categoryInput.trim(),
+                          ];
                           onUpdateTags?.(Array.from(new Set(newTags)));
                           setCategoryInput("");
                         }
@@ -251,7 +388,10 @@ export function RecipeCard({
                       size="sm"
                       onClick={() => {
                         if (categoryInput.trim()) {
-                          const newTags = [...(r.tags || []), categoryInput.trim()];
+                          const newTags = [
+                            ...(r.tags || []),
+                            categoryInput.trim(),
+                          ];
                           onUpdateTags?.(Array.from(new Set(newTags)));
                           setCategoryInput("");
                         }
@@ -262,7 +402,9 @@ export function RecipeCard({
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Current categories:</label>
+                  <label className="text-sm font-medium">
+                    Current categories:
+                  </label>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {r.tags?.length ? (
                       r.tags.map((tag) => (
@@ -271,7 +413,9 @@ export function RecipeCard({
                           variant="secondary"
                           className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
                           onClick={() => {
-                            onUpdateTags?.((r.tags || []).filter(t => t !== tag));
+                            onUpdateTags?.(
+                              (r.tags || []).filter((t) => t !== tag),
+                            );
                           }}
                         >
                           {tag}
@@ -279,7 +423,9 @@ export function RecipeCard({
                         </Badge>
                       ))
                     ) : (
-                      <p className="text-xs text-muted-foreground">No categories assigned</p>
+                      <p className="text-xs text-muted-foreground">
+                        No categories assigned
+                      </p>
                     )}
                   </div>
                 </div>
@@ -292,14 +438,14 @@ export function RecipeCard({
             <div className="mt-2 flex flex-wrap gap-2 items-center">
               {portionCost && (
                 <Badge variant="secondary" className="gap-1 text-xs">
-                  <DollarSign className="h-2.5 w-2.5" />
-                  ${portionCost.toFixed(2)}/portion
+                  <DollarSign className="h-2.5 w-2.5" />$
+                  {portionCost.toFixed(2)}/portion
                 </Badge>
               )}
               {recipeCost && !portionCost && (
                 <Badge variant="secondary" className="gap-1 text-xs">
-                  <DollarSign className="h-2.5 w-2.5" />
-                  ${recipeCost.toFixed(2)} total
+                  <DollarSign className="h-2.5 w-2.5" />${recipeCost.toFixed(2)}{" "}
+                  total
                 </Badge>
               )}
             </div>
@@ -418,10 +564,20 @@ export default function RecipeSearchSection() {
     setCollectionRecipes,
   } = useAppData();
   const [q, setQ] = useState("");
-  type Cat = "all" | "recent" | "top" | "favorites" | "uncategorized" | "trash" | "global";
+  type Cat =
+    | "all"
+    | "recent"
+    | "top"
+    | "favorites"
+    | "uncategorized"
+    | "trash"
+    | "global";
   const [cat, setCat] = useState<Cat>("all");
-  const { language: appLanguage, setLanguage, options: languageOptions } =
-    useLanguage();
+  const {
+    language: appLanguage,
+    setLanguage,
+    options: languageOptions,
+  } = useLanguage();
   const { t } = useTranslation();
   // Taxonomy filters
   const [fcuisine, setFCuisine] = useState<string>("");
@@ -438,9 +594,9 @@ export default function RecipeSearchSection() {
     if (!q.trim()) return [];
     const lowerQ = q.toLowerCase();
     return recipes
-      .filter(r => !r.deletedAt && r.title.toLowerCase().includes(lowerQ))
+      .filter((r) => !r.deletedAt && r.title.toLowerCase().includes(lowerQ))
       .slice(0, 8)
-      .map(r => r.title)
+      .map((r) => r.title)
       .filter((v, i, a) => a.indexOf(v) === i);
   }, [q, recipes]);
 
@@ -488,7 +644,6 @@ export default function RecipeSearchSection() {
     }
   }, [q, searchRecipes, cat, fcuisine, ftech, fcourse, fdiet]);
 
-
   const [status, setStatus] = useState<string | null>(null);
   const [mode, setMode] = useState<"cards" | "grid4" | "rows">("cards");
   const [query, setQuery] = useState("");
@@ -512,9 +667,9 @@ export default function RecipeSearchSection() {
   );
   const [tocChecked, setTocChecked] = useState<Record<string, boolean>>({});
   const pdfPendingRef = useRef<File | null>(null);
-const [bookDropActive, setBookDropActive] = useState(false);
-// Live scan state
-const [scanOpen, setScanOpen] = useState(false);
+  const [bookDropActive, setBookDropActive] = useState(false);
+  // Live scan state
+  const [scanOpen, setScanOpen] = useState(false);
   const [scanPageNo, setScanPageNo] = useState(0);
   const [scanTotal, setScanTotal] = useState(0);
   const [detectedOpen, setDetectedOpen] = useState(false);
@@ -525,15 +680,20 @@ const [scanOpen, setScanOpen] = useState(false);
   const [scanCandidates, setScanCandidates] = useState<number[] | null>(null);
   const [scanBookName, setScanBookName] = useState<string | null>(null);
   const [ownershipConfirmOpen, setOwnershipConfirmOpen] = useState(false);
-  const [pendingOwnershipFile, setPendingOwnershipFile] = useState<File | null>(null);
+  const [pendingOwnershipFile, setPendingOwnershipFile] = useState<File | null>(
+    null,
+  );
 
   const { toast } = useToast();
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const collectionNameRef = useRef<HTMLInputElement | null>(null);
   const [collectionDraftName, setCollectionDraftName] = useState("");
   const [selectedRecipeIds, setSelectedRecipeIds] = useState<string[]>([]);
-  const [activeCollectionId, setActiveCollectionId] = useState<string | null>(null);
-  const [collectionToDelete, setCollectionToDelete] = useState<RecipeCollection | null>(null);
+  const [activeCollectionId, setActiveCollectionId] = useState<string | null>(
+    null,
+  );
+  const [collectionToDelete, setCollectionToDelete] =
+    useState<RecipeCollection | null>(null);
 
   const sortedCollections = useMemo(() => {
     const timestamp = (value: string | undefined) =>
@@ -551,268 +711,276 @@ const [scanOpen, setScanOpen] = useState(false);
   }, [searchParams, setSearchParams]);
 
   const importBookPdf = async (file: File) => {
-  if (!file) return;
-  const isPdf =
-    file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
-  if (!isPdf) {
-    toast({
-      title: "PDF required",
-      description: "Drop a cookbook PDF to use the library importer.",
-      variant: "destructive",
-    });
-    return;
-  }
-  if (bookPhase && bookPhase !== "done") {
-    toast({
-      title: "Book import in progress",
-      description: "Wait for the current PDF import to finish before adding another.",
-    });
-    return;
-  }
-  if (
-    typeof window !== "undefined" &&
-    !confirm("Confirm you own/purchased this cookbook PDF for personal import?")
-  ) {
-    return;
-  }
-  try {
-    setBookFile(file.name);
-    setBookPhase("reading");
-    setStatus("Reading book PDF...");
-    const ab = await file.arrayBuffer();
-    pdfPendingRef.current = file;
-    const pdfjs: any = await import(
-      "https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs",
-    );
-    const workerSrc = "https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs";
-    if (pdfjs.GlobalWorkerOptions)
-      pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
-    const doc = await pdfjs.getDocument({ data: ab }).promise;
-    setBookTotal(doc.numPages);
-    setScanOpen(true);
-    setDetectedOpen(true);
-    setDetected([]);
-    setScanPageNo(0);
-    setScanTotal(doc.numPages);
-    let lines: string[] = [];
-    const isLikelyIngredientList = (txt: string) => {
-      const ls = txt
-        .split(/\n/)
-        .map((s) => s.trim())
-        .filter(Boolean)
-        .slice(0, 80);
-      const qty =
-        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
-      let c = 0;
-      for (const L of ls) {
-        if (qty.test(L) || /^[���\-*]\s+/.test(L)) c++;
-      }
-      return c >= 3;
-    };
-    const normalizeLineA = (s: string) => {
-      let t = s.replace(/\s+/g, " ").trim();
-      if (
-        /^([A-Z]\s+){2,}[A-Z](?:\s+\d+)?[\s:]*$/.test(t) &&
-        t.length <= 60
-      ) {
-        t = t.replace(/\s+/g, "");
-      }
-      return t;
-    };
-    const pageTexts: string[] = [];
-    const candidates: number[] = [];
-    for (let p = 1; p <= doc.numPages; p++) {
-      const page = await doc.getPage(p);
-      const tc = await page.getTextContent();
-      const pageLines = (tc.items as any[])
-        .map((i: any) => String(i.str))
-        .filter(Boolean);
-      lines.push(...pageLines);
-      lines.push("");
-      const t = pageLines.join("\n");
-      pageTexts.push(t);
-      setBookPage(p);
-      setScanPageNo(p);
-      const hasIng =
-        /\bingredients?\b/i.test(t) || isLikelyIngredientList(t);
-      if (hasIng) {
-        candidates.push(p);
-        let guess = "";
-        const top = pageLines
-          .map(normalizeLineA)
+    if (!file) return;
+    const isPdf =
+      file.type === "application/pdf" ||
+      file.name.toLowerCase().endsWith(".pdf");
+    if (!isPdf) {
+      toast({
+        title: "PDF required",
+        description: "Drop a cookbook PDF to use the library importer.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (bookPhase && bookPhase !== "done") {
+      toast({
+        title: "Book import in progress",
+        description:
+          "Wait for the current PDF import to finish before adding another.",
+      });
+      return;
+    }
+    if (
+      typeof window !== "undefined" &&
+      !confirm(
+        "Confirm you own/purchased this cookbook PDF for personal import?",
+      )
+    ) {
+      return;
+    }
+    try {
+      setBookFile(file.name);
+      setBookPhase("reading");
+      setStatus("Reading book PDF...");
+      const ab = await file.arrayBuffer();
+      pdfPendingRef.current = file;
+      const pdfjs: any = await import(
+        "https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs"
+      );
+      const workerSrc = "https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs";
+      if (pdfjs.GlobalWorkerOptions)
+        pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
+      const doc = await pdfjs.getDocument({ data: ab }).promise;
+      setBookTotal(doc.numPages);
+      setScanOpen(true);
+      setDetectedOpen(true);
+      setDetected([]);
+      setScanPageNo(0);
+      setScanTotal(doc.numPages);
+      let lines: string[] = [];
+      const isLikelyIngredientList = (txt: string) => {
+        const ls = txt
+          .split(/\n/)
+          .map((s) => s.trim())
           .filter(Boolean)
-          .slice(0, 10);
-        for (const L of top) {
+          .slice(0, 80);
+        const qty =
+          /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
+        let c = 0;
+        for (const L of ls) {
+          if (qty.test(L) || /^[���\-*]\s+/.test(L)) c++;
+        }
+        return c >= 3;
+      };
+      const normalizeLineA = (s: string) => {
+        let t = s.replace(/\s+/g, " ").trim();
+        if (
+          /^([A-Z]\s+){2,}[A-Z](?:\s+\d+)?[\s:]*$/.test(t) &&
+          t.length <= 60
+        ) {
+          t = t.replace(/\s+/g, "");
+        }
+        return t;
+      };
+      const pageTexts: string[] = [];
+      const candidates: number[] = [];
+      for (let p = 1; p <= doc.numPages; p++) {
+        const page = await doc.getPage(p);
+        const tc = await page.getTextContent();
+        const pageLines = (tc.items as any[])
+          .map((i: any) => String(i.str))
+          .filter(Boolean);
+        lines.push(...pageLines);
+        lines.push("");
+        const t = pageLines.join("\n");
+        pageTexts.push(t);
+        setBookPage(p);
+        setScanPageNo(p);
+        const hasIng = /\bingredients?\b/i.test(t) || isLikelyIngredientList(t);
+        if (hasIng) {
+          candidates.push(p);
+          let guess = "";
+          const top = pageLines
+            .map(normalizeLineA)
+            .filter(Boolean)
+            .slice(0, 10);
+          for (const L of top) {
+            if (
+              /^[A-Z][A-Za-z0-9\-'\s]{2,80}$/.test(L) ||
+              /^([A-Z]\s+){2,}[A-Z][\s:]*$/.test(L)
+            ) {
+              guess = L.replace(/\s+/g, " ").trim();
+              break;
+            }
+          }
           if (
-            /^[A-Z][A-Za-z0-9\-'\s]{2,80}$/.test(L) ||
-            /^([A-Z]\s+){2,}[A-Z][\s:]*$/.test(L)
-          ) {
-            guess = L.replace(/\s+/g, " ").trim();
+            /^see\b/i.test(guess) ||
+            /(flexipan|inch|inches|cm|diameter)\b/i.test(guess)
+          )
+            guess = "";
+          setDetected((d) => [
+            ...d,
+            { page: p, title: guess || `Candidate p.${p}` },
+          ]);
+        }
+      }
+      try {
+        const keepTop = (obj: Record<string, number>, n: number) =>
+          Object.fromEntries(
+            Object.entries(obj)
+              .sort((a, b) => b[1] - a[1])
+              .slice(0, n),
+          );
+        const words: Record<string, number> = {},
+          bigrams: Record<string, number> = {};
+        const textAll = pageTexts
+          .join("\n")
+          .toLowerCase()
+          .replace(/[^a-z\s]/g, " ");
+        const arr = textAll
+          .split(/\s+/)
+          .filter((w) => w.length >= 3 && w.length <= 24);
+        for (let i = 0; i < arr.length; i++) {
+          const w = arr[i];
+          words[w] = (words[w] || 0) + 1;
+          if (i < arr.length - 1) {
+            const g = `${arr[i]} ${arr[i + 1]}`;
+            if (g.length >= 5 && g.length <= 40)
+              bigrams[g] = (bigrams[g] || 0) + 1;
+          }
+        }
+        const raw = localStorage.getItem("kb:cook") || "{}";
+        const kb = JSON.parse(raw || "{}");
+        kb.terms = keepTop({ ...kb.terms, ...words }, 400);
+        kb.bigrams = keepTop({ ...kb.bigrams, ...bigrams }, 600);
+        kb.books = Array.from(
+          new Set([...(kb.books || []), file.name.replace(/\.[^.]+$/, "")]),
+        );
+        localStorage.setItem("kb:cook", JSON.stringify(kb));
+      } catch {}
+      setScanOpen(false);
+      setBookPhase("selecting");
+      setScanPageTexts(pageTexts);
+      setScanCandidates(candidates);
+      setScanBookName(file.name.replace(/\.[^.]+$/, ""));
+      if (candidates.length >= 5) {
+        setStatus(
+          `Detected ${candidates.length} recipe candidates. Click "Import detected" to add them.`,
+        );
+        return;
+      }
+      const normLine = (s: string) => {
+        let t = s.replace(/\s+/g, " ").trim();
+        if (
+          /^([A-Z]\s+){2,}[A-Z](?:\s+\d+)?[\s:]*$/.test(t) &&
+          t.length <= 60
+        ) {
+          t = t.replace(/\s+/g, "");
+        }
+        return t;
+      };
+      const norm = lines.map(normLine);
+      let tocEntries = norm
+        .map((s) => {
+          const tests = [
+            /^(.{3,120}?)(?:[\.·•\s]{2,})(\d{1,4})$/,
+            /^(.{3,120}?)\s{3,}(\d{1,4})$/,
+            /^(.{3,120}?)\s+[-–—]\s*(\d{1,4})$/,
+          ];
+          let m: RegExpMatchArray | null = null;
+          for (const re of tests) {
+            m = s.match(re);
+            if (m) break;
+          }
+          if (!m) return null;
+          const title = m[1].trim();
+          const page = parseInt(m[2], 10);
+          const bad =
+            /^(?:contents|index|appendix|recipes?|chapter|table of contents|fig(?:\.|ures?)?(?:\s*\d+)?|plates?(?:\s*\d+)?|illustrations?(?:\s*\d+)?|photos?(?:\s*\d+)?|tables?(?:\s*\d+)?|maps?(?:\s*\d+)?|yield\b|to convert\b|see\b)/i;
+          if (!title || bad.test(title)) return null;
+          if (/(flexipan|inch|inches|cm|diameter)\b/i.test(title)) return null;
+          return { title, page };
+        })
+        .filter(Boolean) as { title: string; page: number }[];
+      const seen: Record<number, boolean> = {};
+      tocEntries = tocEntries.filter(
+        (e) => !seen[e.page] && (seen[e.page] = true),
+      );
+      if (tocEntries.length >= 5) {
+        setToc(tocEntries);
+        const checked: Record<string, boolean> = {};
+        tocEntries.forEach((x) => (checked[x.title] = true));
+        setTocChecked(checked);
+        setTocOpen(true);
+        setStatus("Select recipes to import");
+        return;
+      }
+      const items: any[] = [];
+      let i = 0;
+      const book = file.name.replace(/\.[^.]+$/, "");
+      const isTitle = (s: string) =>
+        s &&
+        s.length < 70 &&
+        /[A-Za-z]/.test(s) &&
+        (s === s.toUpperCase() || /^[A-Z][^.!?]{2,}$/.test(s));
+      while (i < norm.length) {
+        while (i < norm.length && !/ingredients?/i.test(norm[i])) i++;
+        if (i >= norm.length) break;
+        let tIdx = Math.max(0, i - 5);
+        let title = "";
+        for (let k = i - 1; k >= tIdx; k--) {
+          if (isTitle(norm[k])) {
+            title = norm[k];
             break;
           }
         }
-        if (
-          /^see\b/i.test(guess) ||
-          /(flexipan|inch|inches|cm|diameter)\b/i.test(guess)
-        )
-          guess = "";
-        setDetected((d) => [...d, { page: p, title: guess || `Candidate p.${p}` }]);
-      }
-    }
-    try {
-      const keepTop = (obj: Record<string, number>, n: number) =>
-        Object.fromEntries(
-          Object.entries(obj)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, n),
-        );
-      const words: Record<string, number> = {},
-        bigrams: Record<string, number> = {};
-      const textAll = pageTexts
-        .join("\n")
-        .toLowerCase()
-        .replace(/[^a-z\s]/g, " ");
-      const arr = textAll
-        .split(/\s+/)
-        .filter((w) => w.length >= 3 && w.length <= 24);
-      for (let i = 0; i < arr.length; i++) {
-        const w = arr[i];
-        words[w] = (words[w] || 0) + 1;
-        if (i < arr.length - 1) {
-          const g = `${arr[i]} ${arr[i + 1]}`;
-          if (g.length >= 5 && g.length <= 40)
-            bigrams[g] = (bigrams[g] || 0) + 1;
-        }
-      }
-      const raw = localStorage.getItem("kb:cook") || "{}";
-      const kb = JSON.parse(raw || "{}");
-      kb.terms = keepTop({ ...kb.terms, ...words }, 400);
-      kb.bigrams = keepTop({ ...kb.bigrams, ...bigrams }, 600);
-      kb.books = Array.from(
-        new Set([...(kb.books || []), file.name.replace(/\.[^.]+$/, "")]),
-      );
-      localStorage.setItem("kb:cook", JSON.stringify(kb));
-    } catch {}
-    setScanOpen(false);
-    setBookPhase("selecting");
-    setScanPageTexts(pageTexts);
-    setScanCandidates(candidates);
-    setScanBookName(file.name.replace(/\.[^.]+$/, ""));
-    if (candidates.length >= 5) {
-      setStatus(
-        `Detected ${candidates.length} recipe candidates. Click "Import detected" to add them.`,
-      );
-      return;
-    }
-    const normLine = (s: string) => {
-      let t = s.replace(/\s+/g, " ").trim();
-      if (
-        /^([A-Z]\s+){2,}[A-Z](?:\s+\d+)?[\s:]*$/.test(t) &&
-        t.length <= 60
-      ) {
-        t = t.replace(/\s+/g, "");
-      }
-      return t;
-    };
-    const norm = lines.map(normLine);
-    let tocEntries = norm
-      .map((s) => {
-        const tests = [
-          /^(.{3,120}?)(?:[\.·•\s]{2,})(\d{1,4})$/,
-          /^(.{3,120}?)\s{3,}(\d{1,4})$/,
-          /^(.{3,120}?)\s+[-–—]\s*(\d{1,4})$/,
-        ];
-        let m: RegExpMatchArray | null = null;
-        for (const re of tests) {
-          m = s.match(re);
-          if (m) break;
-        }
-        if (!m) return null;
-        const title = m[1].trim();
-        const page = parseInt(m[2], 10);
-        const bad =
-          /^(?:contents|index|appendix|recipes?|chapter|table of contents|fig(?:\.|ures?)?(?:\s*\d+)?|plates?(?:\s*\d+)?|illustrations?(?:\s*\d+)?|photos?(?:\s*\d+)?|tables?(?:\s*\d+)?|maps?(?:\s*\d+)?|yield\b|to convert\b|see\b)/i;
-        if (!title || bad.test(title)) return null;
-        if (/(flexipan|inch|inches|cm|diameter)\b/i.test(title)) return null;
-        return { title, page };
-      })
-      .filter(Boolean) as { title: string; page: number }[];
-    const seen: Record<number, boolean> = {};
-    tocEntries = tocEntries.filter((e) => !seen[e.page] && (seen[e.page] = true));
-    if (tocEntries.length >= 5) {
-      setToc(tocEntries);
-      const checked: Record<string, boolean> = {};
-      tocEntries.forEach((x) => (checked[x.title] = true));
-      setTocChecked(checked);
-      setTocOpen(true);
-      setStatus("Select recipes to import");
-      return;
-    }
-    const items: any[] = [];
-    let i = 0;
-    const book = file.name.replace(/\.[^.]+$/, "");
-    const isTitle = (s: string) =>
-      s &&
-      s.length < 70 &&
-      /[A-Za-z]/.test(s) &&
-      (s === s.toUpperCase() || /^[A-Z][^.!?]{2,}$/.test(s));
-    while (i < norm.length) {
-      while (i < norm.length && !/ingredients?/i.test(norm[i])) i++;
-      if (i >= norm.length) break;
-      let tIdx = Math.max(0, i - 5);
-      let title = "";
-      for (let k = i - 1; k >= tIdx; k--) {
-        if (isTitle(norm[k])) {
-          title = norm[k];
-          break;
-        }
-      }
-      const ings: string[] = [];
-      i++;
-      while (i < norm.length && !/ingredients?/i.test(norm[i])) {
-        const s = norm[i];
-        if (/^(instructions|directions|method)/i.test(s)) break;
-        if (s) ings.push(s);
+        const ings: string[] = [];
         i++;
+        while (i < norm.length && !/ingredients?/i.test(norm[i])) {
+          const s = norm[i];
+          if (/^(instructions|directions|method)/i.test(s)) break;
+          if (s) ings.push(s);
+          i++;
+        }
+        let ins: string[] = [];
+        while (i < norm.length && !/ingredients?/i.test(norm[i])) {
+          const s = norm[i];
+          if (s) ins.push(s);
+          i++;
+        }
+        if (title && (ings.length || ins.length))
+          items.push({
+            title,
+            ingredients: ings,
+            instructions: ins,
+            tags: [book],
+            extra: { book, source: "pdf-auto" },
+          });
       }
-      let ins: string[] = [];
-      while (i < norm.length && !/ingredients?/i.test(norm[i])) {
-        const s = norm[i];
-        if (s) ins.push(s);
-        i++;
-      }
-      if (title && (ings.length || ins.length))
-        items.push({
-          title,
-          ingredients: ings,
-          instructions: ins,
-          tags: [book],
-          extra: { book, source: "pdf-auto" },
+      setBookPhase("importing");
+      if (items.length) {
+        const blob = new Blob([JSON.stringify(items)], {
+          type: "application/json",
         });
-    }
-    setBookPhase("importing");
-    if (items.length) {
-      const blob = new Blob([JSON.stringify(items)], {
-        type: "application/json",
-      });
-      const jsonFile = new File([blob], `${book}.json`, {
-        type: "application/json",
-      });
-      const { added } = await addRecipesFromJsonFiles([jsonFile]);
-      setBookImported(added);
-      setStatus(`Imported ${added} recipes from book.`);
-      setBookPhase("done");
-    } else {
-      setStatus("Could not detect recipes in PDF");
+        const jsonFile = new File([blob], `${book}.json`, {
+          type: "application/json",
+        });
+        const { added } = await addRecipesFromJsonFiles([jsonFile]);
+        setBookImported(added);
+        setStatus(`Imported ${added} recipes from book.`);
+        setBookPhase("done");
+      } else {
+        setStatus("Could not detect recipes in PDF");
+        setBookPhase(null);
+      }
+    } catch (e: any) {
+      setStatus(`Failed: ${e?.message || "error"}`);
       setBookPhase(null);
     }
-  } catch (e: any) {
-    setStatus(`Failed: ${e?.message || "error"}`);
-    setBookPhase(null);
-  }
-};
+  };
 
-const onFiles = async (files: File[]) => {
+  const onFiles = async (files: File[]) => {
     const list = files.slice(0, 100);
     const jsonFiles = list.filter(
       (f) => f.type.includes("json") || f.name.toLowerCase().endsWith(".json"),
@@ -921,7 +1089,9 @@ const onFiles = async (files: File[]) => {
             .join(", ")}${collectedTitles.length > 4 ? " …" : ""}`
         : "";
     const statusMessage = [summary, issueSummary].join(" ");
-    setStatus(titleSummary ? `${statusMessage} ${titleSummary}` : statusMessage);
+    setStatus(
+      titleSummary ? `${statusMessage} ${titleSummary}` : statusMessage,
+    );
     toast({
       title: "Recipe import complete",
       description: [summary, issueSummary, titleSummary]
@@ -1161,7 +1331,10 @@ const onFiles = async (files: File[]) => {
                 onClick={() => setCat(c)}
                 className={`px-2 py-0.5 rounded-md text-xs ${cat === c ? "bg-background shadow" : "text-foreground/80"}`}
               >
-                {t(`recipes.filter.${c}`, c.replace(/^[a-z]/, (s) => s.toUpperCase()))}
+                {t(
+                  `recipes.filter.${c}`,
+                  c.replace(/^[a-z]/, (s) => s.toUpperCase()),
+                )}
               </button>
             ))}
           </div>
@@ -1209,7 +1382,10 @@ const onFiles = async (files: File[]) => {
               onClick={() => {
                 if (
                   confirm(
-                    t("recipes.deleteAllTrash.confirm", "Delete all items in Trash permanently? This cannot be undone."),
+                    t(
+                      "recipes.deleteAllTrash.confirm",
+                      "Delete all items in Trash permanently? This cannot be undone.",
+                    ),
                   )
                 )
                   purgeDeleted();
@@ -1254,7 +1430,10 @@ const onFiles = async (files: File[]) => {
               {t("recipes.recipeDrop.title", "Recipe Drop")}
             </div>
             <div className="text-xs font-medium text-foreground">
-              {t("recipes.recipeDrop.description", "Drag or upload recipes and images (Word, PDF, Excel, HTML, JSON, ZIP).")}
+              {t(
+                "recipes.recipeDrop.description",
+                "Drag or upload recipes and images (Word, PDF, Excel, HTML, JSON, ZIP).",
+              )}
             </div>
           </div>
         </Dropzone>
@@ -1275,8 +1454,13 @@ const onFiles = async (files: File[]) => {
                 <input
                   ref={collectionNameRef}
                   value={collectionDraftName}
-                  onChange={(event) => setCollectionDraftName(event.target.value)}
-                  placeholder={t("recipes.collectionName.placeholder", "Collection Name")}
+                  onChange={(event) =>
+                    setCollectionDraftName(event.target.value)
+                  }
+                  placeholder={t(
+                    "recipes.collectionName.placeholder",
+                    "Collection Name",
+                  )}
                   className="flex-1 bg-transparent text-xs font-medium text-foreground outline-none placeholder:text-muted-foreground"
                 />
               </div>
@@ -1297,7 +1481,8 @@ const onFiles = async (files: File[]) => {
                 size="icon"
                 onClick={handleSaveCollection}
                 disabled={
-                  collectionDraftName.trim().length === 0 || selectedRecipeIds.length === 0
+                  collectionDraftName.trim().length === 0 ||
+                  selectedRecipeIds.length === 0
                 }
                 title="Save collection"
               >
@@ -1381,7 +1566,8 @@ const onFiles = async (files: File[]) => {
                             {collection.name}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            {collection.season} • {collection.year} • v{collection.version} • {recipeCount} recipe
+                            {collection.season} • {collection.year} • v
+                            {collection.version} • {recipeCount} recipe
                             {recipeCount === 1 ? "" : "s"}
                           </div>
                         </div>
@@ -1391,7 +1577,9 @@ const onFiles = async (files: File[]) => {
                             size="sm"
                             variant="outline"
                             onClick={() => {
-                              const params = new URLSearchParams(window.location.search);
+                              const params = new URLSearchParams(
+                                window.location.search,
+                              );
                               params.set("tab", "server-notes");
                               params.set("collection", collection.id);
                               window.location.href = `/?${params.toString()}`;
@@ -2120,7 +2308,12 @@ const onFiles = async (files: File[]) => {
                         .replace(/[^a-z\s]/g, " ");
                       const arr = textAll
                         .split(/\s+/)
-                        .filter((w) => w.length >= 3 && w.length <= 24 && !STOP_WORDS.has(w));
+                        .filter(
+                          (w) =>
+                            w.length >= 3 &&
+                            w.length <= 24 &&
+                            !STOP_WORDS.has(w),
+                        );
                       for (let i = 0; i < arr.length; i++) {
                         const w = arr[i];
                         words[w] = (words[w] || 0) + 1;
@@ -2134,13 +2327,18 @@ const onFiles = async (files: File[]) => {
                         }
                       }
                       // Extract definitions from text (Term: definition or Term – definition patterns)
-                      const defPattern = /^\s*([A-Z][a-zA-Z\s]{2,50})\s*(?::|–|—|=)\s*(.{10,300})$/gm;
+                      const defPattern =
+                        /^\s*([A-Z][a-zA-Z\s]{2,50})\s*(?::|–|—|=)\s*(.{10,300})$/gm;
                       for (const text of pageTexts) {
                         let match;
                         while ((match = defPattern.exec(text)) !== null) {
                           const term = match[1].trim().toLowerCase();
                           const def = match[2].trim();
-                          if (term.length >= 3 && term.length <= 50 && def.length >= 10) {
+                          if (
+                            term.length >= 3 &&
+                            term.length <= 50 &&
+                            def.length >= 10
+                          ) {
                             definitions[term] = def;
                           }
                         }
@@ -2176,15 +2374,14 @@ const onFiles = async (files: File[]) => {
                       kb.bigrams = keepTop({ ...kb.bigrams, ...bigrams }, 600);
                       kb.definitions = { ...kb.definitions, ...definitions };
                       kb.books = Array.from(
-                        new Set([
-                          ...(kb.books || []),
-                          bookName,
-                        ]),
+                        new Set([...(kb.books || []), bookName]),
                       );
                       localStorage.setItem("kb:cook", JSON.stringify(kb));
 
                       if (extractedProcedures.length > 0) {
-                        console.log(`Extracted ${extractedProcedures.length} procedures from ${bookName}`);
+                        console.log(
+                          `Extracted ${extractedProcedures.length} procedures from ${bookName}`,
+                        );
                       }
                     } catch (error) {
                       console.error("Error processing book knowledge:", error);
@@ -2716,12 +2913,17 @@ const onFiles = async (files: File[]) => {
                           : "bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground",
                       )}
                     >
-                      {selected ? t("recipeSearch.selected") : t("recipeSearch.select")}
+                      {selected
+                        ? t("recipeSearch.selected")
+                        : t("recipeSearch.select")}
                     </button>
                   )}
                 </div>
                 <div className="min-w-0">
-                  <div className="line-clamp-2 text-sm font-medium" title={r.title}>
+                  <div
+                    className="line-clamp-2 text-sm font-medium"
+                    title={r.title}
+                  >
                     {r.title}
                   </div>
                   <div className="line-clamp-1 text-xs text-muted-foreground">
@@ -2827,7 +3029,9 @@ const onFiles = async (files: File[]) => {
                           : "bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground",
                       )}
                     >
-                      {selected ? t("recipeSearch.selected") : t("recipeSearch.select")}
+                      {selected
+                        ? t("recipeSearch.selected")
+                        : t("recipeSearch.select")}
                     </button>
                   )}
                 </div>
@@ -2916,7 +3120,8 @@ const onFiles = async (files: File[]) => {
               if (!raw || recipes.length === 0)
                 return (
                   <div className="text-xs text-muted-foreground">
-                    Import recipes to start learning ingredient ratios, flavor profiles, and regional cooking patterns.
+                    Import recipes to start learning ingredient ratios, flavor
+                    profiles, and regional cooking patterns.
                   </div>
                 );
 
@@ -2925,98 +3130,141 @@ const onFiles = async (files: File[]) => {
               return (
                 <>
                   {/* Ingredient Ratios */}
-                  {insights.ingredientRatios && Object.keys(insights.ingredientRatios).length > 0 && (
-                    <div className="border-t pt-3">
-                      <div className="font-medium mb-2">📊 Key Ingredient Ratios</div>
-                      <ul className="space-y-1 text-xs">
-                        {Object.entries(insights.ingredientRatios).slice(0, 8).map(([key, ratio]: any) => (
-                          <li key={key} className="text-muted-foreground">
-                            <span className="font-mono">{ratio.ingredient1} : {ratio.ingredient2}</span>
-                            {" "}≈ <span className="font-semibold">{(ratio.ratio).toFixed(2)}:1</span>
-                            {" "}({ratio.count}x seen)
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                  {insights.ingredientRatios &&
+                    Object.keys(insights.ingredientRatios).length > 0 && (
+                      <div className="border-t pt-3">
+                        <div className="font-medium mb-2">
+                          📊 Key Ingredient Ratios
+                        </div>
+                        <ul className="space-y-1 text-xs">
+                          {Object.entries(insights.ingredientRatios)
+                            .slice(0, 8)
+                            .map(([key, ratio]: any) => (
+                              <li key={key} className="text-muted-foreground">
+                                <span className="font-mono">
+                                  {ratio.ingredient1} : {ratio.ingredient2}
+                                </span>{" "}
+                                ≈{" "}
+                                <span className="font-semibold">
+                                  {ratio.ratio.toFixed(2)}:1
+                                </span>{" "}
+                                ({ratio.count}x seen)
+                              </li>
+                            ))}
+                        </ul>
+                      </div>
+                    )}
 
                   {/* Flavor Profiles */}
-                  {insights.flavorProfiles && insights.flavorProfiles.length > 0 && (
-                    <div className="border-t pt-3">
-                      <div className="font-medium mb-2">🌶️ Flavor Profile Analysis</div>
-                      <div className="space-y-1 text-xs">
-                        <div className="text-muted-foreground">
-                          <span className="font-semibold">Sweet:</span> {(insights.avgFlavorSweet || 0).toFixed(1)}/10
+                  {insights.flavorProfiles &&
+                    insights.flavorProfiles.length > 0 && (
+                      <div className="border-t pt-3">
+                        <div className="font-medium mb-2">
+                          🌶️ Flavor Profile Analysis
                         </div>
-                        <div className="text-muted-foreground">
-                          <span className="font-semibold">Salty:</span> {(insights.avgFlavorSalty || 0).toFixed(1)}/10
-                        </div>
-                        <div className="text-muted-foreground">
-                          <span className="font-semibold">Umami:</span> {(insights.avgFlavorUmami || 0).toFixed(1)}/10
-                        </div>
-                        <div className="text-muted-foreground">
-                          <span className="font-semibold">Spicy:</span> {(insights.avgFlavorSpicy || 0).toFixed(1)}/10
+                        <div className="space-y-1 text-xs">
+                          <div className="text-muted-foreground">
+                            <span className="font-semibold">Sweet:</span>{" "}
+                            {(insights.avgFlavorSweet || 0).toFixed(1)}/10
+                          </div>
+                          <div className="text-muted-foreground">
+                            <span className="font-semibold">Salty:</span>{" "}
+                            {(insights.avgFlavorSalty || 0).toFixed(1)}/10
+                          </div>
+                          <div className="text-muted-foreground">
+                            <span className="font-semibold">Umami:</span>{" "}
+                            {(insights.avgFlavorUmami || 0).toFixed(1)}/10
+                          </div>
+                          <div className="text-muted-foreground">
+                            <span className="font-semibold">Spicy:</span>{" "}
+                            {(insights.avgFlavorSpicy || 0).toFixed(1)}/10
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
                   {/* Regional Cooking Styles */}
-                  {insights.regionalPatterns && Object.keys(insights.regionalPatterns).length > 0 && (
-                    <div className="border-t pt-3">
-                      <div className="font-medium mb-2">🌍 Regional Cooking Styles</div>
-                      <div className="space-y-2">
-                        {Object.entries(insights.regionalPatterns).slice(0, 5).map(([region, pattern]: any) => (
-                          <div key={region} className="text-xs">
-                            <div className="font-semibold text-foreground">{region}</div>
-                            <div className="text-muted-foreground ml-2">
-                              {pattern.characteristics?.slice(0, 3).join(" • ")}
-                            </div>
-                          </div>
-                        ))}
+                  {insights.regionalPatterns &&
+                    Object.keys(insights.regionalPatterns).length > 0 && (
+                      <div className="border-t pt-3">
+                        <div className="font-medium mb-2">
+                          🌍 Regional Cooking Styles
+                        </div>
+                        <div className="space-y-2">
+                          {Object.entries(insights.regionalPatterns)
+                            .slice(0, 5)
+                            .map(([region, pattern]: any) => (
+                              <div key={region} className="text-xs">
+                                <div className="font-semibold text-foreground">
+                                  {region}
+                                </div>
+                                <div className="text-muted-foreground ml-2">
+                                  {pattern.characteristics
+                                    ?.slice(0, 3)
+                                    .join(" • ")}
+                                </div>
+                              </div>
+                            ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
                   {/* Common Ingredient Combinations */}
-                  {insights.commonCombinations && insights.commonCombinations.length > 0 && (
-                    <div className="border-t pt-3">
-                      <div className="font-medium mb-2">👨‍🍳 Common Ingredient Pairs</div>
-                      <ul className="space-y-1 text-xs">
-                        {insights.commonCombinations.slice(0, 6).map((combo: any, idx: number) => (
-                          <li key={idx} className="text-muted-foreground">
-                            {combo.ingredients.slice(0, 3).join(" + ")}
-                            {combo.cuisines?.length > 0 && (
-                              <span className="ml-1 text-xs">({combo.cuisines[0]})</span>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+                  {insights.commonCombinations &&
+                    insights.commonCombinations.length > 0 && (
+                      <div className="border-t pt-3">
+                        <div className="font-medium mb-2">
+                          👨‍🍳 Common Ingredient Pairs
+                        </div>
+                        <ul className="space-y-1 text-xs">
+                          {insights.commonCombinations
+                            .slice(0, 6)
+                            .map((combo: any, idx: number) => (
+                              <li key={idx} className="text-muted-foreground">
+                                {combo.ingredients.slice(0, 3).join(" + ")}
+                                {combo.cuisines?.length > 0 && (
+                                  <span className="ml-1 text-xs">
+                                    ({combo.cuisines[0]})
+                                  </span>
+                                )}
+                              </li>
+                            ))}
+                        </ul>
+                      </div>
+                    )}
 
                   {/* Cooking Methods */}
-                  {insights.cookingMethods && Object.keys(insights.cookingMethods).length > 0 && (
-                    <div className="border-t pt-3">
-                      <div className="font-medium mb-2">🔥 Preferred Cooking Methods</div>
-                      <div className="flex flex-wrap gap-1">
-                        {Object.entries(insights.cookingMethods)
-                          .sort((a: any, b: any) => b[1].frequency - a[1].frequency)
-                          .slice(0, 6)
-                          .map(([method, stats]: any) => (
-                            <span key={method} className="px-2 py-1 bg-muted rounded text-xs">
-                              {method} ({stats.frequency}x)
-                            </span>
-                          ))}
+                  {insights.cookingMethods &&
+                    Object.keys(insights.cookingMethods).length > 0 && (
+                      <div className="border-t pt-3">
+                        <div className="font-medium mb-2">
+                          🔥 Preferred Cooking Methods
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {Object.entries(insights.cookingMethods)
+                            .sort(
+                              (a: any, b: any) =>
+                                b[1].frequency - a[1].frequency,
+                            )
+                            .slice(0, 6)
+                            .map(([method, stats]: any) => (
+                              <span
+                                key={method}
+                                className="px-2 py-1 bg-muted rounded text-xs"
+                              >
+                                {method} ({stats.frequency}x)
+                              </span>
+                            ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </>
               );
             } catch (e) {
               return (
                 <div className="text-xs text-muted-foreground">
-                  Learning system initialized. Import more recipes to see insights.
+                  Learning system initialized. Import more recipes to see
+                  insights.
                 </div>
               );
             }
@@ -3037,10 +3285,14 @@ const onFiles = async (files: File[]) => {
               const terms = kb.terms || {};
               const books = kb.books || [];
 
-              if (Object.keys(definitions).length === 0 && Object.keys(terms).length === 0) {
+              if (
+                Object.keys(definitions).length === 0 &&
+                Object.keys(terms).length === 0
+              ) {
                 return (
                   <div className="text-muted-foreground">
-                    Import textbooks or reference books to learn culinary terminology and definitions.
+                    Import textbooks or reference books to learn culinary
+                    terminology and definitions.
                   </div>
                 );
               }
@@ -3052,7 +3304,10 @@ const onFiles = async (files: File[]) => {
                       <div className="font-medium mb-2">📖 Books Imported</div>
                       <div className="flex flex-wrap gap-2">
                         {books.map((book) => (
-                          <span key={book} className="px-2 py-1 bg-muted rounded text-xs">
+                          <span
+                            key={book}
+                            className="px-2 py-1 bg-muted rounded text-xs"
+                          >
                             {book}
                           </span>
                         ))}
@@ -3062,24 +3317,39 @@ const onFiles = async (files: File[]) => {
 
                   {Object.keys(definitions).length > 0 && (
                     <div className="border-t pt-3">
-                      <div className="font-medium mb-2">📖 Culinary Definitions</div>
+                      <div className="font-medium mb-2">
+                        📖 Culinary Definitions
+                      </div>
                       <div className="max-h-48 overflow-auto hide-scrollbar space-y-2">
                         {Object.entries(definitions)
-                          .sort((a, b) => (a[0] as string).localeCompare(b[0] as string))
+                          .sort((a, b) =>
+                            (a[0] as string).localeCompare(b[0] as string),
+                          )
                           .slice(0, 15)
                           .map(([term, def]) => (
-                            <div key={term} className="text-xs border-l-2 border-muted pl-2 flex items-start justify-between gap-2 group">
+                            <div
+                              key={term}
+                              className="text-xs border-l-2 border-muted pl-2 flex items-start justify-between gap-2 group"
+                            >
                               <div className="flex-1 min-w-0">
-                                <div className="font-semibold text-foreground capitalize">{term}</div>
-                                <div className="text-muted-foreground line-clamp-2">{def}</div>
+                                <div className="font-semibold text-foreground capitalize">
+                                  {term}
+                                </div>
+                                <div className="text-muted-foreground line-clamp-2">
+                                  {def}
+                                </div>
                               </div>
                               <button
                                 onClick={() => {
-                                  const raw = localStorage.getItem("kb:cook") || "{}";
+                                  const raw =
+                                    localStorage.getItem("kb:cook") || "{}";
                                   const kb = JSON.parse(raw);
                                   if (kb.definitions && kb.definitions[term]) {
                                     delete kb.definitions[term];
-                                    localStorage.setItem("kb:cook", JSON.stringify(kb));
+                                    localStorage.setItem(
+                                      "kb:cook",
+                                      JSON.stringify(kb),
+                                    );
                                     window.location.reload();
                                   }
                                 }}
@@ -3092,7 +3362,8 @@ const onFiles = async (files: File[]) => {
                           ))}
                         {Object.keys(definitions).length > 15 && (
                           <div className="text-muted-foreground italic">
-                            +{Object.keys(definitions).length - 15} more definitions...
+                            +{Object.keys(definitions).length - 15} more
+                            definitions...
                           </div>
                         )}
                       </div>
@@ -3101,21 +3372,33 @@ const onFiles = async (files: File[]) => {
 
                   {Object.keys(terms).length > 0 && (
                     <div className="border-t pt-3">
-                      <div className="font-medium mb-2">🔤 Top Culinary Terms</div>
+                      <div className="font-medium mb-2">
+                        🔤 Top Culinary Terms
+                      </div>
                       <div className="flex flex-wrap gap-1.5">
                         {Object.entries(terms)
                           .sort((a: any, b: any) => b[1] - a[1])
                           .slice(0, 20)
                           .map(([term, count]) => (
-                            <span key={term} className="px-1.5 py-0.5 bg-muted rounded text-xs group relative cursor-default hover:bg-muted/80 transition-colors">
-                              {term} <span className="text-muted-foreground">({count})</span>
+                            <span
+                              key={term}
+                              className="px-1.5 py-0.5 bg-muted rounded text-xs group relative cursor-default hover:bg-muted/80 transition-colors"
+                            >
+                              {term}{" "}
+                              <span className="text-muted-foreground">
+                                ({count})
+                              </span>
                               <button
                                 onClick={() => {
-                                  const raw = localStorage.getItem("kb:cook") || "{}";
+                                  const raw =
+                                    localStorage.getItem("kb:cook") || "{}";
                                   const kb = JSON.parse(raw);
                                   if (kb.terms && kb.terms[term]) {
                                     delete kb.terms[term];
-                                    localStorage.setItem("kb:cook", JSON.stringify(kb));
+                                    localStorage.setItem(
+                                      "kb:cook",
+                                      JSON.stringify(kb),
+                                    );
                                     window.location.reload();
                                   }
                                 }}
@@ -3131,14 +3414,18 @@ const onFiles = async (files: File[]) => {
                   )}
 
                   <div className="border-t pt-3 text-xs text-muted-foreground italic">
-                    💡 <strong>Note:</strong> This knowledge base is retained even when recipes are deleted, preserving your culinary learning across all areas of the application including R&D, General Knowledge, and AI training.
+                    💡 <strong>Note:</strong> This knowledge base is retained
+                    even when recipes are deleted, preserving your culinary
+                    learning across all areas of the application including R&D,
+                    General Knowledge, and AI training.
                   </div>
                 </>
               );
             } catch (e) {
               return (
                 <div className="text-xs text-muted-foreground">
-                  Knowledge base system ready. Import textbooks to learn terminology.
+                  Knowledge base system ready. Import textbooks to learn
+                  terminology.
                 </div>
               );
             }

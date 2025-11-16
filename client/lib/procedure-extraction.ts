@@ -18,7 +18,9 @@ export interface ExtractedProcedure {
 /**
  * Categorize text content to determine if it contains culinary procedures
  */
-export function categorizeProcedureContent(text: string): CulinaryProcedure["category"] {
+export function categorizeProcedureContent(
+  text: string,
+): CulinaryProcedure["category"] {
   const lowerText = text.toLowerCase();
 
   if (
@@ -99,7 +101,11 @@ export function extractProcedureSteps(text: string): Array<{
   ];
 
   const lines = text.split("\n").filter((line) => line.trim());
-  let currentStep: { number: number; instruction: string; tips?: string } | null = null;
+  let currentStep: {
+    number: number;
+    instruction: string;
+    tips?: string;
+  } | null = null;
 
   for (const line of lines) {
     // Check if this line starts a new step
@@ -113,7 +119,9 @@ export function extractProcedureSteps(text: string): Array<{
 
       // Extract step number from text
       const numberMatch = line.match(/\d+/);
-      const stepNumber = numberMatch ? parseInt(numberMatch[0]) : steps.length + 1;
+      const stepNumber = numberMatch
+        ? parseInt(numberMatch[0])
+        : steps.length + 1;
 
       // Clean instruction text
       const instruction = line
@@ -128,9 +136,7 @@ export function extractProcedureSteps(text: string): Array<{
       };
     } else if (currentStep && (line.includes("tip") || line.includes("note"))) {
       // Attach tip to current step
-      const tip = line
-        .replace(/^(?:tip|note|note:|tip:)\s*/i, "")
-        .trim();
+      const tip = line.replace(/^(?:tip|note|note:|tip:)\s*/i, "").trim();
       currentStep.tips = tip;
     }
   }
@@ -157,7 +163,8 @@ export function extractMaterials(text: string): string[] {
   const materials: Set<string> = new Set();
 
   // Look for common material indicators
-  const materialPattern = /(?:ingredients?|materials?|you will need|requires?)[\s:]*([^\n]+)/gi;
+  const materialPattern =
+    /(?:ingredients?|materials?|you will need|requires?)[\s:]*([^\n]+)/gi;
   let match;
 
   while ((match = materialPattern.exec(text)) !== null) {
@@ -215,7 +222,8 @@ export function extractTools(text: string): string[] {
  * Extract time estimate from text
  */
 export function extractTimeEstimate(text: string): string | undefined {
-  const timePattern = /(?:takes?|requires?|about|approximately|roughly)?\s*(\d+[-–]?\d*)\s*(?:minutes?|hours?|mins?|hrs?)/i;
+  const timePattern =
+    /(?:takes?|requires?|about|approximately|roughly)?\s*(\d+[-–]?\d*)\s*(?:minutes?|hours?|mins?|hrs?)/i;
   const match = text.match(timePattern);
   return match ? match[0].trim() : undefined;
 }
@@ -228,7 +236,11 @@ export function extractDifficulty(
 ): "beginner" | "intermediate" | "advanced" | undefined {
   const lowerText = text.toLowerCase();
 
-  if (lowerText.includes("advanced") || lowerText.includes("expert") || lowerText.includes("professional")) {
+  if (
+    lowerText.includes("advanced") ||
+    lowerText.includes("expert") ||
+    lowerText.includes("professional")
+  ) {
     return "advanced";
   }
 

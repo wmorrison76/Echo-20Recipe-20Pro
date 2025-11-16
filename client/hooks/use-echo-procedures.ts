@@ -34,24 +34,32 @@ export function useEchoProcedures() {
     }
   }, []);
 
-  const getByCategory = useCallback((category: CulinaryProcedure["category"]) => {
-    return getProceduresByCategory(category);
-  }, []);
+  const getByCategory = useCallback(
+    (category: CulinaryProcedure["category"]) => {
+      return getProceduresByCategory(category);
+    },
+    [],
+  );
 
   const getByBook = useCallback((bookName: string) => {
     return getProceduresByBook(bookName);
   }, []);
 
-  const add = useCallback(async (procedure: Omit<CulinaryProcedure, "id" | "created_at" | "embedding">) => {
-    try {
-      const newProcedure = await storeProcedure(procedure);
-      setProcedures((prev) => [...prev, newProcedure]);
-      return newProcedure;
-    } catch (error) {
-      console.error("Error storing procedure:", error);
-      throw error;
-    }
-  }, []);
+  const add = useCallback(
+    async (
+      procedure: Omit<CulinaryProcedure, "id" | "created_at" | "embedding">,
+    ) => {
+      try {
+        const newProcedure = await storeProcedure(procedure);
+        setProcedures((prev) => [...prev, newProcedure]);
+        return newProcedure;
+      } catch (error) {
+        console.error("Error storing procedure:", error);
+        throw error;
+      }
+    },
+    [],
+  );
 
   const refresh = useCallback(() => {
     setProcedures(getAllProcedures());

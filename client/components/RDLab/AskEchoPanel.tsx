@@ -1,10 +1,19 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Send, Loader2, BookOpen, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
-import { searchProcedures, getProceduresByCategory } from "@/lib/echo-procedures-service";
+import {
+  searchProcedures,
+  getProceduresByCategory,
+} from "@/lib/echo-procedures-service";
 import type { ProcedureSearchResult } from "@/lib/echo-procedures-service";
 
 interface Message {
@@ -87,7 +96,10 @@ Would you like me to show you available categories instead?`,
           }
 
           // Add materials if available
-          if (result.procedure.materials && result.procedure.materials.length > 0) {
+          if (
+            result.procedure.materials &&
+            result.procedure.materials.length > 0
+          ) {
             response += `Materials: ${result.procedure.materials.join(", ")}\n`;
           }
 
@@ -133,7 +145,9 @@ Would you like me to show you available categories instead?`,
           <BookOpen className="h-5 w-5 text-blue-600" />
           <div>
             <CardTitle>Ask Echo</CardTitle>
-            <CardDescription>Culinary knowledge assistant powered by your textbooks</CardDescription>
+            <CardDescription>
+              Culinary knowledge assistant powered by your textbooks
+            </CardDescription>
           </div>
         </div>
       </CardHeader>
@@ -160,7 +174,12 @@ Would you like me to show you available categories instead?`,
                       return (
                         <div key={i}>
                           {line.split(/(\*\*[^*]+\*\*)/g).map((part, j) => (
-                            <span key={j} className={part.startsWith("**") ? "font-bold" : ""}>
+                            <span
+                              key={j}
+                              className={
+                                part.startsWith("**") ? "font-bold" : ""
+                              }
+                            >
                               {part.replace(/\*\*/g, "")}
                             </span>
                           ))}
@@ -168,7 +187,10 @@ Would you like me to show you available categories instead?`,
                       );
                     }
                     return (
-                      <div key={i} className={line.startsWith("💡") ? "mt-1 italic" : ""}>
+                      <div
+                        key={i}
+                        className={line.startsWith("💡") ? "mt-1 italic" : ""}
+                      >
                         {line}
                       </div>
                     );
@@ -192,7 +214,9 @@ Would you like me to show you available categories instead?`,
           {messages.filter((m) => m.role === "echo").length === 1 && (
             <div className="text-xs text-slate-600 dark:text-slate-400 flex gap-1">
               <AlertCircle className="h-3 w-3 flex-shrink-0 mt-0.5" />
-              <span>Import textbooks first in the RECIPES tab to populate knowledge</span>
+              <span>
+                Import textbooks first in the RECIPES tab to populate knowledge
+              </span>
             </div>
           )}
           <div className="flex gap-2">
@@ -210,7 +234,11 @@ Would you like me to show you available categories instead?`,
               size="sm"
               className="bg-blue-600 hover:bg-blue-700"
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </div>

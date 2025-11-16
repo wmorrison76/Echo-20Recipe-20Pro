@@ -4,7 +4,13 @@ export interface CulinaryProcedure {
   id: string;
   title: string;
   source_book: string;
-  category: "butchery" | "pastry" | "cooking" | "preparation" | "technique" | "general";
+  category:
+    | "butchery"
+    | "pastry"
+    | "cooking"
+    | "preparation"
+    | "technique"
+    | "general";
   steps: Array<{
     number: number;
     instruction: string;
@@ -134,7 +140,9 @@ export function getProceduresByCategory(
  */
 export function getProceduresByBook(bookName: string): CulinaryProcedure[] {
   const procedures = getAllProcedures();
-  return procedures.filter((p) => p.source_book.toLowerCase() === bookName.toLowerCase());
+  return procedures.filter(
+    (p) => p.source_book.toLowerCase() === bookName.toLowerCase(),
+  );
 }
 
 /**
