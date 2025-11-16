@@ -1,6 +1,16 @@
 import { Router, Request, Response } from "express";
 import { generateEmbedding } from "../lib/vector-engine";
-import { supabase } from "../lib/supabase";
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl = process.env.SUPABASE_URL || "";
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+
+function getSupabaseClient() {
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error("Supabase credentials not configured");
+  }
+  return createClient(supabaseUrl, supabaseServiceKey);
+}
 
 const router = Router();
 
