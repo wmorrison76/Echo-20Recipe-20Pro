@@ -163,7 +163,7 @@ export const FontPairingPanel: React.FC<FontPairingPanelProps> = ({
 
             {recommendations.map((pairing, idx) => (
               <Card
-                key={idx}
+                key={`pairing-${pairing.headingFont.id}-${pairing.bodyFont.id}-${idx}`}
                 className="border-primary/30 hover:border-primary/50 hover:shadow-md transition-all"
               >
                 <CardContent className="p-4 space-y-3">
