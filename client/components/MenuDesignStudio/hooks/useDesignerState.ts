@@ -65,6 +65,7 @@ export type PageSize = {
 export type DesignerState = {
   elements: DesignerElement[];
   selectedElementId: string | null;
+  selectedElementIds: string[];
   canvasSettings: CanvasSettings;
   pageSize: PageSize;
   documentName: string;
