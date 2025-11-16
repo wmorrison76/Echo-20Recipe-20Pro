@@ -9,6 +9,7 @@ import {
   Settings,
   Menu,
   X,
+  ArrowLeft,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,10 +22,15 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { MenuBar } from "./MenuBar";
+import { PageSizeSelector } from "./PageSizeSelector";
+import type { PageSize } from "../hooks";
 
 interface TopToolbarProps {
   documentName: string;
   onDocumentNameChange: (name: string) => void;
+  pageSize: PageSize;
+  onPageSizeChange: (size: PageSize) => void;
   canUndo: boolean;
   canRedo: boolean;
   onUndo: () => void;
@@ -35,12 +41,15 @@ interface TopToolbarProps {
   onSave: () => void;
   onOpenSettings: () => void;
   isDirty: boolean;
+  onBack?: () => void;
   className?: string;
 }
 
 export function TopToolbar({
   documentName,
   onDocumentNameChange,
+  pageSize,
+  onPageSizeChange,
   canUndo,
   canRedo,
   onUndo,
@@ -51,6 +60,7 @@ export function TopToolbar({
   onSave,
   onOpenSettings,
   isDirty,
+  onBack,
   className,
 }: TopToolbarProps) {
   const [isEditingName, setIsEditingName] = useState(false);
@@ -76,185 +86,197 @@ export function TopToolbar({
   };
 
   return (
-    <div
-      className={cn(
-        "flex h-16 items-center justify-between border-b border-gray-200 bg-white px-6 dark:border-gray-800 dark:bg-gray-900",
-        className
-      )}
-    >
-      {/* Left Section - Document Name & Basic Controls */}
-      <div className="flex items-center gap-6 flex-1 min-w-0">
-        {/* Logo/Brand */}
-        <div className="flex items-center gap-2 whitespace-nowrap">
-          <div className="text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400">
-            Menu Studio
-          </div>
-        </div>
-
-        {/* Document Name Editor */}
-        {isEditingName ? (
-          <Input
-            autoFocus
-            value={editingName}
-            onChange={(e) => setEditingName(e.target.value)}
-            onBlur={handleNameBlur}
-            onKeyDown={handleNameKeyDown}
-            className="h-8 w-48 text-sm font-medium"
-            placeholder="Untitled Menu"
-          />
-        ) : (
-          <button
-            onClick={() => {
-              setEditingName(documentName);
-              setIsEditingName(true);
-            }}
-            className={cn(
-              "text-sm font-medium truncate px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors",
-              isDirty && "text-gray-700 dark:text-gray-300",
-              !isDirty && "text-gray-600 dark:text-gray-400"
-            )}
-            title="Click to edit document name"
+    <div className={cn("flex flex-col border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900", className)}>
+      {/* Menu Bar Row */}
+      <div className="flex items-center h-10 border-b border-gray-200 dark:border-gray-800">
+        {/* Back Button */}
+        {onBack && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onBack}
+            className="h-10 px-3 rounded-none"
+            title="Back to Menu Studio"
           >
-            {documentName}
-            {isDirty && <span className="ml-1 text-cyan-500">•</span>}
-          </button>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
         )}
+
+        {/* Menu Bar */}
+        <MenuBar
+          onNew={() => {
+            if (isDirty) {
+              const confirmed = window.confirm(
+                "You have unsaved changes. Create new design anyway?"
+              );
+              if (!confirmed) return;
+            }
+            window.location.reload();
+          }}
+          onOpen={() => alert("Open: Coming soon")}
+          onSave={onSave}
+          onSaveAs={() => alert("Save As: Coming soon")}
+          onExportPDF={onExportPDF}
+          onExportSVG={onExportSVG}
+          onPrint={() => window.print()}
+          onUndo={onUndo}
+          onRedo={onRedo}
+          onCut={() => alert("Cut: Coming soon")}
+          onCopy={() => alert("Copy: Coming soon")}
+          onPaste={() => alert("Paste: Coming soon")}
+          onDelete={() => alert("Delete: Use Delete key or select element")}
+          onSelectAll={() => alert("Select All: Coming soon")}
+          onShowGrid={() => alert("Grid toggle: Use View menu")}
+          onShowRulers={() => alert("Rulers: Coming soon")}
+          onShowGuides={() => alert("Guides: Coming soon")}
+          onZoomFit={() => alert("Zoom fit: Coming soon")}
+          onZoom100={() => alert("Zoom 100%: Coming soon")}
+          onAddText={() => onAddElement("heading")}
+          onAddImage={() => onAddElement("image")}
+          onAddShape={() => onAddElement("shape")}
+          onAddDivider={() => onAddElement("divider")}
+          canUndo={canUndo}
+          canRedo={canRedo}
+          showGrid={false}
+          showRulers={false}
+          showGuides={false}
+        />
       </div>
 
-      {/* Center Section - Edit Controls (Hidden on Mobile) */}
-      <div className="hidden md:flex items-center gap-1">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onUndo}
-          disabled={!canUndo}
-          title="Undo (Cmd+Z)"
-          className="h-9 w-9 p-0"
-        >
-          <Undo2 className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onRedo}
-          disabled={!canRedo}
-          title="Redo (Cmd+Shift+Z)"
-          className="h-9 w-9 p-0"
-        >
-          <Redo2 className="h-4 w-4" />
-        </Button>
+      {/* Toolbar Row - Document Info & Controls */}
+      <div className="flex items-center justify-between gap-4 h-12 px-4 py-2">
+        {/* Left: Document Name */}
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400 whitespace-nowrap">
+            Menu Studio
+          </div>
 
-        <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1" />
+          {isEditingName ? (
+            <Input
+              autoFocus
+              value={editingName}
+              onChange={(e) => setEditingName(e.target.value)}
+              onBlur={handleNameBlur}
+              onKeyDown={handleNameKeyDown}
+              className="h-7 w-48 text-sm font-medium"
+              placeholder="Untitled Menu"
+            />
+          ) : (
+            <button
+              onClick={() => {
+                setEditingName(documentName);
+                setIsEditingName(true);
+              }}
+              className={cn(
+                "text-sm font-medium truncate px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors max-w-xs",
+                isDirty && "text-gray-700 dark:text-gray-300",
+                !isDirty && "text-gray-600 dark:text-gray-400"
+              )}
+              title="Click to edit document name"
+            >
+              {documentName}
+              {isDirty && <span className="ml-1 text-cyan-500">•</span>}
+            </button>
+          )}
+        </div>
 
-        {/* Add Element Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+        {/* Center: Page Size Selector */}
+        <div className="hidden lg:flex items-center">
+          <PageSizeSelector
+            pageSize={pageSize}
+            onPageSizeChange={onPageSizeChange}
+          />
+        </div>
+
+        {/* Right: Quick Controls */}
+        <div className="flex items-center gap-1 ml-auto">
+          {/* Desktop Controls */}
+          <div className="hidden sm:flex gap-1">
             <Button
               variant="ghost"
               size="sm"
-              className="h-9 gap-1"
-              title="Add element"
+              onClick={onUndo}
+              disabled={!canUndo}
+              title="Undo (Cmd+Z)"
+              className="h-8 w-8 p-0"
             >
-              <Plus className="h-4 w-4" />
-              <span className="hidden sm:inline text-xs">Add</span>
-              <ChevronDown className="h-3 w-3 opacity-50" />
+              <Undo2 className="h-4 w-4" />
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuLabel>Text</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => onAddElement("heading")}>
-              Heading
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onAddElement("subheading")}>
-              Subheading
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onAddElement("body")}>
-              Body Text
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onAddElement("menu-item")}>
-              Menu Item
-            </DropdownMenuItem>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onRedo}
+              disabled={!canRedo}
+              title="Redo (Cmd+Shift+Z)"
+              className="h-8 w-8 p-0"
+            >
+              <Redo2 className="h-4 w-4" />
+            </Button>
 
-            <DropdownMenuSeparator />
-            <DropdownMenuLabel>Objects</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => onAddElement("image")}>
-              Image
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onAddElement("shape")}>
-              Shape
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onAddElement("divider")}>
-              Divider
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+            <div className="w-px h-5 bg-gray-200 dark:bg-gray-700 mx-1" />
 
-      {/* Right Section - Export & Actions */}
-      <div className="flex items-center gap-2">
-        {/* Desktop Export Menu */}
-        <div className="hidden sm:flex gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onSave}
+              title="Save (Cmd+S)"
+              className="h-8 w-8 p-0"
+            >
+              <Save className="h-4 w-4" />
+            </Button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 gap-1"
+                  title="Export menu"
+                >
+                  <Download className="h-4 w-4" />
+                  <ChevronDown className="h-3 w-3 opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={onExportPDF}>
+                  <span>Export as PDF</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={onExportSVG}>
+                  <span>Export as SVG</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onOpenSettings}
+              title="Settings"
+              className="h-8 w-8 p-0"
+            >
+              <Settings className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Mobile Menu Button */}
           <Button
             variant="ghost"
             size="sm"
-            onClick={onSave}
-            title="Save (Cmd+S)"
-            className="h-9 w-9 p-0"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="sm:hidden h-8 w-8 p-0"
           >
-            <Save className="h-4 w-4" />
-          </Button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-9 gap-1"
-                title="Export menu"
-              >
-                <Download className="h-4 w-4" />
-                <ChevronDown className="h-3 w-3 opacity-50" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={onExportPDF}>
-                <span>Export as PDF</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={onExportSVG}>
-                <span>Export as SVG</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onOpenSettings}
-            title="Settings"
-            className="h-9 w-9 p-0"
-          >
-            <Settings className="h-4 w-4" />
+            {mobileMenuOpen ? (
+              <X className="h-4 w-4" />
+            ) : (
+              <Menu className="h-4 w-4" />
+            )}
           </Button>
         </div>
-
-        {/* Mobile Menu Button */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="sm:hidden h-9 w-9 p-0"
-        >
-          {mobileMenuOpen ? (
-            <X className="h-4 w-4" />
-          ) : (
-            <Menu className="h-4 w-4" />
-          )}
-        </Button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Expanded Menu */}
       {mobileMenuOpen && (
-        <div className="absolute top-16 right-0 left-0 border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 sm:hidden">
+        <div className="border-t border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 sm:hidden">
           <div className="flex flex-col gap-1 p-2">
             <Button
               variant="ghost"
@@ -307,6 +329,18 @@ export function TopToolbar({
               <Download className="h-4 w-4" />
               Export PDF
             </Button>
+
+            {/* Mobile Page Size Selector */}
+            <div className="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
+              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 px-2 py-1">
+                Page Size
+              </p>
+              <PageSizeSelector
+                pageSize={pageSize}
+                onPageSizeChange={onPageSizeChange}
+                className="px-2 py-1"
+              />
+            </div>
           </div>
         </div>
       )}
