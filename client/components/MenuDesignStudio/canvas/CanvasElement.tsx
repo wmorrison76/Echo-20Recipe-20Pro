@@ -5,10 +5,11 @@ import type { DesignerElement } from "../hooks";
 interface CanvasElementProps {
   element: DesignerElement;
   isSelected: boolean;
+  isMultiSelected?: boolean;
   isEditing: boolean;
   isDragging: boolean;
   isResizing: boolean;
-  onSelect: () => void;
+  onSelect: (e: React.MouseEvent) => void;
   onUpdateElement: (updates: Partial<DesignerElement>) => void;
   onStartDrag: (clientX: number, clientY: number) => void;
   onStartResize: (handle: string, clientX: number, clientY: number) => void;
