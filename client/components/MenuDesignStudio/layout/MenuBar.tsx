@@ -35,11 +35,15 @@ interface MenuBarProps {
   onAddImage: () => void;
   onAddShape: () => void;
   onAddDivider: () => void;
+  onToggleSnapToGrid?: (enabled: boolean) => void;
+  onToggleSnapToElements?: (enabled: boolean) => void;
   canUndo: boolean;
   canRedo: boolean;
   showGrid: boolean;
   showRulers: boolean;
   showGuides: boolean;
+  snapToGridEnabled?: boolean;
+  snapToElementsEnabled?: boolean;
 }
 
 export function MenuBar({
