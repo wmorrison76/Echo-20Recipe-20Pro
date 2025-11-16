@@ -3587,6 +3587,16 @@ export default function RecipeSearchSection() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Recipe Import Modal for Knowledge Base Training */}
+      <RecipeImportSelectionModal
+        open={importModalOpen}
+        onOpenChange={setImportModalOpen}
+        recipes={importModalRecipes}
+        onImport={handleImportRecipesToKnowledge}
+        isLoading={isImportingToKnowledge}
+        bookName={importingBook || "Cookbook"}
+      />
     </div>
   );
 }
