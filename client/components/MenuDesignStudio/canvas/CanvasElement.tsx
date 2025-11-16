@@ -94,7 +94,7 @@ export function CanvasElement({
     e.preventDefault();
     e.stopPropagation();
     if (["heading", "subheading", "body", "menu-item"].includes(element.type)) {
-      onSelect();
+      onSelect(e);
       onStartEditingText();
     }
   };
