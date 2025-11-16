@@ -56,6 +56,23 @@ router.post(
         });
       }
 
+      // Validate API key format (should be a reasonable length, not start with sk_)
+      if (apiKey.startsWith("sk_") || apiKey.length < 20) {
+        console.error("Invalid ElevenLabs API key format:", {
+          hasKey: !!apiKey,
+          startsWithSk: apiKey.startsWith("sk_"),
+          length: apiKey.length,
+          keyPrefix: apiKey.substring(0, 10),
+        });
+        return res.status(500).json({
+          success: false,
+          error:
+            "Invalid ElevenLabs API key format. Please verify your API key from https://elevenlabs.io/app/settings/api-keys",
+          details:
+            "API key may be incorrect or from a different service (starts with 'sk_')",
+        });
+      }
+
       // Truncate text to 5000 characters to avoid API limits
       const truncatedText = text.slice(0, 5000);
 
