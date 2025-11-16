@@ -32,6 +32,8 @@ interface TopToolbarProps {
   onDocumentNameChange: (name: string) => void;
   pageSize: PageSize;
   onPageSizeChange: (size: PageSize) => void;
+  backgroundColor: string;
+  onBackgroundColorChange: (color: string) => void;
   canUndo: boolean;
   canRedo: boolean;
   onUndo: () => void;
