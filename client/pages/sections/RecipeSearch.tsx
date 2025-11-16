@@ -2118,14 +2118,17 @@ const onFiles = async (files: File[]) => {
                         .replace(/[^a-z\s]/g, " ");
                       const arr = textAll
                         .split(/\s+/)
-                        .filter((w) => w.length >= 3 && w.length <= 24);
+                        .filter((w) => w.length >= 3 && w.length <= 24 && !STOP_WORDS.has(w));
                       for (let i = 0; i < arr.length; i++) {
                         const w = arr[i];
                         words[w] = (words[w] || 0) + 1;
                         if (i < arr.length - 1) {
-                          const g = `${arr[i]} ${arr[i + 1]}`;
-                          if (g.length >= 5 && g.length <= 40)
-                            bigrams[g] = (bigrams[g] || 0) + 1;
+                          const next = arr[i + 1];
+                          if (!STOP_WORDS.has(next)) {
+                            const g = `${arr[i]} ${next}`;
+                            if (g.length >= 5 && g.length <= 40)
+                              bigrams[g] = (bigrams[g] || 0) + 1;
+                          }
                         }
                       }
                       // Extract definitions from text (Term: definition or Term – definition patterns)
