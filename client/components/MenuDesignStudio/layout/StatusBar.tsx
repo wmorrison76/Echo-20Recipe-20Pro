@@ -1,11 +1,14 @@
 import { ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { MeasurementUnitsToggle, type MeasurementUnit } from "./MeasurementUnitsToggle";
 
 interface StatusBarProps {
   zoom: number;
   selectedElementCount: number;
   totalElementCount: number;
+  measurementUnit?: MeasurementUnit;
+  onMeasurementUnitChange?: (unit: MeasurementUnit) => void;
   onZoomChange?: (zoom: number) => void;
   className?: string;
 }
