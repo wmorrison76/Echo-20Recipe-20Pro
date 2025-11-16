@@ -274,6 +274,28 @@ export function DesignerCanvas({
           ))}
         </div>
       </div>
+
+      {/* Position Tooltip during drag */}
+      {dragPosition && (
+        <div
+          style={{
+            position: "fixed",
+            left: `${dragPosition.clientX + 10}px`,
+            top: `${dragPosition.clientY + 10}px`,
+            background: "rgba(0, 0, 0, 0.8)",
+            color: "#fff",
+            padding: "6px 10px",
+            borderRadius: "4px",
+            fontSize: "12px",
+            fontFamily: "monospace",
+            zIndex: 10000,
+            pointerEvents: "none",
+            whiteSpace: "nowrap",
+          }}
+        >
+          X: {dragPosition.x} Y: {dragPosition.y}
+        </div>
+      )}
     </div>
   );
 }
