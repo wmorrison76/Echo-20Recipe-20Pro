@@ -54,6 +54,8 @@ export function EnhancedLabWhiteboard({
   fontStyle = "chalkboard",
   onFontStyleChange,
   blackboardImage,
+  currentExperiment,
+  allExperiments = [],
 }: EnhancedLabWhiteboardProps) {
   const [entries, setEntries] = useState<WhiteboardEntry[]>(externalEntries);
   const [isMaximized, setIsMaximized] = useState(false);
@@ -62,8 +64,15 @@ export function EnhancedLabWhiteboard({
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [showSettings, setShowSettings] = useState(false);
+  const [showAISuggestions, setShowAISuggestions] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Generate AI suggestions
+  const aiSuggestions = useMemo(() => {
+    if (!currentExperiment || allExperiments.length === 0) return [];
+    return generateAISuggestionsForExperiment(currentExperiment, allExperiments);
+  }, [currentExperiment, allExperiments]);
 
   // Sync external entries
   useEffect(() => {
