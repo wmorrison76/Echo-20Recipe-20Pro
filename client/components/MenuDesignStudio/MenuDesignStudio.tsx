@@ -845,6 +845,17 @@ export function MenuDesignStudio({
         selectedElementCount={state.selectedElementIds.length}
         totalElementCount={state.elements.length}
       />
+
+      {/* Find & Replace Dialog */}
+      <FindReplaceDialog
+        elements={state.elements}
+        onReplace={(elementId, updates) => {
+          updateElement(elementId, updates);
+          historyPush(state);
+        }}
+        isOpen={isFindReplaceOpen}
+        onClose={() => setIsFindReplaceOpen(false)}
+      />
     </div>
   );
 }
