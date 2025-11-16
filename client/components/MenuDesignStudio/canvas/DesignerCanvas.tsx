@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { DesignerElement, CanvasSettings, PageSize } from "../hooks";
 import { CanvasElement } from "./CanvasElement";
