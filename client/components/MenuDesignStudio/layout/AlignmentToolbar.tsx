@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, AlignLeft, AlignCenter, AlignRight, AlignTop, AlignBottomIcon, Grid2X2 } from "lucide-react";
+import { ChevronDown, AlignLeft, AlignCenter, AlignRight, AlignTop, AlignBottom, Grid2X2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -112,7 +112,7 @@ export function AlignmentToolbar({
           onClick={onAlignBottom}
           title="Align Bottom (Alt+B)"
         >
-          <AlignBottomIcon className="h-4 w-4" />
+          <AlignBottom className="h-4 w-4" />
         </Button>
       </div>
 
