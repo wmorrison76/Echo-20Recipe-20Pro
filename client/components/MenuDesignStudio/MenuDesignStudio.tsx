@@ -742,6 +742,8 @@ export function MenuDesignStudio({
             dragState={dragState}
             resizeState={resizeState}
             editingId={editingId}
+            snapToGridEnabled={snapToGridEnabled}
+            snapToElementsEnabled={snapToElementsEnabled}
           />
         </div>
 
