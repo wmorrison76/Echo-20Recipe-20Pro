@@ -262,27 +262,32 @@ export function CanvasElement({
           <div className="absolute inset-0 border border-dashed border-cyan-400 pointer-events-none" />
 
           {/* Resize handles */}
-          {RESIZE_HANDLES.map((handle) => (
-            <div
-              key={handle}
-              className={cn(
-                "absolute w-2 h-2 bg-cyan-500 border border-white cursor-pointer transition-opacity hover:opacity-100",
-                handle.includes("n") && "top-[-5px]",
-                handle.includes("s") && "bottom-[-5px]",
-                handle.includes("e") && "right-[-5px]",
-                handle.includes("w") && "left-[-5px]"
-              )}
-              style={{
-                ...(handle.includes("n") && !handle.includes("s") && { top: -5 }),
-                ...(handle.includes("s") && { bottom: -5 }),
-                ...(handle.includes("e") && { right: -5 }),
-                ...(handle.includes("w") && { left: -5 }),
-                ...(!handle.includes("e") && !handle.includes("w") && { left: "50%", marginLeft: -4 }),
-                ...(handle.includes("e") && handle.includes("w") && { display: "none" }),
-              }}
-              onMouseDown={(e) => handleResizeStart(handle, e)}
-            />
-          ))}
+          {RESIZE_HANDLES.map((handle) => {
+            const handleSize = 8 * scale;
+            return (
+              <div
+                key={handle}
+                className={cn(
+                  "absolute bg-cyan-500 border border-white cursor-pointer transition-opacity hover:opacity-100",
+                  handle.includes("n") && "top-[-5px]",
+                  handle.includes("s") && "bottom-[-5px]",
+                  handle.includes("e") && "right-[-5px]",
+                  handle.includes("w") && "left-[-5px]"
+                )}
+                style={{
+                  width: handleSize,
+                  height: handleSize,
+                  ...(handle.includes("n") && !handle.includes("s") && { top: -handleSize / 2 }),
+                  ...(handle.includes("s") && { bottom: -handleSize / 2 }),
+                  ...(handle.includes("e") && { right: -handleSize / 2 }),
+                  ...(handle.includes("w") && { left: -handleSize / 2 }),
+                  ...(!handle.includes("e") && !handle.includes("w") && { left: "50%", marginLeft: -handleSize / 2 }),
+                  ...(handle.includes("e") && handle.includes("w") && { display: "none" }),
+                }}
+                onMouseDown={(e) => handleResizeStart(handle, e)}
+              />
+            );
+          })}
         </>
       )}
     </div>
