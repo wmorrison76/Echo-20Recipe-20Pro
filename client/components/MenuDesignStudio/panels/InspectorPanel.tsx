@@ -1,15 +1,17 @@
-import { useState } from "react";
-import { ChevronDown, Palette, Type, Layers, Layout } from "lucide-react";
+import { useState, useMemo } from "react";
+import { ChevronDown, Palette, Type, Layers, Layout, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { ColorPaletteManager } from "./ColorPaletteManager";
 import { TypographyPresets } from "./TypographyPresets";
 import { TemplateLibrary } from "./TemplateLibrary";
+import { checkSpelling } from "../utils/spellCheck";
 import type { DesignerElement, CanvasSettings, PageSize } from "../hooks";
 
 interface InspectorPanelProps {
