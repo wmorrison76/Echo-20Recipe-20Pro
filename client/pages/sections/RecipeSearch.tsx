@@ -44,6 +44,8 @@ import type { RecipeCollection } from "@shared/server-notes";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign } from "lucide-react";
 import { ResponsiveImage } from "@/components/ResponsiveImage";
+import { storeProcedure } from "@/lib/echo-procedures-service";
+import { identifyProcedures } from "@/lib/procedure-extraction";
 
 // Common English stop words to exclude from knowledge base
 const STOP_WORDS = new Set([
@@ -2056,7 +2058,7 @@ const onFiles = async (files: File[]) => {
                         .filter(Boolean)
                         .slice(0, 80);
                       const qty =
-                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼��¾⅓⅔⅛⅜⅝��])(?:\s*[a-zA-Z]+)?\b/;
+                        /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼����¾⅓⅔⅛⅜⅝��])(?:\s*[a-zA-Z]+)?\b/;
                       let c = 0;
                       for (const L of ls) {
                         if (qty.test(L) || /^[•\-*]\s+/.test(L)) c++;
