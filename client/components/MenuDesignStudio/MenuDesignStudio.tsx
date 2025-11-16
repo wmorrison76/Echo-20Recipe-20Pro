@@ -504,6 +504,24 @@ export function MenuDesignStudio({
           modifiers: ["meta"],
           callback: () => setIsVersioningOpen(true),
         },
+        {
+          label: "Group",
+          key: "g",
+          modifiers: ["meta"],
+          callback: handleGroupElements,
+        },
+        {
+          label: "Ungroup",
+          key: "g",
+          modifiers: ["meta", "shift"],
+          callback: handleUngroupElements,
+        },
+        {
+          label: "Create Component",
+          key: "k",
+          modifiers: ["meta"],
+          callback: handleCreateComponent,
+        },
       ]),
     [
       undo,
