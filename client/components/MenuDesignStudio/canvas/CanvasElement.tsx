@@ -61,9 +61,10 @@ export function CanvasElement({
   };
 
   const handleDoubleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
-    onSelect();
     if (["heading", "subheading", "body", "menu-item"].includes(element.type)) {
+      onSelect();
       onStartEditingText();
     }
   };
