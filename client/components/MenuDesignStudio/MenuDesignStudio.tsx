@@ -547,6 +547,10 @@ export function MenuDesignStudio({
       handlePaste,
       setIsFindReplaceOpen,
       setIsVersioningOpen,
+      handleGroupElements,
+      handleUngroupElements,
+      handleCreateComponent,
+      getSelectedElements,
     ]
   );
 
