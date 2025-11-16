@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Eye, EyeOff, Lock, Unlock, Trash2, ChevronDown } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Eye, EyeOff, Lock, Unlock, Trash2, ChevronDown, ChevronRight, Folder } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -36,6 +36,86 @@ export function LayersPanel({
 
   const handleToggleLock = (id: string, element: DesignerElement) => {
     onUpdateElement(id, { locked: !element.locked });
+  };
+
+  const toggleGroupExpand = (groupId: string) => {
+    const newExpanded = new Set(expandedGroups);
+    if (newExpanded.has(groupId)) {
+      newExpanded.delete(groupId);
+    } else {
+      newExpanded.add(groupId);
+    }
+    setExpandedGroups(newExpanded);
+  };
+
+  // Build a hierarchical layer structure for rendering
+  const layerHierarchy = useMemo(() => {
+    const elementMap = new Map(elements.map((el) => [el.id, el]));
+    const rootLayers: Array<{ element: DesignerElement; depth: number }> = [];
+
+    // Get top-level elements (not children of any group)
+    const childIds = new Set<string>();
+    elements.forEach((el) => {
+      if (el.childElementIds) {
+        el.childElementIds.forEach((id) => childIds.add(id));
+      }
+    });
+
+    const topLevel = elements.filter((el) => !childIds.has(el.id));
+
+    // Build hierarchy
+    const processElement = (
+      element: DesignerElement,
+      depth: number
+    ): Array<{ element: DesignerElement; depth: number }> => {
+      const items: Array<{ element: DesignerElement; depth: number }> = [
+        { element, depth },
+      ];
+
+      if (
+        element.type === "group" &&
+        element.childElementIds &&
+        expandedGroups.has(element.id)
+      ) {
+        element.childElementIds.forEach((childId) => {
+          const child = elementMap.get(childId);
+          if (child) {
+            items.push(...processElement(child, depth + 1));
+          }
+        });
+      }
+
+      return items;
+    };
+
+    topLevel.forEach((el) => {
+      rootLayers.push(...processElement(el, 0));
+    });
+
+    return rootLayers.reverse(); // Reverse for top layer first
+  }, [elements, expandedGroups]);
+
+  const getElementIcon = (element: DesignerElement): string => {
+    switch (element.type) {
+      case "image":
+        return "🖼️";
+      case "text":
+        return "T";
+      case "heading":
+        return "H";
+      case "shape":
+        return "■";
+      case "divider":
+        return "—";
+      case "menu-item":
+        return "🍽️";
+      case "group":
+        return "📦";
+      case "component":
+        return "⚙️";
+      default:
+        return "○";
+    }
   };
 
   // Render layers in reverse order (top layer first)
