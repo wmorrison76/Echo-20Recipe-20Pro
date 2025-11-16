@@ -86,6 +86,125 @@ export function MenuDesignStudio({
   const { push: historyPush, undo, redo, canUndo, canRedo } = useHistory();
   const { save: saveDesign } = useAutoSave(state);
 
+  // Alignment handlers
+  const handleAlignLeft = useCallback(() => {
+    const selected = getSelectedElements();
+    if (selected.length > 1) {
+      const updates = alignLeft(selected);
+      Object.entries(updates).forEach(([id, update]) => {
+        updateElement(id, update);
+      });
+      historyPush(state);
+    }
+  }, [state, getSelectedElements, alignLeft, updateElement, historyPush]);
+
+  const handleAlignCenter = useCallback(() => {
+    const selected = getSelectedElements();
+    if (selected.length > 1) {
+      const updates = alignCenter(selected);
+      Object.entries(updates).forEach(([id, update]) => {
+        updateElement(id, update);
+      });
+      historyPush(state);
+    }
+  }, [state, getSelectedElements, alignCenter, updateElement, historyPush]);
+
+  const handleAlignRight = useCallback(() => {
+    const selected = getSelectedElements();
+    if (selected.length > 1) {
+      const updates = alignRight(selected);
+      Object.entries(updates).forEach(([id, update]) => {
+        updateElement(id, update);
+      });
+      historyPush(state);
+    }
+  }, [state, getSelectedElements, alignRight, updateElement, historyPush]);
+
+  const handleAlignTop = useCallback(() => {
+    const selected = getSelectedElements();
+    if (selected.length > 1) {
+      const updates = alignTop(selected);
+      Object.entries(updates).forEach(([id, update]) => {
+        updateElement(id, update);
+      });
+      historyPush(state);
+    }
+  }, [state, getSelectedElements, alignTop, updateElement, historyPush]);
+
+  const handleAlignMiddle = useCallback(() => {
+    const selected = getSelectedElements();
+    if (selected.length > 1) {
+      const updates = alignMiddle(selected);
+      Object.entries(updates).forEach(([id, update]) => {
+        updateElement(id, update);
+      });
+      historyPush(state);
+    }
+  }, [state, getSelectedElements, alignMiddle, updateElement, historyPush]);
+
+  const handleAlignBottom = useCallback(() => {
+    const selected = getSelectedElements();
+    if (selected.length > 1) {
+      const updates = alignBottom(selected);
+      Object.entries(updates).forEach(([id, update]) => {
+        updateElement(id, update);
+      });
+      historyPush(state);
+    }
+  }, [state, getSelectedElements, alignBottom, updateElement, historyPush]);
+
+  const handleDistributeHorizontally = useCallback(() => {
+    const selected = getSelectedElements();
+    if (selected.length > 2) {
+      const updates = distributeHorizontally(selected);
+      Object.entries(updates).forEach(([id, update]) => {
+        updateElement(id, update);
+      });
+      historyPush(state);
+      toast({
+        title: "Distributed",
+        description: "Elements distributed horizontally",
+      });
+    }
+  }, [state, getSelectedElements, distributeHorizontally, updateElement, historyPush, toast]);
+
+  const handleDistributeVertically = useCallback(() => {
+    const selected = getSelectedElements();
+    if (selected.length > 2) {
+      const updates = distributeVertically(selected);
+      Object.entries(updates).forEach(([id, update]) => {
+        updateElement(id, update);
+      });
+      historyPush(state);
+      toast({
+        title: "Distributed",
+        description: "Elements distributed vertically",
+      });
+    }
+  }, [state, getSelectedElements, distributeVertically, updateElement, historyPush, toast]);
+
+  const handleMatchWidth = useCallback(() => {
+    const selected = getSelectedElements();
+    if (selected.length > 1) {
+      const updates = matchWidth(selected);
+      Object.entries(updates).forEach(([id, update]) => {
+        updateElement(id, update);
+      });
+      historyPush(state);
+    }
+  }, [state, getSelectedElements, matchWidth, updateElement, historyPush]);
+
+  const handleMatchHeight = useCallback(() => {
+    const selected = getSelectedElements();
+    if (selected.length > 1) {
+      const updates = matchHeight(selected);
+      Object.entries(updates).forEach(([id, update]) => {
+        updateElement(id, update);
+      });
+      historyPush(state);
+    }
+  }, [state, getSelectedElements, matchHeight, updateElement, historyPush]);
+
   // Setup keyboard shortcuts
   const shortcuts = useMemo(
     () =>
