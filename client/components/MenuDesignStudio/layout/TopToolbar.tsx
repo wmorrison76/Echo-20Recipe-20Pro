@@ -54,6 +54,10 @@ interface TopToolbarProps {
   onOpenSettings: () => void;
   isDirty: boolean;
   onBack?: () => void;
+  onToggleSnapToGrid?: (enabled: boolean) => void;
+  onToggleSnapToElements?: (enabled: boolean) => void;
+  snapToGridEnabled?: boolean;
+  snapToElementsEnabled?: boolean;
   className?: string;
 }
 
