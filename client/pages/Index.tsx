@@ -19,7 +19,9 @@ import RecipeDeploymentPanel from "@/components/RecipeDeploymentPanel";
 import ServerNotesSection from "./sections/server-notes";
 import OperationsDocsSection from "./sections/operations-docs";
 import DishAssemblySection from "./sections/dish-assembly";
-import MenuDesignStudioSection from "./sections/EchoMenuStudio";
+import MenuDesignStudioWrapper from "@/components/MenuDesignStudio/MenuDesignStudioWrapper";
+
+const MenuDesignStudioSection = MenuDesignStudioWrapper;
 import ProductionSection from "./sections/Production";
 import PurchasingReceivingSection from "./sections/purchasing-receiving";
 import RDLabsWorkspace from "./sections/RDLabsWorkspace";
