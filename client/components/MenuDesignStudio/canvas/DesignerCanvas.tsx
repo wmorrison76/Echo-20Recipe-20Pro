@@ -25,6 +25,16 @@ interface DesignerCanvasProps {
   onEndResize: () => void;
   onStartEditingText: (id: string) => void;
   onEndEditingText: () => void;
+  onAlignLeft?: () => void;
+  onAlignCenter?: () => void;
+  onAlignRight?: () => void;
+  onAlignTop?: () => void;
+  onAlignMiddle?: () => void;
+  onAlignBottom?: () => void;
+  onDistributeHorizontally?: () => void;
+  onDistributeVertically?: () => void;
+  onMatchWidth?: () => void;
+  onMatchHeight?: () => void;
   dragState: any;
   resizeState: any;
   editingId: string | null;
