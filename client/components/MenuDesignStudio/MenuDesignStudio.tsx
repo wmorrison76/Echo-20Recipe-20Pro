@@ -637,6 +637,16 @@ export function MenuDesignStudio({
             onEndResize={endResize}
             onStartEditingText={startEditingText}
             onEndEditingText={endEditingText}
+            onAlignLeft={handleAlignLeft}
+            onAlignCenter={handleAlignCenter}
+            onAlignRight={handleAlignRight}
+            onAlignTop={handleAlignTop}
+            onAlignMiddle={handleAlignMiddle}
+            onAlignBottom={handleAlignBottom}
+            onDistributeHorizontally={handleDistributeHorizontally}
+            onDistributeVertically={handleDistributeVertically}
+            onMatchWidth={handleMatchWidth}
+            onMatchHeight={handleMatchHeight}
             dragState={dragState}
             resizeState={resizeState}
             editingId={editingId}
