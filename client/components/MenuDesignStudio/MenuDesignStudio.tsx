@@ -346,6 +346,34 @@ export function MenuDesignStudio({
                 updateCanvasSettings(settings);
                 historyPush(state);
               }}
+              onApplyTemplate={handleApplyTemplate}
+            />
+          )}
+          {!selectedElement && (
+            <InspectorPanel
+              element={{
+                id: "placeholder",
+                type: "heading",
+                name: "No Element Selected",
+                x: 0,
+                y: 0,
+                width: 100,
+                height: 100,
+                rotation: 0,
+                opacity: 1,
+                zIndex: 0,
+                text: "",
+                fontSize: 16,
+                fontWeight: 400,
+                fontFamily: "'Inter', sans-serif",
+                color: "#000000",
+                align: "left",
+              }}
+              pageSize={state.pageSize}
+              canvasSettings={state.canvasSettings}
+              onUpdateElement={() => {}}
+              onUpdateCanvasSettings={() => {}}
+              onApplyTemplate={handleApplyTemplate}
             />
           )}
         </div>
