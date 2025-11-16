@@ -17,6 +17,8 @@ export function StatusBar({
   zoom,
   selectedElementCount,
   totalElementCount,
+  measurementUnit = "px",
+  onMeasurementUnitChange,
   onZoomChange,
   className,
 }: StatusBarProps) {
@@ -39,13 +41,23 @@ export function StatusBar({
         </div>
       </div>
 
-      {/* Right - Zoom Controls */}
+      {/* Right - Controls */}
       <div className="flex items-center gap-2">
+        {/* Measurement Unit Toggle */}
+        <MeasurementUnitsToggle
+          unit={measurementUnit}
+          onUnitChange={onMeasurementUnitChange || (() => {})}
+        />
+
+        <div className="w-px h-4 bg-gray-300 dark:bg-gray-600" />
+
+        {/* Zoom Controls */}
         <Button
           variant="ghost"
           size="sm"
           className="h-8 w-8 p-0"
           onClick={() => onZoomChange?.(Math.max(0.1, zoom - 0.1))}
+          title="Zoom out"
         >
           <ZoomOut className="h-4 w-4" />
         </Button>
@@ -59,6 +71,7 @@ export function StatusBar({
           size="sm"
           className="h-8 w-8 p-0"
           onClick={() => onZoomChange?.(Math.min(3, zoom + 0.1))}
+          title="Zoom in"
         >
           <ZoomIn className="h-4 w-4" />
         </Button>
