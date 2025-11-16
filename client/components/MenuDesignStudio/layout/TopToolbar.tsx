@@ -25,7 +25,8 @@ import { cn } from "@/lib/utils";
 import { MenuBar } from "./MenuBar";
 import { PageSizeSelector } from "./PageSizeSelector";
 import { PageColorSelector } from "./PageColorSelector";
-import type { PageSize } from "../hooks";
+import { DocumentSettingsDialog } from "./DocumentSettingsDialog";
+import type { PageSize, CanvasSettings } from "../hooks";
 
 interface TopToolbarProps {
   documentName: string;
