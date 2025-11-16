@@ -522,7 +522,7 @@ export function MenuDesignStudio({
       {/* Status Bar */}
       <StatusBar
         zoom={state.canvasSettings.zoom}
-        selectedElementCount={selectedElement ? 1 : 0}
+        selectedElementCount={state.selectedElementIds.length}
         totalElementCount={state.elements.length}
       />
     </div>
