@@ -140,9 +140,11 @@ export function DesignerCanvas({
 
         {/* Canvas Content */}
         <div
-          className="relative w-full h-full"
+          className="relative w-full h-full overflow-hidden"
           style={{
             backgroundColor: canvasSettings.background,
+            position: "relative",
+            zIndex: 2,
           }}
         >
           {/* Render Elements */}
