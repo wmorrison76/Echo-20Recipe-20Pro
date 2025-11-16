@@ -272,6 +272,81 @@ export function MenuDesignStudio({
     [setElements, state, historyPush, toast]
   );
 
+  // AI³ Integration Handlers
+  const handleApplySuggestion = useCallback(
+    (suggestion: AI3Suggestion) => {
+      if (suggestion.type === "color") {
+        // Apply color palette
+        if (suggestion.details?.colors) {
+          updateCanvasSettings({ background: suggestion.details.colors[4] || "#ffffff" });
+          toast({
+            title: "Palette Applied",
+            description: `${suggestion.title} color scheme applied`,
+          });
+        }
+      } else if (suggestion.type === "layout") {
+        toast({
+          title: "Layout Suggestion",
+          description: suggestion.title,
+        });
+      } else if (suggestion.type === "typography") {
+        toast({
+          title: "Typography Applied",
+          description: suggestion.title,
+        });
+      } else if (suggestion.type === "content" || suggestion.type === "composition") {
+        toast({
+          title: "Analysis Complete",
+          description: suggestion.title,
+        });
+      }
+      historyPush(state);
+    },
+    [updateCanvasSettings, historyPush, state, toast]
+  );
+
+  const handleGenerateLayoutsFromDishes = useCallback(
+    (style: string) => {
+      // This would connect to Dish Assembly data
+      toast({
+        title: "Generate from Dishes",
+        description: "Select dishes from the gallery to create a menu design",
+      });
+      setRightPanelTab("dishes");
+    },
+    [toast]
+  );
+
+  const handleGenerateMenuDesign = useCallback(
+    (dishes: DishData | DishData[]) => {
+      const dishArray = Array.isArray(dishes) ? dishes : [dishes];
+      const elements = DishAssemblyBridge.generateMenuFromDishes(dishArray, "featured");
+
+      // Add generated elements to canvas
+      elements.forEach((element) => {
+        addElement(element);
+      });
+
+      historyPush(state);
+      toast({
+        title: "Menu Generated",
+        description: `${dishArray.length} dish${dishArray.length !== 1 ? "es" : ""} added to canvas`,
+      });
+      setRightPanelTab("inspector");
+    },
+    [addElement, historyPush, state, toast]
+  );
+
+  const handleSelectDish = useCallback(
+    (dish: DishData) => {
+      toast({
+        title: "Dish Selected",
+        description: `Ready to design with "${dish.name}"`,
+      });
+    },
+    [toast]
+  );
+
   const selectedElement = getSelectedElement();
 
   return (
