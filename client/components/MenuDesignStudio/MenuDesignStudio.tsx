@@ -115,9 +115,15 @@ export function MenuDesignStudio({
           key: "Delete",
           modifiers: [],
           callback: () => {
-            const selected = getSelectedElement();
-            if (selected) {
-              removeElement(selected.id);
+            if (state.selectedElementIds.length > 0) {
+              if (state.selectedElementIds.length > 1) {
+                deleteMultiple(state.selectedElementIds);
+              } else {
+                const selected = getSelectedElement();
+                if (selected) {
+                  removeElement(selected.id);
+                }
+              }
               historyPush(state);
             }
           },
