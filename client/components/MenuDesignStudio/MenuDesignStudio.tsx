@@ -277,6 +277,10 @@ export function MenuDesignStudio({
         onDocumentNameChange={setDocumentName}
         pageSize={state.pageSize}
         onPageSizeChange={setPageSize}
+        backgroundColor={state.canvasSettings.background}
+        onBackgroundColorChange={(color) => {
+          updateCanvasSettings({ background: color });
+        }}
         canUndo={canUndo}
         canRedo={canRedo}
         onUndo={undo}
