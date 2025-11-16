@@ -380,7 +380,7 @@ export function MenuDesignStudio({
       />
 
       {/* Main Content Area - Fixed sizing */}
-      <div className="flex flex-1 overflow-hidden min-h-0">
+      <div className="flex flex-1 overflow-hidden min-h-0" style={{ position: "relative", zIndex: 1 }}>
         {/* Left Sidebar - Layers Panel */}
         <div className="hidden w-64 border-r border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 lg:flex lg:flex-col overflow-y-auto">
           <LayersPanel
