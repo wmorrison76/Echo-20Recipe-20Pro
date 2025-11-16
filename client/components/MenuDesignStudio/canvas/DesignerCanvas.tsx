@@ -102,10 +102,24 @@ export function DesignerCanvas({
       const draggedElement = elements.find((el) => el.id === dragState.id);
 
       if (draggedElement) {
+        const otherElements = elements.filter((el) => !selectedElementIds.includes(el.id));
+        const { x: snappedX, y: snappedY, activeGuides: newActiveGuides } = applySnapping(
+          draggedElement,
+          x,
+          y,
+          otherElements,
+          guides,
+          pageSize,
+          snapToGridEnabled,
+          canvasSettings.gridSize
+        );
+
+        setActiveGuides(newActiveGuides);
+
         if (selectedElementIds.includes(dragState.id) && selectedElementIds.length > 1) {
           // Dragging a multi-selected element - move all selected elements
-          const dx = x - draggedElement.x;
-          const dy = y - draggedElement.y;
+          const dx = snappedX - draggedElement.x;
+          const dy = snappedY - draggedElement.y;
 
           const updates: Record<string, any> = {};
           selectedElementIds.forEach((id) => {
@@ -121,10 +135,10 @@ export function DesignerCanvas({
           });
         } else {
           // Single element drag
-          onUpdateElement(dragState.id, { x, y });
+          onUpdateElement(dragState.id, { x: snappedX, y: snappedY });
         }
 
-        setDragPosition({ x: Math.round(x), y: Math.round(y), clientX: e.clientX, clientY: e.clientY });
+        setDragPosition({ x: Math.round(snappedX), y: Math.round(snappedY), clientX: e.clientX, clientY: e.clientY });
       }
     };
 
