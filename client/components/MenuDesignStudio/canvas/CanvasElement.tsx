@@ -121,7 +121,9 @@ export function CanvasElement({
                 onChange={handleTextChange}
                 onBlur={handleTextBlur}
                 onKeyDown={handleTextKeyDown}
-                className="w-full bg-transparent border border-cyan-500 px-1 text-inherit font-inherit"
+                onMouseDown={(e) => e.stopPropagation()}
+                className="w-full bg-transparent border-2 border-cyan-500 px-1 text-inherit font-inherit"
+                style={{ outline: "none", zIndex: 1001 }}
               />
             ) : (
               <div className="font-semibold">{element.text}</div>
