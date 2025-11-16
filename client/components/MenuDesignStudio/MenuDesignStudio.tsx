@@ -36,6 +36,8 @@ export function MenuDesignStudio({
   const { toast } = useToast();
   const containerRef = useRef<HTMLDivElement>(null);
   const [rightPanelTab, setRightPanelTab] = useState<"inspector" | "ai" | "dishes">("inspector");
+  const [snapToGridEnabled, setSnapToGridEnabled] = useState(true);
+  const [snapToElementsEnabled, setSnapToElementsEnabled] = useState(true);
 
   const {
     state,
