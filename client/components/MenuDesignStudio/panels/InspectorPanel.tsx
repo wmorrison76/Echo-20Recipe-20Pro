@@ -518,8 +518,10 @@ export function InspectorPanel({
                                     className="text-xs h-6"
                                     onClick={() => {
                                       const text = element.text || "";
+                                      // Safely escape regex special characters
+                                      const escapedWord = result.word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
                                       const corrected = text.replace(
-                                        new RegExp(`\\b${result.word}\\b`, "g"),
+                                        new RegExp(`\\b${escapedWord}\\b`, "g"),
                                         suggestion
                                       );
                                       onUpdateElement({ text: corrected });
