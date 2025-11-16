@@ -106,7 +106,7 @@ export function DesignerCanvas({
       const draggedElement = elements.find((el) => el.id === dragState.id);
 
       if (draggedElement) {
-        const otherElements = elements.filter((el) => !selectedElementIds.includes(el.id));
+        const otherElements = snapToElementsEnabled ? elements.filter((el) => !selectedElementIds.includes(el.id)) : [];
         const { x: snappedX, y: snappedY, activeGuides: newActiveGuides } = applySnapping(
           draggedElement,
           x,
