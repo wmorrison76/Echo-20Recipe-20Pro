@@ -68,41 +68,60 @@ This document tracks all requested improvements and their implementation status.
 - **Code**: Ready for enhancement in `DesignerCanvas.tsx`
 
 ### ❌ Vector Fonts Editing (Text Path Manipulation)
-**Status: NOT IMPLEMENTED - COMPLEX FEATURE**
+**Status: NOT POSSIBLE - REQUIRES SPECIALIZED TOOLS**
 
-#### Why This Wasn't Implemented
-Vector fonts editing (selecting individual letters and manipulating control points) requires:
+#### What Cannot Be Done in This Web App
+Vector font editing (editing individual letter shapes, control points, bezier curves) **cannot be programmed** into a web-based menu designer because:
 
-1. **Text-to-Path Conversion**
-   - Requires specialized library (opentype.js, etc.)
-   - Need font file parsing
-   - Complex rendering pipeline
+1. **Fonts Are Pre-Made Glyphs**
+   - Individual letters (glyphs) are baked into font files
+   - Editing them requires accessing/modifying font data (`.ttf`, `.otf` files)
+   - This is not supported by web browsers (security restrictions)
 
-2. **Bezier Curve Editing**
-   - Control point manipulation
-   - Curve adjustment handles
-   - Real-time path rendering
+2. **Font Editing Requires Specialized Software**
+   - Tools: FontLab, Glyphs, FontForge
+   - These are professional font design applications
+   - They have their own rendering engines and math libraries
+   - They run on your computer, not in a web browser
 
-3. **Per-Character Transforms**
-   - Individual letter positioning
-   - Custom shape manipulation
-   - Complex geometry calculations
+3. **Why It Won't Work Here**
+   - No direct access to font files from a browser
+   - Font data is read-only in web apps
+   - Would require Node.js backend + complex libraries
+   - Security sandboxing prevents low-level font manipulation
+   - Performance issues with real-time Bezier curve editing
 
-#### Current Text Capabilities ✅
-You CAN currently:
-- Change font family (100+ fonts)
+#### What You CAN Do in This App ✅
+**Standard Text Controls:**
+- Change font family (100+ fonts from Google Fonts)
 - Adjust font size (8-200px)
 - Adjust font weight (100-900)
 - Rotate entire text block (0-360°)
-- Change color
+- Change text color
 - Adjust line height & letter spacing
 - Align text (left, center, right)
+- Opacity control
 
-#### Workaround for Advanced Text Effects
-For advanced text manipulation:
-1. **Create text as individual shapes**: Make each letter a separate text element
-2. **Position individually**: Use rotation and positioning to arrange
-3. **Style separately**: Apply unique colors/sizes per "letter"
+**Workaround for Advanced Text Effects:**
+If you need custom letter shapes:
+1. **Create Each Letter as Separate Text**: Add each letter as individual text element
+2. **Position & Rotate**: Arrange with custom positioning and rotation
+3. **Style Per Letter**: Different colors, sizes, effects per element
+
+#### To Edit Vector Fonts: Use Professional Software
+For actual font editing (modifying letter shapes):
+- **FontLab** (https://www.fontlab.com/) - Professional font editor
+- **Glyphs** (https://glyphsapp.com/) - Mac-focused font design
+- **FontForge** (https://fontforge.org/) - Free, open-source
+- **RoboFont** (https://robofont.com/) - Python-based font editor
+
+These tools let you:
+- Edit individual glyphs (letter shapes)
+- Adjust control points (Bezier curves)
+- Modify metrics and kerning
+- Export as custom font files
+
+**Then**: Import your custom font into MenuStudio once created
 
 ---
 
