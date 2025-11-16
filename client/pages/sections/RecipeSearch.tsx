@@ -686,6 +686,11 @@ export default function RecipeSearchSection() {
   const [pendingOwnershipFile, setPendingOwnershipFile] = useState<File | null>(
     null,
   );
+  // Recipe import modal state
+  const [importModalOpen, setImportModalOpen] = useState(false);
+  const [importModalRecipes, setImportModalRecipes] = useState<DetectedRecipe[]>([]);
+  const [importingBook, setImportingBook] = useState<string | null>(null);
+  const [isImportingToKnowledge, setIsImportingToKnowledge] = useState(false);
 
   const { toast } = useToast();
   const searchInputRef = useRef<HTMLInputElement | null>(null);
