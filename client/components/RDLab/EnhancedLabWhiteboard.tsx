@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Maximize2,
   Minimize2,
@@ -12,14 +13,17 @@ import {
   Plus,
   X,
   Settings,
+  Lightbulb,
 } from "lucide-react";
 import { toast } from "sonner";
+import type { LabExperiment } from "@/stores/rdLabStore";
+import { generateAISuggestionsForExperiment } from "@/lib/rdlab-ai-suggestions";
 
 export type FontStyle = "chalkboard" | "teletype";
 
 interface WhiteboardEntry {
   id: string;
-  type: "hypothesis" | "step" | "observation" | "measurement" | "note";
+  type: "hypothesis" | "step" | "observation" | "measurement" | "note" | "ai-insight";
   content: string;
   timestamp: Date;
 }
@@ -35,6 +39,8 @@ interface EnhancedLabWhiteboardProps {
   fontStyle?: FontStyle;
   onFontStyleChange?: (style: FontStyle) => void;
   blackboardImage?: string;
+  currentExperiment?: LabExperiment;
+  allExperiments?: LabExperiment[];
 }
 
 export function EnhancedLabWhiteboard({
