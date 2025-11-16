@@ -20,6 +20,34 @@ interface CanvasElementProps {
 
 const RESIZE_HANDLES = ["nw", "ne", "sw", "se", "n", "s", "e", "w"] as const;
 
+// Group renderer - just shows a container with a border
+function renderGroupElement(
+  element: DesignerElement,
+  isSelected: boolean,
+  isMultiSelected: boolean,
+  scale: number
+) {
+  return (
+    <div
+      className={cn(
+        "absolute border-2 border-dashed",
+        isMultiSelected && "border-purple-500 bg-purple-50/10",
+        isSelected && !isMultiSelected && "border-cyan-500 bg-cyan-50/10",
+        !isSelected && "border-gray-400 bg-transparent"
+      )}
+      style={{
+        width: "100%",
+        height: "100%",
+        pointerEvents: "none",
+      }}
+    >
+      <div className="absolute -top-6 left-0 text-xs font-medium bg-white dark:bg-gray-900 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded">
+        {element.name}
+      </div>
+    </div>
+  );
+}
+
 export function CanvasElement({
   element,
   isSelected,
