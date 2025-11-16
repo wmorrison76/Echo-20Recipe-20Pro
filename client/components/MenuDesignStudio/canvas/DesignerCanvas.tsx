@@ -72,9 +72,31 @@ export function DesignerCanvas({
         dragStartRef.current = { x: e.clientX, y: e.clientY };
       }
       const { x, y } = onUpdateDrag(e.clientX, e.clientY);
-      const element = elements.find((el) => el.id === dragState.id);
-      if (element) {
-        onUpdateElement(dragState.id, { x, y });
+      const draggedElement = elements.find((el) => el.id === dragState.id);
+
+      if (draggedElement) {
+        if (selectedElementIds.includes(dragState.id) && selectedElementIds.length > 1) {
+          // Dragging a multi-selected element - move all selected elements
+          const dx = x - draggedElement.x;
+          const dy = y - draggedElement.y;
+
+          const updates: Record<string, any> = {};
+          selectedElementIds.forEach((id) => {
+            const el = elements.find((e) => e.id === id);
+            if (el) {
+              updates[id] = { x: el.x + dx, y: el.y + dy };
+            }
+          });
+
+          // Apply updates to all selected elements
+          Object.entries(updates).forEach(([id, update]) => {
+            onUpdateElement(id, update);
+          });
+        } else {
+          // Single element drag
+          onUpdateElement(dragState.id, { x, y });
+        }
+
         setDragPosition({ x: Math.round(x), y: Math.round(y), clientX: e.clientX, clientY: e.clientY });
       }
     };
