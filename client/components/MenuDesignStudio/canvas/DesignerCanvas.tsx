@@ -44,10 +44,14 @@ export function DesignerCanvas({
 }: DesignerCanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
+  const [dragPosition, setDragPosition] = useState<{ x: number; y: number; clientX: number; clientY: number } | null>(null);
 
   // Handle canvas drag
   useEffect(() => {
-    if (!dragState) return;
+    if (!dragState) {
+      setDragPosition(null);
+      return;
+    }
 
     const handleMouseMove = (e: MouseEvent) => {
       if (!dragStartRef.current) {
@@ -57,11 +61,13 @@ export function DesignerCanvas({
       const element = elements.find((el) => el.id === dragState.id);
       if (element) {
         onUpdateElement(dragState.id, { x, y });
+        setDragPosition({ x: Math.round(x), y: Math.round(y), clientX: e.clientX, clientY: e.clientY });
       }
     };
 
     const handleMouseUp = () => {
       dragStartRef.current = null;
+      setDragPosition(null);
       onEndDrag();
     };
 
