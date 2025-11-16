@@ -1702,29 +1702,47 @@ export default function RecipeSearchSection() {
             <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
               Library (Book PDF) Import
             </div>
-            <div className="text-xs text-muted-foreground">
-              {bookPhase ? (
-                <div className="flex items-center gap-2">
-                  <span>
-                    {bookPhase === "reading"
-                      ? "Reading file"
-                      : bookPhase === "selecting"
-                        ? "Selecting recipes"
-                        : bookPhase === "categorizing"
-                          ? "Categorizing recipes"
-                          : bookPhase === "importing"
-                            ? "Importing"
-                            : "Done"}
-                  </span>
-                  {bookPhase === "reading" && (
-                    <span>
-                      {bookPage}/{bookTotal}
-                    </span>
-                  )}
-                </div>
-              ) : (
-                <>Imported: {recipes.length}</>
+            <div className="flex items-center gap-2">
+              {detected && detected.length > 0 && (
+                <Button
+                  size="sm"
+                  variant="default"
+                  className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold text-xs shadow-lg"
+                  onClick={() => {
+                    setImportModalRecipes(detected as DetectedRecipe[]);
+                    setImportingBook(scanBookName || "Unknown Book");
+                    setImportModalOpen(true);
+                  }}
+                  title="[DEV] Import detected recipes to Echo knowledge base"
+                >
+                  <Zap className="mr-1 h-3 w-3" />
+                  Train Echo
+                </Button>
               )}
+              <div className="text-xs text-muted-foreground">
+                {bookPhase ? (
+                  <div className="flex items-center gap-2">
+                    <span>
+                      {bookPhase === "reading"
+                        ? "Reading file"
+                        : bookPhase === "selecting"
+                          ? "Selecting recipes"
+                          : bookPhase === "categorizing"
+                            ? "Categorizing recipes"
+                            : bookPhase === "importing"
+                              ? "Importing"
+                              : "Done"}
+                    </span>
+                    {bookPhase === "reading" && (
+                      <span>
+                        {bookPage}/{bookTotal}
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <>Imported: {recipes.length}</>
+                )}
+              </div>
             </div>
           </div>
           <input
