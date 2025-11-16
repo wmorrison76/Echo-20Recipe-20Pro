@@ -170,6 +170,7 @@ export function TopToolbar({
           onCopy={onCopy || (() => {})}
           onPaste={onPaste || (() => {})}
           onFindReplace={onFindReplace}
+          onVersionHistory={onVersionHistory}
           onDelete={() => alert("Delete: Use Delete key or select element")}
           onSelectAll={() => alert("Select All: Coming soon")}
           onShowGrid={(show) => {
