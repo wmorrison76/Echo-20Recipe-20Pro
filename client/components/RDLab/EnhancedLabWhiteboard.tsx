@@ -374,6 +374,34 @@ export function EnhancedLabWhiteboard({
         </div>
       </ScrollArea>
 
+      {/* AI Suggestions */}
+      {showAISuggestions && aiSuggestions.length > 0 && (
+        <div className="relative z-10 border-t border-amber-100/20 p-3 bg-slate-900/60 max-h-24 overflow-y-auto">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs font-semibold text-cyan-200 flex items-center gap-1">
+              <Lightbulb className="h-3 w-3" /> AI Insights
+            </p>
+            <button
+              onClick={() => setShowAISuggestions(false)}
+              className="text-xs text-amber-100/50 hover:text-amber-100"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="space-y-1">
+            {aiSuggestions.slice(0, 2).map((suggestion) => (
+              <div
+                key={suggestion.id}
+                className="text-xs p-2 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-100 cursor-pointer hover:bg-cyan-500/20 transition-colors"
+                title={suggestion.reasoning}
+              >
+                💡 {suggestion.content}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Input Area */}
       <div className="relative z-10 border-t border-amber-100/20 p-4 space-y-3 bg-gradient-to-t from-slate-950/80 via-slate-900/70 to-transparent rounded-b-lg">
         <div className="flex gap-2">
