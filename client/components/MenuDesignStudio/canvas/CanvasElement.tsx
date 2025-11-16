@@ -180,9 +180,11 @@ export function CanvasElement({
           ...baseStyles,
           backgroundColor: element.fill,
           borderColor: element.borderColor,
-          borderWidth: element.borderWidth,
+          borderWidth: element.borderWidth || 0.5,
           borderRadius: element.borderRadius,
           cursor: isSelected ? "move" : "pointer",
+          outline: "0.5px solid rgba(0, 0, 0, 0.1)",
+          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.12)",
         }}
         onClick={onSelect}
         onMouseDown={handleMouseDown}
