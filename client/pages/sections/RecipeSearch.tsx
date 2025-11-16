@@ -3035,9 +3035,26 @@ const onFiles = async (files: File[]) => {
                           .sort((a, b) => (a[0] as string).localeCompare(b[0] as string))
                           .slice(0, 15)
                           .map(([term, def]) => (
-                            <div key={term} className="text-xs border-l-2 border-muted pl-2">
-                              <div className="font-semibold text-foreground capitalize">{term}</div>
-                              <div className="text-muted-foreground line-clamp-2">{def}</div>
+                            <div key={term} className="text-xs border-l-2 border-muted pl-2 flex items-start justify-between gap-2 group">
+                              <div className="flex-1 min-w-0">
+                                <div className="font-semibold text-foreground capitalize">{term}</div>
+                                <div className="text-muted-foreground line-clamp-2">{def}</div>
+                              </div>
+                              <button
+                                onClick={() => {
+                                  const raw = localStorage.getItem("kb:cook") || "{}";
+                                  const kb = JSON.parse(raw);
+                                  if (kb.definitions && kb.definitions[term]) {
+                                    delete kb.definitions[term];
+                                    localStorage.setItem("kb:cook", JSON.stringify(kb));
+                                    window.location.reload();
+                                  }
+                                }}
+                                className="opacity-0 group-hover:opacity-100 transition-opacity p-1 text-muted-foreground hover:text-destructive"
+                                title="Delete this definition"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
                             </div>
                           ))}
                         {Object.keys(definitions).length > 15 && (
