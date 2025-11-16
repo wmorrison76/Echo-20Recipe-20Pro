@@ -83,6 +83,7 @@ export function DesignerCanvas({
       ref={canvasRef}
       className="relative flex h-full w-full items-center justify-center overflow-auto bg-gray-200 p-8 dark:bg-gray-900"
       onClick={() => onSelectElement(null)}
+      style={{ position: "relative", zIndex: 1 }}
     >
       {/* Canvas Container */}
       <div
@@ -92,6 +93,9 @@ export function DesignerCanvas({
           height: pageSize.height,
           transform: `scale(${scale})`,
           transformOrigin: "top left",
+          overflow: "hidden",
+          zIndex: 1,
+          position: "relative",
         }}
       >
         {/* Grid Background (optional) */}
