@@ -76,9 +76,18 @@ export function CanvasElement({
   }, [isEditing]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (isEditing || isDragging) return;
+    if (isEditing) return;
+    if (isDragging) return;
     e.stopPropagation();
-    onSelect(e);
+    // Only start drag on single click, not as part of potential double-click
+    // Use a small delay to allow double-click detection
+    const clickTime = Date.now();
+    setTimeout(() => {
+      // Only initiate drag if this isn't turning into a double-click
+      if (!isEditing) {
+        onSelect(e);
+      }
+    }, 0);
     onStartDrag(e.clientX, e.clientY);
   };
 
