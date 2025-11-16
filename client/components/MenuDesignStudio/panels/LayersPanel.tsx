@@ -131,28 +131,46 @@ export function LayersPanel({
       {/* Layers List */}
       <ScrollArea className="flex-1">
         <div className="space-y-1 p-3">
-          {sortedElements.length === 0 ? (
+          {layerHierarchy.length === 0 ? (
             <div className="text-center text-sm text-gray-500 dark:text-gray-400 py-6">
               No layers yet
             </div>
           ) : (
-            sortedElements.map((element) => (
+            layerHierarchy.map(({ element, depth }) => (
               <div
                 key={element.id}
                 className={cn(
-                  "group flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
+                  "group flex items-center gap-1 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-gray-100 dark:hover:bg-gray-800",
                   selectedElementId === element.id &&
                     "bg-cyan-50 text-cyan-900 dark:bg-cyan-950/30 dark:text-cyan-100"
                 )}
+                style={{ paddingLeft: `${12 + depth * 16}px` }}
               >
+                {/* Group Expand/Collapse Button */}
+                {element.type === "group" && element.childElementIds && element.childElementIds.length > 0 ? (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-5 w-5 p-0 flex-shrink-0"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleGroupExpand(element.id);
+                    }}
+                    title={expandedGroups.has(element.id) ? "Collapse group" : "Expand group"}
+                  >
+                    {expandedGroups.has(element.id) ? (
+                      <ChevronDown className="h-3.5 w-3.5" />
+                    ) : (
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    )}
+                  </Button>
+                ) : (
+                  <div className="h-5 w-5 flex-shrink-0" />
+                )}
+
                 {/* Layer Icon */}
                 <div className="flex-shrink-0 text-gray-400 dark:text-gray-500">
-                  {element.type === "image" && "🖼️"}
-                  {element.type === "text" && "T"}
-                  {element.type === "heading" && "H"}
-                  {element.type === "shape" && "■"}
-                  {element.type === "divider" && "—"}
-                  {element.type === "menu-item" && "🍽️"}
+                  {getElementIcon(element)}
                 </div>
 
                 {/* Layer Name */}
@@ -183,6 +201,11 @@ export function LayersPanel({
                   ) : (
                     <span className="truncate text-gray-700 dark:text-gray-300">
                       {element.name}
+                      {element.type === "group" && element.childElementIds && (
+                        <span className="ml-1 text-xs text-gray-500 dark:text-gray-400">
+                          ({element.childElementIds.length})
+                        </span>
+                      )}
                     </span>
                   )}
                 </div>
