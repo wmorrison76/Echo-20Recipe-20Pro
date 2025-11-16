@@ -132,11 +132,13 @@ export function CanvasElement({
             onBlur={handleTextBlur}
             onKeyDown={handleTextKeyDown}
             onMouseDown={(e) => e.stopPropagation()}
-            className="w-full h-full bg-transparent border-2 border-cyan-500 p-1 text-inherit font-inherit resize-none"
-            style={{ outline: "none", zIndex: 1001 }}
+            onDoubleClick={(e) => e.stopPropagation()}
+            className="w-full h-full bg-transparent border-2 border-cyan-500 p-2 text-inherit font-inherit resize-none overflow-auto"
+            style={{ outline: "none", zIndex: 1001, display: "block", minHeight: "100%" }}
+            spellCheck="false"
           />
         ) : (
-          <div className="truncate">{element.text}</div>
+          <div className="w-full h-full overflow-hidden break-words whitespace-normal p-1">{element.text}</div>
         );
 
       case "menu-item":
