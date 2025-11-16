@@ -134,9 +134,21 @@ export function TopToolbar({
             }
             window.location.reload();
           }}
-          onOpen={() => alert("Open: Coming soon")}
+          onOpen={() => {
+            // Trigger FileDialog by clicking the open button
+            const openButton = document.querySelector('[data-file-dialog="open"]');
+            if (openButton instanceof HTMLElement) {
+              openButton.click();
+            }
+          }}
           onSave={onSave}
-          onSaveAs={() => alert("Save As: Coming soon")}
+          onSaveAs={() => {
+            // Trigger FileDialog by clicking the save button
+            const saveButton = document.querySelector('[data-file-dialog="save"]');
+            if (saveButton instanceof HTMLElement) {
+              saveButton.click();
+            }
+          }}
           onExportPDF={onExportPDF}
           onExportSVG={onExportSVG}
           onPrint={() => window.print()}
