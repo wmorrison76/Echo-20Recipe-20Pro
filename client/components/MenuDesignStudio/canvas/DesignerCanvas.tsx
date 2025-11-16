@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import type { DesignerElement, CanvasSettings, PageSize } from "../hooks";
 import { CanvasElement } from "./CanvasElement";
 import { AlignmentToolbar } from "../layout/AlignmentToolbar";
+import { HorizontalRuler, VerticalRuler, RulerCorner } from "./Ruler";
 
 interface DesignerCanvasProps {
   elements: DesignerElement[];
