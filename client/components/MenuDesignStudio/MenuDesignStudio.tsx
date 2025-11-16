@@ -405,10 +405,16 @@ export function MenuDesignStudio({
           <DesignerCanvas
             elements={state.elements}
             selectedElementId={state.selectedElementId}
+            selectedElementIds={state.selectedElementIds}
             pageSize={state.pageSize}
             canvasSettings={state.canvasSettings}
             onSelectElement={selectElement}
+            onSelectMultiple={selectMultiple}
+            onAddToSelection={addToSelection}
+            onToggleSelection={toggleSelection}
+            onClearSelection={clearSelection}
             onUpdateElement={updateElement}
+            onUpdateMultiple={updateMultiple}
             onStartDrag={startDrag}
             onUpdateDrag={updateDrag}
             onEndDrag={endDrag}
