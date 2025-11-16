@@ -224,8 +224,8 @@ export const FontPropertiesPanel: React.FC<FontPropertiesPanelProps> = ({
 
             {analysis.suggestions.length > 0 && (
               <div className="mt-4 space-y-1 text-xs text-amber-600 bg-amber-50 dark:bg-amber-950 p-2 rounded">
-                {analysis.suggestions.map((suggestion, idx) => (
-                  <p key={idx}>→ {suggestion}</p>
+                {analysis.suggestions.map((suggestion) => (
+                  <p key={`suggestion-${suggestion.replace(/\s+/g, '-')}`}>→ {suggestion}</p>
                 ))}
               </div>
             )}
