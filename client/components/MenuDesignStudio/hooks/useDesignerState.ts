@@ -647,5 +647,12 @@ export function useDesignerState(initialState?: Partial<DesignerState>) {
     updateMultiple,
     deleteMultiple,
     getSelectedElements,
+    groupElements,
+    ungroupElements,
+    createComponent,
+    deleteComponent,
+    createComponentInstance,
+    updateComponentOverride,
+    setComponents,
   };
 }
