@@ -14,6 +14,7 @@ import type {
 /**
  * Hook for accessing and managing Echo culinary procedures globally
  * Procedures are accessible from R&D, Recipe Editor, and anywhere in the app
+ * Uses backend API backed by PostgreSQL with pgvector
  */
 export function useEchoProcedures() {
   const [procedures, setProcedures] = useState<CulinaryProcedure[]>([]);
@@ -21,29 +22,39 @@ export function useEchoProcedures() {
 
   // Load all procedures on mount
   useEffect(() => {
-    setProcedures(getAllProcedures());
-  }, []);
-
-  const search = useCallback(async (query: string, limit?: number) => {
     setLoading(true);
-    try {
-      const results = await searchProcedures(query, limit);
-      return results;
-    } finally {
-      setLoading(false);
-    }
+    getAllProcedures()
+      .then((data) => setProcedures(data))
+      .catch((error) => console.error("Error loading procedures:", error))
+      .finally(() => setLoading(false));
   }, []);
 
-  const getByCategory = useCallback(
-    (category: CulinaryProcedure["category"]) => {
-      return getProceduresByCategory(category);
+  const search = useCallback(
+    async (query: string, limit?: number) => {
+      setLoading(true);
+      try {
+        const results = await searchProcedures(query, limit);
+        return results;
+      } finally {
+        setLoading(false);
+      }
     },
     [],
   );
 
-  const getByBook = useCallback((bookName: string) => {
-    return getProceduresByBook(bookName);
-  }, []);
+  const getByCategory = useCallback(
+    async (category: CulinaryProcedure["category"]) => {
+      return await getProceduresByCategory(category);
+    },
+    [],
+  );
+
+  const getByBook = useCallback(
+    async (bookName: string) => {
+      return await getProceduresByBook(bookName);
+    },
+    [],
+  );
 
   const add = useCallback(
     async (
@@ -61,8 +72,14 @@ export function useEchoProcedures() {
     [],
   );
 
-  const refresh = useCallback(() => {
-    setProcedures(getAllProcedures());
+  const refresh = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await getAllProcedures();
+      setProcedures(data);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   return {
