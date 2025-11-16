@@ -283,6 +283,24 @@ export function MenuDesignStudio({
           },
         },
         {
+          label: "Copy",
+          key: "c",
+          modifiers: ["meta"],
+          callback: handleCopy,
+        },
+        {
+          label: "Cut",
+          key: "x",
+          modifiers: ["meta"],
+          callback: handleCut,
+        },
+        {
+          label: "Paste",
+          key: "v",
+          modifiers: ["meta"],
+          callback: handlePaste,
+        },
+        {
           label: "Delete",
           key: "Delete",
           modifiers: [],
@@ -406,6 +424,9 @@ export function MenuDesignStudio({
       handleAlignBottom,
       handleDistributeHorizontally,
       handleDistributeVertically,
+      handleCopy,
+      handleCut,
+      handlePaste,
     ]
   );
 
