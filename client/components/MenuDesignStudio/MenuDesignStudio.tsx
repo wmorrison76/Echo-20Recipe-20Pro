@@ -672,6 +672,8 @@ export function MenuDesignStudio({
         onExportPDF={handleExportPDF}
         onExportSVG={handleExportSVG}
         onSave={handleSave}
+        onLoadDesign={handleLoadDesign}
+        currentState={state}
         onCopy={handleCopy}
         onCut={handleCut}
         onPaste={handlePaste}
