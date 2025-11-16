@@ -2079,7 +2079,7 @@ const onFiles = async (files: File[]) => {
                         ]);
                       }
                     }
-                    // Learn cookbook terminology
+                    // Learn cookbook terminology and definitions
                     try {
                       const keepTop = (
                         obj: Record<string, number>,
@@ -2091,7 +2091,8 @@ const onFiles = async (files: File[]) => {
                             .slice(0, n),
                         );
                       const words: Record<string, number> = {},
-                        bigrams: Record<string, number> = {};
+                        bigrams: Record<string, number> = {},
+                        definitions: Record<string, string> = {};
                       const textAll = pageTexts
                         .join("\n")
                         .toLowerCase()
@@ -2108,10 +2109,23 @@ const onFiles = async (files: File[]) => {
                             bigrams[g] = (bigrams[g] || 0) + 1;
                         }
                       }
+                      // Extract definitions from text (Term: definition or Term – definition patterns)
+                      const defPattern = /^\s*([A-Z][a-zA-Z\s]{2,50})\s*(?::|–|—|=)\s*(.{10,300})$/gm;
+                      for (const text of pageTexts) {
+                        let match;
+                        while ((match = defPattern.exec(text)) !== null) {
+                          const term = match[1].trim().toLowerCase();
+                          const def = match[2].trim();
+                          if (term.length >= 3 && term.length <= 50 && def.length >= 10) {
+                            definitions[term] = def;
+                          }
+                        }
+                      }
                       const raw = localStorage.getItem("kb:cook") || "{}";
                       const kb = JSON.parse(raw);
                       kb.terms = keepTop({ ...kb.terms, ...words }, 400);
                       kb.bigrams = keepTop({ ...kb.bigrams, ...bigrams }, 600);
+                      kb.definitions = { ...kb.definitions, ...definitions };
                       kb.books = Array.from(
                         new Set([
                           ...(kb.books || []),
