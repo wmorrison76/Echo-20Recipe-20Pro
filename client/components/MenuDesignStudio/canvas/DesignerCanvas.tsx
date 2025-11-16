@@ -78,6 +78,8 @@ export function DesignerCanvas({
   dragState,
   resizeState,
   editingId,
+  snapToGridEnabled = true,
+  snapToElementsEnabled = true,
 }: DesignerCanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
