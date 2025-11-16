@@ -459,6 +459,80 @@ export function DesignerCanvas({
         />
       )}
 
+      {/* Smart Guides - Show alignment lines when snapping */}
+      {activeGuides.map((guide) => (
+        guide.type === "vertical" ? (
+          <div
+            key={guide.id}
+            style={{
+              position: "absolute",
+              left: `${guide.position * scale + 24}px`,
+              top: 0,
+              width: "1px",
+              height: "100%",
+              backgroundColor: "#4F46E5",
+              opacity: 0.6,
+              pointerEvents: "none",
+              zIndex: 9998,
+            }}
+          />
+        ) : (
+          <div
+            key={guide.id}
+            style={{
+              position: "absolute",
+              top: `${guide.position * scale + 24}px`,
+              left: 0,
+              width: "100%",
+              height: "1px",
+              backgroundColor: "#4F46E5",
+              opacity: 0.6,
+              pointerEvents: "none",
+              zIndex: 9998,
+            }}
+          />
+        )
+      ))}
+
+      {/* Custom Guides Display */}
+      {guides.map((guide) => (
+        guide.type === "vertical" ? (
+          <div
+            key={guide.id}
+            style={{
+              position: "absolute",
+              left: `${guide.position * scale + 24}px`,
+              top: 0,
+              width: "1px",
+              height: "100%",
+              backgroundColor: "rgba(255, 100, 100, 0.5)",
+              opacity: 0.4,
+              pointerEvents: "none",
+              zIndex: 1000,
+              cursor: "col-resize",
+            }}
+            title={`Guide: ${guide.name || 'Vertical'}`}
+          />
+        ) : (
+          <div
+            key={guide.id}
+            style={{
+              position: "absolute",
+              top: `${guide.position * scale + 24}px`,
+              left: 0,
+              width: "100%",
+              height: "1px",
+              backgroundColor: "rgba(255, 100, 100, 0.5)",
+              opacity: 0.4,
+              pointerEvents: "none",
+              zIndex: 1000,
+              cursor: "row-resize",
+            }}
+            title={`Guide: ${guide.name || 'Horizontal'}`}
+          />
+        )
+      ))}
+
       {/* Position Tooltip during drag */}
       {dragPosition && (
         <div
