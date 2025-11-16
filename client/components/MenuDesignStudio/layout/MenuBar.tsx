@@ -287,8 +287,12 @@ export function MenuBar({
           <DropdownMenuItem disabled>
             Documentation
           </DropdownMenuItem>
-          <DropdownMenuItem disabled>
-            Keyboard Shortcuts
+          <DropdownMenuItem asChild>
+            <KeyboardShortcutsDialog>
+              <button className="w-full text-left flex items-center gap-2 px-2 py-1.5 text-sm">
+                Keyboard Shortcuts
+              </button>
+            </KeyboardShortcutsDialog>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem disabled>
