@@ -237,7 +237,8 @@ export function CanvasElement({
         ref={elementRef}
         className={cn(
           "absolute transition-shadow",
-          isSelected && "ring-2 ring-cyan-500"
+          isMultiSelected && "ring-2 ring-purple-500",
+          isSelected && !isMultiSelected && "ring-2 ring-cyan-500"
         )}
         style={{
           ...baseStyles,
