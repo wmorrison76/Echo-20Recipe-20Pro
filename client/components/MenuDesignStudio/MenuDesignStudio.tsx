@@ -350,7 +350,7 @@ export function MenuDesignStudio({
   const selectedElement = getSelectedElement();
 
   return (
-    <div ref={containerRef} className="flex h-screen flex-col bg-gray-50 dark:bg-gray-950 overflow-hidden">
+    <div ref={containerRef} className="flex h-screen flex-col bg-gray-50 dark:bg-gray-950 overflow-hidden" style={{ position: "relative", zIndex: 0 }}>
       {/* Top Toolbar with Menu Bar and Page Selector */}
       <TopToolbar
         documentName={state.documentName}
