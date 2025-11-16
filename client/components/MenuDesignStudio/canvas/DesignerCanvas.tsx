@@ -98,11 +98,63 @@ export function DesignerCanvas({
   const paddingX = 40;
   const paddingY = 40;
 
+  const handleCanvasMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+    if ((e.target as HTMLElement).closest('[data-canvas-element="true"]')) return;
+
+    e.preventDefault();
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const startX = e.clientX - rect.left;
+    const startY = e.clientY - rect.top;
+
+    setIsSelectingBox(true);
+    setDragSelectBox({ startX, startY, endX: startX, endY: startY });
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const endX = moveEvent.clientX - rect.left;
+      const endY = moveEvent.clientY - rect.top;
+      setDragSelectBox({ startX, startY, endX, endY });
+    };
+
+    const handleMouseUp = () => {
+      setIsSelectingBox(false);
+      if (dragSelectBox) {
+        const minX = Math.min(dragSelectBox.startX, dragSelectBox.endX);
+        const maxX = Math.max(dragSelectBox.startX, dragSelectBox.endX);
+        const minY = Math.min(dragSelectBox.startY, dragSelectBox.endY);
+        const maxY = Math.max(dragSelectBox.startY, dragSelectBox.endY);
+
+        const selected = elements.filter((el) => {
+          const elLeft = el.x * canvasSettings.zoom + 24;
+          const elTop = el.y * canvasSettings.zoom + 24;
+          const elRight = elLeft + el.width * canvasSettings.zoom;
+          const elBottom = elTop + el.height * canvasSettings.zoom;
+
+          return elLeft < maxX && elRight > minX && elTop < maxY && elBottom > minY;
+        });
+
+        if (selected.length > 0) {
+          onSelectMultiple(selected.map((el) => el.id));
+        } else {
+          onClearSelection();
+        }
+      }
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      setDragSelectBox(null);
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+  };
+
   return (
     <div
       ref={canvasRef}
       className="relative h-full w-full overflow-auto bg-gray-200 dark:bg-gray-900"
-      onClick={() => onSelectElement(null)}
+      onMouseDown={handleCanvasMouseDown}
       style={{
         position: "relative",
         zIndex: 1,
