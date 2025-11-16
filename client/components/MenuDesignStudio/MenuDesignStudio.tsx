@@ -432,6 +432,12 @@ export function MenuDesignStudio({
           modifiers: ["meta"],
           callback: () => setIsFindReplaceOpen(true),
         },
+        {
+          label: "Version History",
+          key: "shift+h",
+          modifiers: ["meta"],
+          callback: () => setIsVersioningOpen(true),
+        },
       ]),
     [
       undo,
