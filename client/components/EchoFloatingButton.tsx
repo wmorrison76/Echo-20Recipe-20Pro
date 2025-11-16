@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { MessageCircle, X } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import AskEchoPanel from "@/components/RDLab/AskEchoPanel";
 
 export default function EchoFloatingButton() {
@@ -17,7 +22,7 @@ export default function EchoFloatingButton() {
       >
         {/* Animated background gradient */}
         <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-        
+
         {/* Pulsing ring animation */}
         <div className="absolute inset-0 rounded-full border-2 border-blue-500 animate-pulse opacity-50" />
 
