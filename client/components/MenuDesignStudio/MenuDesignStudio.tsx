@@ -423,6 +423,12 @@ export function MenuDesignStudio({
           modifiers: ["alt", "shift"],
           callback: handleDistributeVertically,
         },
+        {
+          label: "Find & Replace",
+          key: "h",
+          modifiers: ["meta"],
+          callback: () => setIsFindReplaceOpen(true),
+        },
       ]),
     [
       undo,
