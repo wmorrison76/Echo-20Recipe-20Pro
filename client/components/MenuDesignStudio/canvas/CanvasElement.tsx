@@ -166,6 +166,8 @@ export function CanvasElement({
     letterSpacing: element.letterSpacing,
     color: element.color,
     textAlign: element.align,
+    outline: "0.5px solid rgba(0, 0, 0, 0.1)",
+    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.12)",
   };
 
   if (element.type === "shape") {
