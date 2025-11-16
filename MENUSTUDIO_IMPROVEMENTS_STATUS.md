@@ -10,12 +10,15 @@ This document tracks all requested improvements and their implementation status.
 
 ### ✅ Drop Shadows & Outlines
 **Status: FIXED**
-- **Before**: Outlines appeared on all text and shapes, creating visual clutter
-- **After**: 
-  - Outlines and drop shadows ONLY apply to shapes
-  - Text elements are clean without outlines
-  - Shapes have: 0.5px outline + 2px soft shadow
-- **Code**: `client/components/MenuDesignStudio/canvas/CanvasElement.tsx`
+- **Panels**: Both left (Layers) and right (Inspector/AI³/Dishes) sidebars now have drop shadows
+- **Shapes**: Shapes also have outlines + drop shadows for visual definition
+- **Text**: Text elements remain clean without shadows or outlines
+- **Implementation**:
+  - Panels: `shadow-lg` class applied to sidebar containers
+  - Shapes: 0.5px outline + 2px soft shadow
+- **Code**:
+  - Panels: `client/components/MenuDesignStudio/MenuDesignStudio.tsx`
+  - Shapes: `client/components/MenuDesignStudio/canvas/CanvasElement.tsx`
 
 ### ✅ Template Text Selection Issue
 **Status: FIXED**
