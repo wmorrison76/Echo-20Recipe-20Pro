@@ -67,6 +67,13 @@ export function MenuDesignStudio({
     copyElements,
     cutElements,
     pasteElements,
+    groupElements,
+    ungroupElements,
+    createComponent,
+    deleteComponent,
+    createComponentInstance,
+    updateComponentOverride,
+    setComponents,
   } = useDesignerState(initialState);
 
   const {
