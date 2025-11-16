@@ -42,6 +42,9 @@ interface TopToolbarProps {
   onExportPDF: () => void;
   onExportSVG: () => void;
   onSave: () => void;
+  onCopy?: () => void;
+  onCut?: () => void;
+  onPaste?: () => void;
   onOpenSettings: () => void;
   isDirty: boolean;
   onBack?: () => void;
