@@ -47,31 +47,31 @@ Tags: ${recipe.tags.join(", ")}
 Source: Page ${recipe.sourcePage} of ${recipe.sourceBook}
     `.trim();
 
+    // Add source metadata to tags for retrieval
+    const enrichedTags = [
+      ...recipe.tags,
+      `source:${recipe.sourceBook.replace(/\s+/g, "-")}`,
+      `page:${recipe.sourcePage}`,
+      "knowledge-base-import",
+    ];
+
     // Store in Pinecone with rich metadata
     const result = await storeRecipeVector(
       {
         id: recipe.recipeId,
         title: recipe.title,
+        description: recipeText,
         ingredients: recipe.ingredients,
-        instructions: recipe.instructions,
-        prepTime: recipe.prepTime,
-        cookTime: recipe.cookTime,
-        yield: recipe.yield,
-        difficulty: recipe.difficulty,
         cuisine: recipe.cuisine,
         course: recipe.course,
-        tags: recipe.tags,
-        description: recipeText,
+        difficulty: recipe.difficulty,
+        tags: enrichedTags,
+        prepTime: recipe.prepTime ? parseInt(recipe.prepTime) : undefined,
+        cookTime: recipe.cookTime ? parseInt(recipe.cookTime) : undefined,
       },
       "manufacturing", // Store in manufacturing track for global knowledge
       "echo-system", // Chef ID for system imports
-      "global-knowledge", // Organization ID for global knowledge base
-      {
-        sourceBook: recipe.sourceBook,
-        sourcePage: recipe.sourcePage,
-        importedAt: recipe.importedAt,
-        knowledgeSource: "pdf-import",
-      }
+      "global-knowledge" // Organization ID for global knowledge base
     );
 
     return {
