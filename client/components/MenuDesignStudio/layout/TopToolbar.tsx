@@ -180,11 +180,15 @@ export function TopToolbar({
           onAddImage={() => onAddElement("image")}
           onAddShape={() => onAddElement("shape")}
           onAddDivider={() => onAddElement("divider")}
+          onToggleSnapToGrid={onToggleSnapToGrid}
+          onToggleSnapToElements={onToggleSnapToElements}
           canUndo={canUndo}
           canRedo={canRedo}
           showGrid={canvasSettings?.showGrid || false}
           showRulers={canvasSettings?.showMargins || false}
           showGuides={false}
+          snapToGridEnabled={snapToGridEnabled}
+          snapToElementsEnabled={snapToElementsEnabled}
         />
       </div>
 
