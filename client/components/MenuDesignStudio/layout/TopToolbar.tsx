@@ -86,6 +86,7 @@ export function TopToolbar({
   onCut,
   onPaste,
   onFindReplace,
+  onVersionHistory,
   onToggleSnapToGrid,
   onToggleSnapToElements,
   snapToGridEnabled = true,
