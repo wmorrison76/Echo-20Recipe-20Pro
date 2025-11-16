@@ -32,6 +32,8 @@ export type DesignerElement = {
   lineHeight?: number;
   letterSpacing?: number;
   align?: "left" | "center" | "right";
+  textTransform?: "none" | "uppercase" | "lowercase" | "capitalize";
+  textDecoration?: "none" | "underline" | "line-through" | "overline";
   color?: string;
   accentColor?: string;
   imageUrl?: string;
