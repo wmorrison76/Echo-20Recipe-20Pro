@@ -43,6 +43,19 @@ export type DesignerElement = {
   borderRadius?: number;
   thickness?: number;
   locked?: boolean;
+  parentGroupId?: string;
+  childElementIds?: string[];
+  componentId?: string;
+  componentOverrides?: Record<string, Partial<DesignerElement>>;
+};
+
+export type ComponentDefinition = {
+  id: string;
+  name: string;
+  description?: string;
+  baseElement: Omit<DesignerElement, "id" | "componentId" | "componentOverrides">;
+  createdAt: number;
+  updatedAt: number;
 };
 
 export type CanvasSettings = {
