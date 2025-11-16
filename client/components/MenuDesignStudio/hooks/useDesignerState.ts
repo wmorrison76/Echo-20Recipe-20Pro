@@ -583,6 +583,46 @@ export function useDesignerState(initialState?: Partial<DesignerState>) {
     return state.elements.filter((el) => state.selectedElementIds.includes(el.id));
   }, [state.elements, state.selectedElementIds]);
 
+  const groupElements = useCallback(
+    (elementIds: string[], groupName: string) => {
+      dispatch({ type: "GROUP_ELEMENTS", payload: { elementIds, groupName } });
+    },
+    []
+  );
+
+  const ungroupElements = useCallback((groupId: string) => {
+    dispatch({ type: "UNGROUP_ELEMENTS", payload: groupId });
+  }, []);
+
+  const createComponent = useCallback(
+    (elementId: string, componentName: string) => {
+      dispatch({ type: "CREATE_COMPONENT", payload: { elementId, componentName } });
+    },
+    []
+  );
+
+  const deleteComponent = useCallback((componentId: string) => {
+    dispatch({ type: "DELETE_COMPONENT", payload: componentId });
+  }, []);
+
+  const createComponentInstance = useCallback(
+    (componentId: string, x: number, y: number) => {
+      dispatch({ type: "CREATE_COMPONENT_INSTANCE", payload: { componentId, x, y } });
+    },
+    []
+  );
+
+  const updateComponentOverride = useCallback(
+    (instanceId: string, propertyPath: string, value: any) => {
+      dispatch({ type: "UPDATE_COMPONENT_OVERRIDE", payload: { instanceId, propertyPath, value } });
+    },
+    []
+  );
+
+  const setComponents = useCallback((components: ComponentDefinition[]) => {
+    dispatch({ type: "SET_COMPONENTS", payload: components });
+  }, []);
+
   return {
     state,
     dispatch,
