@@ -167,6 +167,7 @@ export function TopToolbar({
           onCut={onCut || (() => {})}
           onCopy={onCopy || (() => {})}
           onPaste={onPaste || (() => {})}
+          onFindReplace={onFindReplace}
           onDelete={() => alert("Delete: Use Delete key or select element")}
           onSelectAll={() => alert("Select All: Coming soon")}
           onShowGrid={(show) => {
