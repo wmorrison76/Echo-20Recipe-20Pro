@@ -1,4 +1,4 @@
-import { useReducer, useCallback, useMemo } from "react";
+import { useCallback, useReducer } from "react";
 
 export type DesignerElementType =
   | "heading"
@@ -7,11 +7,9 @@ export type DesignerElementType =
   | "menu-item"
   | "image"
   | "shape"
-  | "divider"
-  | "icon"
-  | "price-column";
+  | "divider";
 
-export interface DesignerElement {
+export type DesignerElement = {
   id: string;
   type: DesignerElementType;
   name: string;
@@ -22,7 +20,6 @@ export interface DesignerElement {
   rotation: number;
   opacity: number;
   zIndex: number;
-  locked?: boolean;
   text?: string;
   description?: string;
   price?: number;
@@ -43,38 +40,10 @@ export interface DesignerElement {
   borderWidth?: number;
   borderRadius?: number;
   thickness?: number;
-  mask?: ElementMask;
-  createdAt?: number;
-  updatedAt?: number;
-  dishId?: string; // Link to EchoRecipePro recipe
-}
+  locked?: boolean;
+};
 
-export interface ElementMask {
-  type: "circle" | "rounded-rect" | "polygon";
-  radius?: number;
-  points?: { x: number; y: number }[];
-  feather?: number;
-}
-
-export interface PageSize {
-  width: number;
-  height: number;
-}
-
-export interface PrintPreset {
-  id: string;
-  label: string;
-  widthIn: number;
-  heightIn: number;
-  widthPx: number;
-  heightPx: number;
-  dpi: number;
-  colorProfile: "RGB" | "CMYK";
-  safeMarginIn: number;
-  bleedIn: number;
-}
-
-export interface CanvasSettings {
+export type CanvasSettings = {
   background: string;
   margin: number;
   bleed: number;
@@ -84,97 +53,78 @@ export interface CanvasSettings {
   showMargins: boolean;
   showBleed: boolean;
   showColumns: boolean;
-  showRulers: boolean;
-  showGuides: boolean;
-  snapToGrid: boolean;
-  snapDistance: number;
   zoom: number;
-  scrollX: number;
-  scrollY: number;
   gridSize: number;
-}
+};
 
-export interface DesignState {
-  documentName: string;
+export type PageSize = {
+  width: number;
+  height: number;
+};
+
+export type DesignerState = {
   elements: DesignerElement[];
-  selectedIds: string[];
-  pageSize: PageSize;
+  selectedElementId: string | null;
   canvasSettings: CanvasSettings;
-  pagePreset: string;
-  printPreset: PrintPreset;
-  dirty: boolean;
-  createdAt: number;
-  updatedAt: number;
-  version: number;
-}
+  pageSize: PageSize;
+  documentName: string;
+  isDirty: boolean;
+};
 
-type DesignerAction =
+export type DesignerAction =
   | { type: "ADD_ELEMENT"; payload: DesignerElement }
-  | { type: "UPDATE_ELEMENT"; payload: { id: string; changes: Partial<DesignerElement> } }
-  | { type: "DELETE_ELEMENT"; payload: string }
-  | { type: "DELETE_MULTIPLE"; payload: string[] }
+  | { type: "REMOVE_ELEMENT"; payload: string }
+  | { type: "UPDATE_ELEMENT"; payload: { id: string; updates: Partial<DesignerElement> } }
   | { type: "SELECT_ELEMENT"; payload: string | null }
-  | { type: "SELECT_MULTIPLE"; payload: string[] }
-  | { type: "DESELECT_ALL" }
+  | { type: "SET_ELEMENTS"; payload: DesignerElement[] }
+  | { type: "UPDATE_CANVAS_SETTINGS"; payload: Partial<CanvasSettings> }
   | { type: "SET_PAGE_SIZE"; payload: PageSize }
-  | { type: "SET_CANVAS_SETTINGS"; payload: Partial<CanvasSettings> }
   | { type: "SET_DOCUMENT_NAME"; payload: string }
   | { type: "SET_DIRTY"; payload: boolean }
-  | { type: "BATCH_UPDATE_ELEMENTS"; payload: DesignerElement[] }
-  | { type: "LAYER_SHIFT"; payload: { id: string; direction: "up" | "down" } }
-  | { type: "LOAD_DESIGN"; payload: DesignState };
+  | { type: "REORDER_ELEMENTS"; payload: { fromId: string; toId: string; mode: "above" | "below" } }
+  | { type: "DUPLICATE_ELEMENT"; payload: string }
+  | { type: "RESET_STATE"; payload: DesignerState };
 
-const createInitialState = (): DesignState => ({
-  documentName: "Untitled Design",
+const INITIAL_STATE: DesignerState = {
   elements: [],
-  selectedIds: [],
-  pageSize: { width: 816, height: 1056 }, // 8.5" x 11" at 96dpi
+  selectedElementId: null,
   canvasSettings: {
     background: "#ffffff",
-    margin: 36,
-    bleed: 12,
+    margin: 24,
+    bleed: 18,
     columns: 1,
-    gutter: 0,
+    gutter: 24,
     showGrid: false,
     showMargins: true,
     showBleed: false,
     showColumns: false,
-    showRulers: false,
-    showGuides: true,
-    snapToGrid: true,
-    snapDistance: 8,
     zoom: 1,
-    scrollX: 0,
-    scrollY: 0,
-    gridSize: 20,
+    gridSize: 16,
   },
-  pagePreset: "letter",
-  printPreset: {
-    id: "letter",
-    label: "US Letter",
-    widthIn: 8.5,
-    heightIn: 11,
-    widthPx: 816,
-    heightPx: 1056,
-    dpi: 96,
-    colorProfile: "RGB",
-    safeMarginIn: 0.25,
-    bleedIn: 0.125,
+  pageSize: {
+    width: 816,
+    height: 1056,
   },
-  dirty: false,
-  createdAt: Date.now(),
-  updatedAt: Date.now(),
-  version: 1,
-});
+  documentName: "Untitled Menu",
+  isDirty: false,
+};
 
-function designerReducer(state: DesignState, action: DesignerAction): DesignState {
+function designerReducer(state: DesignerState, action: DesignerAction): DesignerState {
   switch (action.type) {
     case "ADD_ELEMENT":
       return {
         ...state,
         elements: [...state.elements, action.payload],
-        dirty: true,
-        updatedAt: Date.now(),
+        isDirty: true,
+      };
+
+    case "REMOVE_ELEMENT":
+      return {
+        ...state,
+        elements: state.elements.filter((el) => el.id !== action.payload),
+        selectedElementId:
+          state.selectedElementId === action.payload ? null : state.selectedElementId,
+        isDirty: true,
       };
 
     case "UPDATE_ELEMENT":
@@ -182,132 +132,96 @@ function designerReducer(state: DesignState, action: DesignerAction): DesignStat
         ...state,
         elements: state.elements.map((el) =>
           el.id === action.payload.id
-            ? {
-                ...el,
-                ...action.payload.changes,
-                updatedAt: Date.now(),
-              }
+            ? { ...el, ...action.payload.updates }
             : el
         ),
-        dirty: true,
-        updatedAt: Date.now(),
-      };
-
-    case "DELETE_ELEMENT":
-      return {
-        ...state,
-        elements: state.elements.filter((el) => el.id !== action.payload),
-        selectedIds: state.selectedIds.filter((id) => id !== action.payload),
-        dirty: true,
-        updatedAt: Date.now(),
-      };
-
-    case "DELETE_MULTIPLE":
-      const idsToDelete = new Set(action.payload);
-      return {
-        ...state,
-        elements: state.elements.filter((el) => !idsToDelete.has(el.id)),
-        selectedIds: state.selectedIds.filter((id) => !idsToDelete.has(id)),
-        dirty: true,
-        updatedAt: Date.now(),
+        isDirty: true,
       };
 
     case "SELECT_ELEMENT":
       return {
         ...state,
-        selectedIds: action.payload ? [action.payload] : [],
+        selectedElementId: action.payload,
       };
 
-    case "SELECT_MULTIPLE":
+    case "SET_ELEMENTS":
       return {
         ...state,
-        selectedIds: action.payload,
+        elements: action.payload,
+        isDirty: true,
       };
 
-    case "DESELECT_ALL":
+    case "UPDATE_CANVAS_SETTINGS":
       return {
         ...state,
-        selectedIds: [],
+        canvasSettings: {
+          ...state.canvasSettings,
+          ...action.payload,
+        },
+        isDirty: true,
       };
 
     case "SET_PAGE_SIZE":
       return {
         ...state,
         pageSize: action.payload,
-        dirty: true,
-        updatedAt: Date.now(),
-      };
-
-    case "SET_CANVAS_SETTINGS":
-      return {
-        ...state,
-        canvasSettings: { ...state.canvasSettings, ...action.payload },
-        updatedAt: Date.now(),
+        isDirty: true,
       };
 
     case "SET_DOCUMENT_NAME":
       return {
         ...state,
         documentName: action.payload,
-        dirty: true,
-        updatedAt: Date.now(),
+        isDirty: true,
       };
 
     case "SET_DIRTY":
       return {
         ...state,
-        dirty: action.payload,
+        isDirty: action.payload,
       };
 
-    case "BATCH_UPDATE_ELEMENTS":
-      return {
-        ...state,
-        elements: action.payload,
-        dirty: true,
-        updatedAt: Date.now(),
-      };
+    case "REORDER_ELEMENTS": {
+      const { fromId, toId, mode } = action.payload;
+      const fromIndex = state.elements.findIndex((el) => el.id === fromId);
+      const toIndex = state.elements.findIndex((el) => el.id === toId);
 
-    case "LAYER_SHIFT": {
-      const currentElement = state.elements.find((el) => el.id === action.payload.id);
-      if (!currentElement) return state;
+      if (fromIndex === -1 || toIndex === -1) return state;
 
-      const otherElements = state.elements.filter((el) => el.id !== action.payload.id);
-      const currentIndex = otherElements.findIndex(
-        (el) => el.zIndex < currentElement.zIndex
-      );
+      const newElements = [...state.elements];
+      const [movedElement] = newElements.splice(fromIndex, 1);
 
-      if (action.payload.direction === "up") {
-        if (currentIndex === -1) {
-          currentElement.zIndex = (otherElements[0]?.zIndex ?? 1) + 1;
-        } else {
-          const targetElement = otherElements[currentIndex];
-          const swapZIndex = currentElement.zIndex;
-          currentElement.zIndex = targetElement.zIndex;
-          targetElement.zIndex = swapZIndex;
-        }
-      } else {
-        const lowerIndex = otherElements.findIndex(
-          (el) => el.zIndex > currentElement.zIndex
-        );
-        if (lowerIndex !== -1) {
-          const targetElement = otherElements[lowerIndex];
-          const swapZIndex = currentElement.zIndex;
-          currentElement.zIndex = targetElement.zIndex;
-          targetElement.zIndex = swapZIndex;
-        } else if (otherElements.length > 0) {
-          currentElement.zIndex = Math.max(...otherElements.map((el) => el.zIndex)) - 1;
-        }
-      }
+      const insertIndex = mode === "above" ? toIndex : toIndex + 1;
+      newElements.splice(insertIndex, 0, movedElement);
 
       return {
         ...state,
-        elements: [...otherElements, currentElement],
-        dirty: true,
-        updatedAt: Date.now(),
+        elements: newElements,
+        isDirty: true,
       };
     }
 
-    case "LOAD_DESIGN":
+    case "DUPLICATE_ELEMENT": {
+      const elementToDuplicate = state.elements.find((el) => el.id === action.payload);
+      if (!elementToDuplicate) return state;
+
+      const newElement: DesignerElement = {
+        ...elementToDuplicate,
+        id: `${elementToDuplicate.id}-${Date.now()}`,
+        x: elementToDuplicate.x + 20,
+        y: elementToDuplicate.y + 20,
+        name: `${elementToDuplicate.name} (copy)`,
+      };
+
+      return {
+        ...state,
+        elements: [...state.elements, newElement],
+        selectedElementId: newElement.id,
+        isDirty: true,
+      };
+    }
+
+    case "RESET_STATE":
       return action.payload;
 
     default:
@@ -315,67 +229,49 @@ function designerReducer(state: DesignState, action: DesignerAction): DesignStat
   }
 }
 
-export function useDesignerState(initialElements?: DesignerElement[]) {
-  const [state, dispatch] = useReducer(designerReducer, createInitialState(), (initial) => ({
-    ...initial,
-    elements: initialElements || [],
-  }));
+export function useDesignerState(initialState?: Partial<DesignerState>) {
+  const [state, dispatch] = useReducer(designerReducer, {
+    ...INITIAL_STATE,
+    ...initialState,
+  });
 
-  // Element operations
-  const addElement = useCallback((element: DesignerElement) => {
-    dispatch({ type: "ADD_ELEMENT", payload: element });
+  const addElement = useCallback(
+    (element: Omit<DesignerElement, "id">) => {
+      dispatch({
+        type: "ADD_ELEMENT",
+        payload: {
+          ...element,
+          id: `element-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        },
+      });
+    },
+    []
+  );
+
+  const removeElement = useCallback((id: string) => {
+    dispatch({ type: "REMOVE_ELEMENT", payload: id });
   }, []);
 
-  const updateElement = useCallback((id: string, changes: Partial<DesignerElement>) => {
-    dispatch({ type: "UPDATE_ELEMENT", payload: { id, changes } });
+  const updateElement = useCallback((id: string, updates: Partial<DesignerElement>) => {
+    dispatch({ type: "UPDATE_ELEMENT", payload: { id, updates } });
   }, []);
 
-  const deleteElement = useCallback((id: string) => {
-    dispatch({ type: "DELETE_ELEMENT", payload: id });
-  }, []);
-
-  const deleteMultiple = useCallback((ids: string[]) => {
-    dispatch({ type: "DELETE_MULTIPLE", payload: ids });
-  }, []);
-
-  const batchUpdateElements = useCallback((elements: DesignerElement[]) => {
-    dispatch({ type: "BATCH_UPDATE_ELEMENTS", payload: elements });
-  }, []);
-
-  // Selection operations
   const selectElement = useCallback((id: string | null) => {
     dispatch({ type: "SELECT_ELEMENT", payload: id });
   }, []);
 
-  const selectMultiple = useCallback((ids: string[]) => {
-    dispatch({ type: "SELECT_MULTIPLE", payload: ids });
+  const setElements = useCallback((elements: DesignerElement[]) => {
+    dispatch({ type: "SET_ELEMENTS", payload: elements });
   }, []);
 
-  const deselectAll = useCallback(() => {
-    dispatch({ type: "DESELECT_ALL" });
+  const updateCanvasSettings = useCallback((settings: Partial<CanvasSettings>) => {
+    dispatch({ type: "UPDATE_CANVAS_SETTINGS", payload: settings });
   }, []);
 
-  const toggleSelection = useCallback((id: string, isMultiSelect: boolean) => {
-    dispatch({
-      type: "SELECT_MULTIPLE",
-      payload: isMultiSelect
-        ? state.selectedIds.includes(id)
-          ? state.selectedIds.filter((sid) => sid !== id)
-          : [...state.selectedIds, id]
-        : [id],
-    });
-  }, [state.selectedIds]);
-
-  // Canvas settings
   const setPageSize = useCallback((size: PageSize) => {
     dispatch({ type: "SET_PAGE_SIZE", payload: size });
   }, []);
 
-  const setCanvasSettings = useCallback((settings: Partial<CanvasSettings>) => {
-    dispatch({ type: "SET_CANVAS_SETTINGS", payload: settings });
-  }, []);
-
-  // Document info
   const setDocumentName = useCallback((name: string) => {
     dispatch({ type: "SET_DOCUMENT_NAME", payload: name });
   }, []);
@@ -384,68 +280,40 @@ export function useDesignerState(initialElements?: DesignerElement[]) {
     dispatch({ type: "SET_DIRTY", payload: dirty });
   }, []);
 
-  // Layer management
-  const shiftLayer = useCallback((id: string, direction: "up" | "down") => {
-    dispatch({ type: "LAYER_SHIFT", payload: { id, direction } });
-  }, []);
-
-  // Load complete design
-  const loadDesign = useCallback((design: DesignState) => {
-    dispatch({ type: "LOAD_DESIGN", payload: design });
-  }, []);
-
-  // Helpers
-  const selectedElement = useMemo(
-    () => (state.selectedIds.length > 0 ? state.elements.find((el) => el.id === state.selectedIds[0]) : null),
-    [state.elements, state.selectedIds]
+  const reorderElements = useCallback(
+    (fromId: string, toId: string, mode: "above" | "below") => {
+      dispatch({ type: "REORDER_ELEMENTS", payload: { fromId, toId, mode } });
+    },
+    []
   );
 
-  const selectedElements = useMemo(
-    () => state.elements.filter((el) => state.selectedIds.includes(el.id)),
-    [state.elements, state.selectedIds]
-  );
+  const duplicateElement = useCallback((id: string) => {
+    dispatch({ type: "DUPLICATE_ELEMENT", payload: id });
+  }, []);
+
+  const resetState = useCallback((newState: DesignerState) => {
+    dispatch({ type: "RESET_STATE", payload: newState });
+  }, []);
+
+  const getSelectedElement = useCallback(() => {
+    return state.elements.find((el) => el.id === state.selectedElementId);
+  }, [state.elements, state.selectedElementId]);
 
   return {
-    // State
     state,
-    documentName: state.documentName,
-    elements: state.elements,
-    selectedIds: state.selectedIds,
-    pageSize: state.pageSize,
-    canvasSettings: state.canvasSettings,
-    pagePreset: state.pagePreset,
-    printPreset: state.printPreset,
-    dirty: state.dirty,
-
-    // Element operations
+    dispatch,
     addElement,
+    removeElement,
     updateElement,
-    deleteElement,
-    deleteMultiple,
-    batchUpdateElements,
-
-    // Selection operations
     selectElement,
-    selectMultiple,
-    deselectAll,
-    toggleSelection,
-
-    // Canvas settings
+    setElements,
+    updateCanvasSettings,
     setPageSize,
-    setCanvasSettings,
-
-    // Document
     setDocumentName,
     setDirty,
-
-    // Layers
-    shiftLayer,
-
-    // Load
-    loadDesign,
-
-    // Helpers
-    selectedElement,
-    selectedElements,
+    reorderElements,
+    duplicateElement,
+    resetState,
+    getSelectedElement,
   };
 }
