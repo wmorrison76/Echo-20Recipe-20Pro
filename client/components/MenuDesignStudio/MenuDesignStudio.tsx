@@ -687,6 +687,10 @@ export function MenuDesignStudio({
         }}
         isDirty={state.isDirty}
         onBack={onBack}
+        onToggleSnapToGrid={setSnapToGridEnabled}
+        onToggleSnapToElements={setSnapToElementsEnabled}
+        snapToGridEnabled={snapToGridEnabled}
+        snapToElementsEnabled={snapToElementsEnabled}
       />
 
       {/* Main Content Area - Fixed sizing */}
