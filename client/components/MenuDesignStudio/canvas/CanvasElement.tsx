@@ -152,16 +152,14 @@ export function CanvasElement({
   };
 
   const baseStyles: React.CSSProperties = {
-    position: "absolute",
-    left: element.x,
-    top: element.y,
-    width: element.width,
-    height: element.height,
+    position: "relative",
+    width: "100%",
+    height: "100%",
     zIndex: isSelected ? 1000 : isEditing ? 999 : element.zIndex,
     opacity: element.opacity,
     transform: `rotate(${element.rotation}deg)`,
     fontFamily: element.fontFamily,
-    fontSize: element.fontSize,
+    fontSize: (element.fontSize || 16) * (scale || 1),
     fontWeight: element.fontWeight,
     lineHeight: element.lineHeight,
     letterSpacing: element.letterSpacing,
