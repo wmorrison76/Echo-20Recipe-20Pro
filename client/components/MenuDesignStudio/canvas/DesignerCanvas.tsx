@@ -40,6 +40,8 @@ interface DesignerCanvasProps {
   dragState: any;
   resizeState: any;
   editingId: string | null;
+  snapToGridEnabled?: boolean;
+  snapToElementsEnabled?: boolean;
 }
 
 export function DesignerCanvas({
