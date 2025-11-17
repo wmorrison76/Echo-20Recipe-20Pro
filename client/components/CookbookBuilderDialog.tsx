@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -19,8 +19,8 @@ interface CookbookBuilderDialogProps {
   recipes: Recipe[];
   collectionName: string;
   language: LanguageCode;
-  onLanguageChange: (code: LanguageCode) => void;
-  languageOptions: LanguageOption[];
+  onLanguageChange?: (code: LanguageCode) => void;
+  languageOptions?: LanguageOption[];
   onSaveToOperationsDocs?: (cookbook: { name: string; html: string; language: string }) => void;
 }
 
@@ -34,15 +34,29 @@ export function CookbookBuilderDialog({
   languageOptions,
   onSaveToOperationsDocs,
 }: CookbookBuilderDialogProps) {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [translationProgress, setTranslationProgress] = useState(0);
+
+  useEffect(() => {
+    if (!open) {
+      setIsGenerating(false);
+      setTranslationProgress(0);
+    }
+  }, [open]);
+
   const handlePrint = useCallback(() => {
     window.print();
   }, []);
 
-  const handleDownload = useCallback(() => {
-    const content = document.querySelector("[data-cookbook-content]");
-    if (!content) return;
+  const handleDownload = useCallback(async () => {
+    setIsGenerating(true);
+    setTranslationProgress(0);
 
-    const html = `
+    try {
+      const content = document.querySelector("[data-cookbook-content]");
+      if (!content) return;
+
+      const html = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -56,30 +70,48 @@ export function CookbookBuilderDialog({
   ${content.innerHTML}
 </body>
 </html>
-    `;
+      `;
 
-    const blob = new Blob([html], { type: "text/html" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${collectionName}.html`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+      const blob = new Blob([html], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${collectionName}.html`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
 
-    if (onSaveToOperationsDocs) {
-      onSaveToOperationsDocs({
-        name: collectionName,
-        html,
-        language,
+      setTranslationProgress(100);
+
+      if (onSaveToOperationsDocs) {
+        onSaveToOperationsDocs({
+          name: collectionName,
+          html,
+          language,
+        });
+      }
+
+      setTimeout(() => {
+        setIsGenerating(false);
+        setTranslationProgress(0);
+      }, 1000);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to download cookbook",
+        variant: "destructive",
       });
+      setIsGenerating(false);
+      setTranslationProgress(0);
     }
   }, [collectionName, language, onSaveToOperationsDocs]);
 
   const handleClose = useCallback(() => {
-    onOpenChange(false);
-  }, [onOpenChange]);
+    if (!isGenerating) {
+      onOpenChange(false);
+    }
+  }, [onOpenChange, isGenerating]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
