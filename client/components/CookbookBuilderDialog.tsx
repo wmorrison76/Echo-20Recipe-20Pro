@@ -53,13 +53,19 @@ export function CookbookBuilderDialog({
     setTranslationProgress(0);
 
     try {
-      // Translate recipes if needed
-      if (language !== "en-US" && recipes.length > 0) {
-        await translateRecipes();
-      }
+      // Simulate progress for recipe processing
+      const progressInterval = setInterval(() => {
+        setTranslationProgress((prev) => {
+          if (prev < 80) {
+            return prev + Math.random() * 20;
+          }
+          return prev;
+        });
+      }, 300);
 
       const content = document.querySelector("[data-cookbook-content]");
       if (!content) {
+        clearInterval(progressInterval);
         throw new Error("Could not generate cookbook content");
       }
 
@@ -89,6 +95,7 @@ export function CookbookBuilderDialog({
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
+      clearInterval(progressInterval);
       setTranslationProgress(100);
 
       if (onSaveToOperationsDocs) {
@@ -114,44 +121,7 @@ export function CookbookBuilderDialog({
       setIsGenerating(false);
       setTranslationProgress(0);
     }
-  }, [collectionName, language, recipes, onSaveToOperationsDocs]);
-
-  const translateRecipes = useCallback(async () => {
-    try {
-      // Prepare recipes for translation
-      const recipesToTranslate = recipes.map((recipe) => ({
-        title: recipe.title,
-        description: recipe.description,
-        ingredients: recipe.ingredients || [],
-        instructions: recipe.instructions || [],
-      }));
-
-      const response = await fetch("/api/translate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          recipes: recipesToTranslate,
-          targetLanguage: language,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Translation service unavailable");
-      }
-
-      const data = (await response.json()) as any;
-
-      // Update progress to show completion
-      const totalRecipes = data.recipes?.length || recipes.length;
-      setTranslationProgress(Math.round((totalRecipes / totalRecipes) * 80));
-    } catch (error) {
-      console.error("Translation error:", error);
-      // Continue with untranslated recipes
-      setTranslationProgress(80);
-    }
-  }, [recipes, language]);
+  }, [collectionName, language, onSaveToOperationsDocs]);
 
   const handleClose = useCallback(() => {
     if (!isGenerating) {
