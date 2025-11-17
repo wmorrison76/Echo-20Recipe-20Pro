@@ -187,7 +187,7 @@ export function CookbookBuilderDialog({
             </div>
           )}
 
-          <CooksRecipeBookGeneratorWrapper
+          <CooksRecipeBookGenerator
             recipes={recipes}
             language={selectedLanguage}
             onLanguageChange={handleLanguageChange}
