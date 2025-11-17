@@ -1543,6 +1543,7 @@ export default function RecipeSearchSection() {
                   spellCheck="false"
                   list=""
                   type="text"
+                  data-fuzzy="off"
                 />
               </div>
             </div>
