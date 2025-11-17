@@ -136,7 +136,7 @@ const cookbookLabels: Record<LanguageCode, {
     generate: "Gerar livro",
     print: "Imprimir livro",
     download: "Baixar HTML",
-    empty: "Adicione receitas à etapa 2 para habilitar a exportação do livro.",
+    empty: "Adicione receitas �� etapa 2 para habilitar a exportação do livro.",
   },
   "de-DE": {
     cookbookTitle: "Rezeptbuch",
@@ -319,6 +319,7 @@ type CooksRecipeBookGeneratorProps = {
   onLanguageChange: (code: LanguageCode) => void;
   languageOptions: LanguageOption[];
   note?: ServerNote;
+  onGeneratedHtml?: (html: string) => void;
 };
 
 export function CooksRecipeBookGenerator({
@@ -327,6 +328,7 @@ export function CooksRecipeBookGenerator({
   onLanguageChange,
   languageOptions,
   note,
+  onGeneratedHtml,
 }: CooksRecipeBookGeneratorProps) {
   const labels = useMemo(
     () => cookbookLabels[language] ?? cookbookLabels["en-US"],
