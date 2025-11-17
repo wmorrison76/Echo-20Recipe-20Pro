@@ -3609,6 +3609,10 @@ export default function RecipeSearchSection() {
         recipes={cookbookBuilderRecipes}
         collectionName={cookbookBuilderTitle}
         language={appLanguage}
+        onLanguageChange={(newLang) => {
+          // Language change handled within dialog
+        }}
+        languageOptions={languageOptions}
         onSaveToOperationsDocs={(cookbook) => {
           toast({
             title: "Cookbook saved",
