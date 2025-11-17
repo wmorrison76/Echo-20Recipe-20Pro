@@ -55,6 +55,7 @@ import { identifyProcedures } from "@/lib/procedure-extraction";
 import { RecipeImportSelectionModal, type DetectedRecipe } from "@/components/RecipeImportSelectionModal";
 import { storeBookImportInPinecone, type ImportedRecipeKnowledge } from "@/lib/pinecone-recipe-knowledge";
 import { Zap } from "lucide-react";
+import { CookbookBuilderDialog } from "@/components/CookbookBuilderDialog";
 
 // Common English stop words to exclude from knowledge base
 const STOP_WORDS = new Set([
