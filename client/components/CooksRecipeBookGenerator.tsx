@@ -314,11 +314,11 @@ function revoke(url: string | null) {
 }
 
 type CooksRecipeBookGeneratorProps = {
-  recipes: ServerNoteRecipe[];
+  recipes: any[];
   language: LanguageCode;
   onLanguageChange: (code: LanguageCode) => void;
   languageOptions: LanguageOption[];
-  note: ServerNote;
+  note?: ServerNote;
 };
 
 export function CooksRecipeBookGenerator({
