@@ -189,11 +189,11 @@ export function CookbookBuilderDialog({
                   {currentRecipeProgress} / {recipes.length}
                 </span>
               </div>
-              <div className="space-y-2">
-                {Array.from({ length: recipes.length }).map((_, i) => (
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {recipes.map((recipe, i) => (
                   <div key={i} className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground min-w-16">
-                      Recipe {i + 1}
+                    <span className="text-xs text-muted-foreground min-w-fit max-w-32 truncate">
+                      {recipe.name || `Recipe ${i + 1}`}
                     </span>
                     <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800">
                       <div
