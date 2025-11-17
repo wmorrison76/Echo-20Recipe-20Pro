@@ -136,7 +136,7 @@ const cookbookLabels: Record<LanguageCode, {
     generate: "Gerar livro",
     print: "Imprimir livro",
     download: "Baixar HTML",
-    empty: "Adicione receitas �� etapa 2 para habilitar a exportação do livro.",
+    empty: "Adicione receitas à etapa 2 para habilitar a exportação do livro.",
   },
   "de-DE": {
     cookbookTitle: "Rezeptbuch",
@@ -353,6 +353,9 @@ export function CooksRecipeBookGenerator({
       const blob = new Blob([html], { type: "text/html" });
       setHtmlDocument(html);
       setHtmlUrl(URL.createObjectURL(blob));
+      if (onGeneratedHtml) {
+        onGeneratedHtml(html);
+      }
     } finally {
       setIsGenerating(false);
     }
