@@ -340,7 +340,7 @@ export function CooksRecipeBookGenerator({
 
   const generate = async () => {
     if (!recipes.length) return;
-    setInternalIsGenerating(true);
+    setIsGenerating(true);
     setGeneratedRecipes([]);
 
     try {
@@ -371,7 +371,7 @@ export function CooksRecipeBookGenerator({
         onGeneratedHtml(html);
       }
     } finally {
-      setInternalIsGenerating(false);
+      setIsGenerating(false);
     }
   };
 
