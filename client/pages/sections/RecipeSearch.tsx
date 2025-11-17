@@ -718,7 +718,6 @@ export default function RecipeSearchSection() {
   }, [collections]);
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const [language, setLanguage] = useState<LanguageCode>("en-US");
 
   const openCookbookBuilder = useCallback(() => {
     const selectedRecipes = recipes.filter((r) =>
