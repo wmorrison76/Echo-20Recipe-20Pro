@@ -703,6 +703,11 @@ export default function RecipeSearchSection() {
   );
   const [collectionToDelete, setCollectionToDelete] =
     useState<RecipeCollection | null>(null);
+  const [cookbookBuilderOpen, setCookbookBuilderOpen] = useState(false);
+  const [cookbookBuilderRecipes, setCookbookBuilderRecipes] = useState<
+    (typeof recipes)[number][]
+  >([]);
+  const [cookbookBuilderTitle, setCookbookBuilderTitle] = useState("");
 
   const sortedCollections = useMemo(() => {
     const timestamp = (value: string | undefined) =>
