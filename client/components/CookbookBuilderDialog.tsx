@@ -103,7 +103,7 @@ export function CookbookBuilderDialog({
         onSaveToOperationsDocs({
           name: collectionName,
           html,
-          language,
+          language: selectedLanguage,
         });
       }
 
@@ -122,7 +122,7 @@ export function CookbookBuilderDialog({
       setIsGenerating(false);
       setTranslationProgress(0);
     }
-  }, [collectionName, language, onSaveToOperationsDocs]);
+  }, [collectionName, selectedLanguage, onSaveToOperationsDocs]);
 
   const handleClose = useCallback(() => {
     if (!isGenerating) {
