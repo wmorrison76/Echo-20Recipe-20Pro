@@ -1653,12 +1653,12 @@ export default function RecipeSearchSection() {
                             size="sm"
                             variant="outline"
                             onClick={() => {
-                              const params = new URLSearchParams(
-                                window.location.search,
+                              const collectionRecipes = recipes.filter((r) =>
+                                collection.recipeIds?.includes(r.id),
                               );
-                              params.set("tab", "server-notes");
-                              params.set("collection", collection.id);
-                              window.location.href = `/?${params.toString()}`;
+                              setCookbookBuilderRecipes(collectionRecipes);
+                              setCookbookBuilderTitle(collection.name);
+                              setCookbookBuilderOpen(true);
                             }}
                             title="Build package"
                           >
