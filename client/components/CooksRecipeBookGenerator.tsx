@@ -313,7 +313,6 @@ type CooksRecipeBookGeneratorProps = {
   languageOptions: LanguageOption[];
   note?: ServerNote;
   onGeneratedHtml?: (html: string) => void;
-  isGenerating?: boolean;
 };
 
 export function CooksRecipeBookGenerator({
@@ -323,18 +322,15 @@ export function CooksRecipeBookGenerator({
   languageOptions,
   note,
   onGeneratedHtml,
-  isGenerating: externalIsGenerating = false,
 }: CooksRecipeBookGeneratorProps) {
   const labels = useMemo(
     () => cookbookLabels[language] ?? cookbookLabels["en-US"],
     [language],
   );
-  const [internalIsGenerating, setInternalIsGenerating] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [generatedRecipes, setGeneratedRecipes] = useState<string[]>([]);
   const [htmlDocument, setHtmlDocument] = useState<string | null>(null);
   const [htmlUrl, setHtmlUrl] = useState<string | null>(null);
-
-  const isGenerating = externalIsGenerating || internalIsGenerating;
 
   useEffect(() => () => revoke(htmlUrl), [htmlUrl]);
 
