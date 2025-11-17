@@ -173,23 +173,42 @@ export function CookbookBuilderDialog({
             size="icon"
             className="absolute right-4 top-4"
             onClick={handleClose}
-            disabled={isGenerating}
+            disabled={isGenerating || isTranslating}
           >
             <X className="h-4 w-4" />
           </Button>
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Progress indicator */}
-          {isGenerating && translationProgress < 100 && (
-            <div className="space-y-2">
+          {/* Translation progress indicator */}
+          {isTranslating && (
+            <div className="space-y-3">
               <div className="flex items-center justify-between text-sm">
-                <span>Processing recipes...</span>
+                <span>Translating recipes...</span>
                 <span className="text-muted-foreground">
-                  {Math.round(translationProgress)}%
+                  {currentRecipeProgress} / {recipes.length}
                 </span>
               </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800">
+              <div className="space-y-2">
+                {Array.from({ length: recipes.length }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground min-w-16">
+                      Recipe {i + 1}
+                    </span>
+                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800">
+                      <div
+                        className={`h-full transition-all duration-300 ${
+                          i < currentRecipeProgress
+                            ? "bg-gradient-to-r from-green-500 to-emerald-500"
+                            : "bg-gray-300 dark:bg-gray-700"
+                        }`}
+                        style={{ width: i < currentRecipeProgress ? "100%" : "0%" }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="h-1 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800">
                 <div
                   className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-300"
                   style={{ width: `${translationProgress}%` }}
@@ -198,35 +217,38 @@ export function CookbookBuilderDialog({
             </div>
           )}
 
-          <CooksRecipeBookGenerator
+          <CooksRecipeBookGeneratorWithLanguageControl
             recipes={recipes}
             language={selectedLanguage}
             onLanguageChange={handleLanguageChange}
             languageOptions={languageOptions}
             note={note}
             onGeneratedHtml={handleGeneratedHtml}
+            isGenerated={isGenerated}
+            onTranslate={handleTranslate}
+            languageChangedAfterGeneration={languageChangedAfterGeneration}
+            isTranslating={isTranslating}
           />
 
           <div className="sticky bottom-0 flex gap-2 border-t bg-background p-4" data-no-print="true">
             <Button
               variant="outline"
               onClick={handlePrint}
-              disabled={isGenerating}
+              disabled={!isTranslated || isGenerating || isTranslating}
             >
               Print
             </Button>
             <Button
               variant="outline"
               onClick={handleDownload}
-              disabled={isGenerating || !generatedHtml}
-              className={isGenerating ? "opacity-50" : ""}
+              disabled={!isTranslated || isGenerating || isTranslating}
             >
-              {isGenerating ? "Processing..." : generatedHtml ? "Download & Save" : "Generate First"}
+              Download & Save
             </Button>
             <Button
               variant="ghost"
               onClick={handleClose}
-              disabled={isGenerating}
+              disabled={isGenerating || isTranslating}
               className="ml-auto"
             >
               Close
@@ -235,5 +257,71 @@ export function CookbookBuilderDialog({
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+interface CooksRecipeBookGeneratorWithLanguageControlProps {
+  recipes: any[];
+  language: LanguageCode;
+  onLanguageChange: (code: LanguageCode) => void;
+  languageOptions: LanguageOption[];
+  note?: ServerNote;
+  onGeneratedHtml?: (html: string) => void;
+  isGenerated: boolean;
+  onTranslate: () => void;
+  languageChangedAfterGeneration: boolean;
+  isTranslating: boolean;
+}
+
+function CooksRecipeBookGeneratorWithLanguageControl({
+  recipes,
+  language,
+  onLanguageChange,
+  languageOptions,
+  note,
+  onGeneratedHtml,
+  isGenerated,
+  onTranslate,
+  languageChangedAfterGeneration,
+  isTranslating,
+}: CooksRecipeBookGeneratorWithLanguageControlProps) {
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <label className="text-sm font-medium block mb-2">Translate recipes:</label>
+          <div className="w-32">
+            <select
+              value={language}
+              onChange={(e) => onLanguageChange(e.target.value as LanguageCode)}
+              disabled={isTranslating}
+              className="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-background text-sm"
+            >
+              {languageOptions.map((opt) => (
+                <option key={opt.code} value={opt.code}>
+                  {opt.flag} {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <Button
+          onClick={onTranslate}
+          disabled={!languageChangedAfterGeneration || isTranslating || !isGenerated}
+          variant={languageChangedAfterGeneration ? "default" : "secondary"}
+          className="flex items-center gap-2"
+        >
+          {isTranslating ? "Translating..." : "Translate"}
+        </Button>
+      </div>
+      <CooksRecipeBookGenerator
+        recipes={recipes}
+        language={language}
+        onLanguageChange={onLanguageChange}
+        languageOptions={languageOptions}
+        note={note}
+        onGeneratedHtml={onGeneratedHtml}
+      />
+    </div>
   );
 }
