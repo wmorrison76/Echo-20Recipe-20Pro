@@ -377,7 +377,10 @@ export function CooksRecipeBookGenerator({
   };
 
   return (
-    <div className="space-y-3 rounded-2xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md dark:border-cyan-500/25 dark:bg-slate-950/70">
+    <div
+      className="space-y-3 rounded-2xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md dark:border-cyan-500/25 dark:bg-slate-950/70"
+      data-cookbook-content={htmlDocument ? "true" : undefined}
+    >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h3 className="text-sm font-semibold uppercase tracking-[0.25em]">
@@ -428,6 +431,14 @@ export function CooksRecipeBookGenerator({
           {labels.download}
         </Button>
       </div>
+      {htmlDocument && (
+        <iframe
+          srcDoc={htmlDocument}
+          className="w-full border-0 rounded"
+          style={{ minHeight: "600px" }}
+          title="Cookbook Preview"
+        />
+      )}
       {recipes.length === 0 && (
         <p className="text-xs text-muted-foreground">
           {labels.empty}
