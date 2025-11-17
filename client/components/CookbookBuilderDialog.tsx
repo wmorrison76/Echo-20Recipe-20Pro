@@ -130,11 +130,35 @@ export function CookbookBuilderDialog({
     }
   }, [onOpenChange, isGenerating]);
 
+  const handleLanguageChange = (newLanguage: LanguageCode) => {
+    setSelectedLanguage(newLanguage);
+    onLanguageChange(newLanguage);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] w-full max-w-4xl overflow-y-auto">
         <DialogHeader className="flex flex-row items-center justify-between space-y-0 pr-8">
-          <DialogTitle>{collectionName}</DialogTitle>
+          <div className="flex flex-col gap-3 flex-1">
+            <DialogTitle>{collectionName}</DialogTitle>
+            {languageOptions && languageOptions.length > 0 && (
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium">Language:</label>
+                <select
+                  value={selectedLanguage}
+                  onChange={(e) => handleLanguageChange(e.target.value as LanguageCode)}
+                  disabled={isGenerating}
+                  className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-background text-sm"
+                >
+                  {languageOptions.map((opt) => (
+                    <option key={opt.code} value={opt.code}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
           <Button
             variant="ghost"
             size="icon"
@@ -151,9 +175,9 @@ export function CookbookBuilderDialog({
           {isGenerating && translationProgress < 100 && (
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span>Translating recipes...</span>
+                <span>Processing recipes...</span>
                 <span className="text-muted-foreground">
-                  {translationProgress}%
+                  {Math.round(translationProgress)}%
                 </span>
               </div>
               <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800">
@@ -167,9 +191,9 @@ export function CookbookBuilderDialog({
 
           <CooksRecipeBookGenerator
             recipes={recipes}
-            language={language}
-            onLanguageChange={undefined}
-            languageOptions={[]}
+            language={selectedLanguage}
+            onLanguageChange={handleLanguageChange}
+            languageOptions={languageOptions}
           />
 
           <div className="sticky bottom-0 flex gap-2 border-t bg-background p-4" data-no-print="true">
