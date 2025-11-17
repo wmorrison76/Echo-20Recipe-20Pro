@@ -1,13 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { BookOpen, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import type { ServerNote, ServerNoteRecipe } from "@shared/server-notes";
 import type { LanguageCode, LanguageOption } from "@/i18n/config";
 import { extractRecipeAllergens } from "@/lib/allergens";
