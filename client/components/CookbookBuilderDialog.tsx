@@ -19,8 +19,8 @@ interface CookbookBuilderDialogProps {
   recipes: Recipe[];
   collectionName: string;
   language: LanguageCode;
-  onLanguageChange?: (code: LanguageCode) => void;
-  languageOptions?: LanguageOption[];
+  onLanguageChange: (code: LanguageCode) => void;
+  languageOptions: LanguageOption[];
   onSaveToOperationsDocs?: (cookbook: { name: string; html: string; language: string }) => void;
 }
 
@@ -36,6 +36,7 @@ export function CookbookBuilderDialog({
 }: CookbookBuilderDialogProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [translationProgress, setTranslationProgress] = useState(0);
+  const [selectedLanguage, setSelectedLanguage] = useState<LanguageCode>(language);
 
   useEffect(() => {
     if (!open) {
