@@ -34,10 +34,13 @@ export function CookbookBuilderDialog({
   onLanguageChange,
   languageOptions,
   onSaveToOperationsDocs,
+  note,
 }: CookbookBuilderDialogProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [translationProgress, setTranslationProgress] = useState(0);
   const [selectedLanguage, setSelectedLanguage] = useState<LanguageCode>(language);
+  const [generatedHtml, setGeneratedHtml] = useState<string | null>(null);
+  const generatorRef = useRef<any>(null);
 
   useEffect(() => {
     if (!open) {
@@ -53,6 +56,15 @@ export function CookbookBuilderDialog({
   }, []);
 
   const handleDownload = useCallback(async () => {
+    if (!generatedHtml) {
+      toast({
+        title: "Error",
+        description: "Please generate the cookbook first by clicking the 'Generate Cookbook' button",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsGenerating(true);
     setTranslationProgress(0);
 
@@ -67,29 +79,7 @@ export function CookbookBuilderDialog({
         });
       }, 300);
 
-      const content = document.querySelector("[data-cookbook-content]");
-      if (!content) {
-        clearInterval(progressInterval);
-        throw new Error("Could not generate cookbook content");
-      }
-
-      const html = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>${collectionName}</title>
-  <style>
-    ${document.head.innerHTML}
-  </style>
-</head>
-<body>
-  ${content.innerHTML}
-</body>
-</html>
-      `;
-
-      const blob = new Blob([html], { type: "text/html" });
+      const blob = new Blob([generatedHtml], { type: "text/html" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -105,7 +95,7 @@ export function CookbookBuilderDialog({
       if (onSaveToOperationsDocs) {
         onSaveToOperationsDocs({
           name: collectionName,
-          html,
+          html: generatedHtml,
           language: selectedLanguage,
         });
       }
@@ -125,7 +115,7 @@ export function CookbookBuilderDialog({
       setIsGenerating(false);
       setTranslationProgress(0);
     }
-  }, [collectionName, selectedLanguage, onSaveToOperationsDocs]);
+  }, [generatedHtml, collectionName, selectedLanguage, onSaveToOperationsDocs]);
 
   const handleClose = useCallback(() => {
     if (!isGenerating) {
