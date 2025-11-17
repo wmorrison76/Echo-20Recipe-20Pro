@@ -437,15 +437,6 @@ export function CooksRecipeBookGenerator({
           <Printer className="h-4 w-4" />
           {labels.print}
         </Button>
-        <Button
-          variant="outline"
-          onClick={handleDownload}
-          disabled={!htmlUrl}
-          className="flex items-center gap-2"
-        >
-          <Download className="h-4 w-4" />
-          {labels.download}
-        </Button>
       </div>
       {htmlDocument && (
         <iframe
