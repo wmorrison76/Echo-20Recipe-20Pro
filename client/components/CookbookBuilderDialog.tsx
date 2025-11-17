@@ -136,26 +136,7 @@ export function CookbookBuilderDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] w-full max-w-4xl overflow-y-auto">
         <DialogHeader className="flex flex-row items-center justify-between space-y-0 pr-8">
-          <div className="flex flex-col gap-3 flex-1">
-            <DialogTitle>{collectionName}</DialogTitle>
-            {languageOptions && languageOptions.length > 0 && (
-              <div className="flex items-center gap-2">
-                <label className="text-sm font-medium">Language:</label>
-                <select
-                  value={selectedLanguage}
-                  onChange={(e) => handleLanguageChange(e.target.value as LanguageCode)}
-                  disabled={isGenerating}
-                  className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-background text-sm"
-                >
-                  {languageOptions.map((opt) => (
-                    <option key={opt.code} value={opt.code}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-          </div>
+          <DialogTitle>{collectionName}</DialogTitle>
           <Button
             variant="ghost"
             size="icon"
