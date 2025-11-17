@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { BookOpen, Download, Printer } from "lucide-react";
+import { BookOpen, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
