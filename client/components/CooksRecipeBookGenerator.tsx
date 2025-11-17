@@ -397,27 +397,13 @@ export function CooksRecipeBookGenerator({
       className="space-y-3 rounded-2xl border border-white/60 bg-white/80 p-4 shadow-sm backdrop-blur-md dark:border-cyan-500/25 dark:bg-slate-950/70"
       data-cookbook-content={htmlDocument ? "true" : undefined}
     >
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h3 className="text-sm font-semibold uppercase tracking-[0.25em]">
-            {labels.cookbookTitle}
-          </h3>
-          <p className="text-xs text-muted-foreground">
-            {labels.subtitle}
-          </p>
-        </div>
-        <Select value={language} onValueChange={(value) => onLanguageChange(value as LanguageCode)}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder={labels.language} />
-          </SelectTrigger>
-          <SelectContent>
-            {languageOptions.map((option) => (
-              <SelectItem key={option.code} value={option.code}>
-                {option.flag} {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div>
+        <h3 className="text-sm font-semibold uppercase tracking-[0.25em]">
+          {labels.cookbookTitle}
+        </h3>
+        <p className="text-xs text-muted-foreground">
+          {labels.subtitle}
+        </p>
       </div>
       <div className="flex flex-wrap gap-2">
         <Button
