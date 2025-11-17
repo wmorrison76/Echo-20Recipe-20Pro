@@ -123,35 +123,58 @@ export function CookbookBuilderDialog({
             size="icon"
             className="absolute right-4 top-4"
             onClick={handleClose}
+            disabled={isGenerating}
           >
             <X className="h-4 w-4" />
           </Button>
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* Progress indicator */}
+          {isGenerating && translationProgress < 100 && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span>Translating recipes...</span>
+                <span className="text-muted-foreground">
+                  {translationProgress}%
+                </span>
+              </div>
+              <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800">
+                <div
+                  className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-300"
+                  style={{ width: `${translationProgress}%` }}
+                />
+              </div>
+            </div>
+          )}
+
           <CooksRecipeBookGenerator
             recipes={recipes}
             language={language}
-            onLanguageChange={onLanguageChange}
-            languageOptions={languageOptions}
+            onLanguageChange={undefined}
+            languageOptions={[]}
           />
 
           <div className="sticky bottom-0 flex gap-2 border-t bg-background p-4" data-no-print="true">
             <Button
               variant="outline"
               onClick={handlePrint}
+              disabled={isGenerating}
             >
               Print
             </Button>
             <Button
               variant="outline"
               onClick={handleDownload}
+              disabled={isGenerating}
+              className={isGenerating ? "opacity-50" : ""}
             >
-              Download & Save
+              {isGenerating ? "Processing..." : "Download & Save"}
             </Button>
             <Button
               variant="ghost"
               onClick={handleClose}
+              disabled={isGenerating}
               className="ml-auto"
             >
               Close
