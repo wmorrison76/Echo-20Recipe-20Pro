@@ -419,7 +419,7 @@ export function CooksRecipeBookGenerator({
           className="flex items-center gap-2"
         >
           <BookOpen className="h-4 w-4" />
-          {isGenerating ? `${labels.generate}…` : labels.generate}
+          {internalIsGenerating ? `${labels.generate}…` : labels.generate}
         </Button>
         <Button
           variant="outline"
@@ -431,6 +431,26 @@ export function CooksRecipeBookGenerator({
           {labels.print}
         </Button>
       </div>
+
+      {/* Generated recipes list */}
+      {internalIsGenerating && generatedRecipes.length > 0 && (
+        <div className="space-y-2 rounded-lg bg-blue-50 dark:bg-blue-950/30 p-3">
+          <p className="text-xs font-medium text-blue-900 dark:text-blue-100">
+            Recipes collected: {generatedRecipes.length} / {recipes.length}
+          </p>
+          <div className="space-y-1 max-h-40 overflow-y-auto">
+            {generatedRecipes.map((name, i) => (
+              <div key={i} className="flex items-center gap-2 text-xs text-blue-800 dark:text-blue-200">
+                <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                  <span className="text-white text-xs">✓</span>
+                </div>
+                <span className="truncate">{name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {htmlDocument && (
         <iframe
           srcDoc={htmlDocument}
