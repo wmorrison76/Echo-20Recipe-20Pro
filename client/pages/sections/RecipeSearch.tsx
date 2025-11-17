@@ -1538,6 +1538,7 @@ export default function RecipeSearchSection() {
                     "Collection Name",
                   )}
                   className="flex-1 bg-transparent text-xs font-medium text-foreground outline-none placeholder:text-muted-foreground"
+                  autoComplete="off"
                 />
               </div>
             </div>
