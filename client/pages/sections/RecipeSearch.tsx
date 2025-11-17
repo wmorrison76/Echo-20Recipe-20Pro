@@ -1539,6 +1539,10 @@ export default function RecipeSearchSection() {
                   )}
                   className="flex-1 bg-transparent text-xs font-medium text-foreground outline-none placeholder:text-muted-foreground"
                   autoComplete="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
+                  list=""
+                  type="text"
                 />
               </div>
             </div>
