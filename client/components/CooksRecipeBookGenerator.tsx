@@ -344,7 +344,9 @@ export function CooksRecipeBookGenerator({
 
   const generate = async () => {
     if (!recipes.length) return;
-    setIsGenerating(true);
+    setInternalIsGenerating(true);
+    setGeneratedRecipes([]);
+
     try {
       const defaultNote: ServerNote = {
         id: "",
@@ -357,6 +359,13 @@ export function CooksRecipeBookGenerator({
         createdBy: "",
         type: "server-notes",
       };
+
+      // Simulate collecting recipes one by one
+      for (let i = 0; i < recipes.length; i++) {
+        await new Promise(resolve => setTimeout(resolve, 150));
+        setGeneratedRecipes(prev => [...prev, recipes[i].name || `Recipe ${i + 1}`]);
+      }
+
       const html = buildCookbookHtml(recipes, note || defaultNote, language, labels, languageLabel);
       revoke(htmlUrl);
       const blob = new Blob([html], { type: "text/html" });
@@ -366,7 +375,7 @@ export function CooksRecipeBookGenerator({
         onGeneratedHtml(html);
       }
     } finally {
-      setIsGenerating(false);
+      setInternalIsGenerating(false);
     }
   };
 
