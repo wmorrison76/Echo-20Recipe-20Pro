@@ -285,24 +285,17 @@ function CooksRecipeBookGeneratorWithLanguageControl({
   languageChangedAfterGeneration,
   isTranslating,
 }: CooksRecipeBookGeneratorWithLanguageControlProps) {
+  const currentLanguageLabel = languageOptions.find(opt => opt.code === language)?.label || language;
+  const currentLanguageFlag = languageOptions.find(opt => opt.code === language)?.flag || '';
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-3">
         <div>
           <label className="text-sm font-medium block mb-2">Translate recipes:</label>
-          <div className="w-32">
-            <select
-              value={language}
-              onChange={(e) => onLanguageChange(e.target.value as LanguageCode)}
-              disabled={isTranslating}
-              className="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-background text-sm"
-            >
-              {languageOptions.map((opt) => (
-                <option key={opt.code} value={opt.code}>
-                  {opt.flag} {opt.label}
-                </option>
-              ))}
-            </select>
+          <div className="w-32 px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-sm flex items-center gap-2">
+            <span>{currentLanguageFlag}</span>
+            <span>{currentLanguageLabel}</span>
           </div>
         </div>
         <Button
@@ -321,6 +314,7 @@ function CooksRecipeBookGeneratorWithLanguageControl({
         languageOptions={languageOptions}
         note={note}
         onGeneratedHtml={onGeneratedHtml}
+        isGenerating={false}
       />
     </div>
   );
