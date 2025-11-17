@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -22,6 +22,7 @@ interface CookbookBuilderDialogProps {
   onLanguageChange: (code: LanguageCode) => void;
   languageOptions: LanguageOption[];
   onSaveToOperationsDocs?: (cookbook: { name: string; html: string; language: string }) => void;
+  note?: ServerNote;
 }
 
 export function CookbookBuilderDialog({
