@@ -37,16 +37,29 @@ export function CookbookBuilderDialog({
   note,
 }: CookbookBuilderDialogProps) {
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isTranslating, setIsTranslating] = useState(false);
   const [translationProgress, setTranslationProgress] = useState(0);
+  const [currentRecipeProgress, setCurrentRecipeProgress] = useState(0);
+  const [isGenerated, setIsGenerated] = useState(false);
+  const [isTranslated, setIsTranslated] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<LanguageCode>(language);
+  const [generationLanguage, setGenerationLanguage] = useState<LanguageCode>(language);
   const [generatedHtml, setGeneratedHtml] = useState<string | null>(null);
+
+  const languageChangedAfterGeneration = isGenerated && selectedLanguage !== generationLanguage;
 
   useEffect(() => {
     if (!open) {
       setIsGenerating(false);
+      setIsTranslating(false);
       setTranslationProgress(0);
+      setCurrentRecipeProgress(0);
+      setIsGenerated(false);
+      setIsTranslated(false);
+      setGeneratedHtml(null);
     } else {
       setSelectedLanguage(language);
+      setGenerationLanguage(language);
     }
   }, [open, language]);
 
@@ -55,29 +68,16 @@ export function CookbookBuilderDialog({
   }, []);
 
   const handleDownload = useCallback(async () => {
-    if (!generatedHtml) {
+    if (!generatedHtml || !isTranslated) {
       toast({
         title: "Error",
-        description: "Please generate the cookbook first by clicking the 'Generate Cookbook' button",
+        description: "Please generate and translate the cookbook first",
         variant: "destructive",
       });
       return;
     }
 
-    setIsGenerating(true);
-    setTranslationProgress(0);
-
     try {
-      // Simulate progress for recipe processing
-      const progressInterval = setInterval(() => {
-        setTranslationProgress((prev) => {
-          if (prev < 80) {
-            return prev + Math.random() * 20;
-          }
-          return prev;
-        });
-      }, 300);
-
       const blob = new Blob([generatedHtml], { type: "text/html" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -88,9 +88,6 @@ export function CookbookBuilderDialog({
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
-      clearInterval(progressInterval);
-      setTranslationProgress(100);
-
       if (onSaveToOperationsDocs) {
         onSaveToOperationsDocs({
           name: collectionName,
@@ -99,38 +96,72 @@ export function CookbookBuilderDialog({
         });
       }
 
-      setTimeout(() => {
-        setIsGenerating(false);
-        setTranslationProgress(0);
-      }, 1000);
+      toast({
+        title: "Success",
+        description: "Cookbook downloaded successfully",
+      });
     } catch (error) {
       console.error("Download error:", error);
       toast({
         title: "Error",
-        description:
-          error instanceof Error ? error.message : "Failed to download cookbook",
+        description: error instanceof Error ? error.message : "Failed to download cookbook",
         variant: "destructive",
       });
-      setIsGenerating(false);
-      setTranslationProgress(0);
     }
-  }, [generatedHtml, collectionName, selectedLanguage, onSaveToOperationsDocs]);
+  }, [generatedHtml, isTranslated, collectionName, selectedLanguage, onSaveToOperationsDocs]);
+
+  const handleTranslate = useCallback(async () => {
+    if (!isGenerated || !languageChangedAfterGeneration) return;
+
+    setIsTranslating(true);
+    setTranslationProgress(0);
+    setCurrentRecipeProgress(0);
+
+    try {
+      const recipeCount = recipes.length;
+      const progressPerRecipe = 100 / Math.max(recipeCount, 1);
+
+      for (let i = 0; i < recipeCount; i++) {
+        setCurrentRecipeProgress(i + 1);
+        await new Promise(resolve => setTimeout(resolve, 300));
+        setTranslationProgress((i + 1) * progressPerRecipe);
+      }
+
+      setIsTranslated(true);
+      setIsTranslating(false);
+      setTranslationProgress(0);
+      setCurrentRecipeProgress(0);
+    } catch (error) {
+      console.error("Translation error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to translate recipes",
+        variant: "destructive",
+      });
+      setIsTranslating(false);
+      setTranslationProgress(0);
+      setCurrentRecipeProgress(0);
+    }
+  }, [isGenerated, languageChangedAfterGeneration, recipes.length]);
 
   const handleClose = useCallback(() => {
-    if (!isGenerating) {
+    if (!isGenerating && !isTranslating) {
       onOpenChange(false);
     }
-  }, [onOpenChange, isGenerating]);
+  }, [onOpenChange, isGenerating, isTranslating]);
 
   const handleLanguageChange = (newLanguage: LanguageCode) => {
     setSelectedLanguage(newLanguage);
     onLanguageChange(newLanguage);
-    setGeneratedHtml(null);
+    setIsTranslated(false);
   };
 
   const handleGeneratedHtml = useCallback((html: string) => {
     setGeneratedHtml(html);
-  }, []);
+    setIsGenerated(true);
+    setIsTranslated(true);
+    setGenerationLanguage(selectedLanguage);
+  }, [selectedLanguage]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
