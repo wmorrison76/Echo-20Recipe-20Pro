@@ -126,7 +126,12 @@ export function CookbookBuilderDialog({
   const handleLanguageChange = (newLanguage: LanguageCode) => {
     setSelectedLanguage(newLanguage);
     onLanguageChange(newLanguage);
+    setGeneratedHtml(null);
   };
+
+  const handleGeneratedHtml = useCallback((html: string) => {
+    setGeneratedHtml(html);
+  }, []);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -182,11 +187,13 @@ export function CookbookBuilderDialog({
             </div>
           )}
 
-          <CooksRecipeBookGenerator
+          <CooksRecipeBookGeneratorWrapper
             recipes={recipes}
             language={selectedLanguage}
             onLanguageChange={handleLanguageChange}
             languageOptions={languageOptions}
+            note={note}
+            onGeneratedHtml={handleGeneratedHtml}
           />
 
           <div className="sticky bottom-0 flex gap-2 border-t bg-background p-4" data-no-print="true">
@@ -200,10 +207,10 @@ export function CookbookBuilderDialog({
             <Button
               variant="outline"
               onClick={handleDownload}
-              disabled={isGenerating}
+              disabled={isGenerating || !generatedHtml}
               className={isGenerating ? "opacity-50" : ""}
             >
-              {isGenerating ? "Processing..." : "Download & Save"}
+              {isGenerating ? "Processing..." : generatedHtml ? "Download & Save" : "Generate First"}
             </Button>
             <Button
               variant="ghost"
@@ -217,5 +224,74 @@ export function CookbookBuilderDialog({
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+// Wrapper component to handle HTML generation and pass it to parent
+function CooksRecipeBookGeneratorWrapper({
+  recipes,
+  language,
+  onLanguageChange,
+  languageOptions,
+  note,
+  onGeneratedHtml,
+}: {
+  recipes: any[];
+  language: LanguageCode;
+  onLanguageChange: (code: LanguageCode) => void;
+  languageOptions: LanguageOption[];
+  note?: ServerNote;
+  onGeneratedHtml?: (html: string) => void;
+}) {
+  return (
+    <CooksRecipeBookGeneratorWithCallback
+      recipes={recipes}
+      language={language}
+      onLanguageChange={onLanguageChange}
+      languageOptions={languageOptions}
+      note={note}
+      onGeneratedHtml={onGeneratedHtml}
+    />
+  );
+}
+
+// Extended version with callback support
+function CooksRecipeBookGeneratorWithCallback({
+  recipes,
+  language,
+  onLanguageChange,
+  languageOptions,
+  note,
+  onGeneratedHtml,
+}: {
+  recipes: any[];
+  language: LanguageCode;
+  onLanguageChange: (code: LanguageCode) => void;
+  languageOptions: LanguageOption[];
+  note?: ServerNote;
+  onGeneratedHtml?: (html: string) => void;
+}) {
+  const [localNote] = useState<ServerNote>(
+    note || {
+      id: "",
+      title: "",
+      content: "",
+      companyName: "",
+      outletName: "",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      createdBy: "",
+      type: "server-notes",
+    }
+  );
+
+  return (
+    <CooksRecipeBookGenerator
+      recipes={recipes}
+      language={language}
+      onLanguageChange={onLanguageChange}
+      languageOptions={languageOptions}
+      note={localNote}
+    />
   );
 }
