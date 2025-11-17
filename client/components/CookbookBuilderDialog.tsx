@@ -42,8 +42,10 @@ export function CookbookBuilderDialog({
     if (!open) {
       setIsGenerating(false);
       setTranslationProgress(0);
+    } else {
+      setSelectedLanguage(language);
     }
-  }, [open]);
+  }, [open, language]);
 
   const handlePrint = useCallback(() => {
     window.print();
