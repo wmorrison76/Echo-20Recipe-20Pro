@@ -3602,6 +3602,24 @@ export default function RecipeSearchSection() {
         </DialogContent>
       </Dialog>
 
+      {/* Cookbook Builder Dialog */}
+      <CookbookBuilderDialog
+        open={cookbookBuilderOpen}
+        onOpenChange={setCookbookBuilderOpen}
+        recipes={cookbookBuilderRecipes}
+        collectionName={cookbookBuilderTitle}
+        language={appLanguage}
+        onLanguageChange={setLanguage}
+        languageOptions={languageOptions}
+        onSaveToOperationsDocs={(cookbook) => {
+          toast({
+            title: "Cookbook saved",
+            description: `"${cookbook.name}" has been saved to Operations Docs.`,
+          });
+          setCookbookBuilderOpen(false);
+        }}
+      />
+
       {/* Recipe Import Modal for Knowledge Base Training */}
       <RecipeImportSelectionModal
         open={importModalOpen}
