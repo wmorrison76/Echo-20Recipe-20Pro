@@ -348,7 +348,18 @@ export function CooksRecipeBookGenerator({
     if (!recipes.length) return;
     setIsGenerating(true);
     try {
-      const html = buildCookbookHtml(recipes, note, language, labels, languageLabel);
+      const defaultNote: ServerNote = {
+        id: "",
+        title: "",
+        content: "",
+        companyName: "",
+        outletName: "",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        createdBy: "",
+        type: "server-notes",
+      };
+      const html = buildCookbookHtml(recipes, note || defaultNote, language, labels, languageLabel);
       revoke(htmlUrl);
       const blob = new Blob([html], { type: "text/html" });
       setHtmlDocument(html);
