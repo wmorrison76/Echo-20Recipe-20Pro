@@ -718,11 +718,20 @@ export default function RecipeSearchSection() {
   }, [collections]);
 
   const [searchParams, setSearchParams] = useSearchParams();
+  const [language, setLanguage] = useState<LanguageCode>("en-US");
+
+  const openCookbookBuilder = useCallback(() => {
+    const selectedRecipes = recipes.filter((r) =>
+      selectedRecipeIds.includes(r.id),
+    );
+    setCookbookBuilderRecipes(selectedRecipes);
+    setCookbookBuilderTitle(collectionDraftName || "Recipe Collection");
+    setCookbookBuilderOpen(true);
+  }, [recipes, selectedRecipeIds, collectionDraftName]);
+
   const goToCookbookBuilder = useCallback(() => {
-    const next = new URLSearchParams(searchParams);
-    next.set("tab", "server-notes");
-    setSearchParams(next, { replace: false });
-  }, [searchParams, setSearchParams]);
+    openCookbookBuilder();
+  }, [openCookbookBuilder]);
 
   const importBookPdf = async (file: File) => {
     if (!file) return;
