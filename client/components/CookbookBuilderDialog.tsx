@@ -40,7 +40,6 @@ export function CookbookBuilderDialog({
   const [translationProgress, setTranslationProgress] = useState(0);
   const [selectedLanguage, setSelectedLanguage] = useState<LanguageCode>(language);
   const [generatedHtml, setGeneratedHtml] = useState<string | null>(null);
-  const generatorRef = useRef<any>(null);
 
   useEffect(() => {
     if (!open) {
