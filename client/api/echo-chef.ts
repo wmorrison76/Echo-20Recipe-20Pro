@@ -1,42 +1,111 @@
 import type { Request, Response } from "express";
-import { EchoChefBrain, type ChefBrainSuggestion } from "../echo/brain/echoChefBrain";
-import { generateEmbeddingForQuery } from "../server/lib/echo-chef-embedding";
+import { embedTextToVector } from "../echo/services/embeddingProvider";
+import {
+  EchoChefBrain,
+  type ChefBrainQuery,
+  type ServiceContext,
+} from "../echo/brain/echoChefBrain";
+import { EchoRecipeGenerator } from "../echo/brain/echoRecipeGenerator";
+
+interface EchoChefRequest {
+  userPrompt: string;
+  dietaryTags?: string[];
+  avoidAllergens?: string[];
+  maxComplexity?: 1 | 2 | 3 | 4 | 5;
+  serviceContext?: ServiceContext;
+  guestCount?: number;
+  maxHoldMinutes?: number;
+  holdingMethod?:
+    | "pass_plate"
+    | "hotel_pan"
+    | "hot_box"
+    | "room_temp_pass"
+    | "action_station";
+  courseName?: string;
+  mode?: "suggest" | "generate";
+}
 
 /**
  * POST /api/echo-chef
- * Accepts user prompt + dietary/allergen filters
- * Returns Chef Brain suggestions (existing recipes, variations, new concepts)
- * Uses server-side vector engine for embedding (Pinecone/pgvector agnostic)
+ * Banquet-aware Chef Brain API
+ *
+ * Request mode:
+ * - "suggest": Return suggestions only (existing, variations, concepts)
+ * - "generate": Return suggestions + full recipe draft from LLM
  */
 export const echoChefHandler = async (req: Request, res: Response) => {
   try {
-    const { userPrompt, dietaryTags, avoidAllergens, maxComplexity } = req.body as {
-      userPrompt: string;
-      dietaryTags?: string[];
-      avoidAllergens?: string[];
-      maxComplexity?: 1 | 2 | 3 | 4 | 5;
-    };
+    const {
+      userPrompt,
+      dietaryTags,
+      avoidAllergens,
+      maxComplexity,
+      serviceContext,
+      guestCount,
+      maxHoldMinutes,
+      holdingMethod,
+      courseName,
+      mode = "suggest",
+    } = req.body as EchoChefRequest;
 
     if (!userPrompt || typeof userPrompt !== "string") {
       return res.status(400).json({ error: "userPrompt is required" });
     }
 
-    // Generate embedding using existing vector engine (Pinecone/pgvector)
-    const embedding = await generateEmbeddingForQuery(userPrompt);
+    // Generate embedding for the user prompt
+    const queryEmbedding = await embedTextToVector(userPrompt);
 
-    // Get Chef Brain suggestions from imported recipe knowledge base
-    const suggestions: ChefBrainSuggestion[] =
-      await EchoChefBrain.suggestRecipes({
-        userPrompt,
-        queryEmbedding: embedding,
-        dietaryTags,
-        avoidAllergens,
-        maxComplexity,
-      });
+    // Build base query for Chef Brain
+    const baseQuery: ChefBrainQuery = {
+      userPrompt,
+      queryEmbedding,
+      dietaryTags,
+      avoidAllergens,
+      maxComplexity,
+      serviceContext,
+      guestCount,
+      maxHoldMinutes,
+      holdingMethod,
+      courseName,
+    };
 
-    return res.json(suggestions);
+    // Get suggestions from Chef Brain
+    const suggestions = await EchoChefBrain.suggestRecipes(baseQuery);
+
+    // If mode is "generate", also produce a full recipe draft
+    if (mode === "generate") {
+      try {
+        const generationResult = await EchoRecipeGenerator.generateFullRecipeDraft(
+          {
+            ...baseQuery,
+            neighborsToUse: 5,
+          }
+        );
+
+        return res.json({
+          mode: "generate",
+          suggestions,
+          recipeDraft: generationResult.recipeDraft,
+          neighbors: generationResult.neighborsUsed,
+        });
+      } catch (genErr: any) {
+        console.error("[EchoChef] Recipe generation failed:", genErr);
+        // Fall back to suggestions-only mode
+        return res.json({
+          mode: "suggest",
+          suggestions,
+          generationError: genErr.message,
+        });
+      }
+    }
+
+    // Default: suggestions only
+    return res.json({
+      mode: "suggest",
+      suggestions,
+    });
   } catch (err: any) {
-    console.error("[EchoChef] Error:", err);
+    console.error("[EchoChef] API error:", err);
     return res
       .status(500)
       .json({ error: err.message || "Internal server error" });
