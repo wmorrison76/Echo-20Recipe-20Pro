@@ -1,4 +1,4 @@
-import { vectorEngine } from "./vector-engine";
+import { generateEmbedding } from "./vector-engine";
 
 /**
  * Generate embeddings for text using the existing vector engine
@@ -9,7 +9,7 @@ export async function generateEmbeddingForQuery(
   text: string
 ): Promise<number[]> {
   try {
-    const embedding = await vectorEngine.generateEmbedding(text);
+    const embedding = await generateEmbedding(text);
     return embedding;
   } catch (error) {
     console.error("[EchoChef] Embedding generation failed:", error);
