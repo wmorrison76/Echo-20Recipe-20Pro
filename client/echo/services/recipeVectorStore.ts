@@ -24,20 +24,20 @@ export class RecipeVectorStore {
         id: r.id,
         values: r.values,
         metadata: r.metadata,
-      }))
+      })),
     );
   }
 
   static async semanticSearch(
     queryVector: number[],
     topK: number = 10,
-    filters?: Partial<RecipeCodexMetadata>
+    filters?: Partial<RecipeCodexMetadata>,
   ): Promise<RecipeVectorSearchResult[]> {
     const index = getRecipeIndex();
 
     const filter = filters
       ? Object.fromEntries(
-          Object.entries(filters).filter(([_, v]) => v !== undefined)
+          Object.entries(filters).filter(([_, v]) => v !== undefined),
         )
       : undefined;
 

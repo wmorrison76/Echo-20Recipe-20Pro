@@ -1,4 +1,7 @@
-import { RecipeVectorStore, RecipeVectorSearchResult } from "./recipeVectorStore";
+import {
+  RecipeVectorStore,
+  RecipeVectorSearchResult,
+} from "./recipeVectorStore";
 import type { RecipeCodexMetadata } from "../codex";
 
 export class RecipeCodexService {
@@ -7,12 +10,12 @@ export class RecipeCodexService {
     options?: {
       topK?: number;
       filters?: Partial<RecipeCodexMetadata>;
-    }
+    },
   ): Promise<RecipeVectorSearchResult[]> {
     return RecipeVectorStore.semanticSearch(
       queryVector,
       options?.topK ?? 10,
-      options?.filters
+      options?.filters,
     );
   }
 
@@ -22,12 +25,12 @@ export class RecipeCodexService {
       topK?: number;
       excludeId?: string;
       filters?: Partial<RecipeCodexMetadata>;
-    }
+    },
   ): Promise<RecipeVectorSearchResult[]> {
     const results = await RecipeVectorStore.semanticSearch(
       recipeEmbedding,
       options?.topK ?? 10,
-      options?.filters
+      options?.filters,
     );
 
     if (options?.excludeId) {

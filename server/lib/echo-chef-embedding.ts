@@ -6,7 +6,7 @@ import { generateEmbedding } from "./vector-engine";
  * Used by EchoChefBrain API endpoint
  */
 export async function generateEmbeddingForQuery(
-  text: string
+  text: string,
 ): Promise<number[]> {
   try {
     const embedding = await generateEmbedding(text);
@@ -16,7 +16,7 @@ export async function generateEmbeddingForQuery(
     throw new Error(
       `Failed to generate embedding: ${
         error instanceof Error ? error.message : "Unknown error"
-      }`
+      }`,
     );
   }
 }
@@ -25,7 +25,7 @@ export async function generateEmbeddingForQuery(
  * Generate embeddings for multiple texts (batch)
  */
 export async function generateEmbeddingsForRecipes(
-  recipes: Array<{ id: string; text: string }>
+  recipes: Array<{ id: string; text: string }>,
 ): Promise<Map<string, number[]>> {
   const embeddings = new Map<string, number[]>();
 

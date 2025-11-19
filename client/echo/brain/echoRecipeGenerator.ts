@@ -19,7 +19,7 @@ export interface RecipeGenerationResult {
 
 export class EchoRecipeGenerator {
   static async generateFullRecipeDraft(
-    request: RecipeGenerationRequest
+    request: RecipeGenerationRequest,
   ): Promise<RecipeGenerationResult> {
     const {
       queryEmbedding,
@@ -49,7 +49,7 @@ export class EchoRecipeGenerator {
       {
         topK: neighborsToUse,
         filters,
-      }
+      },
     );
 
     const neighborMetadata = neighbors.map((n) => n.metadata);

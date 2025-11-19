@@ -8,7 +8,7 @@ let pineconeClient: Pinecone | null = null;
 export const getPineconeClient = () => {
   if (!PINECONE_API_KEY) {
     throw new Error(
-      "Pinecone is not configured. Check PINECONE_API_KEY environment variable."
+      "Pinecone is not configured. Check PINECONE_API_KEY environment variable.",
     );
   }
 

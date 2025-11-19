@@ -1,9 +1,11 @@
 # EchoAi³ Culinary Intelligence Module
+
 ## Master Integration Guide for LUCCCA
 
 ### 📋 Overview
 
 EchoAi³ is a complete culinary intelligence system that:
+
 - **Learns from textbooks/PDFs** you import (via existing Recipe PDF Import system)
 - **Understands recipes** through structured codex metadata (ingredients, techniques, flavors, complexity)
 - **Suggests variations** based on dietary constraints and service context
@@ -95,7 +97,10 @@ import { useEchoTraining } from "@/hooks/use-echo-training";
 const { trainWithRecipes } = useEchoTraining();
 
 // After user selects recipes from PDF...
-const results = await trainWithRecipes(selectedRecipes, "The Art of French Cooking");
+const results = await trainWithRecipes(
+  selectedRecipes,
+  "The Art of French Cooking",
+);
 // → Recipes stored in Pinecone with full codex metadata
 // → Available for EchoChefBrain suggestions
 ```
@@ -137,6 +142,7 @@ POST /api/echo-training/store-recipe
 ```
 
 Response:
+
 ```json
 {
   "success": true,
@@ -155,11 +161,13 @@ import { EchoChefPanel } from "@/echo/ui";
 ```
 
 User enters:
+
 ```
 "I need a gluten-free brunch entrée for 150 people, holds well in a hot box"
 ```
 
 Flow:
+
 1. Panel sends to `/api/echo-chef`
 2. API generates embedding of user prompt
 3. EchoChefBrain searches Pinecone using RecipeCodexService
@@ -174,7 +182,9 @@ Flow:
     "type": "existing_recipe",
     "title": "Vegetable Terrine",
     "description": "Aligns with gluten-free requirement and holds well...",
-    "baseRecipe": { /* full metadata */ }
+    "baseRecipe": {
+      /* full metadata */
+    }
   },
   {
     "type": "variation",
@@ -188,7 +198,9 @@ Flow:
     "type": "new_concept",
     "title": "Concept: French-Inspired Vegetable Galantine",
     "description": "Using patterns from similar recipes...",
-    "flavorBalanceHint": { /* flavor targets */ },
+    "flavorBalanceHint": {
+      /* flavor targets */
+    },
     "serviceNotes": "Works for banquet plating..."
   }
 ]
@@ -197,17 +209,20 @@ Flow:
 ### 🎯 Key Features
 
 #### **1. Hybrid Knowledge Retrieval** (Existing)
+
 - First checks imported recipes (Pinecone KB)
 - If confidence < 0.65, falls back to OpenAI
 - Saves 40-60% on API costs
 
 #### **2. Intelligent Recipe Detection** (Existing)
+
 - Multi-page recipe merging
 - Continuation marker detection
 - Ingredient/instruction separation
 - Source tracking (book name, page number)
 
 #### **3. Codex Metadata Enrichment** (NEW)
+
 - Auto-detects recipe complexity
 - Identifies cooking techniques
 - Extracts allergen information
@@ -215,6 +230,7 @@ Flow:
 - Determines service context
 
 #### **4. Chef Brain Reasoning** (NEW)
+
 - Semantic search via Pinecone
 - Dietary constraint filtering
 - Allergen avoidance
@@ -224,12 +240,14 @@ Flow:
 ### 📚 Example Workflow: Training Echo with "The Art of French Cooking"
 
 **Step 1: Import PDF**
+
 ```
 Recipe Search → Library (Book PDF) Import → Select "The Art of French Cooking.pdf"
 → System scans pages → Finds 47 recipes
 ```
 
 **Step 2: Review Recipes**
+
 ```
 Click yellow "Train Echo" button
 → Modal shows all 47 recipes
@@ -237,6 +255,7 @@ Click yellow "Train Echo" button
 ```
 
 **Step 3: Echo Gets Trained**
+
 ```
 Click "Import" button
 → Hook calls trainWithRecipes(recipes, "The Art of French Cooking")
@@ -247,6 +266,7 @@ Click "Import" button
 ```
 
 **Step 4: Echo Can Now Suggest**
+
 ```
 User asks: "French soup for vegetarian customers"
 → EchoChefBrain queries Pinecone
@@ -257,6 +277,7 @@ User asks: "French soup for vegetarian customers"
 ### 🚀 Using EchoChefPanel in Builder
 
 **1. Register as Custom Component**
+
 ```typescript
 // In your Builder.io custom components setup
 import { EchoChefPanel } from "@/echo/ui";
@@ -266,6 +287,7 @@ import { EchoChefPanel } from "@/echo/ui";
 ```
 
 **2. Drop into Any Module**
+
 ```
 RECIPES → EchoChefPanel
 R&D LABS → EchoChefPanel
@@ -274,15 +296,17 @@ PASTRY MODULE → EchoChefPanel
 ```
 
 **3. Props**
+
 ```typescript
 interface EchoChefPanelProps {
-  apiEndpoint?: string;  // Defaults to "/api/echo-chef"
+  apiEndpoint?: string; // Defaults to "/api/echo-chef"
 }
 ```
 
 ### 🔐 Environment Setup
 
 Ensure these are set:
+
 ```bash
 PINECONE_API_KEY=pcsk_...
 OPENAI_API_KEY=sk-proj-...
@@ -290,6 +314,7 @@ PINECONE_INDEX_NAME=luccca-recipes  # or your chosen index
 ```
 
 The system auto-detects which vector engine to use:
+
 - Pinecone (if PINECONE_API_KEY is set)
 - pgvector/Supabase (if SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY are set)
 
@@ -344,6 +369,7 @@ Return suggestions (existing_recipe, variation, new_concept)
 ### 🔗 File Dependencies
 
 **New Files:**
+
 - `client/echo/codex/*` → Schemas
 - `client/echo/services/*` → Pinecone wrappers
 - `client/echo/brain/echoChefBrain.ts` → Core logic
@@ -355,6 +381,7 @@ Return suggestions (existing_recipe, variation, new_concept)
 - `server/routes/echo-training.ts` → Training endpoints
 
 **Integrated With (Existing):**
+
 - `client/lib/pinecone-recipe-knowledge.ts`
 - `client/lib/echo-knowledge-retrieval.ts`
 - `server/lib/vector-engine.ts` (Pinecone/pgvector abstraction)
@@ -379,16 +406,19 @@ Return suggestions (existing_recipe, variation, new_concept)
 ### 📞 Support & Troubleshooting
 
 **EchoChefPanel not showing suggestions:**
+
 - Verify PINECONE_API_KEY and OPENAI_API_KEY are set
 - Check if recipes are actually imported (check Pinecone index)
 - Review `/api/echo-chef` response in network tab
 
 **Recipes not storing:**
+
 - Check `/api/echo-training/store-recipe` response
 - Verify vector engine health: `/api/vector/health`
 - Look at server logs for embedding generation errors
 
 **Suggestions are generic:**
+
 - Ensure recipes were imported with full metadata
 - Check if dietary tags and allergens are being detected
 - Review `recipe-codex-mapper.ts` detection logic

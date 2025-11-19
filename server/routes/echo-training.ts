@@ -82,7 +82,7 @@ Source: ${bookName} (Page ${recipe.sourcePage})
         },
         "manufacturing", // Track
         "echo-system", // Chef
-        "global-knowledge" // Organization (global for all users to benefit)
+        "global-knowledge", // Organization (global for all users to benefit)
       );
     } catch (storeError) {
       console.error("[EchoTraining] Vector storage failed:", storeError);
@@ -171,7 +171,7 @@ Source: ${bookName} (Page ${recipe.sourcePage})
           },
           "manufacturing",
           "echo-system",
-          "global-knowledge"
+          "global-knowledge",
         );
 
         results.success++;
@@ -230,7 +230,7 @@ function inferCategory(course: string | undefined, title: string) {
 
 function inferComplexity(
   difficulty: string | undefined,
-  cookTime: string | undefined
+  cookTime: string | undefined,
 ): 1 | 2 | 3 | 4 | 5 {
   if (difficulty) {
     const lower = difficulty.toLowerCase();

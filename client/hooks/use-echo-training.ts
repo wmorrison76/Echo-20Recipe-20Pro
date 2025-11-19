@@ -37,9 +37,14 @@ export function useEchoTraining() {
   const [trainingProgress, setTrainingProgress] = useState<string>("");
 
   const trainWithRecipes = useCallback(
-    async (recipes: TrainingRecipe[], bookName: string): Promise<TrainingResult> => {
+    async (
+      recipes: TrainingRecipe[],
+      bookName: string,
+    ): Promise<TrainingResult> => {
       setIsTraining(true);
-      setTrainingProgress(`Preparing to train Echo with ${recipes.length} recipes from ${bookName}...`);
+      setTrainingProgress(
+        `Preparing to train Echo with ${recipes.length} recipes from ${bookName}...`,
+      );
 
       const results: TrainingResult = {
         success: 0,
@@ -49,7 +54,9 @@ export function useEchoTraining() {
 
       for (let i = 0; i < recipes.length; i++) {
         const recipe = recipes[i];
-        setTrainingProgress(`Training ${i + 1}/${recipes.length}: ${recipe.title}`);
+        setTrainingProgress(
+          `Training ${i + 1}/${recipes.length}: ${recipe.title}`,
+        );
 
         try {
           // Enrich recipe with codex metadata
@@ -97,7 +104,8 @@ export function useEchoTraining() {
             results.failed++;
           }
         } catch (error) {
-          const errorMsg = error instanceof Error ? error.message : "Unknown error";
+          const errorMsg =
+            error instanceof Error ? error.message : "Unknown error";
           results.results.push({
             recipeId: recipe.id,
             title: recipe.title,
@@ -109,13 +117,13 @@ export function useEchoTraining() {
       }
 
       setTrainingProgress(
-        `Training complete: ${results.success} stored, ${results.failed} failed`
+        `Training complete: ${results.success} stored, ${results.failed} failed`,
       );
       setIsTraining(false);
 
       return results;
     },
-    []
+    [],
   );
 
   return {

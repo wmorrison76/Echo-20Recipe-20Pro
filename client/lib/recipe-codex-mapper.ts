@@ -9,23 +9,21 @@ import type {
  * Convert an imported recipe from PDF to RecipeCodexMetadata
  * Used when storing recipes in Pinecone to enrich metadata for EchoChefBrain
  */
-export function mapImportedRecipeToCodex(
-  recipe: {
-    id: string;
-    title: string;
-    ingredients: string[];
-    instructions: string[];
-    sourceBook: string;
-    sourcePage: number;
-    cuisine?: string;
-    course?: string;
-    difficulty?: string;
-    prepTime?: string;
-    cookTime?: string;
-    yield?: string;
-    tags?: string[];
-  }
-): RecipeCodexMetadata {
+export function mapImportedRecipeToCodex(recipe: {
+  id: string;
+  title: string;
+  ingredients: string[];
+  instructions: string[];
+  sourceBook: string;
+  sourcePage: number;
+  cuisine?: string;
+  course?: string;
+  difficulty?: string;
+  prepTime?: string;
+  cookTime?: string;
+  yield?: string;
+  tags?: string[];
+}): RecipeCodexMetadata {
   // Infer recipe category from course or title
   const category = inferRecipeCategory(recipe.course, recipe.title);
 
@@ -63,7 +61,7 @@ export function mapImportedRecipeToCodex(
 
 function inferRecipeCategory(
   course: string | undefined,
-  title: string
+  title: string,
 ): RecipeCategory {
   const lower = `${course} ${title}`.toLowerCase();
 
@@ -73,12 +71,15 @@ function inferRecipeCategory(
   if (lower.includes("soup")) return "soup";
   if (lower.includes("entree") || lower.includes("main")) return "entree";
   if (lower.includes("side")) return "side";
-  if (lower.includes("dessert") || lower.includes("cake") || lower.includes("pie"))
+  if (
+    lower.includes("dessert") ||
+    lower.includes("cake") ||
+    lower.includes("pie")
+  )
     return "dessert";
   if (lower.includes("cocktail") || lower.includes("drink")) return "cocktail";
   if (lower.includes("bread")) return "bread";
-  if (lower.includes("sauce") || lower.includes("dressing"))
-    return "sauce";
+  if (lower.includes("sauce") || lower.includes("dressing")) return "sauce";
   if (lower.includes("stock") || lower.includes("broth")) return "base";
 
   return "entree"; // default
@@ -86,17 +87,15 @@ function inferRecipeCategory(
 
 function inferComplexity(
   difficulty: string | undefined,
-  cookTime: string | undefined
+  cookTime: string | undefined,
 ): 1 | 2 | 3 | 4 | 5 {
   if (difficulty) {
     const lower = difficulty.toLowerCase();
     if (lower.includes("beginner") || lower.includes("easy")) return 1;
     if (lower.includes("simple")) return 2;
-    if (lower.includes("intermediate") || lower.includes("moderate"))
-      return 3;
+    if (lower.includes("intermediate") || lower.includes("moderate")) return 3;
     if (lower.includes("advanced") || lower.includes("hard")) return 4;
-    if (lower.includes("expert") || lower.includes("professional"))
-      return 5;
+    if (lower.includes("expert") || lower.includes("professional")) return 5;
   }
 
   // Estimate from cooking time
@@ -153,7 +152,7 @@ function parseFromTags(tags: string[] | undefined, prefix: string): string[] {
 
 function detectAllergens(
   ingredients: string[],
-  tags: string[] | undefined
+  tags: string[] | undefined,
 ): string[] {
   const allergens: Set<string> = new Set();
 
@@ -185,10 +184,7 @@ function detectAllergens(
   return Array.from(allergens);
 }
 
-function inferFlavorProfile(
-  ingredients: string[],
-  title: string
-): string[] {
+function inferFlavorProfile(ingredients: string[], title: string): string[] {
   const profiles: Set<string> = new Set();
 
   const flavorKeywords: { [key: string]: RegExp } = {

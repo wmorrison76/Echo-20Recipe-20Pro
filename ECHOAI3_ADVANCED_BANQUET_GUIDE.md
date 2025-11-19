@@ -1,9 +1,11 @@
 # EchoAi³ Advanced – Banquet Intelligence & Recipe Generation
+
 ## Complete Integration Guide for Enterprise Catering & BEO Management
 
 ### 📊 Overview
 
 EchoAi³ Advanced is a production-ready culinary intelligence system that:
+
 - **Learns from your textbooks** (PDF imports) and retains knowledge forever
 - **Understands banquet service** (BEO-aware, holding times, service contexts)
 - **Suggests dishes** based on constraints (dietary, complexity, guest count, service type)
@@ -60,6 +62,7 @@ client/echo/ui/
 ### 🎯 Key Features
 
 #### **1. Embedding Provider (OpenAI + Gemini)**
+
 ```typescript
 import { embedTextToVector } from "@/echo/services";
 
@@ -68,6 +71,7 @@ const embedding = await embedTextToVector("Main course for 200 guests");
 ```
 
 **Environment:**
+
 ```bash
 EMBEDDING_PROVIDER=openai  # or "gemini"
 OPENAI_EMBEDDING_MODEL=text-embedding-3-large
@@ -75,6 +79,7 @@ GEMINI_EMBEDDING_MODEL=text-embedding-004
 ```
 
 #### **2. LLM Provider (OpenAI + Gemini)**
+
 ```typescript
 import { generateRecipeDraftWithLlm } from "@/echo/services";
 
@@ -82,11 +87,14 @@ const recipe = await generateRecipeDraftWithLlm({
   userPrompt: "French main course for 150 pax",
   serviceContext: "banquet_plated",
   guestCount: 150,
-  neighbors: [/* top recipes from Pinecone */],
+  neighbors: [
+    /* top recipes from Pinecone */
+  ],
 });
 ```
 
 **Environment:**
+
 ```bash
 LLM_PROVIDER=openai  # or "gemini"
 OPENAI_MODEL=gpt-4-turbo-preview
@@ -94,22 +102,24 @@ GEMINI_MODEL=gemini-1.5-pro
 ```
 
 #### **3. Banquet/BEO-Aware Chef Brain**
+
 ```typescript
 import { EchoChefBrain, type ServiceContext } from "@/echo/brain";
 
 const suggestions = await EchoChefBrain.suggestRecipes({
   userPrompt: "Buffet main course, 300 pax, holds 1 hour",
   queryEmbedding: embedding,
-  serviceContext: "banquet_buffet",  // NEW
-  guestCount: 300,                   // NEW
-  holdingMethod: "hotel_pan",        // NEW
-  maxHoldMinutes: 60,                // NEW
-  courseName: "Main Course",         // NEW
+  serviceContext: "banquet_buffet", // NEW
+  guestCount: 300, // NEW
+  holdingMethod: "hotel_pan", // NEW
+  maxHoldMinutes: 60, // NEW
+  courseName: "Main Course", // NEW
   dietaryTags: ["gluten_free"],
 });
 ```
 
 **Service Contexts:**
+
 - `"a_la_carte"` – individual plating, quick service
 - `"banquet_plated"` – batch plating, mirror-image for large groups
 - `"banquet_buffet"` – buffet stations, hotel pans, chafers
@@ -117,10 +127,11 @@ const suggestions = await EchoChefBrain.suggestRecipes({
 - `"room_service"` – individual rooms, holding in insulated containers
 
 #### **4. Recipe Generator (LLM-based)**
+
 ```typescript
 import { EchoRecipeGenerator } from "@/echo/brain";
 
-const { recipeDraft, neighborsUsed } = 
+const { recipeDraft, neighborsUsed } =
   await EchoRecipeGenerator.generateFullRecipeDraft({
     userPrompt: "Gluten-free Asian-inspired appetizer",
     queryEmbedding: embedding,
@@ -141,6 +152,7 @@ const { recipeDraft, neighborsUsed } =
 ```
 
 #### **5. Extended API Endpoint**
+
 ```
 POST /api/echo-chef
 
@@ -197,15 +209,16 @@ import { EchoChefPanel } from "@/echo/ui";
 
 export default function BanquetPlanner() {
   return (
-    <EchoChefPanel 
+    <EchoChefPanel
       apiEndpoint="/api/echo-chef"
-      defaultMode="suggest"  // or "generate"
+      defaultMode="suggest" // or "generate"
     />
   );
 }
 ```
 
 **Features:**
+
 - Service context dropdown (banquet plated, buffet, reception, etc.)
 - Guest count input
 - Holding method selector (pass plate, hotel pan, hot box, etc.)
@@ -276,12 +289,14 @@ SUPABASE_SERVICE_ROLE_KEY=...
 **Important:** Even if you delete a cookbook PDF import, Echo retains the learned recipes.
 
 **Why?**
+
 - Recipes are stored as vectors + metadata in Pinecone/pgvector
 - Deletion of PDF only removes the "source reference" (file, import record)
 - The actual recipe embeddings remain permanent
 - Echo continues to suggest those recipes as if they came from a "general knowledge" source
 
 **Example:**
+
 ```
 Day 1: Import "French Cuisine Master" PDF → 50 recipes stored
 Day 2: Delete the PDF import
@@ -294,16 +309,17 @@ This is intentional: **once Echo learns from a textbook, that knowledge becomes 
 ### 🚀 API Integration Examples
 
 #### **Suggest Only (Fast)**
+
 ```javascript
-const response = await fetch('/api/echo-chef', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+const response = await fetch("/api/echo-chef", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     userPrompt: "Appetizer course, reception service, 150 pax",
     serviceContext: "reception",
     guestCount: 150,
-    mode: "suggest"
-  })
+    mode: "suggest",
+  }),
 });
 
 const data = await response.json();
@@ -316,17 +332,18 @@ console.log(data.suggestions);
 ```
 
 #### **Suggest + Generate (Full Recipe)**
+
 ```javascript
-const response = await fetch('/api/echo-chef', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+const response = await fetch("/api/echo-chef", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     userPrompt: "Vegan dessert, elegant, makes 100 portions",
     serviceContext: "banquet_plated",
     guestCount: 100,
     dietaryTags: ["vegan"],
-    mode: "generate"  // ← Request full recipe draft
-  })
+    mode: "generate", // ← Request full recipe draft
+  }),
 });
 
 const data = await response.json();
@@ -361,17 +378,17 @@ const data = await response.json();
 
 ```typescript
 interface GeneratedRecipe {
-  title: string;                    // "Pan-Seared Branzino"
-  description: string;              // "Light, elegant, pairs well with..."
+  title: string; // "Pan-Seared Branzino"
+  description: string; // "Light, elegant, pairs well with..."
   yield: {
-    amount: number;                 // 300
-    unit: string;                   // "portions"
+    amount: number; // 300
+    unit: string; // "portions"
     perGuest?: boolean;
   };
-  serviceContext?: ServiceContext;  // "banquet_plated"
-  miseEnPlace: string[];            // ["mise cups", "plating plates", ...]
+  serviceContext?: ServiceContext; // "banquet_plated"
+  miseEnPlace: string[]; // ["mise cups", "plating plates", ...]
   ingredients: {
-    section?: string;               // "Protein", "Sauce"
+    section?: string; // "Protein", "Sauce"
     name: string;
     quantity: number | string;
     unit?: string;
@@ -381,13 +398,13 @@ interface GeneratedRecipe {
     order: number;
     instruction: string;
     timingMinutes?: number;
-    techniqueTags?: string[];       // ["sear", "rest"]
+    techniqueTags?: string[]; // ["sear", "rest"]
   }[];
-  equipment: string[];              // ["non-stick sauté pan", "plating spoon", ...]
-  allergens: string[];              // ["fish", "shellfish"]
-  dietaryTags: string[];            // ["gluten_free"]
-  holdingGuidelines?: string[];     // ["Hold at 140°F max 30 min", ...]
-  platingNotes?: string;            // "Plate clockwise, garnish last minute"
+  equipment: string[]; // ["non-stick sauté pan", "plating spoon", ...]
+  allergens: string[]; // ["fish", "shellfish"]
+  dietaryTags: string[]; // ["gluten_free"]
+  holdingGuidelines?: string[]; // ["Hold at 140°F max 30 min", ...]
+  platingNotes?: string; // "Plate clockwise, garnish last minute"
 }
 ```
 
@@ -421,19 +438,22 @@ IF mode="generate":
 ### 🎓 Advanced Customization
 
 #### **Custom Service Contexts**
+
 Edit `client/echo/brain/echoChefBrain.ts` to add new contexts:
+
 ```typescript
-export type ServiceContext = 
+export type ServiceContext =
   | "a_la_carte"
   | "banquet_plated"
   | "banquet_buffet"
   | "reception"
   | "room_service"
-  | "drop_off"  // NEW: catering pickup
-  | "food_truck";  // NEW: mobile service
+  | "drop_off" // NEW: catering pickup
+  | "food_truck"; // NEW: mobile service
 ```
 
 #### **Custom Holding Methods**
+
 ```typescript
 export type HoldingMethod =
   | "pass_plate"
@@ -441,11 +461,12 @@ export type HoldingMethod =
   | "hot_box"
   | "room_temp_pass"
   | "action_station"
-  | "sous_vide_bath"  // NEW
-  | "heat_lamp";  // NEW
+  | "sous_vide_bath" // NEW
+  | "heat_lamp"; // NEW
 ```
 
 #### **Custom Embedding/LLM Models**
+
 ```bash
 OPENAI_EMBEDDING_MODEL=text-embedding-3-small  # Cheaper
 OPENAI_MODEL=gpt-4  # More expensive but smarter
@@ -454,22 +475,26 @@ OPENAI_MODEL=gpt-4  # More expensive but smarter
 ### 🚨 Common Issues & Solutions
 
 **Q: "Embedding failed" error**
+
 - Check OPENAI_API_KEY or GEMINI_API_KEY is set
 - Verify EMBEDDING_PROVIDER env var
 - Test with simple text: `embedTextToVector("hello")`
 
 **Q: "LLM returned invalid JSON"**
+
 - Check LLM_PROVIDER is set correctly
 - Verify OPENAI_MODEL or GEMINI_MODEL is valid
 - Check model has JSON mode enabled (GPT-4 Turbo does)
 - Review system prompt formatting
 
 **Q: "No recipes found in Pinecone"**
+
 - Verify recipes were imported (check `/api/vector/health`)
 - Ensure import used correct organizationId ("global-knowledge")
 - Try broader search query (less specific)
 
 **Q: Knowledge lost after deleting cookbook**
+
 - This is expected behavior! Recipes are stored permanently
 - To truly remove: run Pinecone/pgvector DELETE query directly
 - Or implement a "soft delete" flag in metadata
@@ -477,6 +502,7 @@ OPENAI_MODEL=gpt-4  # More expensive but smarter
 ### ��� Support
 
 For issues with:
+
 - **Embedding**: Check OpenAI/Gemini API credentials + model names
 - **LLM**: Check OpenAI/Gemini API credentials + model names + JSON output
 - **Pinecone/pgvector**: Use `/api/vector/health` endpoint
@@ -489,6 +515,7 @@ For issues with:
 Built for Enterprise Catering, Banquet Services, and Culinary R&D
 
 **Key Principles:**
+
 - ✅ Knowledge is permanent (never lost)
 - ✅ Service-context aware (banquet-specific)
 - ✅ Flexible providers (OpenAI + Gemini)

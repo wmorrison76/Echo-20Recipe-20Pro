@@ -47,7 +47,7 @@ async function embedWithOpenAI(text: string): Promise<number[]> {
   if (!res.ok) {
     const body = await res.text();
     throw new Error(
-      `OpenAI embedding error: ${res.status} ${res.statusText} – ${body}`
+      `OpenAI embedding error: ${res.status} ${res.statusText} – ${body}`,
     );
   }
 
@@ -69,7 +69,7 @@ async function embedWithGemini(text: string): Promise<number[]> {
   }
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
-    GEMINI_EMBEDDING_MODEL
+    GEMINI_EMBEDDING_MODEL,
   )}:embedContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
 
   const res = await fetch(url, {
@@ -87,7 +87,7 @@ async function embedWithGemini(text: string): Promise<number[]> {
   if (!res.ok) {
     const body = await res.text();
     throw new Error(
-      `Gemini embedding error: ${res.status} ${res.statusText} – ${body}`
+      `Gemini embedding error: ${res.status} ${res.statusText} – ${body}`,
     );
   }
 

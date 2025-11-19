@@ -75,12 +75,11 @@ export const echoChefHandler = async (req: Request, res: Response) => {
     // If mode is "generate", also produce a full recipe draft
     if (mode === "generate") {
       try {
-        const generationResult = await EchoRecipeGenerator.generateFullRecipeDraft(
-          {
+        const generationResult =
+          await EchoRecipeGenerator.generateFullRecipeDraft({
             ...baseQuery,
             neighborsToUse: 5,
-          }
-        );
+          });
 
         return res.json({
           mode: "generate",

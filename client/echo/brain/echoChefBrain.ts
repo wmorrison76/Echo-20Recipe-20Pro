@@ -47,7 +47,7 @@ export interface ChefBrainSuggestion {
 
 export class EchoChefBrain {
   static async suggestRecipes(
-    query: ChefBrainQuery
+    query: ChefBrainQuery,
   ): Promise<ChefBrainSuggestion[]> {
     const filters: Partial<RecipeCodexMetadata> = {};
 
@@ -80,7 +80,7 @@ export class EchoChefBrain {
         baseRecipe: r.metadata,
         title: r.metadata.title,
         description: `Strong match for your request (${r.metadata.cuisineRegion ?? "Unknown region"}, ${r.metadata.category}). Score: ${r.score.toFixed(
-          3
+          3,
         )}.`,
         serviceNotes: baseServiceNotes || undefined,
         beoNotes: buildBeoNotes(query, index),
@@ -95,7 +95,9 @@ export class EchoChefBrain {
         query.dietaryTags?.includes("gluten_free") &&
         !r.metadata.dietaryTags.includes("gluten_free")
       ) {
-        changes.push("Replace wheat-based components with gluten-free alternatives.");
+        changes.push(
+          "Replace wheat-based components with gluten-free alternatives.",
+        );
       }
 
       if (
@@ -103,13 +105,13 @@ export class EchoChefBrain {
         !r.metadata.dietaryTags.includes("vegetarian")
       ) {
         changes.push(
-          "Swap animal proteins for high-umami plant proteins while preserving core flavor."
+          "Swap animal proteins for high-umami plant proteins while preserving core flavor.",
         );
       }
 
       if (query.serviceContext === "banquet_buffet") {
         changes.push(
-          "Adjust portioning and presentation to hotel pans / chafers with garnish that holds well."
+          "Adjust portioning and presentation to hotel pans / chafers with garnish that holds well.",
         );
       }
 
@@ -158,14 +160,16 @@ function buildServiceNotes(query: ChefBrainQuery): string {
 
   if (query.serviceContext === "banquet_plated") {
     parts.push(
-      "Design plating to be consistent and fast to mirror-image for large groups."
+      "Design plating to be consistent and fast to mirror-image for large groups.",
     );
   } else if (query.serviceContext === "banquet_buffet") {
     parts.push(
-      "Design components to hold well in hotel pans / chafers with minimal last-minute à la minute finishing."
+      "Design components to hold well in hotel pans / chafers with minimal last-minute à la minute finishing.",
     );
   } else if (query.serviceContext === "reception") {
-    parts.push("Focus on bite-sized, easy-to-eat, standing service friendly items.");
+    parts.push(
+      "Focus on bite-sized, easy-to-eat, standing service friendly items.",
+    );
   }
 
   if (query.guestCount) {
@@ -173,7 +177,9 @@ function buildServiceNotes(query: ChefBrainQuery): string {
   }
 
   if (query.maxHoldMinutes) {
-    parts.push(`Must remain high quality for at least ${query.maxHoldMinutes} minutes on hold.`);
+    parts.push(
+      `Must remain high quality for at least ${query.maxHoldMinutes} minutes on hold.`,
+    );
   }
 
   if (query.holdingMethod) {
@@ -207,16 +213,16 @@ function buildBeoNotes(query: ChefBrainQuery, index: number): BeoNotes {
 
 function buildConceptTitle(
   recipe: RecipeCodexMetadata,
-  query: ChefBrainQuery
+  query: ChefBrainQuery,
 ): string {
   const contextLabel =
     query.serviceContext === "banquet_buffet"
       ? "Buffet"
       : query.serviceContext === "banquet_plated"
-      ? "Plated"
-      : query.serviceContext === "reception"
-      ? "Reception"
-      : "Echo";
+        ? "Plated"
+        : query.serviceContext === "reception"
+          ? "Reception"
+          : "Echo";
 
   return `${contextLabel} Concept – ${
     recipe.cuisineRegion ?? "Chef Echo"

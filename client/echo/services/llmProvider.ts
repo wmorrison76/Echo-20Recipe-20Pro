@@ -60,8 +60,8 @@ export async function generateRecipeDraftWithLlm(params: {
         `#${idx + 1}: ${r.title} [${r.cuisineRegion ?? "Unknown cuisine"}] – category=${
           r.category
         }, techniques=${r.primaryTechniques.join(", ")}, dietary=${r.dietaryTags.join(
-          ", "
-        )}, service=${r.serviceContext ?? "unspecified"}`
+          ", ",
+        )}, service=${r.serviceContext ?? "unspecified"}`,
     )
     .join("\n");
 
@@ -112,7 +112,7 @@ ${neighborSummary}
 
 async function generateWithOpenAI(
   systemPrompt: string,
-  userPrompt: string
+  userPrompt: string,
 ): Promise<GeneratedRecipe> {
   if (!OPENAI_API_KEY) {
     throw new Error("OPENAI_API_KEY is not set.");
@@ -137,7 +137,7 @@ async function generateWithOpenAI(
   if (!res.ok) {
     const body = await res.text();
     throw new Error(
-      `OpenAI LLM error: ${res.status} ${res.statusText} – ${body}`
+      `OpenAI LLM error: ${res.status} ${res.statusText} – ${body}`,
     );
   }
 
@@ -158,14 +158,14 @@ async function generateWithOpenAI(
 
 async function generateWithGemini(
   systemPrompt: string,
-  userPrompt: string
+  userPrompt: string,
 ): Promise<GeneratedRecipe> {
   if (!GEMINI_API_KEY) {
     throw new Error("GEMINI_API_KEY is not set.");
   }
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
-    GEMINI_MODEL
+    GEMINI_MODEL,
   )}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
 
   const res = await fetch(url, {
@@ -184,7 +184,7 @@ async function generateWithGemini(
   if (!res.ok) {
     const body = await res.text();
     throw new Error(
-      `Gemini LLM error: ${res.status} ${res.statusText} – ${body}`
+      `Gemini LLM error: ${res.status} ${res.statusText} – ${body}`,
     );
   }
 

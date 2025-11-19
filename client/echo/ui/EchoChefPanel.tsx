@@ -47,9 +47,8 @@ export const EchoChefPanel: React.FC<EchoChefPanelProps> = ({
 }) => {
   const [prompt, setPrompt] = useState("");
   const [dietaryTags, setDietaryTags] = useState<string[]>([]);
-  const [serviceContext, setServiceContext] = useState<ServiceContext>(
-    "banquet_plated"
-  );
+  const [serviceContext, setServiceContext] =
+    useState<ServiceContext>("banquet_plated");
   const [guestCount, setGuestCount] = useState<number | undefined>(200);
   const [holdingMethod, setHoldingMethod] = useState<
     | "pass_plate"
@@ -68,7 +67,7 @@ export const EchoChefPanel: React.FC<EchoChefPanelProps> = ({
 
   const toggleTag = (tag: string) => {
     setDietaryTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
   };
 
@@ -195,7 +194,7 @@ export const EchoChefPanel: React.FC<EchoChefPanelProps> = ({
               value={guestCount ?? ""}
               onChange={(e) =>
                 setGuestCount(
-                  e.target.value ? parseInt(e.target.value, 10) : undefined
+                  e.target.value ? parseInt(e.target.value, 10) : undefined,
                 )
               }
             />
@@ -209,9 +208,7 @@ export const EchoChefPanel: React.FC<EchoChefPanelProps> = ({
               className="w-full rounded-lg bg-white/5 border border-white/10 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400/60"
               value={holdingMethod || ""}
               onChange={(e) =>
-                setHoldingMethod(
-                  (e.target.value as any) || undefined
-                )
+                setHoldingMethod((e.target.value as any) || undefined)
               }
             >
               <option value="">Select holding method</option>
@@ -274,8 +271,8 @@ export const EchoChefPanel: React.FC<EchoChefPanelProps> = ({
             {isLoading
               ? "Echo is thinking..."
               : mode === "generate"
-              ? "Ask Echo & Generate Recipe"
-              : "Ask Echo for Suggestions"}
+                ? "Ask Echo & Generate Recipe"
+                : "Ask Echo for Suggestions"}
           </button>
         </div>
       </form>
@@ -299,14 +296,12 @@ export const EchoChefPanel: React.FC<EchoChefPanelProps> = ({
                   {s.type === "existing_recipe"
                     ? "✓ Existing Recipe"
                     : s.type === "variation"
-                    ? "⚡ Echo Variation"
-                    : "✨ New Concept"}
+                      ? "⚡ Echo Variation"
+                      : "✨ New Concept"}
                 </span>
                 {s.beoNotes && (
                   <div className="text-[10px] text-white/60 text-right space-y-0.5">
-                    {s.beoNotes.course && (
-                      <div>{s.beoNotes.course}</div>
-                    )}
+                    {s.beoNotes.course && <div>{s.beoNotes.course}</div>}
                     {s.beoNotes.stationName && (
                       <div>Station: {s.beoNotes.stationName}</div>
                     )}
@@ -339,11 +334,14 @@ export const EchoChefPanel: React.FC<EchoChefPanelProps> = ({
           <h3 className="text-sm font-semibold mb-2">
             📋 Echo Recipe Draft · {recipeDraft.title}
           </h3>
-          <p className="text-white/80 text-xs mb-3">{recipeDraft.description}</p>
+          <p className="text-white/80 text-xs mb-3">
+            {recipeDraft.description}
+          </p>
 
           <div className="flex items-center gap-4 text-xs text-white/70 mb-3 pb-3 border-b border-white/10">
             <span>
-              <strong>Yield:</strong> {recipeDraft.yield.amount} {recipeDraft.yield.unit}
+              <strong>Yield:</strong> {recipeDraft.yield.amount}{" "}
+              {recipeDraft.yield.unit}
               {recipeDraft.yield.perGuest ? " (per guest)" : ""}
             </span>
             {recipeDraft.serviceContext && (
@@ -369,7 +367,9 @@ export const EchoChefPanel: React.FC<EchoChefPanelProps> = ({
                     <span>
                       {ing.quantity} {ing.unit} {ing.name}
                       {ing.notes ? (
-                        <span className="text-white/60 ml-1">({ing.notes})</span>
+                        <span className="text-white/60 ml-1">
+                          ({ing.notes})
+                        </span>
                       ) : null}
                     </span>
                   </li>
@@ -407,22 +407,24 @@ export const EchoChefPanel: React.FC<EchoChefPanelProps> = ({
             </div>
           )}
 
-          {recipeDraft.holdingGuidelines && recipeDraft.holdingGuidelines.length > 0 && (
-            <div className="mb-3 bg-white/5 rounded-lg p-2">
-              <h4 className="font-semibold text-xs mb-1 text-yellow-300">
-                ⏱️ Holding Guidelines
-              </h4>
-              <ul className="list-disc pl-4 text-xs text-white/80 space-y-0.5">
-                {recipeDraft.holdingGuidelines.map((g, i) => (
-                  <li key={i}>{g}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {recipeDraft.holdingGuidelines &&
+            recipeDraft.holdingGuidelines.length > 0 && (
+              <div className="mb-3 bg-white/5 rounded-lg p-2">
+                <h4 className="font-semibold text-xs mb-1 text-yellow-300">
+                  ⏱️ Holding Guidelines
+                </h4>
+                <ul className="list-disc pl-4 text-xs text-white/80 space-y-0.5">
+                  {recipeDraft.holdingGuidelines.map((g, i) => (
+                    <li key={i}>{g}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
           {recipeDraft.platingNotes && (
             <p className="text-xs text-white/70 border-l-2 border-cyan-400/60 pl-2">
-              <strong className="text-cyan-300">Plating Notes:</strong> {recipeDraft.platingNotes}
+              <strong className="text-cyan-300">Plating Notes:</strong>{" "}
+              {recipeDraft.platingNotes}
             </p>
           )}
         </div>
