@@ -2,12 +2,36 @@ import { RecipeCodexService } from "../services/recipeCodexService";
 import { RecipeVectorSearchResult } from "../services/recipeVectorStore";
 import type { FlavorBalance, RecipeCodexMetadata } from "../codex";
 
+export type ServiceContext =
+  | "a_la_carte"
+  | "banquet_plated"
+  | "banquet_buffet"
+  | "reception"
+  | "room_service";
+
 export interface ChefBrainQuery {
   userPrompt: string;
   queryEmbedding: number[];
   dietaryTags?: string[];
   avoidAllergens?: string[];
   maxComplexity?: 1 | 2 | 3 | 4 | 5;
+  serviceContext?: ServiceContext;
+  guestCount?: number;
+  maxHoldMinutes?: number;
+  holdingMethod?:
+    | "pass_plate"
+    | "hotel_pan"
+    | "hot_box"
+    | "room_temp_pass"
+    | "action_station";
+  courseName?: string;
+}
+
+export interface BeoNotes {
+  course?: string;
+  stationName?: string;
+  platingStyle?: "preset" | "pass_on_trays" | "buffet_self_service";
+  passOrder?: number;
 }
 
 export interface ChefBrainSuggestion {
@@ -18,6 +42,7 @@ export interface ChefBrainSuggestion {
   recommendedChanges?: string[];
   flavorBalanceHint?: FlavorBalance;
   serviceNotes?: string;
+  beoNotes?: BeoNotes;
 }
 
 export class EchoChefBrain {
@@ -26,8 +51,16 @@ export class EchoChefBrain {
   ): Promise<ChefBrainSuggestion[]> {
     const filters: Partial<RecipeCodexMetadata> = {};
 
+    if (query.dietaryTags?.length) {
+      (filters as any).dietaryTags = { $in: query.dietaryTags };
+    }
+
     if (query.maxComplexity) {
       (filters as any).complexity = { $lte: query.maxComplexity };
+    }
+
+    if (query.serviceContext) {
+      (filters as any).serviceContext = query.serviceContext;
     }
 
     const results: RecipeVectorSearchResult[] =
@@ -38,27 +71,31 @@ export class EchoChefBrain {
 
     const suggestions: ChefBrainSuggestion[] = [];
 
-    results.slice(0, 3).forEach((r) => {
+    const baseServiceNotes = buildServiceNotes(query);
+
+    // Top 3: existing recipes
+    results.slice(0, 3).forEach((r, index) => {
       suggestions.push({
         type: "existing_recipe",
         baseRecipe: r.metadata,
         title: r.metadata.title,
-        description: `This recipe aligns strongly with your request based on flavor, technique, and service context. Relevance score: ${r.score.toFixed(
+        description: `Strong match for your request (${r.metadata.cuisineRegion ?? "Unknown region"}, ${r.metadata.category}). Score: ${r.score.toFixed(
           3
         )}.`,
+        serviceNotes: baseServiceNotes || undefined,
+        beoNotes: buildBeoNotes(query, index),
       });
     });
 
-    results.slice(3, 6).forEach((r) => {
+    // 3–6: variations
+    results.slice(3, 6).forEach((r, index) => {
       const changes: string[] = [];
 
       if (
         query.dietaryTags?.includes("gluten_free") &&
         !r.metadata.dietaryTags.includes("gluten_free")
       ) {
-        changes.push(
-          "Replace any wheat-based components with certified gluten-free alternatives."
-        );
+        changes.push("Replace wheat-based components with gluten-free alternatives.");
       }
 
       if (
@@ -66,52 +103,37 @@ export class EchoChefBrain {
         !r.metadata.dietaryTags.includes("vegetarian")
       ) {
         changes.push(
-          "Swap animal proteins with high-umami plant proteins while keeping the core flavor structure."
+          "Swap animal proteins for high-umami plant proteins while preserving core flavor."
         );
       }
 
-      if (
-        query.dietaryTags?.includes("vegan") &&
-        !r.metadata.dietaryTags.includes("vegan")
-      ) {
+      if (query.serviceContext === "banquet_buffet") {
         changes.push(
-          "Replace all animal products with plant-based equivalents, maintaining umami depth through miso, soy, or mushroom bases."
+          "Adjust portioning and presentation to hotel pans / chafers with garnish that holds well."
         );
-      }
-
-      if (query.avoidAllergens?.length) {
-        const recipAllergens = r.metadata.allergens;
-        const toAvoid = query.avoidAllergens.filter((a) =>
-          recipAllergens.includes(a)
-        );
-
-        toAvoid.forEach((allergen) => {
-          changes.push(
-            `Remove or substitute ${allergen} with a safe alternative.`
-          );
-        });
       }
 
       suggestions.push({
         type: "variation",
         baseRecipe: r.metadata,
-        title: `${r.metadata.title} – Chef Echo Variation`,
+        title: `${r.metadata.title} – Echo Banquet Variation`,
         description:
-          "Based on a strong culinary match, this variation adjusts the recipe to better meet your constraints while preserving core flavors.",
-        recommendedChanges: changes.length > 0 ? changes : undefined,
+          "Variation tuned for your service context and dietary constraints.",
+        recommendedChanges: changes,
+        serviceNotes: baseServiceNotes || undefined,
+        beoNotes: buildBeoNotes(query, index + 3),
       });
     });
 
+    // Concept suggestion based on top match
     const top = results[0];
     if (top) {
       suggestions.push({
         type: "new_concept",
         baseRecipe: top.metadata,
-        title: `Concept: ${
-          top.metadata.cuisineRegion ?? "Echo"
-        }-Inspired ${top.metadata.category.toUpperCase()}`,
+        title: buildConceptTitle(top.metadata, query),
         description:
-          "Using patterns from similar recipes, Echo suggests a new concept that preserves the flavor foundation but transforms plating, garnish, and service context for a fresh menu item.",
+          "New concept built from patterns in similar recipes, tuned for your service mode and guest count.",
         flavorBalanceHint: {
           sweet: 0.2,
           sour: 0.3,
@@ -122,11 +144,81 @@ export class EchoChefBrain {
           spice: 0.2,
           aromatic: 0.7,
         },
-        serviceNotes:
-          "Designed to work for both à la carte and banquet plating with minimal last-minute à la minute exposure.",
+        serviceNotes: baseServiceNotes || undefined,
+        beoNotes: buildBeoNotes(query, 99),
       });
     }
 
     return suggestions;
   }
+}
+
+function buildServiceNotes(query: ChefBrainQuery): string {
+  const parts: string[] = [];
+
+  if (query.serviceContext === "banquet_plated") {
+    parts.push(
+      "Design plating to be consistent and fast to mirror-image for large groups."
+    );
+  } else if (query.serviceContext === "banquet_buffet") {
+    parts.push(
+      "Design components to hold well in hotel pans / chafers with minimal last-minute à la minute finishing."
+    );
+  } else if (query.serviceContext === "reception") {
+    parts.push("Focus on bite-sized, easy-to-eat, standing service friendly items.");
+  }
+
+  if (query.guestCount) {
+    parts.push(`Target yield: ${query.guestCount} guests.`);
+  }
+
+  if (query.maxHoldMinutes) {
+    parts.push(`Must remain high quality for at least ${query.maxHoldMinutes} minutes on hold.`);
+  }
+
+  if (query.holdingMethod) {
+    parts.push(`Holding method: ${query.holdingMethod}.`);
+  }
+
+  return parts.join(" ");
+}
+
+function buildBeoNotes(query: ChefBrainQuery, index: number): BeoNotes {
+  const notes: BeoNotes = {};
+
+  if (query.courseName) {
+    notes.course = query.courseName;
+  }
+
+  if (query.serviceContext === "banquet_buffet") {
+    notes.stationName = "Buffet Station";
+    notes.platingStyle = "buffet_self_service";
+  } else if (query.serviceContext === "banquet_plated") {
+    notes.stationName = "Hot Line";
+    notes.platingStyle = "preset";
+  } else if (query.serviceContext === "reception") {
+    notes.stationName = "Passed Canapés";
+    notes.platingStyle = "pass_on_trays";
+  }
+
+  notes.passOrder = index + 1;
+  return notes;
+}
+
+function buildConceptTitle(
+  recipe: RecipeCodexMetadata,
+  query: ChefBrainQuery
+): string {
+  const contextLabel =
+    query.serviceContext === "banquet_buffet"
+      ? "Buffet"
+      : query.serviceContext === "banquet_plated"
+      ? "Plated"
+      : query.serviceContext === "reception"
+      ? "Reception"
+      : "Echo";
+
+  return `${contextLabel} Concept – ${
+    recipe.cuisineRegion ?? "Chef Echo"
+  } ${recipe.category.toString().toUpperCase()}`;
 }
