@@ -587,9 +587,65 @@ export class KnowledgeCrawler {
     query: string,
     config: CrawlerConfig,
   ): Promise<CrawledKnowledge[]> {
-    // This would be integrated with the existing PDF import system
-    // For now, return empty to avoid breaking changes
-    return [];
+    const knowledge: CrawledKnowledge[] = [];
+    const queryLower = query.toLowerCase();
+
+    try {
+      // Search through local recipes for matches
+      for (const [recipeId, recipe] of this.currentRecipes) {
+        // Check if query matches recipe title, ingredients, or instructions
+        const titleMatch = recipe.title?.toLowerCase().includes(queryLower);
+        const ingredientMatch = recipe.ingredients?.some((ing: string) =>
+          ing.toLowerCase().includes(queryLower),
+        );
+        const instructionMatch = recipe.instructions?.some((inst: string) =>
+          inst.toLowerCase().includes(queryLower),
+        );
+        const cuisineMatch = recipe.cuisine?.toLowerCase().includes(queryLower);
+        const tagsMatch = recipe.tags?.some((tag: string) =>
+          tag.toLowerCase().includes(queryLower),
+        );
+
+        if (titleMatch || ingredientMatch || instructionMatch || cuisineMatch || tagsMatch) {
+          const extractedRecipes = this.extractRecipeData(recipe);
+
+          knowledge.push({
+            id: `imported_${recipeId}`,
+            title: recipe.title || "Untitled Recipe",
+            source: "user_imported",
+            sourceUrl: `local://recipe/${recipeId}`,
+            content: [
+              recipe.title,
+              ...(recipe.ingredients || []),
+              ...(recipe.instructions || []),
+            ].join("\n"),
+            metadata: {
+              cuisine: recipe.cuisine,
+              technique: extractedRecipes.technique,
+              ingredients: recipe.ingredients || [],
+              allergens: extractedRecipes.allergens,
+              yield: extractedRecipes.yield,
+              cookTime: extractedRecipes.cookTime,
+              difficulty: extractedRecipes.difficulty,
+            },
+            extractedRecipes: [extractedRecipes],
+            rawData: recipe,
+            crawledAt: Date.now(),
+            triggeredBy: "scheduled",
+          });
+
+          if (knowledge.length >= config.maxResultsPerSource) {
+            break;
+          }
+        }
+      }
+
+      console.log(`✅ Found ${knowledge.length} matching recipes for query: "${query}"`);
+    } catch (error) {
+      console.warn(`Failed to crawl user imported content:`, error);
+    }
+
+    return knowledge;
   }
 
   /**
