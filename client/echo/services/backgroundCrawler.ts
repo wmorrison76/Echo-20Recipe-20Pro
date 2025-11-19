@@ -70,10 +70,22 @@ export class BackgroundKnowledgeCrawler {
       return;
     }
 
+    // Looser vetting criteria for initial knowledge gathering
+    const vetCriteria = {
+      minAuthorityScore: 0.35,  // Lower from 0.6 - we'll be stricter later
+      minSourceTrust: 0.3,       // Lower from 0.5 - local recipes are trustworthy
+      requiresCulinaryBrainApproval: false, // Skip brain approval for speed
+      allergenValidationRequired: true,
+      flavorBalanceValidation: false, // Skip for now
+      ingredientVerification: true,
+      techniqueVerification: false,  // Skip for now
+    };
+
     this.manager = new KnowledgeManager({
       enableAutoCrawl: false,
       enableAutoVetting: true,
       enableGapDetection: true,
+      vetCriteria,
     });
 
     this.tracker = new KnowledgeProgressTracker();
@@ -155,26 +167,50 @@ export class BackgroundKnowledgeCrawler {
 
       for (const topic of topicsToProcess) {
         try {
+          console.log(`  🔍 Searching for: ${topic}...`);
           const result = await this.manager.expandKnowledge(topic, "scheduled");
+
+          // Detailed logging of vetting results
+          const approved = result.vetResult.filter((v) => v.level === "approved" || v.level === "approved_with_notes");
+          const rejected = result.vetResult.filter((v) => v.level === "rejected");
+          const quarantined = result.vetResult.filter((v) => v.level === "quarantined");
+
+          console.log(`    Found ${result.crawlResult.knowledge.length} items, vetting results:`);
+          console.log(`      ✅ Approved: ${approved.length}`);
+          console.log(`      ⚠️  Quarantined: ${quarantined.length}`);
+          console.log(`      ❌ Rejected: ${rejected.length}`);
+
+          // Log details of approved items
+          approved.forEach((item) => {
+            const vet = result.vetResult.find((v) => v.id === item.id);
+            console.log(`        ✓ [${vet?.score.toFixed(2)}] ${item.id}`);
+          });
+
+          // Log details of rejected items with reasons
+          rejected.slice(0, 3).forEach((item) => {
+            const vet = result.vetResult.find((v) => v.id === item.id);
+            const issues = vet?.issues.map((i) => i.message).join(", ") || "Unknown";
+            console.log(`        ✗ [${vet?.score.toFixed(2)}] ${item.id}: ${issues}`);
+          });
 
           // Update progress tracker
           const metadata: Record<string, any> = {};
-          result.newlyApprovedKnowledge.forEach((k) => {
+          approved.forEach((k) => {
             metadata[k.id] = k.metadata;
           });
 
           this.tracker.updateWithCrawlResults(
-            result.newlyApprovedKnowledge.length,
-            result.vetResult.filter((v) => v.level === "rejected").length,
-            result.vetResult.filter((v) => v.level === "quarantined").length,
+            approved.length,
+            rejected.length,
+            quarantined.length,
             metadata,
           );
 
           console.log(
-            `✅ ${topic}: ${result.newlyApprovedKnowledge.length} approved, ${result.crawlResult.failureCount} failures`,
+            `  ✅ ${topic}: ${approved.length} approved, ${result.crawlResult.failureCount} failures`,
           );
         } catch (error) {
-          console.warn(`⚠️ Failed to crawl "${topic}":`, error);
+          console.error(`  ❌ Failed to crawl "${topic}":`, error);
         }
       }
 
