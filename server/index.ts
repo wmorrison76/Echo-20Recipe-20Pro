@@ -15,6 +15,7 @@ import { rdLabsProjectExtractionRouter } from "./routes/rdlabs-project-extractio
 import { elevenLabsRouter } from "./routes/elevenlabs";
 import vectorRouter from "./routes/vector-recipes";
 import proceduresRouter from "./routes/procedures";
+import { echoTrainingRouter } from "./routes/echo-training";
 import {
   proxyRecipeImage as proxyImageOptimized,
   serveRecipeImage,
@@ -82,6 +83,9 @@ export function createServer() {
 
   // Culinary Procedures API (semantic search with pgvector)
   app.use("/api/procedures", proceduresRouter);
+
+  // EchoAi³ Training API (stores recipes for Chef Brain suggestions)
+  app.use("/api/echo-training", echoTrainingRouter);
 
   return app;
 }
