@@ -5,8 +5,9 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { Zap, Rocket, TrendingUp, Globe, ChefHat } from "lucide-react";
+import { Zap, Rocket, TrendingUp, Globe, ChefHat, Play, Pause } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -20,6 +21,7 @@ import KnowledgeProgressTracker, {
   type CulinaryType,
   type Region,
 } from "@/echo/services/knowledgeProgressTracker";
+import { useBackgroundCrawler } from "@/hooks/use-background-crawler";
 
 interface KnowledgeProgressDashboardProps {
   onModeChange?: (mode: "learning" | "on_demand") => void;
@@ -34,8 +36,9 @@ export function KnowledgeProgressDashboard({
   const [state, setState] = useState<KnowledgeProgressState>(
     tracker.getProgressState(),
   );
+  const { status, start, stop } = useBackgroundCrawler();
 
-  // Simulate periodic updates (in real app, this would be from the crawler)
+  // Update local state from tracker
   useEffect(() => {
     const interval = setInterval(() => {
       setState(tracker.getProgressState());
@@ -43,6 +46,14 @@ export function KnowledgeProgressDashboard({
 
     return () => clearInterval(interval);
   }, [tracker]);
+
+  const handleToggleCrawler = () => {
+    if (status.isRunning) {
+      stop();
+    } else {
+      start();
+    }
+  };
 
   const summary = tracker.getSummary();
   const modeColor =
@@ -83,20 +94,41 @@ export function KnowledgeProgressDashboard({
             <Globe className="w-5 h-5 text-blue-600" />
             Echo Knowledge Base Progress
           </h3>
-          <div
-            className={`px-3 py-1 rounded-full border ${modeColor} text-sm font-semibold flex items-center gap-2`}
-          >
-            {state.mode === "learning" ? (
-              <>
-                <Rocket className="w-4 h-4" />
-                Learning Mode
-              </>
-            ) : (
-              <>
-                <Zap className="w-4 h-4" />
-                On-Demand Mode
-              </>
-            )}
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={handleToggleCrawler}
+              variant={status.isRunning ? "default" : "outline"}
+              size="sm"
+              className="flex items-center gap-2"
+              title={status.isRunning ? "Stop Learning Mode" : "Start Learning Mode"}
+            >
+              {status.isRunning ? (
+                <>
+                  <Pause className="w-4 h-4" />
+                  Stop
+                </>
+              ) : (
+                <>
+                  <Play className="w-4 h-4" />
+                  Start
+                </>
+              )}
+            </Button>
+            <div
+              className={`px-3 py-1 rounded-full border ${modeColor} text-sm font-semibold flex items-center gap-2`}
+            >
+              {state.mode === "learning" ? (
+                <>
+                  <Rocket className="w-4 h-4" />
+                  Learning Mode
+                </>
+              ) : (
+                <>
+                  <Zap className="w-4 h-4" />
+                  On-Demand Mode
+                </>
+              )}
+            </div>
           </div>
         </div>
         <p className="text-sm text-slate-600">
