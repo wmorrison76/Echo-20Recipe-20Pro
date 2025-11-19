@@ -65,7 +65,10 @@ export class BackgroundKnowledgeCrawler {
     recipes: RecipeCodexMetadata[],
     ingredients: Record<string, any>,
   ): void {
-    if (this.manager) return; // Already initialized
+    if (this.manager) {
+      console.log("⚠️ Crawler already initialized, skipping");
+      return;
+    }
 
     this.manager = new KnowledgeManager({
       enableAutoCrawl: false,
@@ -77,9 +80,14 @@ export class BackgroundKnowledgeCrawler {
 
     this.manager.registerKnowledgeBase(recipes, ingredients);
 
-    console.log("✅ Background Knowledge Crawler initialized");
+    console.log(`✅ Background Knowledge Crawler initialized with:`);
+    console.log(`   - ${recipes.length} recipes`);
+    console.log(`   - ${Object.keys(ingredients).length} unique ingredients`);
+    console.log(`   - Crawl interval: ${this.config.crawlIntervalMs}ms`);
+    console.log(`   - Batch size: ${this.config.batchSize}`);
 
     if (this.config.enabled && this.config.mode === "learning") {
+      console.log("🚀 Starting crawler in Learning Mode automatically");
       this.start();
     }
   }
