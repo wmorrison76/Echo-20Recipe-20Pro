@@ -370,18 +370,19 @@ export class KnowledgeVettingEngine {
       scoreAdjustment += 0.1;
     }
 
-    // Check for metadata
+    // Check for metadata (less strict for user-imported)
     const metadataFields = Object.values(knowledge.metadata).filter(
       (v) => v !== null && v !== undefined && v !== "",
     ).length;
-    if (metadataFields < 3) {
+    const minMetadataFields = knowledge.source === "user_imported" ? 1 : 3;
+    if (metadataFields < minMetadataFields) {
       issues.push({
         type: "sparse_metadata",
-        message: "Content lacks detailed metadata",
-        severity: "warning",
+        message: `Content has minimal metadata (${metadataFields}/${minMetadataFields} fields)`,
+        severity: knowledge.source === "user_imported" ? "info" : "warning",
         affectedField: "metadata",
       });
-      scoreAdjustment -= 0.05;
+      scoreAdjustment += knowledge.source === "user_imported" ? 0 : -0.05;
     } else {
       checks.push({
         name: "Metadata Richness",
