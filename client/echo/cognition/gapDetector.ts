@@ -118,7 +118,8 @@ export class KnowledgeGapDetector {
     // Sort by priority and severity
     gaps.sort((a, b) => {
       const priorityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
-      const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
+      const priorityDiff =
+        priorityOrder[b.priority] - priorityOrder[a.priority];
       return priorityDiff !== 0 ? priorityDiff : b.severity - a.severity;
     });
 
@@ -141,7 +142,7 @@ export class KnowledgeGapDetector {
   detectGapsForIngredient(ingredientName: string): KnowledgeGap[] {
     const gaps: KnowledgeGap[] = [];
     const ingredient = Array.from(this.ingredients.values()).find(
-      (i) => i.name?.toLowerCase() === ingredientName.toLowerCase()
+      (i) => i.name?.toLowerCase() === ingredientName.toLowerCase(),
     );
 
     if (!ingredient) {
@@ -178,7 +179,11 @@ export class KnowledgeGapDetector {
         priority: "high",
         severity: 0.8,
         relatedTopics: ["nutrition", "calories", "macros"],
-        suggestedSources: ["ingredient_supplier", "academic_paper", "recipe_database"],
+        suggestedSources: [
+          "ingredient_supplier",
+          "academic_paper",
+          "recipe_database",
+        ],
         detectedAt: Date.now(),
         detectionReason: "Nutritional data missing for ingredient",
       });
@@ -229,7 +234,7 @@ export class KnowledgeGapDetector {
   private detectAllergenGaps(): KnowledgeGap[] {
     const gaps: KnowledgeGap[] = [];
     const recipesWithoutAllergens = Array.from(this.recipes.values()).filter(
-      (r) => !r.allergens || r.allergens.length === 0
+      (r) => !r.allergens || r.allergens.length === 0,
     );
 
     if (recipesWithoutAllergens.length > 0) {
@@ -239,7 +244,9 @@ export class KnowledgeGapDetector {
         title: "Allergen Information Gap",
         description: `${recipesWithoutAllergens.length} recipes missing allergen documentation`,
         affectedRecipes: recipesWithoutAllergens.map((r) => r.id),
-        affectedIngredients: this.extractIngredientsFromRecipes(recipesWithoutAllergens),
+        affectedIngredients: this.extractIngredientsFromRecipes(
+          recipesWithoutAllergens,
+        ),
         priority: "critical",
         severity: 1,
         relatedTopics: ["allergens", "food_safety", "regulations", "FDA"],
@@ -258,7 +265,7 @@ export class KnowledgeGapDetector {
   private detectNutritionGaps(): KnowledgeGap[] {
     const gaps: KnowledgeGap[] = [];
     const recipesWithoutNutrition = Array.from(this.recipes.values()).filter(
-      (r) => !r.nutrition || !r.nutrition.calories
+      (r) => !r.nutrition || !r.nutrition.calories,
     );
 
     if (recipesWithoutNutrition.length > 0) {
@@ -268,11 +275,17 @@ export class KnowledgeGapDetector {
         title: "Nutrition Data Gap",
         description: `${recipesWithoutNutrition.length} recipes missing nutritional information`,
         affectedRecipes: recipesWithoutNutrition.map((r) => r.id),
-        affectedIngredients: this.extractIngredientsFromRecipes(recipesWithoutNutrition),
+        affectedIngredients: this.extractIngredientsFromRecipes(
+          recipesWithoutNutrition,
+        ),
         priority: "high",
         severity: 0.8,
         relatedTopics: ["nutrition", "calories", "macros", "dietary_tracking"],
-        suggestedSources: ["ingredient_supplier", "academic_paper", "recipe_database"],
+        suggestedSources: [
+          "ingredient_supplier",
+          "academic_paper",
+          "recipe_database",
+        ],
         detectedAt: Date.now(),
         detectionReason: "Multiple recipes lack nutritional data",
       });
@@ -286,9 +299,9 @@ export class KnowledgeGapDetector {
    */
   private detectFlavorChemistryGaps(): KnowledgeGap[] {
     const gaps: KnowledgeGap[] = [];
-    const ingredientsWithoutChemistry = Array.from(this.ingredients.values()).filter(
-      (i) => !i.chemistry || !i.chemistry.volatiles
-    );
+    const ingredientsWithoutChemistry = Array.from(
+      this.ingredients.values(),
+    ).filter((i) => !i.chemistry || !i.chemistry.volatiles);
 
     if (ingredientsWithoutChemistry.length > 0) {
       gaps.push({
@@ -300,7 +313,12 @@ export class KnowledgeGapDetector {
         affectedRecipes: [],
         priority: "high",
         severity: 0.7,
-        relatedTopics: ["flavor_chemistry", "volatiles", "compounds", "flavor_balance"],
+        relatedTopics: [
+          "flavor_chemistry",
+          "volatiles",
+          "compounds",
+          "flavor_balance",
+        ],
         suggestedSources: ["academic_paper", "food_blog"],
         detectedAt: Date.now(),
         detectionReason: "Ingredients lack detailed chemistry profiles",
@@ -325,7 +343,7 @@ export class KnowledgeGapDetector {
 
     const documentedTechniques = Array.from(this.techniques.keys());
     const missingTechniques = criticalTechniques.filter(
-      (t) => !documentedTechniques.some((dt) => dt.includes(t))
+      (t) => !documentedTechniques.some((dt) => dt.includes(t)),
     );
 
     if (missingTechniques.length > 0) {
@@ -353,9 +371,9 @@ export class KnowledgeGapDetector {
    */
   private detectSubstitutionGaps(): KnowledgeGap[] {
     const gaps: KnowledgeGap[] = [];
-    const ingredientsWithoutSubstitutions = Array.from(this.ingredients.values()).filter(
-      (i) => !i.substitutions || i.substitutions.length === 0
-    );
+    const ingredientsWithoutSubstitutions = Array.from(
+      this.ingredients.values(),
+    ).filter((i) => !i.substitutions || i.substitutions.length === 0);
 
     if (ingredientsWithoutSubstitutions.length > this.ingredients.size * 0.2) {
       gaps.push({
@@ -367,7 +385,11 @@ export class KnowledgeGapDetector {
         affectedRecipes: [],
         priority: "medium",
         severity: 0.6,
-        relatedTopics: ["substitutions", "alternatives", "dietary_restrictions"],
+        relatedTopics: [
+          "substitutions",
+          "alternatives",
+          "dietary_restrictions",
+        ],
         suggestedSources: ["food_blog", "recipe_database"],
         detectedAt: Date.now(),
         detectionReason: "High percentage of ingredients without substitutions",
@@ -383,7 +405,7 @@ export class KnowledgeGapDetector {
   private detectCostGaps(): KnowledgeGap[] {
     const gaps: KnowledgeGap[] = [];
     const ingredientsWithoutCost = Array.from(this.ingredients.values()).filter(
-      (i) => !i.cost || !i.cost.unitPrice
+      (i) => !i.cost || !i.cost.unitPrice,
     );
 
     if (ingredientsWithoutCost.length > 0) {
@@ -411,8 +433,10 @@ export class KnowledgeGapDetector {
    */
   private detectIngredientSpecGaps(): KnowledgeGap[] {
     const gaps: KnowledgeGap[] = [];
-    const ingredientsWithoutSpecs = Array.from(this.ingredients.values()).filter(
-      (i) => !i.specifications || Object.keys(i.specifications).length === 0
+    const ingredientsWithoutSpecs = Array.from(
+      this.ingredients.values(),
+    ).filter(
+      (i) => !i.specifications || Object.keys(i.specifications).length === 0,
     );
 
     if (ingredientsWithoutSpecs.length > 0) {
@@ -441,7 +465,7 @@ export class KnowledgeGapDetector {
   private detectWorkflowGaps(): KnowledgeGap[] {
     const gaps: KnowledgeGap[] = [];
     const recipesWithoutPrepTime = Array.from(this.recipes.values()).filter(
-      (r) => !r.prepTime || !r.cookTime
+      (r) => !r.prepTime || !r.cookTime,
     );
 
     if (recipesWithoutPrepTime.length > 0) {
@@ -469,9 +493,15 @@ export class KnowledgeGapDetector {
    */
   private detectDietaryRestrictionGaps(): KnowledgeGap[] {
     const gaps: KnowledgeGap[] = [];
-    const requiredDiets = ["vegetarian", "vegan", "gluten_free", "dairy_free", "keto"];
+    const requiredDiets = [
+      "vegetarian",
+      "vegan",
+      "gluten_free",
+      "dairy_free",
+      "keto",
+    ];
     const recipesWithoutDietaryTags = Array.from(this.recipes.values()).filter(
-      (r) => !r.dietaryTags || r.dietaryTags.length === 0
+      (r) => !r.dietaryTags || r.dietaryTags.length === 0,
     );
 
     if (recipesWithoutDietaryTags.length > 0) {
@@ -499,8 +529,13 @@ export class KnowledgeGapDetector {
    */
   private detectSourcingGaps(): KnowledgeGap[] {
     const gaps: KnowledgeGap[] = [];
-    const ingredientsWithoutSourcing = Array.from(this.ingredients.values()).filter(
-      (i) => !i.sourcing || !i.sourcing.suppliers || i.sourcing.suppliers.length === 0
+    const ingredientsWithoutSourcing = Array.from(
+      this.ingredients.values(),
+    ).filter(
+      (i) =>
+        !i.sourcing ||
+        !i.sourcing.suppliers ||
+        i.sourcing.suppliers.length === 0,
     );
 
     if (ingredientsWithoutSourcing.length > 0) {
@@ -528,8 +563,10 @@ export class KnowledgeGapDetector {
    */
   private detectRegionalVariationGaps(): KnowledgeGap[] {
     const gaps: KnowledgeGap[] = [];
-    const cuisines = new Set(Array.from(this.recipes.values()).map((r) => r.cuisineRegion));
-    
+    const cuisines = new Set(
+      Array.from(this.recipes.values()).map((r) => r.cuisineRegion),
+    );
+
     if (cuisines.size < 8) {
       gaps.push({
         id: "regional_coverage",
@@ -556,7 +593,7 @@ export class KnowledgeGapDetector {
   private detectEquipmentGaps(): KnowledgeGap[] {
     const gaps: KnowledgeGap[] = [];
     const recipesWithoutEquipment = Array.from(this.recipes.values()).filter(
-      (r) => !r.equipment || r.equipment.length === 0
+      (r) => !r.equipment || r.equipment.length === 0,
     );
 
     if (recipesWithoutEquipment.length > this.recipes.size * 0.3) {
@@ -588,8 +625,8 @@ export class KnowledgeGapDetector {
         (r) =>
           r.ingredients &&
           r.ingredients.some((i) =>
-            i.name.toLowerCase().includes(ingredientName.toLowerCase())
-          )
+            i.name.toLowerCase().includes(ingredientName.toLowerCase()),
+          ),
       )
       .map((r) => r.id);
   }
@@ -597,7 +634,9 @@ export class KnowledgeGapDetector {
   /**
    * Helper: Extract ingredients from recipes
    */
-  private extractIngredientsFromRecipes(recipes: RecipeCodexMetadata[]): string[] {
+  private extractIngredientsFromRecipes(
+    recipes: RecipeCodexMetadata[],
+  ): string[] {
     const ingredients = new Set<string>();
     recipes.forEach((recipe) => {
       recipe.ingredients?.forEach((ingredient) => {
@@ -612,23 +651,23 @@ export class KnowledgeGapDetector {
    */
   private getCurrentKnowledgeState(): CurrentKnowledgeState {
     const recipesWithAllergens = Array.from(this.recipes.values()).filter(
-      (r) => r.allergens && r.allergens.length > 0
+      (r) => r.allergens && r.allergens.length > 0,
     ).length;
 
     const recipesWithNutrition = Array.from(this.recipes.values()).filter(
-      (r) => r.nutrition && r.nutrition.calories
+      (r) => r.nutrition && r.nutrition.calories,
     ).length;
 
-    const ingredientsWithChemistry = Array.from(this.ingredients.values()).filter(
-      (i) => i.chemistry && i.chemistry.acidity !== undefined
-    ).length;
+    const ingredientsWithChemistry = Array.from(
+      this.ingredients.values(),
+    ).filter((i) => i.chemistry && i.chemistry.acidity !== undefined).length;
 
     const substitutionRules = Array.from(this.ingredients.values()).filter(
-      (i) => i.substitutions && i.substitutions.length > 0
+      (i) => i.substitutions && i.substitutions.length > 0,
     ).length;
 
     const costDataPoints = Array.from(this.ingredients.values()).filter(
-      (i) => i.cost && i.cost.unitPrice
+      (i) => i.cost && i.cost.unitPrice,
     ).length;
 
     return {
@@ -649,9 +688,11 @@ export class KnowledgeGapDetector {
     const state = this.getCurrentKnowledgeState();
 
     return {
-      allergen_information: (state.recipesWithAllergens / state.totalRecipes) * 100,
+      allergen_information:
+        (state.recipesWithAllergens / state.totalRecipes) * 100,
       nutrition_data: (state.recipesWithNutrition / state.totalRecipes) * 100,
-      flavor_chemistry: (state.ingredientsWithChemistry / this.ingredients.size) * 100,
+      flavor_chemistry:
+        (state.ingredientsWithChemistry / this.ingredients.size) * 100,
       technique: (state.techniquesDocumented / 12) * 100, // Assume 12 critical techniques
       substitutions: (state.substitutionRules / this.ingredients.size) * 100,
       cost_data: (state.costDataPoints / this.ingredients.size) * 100,
@@ -659,7 +700,8 @@ export class KnowledgeGapDetector {
       workflow_optimization: 50, // Estimated
       dietary_restrictions: 60, // Estimated
       sourcing_information: 40, // Estimated
-      regional_variations: (Array.from(this.recipes.values()).length > 0 ? 50 : 0), // Estimated
+      regional_variations:
+        Array.from(this.recipes.values()).length > 0 ? 50 : 0, // Estimated
       equipment_specifications: 30, // Estimated
     };
   }
@@ -667,7 +709,10 @@ export class KnowledgeGapDetector {
   /**
    * Helper: Generate summary
    */
-  private generateSummary(gaps: KnowledgeGap[], state: CurrentKnowledgeState): string {
+  private generateSummary(
+    gaps: KnowledgeGap[],
+    state: CurrentKnowledgeState,
+  ): string {
     const criticalGaps = gaps.filter((g) => g.priority === "critical").length;
     const highGaps = gaps.filter((g) => g.priority === "high").length;
 
@@ -682,28 +727,32 @@ export class KnowledgeGapDetector {
 
     if (gaps.some((g) => g.category === "allergen_information")) {
       recommendations.push(
-        "CRITICAL: Prioritize allergen documentation from ingredient suppliers and academic sources"
+        "CRITICAL: Prioritize allergen documentation from ingredient suppliers and academic sources",
       );
     }
 
     if (gaps.some((g) => g.category === "nutrition_data")) {
       recommendations.push(
-        "HIGH PRIORITY: Complete nutritional profiles using USDA data and supplier specs"
+        "HIGH PRIORITY: Complete nutritional profiles using USDA data and supplier specs",
       );
     }
 
     if (gaps.some((g) => g.category === "flavor_chemistry")) {
       recommendations.push(
-        "HIGH PRIORITY: Build flavor chemistry database from academic papers and Serious Eats"
+        "HIGH PRIORITY: Build flavor chemistry database from academic papers and Serious Eats",
       );
     }
 
     if (gaps.some((g) => g.category === "technique")) {
-      recommendations.push("Schedule technique documentation from YouTube channels");
+      recommendations.push(
+        "Schedule technique documentation from YouTube channels",
+      );
     }
 
     if (gaps.some((g) => g.category === "substitutions")) {
-      recommendations.push("Expand substitution rules from food blogs and community feedback");
+      recommendations.push(
+        "Expand substitution rules from food blogs and community feedback",
+      );
     }
 
     if (gaps.some((g) => g.category === "cost_data")) {

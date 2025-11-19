@@ -32,7 +32,7 @@ export function KnowledgeProgressDashboard({
 }: KnowledgeProgressDashboardProps) {
   const [tracker] = useState(() => new KnowledgeProgressTracker());
   const [state, setState] = useState<KnowledgeProgressState>(
-    tracker.getProgressState()
+    tracker.getProgressState(),
   );
 
   // Simulate periodic updates (in real app, this would be from the crawler)
@@ -83,7 +83,9 @@ export function KnowledgeProgressDashboard({
             <Globe className="w-5 h-5 text-blue-600" />
             Echo Knowledge Base Progress
           </h3>
-          <div className={`px-3 py-1 rounded-full border ${modeColor} text-sm font-semibold flex items-center gap-2`}>
+          <div
+            className={`px-3 py-1 rounded-full border ${modeColor} text-sm font-semibold flex items-center gap-2`}
+          >
             {state.mode === "learning" ? (
               <>
                 <Rocket className="w-4 h-4" />
@@ -155,7 +157,7 @@ export function KnowledgeProgressDashboard({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {state.culinaryMetrics.map((metric) => {
               const completedCheckpoints = Object.values(
-                metric.checkpoints
+                metric.checkpoints,
               ).filter((v) => v).length;
 
               return (
@@ -171,9 +173,7 @@ export function KnowledgeProgressDashboard({
                       </p>
                     </div>
                     <Badge
-                      variant={
-                        metric.coverage >= 60 ? "default" : "secondary"
-                      }
+                      variant={metric.coverage >= 60 ? "default" : "secondary"}
                     >
                       {metric.coverage}%
                     </Badge>
@@ -328,7 +328,11 @@ export function KnowledgeProgressDashboard({
             <div className="space-y-1">
               <p className="text-sm text-slate-600">Culinary Types</p>
               <p className="text-2xl font-bold">
-                {state.culinaryMetrics.filter((m) => m.itemsApproved > 0).length}/5
+                {
+                  state.culinaryMetrics.filter((m) => m.itemsApproved > 0)
+                    .length
+                }
+                /5
               </p>
             </div>
           </CardContent>
@@ -338,7 +342,8 @@ export function KnowledgeProgressDashboard({
             <div className="space-y-1">
               <p className="text-sm text-slate-600">Regions</p>
               <p className="text-2xl font-bold">
-                {state.regionalMetrics.filter((m) => m.recipesCount > 0).length}/16
+                {state.regionalMetrics.filter((m) => m.recipesCount > 0).length}
+                /16
               </p>
             </div>
           </CardContent>

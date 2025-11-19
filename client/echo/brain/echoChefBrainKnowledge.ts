@@ -4,11 +4,16 @@
  * Provides unified interface for culinary intelligence with knowledge management
  */
 
-import KnowledgeManager, { type KnowledgeManagementConfig } from "../cognition/knowledgeManager";
+import KnowledgeManager, {
+  type KnowledgeManagementConfig,
+} from "../cognition/knowledgeManager";
 import KnowledgeCrawler from "../cognition/knowledgeCrawler";
 import KnowledgeGapDetector from "../cognition/gapDetector";
 import KnowledgeVettingEngine from "../cognition/knowledgeVetting";
-import type { CrawledKnowledge, TriggerType } from "../cognition/knowledgeCrawler";
+import type {
+  CrawledKnowledge,
+  TriggerType,
+} from "../cognition/knowledgeCrawler";
 import type { GapAnalysis, KnowledgeGap } from "../cognition/gapDetector";
 import type { VettingResult } from "../cognition/knowledgeVetting";
 import type { RecipeCodexMetadata } from "../codex";
@@ -42,7 +47,7 @@ export class EchoChefBrainWithKnowledge {
 
   constructor(
     culinaryBrain?: any,
-    knowledgeConfig?: Partial<ChefBrainKnowledgeConfig>
+    knowledgeConfig?: Partial<ChefBrainKnowledgeConfig>,
   ) {
     const defaultConfig: ChefBrainKnowledgeConfig = {
       enableAutoCrawl: false,
@@ -59,7 +64,7 @@ export class EchoChefBrainWithKnowledge {
         enableAutoVetting: defaultConfig.enableAutoVetting,
         enableGapDetection: defaultConfig.enableGapDetection,
       },
-      culinaryBrain
+      culinaryBrain,
     );
 
     this.crawler = new KnowledgeCrawler();
@@ -72,7 +77,7 @@ export class EchoChefBrainWithKnowledge {
    */
   initializeKnowledgeBase(
     recipes: RecipeCodexMetadata[],
-    ingredients: Record<string, any>
+    ingredients: Record<string, any>,
   ): void {
     this.manager.registerKnowledgeBase(recipes, ingredients);
     this.gapDetector.registerRecipes(recipes);
@@ -84,7 +89,7 @@ export class EchoChefBrainWithKnowledge {
    */
   async suggestWithKnowledge(
     query: string,
-    baseRecipes?: RecipeCodexMetadata[]
+    baseRecipes?: RecipeCodexMetadata[],
   ): Promise<KnowledgeEnrichedSuggestion[]> {
     const suggestions: KnowledgeEnrichedSuggestion[] = [];
 
@@ -107,7 +112,8 @@ export class EchoChefBrainWithKnowledge {
 
         if (knowledge.metadata.ingredients) {
           for (const ingredient of knowledge.metadata.ingredients) {
-            const ingredientGaps = this.gapDetector.detectGapsForIngredient(ingredient);
+            const ingredientGaps =
+              this.gapDetector.detectGapsForIngredient(ingredient);
             gaps.push(...ingredientGaps);
           }
         }
@@ -115,7 +121,8 @@ export class EchoChefBrainWithKnowledge {
         suggestions.push({
           title: knowledge.title,
           description: knowledge.content.substring(0, 200),
-          source: vetResult.level === "approved" ? "knowledge_enhanced" : "existing",
+          source:
+            vetResult.level === "approved" ? "knowledge_enhanced" : "existing",
           knowledgeSources: [knowledge],
           confidence: vetResult.score,
           gaps: gaps.slice(0, 3),
@@ -131,7 +138,7 @@ export class EchoChefBrainWithKnowledge {
    * Auto-fill missing allergen information
    */
   async enrichWithAllergenData(
-    recipe: RecipeCodexMetadata
+    recipe: RecipeCodexMetadata,
   ): Promise<RecipeCodexMetadata> {
     if (recipe.allergens && recipe.allergens.length > 0) {
       return recipe; // Already has allergen data
@@ -184,7 +191,8 @@ export class EchoChefBrainWithKnowledge {
       maxResultsPerSource: 15,
     });
 
-    const substitutions: Array<{ name: string; ratio: number; notes: string }> = [];
+    const substitutions: Array<{ name: string; ratio: number; notes: string }> =
+      [];
     const sources: CrawledKnowledge[] = [];
 
     for (const knowledge of crawlResult.knowledge) {
@@ -192,7 +200,7 @@ export class EchoChefBrainWithKnowledge {
       if (knowledge.extractedRecipes) {
         for (const recipe of knowledge.extractedRecipes) {
           const maybeSubstitution = recipe.ingredients.find(
-            (ing) => !ing.name.toLowerCase().includes(ingredient.toLowerCase())
+            (ing) => !ing.name.toLowerCase().includes(ingredient.toLowerCase()),
           );
 
           if (maybeSubstitution) {
@@ -210,9 +218,7 @@ export class EchoChefBrainWithKnowledge {
 
     // Deduplicate
     const uniqueSubstitutions = Array.from(
-      new Map(
-        substitutions.map((s) => [s.name, s])
-      ).values()
+      new Map(substitutions.map((s) => [s.name, s])).values(),
     );
 
     return {
@@ -258,7 +264,7 @@ export class EchoChefBrainWithKnowledge {
    */
   async integrateKnowledge(
     knowledge: CrawledKnowledge,
-    skipVetting: boolean = false
+    skipVetting: boolean = false,
   ): Promise<VettingResult> {
     if (skipVetting) {
       // Direct integration (admin only)
@@ -275,14 +281,18 @@ export class EchoChefBrainWithKnowledge {
    */
   async expandKnowledgeArea(
     area: "allergens" | "nutrition" | "technique" | "flavor" | "cost",
-    specificTopics?: string[]
+    specificTopics?: string[],
   ): Promise<{
     crawlResults: any;
     vetResults: VettingResult[];
     newKnowledge: number;
   }> {
     const topicsMap = {
-      allergens: ["FDA allergens", "cross contamination prevention", "allergen labeling"],
+      allergens: [
+        "FDA allergens",
+        "cross contamination prevention",
+        "allergen labeling",
+      ],
       nutrition: ["macronutrient ratios", "caloric content", "micronutrients"],
       technique: [
         "emulsification",
@@ -295,7 +305,10 @@ export class EchoChefBrainWithKnowledge {
     };
 
     const topics = specificTopics || topicsMap[area];
-    const results = await this.manager.expandKnowledge(topics.join(" "), "manual");
+    const results = await this.manager.expandKnowledge(
+      topics.join(" "),
+      "manual",
+    );
 
     return {
       crawlResults: results.crawlResult,
@@ -327,7 +340,12 @@ Covered Domains: ${metrics.coveredDomains.join(", ")}
 Critical Gaps Detected: ${gaps?.gaps.filter((g) => g.priority === "critical").length || 0}
 
 Top Recommendations:
-${gaps?.recommendations.slice(0, 5).map((r) => `- ${r}`).join("\n") || "No gaps detected"}
+${
+  gaps?.recommendations
+    .slice(0, 5)
+    .map((r) => `- ${r}`)
+    .join("\n") || "No gaps detected"
+}
 `;
 
     return report;

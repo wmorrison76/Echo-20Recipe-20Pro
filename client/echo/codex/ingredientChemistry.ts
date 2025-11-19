@@ -6,43 +6,43 @@
 
 export interface ChemicalComponent {
   name: string;
-  percentage?: number;         // % of ingredient mass
-  intensity?: number;          // 0–1 perceived impact (0=undetectable, 1=dominant)
-  notes?: string;              // aromatic descriptors (citrusy, green, floral, etc.)
+  percentage?: number; // % of ingredient mass
+  intensity?: number; // 0–1 perceived impact (0=undetectable, 1=dominant)
+  notes?: string; // aromatic descriptors (citrusy, green, floral, etc.)
 }
 
 export interface IngredientChemistryProfile {
-  ingredientId: string;        // cross-ref to IngredientCodexEntry.id
-  name: string;                // human readable: "white vinegar", "extra virgin olive oil"
+  ingredientId: string; // cross-ref to IngredientCodexEntry.id
+  name: string; // human readable: "white vinegar", "extra virgin olive oil"
 
   // Acidity & pH
-  acidity?: number;            // pH scale (0–14)
-  acidPercentage?: number;     // e.g., vinegar 4–8%, lemon juice 5–6%, cream 0%
+  acidity?: number; // pH scale (0–14)
+  acidPercentage?: number; // e.g., vinegar 4–8%, lemon juice 5–6%, cream 0%
 
   // Macronutrient Composition
-  fatPercentage?: number;      // oils 100%, butter 80%, egg yolk 30%, cream 35%
-  sugarPercentage?: number;    // honey 80%, fruit varies, vinegar ~0%
-  proteinPercentage?: number;  // egg 12%, yogurt 3%, mustard 1%
-  waterActivity?: number;      // aw level (0–1); lower = more shelf-stable
+  fatPercentage?: number; // oils 100%, butter 80%, egg yolk 30%, cream 35%
+  sugarPercentage?: number; // honey 80%, fruit varies, vinegar ~0%
+  proteinPercentage?: number; // egg 12%, yogurt 3%, mustard 1%
+  waterActivity?: number; // aw level (0–1); lower = more shelf-stable
 
   // Volatile Aromatics & Flavor Compounds
   volatiles: ChemicalComponent[];
 
   // Emulsification Properties
-  emulsifiers?: boolean;       // true if contains lecithin, egg, mustard
-  emulsionStrength?: number;   // how well stabilizes emulsions (0–1)
+  emulsifiers?: boolean; // true if contains lecithin, egg, mustard
+  emulsionStrength?: number; // how well stabilizes emulsions (0–1)
 
   // Texture-Modifying Properties
-  thickeningPower?: number;    // starches/gums/purées (0–1)
-  saltinessFactor?: number;    // relative salt perception (0–1)
+  thickeningPower?: number; // starches/gums/purées (0–1)
+  saltinessFactor?: number; // relative salt perception (0–1)
 
   // Browning / Color Development
-  maillardPotential?: number;  // how readily browns (0–1)
+  maillardPotential?: number; // how readily browns (0–1)
   caramelizationPotential?: number; // sugar browning (0–1)
 
   // Flavor Characteristics
   basicTastes?: {
-    sweet?: number;            // 0–1
+    sweet?: number; // 0–1
     salty?: number;
     sour?: number;
     bitter?: number;
@@ -50,7 +50,7 @@ export interface IngredientChemistryProfile {
   };
 
   // Interaction Notes
-  notes?: string;              // special properties, warnings, pairings
+  notes?: string; // special properties, warnings, pairings
 }
 
 /**
@@ -71,7 +71,11 @@ export const INGREDIENT_CHEMISTRY_DATABASE: Record<
     waterActivity: 0.95,
     volatiles: [
       { name: "acetic acid", intensity: 0.9, notes: "sharp, pungent" },
-      { name: "sulfur compounds", intensity: 0.3, notes: "slight vinegar notes" },
+      {
+        name: "sulfur compounds",
+        intensity: 0.3,
+        notes: "slight vinegar notes",
+      },
     ],
     emulsifiers: false,
     thickeningPower: 0,
@@ -121,7 +125,7 @@ export const INGREDIENT_CHEMISTRY_DATABASE: Record<
     notes: "Excellent emulsifier; salt and vinegar content add seasoning",
   },
 
-  "honey": {
+  honey: {
     ingredientId: "honey",
     name: "Raw Honey",
     acidity: 3.9,
@@ -181,7 +185,7 @@ export const INGREDIENT_CHEMISTRY_DATABASE: Record<
     notes: "Premier emulsifier; ~3g per 250ml oil max for mayo",
   },
 
-  "butter": {
+  butter: {
     ingredientId: "butter",
     name: "Unsalted Butter",
     acidity: undefined,
@@ -201,7 +205,7 @@ export const INGREDIENT_CHEMISTRY_DATABASE: Record<
     notes: "Lower melting point than oil; separates if overheated in emulsions",
   },
 
-  "garlic": {
+  garlic: {
     ingredientId: "garlic",
     name: "Fresh Garlic",
     acidity: undefined,
@@ -221,7 +225,7 @@ export const INGREDIENT_CHEMISTRY_DATABASE: Record<
     notes: "Raw = sharp; cooked = sweet; develops sweetness with long cooking",
   },
 
-  "shallot": {
+  shallot: {
     ingredientId: "shallot",
     name: "Shallot",
     acidity: 6.5,
@@ -241,7 +245,7 @@ export const INGREDIENT_CHEMISTRY_DATABASE: Record<
     notes: "Milder than garlic; adds sweetness when cooked",
   },
 
-  "mayonnaise": {
+  mayonnaise: {
     ingredientId: "mayonnaise",
     name: "Mayonnaise (Store-bought)",
     acidity: 3.8,
@@ -257,7 +261,8 @@ export const INGREDIENT_CHEMISTRY_DATABASE: Record<
     thickeningPower: 0.8,
     saltinessFactor: 0.3,
     basicTastes: { salty: 0.2, umami: 0.1 },
-    notes: "Pre-made emulsion; add carefully to other emulsions to avoid breaking",
+    notes:
+      "Pre-made emulsion; add carefully to other emulsions to avoid breaking",
   },
 };
 
@@ -265,7 +270,7 @@ export const INGREDIENT_CHEMISTRY_DATABASE: Record<
  * Helper: Get default profile for an ingredient
  */
 export function getIngredientChemistry(
-  ingredientId: string
+  ingredientId: string,
 ): IngredientChemistryProfile | undefined {
   return INGREDIENT_CHEMISTRY_DATABASE[ingredientId];
 }

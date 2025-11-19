@@ -18,7 +18,11 @@ export type KnowledgeSource =
   | "ingredient_supplier"
   | "user_imported";
 
-export type TriggerType = "user_query" | "gap_detection" | "scheduled" | "manual";
+export type TriggerType =
+  | "user_query"
+  | "gap_detection"
+  | "scheduled"
+  | "manual";
 
 export interface CrawledKnowledge {
   id: string;
@@ -101,7 +105,14 @@ export class KnowledgeCrawler {
 
   constructor(config: Partial<CrawlerConfig> = {}) {
     this.config = {
-      sources: ["recipe_database", "academic_paper", "restaurant_menu", "youtube_video", "food_blog", "ingredient_supplier"],
+      sources: [
+        "recipe_database",
+        "academic_paper",
+        "restaurant_menu",
+        "youtube_video",
+        "food_blog",
+        "ingredient_supplier",
+      ],
       maxResultsPerSource: 50,
       includePdf: true,
       includeVideo: true,
@@ -117,7 +128,7 @@ export class KnowledgeCrawler {
    */
   async crawlByQuery(
     query: string,
-    options: Partial<CrawlerConfig> = {}
+    options: Partial<CrawlerConfig> = {},
   ): Promise<CrawlerResult> {
     const startTime = Date.now();
     const mergedConfig = { ...this.config, ...options };
@@ -128,7 +139,11 @@ export class KnowledgeCrawler {
     for (const source of mergedConfig.sources) {
       try {
         await this.delay(mergedConfig.rateLimitDelayMs);
-        const sourceKnowledge = await this.crawlSource(query, source, mergedConfig);
+        const sourceKnowledge = await this.crawlSource(
+          query,
+          source,
+          mergedConfig,
+        );
         knowledge.push(...sourceKnowledge);
         successCount += sourceKnowledge.length;
       } catch (error) {
@@ -150,7 +165,10 @@ export class KnowledgeCrawler {
   /**
    * Crawl a specific knowledge gap
    */
-  async crawlGap(gapType: string, gapDescription: string): Promise<CrawlerResult> {
+  async crawlGap(
+    gapType: string,
+    gapDescription: string,
+  ): Promise<CrawlerResult> {
     const query = `${gapType}: ${gapDescription}`;
     const result = await this.crawlByQuery(query, {
       sources: this.selectSourcesForGap(gapType),
@@ -180,7 +198,7 @@ export class KnowledgeCrawler {
    */
   async crawlManual(
     query: string,
-    config: Partial<CrawlerConfig>
+    config: Partial<CrawlerConfig>,
   ): Promise<CrawlerResult> {
     return this.crawlByQuery(query, config);
   }
@@ -191,53 +209,39 @@ export class KnowledgeCrawler {
   private async crawlSource(
     query: string,
     source: KnowledgeSource,
-    config: CrawlerConfig
+    config: CrawlerConfig,
   ): Promise<CrawledKnowledge[]> {
     const knowledge: CrawledKnowledge[] = [];
 
     switch (source) {
       case "recipe_database":
-        knowledge.push(
-          ...(await this.crawlRecipeDatabases(query, config))
-        );
+        knowledge.push(...(await this.crawlRecipeDatabases(query, config)));
         break;
 
       case "academic_paper":
-        knowledge.push(
-          ...(await this.crawlAcademicPapers(query, config))
-        );
+        knowledge.push(...(await this.crawlAcademicPapers(query, config)));
         break;
 
       case "restaurant_menu":
-        knowledge.push(
-          ...(await this.crawlRestaurantMenus(query, config))
-        );
+        knowledge.push(...(await this.crawlRestaurantMenus(query, config)));
         break;
 
       case "youtube_video":
         if (config.includeVideo) {
-          knowledge.push(
-            ...(await this.crawlYouTubeVideos(query, config))
-          );
+          knowledge.push(...(await this.crawlYouTubeVideos(query, config)));
         }
         break;
 
       case "food_blog":
-        knowledge.push(
-          ...(await this.crawlFoodBlogs(query, config))
-        );
+        knowledge.push(...(await this.crawlFoodBlogs(query, config)));
         break;
 
       case "ingredient_supplier":
-        knowledge.push(
-          ...(await this.crawlIngredientSuppliers(query, config))
-        );
+        knowledge.push(...(await this.crawlIngredientSuppliers(query, config)));
         break;
 
       case "user_imported":
-        knowledge.push(
-          ...(await this.crawlUserImportedContent(query, config))
-        );
+        knowledge.push(...(await this.crawlUserImportedContent(query, config)));
         break;
     }
 
@@ -249,7 +253,7 @@ export class KnowledgeCrawler {
    */
   private async crawlRecipeDatabases(
     query: string,
-    config: CrawlerConfig
+    config: CrawlerConfig,
   ): Promise<CrawledKnowledge[]> {
     const knowledge: CrawledKnowledge[] = [];
 
@@ -267,12 +271,17 @@ export class KnowledgeCrawler {
         for (const recipe of recipes.slice(0, config.maxResultsPerSource)) {
           const extracted = this.extractRecipeData(recipe);
 
-          if (config.filterByAllergen && !this.hasNoAllergens(extracted, config.filterByAllergen)) {
+          if (
+            config.filterByAllergen &&
+            !this.hasNoAllergens(extracted, config.filterByAllergen)
+          ) {
             continue;
           }
 
           knowledge.push({
-            id: `db_${db.name}_${extracted.title}`.toLowerCase().replace(/\s+/g, "_"),
+            id: `db_${db.name}_${extracted.title}`
+              .toLowerCase()
+              .replace(/\s+/g, "_"),
             title: extracted.title,
             source: "recipe_database",
             sourceUrl: recipe.url || db.apiUrl,
@@ -307,7 +316,7 @@ export class KnowledgeCrawler {
    */
   private async crawlAcademicPapers(
     query: string,
-    config: CrawlerConfig
+    config: CrawlerConfig,
   ): Promise<CrawledKnowledge[]> {
     const knowledge: CrawledKnowledge[] = [];
 
@@ -315,7 +324,10 @@ export class KnowledgeCrawler {
       { name: "PubMed Central", apiUrl: "https://www.ncbi.nlm.nih.gov/pmc/" },
       { name: "Google Scholar", apiUrl: "https://scholar.google.com" },
       { name: "ResearchGate", apiUrl: "https://www.researchgate.net" },
-      { name: "Flavor Chemistry Journals", apiUrl: "https://pubs.acs.org/journal/jafcau" },
+      {
+        name: "Flavor Chemistry Journals",
+        apiUrl: "https://pubs.acs.org/journal/jafcau",
+      },
     ];
 
     for (const source of academicSources) {
@@ -332,10 +344,18 @@ export class KnowledgeCrawler {
             metadata: {
               author: paper.authors?.join(", "),
               publishDate: paper.publishDate,
-              cuisine: paper.keywords?.find((k: string) => k.includes("cuisine")),
+              cuisine: paper.keywords?.find((k: string) =>
+                k.includes("cuisine"),
+              ),
               technique: paper.keywords || [],
-              ingredients: paper.keywords?.filter((k: string) => k.match(/ingredient|compound|chemical/i)) || [],
-              allergens: paper.keywords?.filter((k: string) => k.match(/allergen|sensitivity/i)) || [],
+              ingredients:
+                paper.keywords?.filter((k: string) =>
+                  k.match(/ingredient|compound|chemical/i),
+                ) || [],
+              allergens:
+                paper.keywords?.filter((k: string) =>
+                  k.match(/allergen|sensitivity/i),
+                ) || [],
             },
             rawData: paper,
             crawledAt: Date.now(),
@@ -355,7 +375,7 @@ export class KnowledgeCrawler {
    */
   private async crawlRestaurantMenus(
     query: string,
-    config: CrawlerConfig
+    config: CrawlerConfig,
   ): Promise<CrawledKnowledge[]> {
     const knowledge: CrawledKnowledge[] = [];
 
@@ -373,7 +393,9 @@ export class KnowledgeCrawler {
           const dishes = this.extractDishesFromMenu(menu);
 
           knowledge.push({
-            id: `menu_${menu.restaurantName || ""}`.toLowerCase().replace(/\s+/g, "_"),
+            id: `menu_${menu.restaurantName || ""}`
+              .toLowerCase()
+              .replace(/\s+/g, "_"),
             title: menu.restaurantName || "Restaurant Menu",
             source: "restaurant_menu",
             sourceUrl: menu.url || source.apiUrl,
@@ -404,7 +426,7 @@ export class KnowledgeCrawler {
    */
   private async crawlYouTubeVideos(
     query: string,
-    config: CrawlerConfig
+    config: CrawlerConfig,
   ): Promise<CrawledKnowledge[]> {
     const knowledge: CrawledKnowledge[] = [];
 
@@ -451,7 +473,7 @@ export class KnowledgeCrawler {
    */
   private async crawlFoodBlogs(
     query: string,
-    config: CrawlerConfig
+    config: CrawlerConfig,
   ): Promise<CrawledKnowledge[]> {
     const knowledge: CrawledKnowledge[] = [];
 
@@ -468,7 +490,9 @@ export class KnowledgeCrawler {
 
         for (const post of posts.slice(0, config.maxResultsPerSource)) {
           knowledge.push({
-            id: `blog_${blog.name}_${post.slug}`.toLowerCase().replace(/\s+/g, "_"),
+            id: `blog_${blog.name}_${post.slug}`
+              .toLowerCase()
+              .replace(/\s+/g, "_"),
             title: post.title,
             source: "food_blog",
             sourceUrl: post.url || `https://${blog.domain}`,
@@ -498,7 +522,7 @@ export class KnowledgeCrawler {
    */
   private async crawlIngredientSuppliers(
     query: string,
-    config: CrawlerConfig
+    config: CrawlerConfig,
   ): Promise<CrawledKnowledge[]> {
     const knowledge: CrawledKnowledge[] = [];
 
@@ -511,7 +535,10 @@ export class KnowledgeCrawler {
 
     for (const supplier of suppliers) {
       try {
-        const products = await this.fetchSupplierProducts(supplier.domain, query);
+        const products = await this.fetchSupplierProducts(
+          supplier.domain,
+          query,
+        );
 
         for (const product of products.slice(0, config.maxResultsPerSource)) {
           knowledge.push({
@@ -543,7 +570,7 @@ export class KnowledgeCrawler {
    */
   private async crawlUserImportedContent(
     query: string,
-    config: CrawlerConfig
+    config: CrawlerConfig,
   ): Promise<CrawledKnowledge[]> {
     // This would be integrated with the existing PDF import system
     // For now, return empty to avoid breaking changes
@@ -555,14 +582,22 @@ export class KnowledgeCrawler {
    */
   private selectSourcesForGap(gapType: string): KnowledgeSource[] {
     const sourceMap: Record<string, KnowledgeSource[]> = {
-      "allergen_information": ["recipe_database", "academic_paper", "ingredient_supplier"],
-      "nutrition_data": ["academic_paper", "ingredient_supplier", "recipe_database"],
-      "flavor_chemistry": ["academic_paper", "food_blog"],
-      "technique": ["youtube_video", "food_blog", "restaurant_menu"],
-      "substitutions": ["food_blog", "recipe_database"],
-      "cost_data": ["ingredient_supplier", "restaurant_menu"],
-      "ingredient_specs": ["ingredient_supplier", "academic_paper"],
-      "workflow_optimization": ["restaurant_menu", "food_blog", "youtube_video"],
+      allergen_information: [
+        "recipe_database",
+        "academic_paper",
+        "ingredient_supplier",
+      ],
+      nutrition_data: [
+        "academic_paper",
+        "ingredient_supplier",
+        "recipe_database",
+      ],
+      flavor_chemistry: ["academic_paper", "food_blog"],
+      technique: ["youtube_video", "food_blog", "restaurant_menu"],
+      substitutions: ["food_blog", "recipe_database"],
+      cost_data: ["ingredient_supplier", "restaurant_menu"],
+      ingredient_specs: ["ingredient_supplier", "academic_paper"],
+      workflow_optimization: ["restaurant_menu", "food_blog", "youtube_video"],
     };
 
     return sourceMap[gapType] || this.config.sources;
@@ -571,11 +606,14 @@ export class KnowledgeCrawler {
   /**
    * Helper: Check if recipe has no specified allergens
    */
-  private hasNoAllergens(recipe: ExtractedRecipe, allergenFilter: string[]): boolean {
+  private hasNoAllergens(
+    recipe: ExtractedRecipe,
+    allergenFilter: string[],
+  ): boolean {
     return !recipe.allergens.some((allergen) =>
       allergenFilter.some((filter) =>
-        allergen.toLowerCase().includes(filter.toLowerCase())
-      )
+        allergen.toLowerCase().includes(filter.toLowerCase()),
+      ),
     );
   }
 

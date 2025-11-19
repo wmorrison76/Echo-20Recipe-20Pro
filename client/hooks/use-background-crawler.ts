@@ -86,21 +86,27 @@ export function useBackgroundCrawler() {
     updateStatus();
   }, [updateStatus]);
 
-  const setMode = useCallback((mode: "learning" | "on_demand") => {
-    const crawler = getBackgroundCrawler();
-    crawler.setMode(mode);
-    updateStatus();
-  }, [updateStatus]);
-
-  const crawlTopic = useCallback(async (topic: string) => {
-    try {
+  const setMode = useCallback(
+    (mode: "learning" | "on_demand") => {
       const crawler = getBackgroundCrawler();
-      await crawler.crawlTopic(topic);
+      crawler.setMode(mode);
       updateStatus();
-    } catch (error) {
-      console.error("Error crawling topic:", error);
-    }
-  }, [updateStatus]);
+    },
+    [updateStatus],
+  );
+
+  const crawlTopic = useCallback(
+    async (topic: string) => {
+      try {
+        const crawler = getBackgroundCrawler();
+        await crawler.crawlTopic(topic);
+        updateStatus();
+      } catch (error) {
+        console.error("Error crawling topic:", error);
+      }
+    },
+    [updateStatus],
+  );
 
   return {
     status,

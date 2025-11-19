@@ -74,7 +74,7 @@ export class KnowledgeManager {
 
   constructor(
     config: Partial<KnowledgeManagementConfig> = {},
-    culinaryBrain?: any
+    culinaryBrain?: any,
   ) {
     this.config = {
       enableAutoCrawl: false,
@@ -100,7 +100,10 @@ export class KnowledgeManager {
   /**
    * Register knowledge base components
    */
-  registerKnowledgeBase(recipes: RecipeCodexMetadata[], ingredients: Record<string, any>): void {
+  registerKnowledgeBase(
+    recipes: RecipeCodexMetadata[],
+    ingredients: Record<string, any>,
+  ): void {
     this.gapDetector.registerRecipes(recipes);
     this.gapDetector.registerIngredients(ingredients);
 
@@ -114,7 +117,10 @@ export class KnowledgeManager {
   /**
    * Run complete knowledge expansion workflow
    */
-  async expandKnowledge(query: string, triggerType: TriggerType = "user_query"): Promise<{
+  async expandKnowledge(
+    query: string,
+    triggerType: TriggerType = "user_query",
+  ): Promise<{
     crawlResult: CrawlerResult;
     vetResult: VettingResult[];
     newlyApprovedKnowledge: CrawledKnowledge[];
@@ -132,7 +138,7 @@ export class KnowledgeManager {
       for (const knowledge of crawlResult.knowledge) {
         const vetResult = await this.vettingEngine.vetKnowledge(
           knowledge,
-          this.config.vetCriteria
+          this.config.vetCriteria,
         );
         vetResults.push(vetResult);
         this.vettingResults.set(knowledge.id, vetResult);
@@ -143,7 +149,7 @@ export class KnowledgeManager {
       const approvedKnowledge = crawlResult.knowledge.filter(
         (k) =>
           this.vettingResults.get(k.id)?.level === "approved" ||
-          this.vettingResults.get(k.id)?.level === "approved_with_notes"
+          this.vettingResults.get(k.id)?.level === "approved_with_notes",
       );
 
       approvedKnowledge.forEach((knowledge) => {
@@ -168,7 +174,10 @@ export class KnowledgeManager {
         newlyApprovedKnowledge: approvedKnowledge,
       };
     } catch (error) {
-      this.failJob(jobId, error instanceof Error ? error.message : "Unknown error");
+      this.failJob(
+        jobId,
+        error instanceof Error ? error.message : "Unknown error",
+      );
       throw error;
     }
   }
@@ -185,7 +194,9 @@ export class KnowledgeManager {
 
       // Automatically crawl critical gaps
       if (this.config.enableAutoCrawl) {
-        const criticalGaps = analysis.gaps.filter((g) => g.priority === "critical");
+        const criticalGaps = analysis.gaps.filter(
+          (g) => g.priority === "critical",
+        );
         for (const gap of criticalGaps.slice(0, 5)) {
           // Limit to 5 auto-crawls
           this.crawlGap(gap.id, gap.category);
@@ -195,7 +206,10 @@ export class KnowledgeManager {
       this.completeJob(jobId, analysis);
       return analysis;
     } catch (error) {
-      this.failJob(jobId, error instanceof Error ? error.message : "Unknown error");
+      this.failJob(
+        jobId,
+        error instanceof Error ? error.message : "Unknown error",
+      );
       throw error;
     }
   }
@@ -211,7 +225,10 @@ export class KnowledgeManager {
       this.completeJob(jobId, result);
       return result;
     } catch (error) {
-      this.failJob(jobId, error instanceof Error ? error.message : "Unknown error");
+      this.failJob(
+        jobId,
+        error instanceof Error ? error.message : "Unknown error",
+      );
       throw error;
     }
   }
@@ -221,9 +238,12 @@ export class KnowledgeManager {
    */
   async importAndVet(
     knowledge: CrawledKnowledge,
-    criteria?: Partial<VettingCriteria>
+    criteria?: Partial<VettingCriteria>,
   ): Promise<VettingResult> {
-    const vetResult = await this.vettingEngine.vetKnowledge(knowledge, criteria);
+    const vetResult = await this.vettingEngine.vetKnowledge(
+      knowledge,
+      criteria,
+    );
 
     if (
       vetResult.level === "approved" ||
@@ -249,9 +269,17 @@ export class KnowledgeManager {
         "recipe_database",
       ],
       "flavor|taste|balance": ["academic_paper", "food_blog", "youtube_video"],
-      "technique|method|process": ["youtube_video", "food_blog", "restaurant_menu"],
+      "technique|method|process": [
+        "youtube_video",
+        "food_blog",
+        "restaurant_menu",
+      ],
       "cost|price|budget": ["ingredient_supplier", "restaurant_menu"],
-      "nutrition|calorie|macro": ["academic_paper", "recipe_database", "ingredient_supplier"],
+      "nutrition|calorie|macro": [
+        "academic_paper",
+        "recipe_database",
+        "ingredient_supplier",
+      ],
       "ingredient|substitut": [
         "food_blog",
         "recipe_database",
@@ -285,14 +313,15 @@ export class KnowledgeManager {
       rejectedItems: results.filter((r) => r.level === "rejected").length,
       quarantinedItems: results.filter((r) => r.level === "quarantined").length,
       averageTrustScore:
-        results.reduce((sum, r) => sum + r.score, 0) / Math.max(results.length, 1),
+        results.reduce((sum, r) => sum + r.score, 0) /
+        Math.max(results.length, 1),
       lastCrawlTime: this.getLastJobTime("crawl"),
       lastIntegrationTime: this.getLastJobTime("integration"),
       detectedGaps: this.gapAnalysis?.gaps.length || 0,
       coveredDomains: Array.from(
         new Set(
-          Array.from(this.knowledgeLibrary.values()).map((k) => k.source)
-        )
+          Array.from(this.knowledgeLibrary.values()).map((k) => k.source),
+        ),
       ).map((s) => s.toString()),
     };
   }
@@ -314,7 +343,8 @@ export class KnowledgeManager {
       const vetResult = this.vettingResults.get(knowledge.id);
       if (
         vetResult &&
-        (vetResult.level === "approved" || vetResult.level === "approved_with_notes")
+        (vetResult.level === "approved" ||
+          vetResult.level === "approved_with_notes")
       ) {
         approved.push(knowledge);
       }
@@ -395,7 +425,11 @@ export class KnowledgeManager {
   /**
    * Helper: Update job progress
    */
-  private updateJobProgress(jobId: string, progress: number, message: string): void {
+  private updateJobProgress(
+    jobId: string,
+    progress: number,
+    message: string,
+  ): void {
     const job = this.jobs.get(jobId);
     if (job) {
       job.status = "in_progress";

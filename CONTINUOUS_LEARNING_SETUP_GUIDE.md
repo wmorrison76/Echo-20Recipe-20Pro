@@ -1,4 +1,5 @@
 # EchoAi³ Continuous Learning Mode - Setup & Configuration
+
 ## Development Knowledge Base Building with Progress Tracking
 
 ---
@@ -9,26 +10,30 @@ Echo now runs in **Learning Mode** by default during development, continuously c
 
 ### Two Modes
 
-| Aspect | Learning Mode | On-Demand Mode |
-|--------|---------------|----------------|
-| **Trigger** | Scheduled (automatic) | User query only |
-| **Frequency** | Every 2 minutes | Only when requested |
-| **Goal** | Build comprehensive knowledge base | Save API costs, provide fast responses |
-| **Duration** | Development phase | Production (when 10,000+ items + 75% coverage) |
+| Aspect        | Learning Mode                      | On-Demand Mode                                 |
+| ------------- | ---------------------------------- | ---------------------------------------------- |
+| **Trigger**   | Scheduled (automatic)              | User query only                                |
+| **Frequency** | Every 2 minutes                    | Only when requested                            |
+| **Goal**      | Build comprehensive knowledge base | Save API costs, provide fast responses         |
+| **Duration**  | Development phase                  | Production (when 10,000+ items + 75% coverage) |
 
 ---
 
 ## 📦 Components
 
 ### 1. **Background Crawler Service**
+
 (`client/echo/services/backgroundCrawler.ts`)
+
 - Runs knowledge crawler in background
 - Configurable crawl intervals and batch sizes
 - Auto-switches modes when thresholds met
 - Tracks metrics continuously
 
 ### 2. **Knowledge Progress Tracker**
+
 (`client/echo/services/knowledgeProgressTracker.ts`)
+
 - Monitors knowledge base growth
 - Tracks 5 culinary types with checkpoints
 - Tracks 16 regions/cuisines
@@ -36,14 +41,18 @@ Echo now runs in **Learning Mode** by default during development, continuously c
 - Manages mode transitions
 
 ### 3. **Progress Dashboard Component**
+
 (`client/components/KnowledgeProgressDashboard.tsx`)
+
 - Beautiful UI showing progress
 - Compact and full modes
 - Real-time metrics and coverage
 - Checkpoint visualization
 
 ### 4. **Crawler Hook**
+
 (`client/hooks/use-background-crawler.ts`)
+
 - React hook for crawler integration
 - Status management
 - Manual control (start/stop/mode switch)
@@ -89,10 +98,10 @@ export function YourPage() {
     <div>
       <h1>Recipes</h1>
       {/* ... page content ... */}
-      
+
       {/* Compact mode */}
       <KnowledgeProgressDashboard compact={true} />
-      
+
       {/* Full mode */}
       <KnowledgeProgressDashboard compact={false} />
     </div>
@@ -200,6 +209,7 @@ Day 14:  75% coverage, 10,000 items   → ✨ Auto-switch to On-Demand Mode
 Each type has **5 checkpoints** that must be completed:
 
 ### 1. General Culinary
+
 - ✅ Allergens documented
 - ✅ Nutrition data complete
 - ✅ Techniques explained
@@ -207,6 +217,7 @@ Each type has **5 checkpoints** that must be completed:
 - ✅ Substitutions available
 
 ### 2. Pastry & Desserts
+
 - Temperature management
 - Precise measurements
 - Decoration techniques
@@ -214,6 +225,7 @@ Each type has **5 checkpoints** that must be completed:
 - Dietary adaptations
 
 ### 3. Baking & Bread
+
 - Fermentation science
 - Hydration ratios
 - Gluten development
@@ -221,6 +233,7 @@ Each type has **5 checkpoints** that must be completed:
 - Shelf stability
 
 ### 4. Banquet & Plated
+
 - Presentation standards
 - Portion control
 - Hold time specs
@@ -228,6 +241,7 @@ Each type has **5 checkpoints** that must be completed:
 - Service flow
 
 ### 5. Catering & Service
+
 - Batch scaling
 - Transport logistics
 - Holding equipment
@@ -264,14 +278,18 @@ Each type has **5 checkpoints** that must be completed:
 ## 📈 Progress Dashboard Features
 
 ### Compact View
+
 Shows:
+
 - Mode indicator (Learning/On-Demand)
 - Overall coverage %
 - Progress bar
 - Next threshold (if in Learning mode)
 
 ### Full View
+
 Shows:
+
 - Header with mode badge
 - Overall coverage card
 - Culinary types progress (5 items with checkpoints)
@@ -367,6 +385,7 @@ Dashboard updates with:
 ## 🚨 What Gets Crawled
 
 ### Initial Topics (Auto-cycling)
+
 1. Allergen safety
 2. Flavor chemistry
 3. Pastry techniques
@@ -385,6 +404,7 @@ Dashboard updates with:
 16. Sustainable cooking
 
 ### Each Crawl Searches:
+
 - ✅ Recipe databases
 - ✅ Academic papers
 - ✅ Restaurant menus
@@ -393,6 +413,7 @@ Dashboard updates with:
 - ✅ Ingredient suppliers
 
 ### Vetting Process:
+
 - ✅ Source credibility
 - ✅ Content quality
 - ✅ Ingredient verification
@@ -425,7 +446,9 @@ RecipeSearch Page
 ## 🔍 Monitoring Progress
 
 ### Console Logs
+
 The crawler logs all activity to console:
+
 ```
 🚀 Starting Background Knowledge Crawler (Learning Mode)
 📚 Crawling batch 1: allergen safety, flavor chemistry, pastry techniques
@@ -437,19 +460,22 @@ The crawler logs all activity to console:
 ```
 
 ### Dashboard Display
+
 Real-time updates showing:
+
 - Coverage percentage per culinary type
 - Checkpoint completion (colored dots)
 - Regional recipe counts
 - Overall statistics
 
 ### API Access
+
 ```typescript
 const tracker = new KnowledgeProgressTracker();
 const progress = tracker.getProgressState();
-console.log(progress.overallCoverage);      // 45%
-console.log(progress.totalApprovedItems);   // 5600
-console.log(progress.mode);                 // "learning"
+console.log(progress.overallCoverage); // 45%
+console.log(progress.totalApprovedItems); // 5600
+console.log(progress.mode); // "learning"
 ```
 
 ---
@@ -457,18 +483,21 @@ console.log(progress.mode);                 // "learning"
 ## 🎯 Development Workflow
 
 ### Phase 1: Learning (Days 1-14)
+
 - Crawler runs continuously
 - Dashboard shows progress
 - Users can see knowledge expanding
 - Monitor coverage growth
 
 ### Phase 2: Transition (Day 14+)
+
 - Auto-switch triggers
 - Mode changes to On-Demand
 - Crawler stops
 - Dashboard updates
 
 ### Phase 3: Production (On-Demand)
+
 - Crawler only runs on user queries
 - Lower API costs
 - Faster response times
@@ -490,6 +519,7 @@ console.log(progress.mode);                 // "learning"
 ## 🔧 Troubleshooting
 
 ### Crawler not running?
+
 ```typescript
 const crawler = getBackgroundCrawler();
 const status = crawler.getStatus();
@@ -497,16 +527,19 @@ console.log(status); // Check if isRunning, mode, etc.
 ```
 
 ### Dashboard not showing?
+
 - Check if `KnowledgeProgressDashboard` is imported
 - Ensure it's placed in the right location
 - Check browser console for errors
 
 ### Progress not updating?
+
 - Wait for next crawl cycle (2 minutes default)
 - Or call `updateStatus()` manually
 - Check if crawler is initialized with recipes/ingredients
 
 ### Not auto-switching?
+
 - Check if `autoSwitchWhenReady: true` in config
 - Monitor thresholds: need 75% AND 10,000 items
 - Check console for auto-switch logs

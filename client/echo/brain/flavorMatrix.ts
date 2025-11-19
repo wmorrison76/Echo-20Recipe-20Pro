@@ -16,21 +16,21 @@ export interface IngredientAmount {
 }
 
 export interface FlavorBalanceResult {
-  acid: number;                // total acid grams
-  fat: number;                 // total fat grams
-  sweet: number;               // total sugar grams
-  savory: number;              // umami contribution
-  bitter: number;              // bitterness contribution
-  aromatic: number;            // aromatic volatility score
-  viscosity: number;           // thickening power aggregate
-  emulsionStability: number;   // likelihood of stable emulsion
-  waterActivityAvg: number;    // average water activity
-  maillardPotential: number;   // browning tendency
+  acid: number; // total acid grams
+  fat: number; // total fat grams
+  sweet: number; // total sugar grams
+  savory: number; // umami contribution
+  bitter: number; // bitterness contribution
+  aromatic: number; // aromatic volatility score
+  viscosity: number; // thickening power aggregate
+  emulsionStability: number; // likelihood of stable emulsion
+  waterActivityAvg: number; // average water activity
+  maillardPotential: number; // browning tendency
   caramelizationPotential: number;
 
   // Ratios & Recommendations
-  fatToAcidRatio: number;      // oil:vinegar ratio (3:1 is classic)
-  saltinessFactor: number;     // perceived salt intensity
+  fatToAcidRatio: number; // oil:vinegar ratio (3:1 is classic)
+  saltinessFactor: number; // perceived salt intensity
   overallBalanceNotes: string[];
   suggestions: string[];
 }
@@ -41,7 +41,7 @@ export class FlavorMatrix {
    */
   static calculateBalance(
     ingredients: IngredientAmount[],
-    chemistryProfiles: Record<string, IngredientChemistryProfile>
+    chemistryProfiles: Record<string, IngredientChemistryProfile>,
   ): FlavorBalanceResult {
     let acid = 0;
     let fat = 0;
@@ -113,7 +113,8 @@ export class FlavorMatrix {
       }
 
       if (profile.caramelizationPotential) {
-        caramelizationPotential += weight * profile.caramelizationPotential * 0.01;
+        caramelizationPotential +=
+          weight * profile.caramelizationPotential * 0.01;
       }
 
       // Saltiness
@@ -124,7 +125,8 @@ export class FlavorMatrix {
 
     // Normalize
     const scale = (n: number) => parseFloat((n / 100).toFixed(3));
-    const waterActivityAvg = totalWeight > 0 ? waterActivitySum / totalWeight : 0.5;
+    const waterActivityAvg =
+      totalWeight > 0 ? waterActivitySum / totalWeight : 0.5;
 
     // Fat-to-acid ratio (classic vinaigrette is ~3:1)
     const fatToAcidRatio = acid > 0 ? fat / acid : 0;
@@ -136,12 +138,16 @@ export class FlavorMatrix {
     if (acid > fat * 0.5) {
       notes.push("Dish leans acidic");
       if (fatToAcidRatio < 2) {
-        suggestions.push("Increase fat (oil/butter) by 20–30% or reduce acid by 15%");
+        suggestions.push(
+          "Increase fat (oil/butter) by 20–30% or reduce acid by 15%",
+        );
       }
     } else if (fat > acid * 2) {
       notes.push("Dish leans rich/fatty");
       if (fatToAcidRatio > 4) {
-        suggestions.push("Add acid (vinegar/lemon) to brighten and balance richness");
+        suggestions.push(
+          "Add acid (vinegar/lemon) to brighten and balance richness",
+        );
       }
     } else {
       notes.push("Fat-to-acid balance appears optimal");
@@ -167,13 +173,15 @@ export class FlavorMatrix {
     if (emulsionStability < 5 && fat > 20) {
       notes.push("Emulsion stability low for amount of fat");
       suggestions.push(
-        "Add emulsifier (mustard, egg yolk, or mayo) to stabilize emulsion"
+        "Add emulsifier (mustard, egg yolk, or mayo) to stabilize emulsion",
       );
     }
 
     // Savory/umami check
     if (savory < 2 && fat > 30) {
-      suggestions.push("Add umami element (garlic, mustard, soy, Parmesan) for depth");
+      suggestions.push(
+        "Add umami element (garlic, mustard, soy, Parmesan) for depth",
+      );
     }
 
     // Water activity (shelf life)
@@ -219,7 +227,7 @@ export class FlavorMatrix {
     oilGrams: number,
     vinegaarGrams: number,
     otherIngredients: IngredientAmount[] = [],
-    chemistryProfiles: Record<string, IngredientChemistryProfile> = {}
+    chemistryProfiles: Record<string, IngredientChemistryProfile> = {},
   ): { ratio: number; balanced: boolean; notes: string[] } {
     const ratio = oilGrams / vinegaarGrams;
     const notes: string[] = [];
@@ -227,17 +235,17 @@ export class FlavorMatrix {
 
     if (ratio < 2) {
       notes.push(
-        `Ratio ${ratio.toFixed(2)}:1 is too acidic. Ideal is 3:1 oil:vinegar.`
+        `Ratio ${ratio.toFixed(2)}:1 is too acidic. Ideal is 3:1 oil:vinegar.`,
       );
       notes.push(
-        `Increase oil by ${Math.round((3 * vinegaarGrams - oilGrams) / vinegaarGrams * 100) / 100}g or reduce vinegar.`
+        `Increase oil by ${Math.round(((3 * vinegaarGrams - oilGrams) / vinegaarGrams) * 100) / 100}g or reduce vinegar.`,
       );
     } else if (ratio > 4) {
       notes.push(
-        `Ratio ${ratio.toFixed(2)}:1 is too rich. Ideal is 3:1 oil:vinegar.`
+        `Ratio ${ratio.toFixed(2)}:1 is too rich. Ideal is 3:1 oil:vinegar.`,
       );
       notes.push(
-        `Reduce oil by ${Math.round((oilGrams - 3 * vinegaarGrams) / oilGrams * 100) / 100}g or increase vinegar.`
+        `Reduce oil by ${Math.round(((oilGrams - 3 * vinegaarGrams) / oilGrams) * 100) / 100}g or increase vinegar.`,
       );
     } else {
       notes.push(`Ratio ${ratio.toFixed(2)}:1 is well-balanced.`);
@@ -254,7 +262,7 @@ export class FlavorMatrix {
   static assessEmulsionCapacity(
     emulsifierGrams: number,
     fatGrams: number,
-    chemistryProfiles: Record<string, IngredientChemistryProfile>
+    chemistryProfiles: Record<string, IngredientChemistryProfile>,
   ): { stable: boolean; notes: string[] } {
     const notes: string[] = [];
 
@@ -266,17 +274,17 @@ export class FlavorMatrix {
 
     if (!stable) {
       notes.push(
-        `Fat-to-emulsifier ratio exceeds stability. ${emulsifierGrams}g emulsifier can stabilize ~${Math.round(maxStableFat)}g fat; you have ${fatGrams}g.`
+        `Fat-to-emulsifier ratio exceeds stability. ${emulsifierGrams}g emulsifier can stabilize ~${Math.round(maxStableFat)}g fat; you have ${fatGrams}g.`,
       );
       notes.push(
-        `Add ${Math.round((fatGrams - maxStableFat) / capacityFatPerGramEmulsifier + 0.5)}g more emulsifier or reduce fat by ${Math.round(fatGrams - maxStableFat)}g.`
+        `Add ${Math.round((fatGrams - maxStableFat) / capacityFatPerGramEmulsifier + 0.5)}g more emulsifier or reduce fat by ${Math.round(fatGrams - maxStableFat)}g.`,
       );
       notes.push(
-        "If emulsion breaks: blend in slowly, start with new emulsifier, or add water/acid gradually."
+        "If emulsion breaks: blend in slowly, start with new emulsifier, or add water/acid gradually.",
       );
     } else {
       notes.push(
-        `Emulsion proportions stable: ${emulsifierGrams}g emulsifier, ${fatGrams}g fat.`
+        `Emulsion proportions stable: ${emulsifierGrams}g emulsifier, ${fatGrams}g fat.`,
       );
     }
 
@@ -294,11 +302,15 @@ export class FlavorMatrix {
     }
 
     if (balance.fatToAcidRatio > 4) {
-      corrections.push("Add acid (vinegar, lemon, or citrus) to brighten richness");
+      corrections.push(
+        "Add acid (vinegar, lemon, or citrus) to brighten richness",
+      );
     }
 
     if (balance.aromatic < 5) {
-      corrections.push("Add aromatic elements: garlic, shallot, or fresh herbs");
+      corrections.push(
+        "Add aromatic elements: garlic, shallot, or fresh herbs",
+      );
     }
 
     if (
@@ -307,7 +319,7 @@ export class FlavorMatrix {
       balance.fat > balance.acid
     ) {
       corrections.push(
-        "Emulsion may be unstable; add mustard, egg yolk, or mayo to stabilize"
+        "Emulsion may be unstable; add mustard, egg yolk, or mayo to stabilize",
       );
     }
 

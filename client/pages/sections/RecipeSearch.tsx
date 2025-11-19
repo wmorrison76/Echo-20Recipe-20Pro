@@ -53,8 +53,14 @@ import { KnowledgeProgressDashboard } from "@/components/KnowledgeProgressDashbo
 import { ResponsiveImage } from "@/components/ResponsiveImage";
 import { storeProcedure } from "@/lib/echo-procedures-service";
 import { identifyProcedures } from "@/lib/procedure-extraction";
-import { RecipeImportSelectionModal, type DetectedRecipe } from "@/components/RecipeImportSelectionModal";
-import { storeBookImportInPinecone, type ImportedRecipeKnowledge } from "@/lib/pinecone-recipe-knowledge";
+import {
+  RecipeImportSelectionModal,
+  type DetectedRecipe,
+} from "@/components/RecipeImportSelectionModal";
+import {
+  storeBookImportInPinecone,
+  type ImportedRecipeKnowledge,
+} from "@/lib/pinecone-recipe-knowledge";
 import { Zap } from "lucide-react";
 import { CookbookBuilderDialog } from "@/components/CookbookBuilderDialog";
 
@@ -690,7 +696,9 @@ export default function RecipeSearchSection() {
   );
   // Recipe import modal state
   const [importModalOpen, setImportModalOpen] = useState(false);
-  const [importModalRecipes, setImportModalRecipes] = useState<DetectedRecipe[]>([]);
+  const [importModalRecipes, setImportModalRecipes] = useState<
+    DetectedRecipe[]
+  >([]);
   const [importingBook, setImportingBook] = useState<string | null>(null);
   const [isImportingToKnowledge, setIsImportingToKnowledge] = useState(false);
 
@@ -1004,7 +1012,7 @@ export default function RecipeSearchSection() {
   };
 
   const handleImportRecipesToKnowledge = async (
-    selectedRecipes: DetectedRecipe[]
+    selectedRecipes: DetectedRecipe[],
   ) => {
     if (!importingBook) return;
 
@@ -1029,7 +1037,7 @@ export default function RecipeSearchSection() {
             "cookbook",
             recipe.difficulty ? recipe.difficulty.toLowerCase() : "medium",
           ],
-        })
+        }),
       );
 
       // Store in Pinecone for Echo knowledge base

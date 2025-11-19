@@ -1,4 +1,5 @@
 # EchoAi³ Flavor Chemistry & Balance Engine
+
 ## Understanding Ratios, Acidity, Emulsions, and Flavor Architecture
 
 ---
@@ -8,7 +9,9 @@
 Echo can now reason about flavor and texture at the **chemistry level**:
 
 ### **1. Ingredient Chemistry**
+
 Every ingredient has a profile with:
+
 - **Acidity & pH** – how acidic (vinegar 5%, lemon 5.5%, cream 0%)
 - **Fat Content** – oils 100%, butter 80%, egg yolk 30%
 - **Sugar & Sweetness** – honey 80%, fruit varies
@@ -18,7 +21,9 @@ Every ingredient has a profile with:
 - **Browning Potential** – Maillard & caramelization tendency
 
 ### **2. Flavor Balance Calculations**
+
 Given ingredient amounts, Echo calculates:
+
 - **Fat-to-Acid Ratio** – classic vinaigrette is 3:1 oil:vinegar
 - **Emulsion Stability** – can this hold together?
 - **Aromatic Complexity** – from volatiles & sulfur compounds
@@ -27,7 +32,9 @@ Given ingredient amounts, Echo calculates:
 - **Overall Balance** – is it harmonious?
 
 ### **3. Smart Corrections**
+
 Echo can now:
+
 - Detect imbalances automatically
 - Suggest specific fixes with amounts
 - Fix broken emulsions
@@ -39,9 +46,11 @@ Echo can now:
 ## 📊 Example 1: Vinaigrette Analysis
 
 ### User Says:
+
 "I want to make a vinaigrette with 15g vinegar and 45g olive oil"
 
 ### Echo Analyzes:
+
 ```
 Vinaigrette Balance Check:
 - Ratio: 3:1 oil:vinegar ✓ PERFECT
@@ -58,6 +67,7 @@ RECOMMENDATIONS:
 ```
 
 ### Result:
+
 New recipe with calculated changes → **balanced, stable, aromatic vinaigrette**
 
 ---
@@ -65,14 +75,17 @@ New recipe with calculated changes → **balanced, stable, aromatic vinaigrette*
 ## 📊 Example 2: Mayonnaise Proportions
 
 ### User Says:
+
 "I have 1 egg yolk. How much oil can I add?"
 
 ### Echo Knows:
+
 - 1 egg yolk (~18g) can stabilize ~250ml oil (~230g)
 - Egg yolk contains ~5g fat + lecithin (emulsifier)
 - Max ratio before breakdown: ~1:40 yolk:oil
 
 ### Echo Responds:
+
 ```
 Mayonnaise Capacity:
 - Your 18g egg yolk can safely hold up to ~280g oil
@@ -88,9 +101,11 @@ If emulsion breaks: Start with new yolk, whisk in broken mixture slowly
 ## 📊 Example 3: Balance-Adjusted Hollandaise
 
 ### User Says:
+
 "My hollandaise tastes too rich and buttery"
 
 ### Echo Analyzes:
+
 ```
 Current: 3 egg yolks (54g) + 200g butter (160g fat)
 Ratio: 1 yolk : 3.3g fat (very rich!)
@@ -113,26 +128,31 @@ OR reduce butter by 30g and use lighter emulsification
 Echo includes pre-defined chemistry for common ingredients:
 
 ### Acids
+
 - **White Vinegar**: 5% acetic acid, pH 2.4
 - **Lemon Juice**: 5.5% citric acid, pH 2.0 (fresher notes)
 - **Red Wine Vinegar**: 4–6% acetic acid (plus tannins)
 
 ### Fats & Oils
+
 - **Olive Oil**: 100% fat, polyphenols (peppery), fruity aromatics
 - **Butter**: 80% fat, diacetyl (creamy sweetness)
 - **Egg Yolk**: 30% fat, lecithin (emulsifier), subtle sulfur
 
 ### Emulsifiers & Stabilizers
+
 - **Dijon Mustard**: Lecithin + glucosides, ~0.7 strength, 1.5% acid
 - **Egg Yolk**: Lecithin + proteins, ~1.0 strength (best)
 - **Mayonnaise**: Pre-made emulsion, ~0.95 strength
 
 ### Aromatics
+
 - **Garlic**: Allicin (pungent, sulfurous), umami depth
 - **Shallot**: Milder sulfur, natural sweetness (great cooked)
 - **Lemon Zest**: Limonene (bright citrus), high intensity
 
 ### Thickeners & Texturizers
+
 - **Honey**: 40% thickening power, browning potential, rounds acidity
 - **Egg Yolk**: 50% thickening power (from lecithin/proteins)
 - **Cornstarch**: Up to 80% thickening power (if used)
@@ -156,7 +176,7 @@ const ingredients = [
 
 const balance = FlavorMatrix.calculateBalance(
   ingredients,
-  INGREDIENT_CHEMISTRY_DATABASE
+  INGREDIENT_CHEMISTRY_DATABASE,
 );
 
 console.log(balance);
@@ -185,7 +205,7 @@ console.log(balance);
 ```typescript
 const { ratio, balanced, notes } = FlavorMatrix.balanceVinaigrette(
   60, // oil grams
-  20  // vinegar grams
+  20, // vinegar grams
 );
 
 // ratio = 3.0 (perfect!)
@@ -197,8 +217,8 @@ const { ratio, balanced, notes } = FlavorMatrix.balanceVinaigrette(
 
 ```typescript
 const { stable, notes } = FlavorMatrix.assessEmulsionCapacity(
-  18,  // egg yolk grams
-  250  // oil grams
+  18, // egg yolk grams
+  250, // oil grams
 );
 
 // stable = true
@@ -221,7 +241,7 @@ import { EchoChefBrain } from "@/echo/brain";
 const { balance, corrections } = EchoChefBrain.analyzeFlavorBalance(
   ingredients,
   INGREDIENT_CHEMISTRY_DATABASE,
-  "vinaigrette"
+  "vinaigrette",
 );
 
 // Use in suggestions
@@ -238,12 +258,14 @@ suggestion.flavorBalanceHint = balance;
 User reports: "My mayo broke during mixing"
 
 Echo knows:
+
 - Egg yolk can only stabilize so much oil
 - Temperature matters (cold breaks faster)
 - Adding oil too fast breaks emulsion
 - Water/acid stops emulsion breaking
 
 Echo suggests:
+
 ```
 "Your emulsion broke because:
 1. Oil-to-yolk ratio exceeded ~18:1
@@ -260,11 +282,13 @@ C) Add 1-2 tbsp mayo/mustard to re-emulsify
 User says: "My sauce is too acidic"
 
 Echo analyzes:
+
 - Tomato acidity: 4.2 pH, ~3% acid
 - No fat to buffer
 - No sugar to round
 
 Echo recommends:
+
 ```
 "Add ONE of:
 1. Butter/oil (1-2 tbsp) to coat palate and mellow acid
@@ -279,12 +303,14 @@ OR combine: 1 tbsp butter + 1 tsp honey for best result"
 User says: "I want to make 2x this Caesar dressing"
 
 Echo knows:
+
 - Emulsifiers don't scale linearly
 - Garlic intensity compounds (use sparingly at 2x)
 - Acid:fat ratio must hold
 - Worcestershire umami impact increases
 
 Echo suggests:
+
 ```
 ORIGINAL (serves 4):
 - 1 egg yolk
@@ -311,6 +337,7 @@ This maintains ratios while respecting emulsion limits.
 With IngredientChemistry + FlavorMatrix:
 
 ✅ **Analyze any sauce/dressing by composition**
+
 - Acid balance
 - Fat balance
 - Emulsion stability
@@ -318,17 +345,20 @@ With IngredientChemistry + FlavorMatrix:
 - Umami depth
 
 ✅ **Predict outcomes**
+
 - Will this emulsion hold?
 - Will this taste balanced?
 - Will this brown nicely?
 - Will this stay fresh?
 
 ✅ **Suggest specific fixes**
+
 - "Add 15g oil to adjust ratio"
 - "Add 2g mustard to stabilize"
 - "Add 5ml vinegar to brighten"
 
 ✅ **Generalize across dishes**
+
 - Vinaigrettes
 - Mayonnaise & aïoli
 - Hollandaise & beurre blanc
@@ -337,6 +367,7 @@ With IngredientChemistry + FlavorMatrix:
 - Chimichurri & pesto
 
 ✅ **Fix failed recipes**
+
 - Broken emulsions → recovery steps
 - Imbalanced sauces → precise adjustments
 - Weak flavor → aromatics/umami additions
@@ -374,12 +405,13 @@ To go even deeper, Echo could also learn:
 **IngredientChemistry + FlavorMatrix = Echo's Culinary Reasoning Engine**
 
 Echo is now:
+
 - 🧪 A chemist (understands ingredient composition)
 - ⚖️ A balance expert (optimizes ratios)
 - 🔧 A troubleshooter (fixes broken dishes)
 - 📖 A generalizer (applies rules across cuisines)
 
-This is how Echo learns to think like a **master chef** who understands not just *what* to cook, but **why** it works.
+This is how Echo learns to think like a **master chef** who understands not just _what_ to cook, but **why** it works.
 
 ---
 

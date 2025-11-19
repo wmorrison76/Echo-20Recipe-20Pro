@@ -5,7 +5,11 @@
 
 // Core exports
 export { EchoAI3, bootstrapEcho } from "./echo-bootstrap";
-export type { EchoBootstrapOptions, EchoInstance, EchoAskArgs } from "./echo-bootstrap";
+export type {
+  EchoBootstrapOptions,
+  EchoInstance,
+  EchoAskArgs,
+} from "./echo-bootstrap";
 
 // Cognition exports
 export {
@@ -118,10 +122,7 @@ export {
   getEventSummary,
 } from "./expansions/resilience-suite";
 
-export type {
-  EchoEvent,
-  EventSummary,
-} from "./expansions/resilience-suite";
+export type { EchoEvent, EventSummary } from "./expansions/resilience-suite";
 
 export {
   runEchoCiChecks,
@@ -141,7 +142,7 @@ export {
   KnowledgeVettingEngine,
   KnowledgeManager,
   EchoChefBrainWithKnowledge,
-} from "./cognition/knowledgeCrawler\" & \"./cognition/gapDetector\" & \"./cognition/knowledgeVetting\" & \"./cognition/knowledgeManager\" & \"./brain/echoChefBrainKnowledge";
+} from './cognition/knowledgeCrawler" & "./cognition/gapDetector" & "./cognition/knowledgeVetting" & "./cognition/knowledgeManager" & "./brain/echoChefBrainKnowledge';
 
 export type {
   CrawledKnowledge,
@@ -167,4 +168,4 @@ export type {
   KnowledgeMetrics,
   ChefBrainKnowledgeConfig,
   KnowledgeEnrichedSuggestion,
-} from "./cognition/knowledgeCrawler\" & \"./cognition/gapDetector\" & \"./cognition/knowledgeVetting\" & \"./cognition/knowledgeManager\" & \"./brain/echoChefBrainKnowledge";
+} from './cognition/knowledgeCrawler" & "./cognition/gapDetector" & "./cognition/knowledgeVetting" & "./cognition/knowledgeManager" & "./brain/echoChefBrainKnowledge';

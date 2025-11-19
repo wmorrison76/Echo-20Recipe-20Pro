@@ -1,7 +1,7 @@
 /**
  * EchoAi³ Knowledge System Integration Example
  * Shows practical usage of crawler, gap detection, and vetting systems
- * 
+ *
  * This example demonstrates:
  * 1. Initializing the knowledge manager
  * 2. Running a user query crawl
@@ -72,7 +72,7 @@ export async function example1_BasicSetup() {
 
   const result = await manager.expandKnowledge(
     "allergen-free vinaigrette recipe",
-    "user_query"
+    "user_query",
   );
 
   console.log(`\n📊 Crawl Results:`);
@@ -88,14 +88,18 @@ export async function example1_BasicSetup() {
     }
   });
 
-  console.log(`\n✅ New Approved Knowledge: ${result.newlyApprovedKnowledge.length} items`);
+  console.log(
+    `\n✅ New Approved Knowledge: ${result.newlyApprovedKnowledge.length} items`,
+  );
 
   // Check metrics
   const metrics = manager.getMetrics();
   console.log(`\n📈 Knowledge Metrics:`);
   console.log(`   Total Items: ${metrics.totalKnowledgeItems}`);
   console.log(`   Approved: ${metrics.approvedItems}`);
-  console.log(`   Avg Trust Score: ${(metrics.averageTrustScore * 100).toFixed(0)}%`);
+  console.log(
+    `   Avg Trust Score: ${(metrics.averageTrustScore * 100).toFixed(0)}%`,
+  );
 }
 
 /**
@@ -115,11 +119,15 @@ export async function example2_GapDetection() {
   const gapAnalysis = await manager.analyzeGaps();
 
   console.log("🚨 CRITICAL GAPS:");
-  const criticalGaps = gapAnalysis.gaps.filter((g) => g.priority === "critical");
+  const criticalGaps = gapAnalysis.gaps.filter(
+    (g) => g.priority === "critical",
+  );
   criticalGaps.slice(0, 3).forEach((gap) => {
     console.log(`\n   📍 ${gap.title}`);
     console.log(`      Description: ${gap.description}`);
-    console.log(`      Affected: ${gap.affectedRecipes.length} recipes, ${gap.affectedIngredients.length} ingredients`);
+    console.log(
+      `      Affected: ${gap.affectedRecipes.length} recipes, ${gap.affectedIngredients.length} ingredients`,
+    );
     console.log(`      Suggested Sources: ${gap.suggestedSources.join(", ")}`);
   });
 
@@ -164,32 +172,42 @@ export async function example3_AllergenExpansion() {
 
   // Focus on allergen information
   console.log("🚨 ALLERGEN KNOWLEDGE EXPANSION\n");
-  console.log("Crawling for: Walnut allergy safety, cross contamination, substitutions\n");
+  console.log(
+    "Crawling for: Walnut allergy safety, cross contamination, substitutions\n",
+  );
 
   const result = await manager.expandKnowledge(
     "walnut allergy dessert safety cross contamination prevention substitutes",
-    "gap_detection" // Triggered by gap detection
+    "gap_detection", // Triggered by gap detection
   );
 
   console.log(`✅ Found ${result.crawlResult.successCount} sources\n`);
 
   // Focus on critical vetting results
-  const criticalVets = result.vetResult.filter((v) => v.level === "rejected" || v.level === "quarantined");
+  const criticalVets = result.vetResult.filter(
+    (v) => v.level === "rejected" || v.level === "quarantined",
+  );
   if (criticalVets.length > 0) {
-    console.log(`⚠️  FILTERED OUT (Failed vetting): ${criticalVets.length} items`);
+    console.log(
+      `⚠️  FILTERED OUT (Failed vetting): ${criticalVets.length} items`,
+    );
     criticalVets.slice(0, 2).forEach((v) => {
       console.log(`   ${v.source}: ${v.vetterNotes}`);
     });
   }
 
-  console.log(`\n✅ APPROVED KNOWLEDGE: ${result.newlyApprovedKnowledge.length} items`);
+  console.log(
+    `\n✅ APPROVED KNOWLEDGE: ${result.newlyApprovedKnowledge.length} items`,
+  );
   console.log("   These are safe for integration into your knowledge base");
 
   // Show what was learned
   result.newlyApprovedKnowledge.slice(0, 2).forEach((knowledge) => {
     console.log(`\n   📚 ${knowledge.title}`);
     console.log(`      Source: ${knowledge.source}`);
-    console.log(`      Allergens: ${knowledge.metadata.allergens?.join(", ") || "None found"}`);
+    console.log(
+      `      Allergens: ${knowledge.metadata.allergens?.join(", ") || "None found"}`,
+    );
   });
 }
 
@@ -239,14 +257,16 @@ export async function example4_RDLabsIntegration() {
   // Get knowledge-enriched suggestions
   const suggestions = await echo.suggestWithKnowledge(
     "chocolate mousse variations dietary restrictions",
-    [mockRecipes[0]]
+    [mockRecipes[0]],
   );
 
   console.log(`📚 Knowledge-Enhanced Suggestions: ${suggestions.length}\n`);
   suggestions.slice(0, 2).forEach((suggestion) => {
     console.log(`   �� ${suggestion.title}`);
     console.log(`      Source: ${suggestion.source}`);
-    console.log(`      Confidence: ${(suggestion.confidence * 100).toFixed(0)}%`);
+    console.log(
+      `      Confidence: ${(suggestion.confidence * 100).toFixed(0)}%`,
+    );
     console.log(`      From ${suggestion.knowledgeSources.length} sources`);
   });
 
@@ -262,8 +282,12 @@ export async function example4_RDLabsIntegration() {
   // Analyze gaps
   console.log("\n🔍 KNOWLEDGE GAPS:\n");
   const gaps = await echo.analyzeKnowledgeGaps();
-  console.log(`   Critical gaps: ${gaps.analysis.gaps.filter((g) => g.priority === "critical").length}`);
-  console.log(`   High gaps: ${gaps.analysis.gaps.filter((g) => g.priority === "high").length}`);
+  console.log(
+    `   Critical gaps: ${gaps.analysis.gaps.filter((g) => g.priority === "critical").length}`,
+  );
+  console.log(
+    `   High gaps: ${gaps.analysis.gaps.filter((g) => g.priority === "high").length}`,
+  );
 
   // Generate report
   console.log("\n📊 EXPERIMENT READINESS REPORT:\n");
@@ -296,17 +320,26 @@ export async function example5_MetricsMonitoring() {
   console.log(`   Approved: ${metrics.approvedItems}`);
   console.log(`   Rejected: ${metrics.rejectedItems}`);
   console.log(`   Quarantined: ${metrics.quarantinedItems}`);
-  console.log(`   Average Trust Score: ${(metrics.averageTrustScore * 100).toFixed(0)}%`);
-  console.log(`   Covered Domains: ${metrics.coveredDomains.length > 0 ? metrics.coveredDomains.join(", ") : "None yet"}`);
+  console.log(
+    `   Average Trust Score: ${(metrics.averageTrustScore * 100).toFixed(0)}%`,
+  );
+  console.log(
+    `   Covered Domains: ${metrics.coveredDomains.length > 0 ? metrics.coveredDomains.join(", ") : "None yet"}`,
+  );
 
   console.log("\n⏱️  TIMING:\n");
-  console.log(`   Last Crawl: ${metrics.lastCrawlTime > 0 ? new Date(metrics.lastCrawlTime).toLocaleString() : "Never"}`);
-  console.log(`   Last Integration: ${metrics.lastIntegrationTime > 0 ? new Date(metrics.lastIntegrationTime).toLocaleString() : "Never"}`);
+  console.log(
+    `   Last Crawl: ${metrics.lastCrawlTime > 0 ? new Date(metrics.lastCrawlTime).toLocaleString() : "Never"}`,
+  );
+  console.log(
+    `   Last Integration: ${metrics.lastIntegrationTime > 0 ? new Date(metrics.lastIntegrationTime).toLocaleString() : "Never"}`,
+  );
 
   console.log("\n🎯 QUALITY STATUS:\n");
-  const approvalRate = metrics.totalKnowledgeItems > 0
-    ? ((metrics.approvedItems / metrics.totalKnowledgeItems) * 100).toFixed(0)
-    : "0";
+  const approvalRate =
+    metrics.totalKnowledgeItems > 0
+      ? ((metrics.approvedItems / metrics.totalKnowledgeItems) * 100).toFixed(0)
+      : "0";
   console.log(`   Approval Rate: ${approvalRate}%`);
   console.log(`   Quality Threshold: ✅ (Target > 60%)`);
 }
@@ -369,7 +402,9 @@ export async function example6_ManualImport() {
     });
   }
 
-  console.log(`\n✅ Integration: ${vetResult.level === "approved" || vetResult.level === "approved_with_notes" ? "Ready" : "Review Required"}`);
+  console.log(
+    `\n✅ Integration: ${vetResult.level === "approved" || vetResult.level === "approved_with_notes" ? "Ready" : "Review Required"}`,
+  );
 }
 
 /**

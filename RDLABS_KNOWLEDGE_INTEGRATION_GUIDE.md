@@ -1,4 +1,5 @@
 # R&D Labs with EchoAi³ Knowledge Integration
+
 ## Advanced Experiment Design with Knowledge-Enhanced AI
 
 ---
@@ -85,7 +86,7 @@ export class RDLabsKnowledgeEnhancer {
       baseRecipe.ingredients.map(async (ing) => ({
         original: ing.name,
         suggestions: await this.echo.suggestSubstitutions(ing.name),
-      }))
+      })),
     );
 
     experiment.variables = substitutions.map((sub) => ({
@@ -101,8 +102,8 @@ export class RDLabsKnowledgeEnhancer {
     experiment.gaps = gapAnalysis.analysis.gaps
       .filter((g) =>
         baseRecipe.ingredients.some((ing) =>
-          g.affectedIngredients.includes(ing.name)
-        )
+          g.affectedIngredients.includes(ing.name),
+        ),
       )
       .slice(0, 5);
 
@@ -146,8 +147,7 @@ export class RDLabsKnowledgeEnhancer {
         predictions.push({
           variable: variable.original,
           option: option,
-          confidenceScore:
-            experiment.knowledgeSources.length > 0 ? 0.8 : 0.5,
+          confidenceScore: experiment.knowledgeSources.length > 0 ? 0.8 : 0.5,
           reasoning: "Based on similar experiments in knowledge base",
           sources: experiment.knowledgeSources.slice(0, 3),
         });
@@ -202,7 +202,9 @@ export class RDLabsKnowledgeEnhancer {
       recommendations.push("Complete allergen documentation before proceeding");
     }
     if (!validations.knowledgeCoverage.passed) {
-      recommendations.push("Enhance experiment with additional research sources");
+      recommendations.push(
+        "Enhance experiment with additional research sources",
+      );
     }
     return recommendations;
   }
@@ -226,7 +228,7 @@ export class RDLabsSubstitutionManager {
 
   async getSubstitutionsWithFlavor(
     ingredient: string,
-    flavorProfile: "sweeter" | "savory" | "acidic" | "balanced"
+    flavorProfile: "sweeter" | "savory" | "acidic" | "balanced",
   ): Promise<SubstitutionOption[]> {
     const suggestions = await this.echo.suggestSubstitutions(ingredient);
 
@@ -271,12 +273,11 @@ export class RDLabExperimentWorkflow {
   async executeExperimentWithCheckpoints(experiment: RDLabExperiment) {
     // Checkpoint 1: Design Validation
     console.log("✓ Checkpoint 1: Design Validation");
-    const designValidation = await this.enhancer.validateExperimentDesign(
-      experiment
-    );
+    const designValidation =
+      await this.enhancer.validateExperimentDesign(experiment);
     if (!designValidation.isValid) {
       throw new Error(
-        `Design validation failed: ${designValidation.recommendations.join(", ")}`
+        `Design validation failed: ${designValidation.recommendations.join(", ")}`,
       );
     }
 
@@ -301,7 +302,9 @@ export class RDLabExperimentWorkflow {
     console.log("✓ Checkpoint 5: Outcome Predictions");
     const predictions = await this.enhancer.predictOutcomes(experiment);
     predictions.forEach((p) => {
-      console.log(`   ${p.variable} → ${p.option}: ${(p.confidenceScore * 100).toFixed(0)}%`);
+      console.log(
+        `   ${p.variable} → ${p.option}: ${(p.confidenceScore * 100).toFixed(0)}%`,
+      );
     });
 
     return {
@@ -327,8 +330,7 @@ export class RDLabExperimentWorkflow {
   private async checkKnowledgeCoverage(experiment: RDLabExperiment) {
     const maxSources = 10;
     return {
-      coverage:
-        (experiment.knowledgeSources.length / maxSources) * 100,
+      coverage: (experiment.knowledgeSources.length / maxSources) * 100,
       sources: experiment.knowledgeSources.length,
     };
   }
@@ -375,23 +377,19 @@ export interface ExperimentKnowledgeDashboard {
 export class ExperimentDashboardBuilder {
   async buildDashboard(
     experiment: RDLabExperiment,
-    echo: EchoChefBrainWithKnowledge
+    echo: EchoChefBrainWithKnowledge,
   ): Promise<ExperimentKnowledgeDashboard> {
     const gaps = await echo.analyzeKnowledgeGaps();
 
     return {
       experiment,
       knowledgeMetrics: {
-        coveragePercentage:
-          (experiment.knowledgeSources.length / 10) * 100,
+        coveragePercentage: (experiment.knowledgeSources.length / 10) * 100,
         approvedSources: experiment.knowledgeSources.filter(
-          (s) => s.source === "academic_paper"
+          (s) => s.source === "academic_paper",
         ).length,
         gapsIdentified: experiment.gaps.length,
-        trustScoreAverage:
-          experiment.knowledgeSources.length > 0
-            ? 0.75
-            : 0,
+        trustScoreAverage: experiment.knowledgeSources.length > 0 ? 0.75 : 0,
       },
       substitutionOptions: experiment.variables
         .filter((v) => v.type === "ingredient_substitution")
@@ -399,8 +397,7 @@ export class ExperimentDashboardBuilder {
           ingredient: v.original,
           alternatives: v.options.length,
           avgTrustScore:
-            v.options.reduce((sum) => sum + 0.7, 0) /
-            v.options.length,
+            v.options.reduce((sum) => sum + 0.7, 0) / v.options.length,
         })),
       flavorOptimizations: [
         {
@@ -415,8 +412,7 @@ export class ExperimentDashboardBuilder {
         },
       ],
       riskAssessment: {
-        allergenRisks:
-          experiment.baseRecipe.allergens || [],
+        allergenRisks: experiment.baseRecipe.allergens || [],
         knowledgeGaps: experiment.gaps.map((g) => g.title),
         techniqueChallenges: [],
       },
@@ -430,8 +426,10 @@ export class ExperimentDashboardBuilder {
 ## 🎯 Use Cases for R&D Labs
 
 ### Use Case 1: Regional Cuisine Fusion
+
 **Problem**: Want to combine Thai and French techniques safely
 **Solution**:
+
 1. Query knowledge for both technique sets
 2. Check for ingredient compatibility
 3. Validate allergen combinations
@@ -439,8 +437,10 @@ export class ExperimentDashboardBuilder {
 5. Identify knowledge gaps in fusion literature
 
 ### Use Case 2: Dietary Adaptation
+
 **Problem**: Convert classic recipe to allergen-free
 **Solution**:
+
 1. Auto-identify all allergens
 2. Query knowledge base for substitutions
 3. Get flavor chemistry recommendations
@@ -448,8 +448,10 @@ export class ExperimentDashboardBuilder {
 5. Suggest complementary items
 
 ### Use Case 3: Molecular Gastronomy
+
 **Problem**: Design advanced technique experiment
 **Solution**:
+
 1. Search academic papers for chemistry
 2. Validate technique feasibility
 3. Get equipment requirements
@@ -457,8 +459,10 @@ export class ExperimentDashboardBuilder {
 5. Find similar experiments in knowledge base
 
 ### Use Case 4: Cost Optimization
+
 **Problem**: Reduce COGS while maintaining quality
 **Solution**:
+
 1. Find alternative ingredients with cost data
 2. Query seasonal availability
 3. Validate flavor/nutrition equivalence
@@ -502,16 +506,16 @@ export function RDLabPanel() {
       {experiment && (
         <div>
           <h2>{experiment.title}</h2>
-          
+
           {/* Variables section */}
           <KnowledgeEnrichedVariables variables={experiment.variables} />
-          
+
           {/* Knowledge sources */}
           <KnowledgeSources sources={experiment.knowledgeSources} />
-          
+
           {/* Gaps section */}
           <IdentifiedGaps gaps={experiment.gaps} />
-          
+
           {/* Recommendations */}
           <Recommendations items={experiment.recommendations} />
         </div>
@@ -537,28 +541,25 @@ interface RDLabKnowledgeMetrics {
 
 // Monthly reporting
 export function generateRDLabsKnowledgeReport(
-  experiments: RDLabExperiment[]
+  experiments: RDLabExperiment[],
 ): RDLabKnowledgeMetrics {
   return {
     experimentsDesigned: experiments.length,
     experimentsWithFullCoverage: experiments.filter(
-      (e) => (e.knowledgeSources.length / 10) * 100 > 80
+      (e) => (e.knowledgeSources.length / 10) * 100 > 80,
     ).length,
     averageTrustScore:
       experiments.reduce((sum, e) => sum + calculateTrust(e), 0) /
       experiments.length,
-    knowledgeGapsClosed: experiments.reduce(
-      (sum, e) => sum + e.gaps.length,
-      0
-    ),
+    knowledgeGapsClosed: experiments.reduce((sum, e) => sum + e.gaps.length, 0),
     substitutionsValidated: experiments.reduce(
       (sum, e) =>
         sum +
         e.variables.filter((v) => v.type === "ingredient_substitution").length,
-      0
+      0,
     ),
     allergenIssuesPrevented: experiments.filter(
-      (e) => e.baseRecipe.allergens && e.baseRecipe.allergens.length > 0
+      (e) => e.baseRecipe.allergens && e.baseRecipe.allergens.length > 0,
     ).length,
   };
 }
@@ -582,22 +583,26 @@ Every R&D experiment should have:
 ## 🚀 Getting Started
 
 1. **Initialize Echo with Knowledge**:
+
 ```typescript
 const echo = new EchoChefBrainWithKnowledge(culinaryBrain);
 echo.initializeKnowledgeBase(recipes, ingredients);
 ```
 
 2. **Create Experiment Enhancer**:
+
 ```typescript
 const enhancer = new RDLabsKnowledgeEnhancer();
 ```
 
 3. **Design with Knowledge**:
+
 ```typescript
 const experiment = await enhancer.designExperimentWithKnowledge(baseRecipe);
 ```
 
 4. **Validate & Execute**:
+
 ```typescript
 const validation = await enhancer.validateExperimentDesign(experiment);
 if (validation.isValid) {
@@ -606,6 +611,7 @@ if (validation.isValid) {
 ```
 
 5. **Monitor & Learn**:
+
 ```typescript
 const metrics = generateRDLabsKnowledgeReport(allExperiments);
 console.log(`Knowledge coverage: ${metrics.averageTrustScore * 100}%`);

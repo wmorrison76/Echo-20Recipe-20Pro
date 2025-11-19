@@ -9,7 +9,11 @@ import type { IngredientChemistryProfile } from "../codex/ingredientChemistry";
 import type { FlavorBalanceResult } from "./flavorMatrix";
 import type { CrawledKnowledge, ExtractedRecipe } from "./knowledgeCrawler";
 
-export type VettingLevel = "rejected" | "quarantined" | "approved" | "approved_with_notes";
+export type VettingLevel =
+  | "rejected"
+  | "quarantined"
+  | "approved"
+  | "approved_with_notes";
 
 export interface VettingResult {
   id: string;
@@ -95,7 +99,7 @@ export class KnowledgeVettingEngine {
    * Register ingredient database for validation
    */
   registerIngredientDatabase(
-    ingredients: Map<string, IngredientChemistryProfile>
+    ingredients: Map<string, IngredientChemistryProfile>,
   ): void {
     this.ingredientDatabase = ingredients;
   }
@@ -105,7 +109,7 @@ export class KnowledgeVettingEngine {
    */
   async vetKnowledge(
     knowledge: CrawledKnowledge,
-    criteria: Partial<VettingCriteria> = {}
+    criteria: Partial<VettingCriteria> = {},
   ): Promise<VettingResult> {
     const defaultCriteria: VettingCriteria = {
       minAuthorityScore: 0.6,
@@ -143,9 +147,12 @@ export class KnowledgeVettingEngine {
     }
 
     // Phase 4: Allergen validation (CRITICAL)
-    if (defaultCriteria.allergenValidationRequired && knowledge.extractedRecipes) {
+    if (
+      defaultCriteria.allergenValidationRequired &&
+      knowledge.extractedRecipes
+    ) {
       const allergenValidation = this.validateAllergens(
-        knowledge.extractedRecipes
+        knowledge.extractedRecipes,
       );
       validations.push(...allergenValidation.checks);
       issues.push(...allergenValidation.issues);
@@ -153,12 +160,9 @@ export class KnowledgeVettingEngine {
     }
 
     // Phase 5: Flavor chemistry validation
-    if (
-      defaultCriteria.flavorBalanceValidation &&
-      knowledge.extractedRecipes
-    ) {
+    if (defaultCriteria.flavorBalanceValidation && knowledge.extractedRecipes) {
       const flavorValidation = await this.validateFlavorBalance(
-        knowledge.extractedRecipes
+        knowledge.extractedRecipes,
       );
       validations.push(...flavorValidation.checks);
       issues.push(...flavorValidation.issues);
@@ -166,9 +170,12 @@ export class KnowledgeVettingEngine {
     }
 
     // Phase 6: Technique validation
-    if (defaultCriteria.techniqueVerification && knowledge.extractedTechniques) {
+    if (
+      defaultCriteria.techniqueVerification &&
+      knowledge.extractedTechniques
+    ) {
       const techniqueValidation = this.validateTechniques(
-        knowledge.extractedTechniques
+        knowledge.extractedTechniques,
       );
       validations.push(...techniqueValidation.checks);
       issues.push(...techniqueValidation.issues);
@@ -213,7 +220,7 @@ export class KnowledgeVettingEngine {
    */
   private validateSource(
     knowledge: CrawledKnowledge,
-    criteria: VettingCriteria
+    criteria: VettingCriteria,
   ): {
     checks: ValidationCheck[];
     issues: ValidationIssue[];
@@ -243,7 +250,9 @@ export class KnowledgeVettingEngine {
     }
 
     // Check if source is approved
-    if (Array.from(this.approvedSources).some((as) => sourceName.includes(as))) {
+    if (
+      Array.from(this.approvedSources).some((as) => sourceName.includes(as))
+    ) {
       checks.push({
         name: "Source Trust",
         passed: true,
@@ -288,7 +297,8 @@ export class KnowledgeVettingEngine {
     }
 
     // Check recency
-    const daysSinceCrawl = (Date.now() - knowledge.crawledAt) / (1000 * 60 * 60 * 24);
+    const daysSinceCrawl =
+      (Date.now() - knowledge.crawledAt) / (1000 * 60 * 60 * 24);
     if (daysSinceCrawl < 30) {
       checks.push({
         name: "Recency",
@@ -315,7 +325,7 @@ export class KnowledgeVettingEngine {
    */
   private validateContent(
     knowledge: CrawledKnowledge,
-    criteria: VettingCriteria
+    criteria: VettingCriteria,
   ): {
     checks: ValidationCheck[];
     issues: ValidationIssue[];
@@ -361,7 +371,7 @@ export class KnowledgeVettingEngine {
 
     // Check for metadata
     const metadataFields = Object.values(knowledge.metadata).filter(
-      (v) => v !== null && v !== undefined && v !== ""
+      (v) => v !== null && v !== undefined && v !== "",
     ).length;
     if (metadataFields < 3) {
       issues.push({
@@ -413,7 +423,7 @@ export class KnowledgeVettingEngine {
 
     allIngredients.forEach((ingredient) => {
       const isKnown = Array.from(this.ingredientDatabase.keys()).some((key) =>
-        key.toLowerCase().includes(ingredient)
+        key.toLowerCase().includes(ingredient),
       );
 
       if (isKnown) {
@@ -469,7 +479,7 @@ export class KnowledgeVettingEngine {
     let scoreAdjustment = 0;
 
     const recipesWithAllergens = recipes.filter(
-      (r) => r.allergens && r.allergens.length > 0
+      (r) => r.allergens && r.allergens.length > 0,
     ).length;
 
     if (recipesWithAllergens === recipes.length) {
@@ -518,15 +528,14 @@ export class KnowledgeVettingEngine {
     recipes.forEach((recipe) => {
       if (recipe.allergens && recipe.allergens.length > 0) {
         const validAllergens = recipe.allergens.filter((a) =>
-          majorAllergens.some((ma) => a.toLowerCase().includes(ma))
+          majorAllergens.some((ma) => a.toLowerCase().includes(ma)),
         );
 
         if (validAllergens.length === recipe.allergens.length) {
           // All allergens are valid
         } else {
           const invalidAllergens = recipe.allergens.filter(
-            (a) =>
-              !majorAllergens.some((ma) => a.toLowerCase().includes(ma))
+            (a) => !majorAllergens.some((ma) => a.toLowerCase().includes(ma)),
           );
           issues.push({
             type: "non_standard_allergen",
@@ -571,7 +580,7 @@ export class KnowledgeVettingEngine {
         const analysis = this.culinaryBrain.analyzeFlavorBalance(
           ingredientAmounts,
           this.buildChemistryMap(),
-          recipe.title
+          recipe.title,
         );
 
         if (analysis.balance) {
@@ -620,7 +629,7 @@ export class KnowledgeVettingEngine {
 
     techniques.forEach((technique) => {
       const isStandard = standardTechniques.some((st) =>
-        technique.name.toLowerCase().includes(st)
+        technique.name.toLowerCase().includes(st),
       );
 
       if (isStandard) {
@@ -657,7 +666,9 @@ export class KnowledgeVettingEngine {
   /**
    * Run culinary brain analysis
    */
-  private async runCulinaryBrainAnalysis(knowledge: CrawledKnowledge): Promise<string> {
+  private async runCulinaryBrainAnalysis(
+    knowledge: CrawledKnowledge,
+  ): Promise<string> {
     if (!this.culinaryBrain) {
       return "CULINARY_BRAIN_NOT_CONFIGURED";
     }
@@ -683,9 +694,11 @@ VERDICT: APPROVED`;
   private determineVettingLevel(
     score: number,
     issues: ValidationIssue[],
-    criteria: VettingCriteria
+    criteria: VettingCriteria,
   ): VettingLevel {
-    const criticalIssues = issues.filter((i) => i.severity === "critical").length;
+    const criticalIssues = issues.filter(
+      (i) => i.severity === "critical",
+    ).length;
     const errorIssues = issues.filter((i) => i.severity === "error").length;
 
     if (score < 0.3 || criticalIssues > 0) {
@@ -750,18 +763,21 @@ VERDICT: APPROVED`;
   private assessContentConsistency(knowledge: CrawledKnowledge): number {
     let consistency = 0.5;
 
-    if (
-      knowledge.extractedRecipes &&
-      knowledge.extractedRecipes.length > 0
-    ) {
+    if (knowledge.extractedRecipes && knowledge.extractedRecipes.length > 0) {
       consistency += 0.2;
     }
 
-    if (knowledge.metadata.ingredients && knowledge.metadata.ingredients.length > 5) {
+    if (
+      knowledge.metadata.ingredients &&
+      knowledge.metadata.ingredients.length > 5
+    ) {
       consistency += 0.15;
     }
 
-    if (knowledge.metadata.allergens && knowledge.metadata.allergens.length > 0) {
+    if (
+      knowledge.metadata.allergens &&
+      knowledge.metadata.allergens.length > 0
+    ) {
       consistency += 0.15;
     }
 
@@ -822,7 +838,7 @@ VERDICT: APPROVED`;
    */
   private generateRecommendations(
     issues: ValidationIssue[],
-    knowledge: CrawledKnowledge
+    knowledge: CrawledKnowledge,
   ): string[] {
     const recommendations: string[] = [];
 
@@ -834,7 +850,7 @@ VERDICT: APPROVED`;
 
     if (recommendations.length === 0 && issues.length > 0) {
       recommendations.push(
-        "Review and address flagged issues before integration"
+        "Review and address flagged issues before integration",
       );
     }
 
@@ -847,18 +863,19 @@ VERDICT: APPROVED`;
   private generateVetterNotes(
     level: VettingLevel,
     score: number,
-    issues: ValidationIssue[]
+    issues: ValidationIssue[],
   ): string {
     const statusMap = {
-      approved:
-        "Knowledge approved for integration into culinary database",
+      approved: "Knowledge approved for integration into culinary database",
       approved_with_notes:
         "Knowledge approved with notes - review before integration",
       quarantined: "Knowledge quarantined - significant issues detected",
       rejected: "Knowledge rejected - critical issues prevent integration",
     };
 
-    const criticalCount = issues.filter((i) => i.severity === "critical").length;
+    const criticalCount = issues.filter(
+      (i) => i.severity === "critical",
+    ).length;
     const errorCount = issues.filter((i) => i.severity === "error").length;
     const warningCount = issues.filter((i) => i.severity === "warning").length;
 

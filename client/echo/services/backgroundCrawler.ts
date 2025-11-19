@@ -61,7 +61,10 @@ export class BackgroundKnowledgeCrawler {
   /**
    * Initialize the crawler with knowledge base
    */
-  initialize(recipes: RecipeCodexMetadata[], ingredients: Record<string, any>): void {
+  initialize(
+    recipes: RecipeCodexMetadata[],
+    ingredients: Record<string, any>,
+  ): void {
     if (this.manager) return; // Already initialized
 
     this.manager = new KnowledgeManager({
@@ -127,7 +130,7 @@ export class BackgroundKnowledgeCrawler {
       const topicsToProcess = this.selectTopicsForBatch();
 
       console.log(
-        `📚 Crawling batch ${this.crawlCount + 1}: ${topicsToProcess.join(", ")}`
+        `📚 Crawling batch ${this.crawlCount + 1}: ${topicsToProcess.join(", ")}`,
       );
 
       for (const topic of topicsToProcess) {
@@ -144,11 +147,11 @@ export class BackgroundKnowledgeCrawler {
             result.newlyApprovedKnowledge.length,
             result.vetResult.filter((v) => v.level === "rejected").length,
             result.vetResult.filter((v) => v.level === "quarantined").length,
-            metadata
+            metadata,
           );
 
           console.log(
-            `✅ ${topic}: ${result.newlyApprovedKnowledge.length} approved, ${result.crawlResult.failureCount} failures`
+            `✅ ${topic}: ${result.newlyApprovedKnowledge.length} approved, ${result.crawlResult.failureCount} failures`,
           );
         } catch (error) {
           console.warn(`⚠️ Failed to crawl "${topic}":`, error);
@@ -162,7 +165,7 @@ export class BackgroundKnowledgeCrawler {
         const progress = this.tracker.getProgressState();
         if (progress.mode === "on_demand") {
           console.log(
-            "✨ Auto-switched to On-Demand Mode - Knowledge base is substantial!"
+            "✨ Auto-switched to On-Demand Mode - Knowledge base is substantial!",
           );
           this.config.mode = "on_demand";
           this.stop();
@@ -184,7 +187,8 @@ export class BackgroundKnowledgeCrawler {
    * Select topics for this batch
    */
   private selectTopicsForBatch(): string[] {
-    const start = (this.crawlCount * this.config.batchSize) % this.config.topics.length;
+    const start =
+      (this.crawlCount * this.config.batchSize) % this.config.topics.length;
     const selected = [];
 
     for (let i = 0; i < this.config.batchSize; i++) {
@@ -204,7 +208,9 @@ export class BackgroundKnowledgeCrawler {
     }
 
     const result = await this.manager.expandKnowledge(topic, "manual");
-    console.log(`✅ Manual crawl: ${topic} - ${result.newlyApprovedKnowledge.length} items`);
+    console.log(
+      `✅ Manual crawl: ${topic} - ${result.newlyApprovedKnowledge.length} items`,
+    );
   }
 
   /**
@@ -298,7 +304,7 @@ export function getBackgroundCrawler(): BackgroundKnowledgeCrawler {
  */
 export function initializeBackgroundCrawler(
   recipes: RecipeCodexMetadata[],
-  ingredients: Record<string, any>
+  ingredients: Record<string, any>,
 ): void {
   const crawler = getBackgroundCrawler();
   crawler.initialize(recipes, ingredients);

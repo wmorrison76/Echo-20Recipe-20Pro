@@ -1,7 +1,11 @@
 import { RecipeCodexService } from "../services/recipeCodexService";
 import { RecipeVectorSearchResult } from "../services/recipeVectorStore";
 import type { FlavorBalance, RecipeCodexMetadata } from "../codex";
-import { FlavorMatrix, type IngredientAmount, type FlavorBalanceResult } from "./flavorMatrix";
+import {
+  FlavorMatrix,
+  type IngredientAmount,
+  type FlavorBalanceResult,
+} from "./flavorMatrix";
 import type { IngredientChemistryProfile } from "../codex/ingredientChemistry";
 
 export type ServiceContext =
@@ -54,9 +58,12 @@ export class EchoChefBrain {
   static analyzeFlavorBalance(
     ingredients: IngredientAmount[],
     chemistryProfiles: Record<string, IngredientChemistryProfile>,
-    dishType?: string
+    dishType?: string,
   ): { balance: FlavorBalanceResult; corrections: string[] } {
-    const balance = FlavorMatrix.calculateBalance(ingredients, chemistryProfiles);
+    const balance = FlavorMatrix.calculateBalance(
+      ingredients,
+      chemistryProfiles,
+    );
     const corrections = FlavorMatrix.suggestCorrections(balance);
     return { balance, corrections };
   }
@@ -67,9 +74,13 @@ export class EchoChefBrain {
   static analyzeVinaigrette(
     oilGrams: number,
     vinegaarGrams: number,
-    otherIngredients?: IngredientAmount[]
+    otherIngredients?: IngredientAmount[],
   ) {
-    return FlavorMatrix.balanceVinaigrette(oilGrams, vinegaarGrams, otherIngredients);
+    return FlavorMatrix.balanceVinaigrette(
+      oilGrams,
+      vinegaarGrams,
+      otherIngredients,
+    );
   }
 
   static async suggestRecipes(

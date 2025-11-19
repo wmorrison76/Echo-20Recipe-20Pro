@@ -2,7 +2,13 @@ export interface CulinaryProcedure {
   id: string;
   title: string;
   source_book: string;
-  category: "butchery" | "pastry" | "cooking" | "preparation" | "technique" | "general";
+  category:
+    | "butchery"
+    | "pastry"
+    | "cooking"
+    | "preparation"
+    | "technique"
+    | "general";
   steps: Array<{
     number: number;
     instruction: string;
@@ -73,11 +79,17 @@ export async function searchProcedures(
 
       // Handle Supabase not configured gracefully (503)
       if (response.status === 503) {
-        console.warn("Procedures feature unavailable: Supabase not configured. Using Pinecone recipes instead.");
+        console.warn(
+          "Procedures feature unavailable: Supabase not configured. Using Pinecone recipes instead.",
+        );
         return [];
       }
 
-      const errorMessage = errorData.error || errorData.message || response.statusText || "Unknown error";
+      const errorMessage =
+        errorData.error ||
+        errorData.message ||
+        response.statusText ||
+        "Unknown error";
       throw new Error(`Failed to search procedures: ${errorMessage}`);
     }
 
@@ -103,7 +115,9 @@ export async function getAllProcedures(): Promise<CulinaryProcedure[]> {
 
       // Handle Supabase not configured gracefully (503)
       if (response.status === 503) {
-        console.warn("Procedures feature unavailable: Supabase not configured.");
+        console.warn(
+          "Procedures feature unavailable: Supabase not configured.",
+        );
         return [];
       }
 
@@ -121,7 +135,9 @@ export async function getAllProcedures(): Promise<CulinaryProcedure[]> {
 /**
  * Get procedure by ID
  */
-export async function getProcedureById(id: string): Promise<CulinaryProcedure | null> {
+export async function getProcedureById(
+  id: string,
+): Promise<CulinaryProcedure | null> {
   try {
     const response = await fetch(`${API_BASE}/${id}`);
 
@@ -152,7 +168,9 @@ export async function getProceduresByCategory(
 
       // Handle Supabase not configured gracefully (503)
       if (response.status === 503) {
-        console.warn("Procedures feature unavailable: Supabase not configured.");
+        console.warn(
+          "Procedures feature unavailable: Supabase not configured.",
+        );
         return [];
       }
 
@@ -171,16 +189,22 @@ export async function getProceduresByCategory(
  * Get procedures from a specific book
  * Falls back gracefully if Supabase is not configured
  */
-export async function getProceduresByBook(bookName: string): Promise<CulinaryProcedure[]> {
+export async function getProceduresByBook(
+  bookName: string,
+): Promise<CulinaryProcedure[]> {
   try {
-    const response = await fetch(`${API_BASE}/by-book/${encodeURIComponent(bookName)}`);
+    const response = await fetch(
+      `${API_BASE}/by-book/${encodeURIComponent(bookName)}`,
+    );
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
 
       // Handle Supabase not configured gracefully (503)
       if (response.status === 503) {
-        console.warn("Procedures feature unavailable: Supabase not configured.");
+        console.warn(
+          "Procedures feature unavailable: Supabase not configured.",
+        );
         return [];
       }
 
@@ -220,14 +244,18 @@ export async function searchProceduresFulltext(
   limit: number = 20,
 ): Promise<CulinaryProcedure[]> {
   try {
-    const response = await fetch(`${API_BASE}/search-text/${encodeURIComponent(query)}?limit=${limit}`);
+    const response = await fetch(
+      `${API_BASE}/search-text/${encodeURIComponent(query)}?limit=${limit}`,
+    );
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
 
       // Handle Supabase not configured gracefully (503)
       if (response.status === 503) {
-        console.warn("Procedures feature unavailable: Supabase not configured.");
+        console.warn(
+          "Procedures feature unavailable: Supabase not configured.",
+        );
         return [];
       }
 

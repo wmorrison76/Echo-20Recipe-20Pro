@@ -11,7 +11,11 @@ export * from "./services";
 export * from "./brain";
 
 // Flavor Science - Balance calculations & corrections
-export { FlavorMatrix, type IngredientAmount, type FlavorBalanceResult } from "./brain/flavorMatrix";
+export {
+  FlavorMatrix,
+  type IngredientAmount,
+  type FlavorBalanceResult,
+} from "./brain/flavorMatrix";
 
 // Knowledge Management - Crawler, Gap Detection, Vetting
 export { KnowledgeCrawler } from "./cognition/knowledgeCrawler";

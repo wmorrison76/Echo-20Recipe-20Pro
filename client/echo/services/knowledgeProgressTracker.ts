@@ -3,14 +3,14 @@
  * Monitors knowledge base growth and tracks progress across domains
  */
 
-export type CulinaryType = 
+export type CulinaryType =
   | "general"
   | "pastry"
   | "baking"
   | "banquet"
   | "catering";
 
-export type Region = 
+export type Region =
   | "chinese"
   | "japanese"
   | "thai"
@@ -86,7 +86,7 @@ export class KnowledgeProgressTracker {
     approvedCount: number,
     rejectedCount: number,
     quarantinedCount: number,
-    metadataByCategory: Record<string, any>
+    metadataByCategory: Record<string, any>,
   ): KnowledgeProgressState {
     this.state.totalApprovedItems += approvedCount;
     this.state.totalRejectedItems += rejectedCount;
@@ -133,7 +133,7 @@ export class KnowledgeProgressTracker {
 
         // Calculate coverage based on checkpoints
         const checkpointsCovered = Object.values(metric.checkpoints).filter(
-          (v) => v
+          (v) => v,
         ).length;
         metric.coverage =
           Math.min(100, typeItems * 5) + checkpointsCovered * 10;
@@ -150,37 +150,35 @@ export class KnowledgeProgressTracker {
    */
   private updateCheckpoints(
     metric: CulinaryTypeMetrics,
-    metadata: Record<string, any>
+    metadata: Record<string, any>,
   ): void {
     const typeMetadata = Object.values(metadata).filter((m: any) =>
-      (m.category || m.type || "").toLowerCase().includes(metric.type)
+      (m.category || m.type || "").toLowerCase().includes(metric.type),
     );
 
     if (typeMetadata.length === 0) return;
 
     // Allergens checkpoint
     metric.checkpoints.allergens = typeMetadata.some(
-      (m: any) => m.allergens && m.allergens.length > 0
+      (m: any) => m.allergens && m.allergens.length > 0,
     );
 
     // Nutrition checkpoint
-    metric.checkpoints.nutrition = typeMetadata.some(
-      (m: any) => m.nutrition
-    );
+    metric.checkpoints.nutrition = typeMetadata.some((m: any) => m.nutrition);
 
     // Techniques checkpoint
     metric.checkpoints.techniques = typeMetadata.some(
-      (m: any) => m.technique && m.technique.length > 0
+      (m: any) => m.technique && m.technique.length > 0,
     );
 
     // Flavor balance checkpoint
     metric.checkpoints.flavorBalance = typeMetadata.some(
-      (m: any) => m.flavorBalance
+      (m: any) => m.flavorBalance,
     );
 
     // Substitutions checkpoint
     metric.checkpoints.substitutions = typeMetadata.some(
-      (m: any) => m.substitutions
+      (m: any) => m.substitutions,
     );
   }
 
@@ -209,7 +207,7 @@ export class KnowledgeProgressTracker {
 
     Object.entries(regionCuisineMap).forEach(([region, cuisines]) => {
       const metric = this.state.regionalMetrics.find(
-        (m) => m.region === (region as Region)
+        (m) => m.region === (region as Region),
       );
       if (metric) {
         const regionMetadata = Object.values(metadata).filter((m: any) =>
@@ -218,21 +216,21 @@ export class KnowledgeProgressTracker {
               (m.cuisineRegion || m.cuisine || "")
                 .toLowerCase()
                 .includes(cuisine.toLowerCase()) ||
-              (m.title || "").toLowerCase().includes(cuisine.toLowerCase())
-          )
+              (m.title || "").toLowerCase().includes(cuisine.toLowerCase()),
+          ),
         );
 
         metric.recipesCount = regionMetadata.length;
         metric.coverage = Math.min(
           100,
-          Math.max(0, (regionMetadata.length / 100) * 100)
+          Math.max(0, (regionMetadata.length / 100) * 100),
         );
         metric.cuisinesRepresented = cuisines.filter((c) =>
           regionMetadata.some((m: any) =>
             (m.cuisineRegion || m.cuisine || "")
               .toLowerCase()
-              .includes(c.toLowerCase())
-          )
+              .includes(c.toLowerCase()),
+          ),
         );
       }
     });
@@ -336,16 +334,19 @@ export class KnowledgeProgressTracker {
     const coverageToGo = Math.max(
       0,
       this.state.modeAutoSwitchThresholds.coveragePercentage -
-        this.state.overallCoverage
+        this.state.overallCoverage,
     );
     const itemsToGo = Math.max(
       0,
       this.state.modeAutoSwitchThresholds.minApprovedItems -
-        this.state.totalApprovedItems
+        this.state.totalApprovedItems,
     );
 
     return {
-      mode: this.state.mode === "learning" ? "🚀 Learning Mode" : "⚡ On-Demand Mode",
+      mode:
+        this.state.mode === "learning"
+          ? "🚀 Learning Mode"
+          : "⚡ On-Demand Mode",
       coverage: this.state.overallCoverage,
       approved: this.state.totalApprovedItems,
       progress: `${this.state.overallCoverage}% coverage, ${this.state.totalApprovedItems.toLocaleString()} items approved`,
@@ -434,22 +435,118 @@ export class KnowledgeProgressTracker {
         },
       ],
       regionalMetrics: [
-        { region: "chinese", label: "🇨🇳 Chinese", coverage: 0, recipesCount: 0, cuisinesRepresented: [] },
-        { region: "japanese", label: "🇯🇵 Japanese", coverage: 0, recipesCount: 0, cuisinesRepresented: [] },
-        { region: "thai", label: "🇹🇭 Thai", coverage: 0, recipesCount: 0, cuisinesRepresented: [] },
-        { region: "korean", label: "🇰🇷 Korean", coverage: 0, recipesCount: 0, cuisinesRepresented: [] },
-        { region: "indian", label: "🇮🇳 Indian", coverage: 0, recipesCount: 0, cuisinesRepresented: [] },
-        { region: "vietnamese", label: "🇻🇳 Vietnamese", coverage: 0, recipesCount: 0, cuisinesRepresented: [] },
-        { region: "french", label: "🇫🇷 French", coverage: 0, recipesCount: 0, cuisinesRepresented: [] },
-        { region: "italian", label: "🇮🇹 Italian", coverage: 0, recipesCount: 0, cuisinesRepresented: [] },
-        { region: "spanish", label: "🇪🇸 Spanish", coverage: 0, recipesCount: 0, cuisinesRepresented: [] },
-        { region: "german", label: "🇩🇪 German", coverage: 0, recipesCount: 0, cuisinesRepresented: [] },
-        { region: "mexican", label: "🇲🇽 Mexican", coverage: 0, recipesCount: 0, cuisinesRepresented: [] },
-        { region: "brazilian", label: "🇧🇷 Brazilian", coverage: 0, recipesCount: 0, cuisinesRepresented: [] },
-        { region: "american", label: "🇺🇸 American", coverage: 0, recipesCount: 0, cuisinesRepresented: [] },
-        { region: "middle_eastern", label: "🌍 Middle Eastern", coverage: 0, recipesCount: 0, cuisinesRepresented: [] },
-        { region: "african", label: "🌍 African", coverage: 0, recipesCount: 0, cuisinesRepresented: [] },
-        { region: "oceanic", label: "🌏 Oceanic", coverage: 0, recipesCount: 0, cuisinesRepresented: [] },
+        {
+          region: "chinese",
+          label: "🇨🇳 Chinese",
+          coverage: 0,
+          recipesCount: 0,
+          cuisinesRepresented: [],
+        },
+        {
+          region: "japanese",
+          label: "🇯🇵 Japanese",
+          coverage: 0,
+          recipesCount: 0,
+          cuisinesRepresented: [],
+        },
+        {
+          region: "thai",
+          label: "🇹🇭 Thai",
+          coverage: 0,
+          recipesCount: 0,
+          cuisinesRepresented: [],
+        },
+        {
+          region: "korean",
+          label: "🇰🇷 Korean",
+          coverage: 0,
+          recipesCount: 0,
+          cuisinesRepresented: [],
+        },
+        {
+          region: "indian",
+          label: "🇮🇳 Indian",
+          coverage: 0,
+          recipesCount: 0,
+          cuisinesRepresented: [],
+        },
+        {
+          region: "vietnamese",
+          label: "🇻🇳 Vietnamese",
+          coverage: 0,
+          recipesCount: 0,
+          cuisinesRepresented: [],
+        },
+        {
+          region: "french",
+          label: "🇫🇷 French",
+          coverage: 0,
+          recipesCount: 0,
+          cuisinesRepresented: [],
+        },
+        {
+          region: "italian",
+          label: "🇮🇹 Italian",
+          coverage: 0,
+          recipesCount: 0,
+          cuisinesRepresented: [],
+        },
+        {
+          region: "spanish",
+          label: "🇪🇸 Spanish",
+          coverage: 0,
+          recipesCount: 0,
+          cuisinesRepresented: [],
+        },
+        {
+          region: "german",
+          label: "🇩🇪 German",
+          coverage: 0,
+          recipesCount: 0,
+          cuisinesRepresented: [],
+        },
+        {
+          region: "mexican",
+          label: "🇲🇽 Mexican",
+          coverage: 0,
+          recipesCount: 0,
+          cuisinesRepresented: [],
+        },
+        {
+          region: "brazilian",
+          label: "🇧🇷 Brazilian",
+          coverage: 0,
+          recipesCount: 0,
+          cuisinesRepresented: [],
+        },
+        {
+          region: "american",
+          label: "🇺🇸 American",
+          coverage: 0,
+          recipesCount: 0,
+          cuisinesRepresented: [],
+        },
+        {
+          region: "middle_eastern",
+          label: "🌍 Middle Eastern",
+          coverage: 0,
+          recipesCount: 0,
+          cuisinesRepresented: [],
+        },
+        {
+          region: "african",
+          label: "🌍 African",
+          coverage: 0,
+          recipesCount: 0,
+          cuisinesRepresented: [],
+        },
+        {
+          region: "oceanic",
+          label: "🌏 Oceanic",
+          coverage: 0,
+          recipesCount: 0,
+          cuisinesRepresented: [],
+        },
       ],
       lastUpdated: Date.now(),
       modeAutoSwitchThresholds: {
