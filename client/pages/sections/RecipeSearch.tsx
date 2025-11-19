@@ -49,6 +49,7 @@ import type { LanguageCode } from "@/i18n/config";
 import type { RecipeCollection } from "@shared/server-notes";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign } from "lucide-react";
+import { KnowledgeProgressDashboard } from "@/components/KnowledgeProgressDashboard";
 import { ResponsiveImage } from "@/components/ResponsiveImage";
 import { storeProcedure } from "@/lib/echo-procedures-service";
 import { identifyProcedures } from "@/lib/procedure-extraction";
