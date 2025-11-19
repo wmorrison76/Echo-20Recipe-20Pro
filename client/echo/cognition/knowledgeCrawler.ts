@@ -106,6 +106,7 @@ export class KnowledgeCrawler {
   constructor(config: Partial<CrawlerConfig> = {}) {
     this.config = {
       sources: [
+        "user_imported",
         "recipe_database",
         "academic_paper",
         "restaurant_menu",
@@ -121,6 +122,20 @@ export class KnowledgeCrawler {
       ...config,
     };
     this.currentRecipes = new Map();
+  }
+
+  /**
+   * Register local recipes for crawling
+   */
+  registerLocalRecipes(recipes: Record<string, any>[]): void {
+    this.currentRecipes.clear();
+    recipes.forEach((recipe, index) => {
+      this.currentRecipes.set(
+        recipe.id || `recipe_${index}`,
+        recipe
+      );
+    });
+    console.log(`📚 Registered ${this.currentRecipes.size} local recipes for crawling`);
   }
 
   /**
