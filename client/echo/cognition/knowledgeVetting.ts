@@ -200,6 +200,25 @@ export class KnowledgeVettingEngine {
     const level = this.determineVettingLevel(score, issues, defaultCriteria);
     const recommendations = this.generateRecommendations(issues, knowledge);
 
+    // Log vetting result for debugging
+    const passedChecks = validations.filter((v) => v.passed).length;
+    const failedChecks = validations.filter((v) => !v.passed).length;
+    const criticalIssues = issues.filter((i) => i.severity === "critical").length;
+
+    if (level === "approved" || level === "approved_with_notes") {
+      console.log(
+        `    ✅ [${level}] ${knowledge.id} (score: ${score.toFixed(2)}) - ${passedChecks}/${validations.length} checks passed`,
+      );
+    } else if (level === "quarantined") {
+      console.log(
+        `    ⚠️  [quarantined] ${knowledge.id} (score: ${score.toFixed(2)}) - ${failedChecks} issues: ${issues.slice(0, 2).map((i) => i.message).join(", ")}`,
+      );
+    } else {
+      console.log(
+        `    ❌ [rejected] ${knowledge.id} (score: ${score.toFixed(2)}) - ${criticalIssues} critical issues`,
+      );
+    }
+
     return {
       id: knowledge.id,
       source: knowledge.source,
