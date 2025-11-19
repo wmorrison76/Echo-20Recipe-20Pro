@@ -39,21 +39,7 @@ export function useBackgroundCrawler() {
     progress: null,
     summary: null,
   });
-
-  // Initialize crawler on mount
-  useEffect(() => {
-    if (recipes && ingredients && recipes.length > 0) {
-      initializeBackgroundCrawler(recipes, ingredients);
-      updateStatus();
-    }
-
-    // Poll for status updates every 10 seconds
-    const interval = setInterval(() => {
-      updateStatus();
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, [recipes, ingredients]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const updateStatus = useCallback(() => {
     try {
@@ -74,16 +60,47 @@ export function useBackgroundCrawler() {
     }
   }, []);
 
+  // Initialize crawler on mount or when recipes/ingredients change
+  useEffect(() => {
+    if (!isInitialized && recipes && ingredients && recipes.length > 0) {
+      console.log("Initializing background crawler...");
+      initializeBackgroundCrawler(recipes, ingredients);
+      setIsInitialized(true);
+      updateStatus();
+    }
+  }, [recipes, ingredients, isInitialized, updateStatus]);
+
+  // Poll for status updates every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      updateStatus();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [updateStatus]);
+
   const start = useCallback(() => {
-    const crawler = getBackgroundCrawler();
-    crawler.start();
-    updateStatus();
+    try {
+      const crawler = getBackgroundCrawler();
+      console.log("Starting crawler...");
+      crawler.start();
+      // Update status immediately
+      setTimeout(() => updateStatus(), 100);
+    } catch (error) {
+      console.error("Error starting crawler:", error);
+    }
   }, [updateStatus]);
 
   const stop = useCallback(() => {
-    const crawler = getBackgroundCrawler();
-    crawler.stop();
-    updateStatus();
+    try {
+      const crawler = getBackgroundCrawler();
+      console.log("Stopping crawler...");
+      crawler.stop();
+      // Update status immediately
+      setTimeout(() => updateStatus(), 100);
+    } catch (error) {
+      console.error("Error stopping crawler:", error);
+    }
   }, [updateStatus]);
 
   const setMode = useCallback(
