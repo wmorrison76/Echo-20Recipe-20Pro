@@ -1,12 +1,13 @@
 import type { Request, Response } from "express";
 import { EchoChefBrain, type ChefBrainSuggestion } from "../echo/brain/echoChefBrain";
+import { generateEmbeddingForQuery } from "../server/lib/echo-chef-embedding";
 
-async function embedTextToVector(text: string): Promise<number[]> {
-  throw new Error(
-    "embedTextToVector is not implemented – plug in your embedding model (OpenAI, etc.) here."
-  );
-}
-
+/**
+ * POST /api/echo-chef
+ * Accepts user prompt + dietary/allergen filters
+ * Returns Chef Brain suggestions (existing recipes, variations, new concepts)
+ * Uses server-side vector engine for embedding (Pinecone/pgvector agnostic)
+ */
 export const echoChefHandler = async (req: Request, res: Response) => {
   try {
     const { userPrompt, dietaryTags, avoidAllergens, maxComplexity } = req.body as {
@@ -20,8 +21,10 @@ export const echoChefHandler = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "userPrompt is required" });
     }
 
-    const embedding = await embedTextToVector(userPrompt);
+    // Generate embedding using existing vector engine (Pinecone/pgvector)
+    const embedding = await generateEmbeddingForQuery(userPrompt);
 
+    // Get Chef Brain suggestions from imported recipe knowledge base
     const suggestions: ChefBrainSuggestion[] =
       await EchoChefBrain.suggestRecipes({
         userPrompt,
