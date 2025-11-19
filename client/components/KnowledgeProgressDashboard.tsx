@@ -5,7 +5,15 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { Zap, Rocket, TrendingUp, Globe, ChefHat, Play, Pause } from "lucide-react";
+import {
+  Zap,
+  Rocket,
+  TrendingUp,
+  Globe,
+  ChefHat,
+  Play,
+  Pause,
+} from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import {
@@ -100,7 +108,9 @@ export function KnowledgeProgressDashboard({
               variant={status.isRunning ? "default" : "outline"}
               size="sm"
               className="flex items-center gap-2"
-              title={status.isRunning ? "Stop Learning Mode" : "Start Learning Mode"}
+              title={
+                status.isRunning ? "Stop Learning Mode" : "Start Learning Mode"
+              }
             >
               {status.isRunning ? (
                 <>
