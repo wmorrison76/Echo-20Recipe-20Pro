@@ -143,6 +143,11 @@ export function KnowledgeProgressDashboard({
                 </>
               )}
             </Button>
+            {status.isRunning && (
+              <div className="text-sm font-semibold text-slate-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200 whitespace-nowrap">
+                📦 {(state.totalApprovedItems || 0).toLocaleString()} items
+              </div>
+            )}
             <div
               className={`px-3 py-1 rounded-full border ${modeColor} text-sm font-semibold flex items-center gap-2`}
             >
