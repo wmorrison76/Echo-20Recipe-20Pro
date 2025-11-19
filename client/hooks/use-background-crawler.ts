@@ -70,14 +70,14 @@ export function useBackgroundCrawler() {
     }
   }, [recipes, ingredients, isInitialized, updateStatus]);
 
-  // Poll for status updates every 5 seconds
+  // Poll for status updates (more frequently when running)
   useEffect(() => {
     const interval = setInterval(() => {
       updateStatus();
-    }, 5000);
+    }, isInitialized && status.isRunning ? 2000 : 5000); // 2s when running, 5s otherwise
 
     return () => clearInterval(interval);
-  }, [updateStatus]);
+  }, [updateStatus, isInitialized, status.isRunning]);
 
   const start = useCallback(() => {
     try {
