@@ -133,3 +133,38 @@ export type {
   CICheckResult,
   ValidationResult,
 } from "./expansions/ci-guardrails";
+
+// Knowledge Management exports
+export {
+  KnowledgeCrawler,
+  KnowledgeGapDetector,
+  KnowledgeVettingEngine,
+  KnowledgeManager,
+  EchoChefBrainWithKnowledge,
+} from "./cognition/knowledgeCrawler\" & \"./cognition/gapDetector\" & \"./cognition/knowledgeVetting\" & \"./cognition/knowledgeManager\" & \"./brain/echoChefBrainKnowledge";
+
+export type {
+  CrawledKnowledge,
+  ExtractedRecipe,
+  ExtractedTechnique,
+  KnowledgeSource,
+  TriggerType,
+  CrawlerConfig,
+  CrawlerResult,
+  GapAnalysisResult,
+  KnowledgeGap,
+  GapCategory,
+  CurrentKnowledgeState,
+  GapAnalysis,
+  VettingResult,
+  VettingLevel,
+  ValidationCheck,
+  ValidationIssue,
+  VettingCriteria,
+  KnowledgeTrustScoring,
+  KnowledgeManagementConfig,
+  KnowledgeIntegrationJob,
+  KnowledgeMetrics,
+  ChefBrainKnowledgeConfig,
+  KnowledgeEnrichedSuggestion,
+} from "./cognition/knowledgeCrawler\" & \"./cognition/gapDetector\" & \"./cognition/knowledgeVetting\" & \"./cognition/knowledgeManager\" & \"./brain/echoChefBrainKnowledge";
