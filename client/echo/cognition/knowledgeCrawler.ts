@@ -692,15 +692,57 @@ export class KnowledgeCrawler {
    * Helper: Extract recipe data from raw format
    */
   private extractRecipeData(recipe: any): ExtractedRecipe {
+    // Extract ingredients as strings or objects
+    const ingredients = (recipe.ingredients || [])
+      .map((ing: any) => {
+        if (typeof ing === "string") {
+          return { name: ing, amount: 1, unit: "" };
+        }
+        return {
+          name: typeof ing === "object" ? (ing.name || ing.item || ing.ingredient || "") : String(ing),
+          amount: ing.amount || ing.qty || ing.quantity || 1,
+          unit: ing.unit || ing.unitOfMeasure || "",
+        };
+      })
+      .filter((ing: any) => ing.name && String(ing.name).trim());
+
+    // Extract allergens
+    let allergens: string[] = recipe.allergens || [];
+    if (recipe.selectedAllergens) {
+      allergens = [...new Set([...allergens, ...recipe.selectedAllergens])];
+    }
+
+    // Extract techniques
+    let techniques: string[] = recipe.technique || [];
+    if (recipe.selectedPrepMethod) {
+      techniques = [...new Set([...techniques, ...recipe.selectedPrepMethod])];
+    }
+    if (recipe.selectedCookingEquipment) {
+      techniques = [...new Set([...techniques, ...recipe.selectedCookingEquipment])];
+    }
+
+    // Parse difficulty
+    let difficulty = recipe.difficulty || 2;
+    if (typeof difficulty === "string") {
+      const diffMap: Record<string, number> = {
+        easy: 1,
+        medium: 2,
+        hard: 3,
+        advanced: 4,
+        professional: 5,
+      };
+      difficulty = diffMap[difficulty.toLowerCase()] || 2;
+    }
+
     return {
       title: recipe.title || "Unknown Recipe",
-      ingredients: recipe.ingredients || [],
+      ingredients,
       instructions: recipe.instructions || [],
-      yield: recipe.yield || recipe.servings || 1,
+      yield: recipe.yield || recipe.servings || recipe.portionCount || 1,
       cookTime: recipe.cookTime || recipe.prepTime || 0,
-      difficulty: recipe.difficulty || 2,
-      allergens: recipe.allergens || [],
-      technique: recipe.technique || [],
+      difficulty: Math.max(1, Math.min(5, difficulty)),
+      allergens: allergens,
+      technique: techniques,
     };
   }
 
