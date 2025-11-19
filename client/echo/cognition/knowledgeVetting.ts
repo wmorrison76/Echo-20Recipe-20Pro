@@ -753,7 +753,7 @@ VERDICT: APPROVED`;
       youtube_video: 0.65,
       food_blog: 0.6,
       ingredient_supplier: 0.85,
-      user_imported: 0.5,
+      user_imported: 0.8,  // User's own recipes are highly trustworthy
     };
 
     return reliabilityMap[source] || 0.5;
