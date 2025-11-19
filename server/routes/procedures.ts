@@ -5,8 +5,10 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = process.env.SUPABASE_URL || "";
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
+const isSupabaseConfigured = !!supabaseUrl && !!supabaseServiceKey;
+
 function getSupabaseClient() {
-  if (!supabaseUrl || !supabaseServiceKey) {
+  if (!isSupabaseConfigured) {
     throw new Error("Supabase credentials not configured");
   }
   return createClient(supabaseUrl, supabaseServiceKey);
@@ -15,10 +17,25 @@ function getSupabaseClient() {
 const router = Router();
 
 /**
+ * Middleware to check if Supabase is configured
+ */
+const checkSupabaseConfig = (req: Request, res: Response, next: Function) => {
+  if (!isSupabaseConfigured) {
+    return res.status(503).json({
+      success: false,
+      error: "Supabase is not configured. Culinary procedures feature is unavailable.",
+      message:
+        "Configure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables to enable this feature.",
+    });
+  }
+  next();
+};
+
+/**
  * POST /api/procedures/store
  * Store a culinary procedure with semantic embedding
  */
-router.post("/store", async (req: Request, res: Response) => {
+router.post("/store", checkSupabaseConfig, async (req: Request, res: Response) => {
   try {
     const {
       title,
@@ -88,7 +105,7 @@ router.post("/store", async (req: Request, res: Response) => {
  * POST /api/procedures/search
  * Search procedures semantically
  */
-router.post("/search", async (req: Request, res: Response) => {
+router.post("/search", checkSupabaseConfig, async (req: Request, res: Response) => {
   try {
     const { query, limit = 10, category, min_similarity = 0.3 } = req.body;
 
@@ -153,7 +170,7 @@ router.post("/search", async (req: Request, res: Response) => {
  * GET /api/procedures/by-category/:category
  * Get all procedures for a specific category
  */
-router.get("/by-category/:category", async (req: Request, res: Response) => {
+router.get("/by-category/:category", checkSupabaseConfig, async (req: Request, res: Response) => {
   try {
     const { category } = req.params;
     const { limit = 20 } = req.query;
@@ -186,94 +203,23 @@ router.get("/by-category/:category", async (req: Request, res: Response) => {
 });
 
 /**
- * GET /api/procedures/by-book/:book
- * Get all procedures from a specific book
+ * GET /api/procedures/list
+ * Get all procedures with pagination
  */
-router.get("/by-book/:book", async (req: Request, res: Response) => {
+router.get("/list", checkSupabaseConfig, async (req: Request, res: Response) => {
   try {
-    const { book } = req.params;
-    const { limit = 50 } = req.query;
+    const { limit = 20, offset = 0, category } = req.query;
     const supabase = getSupabaseClient();
 
-    const { data, error } = await supabase.rpc("get_procedures_by_book", {
-      p_book: decodeURIComponent(book),
-      p_limit: parseInt(limit as string) || 50,
-    });
+    let query = supabase.from("culinary_procedures").select("*");
 
-    if (error) {
-      console.error("Error fetching procedures by book:", error);
-      return res.status(500).json({
-        success: false,
-        error: error.message,
-      });
+    if (category) {
+      query = query.eq("category", category);
     }
 
-    return res.json({
-      success: true,
-      data,
-    });
-  } catch (error) {
-    console.error("Error in /procedures/by-book:", error);
-    return res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
-
-/**
- * GET /api/procedures/search-text/:query
- * Full text search on procedures
- */
-router.get("/search-text/:query", async (req: Request, res: Response) => {
-  try {
-    const { query } = req.params;
-    const { limit = 20 } = req.query;
-    const supabase = getSupabaseClient();
-
-    const { data, error } = await supabase.rpc("search_procedures_fulltext", {
-      p_query: decodeURIComponent(query),
-      p_limit: parseInt(limit as string) || 20,
-    });
-
-    if (error) {
-      console.error("Error searching procedures by text:", error);
-      return res.status(500).json({
-        success: false,
-        error: error.message,
-      });
-    }
-
-    return res.json({
-      success: true,
-      data,
-    });
-  } catch (error) {
-    console.error("Error in /procedures/search-text:", error);
-    return res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
-
-/**
- * GET /api/procedures/all
- * Get all procedures (paginated)
- */
-router.get("/all", async (req: Request, res: Response) => {
-  try {
-    const { limit = 100, offset = 0 } = req.query;
-    const supabase = getSupabaseClient();
-
-    const { data, error, count } = await supabase
-      .from("culinary_procedures")
-      .select("*", { count: "exact" })
-      .order("created_at", { ascending: false })
-      .range(
-        parseInt(offset as string) || 0,
-        (parseInt(offset as string) || 0) + (parseInt(limit as string) || 100) - 1
-      );
+    const { data, error, count } = await query
+      .range(parseInt(offset as string), parseInt(offset as string) + parseInt(limit as string) - 1)
+      .order("created_at", { ascending: false });
 
     if (error) {
       console.error("Error fetching procedures:", error);
@@ -286,12 +232,14 @@ router.get("/all", async (req: Request, res: Response) => {
     return res.json({
       success: true,
       data,
-      total: count,
-      limit: parseInt(limit as string) || 100,
-      offset: parseInt(offset as string) || 0,
+      pagination: {
+        limit: parseInt(limit as string),
+        offset: parseInt(offset as string),
+        total: count,
+      },
     });
   } catch (error) {
-    console.error("Error in /procedures/all:", error);
+    console.error("Error in /procedures/list:", error);
     return res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
@@ -300,74 +248,17 @@ router.get("/all", async (req: Request, res: Response) => {
 });
 
 /**
- * GET /api/procedures/:id
- * Get a specific procedure by ID
+ * GET /api/procedures/health
+ * Check if procedures feature is configured
  */
-router.get("/:id", async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const supabase = getSupabaseClient();
-
-    const { data, error } = await supabase
-      .from("culinary_procedures")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (error) {
-      console.error("Error fetching procedure:", error);
-      return res.status(404).json({
-        success: false,
-        error: "Procedure not found",
-      });
-    }
-
-    return res.json({
-      success: true,
-      data,
-    });
-  } catch (error) {
-    console.error("Error in /procedures/:id:", error);
-    return res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
-
-/**
- * DELETE /api/procedures/:id
- * Delete a procedure
- */
-router.delete("/:id", async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const supabase = getSupabaseClient();
-
-    const { error } = await supabase
-      .from("culinary_procedures")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      console.error("Error deleting procedure:", error);
-      return res.status(500).json({
-        success: false,
-        error: error.message,
-      });
-    }
-
-    return res.json({
-      success: true,
-      message: "Procedure deleted successfully",
-    });
-  } catch (error) {
-    console.error("Error in DELETE /procedures/:id:", error);
-    return res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
+router.get("/health", (req: Request, res: Response) => {
+  return res.json({
+    success: true,
+    configured: isSupabaseConfigured,
+    message: isSupabaseConfigured
+      ? "Supabase is configured and procedures feature is available"
+      : "Supabase is not configured. Procedures feature is unavailable.",
+  });
 });
 
 export default router;
