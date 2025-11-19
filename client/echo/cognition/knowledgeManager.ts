@@ -107,6 +107,9 @@ export class KnowledgeManager {
     this.gapDetector.registerRecipes(recipes);
     this.gapDetector.registerIngredients(ingredients);
 
+    // Register recipes with crawler for local searching
+    this.crawler.registerLocalRecipes(recipes);
+
     const ingredientMap = new Map<string, IngredientChemistryProfile>();
     Object.entries(ingredients).forEach(([id, ingredient]) => {
       ingredientMap.set(id, ingredient as IngredientChemistryProfile);
