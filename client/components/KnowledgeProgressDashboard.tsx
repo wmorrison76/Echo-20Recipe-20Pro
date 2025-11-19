@@ -55,12 +55,20 @@ export function KnowledgeProgressDashboard({
     return () => clearInterval(interval);
   }, [tracker]);
 
-  const handleToggleCrawler = () => {
+  const handleToggleCrawler = async () => {
+    console.log("Toggle button clicked. Current status:", status.isRunning);
     if (status.isRunning) {
+      console.log("Stopping crawler...");
       stop();
     } else {
+      console.log("Starting crawler...");
       start();
     }
+    // Force immediate update
+    setTimeout(() => {
+      const tracker = new KnowledgeProgressTracker();
+      setState(tracker.getProgressState());
+    }, 500);
   };
 
   const summary = tracker.getSummary();
