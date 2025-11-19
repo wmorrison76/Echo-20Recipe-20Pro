@@ -1,6 +1,8 @@
 import { RecipeCodexService } from "../services/recipeCodexService";
 import { RecipeVectorSearchResult } from "../services/recipeVectorStore";
 import type { FlavorBalance, RecipeCodexMetadata } from "../codex";
+import { FlavorMatrix, type IngredientAmount, type FlavorBalanceResult } from "./flavorMatrix";
+import type { IngredientChemistryProfile } from "../codex/ingredientChemistry";
 
 export type ServiceContext =
   | "a_la_carte"
@@ -46,6 +48,30 @@ export interface ChefBrainSuggestion {
 }
 
 export class EchoChefBrain {
+  /**
+   * Analyze flavor balance of a dish and suggest corrections
+   */
+  static analyzeFlavorBalance(
+    ingredients: IngredientAmount[],
+    chemistryProfiles: Record<string, IngredientChemistryProfile>,
+    dishType?: string
+  ): { balance: FlavorBalanceResult; corrections: string[] } {
+    const balance = FlavorMatrix.calculateBalance(ingredients, chemistryProfiles);
+    const corrections = FlavorMatrix.suggestCorrections(balance);
+    return { balance, corrections };
+  }
+
+  /**
+   * Analyze vinaigrette specifically
+   */
+  static analyzeVinaigrette(
+    oilGrams: number,
+    vinegaarGrams: number,
+    otherIngredients?: IngredientAmount[]
+  ) {
+    return FlavorMatrix.balanceVinaigrette(oilGrams, vinegaarGrams, otherIngredients);
+  }
+
   static async suggestRecipes(
     query: ChefBrainQuery,
   ): Promise<ChefBrainSuggestion[]> {
