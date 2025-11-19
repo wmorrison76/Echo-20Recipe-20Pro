@@ -46,14 +46,20 @@ export function KnowledgeProgressDashboard({
   );
   const { status, start, stop, updateStatus } = useBackgroundCrawler();
 
-  // Update local state from tracker (more frequently when running)
+  // Update local state from crawler progress and tracker (more frequently when running)
   useEffect(() => {
     const interval = setInterval(() => {
-      setState(tracker.getProgressState());
+      // Update from the actual progress data if available
+      if (status.progress) {
+        setState(status.progress);
+      } else {
+        // Fall back to tracker state
+        setState(tracker.getProgressState());
+      }
     }, status.isRunning ? 2000 : 5000); // Update every 2s when running, 5s when idle
 
     return () => clearInterval(interval);
-  }, [tracker, status.isRunning]);
+  }, [tracker, status, status.isRunning]);
 
   const handleToggleCrawler = async () => {
     console.log("🎬 Toggle button clicked. Current status:", {
