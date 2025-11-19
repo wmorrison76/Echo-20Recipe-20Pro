@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { vectorEngine } from "../lib/vector-engine";
+import { generateEmbedding, storeRecipeVector } from "../lib/vector-engine";
 import type { RecipeCodexMetadata } from "../../client/echo/codex";
 
 const router = Router();
@@ -52,7 +52,7 @@ Source: ${bookName} (Page ${recipe.sourcePage})
     `.trim();
 
     // Generate embedding using existing vector engine
-    const embedding = await vectorEngine.generateEmbedding(recipeText);
+    const embedding = await generateEmbedding(recipeText);
 
     // Enrich tags with source and codex info
     const enrichedTags = [
@@ -66,33 +66,26 @@ Source: ${bookName} (Page ${recipe.sourcePage})
     ];
 
     // Store vector with full codex metadata
-    const storeResult = await vectorEngine.storeRecipeVector(
-      {
-        id: recipe.id,
-        title: recipe.title,
-        description: recipeText,
-        ingredients: recipe.ingredients,
-        cuisine: recipe.cuisine,
-        course: recipe.course,
-        difficulty: recipe.difficulty,
-        tags: enrichedTags,
-        prepTime: recipe.prepTime ? parseInt(recipe.prepTime) : undefined,
-        cookTime: recipe.cookTime ? parseInt(recipe.cookTime) : undefined,
-        // Store full codex metadata for EchoChefBrain
-        complexity: codexMetadata.complexity,
-        primaryTechniques: codexMetadata.primaryTechniques,
-        mainIngredients: codexMetadata.mainIngredients,
-        dietaryTags: codexMetadata.dietaryTags,
-        allergens: codexMetadata.allergens,
-        flavorProfile: codexMetadata.flavorProfile,
-        serviceContext: codexMetadata.serviceContext,
-      },
-      "manufacturing", // Track
-      "echo-system", // Chef
-      "global-knowledge" // Organization (global for all users to benefit)
-    );
-
-    if (!storeResult.success) {
+    try {
+      await storeRecipeVector(
+        {
+          id: recipe.id,
+          title: recipe.title,
+          description: recipeText,
+          ingredients: recipe.ingredients,
+          cuisine: recipe.cuisine,
+          course: recipe.course,
+          difficulty: recipe.difficulty,
+          tags: enrichedTags,
+          prepTime: recipe.prepTime ? parseInt(recipe.prepTime) : undefined,
+          cookTime: recipe.cookTime ? parseInt(recipe.cookTime) : undefined,
+        },
+        "manufacturing", // Track
+        "echo-system", // Chef
+        "global-knowledge" // Organization (global for all users to benefit)
+      );
+    } catch (storeError) {
+      console.error("[EchoTraining] Vector storage failed:", storeError);
       return res.status(500).json({
         success: false,
         error: "Failed to store recipe vector",
@@ -158,7 +151,7 @@ Complexity: ${codexMetadata.complexity}/5
 Source: ${bookName} (Page ${recipe.sourcePage})
         `.trim();
 
-        const embedding = await vectorEngine.generateEmbedding(recipeText);
+        const embedding = await generateEmbedding(recipeText);
 
         const enrichedTags = [
           ...(recipe.tags || []),
@@ -167,7 +160,7 @@ Source: ${bookName} (Page ${recipe.sourcePage})
           "echo-training",
         ];
 
-        const storeResult = await vectorEngine.storeRecipeVector(
+        await storeRecipeVector(
           {
             id: recipe.id,
             title: recipe.title,
@@ -181,22 +174,12 @@ Source: ${bookName} (Page ${recipe.sourcePage})
           "global-knowledge"
         );
 
-        if (storeResult.success) {
-          results.success++;
-          results.recipes.push({
-            id: recipe.id,
-            title: recipe.title,
-            success: true,
-          });
-        } else {
-          results.failed++;
-          results.recipes.push({
-            id: recipe.id,
-            title: recipe.title,
-            success: false,
-            error: "Vector storage failed",
-          });
-        }
+        results.success++;
+        results.recipes.push({
+          id: recipe.id,
+          title: recipe.title,
+          success: true,
+        });
       } catch (error) {
         results.failed++;
         results.recipes.push({
