@@ -60,15 +60,37 @@ export function useBackgroundCrawler() {
     }
   }, []);
 
-  // Initialize crawler on mount or when recipes/ingredients change
+  // Initialize crawler on mount or when recipes change
   useEffect(() => {
-    if (!isInitialized && recipes && ingredients && recipes.length > 0) {
-      console.log("Initializing background crawler...");
-      initializeBackgroundCrawler(recipes, ingredients);
+    if (!isInitialized && recipes && recipes.length > 0) {
+      console.log(`Initializing background crawler with ${recipes.length} recipes...`);
+
+      // Extract ingredients from recipes to build ingredients map
+      const ingredientsMap: Record<string, any> = {};
+      recipes.forEach((recipe) => {
+        if (recipe.ingredients && Array.isArray(recipe.ingredients)) {
+          recipe.ingredients.forEach((ing: string) => {
+            const trimmed = String(ing).trim().toLowerCase();
+            if (trimmed) {
+              ingredientsMap[trimmed] = {
+                name: trimmed,
+                frequency: (ingredientsMap[trimmed]?.frequency || 0) + 1,
+                recipeCount: new Set([
+                  ...(ingredientsMap[trimmed]?.recipes || []),
+                  recipe.id,
+                ]).size,
+              };
+            }
+          });
+        }
+      });
+
+      console.log(`Found ${Object.keys(ingredientsMap).length} unique ingredients`);
+      initializeBackgroundCrawler(recipes, ingredientsMap);
       setIsInitialized(true);
       updateStatus();
     }
-  }, [recipes, ingredients, isInitialized, updateStatus]);
+  }, [recipes, isInitialized, updateStatus]);
 
   // Poll for status updates (more frequently when running)
   useEffect(() => {
