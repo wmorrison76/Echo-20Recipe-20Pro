@@ -88,9 +88,21 @@ export class BackgroundKnowledgeCrawler {
    * Start the background crawler
    */
   start(): void {
-    if (this.isRunning || !this.manager) {
-      console.warn("Crawler already running or not initialized");
+    if (this.isRunning) {
+      console.log("⚠️ Crawler already running");
       return;
+    }
+
+    if (!this.manager) {
+      console.warn("❌ Crawler not initialized - initializing with empty data...");
+      // Initialize with empty data so crawler can still function
+      this.manager = new KnowledgeManager({
+        enableAutoCrawl: false,
+        enableAutoVetting: true,
+        enableGapDetection: true,
+      });
+      this.tracker = new KnowledgeProgressTracker();
+      this.manager.registerKnowledgeBase([], {});
     }
 
     this.isRunning = true;
