@@ -51,6 +51,7 @@ export async function storeProcedure(
 
 /**
  * Search procedures semantically using backend API
+ * Falls back gracefully if Supabase is not configured
  */
 export async function searchProcedures(
   query: string,
@@ -68,25 +69,44 @@ export async function searchProcedures(
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to search procedures: ${response.statusText}`);
+      const errorData = await response.json().catch(() => ({}));
+
+      // Handle Supabase not configured gracefully (503)
+      if (response.status === 503) {
+        console.warn("Procedures feature unavailable: Supabase not configured. Using Pinecone recipes instead.");
+        return [];
+      }
+
+      const errorMessage = errorData.error || errorData.message || response.statusText || "Unknown error";
+      throw new Error(`Failed to search procedures: ${errorMessage}`);
     }
 
     const { data } = await response.json();
     return data || [];
   } catch (error) {
     console.error("Error searching procedures:", error);
+    // Return empty array gracefully instead of throwing
     return [];
   }
 }
 
 /**
  * Get all stored procedures
+ * Falls back gracefully if Supabase is not configured
  */
 export async function getAllProcedures(): Promise<CulinaryProcedure[]> {
   try {
-    const response = await fetch(`${API_BASE}/all`);
+    const response = await fetch(`${API_BASE}/list`);
 
     if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+
+      // Handle Supabase not configured gracefully (503)
+      if (response.status === 503) {
+        console.warn("Procedures feature unavailable: Supabase not configured.");
+        return [];
+      }
+
       throw new Error(`Failed to fetch procedures: ${response.statusText}`);
     }
 
@@ -119,6 +139,7 @@ export async function getProcedureById(id: string): Promise<CulinaryProcedure | 
 
 /**
  * Get procedures by category
+ * Falls back gracefully if Supabase is not configured
  */
 export async function getProceduresByCategory(
   category: CulinaryProcedure["category"],
@@ -127,6 +148,14 @@ export async function getProceduresByCategory(
     const response = await fetch(`${API_BASE}/by-category/${category}`);
 
     if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+
+      // Handle Supabase not configured gracefully (503)
+      if (response.status === 503) {
+        console.warn("Procedures feature unavailable: Supabase not configured.");
+        return [];
+      }
+
       throw new Error(`Failed to fetch procedures: ${response.statusText}`);
     }
 
@@ -140,12 +169,21 @@ export async function getProceduresByCategory(
 
 /**
  * Get procedures from a specific book
+ * Falls back gracefully if Supabase is not configured
  */
 export async function getProceduresByBook(bookName: string): Promise<CulinaryProcedure[]> {
   try {
     const response = await fetch(`${API_BASE}/by-book/${encodeURIComponent(bookName)}`);
 
     if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+
+      // Handle Supabase not configured gracefully (503)
+      if (response.status === 503) {
+        console.warn("Procedures feature unavailable: Supabase not configured.");
+        return [];
+      }
+
       throw new Error(`Failed to fetch procedures: ${response.statusText}`);
     }
 
@@ -175,6 +213,7 @@ export async function deleteProcedure(id: string): Promise<boolean> {
 
 /**
  * Search procedures by full text
+ * Falls back gracefully if Supabase is not configured
  */
 export async function searchProceduresFulltext(
   query: string,
@@ -184,6 +223,14 @@ export async function searchProceduresFulltext(
     const response = await fetch(`${API_BASE}/search-text/${encodeURIComponent(query)}?limit=${limit}`);
 
     if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+
+      // Handle Supabase not configured gracefully (503)
+      if (response.status === 503) {
+        console.warn("Procedures feature unavailable: Supabase not configured.");
+        return [];
+      }
+
       throw new Error(`Failed to search procedures: ${response.statusText}`);
     }
 
