@@ -335,15 +335,16 @@ export class KnowledgeVettingEngine {
     const issues: ValidationIssue[] = [];
     let scoreAdjustment = 0;
 
-    // Check content length
-    if (!knowledge.content || knowledge.content.length < 100) {
+    // Check content length (less strict for user-imported content)
+    const minContentLength = knowledge.source === "user_imported" ? 50 : 100;
+    if (!knowledge.content || knowledge.content.length < minContentLength) {
       issues.push({
         type: "insufficient_content",
-        message: "Content is too brief",
-        severity: "warning",
+        message: `Content is too brief (${knowledge.content?.length || 0}/${minContentLength} chars)`,
+        severity: knowledge.source === "user_imported" ? "info" : "warning",
         affectedField: "content",
       });
-      scoreAdjustment -= 0.1;
+      scoreAdjustment += knowledge.source === "user_imported" ? 0 : -0.1;
     } else {
       checks.push({
         name: "Content Length",
