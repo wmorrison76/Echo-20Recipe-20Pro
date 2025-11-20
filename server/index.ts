@@ -16,6 +16,7 @@ import { elevenLabsRouter } from "./routes/elevenlabs";
 import vectorRouter from "./routes/vector-recipes";
 import proceduresRouter from "./routes/procedures";
 import { echoTrainingRouter } from "./routes/echo-training";
+import { echoOpenAITrainingRouter } from "./routes/echo-openai-training";
 import {
   proxyRecipeImage as proxyImageOptimized,
   serveRecipeImage,
