@@ -2772,11 +2772,35 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           ingIdx >= 0
             ? getRange(ingIdx, instIdx >= 0 ? instIdx : lines.length)
             : undefined;
-        if (ingredients && ingredients.length < 2) {
-          const candidates = ingredients.filter((line) => qtyRegex.test(line));
-          if (candidates.length >= 2) ingredients = candidates;
-        } else if (ingredients && ingredients.length) {
-          ingredients = ingredients.filter((line) => !metaSuppress.test(line));
+
+        // Filter out table headers, metadata, and non-ingredient lines
+        if (ingredients && ingredients.length) {
+          const tableHeaderPatterns = [
+            /^(?:ingredients|u\.?s\.?|metric|%|\s*)?$/i,
+            /^(?:ingredients|u\.?s\.?[\s\(]|metric[\s\(]|%[\s\(])/i,
+            /^(?:total weight:|total weight)/i,
+            /^(?:butter.*?shortening|sugar|salt|eggs|milk|vanilla|flour|baking)/i, // Skip ingredient column headers
+          ];
+          const isTableHeader = (line: string) =>
+            tableHeaderPatterns.some(pattern => pattern.test(line.trim()));
+
+          // Filter and clean
+          ingredients = ingredients
+            .filter((line) => {
+              const trimmed = line.trim();
+              if (!trimmed || isTableHeader(trimmed)) return false;
+              if (metaSuppress.test(trimmed)) return false;
+              // Exclude lines that are clearly just units or percentages
+              if (/^(?:oz|g|%|\(\d+\)|lb|tsp|tbsp)$/.test(trimmed.toLowerCase())) return false;
+              return true;
+            });
+
+          // If we have very few ingredients, try to recover by looking for lines with quantities
+          if (ingredients.length < 2) {
+            const candidates = getRange(ingIdx, instIdx >= 0 ? instIdx : lines.length)
+              .filter((line) => qtyRegex.test(line) && !isTableHeader(line));
+            if (candidates.length >= 2) ingredients = candidates;
+          }
         }
 
         let instructions =
