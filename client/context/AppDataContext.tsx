@@ -2450,13 +2450,26 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             structured.push(segment);
           }
         }
-        structured.sort((a, b) => {
+        // Detect if this is a multi-column layout
+        const xPositions = structured.map((s) => Math.round(s.x / 50) * 50);
+        const uniqueXPositions = Array.from(new Set(xPositions)).sort((a, b) => a - b);
+        const isMultiColumn = uniqueXPositions.length >= 2 && uniqueXPositions[1] - uniqueXPositions[0] > 100;
+
+        let filtered = structured;
+        if (isMultiColumn && uniqueXPositions.length >= 2) {
+          // For multi-column layouts, prefer the rightmost column (typically contains the recipe)
+          const rightmostX = uniqueXPositions[uniqueXPositions.length - 1];
+          const columnThreshold = rightmostX - 100;
+          filtered = structured.filter((s) => s.x >= columnThreshold);
+        }
+
+        filtered.sort((a, b) => {
           if (Math.abs(a.y - b.y) <= 4) {
             return a.x - b.x;
           }
           return b.y - a.y;
         });
-        const rawLines = structured
+        const rawLines = filtered
           .map((entry) => entry.text.replace(/\s+/g, " ").trim())
           .filter(Boolean);
         const lines = mergeHyphenatedLines(rawLines);
