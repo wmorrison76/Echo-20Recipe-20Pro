@@ -2898,9 +2898,11 @@ export default function RecipeSearchSection() {
                       JSON.stringify(selected),
                     );
                     if (pdfPendingRef.current) {
-                      const { added } = await addRecipesFromPdfFiles([
-                        pdfPendingRef.current,
-                      ]);
+                      const bookName = pdfPendingRef.current.name.replace(/\.pdf$/i, "");
+                      const { added } = await importRecipesWithEchoTraining(
+                        () => addRecipesFromPdfFiles([pdfPendingRef.current]),
+                        bookName,
+                      );
                       setStatus(`Imported ${added} recipe(s) from book.`);
                       setBookPhase("done");
                     }
