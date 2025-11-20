@@ -1973,7 +1973,13 @@ export default function RecipeSearchSection() {
                       /^scan to download/i,
                       /^visit us online/i,
                       /^qr code/i,
-                      /^(page|contents|index|glossary|appendix|copyright|isbn)/i,
+                      /^(page|contents|index|glossary|appendix|copyright|isbn|preface|chapter|questions|using|references|introduction|about|forward|foreword)\b/i,
+                      /^recipe\s+contents\b/i,
+                      /^(the\s+)?(baking|cooking|culinary|pastry)\s+(profession|basics|fundamentals)/i,
+                      /^(step|section|unit|lesson|part)\s+\d+/i,
+                      /^(?:table\s+of|quick\s+reference|formula|metric|conversion)/i,
+                      /^(?:baker['']?s\s+)?(?:percentage|ratio|temperature)/i,
+                      /\b(?:review|quiz|assignment|worksheet)\b/i,
                     ];
 
                     for (const pattern of ocrFilterPatterns) {
