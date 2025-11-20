@@ -348,14 +348,20 @@ export function EchoOpenAITrainingMode({
                 message.speaker === "echo"
                   ? "bg-blue-500 text-white rounded-br-none"
                   : message.speaker === "system"
-                    ? "bg-gray-100 text-gray-900 rounded-none"
+                    ? message.messageType === "confirmation"
+                      ? "bg-green-100 text-green-900 rounded-none border-l-4 border-green-500"
+                      : "bg-gray-100 text-gray-900 rounded-none"
                     : "bg-indigo-100 text-indigo-900 rounded-bl-none"
               }`}
             >
               <p className="text-sm">{message.content}</p>
               <p
                 className={`text-xs mt-1 ${
-                  message.speaker === "echo" ? "text-blue-200" : "text-gray-500"
+                  message.speaker === "echo"
+                    ? "text-blue-200"
+                    : message.speaker === "system"
+                      ? "text-gray-600"
+                      : "text-gray-500"
                 }`}
               >
                 {message.speaker === "system"
