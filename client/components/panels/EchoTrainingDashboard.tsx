@@ -160,6 +160,11 @@ export function EchoTrainingDashboard({
           <TabsTrigger value="progress">Progress</TabsTrigger>
         </TabsList>
 
+        {/* Automated Multi-Domain Training Tab */}
+        <TabsContent value="multi-domain" className="py-4">
+          <AutomatedMultiDomainTraining />
+        </TabsContent>
+
         {/* System Status Tab */}
         <TabsContent value="status" className="space-y-4">
           <SystemHealthDashboard
