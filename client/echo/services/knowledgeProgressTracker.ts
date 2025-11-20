@@ -160,15 +160,24 @@ export class KnowledgeProgressTracker {
     metric: CulinaryTypeMetrics,
     metadata: Record<string, any>,
   ): void {
-    const typeMetadata = Object.values(metadata).filter((m: any) =>
-      (m.category || m.type || "").toLowerCase().includes(metric.type),
-    );
+    // Guard against invalid metadata
+    if (!metadata || typeof metadata !== "object") {
+      return;
+    }
+
+    const typeMetadata = Object.values(metadata)
+      .filter((m) => m && typeof m === "object")
+      .filter((m: any) => {
+        const category = m.category || m.type || "";
+        return typeof category === "string" && category.toLowerCase().includes(metric.type);
+      });
 
     if (typeMetadata.length === 0) return;
 
     // Allergens checkpoint
     metric.checkpoints.allergens = typeMetadata.some(
-      (m: any) => m.allergens && m.allergens.length > 0,
+      (m: any) =>
+        Array.isArray(m.allergens) && m.allergens.length > 0,
     );
 
     // Nutrition checkpoint
@@ -176,7 +185,8 @@ export class KnowledgeProgressTracker {
 
     // Techniques checkpoint
     metric.checkpoints.techniques = typeMetadata.some(
-      (m: any) => m.technique && m.technique.length > 0,
+      (m: any) =>
+        Array.isArray(m.technique) && m.technique.length > 0,
     );
 
     // Flavor balance checkpoint
