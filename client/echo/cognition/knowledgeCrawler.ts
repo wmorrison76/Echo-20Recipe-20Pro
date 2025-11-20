@@ -939,30 +939,123 @@ export class KnowledgeCrawler {
   }
 
   /**
-   * Mock API calls (replace with real implementations as needed)
+   * Fetch recipes from databases via server API
    */
   private async fetchRecipesFromDatabase(apiUrl: string, query: string) {
-    return [];
+    try {
+      const response = await fetch("/api/recipes/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query, limit: 10 }),
+      });
+
+      if (!response.ok) return [];
+      const data = await response.json();
+      return data.recipes || [];
+    } catch (error) {
+      console.warn("[KnowledgeCrawler] Recipe fetch error:", error);
+      return [];
+    }
   }
 
+  /**
+   * Fetch nutrition data from USDA
+   */
   private async fetchAcademicPapers(apiUrl: string, query: string) {
-    return [];
+    try {
+      const response = await fetch("/api/recipes/nutrition", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query, limit: 10 }),
+      });
+
+      if (!response.ok) return [];
+      const data = await response.json();
+      return data.foods || [];
+    } catch (error) {
+      console.warn("[KnowledgeCrawler] Nutrition fetch error:", error);
+      return [];
+    }
   }
 
+  /**
+   * Fetch restaurant menu data
+   */
   private async fetchMenus(apiUrl: string, query: string) {
-    return [];
+    try {
+      const response = await fetch("/api/recipes/menus", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query, limit: 10 }),
+      });
+
+      if (!response.ok) return [];
+      const data = await response.json();
+      return data.menus || [];
+    } catch (error) {
+      console.warn("[KnowledgeCrawler] Menu fetch error:", error);
+      return [];
+    }
   }
 
+  /**
+   * Fetch cooking technique videos
+   */
   private async fetchYouTubeVideos(query: string, chefs: string[]) {
-    return [];
+    try {
+      const response = await fetch("/api/recipes/videos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query, chefs, limit: 10 }),
+      });
+
+      if (!response.ok) return [];
+      const data = await response.json();
+      return data.videos || [];
+    } catch (error) {
+      console.warn("[KnowledgeCrawler] Video fetch error:", error);
+      return [];
+    }
   }
 
+  /**
+   * Fetch blog posts about culinary techniques
+   */
   private async fetchBlogPosts(domain: string, query: string) {
-    return [];
+    try {
+      const response = await fetch("/api/recipes/blogs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain, query, limit: 10 }),
+      });
+
+      if (!response.ok) return [];
+      const data = await response.json();
+      return data.posts || [];
+    } catch (error) {
+      console.warn("[KnowledgeCrawler] Blog fetch error:", error);
+      return [];
+    }
   }
 
+  /**
+   * Fetch supplier product and ingredient data
+   */
   private async fetchSupplierProducts(domain: string, query: string) {
-    return [];
+    try {
+      const response = await fetch("/api/recipes/suppliers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain, query, limit: 10 }),
+      });
+
+      if (!response.ok) return [];
+      const data = await response.json();
+      return data.products || [];
+    } catch (error) {
+      console.warn("[KnowledgeCrawler] Supplier fetch error:", error);
+      return [];
+    }
   }
 }
 
