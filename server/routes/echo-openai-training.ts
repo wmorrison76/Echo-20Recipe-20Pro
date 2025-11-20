@@ -319,34 +319,31 @@ router.post(
         return res.status(500).json({ error: "OpenAI API key not configured" });
       }
 
-      const extractionPrompt = `Analyze this response and extract structured knowledge that should be captured in Echo's knowledge base:
+      const extractionPrompt = `You are a knowledge extraction expert. Extract ALL important knowledge and concepts from the following response.
 
 Context: ${context}
 Domain: ${domain}
 
 Response to analyze:
-${openaiResponse}
+"${openaiResponse}"
 
-For each piece of knowledge, identify:
-1. Type (recipe, technique, terminology, financial, hospitality, etc.)
-2. Title/Name
-3. Core content/definition
-4. Relevant tags
-5. Confidence level (0-1)
+Extract EVERY significant concept, technique, term, definition, principle, or piece of information from this response.
 
-Return a JSON array of knowledge items. Example format:
+Return a JSON array with all knowledge items. Return at least 2-5 items for a comprehensive response.
+
+Format:
 [
   {
-    "type": "technique",
-    "title": "Sous Vide Cooking",
-    "content": "Detailed explanation...",
-    "tags": ["cooking", "precision", "temperature"],
-    "domain": "culinary",
-    "confidence": 0.9
+    "type": "technique|recipe|terminology|principle|ingredient|process|concept|financial|procedure",
+    "title": "Clear, concise name",
+    "content": "Detailed explanation of this knowledge",
+    "tags": ["relevant", "keywords", "and", "categories"],
+    "domain": "${domain}",
+    "confidence": 0.85
   }
 ]
 
-Return ONLY valid JSON.`;
+Return ONLY valid JSON array. No other text.`;
 
       const response = await fetch(
         "https://api.openai.com/v1/chat/completions",
