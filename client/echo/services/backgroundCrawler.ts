@@ -193,18 +193,27 @@ export class BackgroundKnowledgeCrawler {
             console.log(`        ✗ [${vet?.score.toFixed(2)}] ${item.id}: ${issues}`);
           });
 
-          // Update progress tracker
+          // Update progress tracker with approved items' metadata
           const metadata: Record<string, any> = {};
-          approved.forEach((k) => {
-            metadata[k.id] = k.metadata;
+          approved.forEach((vetResult) => {
+            // Build metadata from vetting result
+            metadata[vetResult.id] = {
+              ...vetResult.metadata,
+              category: vetResult.metadata?.category || "general",
+              type: vetResult.metadata?.type || "general",
+            };
           });
 
-          this.tracker.updateWithCrawlResults(
-            approved.length,
-            rejected.length,
-            quarantined.length,
-            metadata,
-          );
+          try {
+            this.tracker.updateWithCrawlResults(
+              approved.length,
+              rejected.length,
+              quarantined.length,
+              metadata,
+            );
+          } catch (trackerError) {
+            console.error(`  ❌ Failed to update progress tracker:`, trackerError);
+          }
 
           console.log(
             `  ✅ ${topic}: ${approved.length} approved, ${result.crawlResult.failureCount} failures`,
