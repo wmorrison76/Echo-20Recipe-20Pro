@@ -3752,6 +3752,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
               throw new Error(msg);
             }
 
+            console.log("[Excel Import] Processing rows. First row keys:", Object.keys(json[0] || {}));
             for (const row of json) {
               const title = String(
                 row.title ??
@@ -3764,7 +3765,11 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
                   row["recipe name"] ??
                   ""
               ).trim();
-              if (!title) continue;
+              if (!title) {
+                console.log("[Excel Import] Skipping row with no title. Row data:", row);
+                continue;
+              }
+              console.log("[Excel Import] Found recipe:", title);
               const ing = String(
                 row.ingredients ??
                   row.Ingredients ??
