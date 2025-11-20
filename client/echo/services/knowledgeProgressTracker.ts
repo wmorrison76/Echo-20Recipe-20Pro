@@ -204,6 +204,11 @@ export class KnowledgeProgressTracker {
    * Update regional metrics
    */
   private updateRegionalMetrics(metadata: Record<string, any>): void {
+    // Guard against invalid metadata
+    if (!metadata || typeof metadata !== "object") {
+      return;
+    }
+
     const regionCuisineMap: Record<Region, string[]> = {
       chinese: ["Chinese", "Cantonese", "Sichuan", "Hunan"],
       japanese: ["Japanese", "Sushi", "Ramen", "Tempura"],
@@ -223,12 +228,16 @@ export class KnowledgeProgressTracker {
       oceanic: ["Oceanic", "Australian", "Polynesian", "Hawaiian"],
     };
 
+    const metadataValues = Object.values(metadata).filter(
+      (m) => m && typeof m === "object"
+    );
+
     Object.entries(regionCuisineMap).forEach(([region, cuisines]) => {
       const metric = this.state.regionalMetrics.find(
         (m) => m.region === (region as Region),
       );
       if (metric) {
-        const regionMetadata = Object.values(metadata).filter((m: any) =>
+        const regionMetadata = metadataValues.filter((m: any) =>
           cuisines.some(
             (cuisine) =>
               (m.cuisineRegion || m.cuisine || "")
