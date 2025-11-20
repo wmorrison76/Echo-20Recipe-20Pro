@@ -3848,6 +3848,23 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
               let title = f.name.replace(/\.[^.]+$/, "");
               const ing: string[] = [];
 
+              if (rawRows && rawRows.length > 0) {
+                for (let i = 0; i < Math.min(15, rawRows.length); i++) {
+                  const row = rawRows[i];
+                  if (!Array.isArray(row)) continue;
+
+                  const rowText = row.map((v) => String(v || "")).join(" ");
+                  if (rowText.includes("Name:")) {
+                    const nameMatch = rowText.match(/Name:\s*([^\n\t]+)/);
+                    if (nameMatch && nameMatch[1]) {
+                      title = nameMatch[1].trim();
+                      console.log("[Excel Import] Extracted recipe name from row", i, ":", title);
+                      break;
+                    }
+                  }
+                }
+              }
+
               for (const row of json) {
                 const ingredientKey = findColumn(row, ["ingredient"]);
                 const amountKey = findColumn(row, ["amount", "qty", "quantity"]);
