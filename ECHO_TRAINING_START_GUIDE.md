@@ -9,15 +9,19 @@ The Echo Knowledge Universe is now fully integrated with OpenAI and Pinecone for
 ### API Endpoints Available
 
 1. **Quick Status Check**
+
    ```
    GET /api/health/status
    ```
+
    Returns overall system health with service details
 
 2. **Readiness Check**
+
    ```
    GET /api/health/ready
    ```
+
    Quick boolean check if training is ready to start
 
 3. **Detailed Verification**
@@ -28,11 +32,11 @@ The Echo Knowledge Universe is now fully integrated with OpenAI and Pinecone for
 
 ### What Each Service Does
 
-| Service | Purpose | Status Check |
-|---------|---------|--------------|
-| **Echo** | Core AI culinary assistant with knowledge engines | Automatic - always operational |
-| **OpenAI** | Powers collaborative training dialogues and knowledge extraction | API connectivity + key validation |
-| **Pinecone** | Stores learned knowledge as vectors for semantic search | API connectivity + index readiness |
+| Service      | Purpose                                                          | Status Check                       |
+| ------------ | ---------------------------------------------------------------- | ---------------------------------- |
+| **Echo**     | Core AI culinary assistant with knowledge engines                | Automatic - always operational     |
+| **OpenAI**   | Powers collaborative training dialogues and knowledge extraction | API connectivity + key validation  |
+| **Pinecone** | Stores learned knowledge as vectors for semantic search          | API connectivity + index readiness |
 
 ---
 
@@ -61,6 +65,7 @@ The Echo Knowledge Universe is now fully integrated with OpenAI and Pinecone for
 ### Via API (Advanced)
 
 **Initialize Dialogue**
+
 ```bash
 POST /api/echo-training/init-dialogue
 Content-Type: application/json
@@ -72,6 +77,7 @@ Content-Type: application/json
 ```
 
 **Response includes:**
+
 - `dialogueId` - Unique training session ID
 - Initial Echo message asking OpenAI to help fill knowledge gaps
 - Identified knowledge gaps in the domain
@@ -81,11 +87,13 @@ Content-Type: application/json
 ## 📊 Training Workflow
 
 ### 1. Dialogue Initialization
+
 - Echo identifies knowledge gaps in the selected domain
 - System initializes a collaborative dialogue with OpenAI
 - Echo asks questions to learn and fill gaps
 
 ### 2. Dialogue Turns
+
 ```bash
 POST /api/echo-training/dialogue-turn
 Content-Type: application/json
@@ -101,13 +109,16 @@ Content-Type: application/json
 Echo and OpenAI exchange messages, with OpenAI providing detailed responses and Echo asking follow-up questions.
 
 ### 3. Knowledge Capture
+
 The system automatically:
+
 - Extracts structured knowledge from OpenAI responses
 - Tags knowledge with domain and type (recipe, technique, terminology, etc.)
 - Calculates confidence scores
 - Stores vectors in Pinecone for semantic search
 
 **Manual Knowledge Save:**
+
 ```bash
 POST /api/echo-training/save-learned-knowledge
 Content-Type: application/json
@@ -129,6 +140,7 @@ Content-Type: application/json
 ```
 
 ### 4. Dialogue Completion
+
 ```bash
 POST /api/echo-training/complete-dialogue
 Content-Type: application/json
@@ -140,6 +152,7 @@ Content-Type: application/json
 ```
 
 Returns:
+
 - Summary of learnings
 - Key knowledge acquired
 - Remaining gaps identified
@@ -150,51 +163,65 @@ Returns:
 ## 🔧 Troubleshooting
 
 ### "OpenAI API Key not configured"
+
 **Solution:**
+
 1. Check that `OPENAI_API_KEY` environment variable is set
 2. Verify the key is valid and has API credits at https://platform.openai.com
 3. Restart the server if you just added the key
 
 ### "Pinecone API Key not configured"
+
 **Solution:**
+
 1. Check that `PINECONE_API_KEY` environment variable is set
 2. Verify the key is valid at https://www.pinecone.io
 3. The `echo-knowledge` index will be created automatically on first use
 
 ### "OpenAI API key is invalid (401 Unauthorized)"
+
 **Solution:**
+
 1. Verify your API key hasn't expired or been revoked
 2. Check for typos in the API key
 3. Ensure your OpenAI account has active billing
 4. Generate a new API key at https://platform.openai.com/account/api-keys
 
 ### "Pinecone API key is invalid (401 Unauthorized)"
+
 **Solution:**
+
 1. Verify your API key is correct
 2. Check that your Pinecone organization is active
 3. Ensure the key has the correct permissions
 4. Regenerate the API key if needed
 
 ### Training starts but no responses from OpenAI
+
 **Possible causes:**
+
 - OpenAI API rate limits reached
 - Network connectivity issue
 - OpenAI API is experiencing outages
 - Model (gpt-4-turbo-preview) is not available in your region
 
 **Solution:**
+
 1. Wait a few minutes and try again
 2. Check OpenAI status at https://status.openai.com
 3. Verify internet connection
 4. Check server logs for detailed error messages
 
 ### Knowledge not being stored in Pinecone
+
 **Possible causes:**
+
 - Pinecone index doesn't exist and wasn't created automatically
 - API rate limits on Pinecone
 - Embedding generation failed
 
 **Solution:**
+
 1. Verify Pinecone connection is working via health check
 2. Check that `echo-knowledge` index exists in Pinecone console
 3. Ensure you have index quota remaining
@@ -205,6 +232,7 @@ Returns:
 ## 📈 Monitoring Training Progress
 
 ### Via UI
+
 - **Training Tab**: Shows active session and statistics
 - **Progress Tab**: Displays cumulative learning across all sessions
   - Total training sessions
@@ -213,6 +241,7 @@ Returns:
   - Recently learned knowledge
 
 ### Via API
+
 ```bash
 GET /api/health/status
 ```
@@ -234,23 +263,33 @@ Check the service status and use your application logs to monitor training sessi
 ## 📚 Available Training Domains
 
 ### Culinary Arts
+
 **Focus Areas:** Recipe Development, Cooking Techniques, Ingredient Chemistry, Flavor Profiles
+
 - Ideal for: Recipe development, menu innovation, cooking method mastery
 
 ### Financial Management
+
 **Focus Areas:** Food Cost Analysis, Pricing Strategy, Profit Margins, Budget Planning
+
 - Ideal for: Cost optimization, pricing decisions, financial planning
 
 ### Hospitality & Service
+
 **Focus Areas:** Service Protocols, Banquet Planning, Guest Relations, Event Management
+
 - Ideal for: Service excellence, event planning, guest satisfaction
 
 ### Beverage Management
+
 **Focus Areas:** Cocktail Development, Wine Pairing, Beverage Cost, Service Techniques
+
 - Ideal for: Bar operations, beverage program development, cost management
 
 ### Food Safety & Compliance
+
 **Focus Areas:** Allergen Protocols, Food Safety, Sanitation Standards, Compliance
+
 - Ideal for: Regulatory compliance, safety protocols, allergen management
 
 ---

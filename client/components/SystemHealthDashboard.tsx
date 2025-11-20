@@ -64,9 +64,7 @@ export function SystemHealthDashboard({
     return () => clearInterval(interval);
   }, []);
 
-  const getStatusIcon = (
-    status: "operational" | "warning" | "error",
-  ) => {
+  const getStatusIcon = (status: "operational" | "warning" | "error") => {
     switch (status) {
       case "operational":
         return <CheckCircle className="w-5 h-5 text-green-600" />;
@@ -77,9 +75,7 @@ export function SystemHealthDashboard({
     }
   };
 
-  const getStatusColor = (
-    status: "operational" | "warning" | "error",
-  ) => {
+  const getStatusColor = (status: "operational" | "warning" | "error") => {
     switch (status) {
       case "operational":
         return "bg-green-50 border-green-200";
@@ -90,9 +86,7 @@ export function SystemHealthDashboard({
     }
   };
 
-  const getStatusBadge = (
-    status: "operational" | "warning" | "error",
-  ) => {
+  const getStatusBadge = (status: "operational" | "warning" | "error") => {
     switch (status) {
       case "operational":
         return <Badge className="bg-green-600">Operational</Badge>;
@@ -123,7 +117,9 @@ export function SystemHealthDashboard({
         <div>
           <h2 className="text-2xl font-bold text-gray-900">System Status</h2>
           <p className="text-sm text-gray-600 mt-1">
-            {health ? `Last updated: ${new Date(health.timestamp).toLocaleTimeString()}` : "Checking..."}
+            {health
+              ? `Last updated: ${new Date(health.timestamp).toLocaleTimeString()}`
+              : "Checking..."}
           </p>
         </div>
         <Button
@@ -155,10 +151,16 @@ export function SystemHealthDashboard({
                 <AlertCircle className="w-6 h-6 text-red-600" />
               )}
               <div>
-                <h3 className={`font-semibold ${health.healthy ? "text-green-900" : "text-red-900"}`}>
-                  {health.healthy ? "All Systems Operational" : "System Issues Detected"}
+                <h3
+                  className={`font-semibold ${health.healthy ? "text-green-900" : "text-red-900"}`}
+                >
+                  {health.healthy
+                    ? "All Systems Operational"
+                    : "System Issues Detected"}
                 </h3>
-                <p className={`text-sm mt-1 ${health.healthy ? "text-green-700" : "text-red-700"}`}>
+                <p
+                  className={`text-sm mt-1 ${health.healthy ? "text-green-700" : "text-red-700"}`}
+                >
                   {health.healthy
                     ? "Echo is ready to start training with OpenAI"
                     : "Some services are not available. Check details below."}

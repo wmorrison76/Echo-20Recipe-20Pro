@@ -90,15 +90,12 @@ router.get("/status", async (_req: Request, res: Response) => {
     status.healthy = false;
   } else {
     try {
-      const response = await fetch(
-        "https://api.pinecone.io/indexes",
-        {
-          method: "GET",
-          headers: {
-            "Api-Key": pineconeKey,
-          },
+      const response = await fetch("https://api.pinecone.io/indexes", {
+        method: "GET",
+        headers: {
+          "Api-Key": pineconeKey,
         },
-      );
+      });
 
       if (response.ok) {
         const data = (await response.json()) as any;
@@ -221,15 +218,12 @@ router.post("/verify", async (_req: Request, res: Response) => {
   // Check 4: Pinecone API is accessible
   if (pineconeKey) {
     try {
-      const response = await fetch(
-        "https://api.pinecone.io/indexes",
-        {
-          method: "GET",
-          headers: {
-            "Api-Key": pineconeKey,
-          },
+      const response = await fetch("https://api.pinecone.io/indexes", {
+        method: "GET",
+        headers: {
+          "Api-Key": pineconeKey,
         },
-      );
+      });
 
       verification.checks.push({
         name: "Pinecone API Connectivity",
