@@ -2569,13 +2569,42 @@ export default function RecipeSearchSection() {
 
                       const raw = localStorage.getItem("kb:cook") || "{}";
                       const kb = JSON.parse(raw);
-                      kb.terms = keepTop({ ...kb.terms, ...words }, 400);
+
+                      // Prioritize culinary-specific terms over generic words when displaying
+                      // Store both for reference but mark culinary terms as priority
+                      const mergedTerms = { ...kb.terms, ...words };
+                      const mergedCulinaryTerms = {
+                        ...(kb.culinaryTerms || {}),
+                        ...culinaryTerms,
+                      };
+
+                      // For display purposes, use culinary terms if available, otherwise use all terms
+                      kb.terms = keepTop(
+                        Object.entries(mergedTerms).reduce(
+                          (acc, [term, count]) => {
+                            // Boost culinary terms in rankings
+                            const boost = mergedCulinaryTerms[term] ? 2 : 1;
+                            acc[term] = (count || 0) * boost;
+                            return acc;
+                          },
+                          {} as Record<string, number>,
+                        ),
+                        400,
+                      );
+
+                      kb.culinaryTerms = keepTop(mergedCulinaryTerms, 200);
                       kb.bigrams = keepTop({ ...kb.bigrams, ...bigrams }, 600);
                       kb.definitions = { ...kb.definitions, ...definitions };
                       kb.books = Array.from(
                         new Set([...(kb.books || []), bookName]),
                       );
                       localStorage.setItem("kb:cook", JSON.stringify(kb));
+                      console.log(`📚 Learned from ${bookName}:`, {
+                        wordsExtracted: Object.keys(words).length,
+                        culinaryTermsExtracted: Object.keys(culinaryTerms).length,
+                        definitionsExtracted: Object.keys(definitions).length,
+                        bigramsExtracted: Object.keys(bigrams).length,
+                      });
 
                       if (extractedProcedures.length > 0) {
                         console.log(
