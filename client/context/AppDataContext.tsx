@@ -3169,7 +3169,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             return cnt >= 3;
           };
           const instWord =
-            /(instructions|directions|method|steps|preparation|procedure)\b/i;
+            /(instructions|directions|method|steps|preparation|procedure|mixing|makeup|baking|heating|chilling)\b/i;
           const markerStarts: number[] = [];
           // Forward scan
           for (let p = 1; p <= doc.numPages; p++) {
