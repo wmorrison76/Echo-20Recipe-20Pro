@@ -3112,30 +3112,6 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       }
 
       const { added } = appendRecipes(collected);
-
-      // Extract definitions from the PDF and send to Echo
-      if (pageTexts.length > 0) {
-        try {
-          const bookName = files[0]?.name.replace(/\.pdf$/i, "") || "Imported Cookbook";
-          const allPageText = pageTexts.join("\n");
-
-          // Extract definitions using the new extraction utility
-          const definitions = extractDefinitionsFromText(allPageText);
-
-          // Send definitions to Echo knowledge base if any were found
-          if (definitions.length > 0) {
-            console.log(`📚 Sending ${definitions.length} definitions to Echo...`);
-            const result = await sendDefinitionsToEcho(definitions, bookName);
-            console.log(
-              `✅ Definitions sent to Echo: ${result.success} stored, ${result.failed} failed`,
-            );
-          }
-        } catch (error) {
-          console.warn("Failed to send definitions to Echo:", error);
-          // Don't fail the import if definitions sending fails
-        }
-      }
-
       return { added: added.length, errors, titles };
     },
     [appendRecipes],
