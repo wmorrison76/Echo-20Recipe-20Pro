@@ -1,11 +1,11 @@
-export type KnowledgeType = 
-  | "recipe" 
-  | "technique" 
-  | "terminology" 
-  | "financial" 
-  | "hospitality" 
-  | "beverage" 
-  | "plating" 
+export type KnowledgeType =
+  | "recipe"
+  | "technique"
+  | "terminology"
+  | "financial"
+  | "hospitality"
+  | "beverage"
+  | "plating"
   | "safety";
 
 export interface BaseKnowledge {
@@ -89,13 +89,13 @@ export interface SafetyKnowledge extends BaseKnowledge {
   regulations?: string[];
 }
 
-export type AnyKnowledge = 
-  | RecipeKnowledge 
-  | TechniqueKnowledge 
-  | TerminologyKnowledge 
-  | FinancialKnowledge 
-  | HospitalityKnowledge 
-  | BeverageKnowledge 
+export type AnyKnowledge =
+  | RecipeKnowledge
+  | TechniqueKnowledge
+  | TerminologyKnowledge
+  | FinancialKnowledge
+  | HospitalityKnowledge
+  | BeverageKnowledge
   | SafetyKnowledge;
 
 export interface KnowledgeSearchResult {
@@ -121,7 +121,12 @@ export interface DialogueMessage {
   timestamp: string;
   speaker: "echo" | "openai" | "system";
   content: string;
-  messageType: "question" | "answer" | "suggestion" | "correction" | "confirmation";
+  messageType:
+    | "question"
+    | "answer"
+    | "suggestion"
+    | "correction"
+    | "confirmation";
   knowledgeGaps?: string[];
   proposedLearning?: {
     type: KnowledgeType;

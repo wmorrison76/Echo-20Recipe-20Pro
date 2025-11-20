@@ -2,14 +2,26 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Card } from "./ui/card";
-import { AlertCircle, CheckCircle2, Send, Plus, Pause, Play } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Send,
+  Plus,
+  Pause,
+  Play,
+} from "lucide-react";
 
 interface DialogueMessage {
   id: string;
   timestamp: string;
   speaker: "echo" | "openai" | "system";
   content: string;
-  messageType: "question" | "answer" | "suggestion" | "correction" | "confirmation";
+  messageType:
+    | "question"
+    | "answer"
+    | "suggestion"
+    | "correction"
+    | "confirmation";
 }
 
 interface TrainingDialogueProps {
@@ -38,7 +50,9 @@ export function EchoOpenAITrainingMode({
   const [isLoading, setIsLoading] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
   const [isActive, setIsActive] = useState(false);
-  const [knowledgeProposals, setKnowledgeProposals] = useState<KnowledgeProposal[]>([]);
+  const [knowledgeProposals, setKnowledgeProposals] = useState<
+    KnowledgeProposal[]
+  >([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [stats, setStats] = useState({
     questionsAsked: 0,
@@ -154,15 +168,18 @@ export function EchoOpenAITrainingMode({
 
   const captureKnowledgeAutomatically = async (openaiResponse: string) => {
     try {
-      const response = await fetch("/api/echo-training/auto-capture-openai-knowledge", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          openaiResponse,
-          context: `Training dialogue for ${domain}`,
-          domain,
-        }),
-      });
+      const response = await fetch(
+        "/api/echo-training/auto-capture-openai-knowledge",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            openaiResponse,
+            context: `Training dialogue for ${domain}`,
+            domain,
+          }),
+        },
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -188,31 +205,32 @@ export function EchoOpenAITrainingMode({
     if (confirmedItems.length === 0) return;
 
     try {
-      const response = await fetch("/api/echo-training/save-learned-knowledge", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          dialogueId,
-          knowledge: confirmedItems.map((item) => ({
-            id: `knowledge-${Date.now()}-${Math.random()}`,
-            type: item.type,
-            title: item.title,
-            description: item.content,
-            content: item.content,
-            sourceType: "openai",
-            tags: [domain, ...focusAreas],
-            domain,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          })),
-        }),
-      });
+      const response = await fetch(
+        "/api/echo-training/save-learned-knowledge",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            dialogueId,
+            knowledge: confirmedItems.map((item) => ({
+              id: `knowledge-${Date.now()}-${Math.random()}`,
+              type: item.type,
+              title: item.title,
+              description: item.content,
+              content: item.content,
+              sourceType: "openai",
+              tags: [domain, ...focusAreas],
+              domain,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            })),
+          }),
+        },
+      );
 
       if (response.ok) {
         const data = await response.json();
-        setKnowledgeProposals((prev) =>
-          prev.filter((p) => !p.confirmed)
-        );
+        setKnowledgeProposals((prev) => prev.filter((p) => !p.confirmed));
 
         const confirmMessage: DialogueMessage = {
           id: `msg-confirm-${Date.now()}`,
@@ -277,7 +295,8 @@ export function EchoOpenAITrainingMode({
               Echo AI Training Mode
             </h2>
             <p className="text-sm text-indigo-700 mt-1">
-              Learning domain: <span className="font-medium capitalize">{domain}</span>
+              Learning domain:{" "}
+              <span className="font-medium capitalize">{domain}</span>
             </p>
             <p className="text-sm text-indigo-600">
               Focus areas: {focusAreas.join(", ")}
@@ -340,22 +359,27 @@ export function EchoOpenAITrainingMode({
           </h3>
           <div className="space-y-2 max-h-40 overflow-y-auto">
             {knowledgeProposals.map((proposal, index) => (
-              <label key={index} className="flex items-start gap-3 p-2 hover:bg-amber-100 rounded">
+              <label
+                key={index}
+                className="flex items-start gap-3 p-2 hover:bg-amber-100 rounded"
+              >
                 <input
                   type="checkbox"
                   checked={proposal.confirmed}
                   onChange={(e) => {
                     setKnowledgeProposals((prev) =>
                       prev.map((p, i) =>
-                        i === index ? { ...p, confirmed: e.target.checked } : p
-                      )
+                        i === index ? { ...p, confirmed: e.target.checked } : p,
+                      ),
                     );
                   }}
                   className="mt-1"
                 />
                 <div className="flex-1 text-sm">
                   <p className="font-medium text-amber-900">{proposal.title}</p>
-                  <p className="text-amber-700 text-xs">{proposal.content.substring(0, 100)}...</p>
+                  <p className="text-amber-700 text-xs">
+                    {proposal.content.substring(0, 100)}...
+                  </p>
                 </div>
               </label>
             ))}
@@ -366,7 +390,8 @@ export function EchoOpenAITrainingMode({
             className="mt-3 w-full bg-amber-600 hover:bg-amber-700"
           >
             <CheckCircle2 className="w-4 h-4 mr-2" />
-            Learn Selected ({knowledgeProposals.filter((p) => p.confirmed).length})
+            Learn Selected (
+            {knowledgeProposals.filter((p) => p.confirmed).length})
           </Button>
         </Card>
       )}

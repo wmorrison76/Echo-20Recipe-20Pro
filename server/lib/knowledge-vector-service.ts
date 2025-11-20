@@ -1,4 +1,7 @@
-import type { AnyKnowledge, KnowledgeType } from "../../client/echo/types/knowledge";
+import type {
+  AnyKnowledge,
+  KnowledgeType,
+} from "../../client/echo/types/knowledge";
 import { generateEmbedding } from "./pinecone-service";
 
 let PineconeClass: any = null;
@@ -215,9 +218,7 @@ export async function identifyKnowledgeGaps(
     const existingKnowledge = await searchKnowledgeByDomain(domain, 100);
 
     const coveredAreas = new Set(
-      existingKnowledge
-        .flatMap((item) => item.knowledge.tags)
-        .filter(Boolean),
+      existingKnowledge.flatMap((item) => item.knowledge.tags).filter(Boolean),
     );
 
     const gaps: string[] = [];
@@ -282,7 +283,11 @@ export async function deleteKnowledgeVector(id: string): Promise<void> {
  * Build searchable text from knowledge
  */
 function buildKnowledgeText(knowledge: AnyKnowledge): string {
-  const parts: string[] = [knowledge.title, knowledge.description, knowledge.content];
+  const parts: string[] = [
+    knowledge.title,
+    knowledge.description,
+    knowledge.content,
+  ];
 
   const typed = knowledge as any;
 
@@ -350,10 +355,12 @@ export async function getKnowledgeStats(): Promise<{
         stats.byType[metadata.type] = (stats.byType[metadata.type] || 0) + 1;
       }
       if (metadata.domain) {
-        stats.byDomain[metadata.domain] = (stats.byDomain[metadata.domain] || 0) + 1;
+        stats.byDomain[metadata.domain] =
+          (stats.byDomain[metadata.domain] || 0) + 1;
       }
       if (metadata.sourceType) {
-        stats.bySource[metadata.sourceType] = (stats.bySource[metadata.sourceType] || 0) + 1;
+        stats.bySource[metadata.sourceType] =
+          (stats.bySource[metadata.sourceType] || 0) + 1;
       }
     }
 

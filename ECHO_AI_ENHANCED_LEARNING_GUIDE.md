@@ -15,17 +15,19 @@ Echo AI has been enhanced with a sophisticated learning system that captures div
 ### 1. **Automatic Knowledge Capture from OpenAI**
 
 When Echo generates recipes or suggestions using OpenAI, the system automatically:
+
 - Extracts structured knowledge from the response
 - Identifies techniques, terminology, and best practices
 - Stores this knowledge in the vector database
 - Makes it available for future queries (no OpenAI notation)
 
 **How it works:**
+
 ```
-User Request → Echo searches knowledge base → 
-Low coverage → OpenAI generation → 
-Auto-capture of knowledge → 
-Store in Pinecone → 
+User Request → Echo searches knowledge base →
+Low coverage → OpenAI generation →
+Auto-capture of knowledge →
+Store in Pinecone →
 Future queries use learned knowledge
 ```
 
@@ -36,6 +38,7 @@ Echo and OpenAI engage in a dialogue to collaboratively expand Echo's knowledge:
 #### Starting a Training Session
 
 Access the Echo Training Dashboard:
+
 1. Navigate to the Echo Training Center
 2. Select a domain (Culinary, Finance, Hospitality, etc.)
 3. Choose focus areas within that domain
@@ -52,11 +55,11 @@ Access the Echo Training Dashboard:
 #### Example Dialogue
 
 ```
-Echo: "I need to understand advanced sauce preparation techniques. 
+Echo: "I need to understand advanced sauce preparation techniques.
        Can you explain the process of making a beurre blanc with temperature control?"
 
-OpenAI: "Beurre blanc is an emulsified sauce made from butter, white wine, 
-         shallots, and cream. The key is temperature control - maintaining 
+OpenAI: "Beurre blanc is an emulsified sauce made from butter, white wine,
+         shallots, and cream. The key is temperature control - maintaining
          160-180°F to emulsify the butter without breaking it..."
 
 System: [Extracts technique knowledge about beurre blanc]
@@ -69,12 +72,14 @@ Storage: Technique stored → Available for future recipe suggestions
 ### 3. **Knowledge Types**
 
 #### Recipe Knowledge
+
 - Full recipe with ingredients and instructions
 - Cuisine, complexity, prep/cook times
 - Techniques and flavor profiles
 - Service context (banquet, à la carte, etc.)
 
 #### Technique Knowledge
+
 - Step-by-step instructions
 - Equipment needed
 - Difficulty level
@@ -82,12 +87,14 @@ Storage: Technique stored → Available for future recipe suggestions
 - Professional tips
 
 #### Terminology
+
 - Culinary terms and definitions
 - Etymology and context
 - Synonyms and examples
 - Usage in professional settings
 
 #### Financial Knowledge
+
 - Cost analysis structures
 - Pricing formulas
 - Margin calculations
@@ -95,6 +102,7 @@ Storage: Technique stored → Available for future recipe suggestions
 - Benchmark data
 
 #### Hospitality Knowledge
+
 - Service protocols
 - Banquet planning guidelines
 - Guest interaction standards
@@ -102,12 +110,14 @@ Storage: Technique stored → Available for future recipe suggestions
 - Service recovery techniques
 
 #### Beverage Knowledge
+
 - Cocktail recipes and techniques
 - Wine and food pairing
 - Beverage cost management
 - Service standards
 
 #### Safety Knowledge
+
 - Allergen protocols
 - Food safety procedures
 - Sanitation standards
@@ -118,6 +128,7 @@ Storage: Technique stored → Available for future recipe suggestions
 ### Collaborative Training Endpoints
 
 #### Initialize Dialogue
+
 ```bash
 POST /api/echo-training/init-dialogue
 {
@@ -137,6 +148,7 @@ Response:
 ```
 
 #### Send Message in Dialogue
+
 ```bash
 POST /api/echo-training/dialogue-turn
 {
@@ -156,6 +168,7 @@ Response:
 ```
 
 #### Save Learned Knowledge
+
 ```bash
 POST /api/echo-training/save-learned-knowledge
 {
@@ -181,6 +194,7 @@ Response:
 ```
 
 #### Auto-Capture Knowledge
+
 ```bash
 POST /api/echo-training/auto-capture-openai-knowledge
 {
@@ -198,6 +212,7 @@ Response:
 ```
 
 #### Complete Training Dialogue
+
 ```bash
 POST /api/echo-training/complete-dialogue
 {
@@ -226,7 +241,7 @@ import { EchoOpenAITrainingMode } from "@/components/EchoOpenAITrainingMode";
   focusAreas={["Recipe Development", "Cooking Techniques"]}
   onDialogueComplete={(summary) => console.log(summary)}
   onKnowledgeCapture={(knowledge) => console.log(knowledge)}
-/>
+/>;
 ```
 
 ### EchoTrainingDashboard Component
@@ -236,9 +251,7 @@ The complete training dashboard:
 ```tsx
 import { EchoTrainingDashboard } from "@/components/panels/EchoTrainingDashboard";
 
-<EchoTrainingDashboard
-  onRecipeImport={(recipes) => handleImport(recipes)}
-/>
+<EchoTrainingDashboard onRecipeImport={(recipes) => handleImport(recipes)} />;
 ```
 
 ## Hooks
@@ -254,13 +267,13 @@ const {
   isLoading,
   learnedKnowledge,
   trainingSessions,
-  
+
   // Methods
   initializeDialogue,
   sendMessage,
   saveLearning,
   completeDialogue,
-  getSessionStats
+  getSessionStats,
 } = useEchoOpenAITraining();
 
 // Initialize a dialogue
@@ -289,7 +302,7 @@ import {
   searchKnowledge,
   searchKnowledgeByDomain,
   identifyKnowledgeGaps,
-  getKnowledgeStats
+  getKnowledgeStats,
 } from "@/server/lib/knowledge-vector-service";
 
 // Store knowledge
@@ -300,15 +313,18 @@ const results = await searchKnowledge("beurre blanc", {
   topK: 10,
   type: "technique",
   domain: "culinary",
-  minConfidence: 0.7
+  minConfidence: 0.7,
 });
 
 // Search by domain
 const allCulinary = await searchKnowledgeByDomain("culinary", 50);
 
 // Identify gaps
-const gaps = await identifyKnowledgeGaps("culinary", 
-  ["Techniques", "Ingredients", "Plating"]);
+const gaps = await identifyKnowledgeGaps("culinary", [
+  "Techniques",
+  "Ingredients",
+  "Plating",
+]);
 
 // Get statistics
 const stats = await getKnowledgeStats();
@@ -320,31 +336,36 @@ const stats = await getKnowledgeStats();
 The enhanced Chef Brain leverages all knowledge types:
 
 ```typescript
-import { EchoChefBrainKnowledgeIntegration } from 
-  "@/client/echo/brain/echoChefBrainKnowledgeIntegration";
+import { EchoChefBrainKnowledgeIntegration } from "@/client/echo/brain/echoChefBrainKnowledgeIntegration";
 
 // Enhance suggestions with related knowledge
-const enhanced = await EchoChefBrainKnowledgeIntegration
-  .enhanceSuggestionWithKnowledge(
+const enhanced =
+  await EchoChefBrainKnowledgeIntegration.enhanceSuggestionWithKnowledge(
     baseRecipeSuggestion,
-    relatedKnowledge
+    relatedKnowledge,
   );
 
 // Get service context guidelines
-const guidelines = await EchoChefBrainKnowledgeIntegration
-  .getServiceContextKnowledge("banquet_plated", guestCount);
+const guidelines =
+  await EchoChefBrainKnowledgeIntegration.getServiceContextKnowledge(
+    "banquet_plated",
+    guestCount,
+  );
 
 // Get cost analysis knowledge
-const costAnalysis = await EchoChefBrainKnowledgeIntegration
-  .getCostAnalysisKnowledge(recipeTitle, estimatedCost);
+const costAnalysis =
+  await EchoChefBrainKnowledgeIntegration.getCostAnalysisKnowledge(
+    recipeTitle,
+    estimatedCost,
+  );
 
 // Build comprehensive recipe card
-const card = await EchoChefBrainKnowledgeIntegration
-  .buildComprehensiveRecipeCard(
+const card =
+  await EchoChefBrainKnowledgeIntegration.buildComprehensiveRecipeCard(
     baseRecipe,
     relatedKnowledge,
     serviceContext,
-    guestCount
+    guestCount,
   );
 ```
 
@@ -376,7 +397,7 @@ interface BaseKnowledge {
 
 1. **Start Training**: User clicks "Start Collaborative Training" for Culinary domain
 2. **Focus Areas**: Select "Cooking Techniques"
-3. **Dialogue**: 
+3. **Dialogue**:
    - Echo asks: "Can you explain modern emulsification techniques?"
    - OpenAI responds with detailed explanation
    - System proposes technique knowledge items

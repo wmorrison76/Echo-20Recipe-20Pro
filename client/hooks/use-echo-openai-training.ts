@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
-import type { 
-  EchoOpenAIDialogue, 
-  DialogueMessage, 
+import type {
+  EchoOpenAIDialogue,
+  DialogueMessage,
   AnyKnowledge,
-  TrainingSession 
+  TrainingSession,
 } from "../echo/types/knowledge";
 
 interface TrainingState {
@@ -24,7 +24,9 @@ export function useEchoOpenAITraining() {
     isLoading: false,
   });
 
-  const [trainingSessions, setTrainingSessions] = useState<TrainingSession[]>([]);
+  const [trainingSessions, setTrainingSessions] = useState<TrainingSession[]>(
+    [],
+  );
   const [learnedKnowledge, setLearnedKnowledge] = useState<AnyKnowledge[]>([]);
 
   /**
@@ -62,7 +64,7 @@ export function useEchoOpenAITraining() {
         throw error;
       }
     },
-    []
+    [],
   );
 
   /**
@@ -96,11 +98,7 @@ export function useEchoOpenAITraining() {
 
         setState((s) => ({
           ...s,
-          messages: [
-            ...s.messages,
-            data.userMessage,
-            data.openaiMessage,
-          ],
+          messages: [...s.messages, data.userMessage, data.openaiMessage],
           isLoading: false,
         }));
 
@@ -111,7 +109,7 @@ export function useEchoOpenAITraining() {
         throw error;
       }
     },
-    [state.dialogue]
+    [state.dialogue],
   );
 
   /**
@@ -124,14 +122,17 @@ export function useEchoOpenAITraining() {
       }
 
       try {
-        const response = await fetch("/api/echo-training/save-learned-knowledge", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            dialogueId: state.dialogue.id,
-            knowledge,
-          }),
-        });
+        const response = await fetch(
+          "/api/echo-training/save-learned-knowledge",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              dialogueId: state.dialogue.id,
+              knowledge,
+            }),
+          },
+        );
 
         if (!response.ok) {
           throw new Error("Failed to save learning");
@@ -146,70 +147,67 @@ export function useEchoOpenAITraining() {
         throw error;
       }
     },
-    [state.dialogue]
+    [state.dialogue],
   );
 
   /**
    * Complete the training dialogue
    */
-  const completeDialogue = useCallback(
-    async () => {
-      if (!state.dialogue) {
-        return;
-      }
+  const completeDialogue = useCallback(async () => {
+    if (!state.dialogue) {
+      return;
+    }
 
-      try {
-        const response = await fetch("/api/echo-training/complete-dialogue", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            dialogueId: state.dialogue.id,
-            dialogue: {
-              ...state.dialogue,
-              messages: state.messages,
-              status: "completed",
-              trainedKnowledge: learnedKnowledge.map((k) => k.id),
-            },
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to complete dialogue");
-        }
-
-        const data = await response.json();
-
-        const session: TrainingSession = {
-          id: `session-${Date.now()}`,
-          createdAt: new Date().toISOString(),
-          domain: state.dialogue.domain,
-          focusAreas: state.messages[0]?.knowledgeGaps || [],
-          dialogues: [state.dialogue.id],
-          completedKnowledge: learnedKnowledge,
-          stats: {
-            questionsAsked: state.messages.length,
-            knowledgeAcquired: learnedKnowledge.length,
-            gapsIdentified: state.messages[0]?.knowledgeGaps?.length || 0,
-            gapsFilled: learnedKnowledge.length,
+    try {
+      const response = await fetch("/api/echo-training/complete-dialogue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          dialogueId: state.dialogue.id,
+          dialogue: {
+            ...state.dialogue,
+            messages: state.messages,
+            status: "completed",
+            trainedKnowledge: learnedKnowledge.map((k) => k.id),
           },
-        };
+        }),
+      });
 
-        setTrainingSessions((prev) => [...prev, session]);
-        setState({
-          dialogue: null,
-          messages: [],
-          isActive: false,
-          isLoading: false,
-        });
-
-        return { session, summary: data.summary };
-      } catch (error) {
-        console.error("Error completing dialogue:", error);
-        throw error;
+      if (!response.ok) {
+        throw new Error("Failed to complete dialogue");
       }
-    },
-    [state.dialogue, state.messages, learnedKnowledge]
-  );
+
+      const data = await response.json();
+
+      const session: TrainingSession = {
+        id: `session-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        domain: state.dialogue.domain,
+        focusAreas: state.messages[0]?.knowledgeGaps || [],
+        dialogues: [state.dialogue.id],
+        completedKnowledge: learnedKnowledge,
+        stats: {
+          questionsAsked: state.messages.length,
+          knowledgeAcquired: learnedKnowledge.length,
+          gapsIdentified: state.messages[0]?.knowledgeGaps?.length || 0,
+          gapsFilled: learnedKnowledge.length,
+        },
+      };
+
+      setTrainingSessions((prev) => [...prev, session]);
+      setState({
+        dialogue: null,
+        messages: [],
+        isActive: false,
+        isLoading: false,
+      });
+
+      return { session, summary: data.summary };
+    } catch (error) {
+      console.error("Error completing dialogue:", error);
+      throw error;
+    }
+  }, [state.dialogue, state.messages, learnedKnowledge]);
 
   /**
    * Get statistics for current session

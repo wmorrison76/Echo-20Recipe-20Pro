@@ -1,4 +1,7 @@
-import { storeKnowledgeVector, generateEmbedding } from "./knowledge-vector-service";
+import {
+  storeKnowledgeVector,
+  generateEmbedding,
+} from "./knowledge-vector-service";
 import type { AnyKnowledge } from "../../client/echo/types/knowledge";
 
 const openaiApiKey = process.env.OPENAI_API_KEY;
@@ -10,14 +13,14 @@ const openaiApiKey = process.env.OPENAI_API_KEY;
 export async function captureOpenAIKnowledgeAsync(
   generatedRecipe: any,
   userPrompt: string,
-  serviceContext?: string
+  serviceContext?: string,
 ): Promise<void> {
   // Run in background without awaiting
   try {
     const knowledge = await extractKnowledgeFromRecipe(
       generatedRecipe,
       userPrompt,
-      serviceContext
+      serviceContext,
     );
 
     if (knowledge.length > 0) {
@@ -40,7 +43,7 @@ export async function captureOpenAIKnowledgeAsync(
 async function extractKnowledgeFromRecipe(
   recipe: any,
   userPrompt: string,
-  serviceContext?: string
+  serviceContext?: string,
 ): Promise<AnyKnowledge[]> {
   if (!openaiApiKey) {
     return [];

@@ -1,9 +1,9 @@
 import { Router, Request, Response } from "express";
-import type { 
-  EchoOpenAIDialogue, 
-  DialogueMessage, 
+import type {
+  EchoOpenAIDialogue,
+  DialogueMessage,
   AnyKnowledge,
-  TrainingSession 
+  TrainingSession,
 } from "../../client/echo/types/knowledge";
 import {
   storeKnowledgeVector,
@@ -299,25 +299,27 @@ router.post("/save-learned-knowledge", async (req: Request, res: Response) => {
  * POST /api/echo-training/auto-capture-openai-knowledge
  * Automatically capture and store knowledge from OpenAI responses
  */
-router.post("/auto-capture-openai-knowledge", async (req: Request, res: Response) => {
-  try {
-    const { openaiResponse, context, domain } = req.body as {
-      openaiResponse: string;
-      context: string;
-      domain: string;
-    };
+router.post(
+  "/auto-capture-openai-knowledge",
+  async (req: Request, res: Response) => {
+    try {
+      const { openaiResponse, context, domain } = req.body as {
+        openaiResponse: string;
+        context: string;
+        domain: string;
+      };
 
-    if (!openaiResponse) {
-      return res.status(400).json({
-        error: "openaiResponse is required",
-      });
-    }
+      if (!openaiResponse) {
+        return res.status(400).json({
+          error: "openaiResponse is required",
+        });
+      }
 
-    if (!openaiApiKey) {
-      return res.status(500).json({ error: "OpenAI API key not configured" });
-    }
+      if (!openaiApiKey) {
+        return res.status(500).json({ error: "OpenAI API key not configured" });
+      }
 
-    const extractionPrompt = `Analyze this response and extract structured knowledge that should be captured in Echo's knowledge base:
+      const extractionPrompt = `Analyze this response and extract structured knowledge that should be captured in Echo's knowledge base:
 
 Context: ${context}
 Domain: ${domain}
@@ -346,91 +348,95 @@ Return a JSON array of knowledge items. Example format:
 
 Return ONLY valid JSON.`;
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${openaiApiKey}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-4-turbo-preview",
-        messages: [
-          {
-            role: "user",
-            content: extractionPrompt,
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${openaiApiKey}`,
           },
-        ],
-        temperature: 0.5,
-        max_tokens: 2000,
-      }),
-    });
+          body: JSON.stringify({
+            model: "gpt-4-turbo-preview",
+            messages: [
+              {
+                role: "user",
+                content: extractionPrompt,
+              },
+            ],
+            temperature: 0.5,
+            max_tokens: 2000,
+          }),
+        },
+      );
 
-    if (!response.ok) {
-      const error = await response.text();
-      console.error("OpenAI extraction error:", error);
-      return res.status(500).json({
-        error: "Failed to extract knowledge",
-        details: error,
-      });
-    }
+      if (!response.ok) {
+        const error = await response.text();
+        console.error("OpenAI extraction error:", error);
+        return res.status(500).json({
+          error: "Failed to extract knowledge",
+          details: error,
+        });
+      }
 
-    const data = (await response.json()) as any;
-    const extractedContent = data.choices?.[0]?.message?.content;
+      const data = (await response.json()) as any;
+      const extractedContent = data.choices?.[0]?.message?.content;
 
-    if (!extractedContent) {
-      return res.status(500).json({
-        error: "No extraction response from OpenAI",
-      });
-    }
+      if (!extractedContent) {
+        return res.status(500).json({
+          error: "No extraction response from OpenAI",
+        });
+      }
 
-    const extractedKnowledge: AnyKnowledge[] = [];
+      const extractedKnowledge: AnyKnowledge[] = [];
 
-    try {
-      const jsonMatch = extractedContent.match(/\[[\s\S]*\]/);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
-        if (Array.isArray(parsed)) {
-          for (const item of parsed) {
-            const knowledge = {
-              id: `knowledge-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-              type: item.type || "terminology",
-              title: item.title,
-              description: item.content || item.description || "",
-              content: item.content || item.description || "",
-              source: "openai-auto-capture",
-              sourceType: "openai" as const,
-              tags: item.tags || [],
-              domain: domain || "culinary",
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-              confidence: item.confidence || 0.8,
-            };
-            extractedKnowledge.push(knowledge as AnyKnowledge);
+      try {
+        const jsonMatch = extractedContent.match(/\[[\s\S]*\]/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          if (Array.isArray(parsed)) {
+            for (const item of parsed) {
+              const knowledge = {
+                id: `knowledge-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                type: item.type || "terminology",
+                title: item.title,
+                description: item.content || item.description || "",
+                content: item.content || item.description || "",
+                source: "openai-auto-capture",
+                sourceType: "openai" as const,
+                tags: item.tags || [],
+                domain: domain || "culinary",
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                confidence: item.confidence || 0.8,
+              };
+              extractedKnowledge.push(knowledge as AnyKnowledge);
+            }
           }
         }
+      } catch (parseError) {
+        console.warn("Failed to parse extracted knowledge:", parseError);
       }
-    } catch (parseError) {
-      console.warn("Failed to parse extracted knowledge:", parseError);
-    }
 
-    if (extractedKnowledge.length > 0) {
-      await storeKnowledgeBatch(extractedKnowledge);
-    }
+      if (extractedKnowledge.length > 0) {
+        await storeKnowledgeBatch(extractedKnowledge);
+      }
 
-    return res.json({
-      success: true,
-      extracted: extractedKnowledge.length,
-      knowledge: extractedKnowledge,
-      message: `Captured and stored ${extractedKnowledge.length} knowledge items`,
-    });
-  } catch (error: any) {
-    console.error("[EchoTraining] Auto-capture failed:", error);
-    return res.status(500).json({
-      success: false,
-      error: error.message || "Internal server error",
-    });
-  }
-});
+      return res.json({
+        success: true,
+        extracted: extractedKnowledge.length,
+        knowledge: extractedKnowledge,
+        message: `Captured and stored ${extractedKnowledge.length} knowledge items`,
+      });
+    } catch (error: any) {
+      console.error("[EchoTraining] Auto-capture failed:", error);
+      return res.status(500).json({
+        success: false,
+        error: error.message || "Internal server error",
+      });
+    }
+  },
+);
 
 /**
  * Helper: Extract knowledge proposals from OpenAI response

@@ -1,11 +1,11 @@
-import type { 
-  AnyKnowledge, 
-  KnowledgeType, 
+import type {
+  AnyKnowledge,
+  KnowledgeType,
   KnowledgeSearchResult,
   TechniqueKnowledge,
   TerminologyKnowledge,
   FinancialKnowledge,
-  HospitalityKnowledge
+  HospitalityKnowledge,
 } from "../types/knowledge";
 
 /**
@@ -23,13 +23,13 @@ export class EchoChefBrainKnowledgeIntegration {
     const enhanced = { ...baseRecipeSuggestion };
 
     const techniques = relatedKnowledge.filter(
-      (k) => k.type === "technique"
+      (k) => k.type === "technique",
     ) as TechniqueKnowledge[];
     const terminology = relatedKnowledge.filter(
-      (k) => k.type === "terminology"
+      (k) => k.type === "terminology",
     ) as TerminologyKnowledge[];
     const hospitality = relatedKnowledge.filter(
-      (k) => k.type === "hospitality"
+      (k) => k.type === "hospitality",
     ) as HospitalityKnowledge[];
 
     if (techniques.length > 0) {
@@ -107,7 +107,8 @@ export class EchoChefBrainKnowledgeIntegration {
         id: "guide-buffet-service",
         title: "Banquet Buffet Service Guidelines",
         description: "Best practices for buffet-style banquet service",
-        content: "Buffet service requires holding quality and guest flow management",
+        content:
+          "Buffet service requires holding quality and guest flow management",
         category: "service",
         guidelines: [
           "Use chafers for temperature maintenance (6+ hours for hot foods)",
@@ -132,7 +133,8 @@ export class EchoChefBrainKnowledgeIntegration {
         id: "guide-reception-service",
         title: "Reception Service Guidelines",
         description: "Best practices for reception-style service",
-        content: "Reception requires bite-sized items and standing service comfort",
+        content:
+          "Reception requires bite-sized items and standing service comfort",
         category: "service",
         guidelines: [
           "All items must be consumed standing/walking",
@@ -218,7 +220,8 @@ export class EchoChefBrainKnowledgeIntegration {
       "temper",
     ];
 
-    const combinedText = `${recipeIngredients.join(" ")} ${recipeInstructions.join(" ")}`.toLowerCase();
+    const combinedText =
+      `${recipeIngredients.join(" ")} ${recipeInstructions.join(" ")}`.toLowerCase();
 
     for (const technique of commonTechniques) {
       if (combinedText.includes(technique)) {
@@ -237,9 +240,7 @@ export class EchoChefBrainKnowledgeIntegration {
     existingKnowledge: AnyKnowledge[],
   ): Promise<string[]> {
     const gaps: string[] = [];
-    const existingTags = new Set(
-      existingKnowledge.flatMap((k) => k.tags)
-    );
+    const existingTags = new Set(existingKnowledge.flatMap((k) => k.tags));
 
     const extractedTechniques = this.extractTechniquesFromRecipe(
       recipeKnowledge.ingredients || [],
@@ -284,23 +285,19 @@ export class EchoChefBrainKnowledgeIntegration {
       );
     }
 
-    const techniques = relatedKnowledge.filter(
-      (k) => k.type === "technique"
-    );
+    const techniques = relatedKnowledge.filter((k) => k.type === "technique");
     if (techniques.length > 0) {
       card.knowledge.techniques = techniques;
     }
 
     const terminology = relatedKnowledge.filter(
-      (k) => k.type === "terminology"
+      (k) => k.type === "terminology",
     );
     if (terminology.length > 0) {
       card.knowledge.terms = terminology;
     }
 
-    const financial = relatedKnowledge.filter(
-      (k) => k.type === "financial"
-    );
+    const financial = relatedKnowledge.filter((k) => k.type === "financial");
     if (financial.length > 0) {
       card.knowledge.costAnalysis = financial;
     }

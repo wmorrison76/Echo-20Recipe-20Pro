@@ -3,11 +3,11 @@ import { Card } from "../ui/card";
 import { Button } from "../ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Badge } from "../ui/badge";
-import { 
-  BookOpen, 
-  Zap, 
-  Users, 
-  TrendingUp, 
+import {
+  BookOpen,
+  Zap,
+  Users,
+  TrendingUp,
   Upload,
   MessageSquare,
   Settings,
@@ -21,35 +21,60 @@ interface EchoTrainingDashboardProps {
 }
 
 const TRAINING_DOMAINS = [
-  { 
-    id: "culinary", 
-    label: "Culinary Arts", 
+  {
+    id: "culinary",
+    label: "Culinary Arts",
     description: "Recipes, techniques, ingredients, and cooking methods",
-    focusAreas: ["Recipe Development", "Cooking Techniques", "Ingredient Chemistry", "Flavor Profiles"]
+    focusAreas: [
+      "Recipe Development",
+      "Cooking Techniques",
+      "Ingredient Chemistry",
+      "Flavor Profiles",
+    ],
   },
-  { 
-    id: "finance", 
-    label: "Financial Management", 
+  {
+    id: "finance",
+    label: "Financial Management",
     description: "Cost analysis, pricing, margins, and budgeting",
-    focusAreas: ["Food Cost Analysis", "Pricing Strategy", "Profit Margins", "Budget Planning"]
+    focusAreas: [
+      "Food Cost Analysis",
+      "Pricing Strategy",
+      "Profit Margins",
+      "Budget Planning",
+    ],
   },
-  { 
-    id: "hospitality", 
-    label: "Hospitality & Service", 
+  {
+    id: "hospitality",
+    label: "Hospitality & Service",
     description: "Banquet planning, service standards, and guest experience",
-    focusAreas: ["Service Protocols", "Banquet Planning", "Guest Relations", "Event Management"]
+    focusAreas: [
+      "Service Protocols",
+      "Banquet Planning",
+      "Guest Relations",
+      "Event Management",
+    ],
   },
-  { 
-    id: "beverage", 
-    label: "Beverage Management", 
+  {
+    id: "beverage",
+    label: "Beverage Management",
     description: "Cocktails, wine, beer, and pairing techniques",
-    focusAreas: ["Cocktail Development", "Wine Pairing", "Beverage Cost", "Service Techniques"]
+    focusAreas: [
+      "Cocktail Development",
+      "Wine Pairing",
+      "Beverage Cost",
+      "Service Techniques",
+    ],
   },
-  { 
-    id: "safety", 
-    label: "Food Safety & Compliance", 
+  {
+    id: "safety",
+    label: "Food Safety & Compliance",
     description: "Allergen management, sanitation, and regulations",
-    focusAreas: ["Allergen Protocols", "Food Safety", "Sanitation Standards", "Compliance"]
+    focusAreas: [
+      "Allergen Protocols",
+      "Food Safety",
+      "Sanitation Standards",
+      "Compliance",
+    ],
   },
 ];
 
@@ -59,7 +84,8 @@ export function EchoTrainingDashboard({
 }: EchoTrainingDashboardProps) {
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
-  const [showCollaborativeTraining, setShowCollaborativeTraining] = useState(false);
+  const [showCollaborativeTraining, setShowCollaborativeTraining] =
+    useState(false);
   const training = useEchoOpenAITraining();
 
   const stats = training.getSessionStats();
@@ -69,8 +95,12 @@ export function EchoTrainingDashboard({
     setShowCollaborativeTraining(true);
   };
 
-  if (selectedDomain && showCollaborativeTraining && TRAINING_DOMAINS.find(d => d.id === selectedDomain)) {
-    const domain = TRAINING_DOMAINS.find(d => d.id === selectedDomain)!;
+  if (
+    selectedDomain &&
+    showCollaborativeTraining &&
+    TRAINING_DOMAINS.find((d) => d.id === selectedDomain)
+  ) {
+    const domain = TRAINING_DOMAINS.find((d) => d.id === selectedDomain)!;
     return (
       <div className={className}>
         <Button
@@ -101,9 +131,12 @@ export function EchoTrainingDashboard({
     <div className={`space-y-6 ${className}`}>
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-gray-900">Echo AI Training Center</h1>
+        <h1 className="text-3xl font-bold text-gray-900">
+          Echo AI Training Center
+        </h1>
         <p className="text-gray-600">
-          Train Echo with culinary knowledge, financial insights, and operational excellence
+          Train Echo with culinary knowledge, financial insights, and
+          operational excellence
         </p>
       </div>
 
@@ -112,7 +145,9 @@ export function EchoTrainingDashboard({
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="training" className="relative">
             Training
-            {stats.isActive && <Badge className="absolute -top-2 -right-2">Active</Badge>}
+            {stats.isActive && (
+              <Badge className="absolute -top-2 -right-2">Active</Badge>
+            )}
           </TabsTrigger>
           <TabsTrigger value="progress">Progress</TabsTrigger>
         </TabsList>
@@ -122,9 +157,12 @@ export function EchoTrainingDashboard({
           <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-indigo-200 p-6">
             <div className="flex items-start justify-between">
               <div>
-                <h2 className="text-2xl font-bold text-indigo-900">Welcome to Training Mode</h2>
+                <h2 className="text-2xl font-bold text-indigo-900">
+                  Welcome to Training Mode
+                </h2>
                 <p className="text-indigo-700 mt-2">
-                  Echo learns through collaborative dialogue with OpenAI. Select a domain below to begin training.
+                  Echo learns through collaborative dialogue with OpenAI. Select
+                  a domain below to begin training.
                 </p>
               </div>
               <Zap className="w-8 h-8 text-indigo-600" />
@@ -133,20 +171,33 @@ export function EchoTrainingDashboard({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {TRAINING_DOMAINS.map((domain) => (
-              <Card key={domain.id} className="hover:border-indigo-300 hover:shadow-md transition-all">
+              <Card
+                key={domain.id}
+                className="hover:border-indigo-300 hover:shadow-md transition-all"
+              >
                 <div className="p-4 space-y-3">
                   <div className="flex items-start justify-between">
-                    <h3 className="font-semibold text-gray-900">{domain.label}</h3>
-                    <Badge variant="outline" className="capitalize">{domain.id}</Badge>
+                    <h3 className="font-semibold text-gray-900">
+                      {domain.label}
+                    </h3>
+                    <Badge variant="outline" className="capitalize">
+                      {domain.id}
+                    </Badge>
                   </div>
-                  
+
                   <p className="text-sm text-gray-600">{domain.description}</p>
 
                   <div className="space-y-2">
-                    <p className="text-xs font-medium text-gray-500 uppercase">Focus Areas:</p>
+                    <p className="text-xs font-medium text-gray-500 uppercase">
+                      Focus Areas:
+                    </p>
                     <div className="flex flex-wrap gap-1">
                       {domain.focusAreas.map((area) => (
-                        <Badge key={area} variant="secondary" className="text-xs">
+                        <Badge
+                          key={area}
+                          variant="secondary"
+                          className="text-xs"
+                        >
                           {area}
                         </Badge>
                       ))}
@@ -167,30 +218,42 @@ export function EchoTrainingDashboard({
 
           {/* Additional Features */}
           <Card className="border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Training Features</h3>
-            
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Training Features
+            </h3>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex gap-3">
                 <BookOpen className="w-5 h-5 text-indigo-600 flex-shrink-0" />
                 <div>
                   <h4 className="font-medium text-gray-900">Recipe Import</h4>
-                  <p className="text-sm text-gray-600">Import recipes from PDFs or directly</p>
+                  <p className="text-sm text-gray-600">
+                    Import recipes from PDFs or directly
+                  </p>
                 </div>
               </div>
 
               <div className="flex gap-3">
                 <Users className="w-5 h-5 text-indigo-600 flex-shrink-0" />
                 <div>
-                  <h4 className="font-medium text-gray-900">Collaborative Learning</h4>
-                  <p className="text-sm text-gray-600">Echo and OpenAI dialogue to fill knowledge gaps</p>
+                  <h4 className="font-medium text-gray-900">
+                    Collaborative Learning
+                  </h4>
+                  <p className="text-sm text-gray-600">
+                    Echo and OpenAI dialogue to fill knowledge gaps
+                  </p>
                 </div>
               </div>
 
               <div className="flex gap-3">
                 <TrendingUp className="w-5 h-5 text-indigo-600 flex-shrink-0" />
                 <div>
-                  <h4 className="font-medium text-gray-900">Knowledge Tracking</h4>
-                  <p className="text-sm text-gray-600">Monitor Echo's learning progress</p>
+                  <h4 className="font-medium text-gray-900">
+                    Knowledge Tracking
+                  </h4>
+                  <p className="text-sm text-gray-600">
+                    Monitor Echo's learning progress
+                  </p>
                 </div>
               </div>
 
@@ -198,7 +261,9 @@ export function EchoTrainingDashboard({
                 <Zap className="w-5 h-5 text-indigo-600 flex-shrink-0" />
                 <div>
                   <h4 className="font-medium text-gray-900">Auto-Learning</h4>
-                  <p className="text-sm text-gray-600">Automatically capture knowledge from OpenAI</p>
+                  <p className="text-sm text-gray-600">
+                    Automatically capture knowledge from OpenAI
+                  </p>
                 </div>
               </div>
             </div>
@@ -212,7 +277,9 @@ export function EchoTrainingDashboard({
               <Card className="bg-green-50 border-green-200 p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-semibold text-green-900">Training Session Active</h3>
+                    <h3 className="font-semibold text-green-900">
+                      Training Session Active
+                    </h3>
                     <p className="text-sm text-green-700">
                       Session ID: {stats.dialogueId?.substring(0, 8)}...
                     </p>
@@ -224,22 +291,30 @@ export function EchoTrainingDashboard({
               <div className="grid grid-cols-2 gap-4">
                 <Card className="p-4">
                   <p className="text-sm text-gray-600">Questions Asked</p>
-                  <p className="text-2xl font-bold text-indigo-600">{stats.totalQuestions}</p>
+                  <p className="text-2xl font-bold text-indigo-600">
+                    {stats.totalQuestions}
+                  </p>
                 </Card>
                 <Card className="p-4">
                   <p className="text-sm text-gray-600">Knowledge Learned</p>
-                  <p className="text-2xl font-bold text-green-600">{stats.knowledgeLearned}</p>
+                  <p className="text-2xl font-bold text-green-600">
+                    {stats.knowledgeLearned}
+                  </p>
                 </Card>
               </div>
             </div>
           ) : training.trainingSessions.length > 0 ? (
             <div className="space-y-4">
-              <h3 className="font-semibold text-gray-900">Recent Training Sessions</h3>
+              <h3 className="font-semibold text-gray-900">
+                Recent Training Sessions
+              </h3>
               {training.trainingSessions.map((session) => (
                 <Card key={session.id} className="p-4">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="font-medium text-gray-900 capitalize">{session.domain}</h4>
+                      <h4 className="font-medium text-gray-900 capitalize">
+                        {session.domain}
+                      </h4>
                       <p className="text-sm text-gray-600 mt-1">
                         {new Date(session.createdAt).toLocaleDateString()}
                       </p>
@@ -268,30 +343,46 @@ export function EchoTrainingDashboard({
         {/* Progress Tab */}
         <TabsContent value="progress" className="space-y-4">
           <Card className="p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Learning Statistics</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Learning Statistics
+            </h3>
 
             <div className="space-y-4">
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <p className="text-sm font-medium text-gray-700">Total Training Sessions</p>
-                  <p className="text-lg font-bold text-indigo-600">{training.trainingSessions.length}</p>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <p className="text-sm font-medium text-gray-700">Total Knowledge Items</p>
-                  <p className="text-lg font-bold text-green-600">
-                    {training.trainingSessions.reduce((sum, s) => sum + s.stats.knowledgeAcquired, 0)}
+                  <p className="text-sm font-medium text-gray-700">
+                    Total Training Sessions
+                  </p>
+                  <p className="text-lg font-bold text-indigo-600">
+                    {training.trainingSessions.length}
                   </p>
                 </div>
               </div>
 
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <p className="text-sm font-medium text-gray-700">Domains Covered</p>
+                  <p className="text-sm font-medium text-gray-700">
+                    Total Knowledge Items
+                  </p>
+                  <p className="text-lg font-bold text-green-600">
+                    {training.trainingSessions.reduce(
+                      (sum, s) => sum + s.stats.knowledgeAcquired,
+                      0,
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <p className="text-sm font-medium text-gray-700">
+                    Domains Covered
+                  </p>
                   <p className="text-lg font-bold text-purple-600">
-                    {new Set(training.trainingSessions.map(s => s.domain)).size}
+                    {
+                      new Set(training.trainingSessions.map((s) => s.domain))
+                        .size
+                    }
                   </p>
                 </div>
               </div>
@@ -300,16 +391,25 @@ export function EchoTrainingDashboard({
 
           {training.learnedKnowledge.length > 0 && (
             <Card className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Recently Learned</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Recently Learned
+              </h3>
               <div className="space-y-3">
                 {training.learnedKnowledge.slice(0, 5).map((knowledge) => (
-                  <div key={knowledge.id} className="flex items-start gap-3 pb-3 border-b last:border-0">
+                  <div
+                    key={knowledge.id}
+                    className="flex items-start gap-3 pb-3 border-b last:border-0"
+                  >
                     <Badge variant="outline" className="capitalize text-xs">
                       {knowledge.type}
                     </Badge>
                     <div className="flex-1">
-                      <p className="font-medium text-gray-900">{knowledge.title}</p>
-                      <p className="text-sm text-gray-600 line-clamp-1">{knowledge.description}</p>
+                      <p className="font-medium text-gray-900">
+                        {knowledge.title}
+                      </p>
+                      <p className="text-sm text-gray-600 line-clamp-1">
+                        {knowledge.description}
+                      </p>
                     </div>
                   </div>
                 ))}

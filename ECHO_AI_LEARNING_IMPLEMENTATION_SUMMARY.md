@@ -3,6 +3,7 @@
 ## What Was Built
 
 A comprehensive learning system that enables Echo AI to:
+
 1. **Automatically capture knowledge** from OpenAI-generated responses
 2. **Store diverse knowledge types** (recipes, techniques, terminology, financial, hospitality, beverage, safety)
 3. **Engage in collaborative dialogue** with OpenAI to fill knowledge gaps
@@ -11,6 +12,7 @@ A comprehensive learning system that enables Echo AI to:
 ## Core Files Created
 
 ### 1. Knowledge Type System
+
 - **File**: `client/echo/types/knowledge.ts`
 - **Purpose**: Defines all knowledge types and interfaces
 - **Key Types**:
@@ -27,6 +29,7 @@ A comprehensive learning system that enables Echo AI to:
   - `TrainingSession` - Complete training session tracking
 
 ### 2. Vector Database Service
+
 - **File**: `server/lib/knowledge-vector-service.ts`
 - **Functions**:
   - `storeKnowledgeVector()` - Store single knowledge item
@@ -39,6 +42,7 @@ A comprehensive learning system that enables Echo AI to:
   - `getKnowledgeStats()` - Get knowledge base statistics
 
 ### 3. Echo-OpenAI Collaborative Training API
+
 - **File**: `server/routes/echo-openai-training.ts`
 - **Endpoints**:
   - `POST /api/echo-training/init-dialogue` - Start training session
@@ -48,6 +52,7 @@ A comprehensive learning system that enables Echo AI to:
   - `POST /api/echo-training/complete-dialogue` - End session and summarize
 
 **Features**:
+
 - Echo asks questions about focus areas
 - OpenAI provides detailed responses
 - System automatically extracts structured knowledge
@@ -55,6 +60,7 @@ A comprehensive learning system that enables Echo AI to:
 - Learned knowledge stored in Pinecone with metadata
 
 ### 4. Automatic Knowledge Capture Service
+
 - **File**: `server/lib/auto-knowledge-capture.ts`
 - **Function**: `captureOpenAIKnowledgeAsync()`
 - **Features**:
@@ -65,6 +71,7 @@ A comprehensive learning system that enables Echo AI to:
   - Supports all knowledge types
 
 ### 5. Enhanced Echo Chef Brain Integration
+
 - **File**: `client/echo/brain/echoChefBrainKnowledgeIntegration.ts`
 - **Functions**:
   - `enhanceSuggestionWithKnowledge()` - Add related knowledge to recipes
@@ -77,6 +84,7 @@ A comprehensive learning system that enables Echo AI to:
 ### 6. UI Components
 
 #### EchoOpenAITrainingMode Component
+
 - **File**: `client/components/EchoOpenAITrainingMode.tsx`
 - **Features**:
   - Real-time dialogue interface
@@ -87,6 +95,7 @@ A comprehensive learning system that enables Echo AI to:
   - Automatic knowledge capture feedback
 
 #### EchoTrainingDashboard Component
+
 - **File**: `client/components/panels/EchoTrainingDashboard.tsx`
 - **Features**:
   - Overview of all training domains
@@ -98,6 +107,7 @@ A comprehensive learning system that enables Echo AI to:
 ### 7. Hooks
 
 #### useEchoOpenAITraining Hook
+
 - **File**: `client/hooks/use-echo-openai-training.ts`
 - **Capabilities**:
   - Initialize dialogue
@@ -108,6 +118,7 @@ A comprehensive learning system that enables Echo AI to:
   - Get session statistics
 
 ### 8. Server Integration
+
 - **Modified**: `server/index.ts`
 - **Change**: Registered echo-openai-training router
 - **Route**: All endpoints under `/api/echo-training/`
@@ -163,33 +174,39 @@ Learned knowledge available for future use
 ## Key Features
 
 ### 1. **No OpenAI Attribution**
+
 - Learned knowledge stored as "pure knowledge"
 - Source tracked internally as "openai" but not displayed
 - Users see knowledge as if it was part of Echo's training
 
 ### 2. **Confidence Scoring**
+
 - Each knowledge item has confidence 0-1
 - OpenAI-generated: default 0.75-0.95
 - Used for ranking suggestions
 - High confidence items preferred in suggestions
 
 ### 3. **Knowledge Linking**
+
 - Related knowledge items are linked
 - Recipes linked to techniques and terminology
 - Techniques linked to applications
 - Enables rich, interconnected knowledge base
 
 ### 4. **Domain Organization**
+
 - Knowledge organized by domain (culinary, finance, hospitality, beverage, safety)
 - Domain-specific search and filtering
 - Domain-based training focus
 
 ### 5. **Async Processing**
+
 - Knowledge capture doesn't block API responses
 - Background processing of OpenAI responses
 - Non-blocking auto-learning
 
 ### 6. **Multi-Type Support**
+
 - Recipes with full ingredient/instruction details
 - Techniques with step-by-step instructions
 - Terminology with definitions and context
@@ -201,26 +218,31 @@ Learned knowledge available for future use
 ## Training Domains
 
 ### 1. **Culinary Arts**
+
 - Focus: Recipes, techniques, ingredients, flavor profiles
 - Knowledge Types: Recipe, Technique, Terminology, Beverage
 - Use Case: Expand recipe suggestions and cooking methods
 
 ### 2. **Financial Management**
+
 - Focus: Cost analysis, pricing, margins, budgeting
 - Knowledge Types: Financial
 - Use Case: Provide cost-aware recipe suggestions
 
 ### 3. **Hospitality & Service**
+
 - Focus: Service protocols, banquet planning, guest relations
 - Knowledge Types: Hospitality
 - Use Case: Service-context aware recommendations
 
 ### 4. **Beverage Management**
+
 - Focus: Cocktails, wine, beer, pairings
 - Knowledge Types: Beverage
 - Use Case: Pairing suggestions and beverage knowledge
 
 ### 5. **Food Safety & Compliance**
+
 - Focus: Allergen management, sanitation, regulations
 - Knowledge Types: Safety
 - Use Case: Safety-aware recipe modifications
@@ -255,6 +277,7 @@ All endpoints return standardized responses:
 ### Knowledge Index: "echo-knowledge"
 
 Vector Storage with Metadata:
+
 ```
 {
   "id": "technique-123abc",
@@ -275,12 +298,14 @@ Vector Storage with Metadata:
 ## Configuration Requirements
 
 ### Environment Variables
+
 ```env
 PINECONE_API_KEY=<pinecone-api-key>
 OPENAI_API_KEY=<openai-api-key>
 ```
 
 ### Pinecone Index
+
 - Index Name: `echo-knowledge`
 - Dimension: 1536 (OpenAI text-embedding-3-small)
 - Metric: Cosine similarity
@@ -288,22 +313,25 @@ OPENAI_API_KEY=<openai-api-key>
 ## Usage Examples
 
 ### Initialize Training
+
 ```typescript
 const training = useEchoOpenAITraining();
-await training.initializeDialogue("culinary", 
-  ["Recipe Development", "Cooking Techniques"]);
+await training.initializeDialogue("culinary", [
+  "Recipe Development",
+  "Cooking Techniques",
+]);
 ```
 
 ### Send Training Message
+
 ```typescript
-await training.sendMessage(
-  "Explain the Maillard reaction",
-  "culinary",
-  ["Cooking Techniques"]
-);
+await training.sendMessage("Explain the Maillard reaction", "culinary", [
+  "Cooking Techniques",
+]);
 ```
 
 ### Save Learned Knowledge
+
 ```typescript
 await training.saveLearning([
   {
@@ -316,18 +344,19 @@ await training.saveLearning([
     tags: ["chemistry", "cooking", "browning"],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    confidence: 0.95
-  }
+    confidence: 0.95,
+  },
 ]);
 ```
 
 ### Search Knowledge
+
 ```typescript
 const results = await searchKnowledge("sous vide", {
   topK: 10,
   type: "technique",
   domain: "culinary",
-  minConfidence: 0.75
+  minConfidence: 0.75,
 });
 ```
 
