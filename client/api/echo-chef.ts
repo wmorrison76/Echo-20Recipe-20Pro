@@ -86,14 +86,28 @@ export const echoChefHandler = async (req: Request, res: Response) => {
             neighborsToUse: 5,
           });
 
-        return res.json({
-          mode: "generate",
+        const response = {
+          mode: "generate" as const,
           suggestions,
           recipeDraft: generationResult.recipeDraft,
           neighbors: generationResult.neighborsUsed,
           usedOpenAI: shouldAutoGenerate,
           openAIReason: shouldAutoGenerate ? "Knowledge base coverage insufficient, using OpenAI" : undefined,
-        });
+        };
+
+        // Asynchronously capture knowledge from OpenAI-generated recipe
+        // This doesn't block the response
+        if (generationResult.recipeDraft) {
+          captureOpenAIKnowledgeAsync(
+            generationResult.recipeDraft,
+            userPrompt,
+            serviceContext
+          ).catch((err) => {
+            console.warn("[EchoChef] Failed to capture knowledge:", err);
+          });
+        }
+
+        return res.json(response);
       } catch (genErr: any) {
         console.error("[EchoChef] Recipe generation failed:", genErr);
         // Fall back to suggestions-only mode
