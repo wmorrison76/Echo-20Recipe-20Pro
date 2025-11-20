@@ -361,8 +361,8 @@ Return ONLY valid JSON array. No other text.`;
                 content: extractionPrompt,
               },
             ],
-            temperature: 0.5,
-            max_tokens: 2000,
+            temperature: 0.7,
+            max_tokens: 3000,
           }),
         },
       );
@@ -393,30 +393,46 @@ Return ONLY valid JSON array. No other text.`;
           const parsed = JSON.parse(jsonMatch[0]);
           if (Array.isArray(parsed)) {
             for (const item of parsed) {
+              if (!item.title || !item.content) {
+                console.warn("Skipping incomplete knowledge item:", item);
+                continue;
+              }
+
               const knowledge = {
                 id: `knowledge-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
                 type: item.type || "terminology",
-                title: item.title,
-                description: item.content || item.description || "",
-                content: item.content || item.description || "",
+                title: item.title.substring(0, 200),
+                description: (item.content || "").substring(0, 1000),
+                content: (item.content || "").substring(0, 2000),
                 source: "openai-auto-capture",
                 sourceType: "openai" as const,
-                tags: item.tags || [],
+                tags: Array.isArray(item.tags)
+                  ? item.tags.slice(0, 10)
+                  : [domain],
                 domain: domain || "culinary",
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
-                confidence: item.confidence || 0.8,
+                confidence: Math.min(1, Math.max(0, item.confidence || 0.85)),
               };
               extractedKnowledge.push(knowledge as AnyKnowledge);
             }
           }
         }
       } catch (parseError) {
-        console.warn("Failed to parse extracted knowledge:", parseError);
+        console.warn(
+          "[EchoTraining] Failed to parse extracted knowledge:",
+          parseError,
+          "Content:",
+          extractedContent,
+        );
       }
 
       if (extractedKnowledge.length > 0) {
-        await storeKnowledgeBatch(extractedKnowledge);
+        console.log(
+          `[EchoTraining] Storing ${extractedKnowledge.length} knowledge items to Pinecone`,
+        );
+        const storeResult = await storeKnowledgeBatch(extractedKnowledge);
+        console.log("[EchoTraining] Storage result:", storeResult);
       }
 
       return res.json({
