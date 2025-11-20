@@ -722,11 +722,16 @@ VERDICT: APPROVED`;
     ).length;
     const errorIssues = issues.filter((i) => i.severity === "error").length;
 
-    if (score < 0.3 || criticalIssues > 0) {
+    // Reject only if score is very low AND there are critical issues
+    if (criticalIssues > 0 && score < 0.2) {
       return "rejected";
     }
 
-    if (score < 0.5 || errorIssues > 1) {
+    if (score < 0.2) {
+      return "rejected";
+    }
+
+    if (score < 0.35 || errorIssues > 2) {
       return "quarantined";
     }
 
