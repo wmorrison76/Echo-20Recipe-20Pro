@@ -388,15 +388,15 @@ function RDLabsWorkspaceContent() {
             </TabsList>
 
             {/* Tab Content */}
-            <div className="flex-1 overflow-auto">
-              <TabsContent value="overview" className="m-0">
-                <div className="p-6">
+            <div className="flex-1 overflow-hidden">
+              <TabsContent value="overview" className="m-0 flex-1 overflow-hidden h-full">
+                <div className="h-full overflow-y-auto p-6">
                   <TrackDashboards track={recipeTrack} labMode={labMode} />
                 </div>
               </TabsContent>
 
-              <TabsContent value="insights" className="m-0">
-                <div className="p-6">
+              <TabsContent value="insights" className="m-0 flex-1 overflow-hidden h-full">
+                <div className="h-full overflow-y-auto p-6">
                   <div className="space-y-4">
                     <h2 className="text-2xl font-bold text-foreground">
                       Lab Insights
@@ -408,8 +408,8 @@ function RDLabsWorkspaceContent() {
                 </div>
               </TabsContent>
 
-              <TabsContent value="analytics" className="m-0">
-                <div className="p-6">
+              <TabsContent value="analytics" className="m-0 flex-1 overflow-hidden h-full">
+                <div className="h-full overflow-y-auto p-6">
                   <div className="space-y-4">
                     <h2 className="text-2xl font-bold text-foreground">
                       Lab Analytics
@@ -421,38 +421,38 @@ function RDLabsWorkspaceContent() {
                 </div>
               </TabsContent>
 
-              <TabsContent value="ai-design" className="m-0">
-                <div className="p-6">
+              <TabsContent value="ai-design" className="m-0 flex-1 overflow-hidden h-full">
+                <div className="h-full overflow-y-auto p-6">
                   <AIExperimentDesigner />
                 </div>
               </TabsContent>
 
-              <TabsContent value="ai-validate" className="m-0">
-                <div className="p-6">
+              <TabsContent value="ai-validate" className="m-0 flex-1 overflow-hidden h-full">
+                <div className="h-full overflow-y-auto p-6">
                   <AIValidationPanel />
                 </div>
               </TabsContent>
 
-              <TabsContent value="ai-sop" className="m-0">
-                <div className="p-6">
+              <TabsContent value="ai-sop" className="m-0 flex-1 overflow-hidden h-full">
+                <div className="h-full overflow-y-auto p-6">
                   <AISOPGenerator />
                 </div>
               </TabsContent>
 
-              <TabsContent value="workbench" className="m-0">
-                <div className="p-6">
+              <TabsContent value="workbench" className="m-0 flex-1 overflow-hidden h-full">
+                <div className="h-full overflow-y-auto p-6">
                   <WorkbenchPanel />
                 </div>
               </TabsContent>
 
-              <TabsContent value="discovery" className="m-0">
-                <div className="p-6">
+              <TabsContent value="discovery" className="m-0 flex-1 overflow-hidden h-full">
+                <div className="h-full overflow-y-auto p-6">
                   <DiscoveryPanel />
                 </div>
               </TabsContent>
 
-              <TabsContent value="search" className="m-0">
-                <div className="p-6">
+              <TabsContent value="search" className="m-0 flex-1 overflow-hidden h-full">
+                <div className="h-full overflow-y-auto p-6">
                   <GlobalExperimentSearch />
                 </div>
               </TabsContent>
