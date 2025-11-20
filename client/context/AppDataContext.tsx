@@ -2825,10 +2825,9 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         // Filter out table headers, metadata, and non-ingredient lines
         if (ingredients && ingredients.length) {
           const tableHeaderPatterns = [
-            /^(?:ingredients|u\.?s\.?|metric|%|\s*)?$/i,
-            /^(?:ingredients|u\.?s\.?[\s\(]|metric[\s\(]|%[\s\(])/i,
-            /^(?:total weight:|total weight)/i,
-            /^(?:butter.*?shortening|sugar|salt|eggs|milk|vanilla|flour|baking)/i, // Skip ingredient column headers
+            /^(?:ingredients|u\.?s\.?|metric|%|\s*)?$/i, // Empty or just units
+            /^(?:ingredients|u\.?s\.?[\s\(]|metric[\s\(]|%[\s\(])/i, // Header row
+            /^(?:total weight:?|total weight)/i, // Totals line
           ];
           const isTableHeader = (line: string) =>
             tableHeaderPatterns.some(pattern => pattern.test(line.trim()));
@@ -2840,14 +2839,21 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
               if (!trimmed || isTableHeader(trimmed)) return false;
               if (metaSuppress.test(trimmed)) return false;
               // Exclude lines that are clearly just units or percentages
-              if (/^(?:oz|g|%|\(\d+\)|lb|tsp|tbsp)$/.test(trimmed.toLowerCase())) return false;
-              return true;
+              if (/^(?:oz|g|%|\(\d+\)|lb|tsp|tbsp|gram|ounce|pound|milliliter|liter|cup)$/.test(trimmed.toLowerCase())) return false;
+              // Keep lines that have actual ingredient content (at least 3 chars)
+              if (trimmed.length >= 3) return true;
+              return false;
             });
 
           // If we have very few ingredients, try to recover by looking for lines with quantities
           if (ingredients.length < 2) {
             const candidates = getRange(ingIdx, instIdx >= 0 ? instIdx : lines.length)
-              .filter((line) => qtyRegex.test(line) && !isTableHeader(line));
+              .filter((line) => {
+                const trimmed = line.trim();
+                return qtyRegex.test(trimmed) &&
+                       !isTableHeader(trimmed) &&
+                       trimmed.length >= 3;
+              });
             if (candidates.length >= 2) ingredients = candidates;
           }
         }
