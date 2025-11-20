@@ -2514,14 +2514,39 @@ export default function RecipeSearchSection() {
                       }
 
                       // Extract definitions from text using multiple patterns
+                      // Optimized for culinary definition textbooks
                       const defPatterns = [
-                        // Pattern 1: "Term: definition"
+                        // Pattern 1: "Term: definition" (most common)
                         /^\s*([A-Z][a-zA-Z\s]{2,50})\s*:\s*(.{10,300})$/gm,
-                        // Pattern 2: "Term – definition"
+                        // Pattern 2: "Term – definition" or "Term — definition"
                         /^\s*([A-Z][a-zA-Z\s]{2,50})\s*(?:–|—|=)\s*(.{10,300})$/gm,
-                        // Pattern 3: Multi-line with term on one line, definition on next
+                        // Pattern 3: "Term (plural): definition"
+                        /^\s*([A-Z][a-zA-Z\s]{2,50})\s*\([^)]*\)\s*:\s*(.{10,300})$/gm,
+                        // Pattern 4: Multi-line with term on one line, definition on next
                         /^([A-Z][a-zA-Z\s]{2,50})$\n+(.{20,300}?)(?:\n\n|\n[A-Z]|$)/gm,
+                        // Pattern 5: Indented definition pattern (term followed by indented text)
+                        /^([A-Z][a-zA-Z\s]{2,50})\n\s{2,}(.{20,300}?)(?:\n\n|$)/gm,
+                        // Pattern 6: Bold/italic markers followed by definition (markdown-style)
+                        /^\*\*?([A-Z][a-zA-Z\s]{2,50})\*\*?\s*[-–—:]\s*(.{10,300})$/gm,
                       ];
+
+                      // Filter out common OCR artifacts and false positives
+                      const falsePositives = new Set([
+                        "scan to download",
+                        "visit us online",
+                        "page number",
+                        "contents",
+                        "table of contents",
+                        "index",
+                        "glossary",
+                        "appendix",
+                        "copyright",
+                        "isbn",
+                        "scan",
+                        "download",
+                        "qr code",
+                        "to download",
+                      ]);
 
                       for (const text of pageTexts) {
                         for (const pattern of defPatterns) {
@@ -2530,18 +2555,33 @@ export default function RecipeSearchSection() {
                             const term = match[1]?.trim().toLowerCase() || "";
                             const def = match[2]?.trim() || "";
 
-                            if (
+                            // Validate term and definition quality
+                            const isFalsePositive = falsePositives.has(term);
+                            const isValidDef =
                               term.length >= 3 &&
                               term.length <= 50 &&
                               def.length >= 10 &&
                               def.length <= 300 &&
-                              !definitions[term]
-                            ) {
-                              definitions[term] = def;
+                              !isFalsePositive &&
+                              !definitions[term];
+
+                            // Clean up definition (remove extra whitespace, normalize)
+                            if (isValidDef) {
+                              const cleanedDef = def
+                                .replace(/\s+/g, " ")
+                                .replace(/[""]/g, '"')
+                                .replace(/['']/g, "'")
+                                .trim();
+
+                              if (cleanedDef.length >= 10) {
+                                definitions[term] = cleanedDef;
+                              }
                             }
                           }
                         }
                       }
+
+                      console.log(`  📚 Extracted ${Object.keys(definitions).length} definitions from PDF`);
 
                       // Extract procedures for semantic knowledge (Echo learning)
                       const fullText = pageTexts.join("\n");
