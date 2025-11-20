@@ -546,6 +546,129 @@ Return ONLY valid JSON array.`;
 }
 
 /**
+ * POST /api/multi-domain-training/save-session
+ * Save current session to Supabase and Pinecone
+ */
+router.post("/save-session", async (req: Request, res: Response) => {
+  try {
+    const { sessionId } = req.body as { sessionId: string };
+
+    if (!sessionId) {
+      return res.status(400).json({ error: "sessionId is required" });
+    }
+
+    const session = activeSessions.get(sessionId);
+    if (!session) {
+      return res.status(404).json({ error: "Session not found" });
+    }
+
+    // Save to Supabase
+    await saveTrainingSession(session);
+
+    // Save domain states
+    for (const [profileId, state] of Object.entries(session.domainStates)) {
+      await saveDomainTrainingState(sessionId, state);
+    }
+
+    console.log("[MultiDomainTraining] Session saved to Supabase:", sessionId);
+
+    return res.json({
+      success: true,
+      message: "Training session saved",
+      sessionId,
+    });
+  } catch (error: any) {
+    console.error("[MultiDomainTraining] Save session failed:", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Failed to save session",
+    });
+  }
+});
+
+/**
+ * POST /api/multi-domain-training/record-completed
+ * Record the 3 completed training domains (Culinary, Pastry, Beverage)
+ */
+router.post("/record-completed", async (_req: Request, res: Response) => {
+  try {
+    console.log(
+      "[MultiDomainTraining] Recording completed training domains...",
+    );
+
+    const session = await recordCompletedTrainingDomains();
+
+    console.log("[MultiDomainTraining] Successfully recorded completed domains");
+
+    return res.json({
+      success: true,
+      message: "Completed training domains recorded",
+      session,
+    });
+  } catch (error: any) {
+    console.error("[MultiDomainTraining] Record completed failed:", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Failed to record completed domains",
+    });
+  }
+});
+
+/**
+ * GET /api/multi-domain-training/sessions/completed
+ * Get all completed training sessions
+ */
+router.get("/sessions/completed", async (_req: Request, res: Response) => {
+  try {
+    const completedSessions = await getCompletedTrainingSessions();
+
+    return res.json({
+      success: true,
+      sessions: completedSessions,
+      count: completedSessions.length,
+    });
+  } catch (error: any) {
+    console.error("[MultiDomainTraining] Get completed sessions failed:", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Failed to get completed sessions",
+    });
+  }
+});
+
+/**
+ * GET /api/multi-domain-training/session/:sessionId
+ * Load a training session from Supabase
+ */
+router.get("/session/:sessionId", async (req: Request, res: Response) => {
+  try {
+    const { sessionId } = req.params;
+
+    if (!sessionId) {
+      return res.status(400).json({ error: "sessionId is required" });
+    }
+
+    const session =
+      activeSessions.get(sessionId) || (await loadTrainingSession(sessionId));
+
+    if (!session) {
+      return res.status(404).json({ error: "Session not found" });
+    }
+
+    return res.json({
+      success: true,
+      session,
+    });
+  } catch (error: any) {
+    console.error("[MultiDomainTraining] Load session failed:", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Failed to load session",
+    });
+  }
+});
+
+/**
  * Calculate overall session progress
  */
 function calculateSessionProgress(session: MultiDomainTrainingSession): number {
