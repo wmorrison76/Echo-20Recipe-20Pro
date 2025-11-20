@@ -2965,7 +2965,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
               /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
             let cnt = 0;
             for (const L of lines) {
-              if (qtyRe.test(L) || /^[���\-*]\s+/.test(L)) cnt++;
+              if (qtyRe.test(L) || /^[•\-*]\s+/.test(L)) cnt++;
             }
             return cnt >= 3;
           };
@@ -3188,6 +3188,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
                         const kb = JSON.parse(kbRaw);
                         const culinaryTerms = kb.culinaryTerms || {};
                         const definitions = kb.definitions || {};
+                        const definitionDetails = kb.definitionDetails || {};
 
                         // Add extracted definitions to the knowledge base
                         for (const def of result.definitions) {
@@ -3198,16 +3199,21 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
                             culinaryTerms[term] += 1;
                           }
 
-                          // Store the actual definition text
-                          definitions[term] = {
+                          // Store the definition text for display
+                          definitions[term] = def.definition;
+
+                          // Store detailed metadata separately
+                          definitionDetails[term] = {
                             definition: def.definition,
                             categories: def.categories || [],
                             source: sourceName,
+                            slug: def.slug,
                           };
                         }
 
                         kb.culinaryTerms = culinaryTerms;
                         kb.definitions = definitions;
+                        kb.definitionDetails = definitionDetails;
                         kb.books = Array.from(new Set([...(kb.books || []), sourceName]));
 
                         localStorage.setItem("kb:cook", JSON.stringify(kb));
