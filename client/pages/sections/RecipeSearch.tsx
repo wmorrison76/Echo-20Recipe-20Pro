@@ -575,7 +575,7 @@ export default function RecipeSearchSection() {
     deleteCollection,
     setCollectionRecipes,
   } = useAppData();
-  const { trainWithRecipes, isTraining, trainingProgress } = useEchoTraining();
+  const { trainWithRecipes, isTraining, showTrainingResult, trainingProgress, trainingResult, dismissTrainingResult } = useEchoTraining();
 
   // Wrapper to train Echo after recipes are imported
   const importRecipesWithEchoTraining = useCallback(
