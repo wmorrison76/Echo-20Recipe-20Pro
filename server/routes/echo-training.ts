@@ -247,4 +247,140 @@ function inferComplexity(
   return 3;
 }
 
+/**
+ * POST /api/echo-training/extract-definitions-from-pdf
+ * Extract glossary/definitions from PDF text and prepare for Builder.io storage
+ */
+router.post(
+  "/extract-definitions-from-pdf",
+  async (req: Request, res: Response) => {
+    try {
+      const { pdfText, sourceName } = req.body as {
+        pdfText: string;
+        sourceName: string;
+      };
+
+      if (!pdfText || pdfText.trim().length === 0) {
+        return res.status(400).json({ error: "PDF text required" });
+      }
+
+      // Extract definitions using the scanner logic
+      const definitions = extractDefinitionsFromPdfText(
+        pdfText,
+        sourceName || "Imported Cookbook",
+      );
+
+      // Format for Builder.io
+      const formatted = formatDefinitionsForBuilder(definitions);
+
+      return res.json({
+        success: true,
+        count: definitions.length,
+        definitions: formatted,
+      });
+    } catch (error: any) {
+      console.error("[EchoTraining] Extract definitions failed:", error);
+      return res.status(500).json({
+        success: false,
+        error: error.message || "Internal server error",
+      });
+    }
+  },
+);
+
+/**
+ * POST /api/echo-training/store-definitions-batch
+ * Store extracted definitions to Pinecone for Echo knowledge
+ */
+router.post(
+  "/store-definitions-batch",
+  async (req: Request, res: Response) => {
+    try {
+      const { definitions, sourceName } = req.body as {
+        definitions: Array<{
+          term: string;
+          definition: string;
+          categories?: string[];
+          slug?: string;
+        }>;
+        sourceName: string;
+      };
+
+      if (!definitions || definitions.length === 0) {
+        return res.status(400).json({ error: "Definitions array required" });
+      }
+
+      const results = {
+        success: 0,
+        failed: 0,
+        terms: [] as Array<{
+          term: string;
+          success: boolean;
+          error?: string;
+        }>,
+      };
+
+      // Store each definition in vector store for Echo
+      for (const def of definitions) {
+        try {
+          const definitionText = `
+Culinary Term: ${def.term}
+Definition: ${def.definition}
+${def.categories ? `Categories: ${def.categories.join(", ")}` : ""}
+Source: ${sourceName}
+          `.trim();
+
+          // Generate embedding
+          const embedding = await generateEmbedding(definitionText);
+
+          // Store in vector database for Echo knowledge retrieval
+          const tags = [
+            "culinary-definition",
+            "glossary",
+            "auto-imported",
+            `source:${sourceName.replace(/\s+/g, "-")}`,
+            ...(def.categories || []).map((c) => `category:${c}`),
+          ].filter(Boolean);
+
+          // Store using the same vector mechanism as recipes
+          await storeRecipeVector(
+            {
+              id: `def-${def.slug || def.term.replace(/\s+/g, "-")}-${Date.now()}`,
+              title: `Term: ${def.term}`,
+              description: definitionText,
+              ingredients: [], // Not used for definitions
+              tags,
+            },
+            "culinary-knowledge", // recipe type
+            "echo-system", // context
+            "definitions", // source
+          );
+
+          results.success++;
+          results.terms.push({
+            term: def.term,
+            success: true,
+          });
+        } catch (error) {
+          results.failed++;
+          results.terms.push({
+            term: def.term,
+            success: false,
+            error:
+              error instanceof Error ? error.message : "Unknown error",
+          });
+        }
+      }
+
+      return res.json(results);
+    } catch (error: any) {
+      console.error("[EchoTraining] Store definitions batch failed:", error);
+      return res.status(500).json({
+        success: false,
+        error: error.message || "Internal server error",
+      });
+    }
+  },
+);
+
 export const echoTrainingRouter = router;
