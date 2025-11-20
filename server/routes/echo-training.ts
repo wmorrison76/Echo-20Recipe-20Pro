@@ -472,7 +472,7 @@ ${pdfText}`,
       });
     }
 
-    const response = await message.json() as any;
+    const response = (await message.json()) as any;
     const content = response.choices?.[0]?.message?.content;
 
     if (!content) {

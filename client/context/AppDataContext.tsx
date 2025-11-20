@@ -2253,8 +2253,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           const base64 = btoa(
             new Uint8Array(ab).reduce(
               (data, byte) => data + String.fromCharCode(byte),
-              ""
-            )
+              "",
+            ),
           );
 
           const response = await fetch(
@@ -2266,7 +2266,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
                 pdfBase64: base64,
                 pdfName: f.name,
               }),
-            }
+            },
           );
 
           if (!response.ok) {
@@ -2297,7 +2297,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
               titles.push(recipe.title);
             }
             console.log(
-              `✅ Extracted ${result.recipes.length} recipes from ${f.name}`
+              `✅ Extracted ${result.recipes.length} recipes from ${f.name}`,
             );
           }
         } catch (error: any) {
@@ -2311,7 +2311,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       const { added } = appendRecipes(collected);
       return { added: added.length, errors, titles };
     },
-    [appendRecipes]
+    [appendRecipes],
   );
 
   const addRecipesFromPdfFiles = useCallback(
@@ -2535,8 +2535,12 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         }
         // Detect if this is a multi-column layout
         const xPositions = structured.map((s) => Math.round(s.x / 50) * 50);
-        const uniqueXPositions = Array.from(new Set(xPositions)).sort((a, b) => a - b);
-        const isMultiColumn = uniqueXPositions.length >= 2 && uniqueXPositions[1] - uniqueXPositions[0] > 100;
+        const uniqueXPositions = Array.from(new Set(xPositions)).sort(
+          (a, b) => a - b,
+        );
+        const isMultiColumn =
+          uniqueXPositions.length >= 2 &&
+          uniqueXPositions[1] - uniqueXPositions[0] > 100;
 
         let filtered = structured;
         if (isMultiColumn && uniqueXPositions.length >= 2) {
@@ -3231,7 +3235,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
                   );
                 } catch (importError) {
                   console.warn(
-                    "Could not load pdfjs from esm.sh, skipping definition extraction"
+                    "Could not load pdfjs from esm.sh, skipping definition extraction",
                   );
                   continue;
                 }
@@ -3290,15 +3294,13 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
                     });
                   }
                   const rows = Array.from(rowMap.values()).sort(
-                    (a, b) => b.y - a.y
+                    (a, b) => b.y - a.y,
                   );
                   const pageLines: string[] = [];
                   const newColumnGap = 48;
                   const wordGap = 4;
                   for (const row of rows) {
-                    const sortedItems = row.items.sort(
-                      (a, b) => a.x - b.x
-                    );
+                    const sortedItems = row.items.sort((a, b) => a.x - b.x);
                     let buffer = "";
                     let bufferStart = sortedItems[0]?.x ?? 0;
                     let bufferEnd = sortedItems[0]?.xEnd ?? bufferStart;
@@ -3322,8 +3324,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
                         bufferEnd = current.xEnd;
                         continue;
                       }
-                      if (gap > wordGap && !buffer.endsWith(" "))
-                        buffer += " ";
+                      if (gap > wordGap && !buffer.endsWith(" ")) buffer += " ";
                       buffer += text;
                       bufferEnd = Math.max(bufferEnd, current.xEnd);
                     }
