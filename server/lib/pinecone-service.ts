@@ -153,7 +153,7 @@ export async function storeRecipeVector(
   }
 
   try {
-    const client = getPineconeClient();
+    const client = await getPineconeClient();
     const index = client.Index(PINECONE_INDEX);
 
     const recipeText = [
@@ -242,7 +242,7 @@ export async function searchSimilarRecipes(
   }
 
   try {
-    const client = getPineconeClient();
+    const client = await getPineconeClient();
     const index = client.Index(PINECONE_INDEX);
 
     const embedding = await generateEmbedding(recipeText);
@@ -304,7 +304,7 @@ export async function getRecipesByTrack(
   }
 
   try {
-    const client = getPineconeClient();
+    const client = await getPineconeClient();
     const index = client.Index(PINECONE_INDEX);
 
     const filterCriteria: Record<string, any> = {
@@ -346,7 +346,7 @@ export async function deleteRecipeVector(
   }
 
   try {
-    const client = getPineconeClient();
+    const client = await getPineconeClient();
     const index = client.Index(PINECONE_INDEX);
     const vectorId = `${track}-${recipeId}-${chefId}`;
 
@@ -369,7 +369,7 @@ export async function getCrossTrackLearning(
   }
 
   try {
-    const client = getPineconeClient();
+    const client = await getPineconeClient();
     const index = client.Index(PINECONE_INDEX);
 
     const embedding = await generateEmbedding(recipeText);
