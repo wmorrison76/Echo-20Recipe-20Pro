@@ -144,7 +144,11 @@ export function EchoTrainingDashboard({
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="multi-domain" className="gap-1">
+            <Rocket className="w-4 h-4" />
+            <span className="hidden sm:inline">Automated</span>
+          </TabsTrigger>
           <TabsTrigger value="status">System Status</TabsTrigger>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="training" className="relative">
