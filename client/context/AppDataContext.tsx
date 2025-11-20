@@ -3816,13 +3816,17 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             }
           }
         } catch (e: any) {
+          const errMsg = e?.message ?? "Failed to read spreadsheet";
+          console.error("[Excel Import] Error processing file", f.name, ":", errMsg);
           errors.push({
             file: f.name,
-            error: e?.message ?? "Failed to read spreadsheet",
+            error: errMsg,
           });
         }
       }
+      console.log("[Excel Import] Import complete. Collected:", collected.length, "recipes. Errors:", errors.length);
       const { added } = appendRecipes(collected);
+      console.log("[Excel Import] Added to database:", added.length, "recipes");
       return { added: added.length, errors, titles };
     },
     [appendRecipes],
