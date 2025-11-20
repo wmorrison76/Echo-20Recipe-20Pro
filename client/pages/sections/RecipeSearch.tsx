@@ -53,6 +53,7 @@ import { KnowledgeProgressDashboard } from "@/components/KnowledgeProgressDashbo
 import { ResponsiveImage } from "@/components/ResponsiveImage";
 import { storeProcedure } from "@/lib/echo-procedures-service";
 import { identifyProcedures } from "@/lib/procedure-extraction";
+import { useEchoTraining } from "@/hooks/use-echo-training";
 import {
   RecipeImportSelectionModal,
   type DetectedRecipe,
