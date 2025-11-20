@@ -2231,6 +2231,84 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     [appendRecipes, linkImagesToRecipesByFilename],
   );
 
+  /**
+   * Vision-based PDF import using GPT-4V
+   * Much faster and more accurate than layout parsing
+   */
+  const addRecipesFromPdfFilesVision = useCallback(
+    async (files: File[]) => {
+      const errors: { file: string; error: string }[] = [];
+      const collected: Recipe[] = [];
+      const titles: string[] = [];
+
+      for (const f of files) {
+        try {
+          console.log(`📸 Extracting recipes from ${f.name} using vision...`);
+          const ab = await f.arrayBuffer();
+          const base64 = btoa(
+            new Uint8Array(ab).reduce(
+              (data, byte) => data + String.fromCharCode(byte),
+              ""
+            )
+          );
+
+          const response = await fetch(
+            "/api/echo-training/vision-extract-recipes",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                pdfBase64: base64,
+                pdfName: f.name,
+              }),
+            }
+          );
+
+          if (!response.ok) {
+            const err = await response.json();
+            errors.push({
+              file: f.name,
+              error: err.error || "Failed to extract recipes",
+            });
+            continue;
+          }
+
+          const result = await response.json();
+          if (result.recipes && Array.isArray(result.recipes)) {
+            for (const recipe of result.recipes) {
+              collected.push({
+                id: uid(),
+                createdAt: Date.now(),
+                title: recipe.title || "Untitled Recipe",
+                ingredients: recipe.ingredients || [],
+                instructions: recipe.instructions || [],
+                prepTime: recipe.prepTime,
+                cookTime: recipe.cookTime,
+                yield: recipe.servings,
+                cuisine: recipe.cuisine,
+                sourceFile: f.name,
+                tags: [f.name.replace(/\.pdf$/i, "")],
+              });
+              titles.push(recipe.title);
+            }
+            console.log(
+              `✅ Extracted ${result.recipes.length} recipes from ${f.name}`
+            );
+          }
+        } catch (error: any) {
+          errors.push({
+            file: f.name,
+            error: error.message || "Failed to read PDF",
+          });
+        }
+      }
+
+      const { added } = appendRecipes(collected);
+      return { added: added.length, errors, titles };
+    },
+    [appendRecipes]
+  );
+
   const addRecipesFromPdfFiles = useCallback(
     async (files: File[]) => {
       const errors: { file: string; error: string }[] = [];
