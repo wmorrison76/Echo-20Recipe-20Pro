@@ -576,6 +576,53 @@ export default function RecipeSearchSection() {
     setCollectionRecipes,
   } = useAppData();
   const { trainWithRecipes } = useEchoTraining();
+
+  // Wrapper to train Echo after recipes are imported
+  const importRecipesWithEchoTraining = useCallback(
+    async (
+      importFn: () => Promise<{ added: number; titles?: string[] }>,
+      bookName: string,
+    ) => {
+      const result = await importFn();
+
+      // Train Echo if recipes were imported
+      if (result.added > 0) {
+        try {
+          console.log(`🧠 Training Echo with ${result.added} imported recipes from "${bookName}"...`);
+          // Get the newly added recipes from the app data
+          const newRecipes = recipes
+            .filter((r) => result.titles?.includes(r.title))
+            .slice(-result.added)
+            .map((r) => ({
+              id: r.id,
+              title: r.title,
+              ingredients: r.ingredients || [],
+              instructions: r.instructions || [],
+              sourceBook: bookName,
+              sourcePage: r.extra?.page || 0,
+              cuisine: r.extra?.cuisine,
+              course: r.extra?.course,
+              difficulty: r.extra?.difficulty,
+              prepTime: r.extra?.prepTime,
+              cookTime: r.extra?.cookTime,
+              yield: r.extra?.yield,
+              tags: r.tags || [],
+            }));
+
+          if (newRecipes.length > 0) {
+            const trainingResult = await trainWithRecipes(newRecipes, bookName);
+            console.log(`✅ Echo training complete:`, trainingResult);
+          }
+        } catch (error) {
+          console.warn(`⚠️ Echo training failed (will continue anyway):`, error);
+        }
+      }
+
+      return result;
+    },
+    [recipes, trainWithRecipes],
+  );
+
   const [q, setQ] = useState("");
   type Cat =
     | "all"
