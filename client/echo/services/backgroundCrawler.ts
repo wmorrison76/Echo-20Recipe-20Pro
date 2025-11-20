@@ -177,7 +177,7 @@ export class BackgroundKnowledgeCrawler {
 
           console.log(`    Found ${result.crawlResult.knowledge.length} items, vetting results:`);
           console.log(`      ✅ Approved: ${approved.length}`);
-          console.log(`      ⚠️  Quarantined: ${quarantined.length}`);
+          console.log(`      ⚠���  Quarantined: ${quarantined.length}`);
           console.log(`      ❌ Rejected: ${rejected.length}`);
 
           // Log details of approved items
@@ -196,11 +196,33 @@ export class BackgroundKnowledgeCrawler {
           // Update progress tracker with approved items' metadata
           const metadata: Record<string, any> = {};
           approved.forEach((vetResult) => {
-            // Build metadata from vetting result
+            const title = vetResult.metadata?.title || "";
+
+            let cuisineRegion = vetResult.metadata?.cuisine || vetResult.metadata?.cuisineRegion || "";
+
+            if (!cuisineRegion && title) {
+              const cuisineKeywords = [
+                "chinese", "japanese", "thai", "korean", "indian", "vietnamese",
+                "french", "italian", "spanish", "german", "mexican", "brazilian",
+                "american", "middle eastern", "african", "oceanic", "asian",
+                "mediterranean", "greek", "portuguese", "indian", "fusion"
+              ];
+
+              const lowerTitle = title.toLowerCase();
+              for (const cuisine of cuisineKeywords) {
+                if (lowerTitle.includes(cuisine)) {
+                  cuisineRegion = cuisine;
+                  break;
+                }
+              }
+            }
+
             metadata[vetResult.id] = {
               ...vetResult.metadata,
               category: vetResult.metadata?.category || "general",
               type: vetResult.metadata?.type || "general",
+              cuisineRegion: cuisineRegion || "american",
+              title: title,
             };
           });
 
