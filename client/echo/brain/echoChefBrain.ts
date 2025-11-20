@@ -110,81 +110,97 @@ export class EchoChefBrain {
 
     const baseServiceNotes = buildServiceNotes(query);
 
-    // Top 3: existing recipes
-    results.slice(0, 3).forEach((r, index) => {
-      suggestions.push({
-        type: "existing_recipe",
-        baseRecipe: r.metadata,
-        title: r.metadata.title,
-        description: `Strong match for your request (${r.metadata.cuisineRegion ?? "Unknown region"}, ${r.metadata.category}). Score: ${r.score.toFixed(
-          3,
-        )}.`,
-        serviceNotes: baseServiceNotes || undefined,
-        beoNotes: buildBeoNotes(query, index),
+    // Check knowledge base coverage: use trained recipes if similarity is high (>0.7)
+    // Otherwise fall back to generic suggestions (as if knowledge base is empty)
+    const hasGoodCoverage = results.length > 0 && results[0].score > 0.7;
+
+    if (hasGoodCoverage) {
+      // Top 3: existing recipes
+      results.slice(0, 3).forEach((r, index) => {
+        suggestions.push({
+          type: "existing_recipe",
+          baseRecipe: r.metadata,
+          title: r.metadata.title,
+          description: `Strong match for your request (${r.metadata.cuisineRegion ?? "Unknown region"}, ${r.metadata.category}). Score: ${r.score.toFixed(
+            3,
+          )}.`,
+          serviceNotes: baseServiceNotes || undefined,
+          beoNotes: buildBeoNotes(query, index),
+        });
       });
-    });
 
-    // 3–6: variations
-    results.slice(3, 6).forEach((r, index) => {
-      const changes: string[] = [];
+      // 3–6: variations
+      results.slice(3, 6).forEach((r, index) => {
+        const changes: string[] = [];
 
-      if (
-        query.dietaryTags?.includes("gluten_free") &&
-        !r.metadata.dietaryTags.includes("gluten_free")
-      ) {
-        changes.push(
-          "Replace wheat-based components with gluten-free alternatives.",
-        );
-      }
+        if (
+          query.dietaryTags?.includes("gluten_free") &&
+          !r.metadata.dietaryTags.includes("gluten_free")
+        ) {
+          changes.push(
+            "Replace wheat-based components with gluten-free alternatives.",
+          );
+        }
 
-      if (
-        query.dietaryTags?.includes("vegetarian") &&
-        !r.metadata.dietaryTags.includes("vegetarian")
-      ) {
-        changes.push(
-          "Swap animal proteins for high-umami plant proteins while preserving core flavor.",
-        );
-      }
+        if (
+          query.dietaryTags?.includes("vegetarian") &&
+          !r.metadata.dietaryTags.includes("vegetarian")
+        ) {
+          changes.push(
+            "Swap animal proteins for high-umami plant proteins while preserving core flavor.",
+          );
+        }
 
-      if (query.serviceContext === "banquet_buffet") {
-        changes.push(
-          "Adjust portioning and presentation to hotel pans / chafers with garnish that holds well.",
-        );
-      }
+        if (query.serviceContext === "banquet_buffet") {
+          changes.push(
+            "Adjust portioning and presentation to hotel pans / chafers with garnish that holds well.",
+          );
+        }
 
-      suggestions.push({
-        type: "variation",
-        baseRecipe: r.metadata,
-        title: `${r.metadata.title} – Echo Banquet Variation`,
-        description:
-          "Variation tuned for your service context and dietary constraints.",
-        recommendedChanges: changes,
-        serviceNotes: baseServiceNotes || undefined,
-        beoNotes: buildBeoNotes(query, index + 3),
+        suggestions.push({
+          type: "variation",
+          baseRecipe: r.metadata,
+          title: `${r.metadata.title} – Echo Banquet Variation`,
+          description:
+            "Variation tuned for your service context and dietary constraints.",
+          recommendedChanges: changes,
+          serviceNotes: baseServiceNotes || undefined,
+          beoNotes: buildBeoNotes(query, index + 3),
+        });
       });
-    });
 
-    // Concept suggestion based on top match
-    const top = results[0];
-    if (top) {
+      // Concept suggestion based on top match
+      const top = results[0];
+      if (top) {
+        suggestions.push({
+          type: "new_concept",
+          baseRecipe: top.metadata,
+          title: buildConceptTitle(top.metadata, query),
+          description:
+            "New concept built from patterns in similar recipes, tuned for your service mode and guest count.",
+          flavorBalanceHint: {
+            sweet: 0.2,
+            sour: 0.3,
+            salty: 0.6,
+            bitter: 0.1,
+            umami: 0.8,
+            fat: 0.5,
+            spice: 0.2,
+            aromatic: 0.7,
+          },
+          serviceNotes: baseServiceNotes || undefined,
+          beoNotes: buildBeoNotes(query, 99),
+        });
+      }
+    } else {
+      // Knowledge base has insufficient coverage, will fall back to OpenAI in generation mode
+      // For suggestions-only mode, provide guidance about using generation mode
       suggestions.push({
         type: "new_concept",
-        baseRecipe: top.metadata,
-        title: buildConceptTitle(top.metadata, query),
+        title: "Use generation mode for AI-powered suggestions",
         description:
-          "New concept built from patterns in similar recipes, tuned for your service mode and guest count.",
-        flavorBalanceHint: {
-          sweet: 0.2,
-          sour: 0.3,
-          salty: 0.6,
-          bitter: 0.1,
-          umami: 0.8,
-          fat: 0.5,
-          spice: 0.2,
-          aromatic: 0.7,
-        },
+          "Knowledge base coverage is low. Switch to generation mode to leverage OpenAI for comprehensive recipe suggestions based on your criteria.",
         serviceNotes: baseServiceNotes || undefined,
-        beoNotes: buildBeoNotes(query, 99),
       });
     }
 
