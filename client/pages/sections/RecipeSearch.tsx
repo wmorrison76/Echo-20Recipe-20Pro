@@ -845,15 +845,30 @@ export default function RecipeSearchSection() {
               break;
             }
           }
-          if (
-            /^see\b/i.test(guess) ||
-            /(flexipan|inch|inches|cm|diameter)\b/i.test(guess)
-          )
-            guess = "";
-          setDetected((d) => [
-            ...d,
-            { page: p, title: guess || `Candidate p.${p}` },
-          ]);
+          // Filter out OCR artifacts and common non-recipe text
+          const ocrFilterPatterns = [
+            /^see\b/i,
+            /(flexipan|inch|inches|cm|diameter)\b/i,
+            /^scan to download/i,
+            /^visit us online/i,
+            /^qr code/i,
+            /^(page|contents|index|glossary|appendix|copyright|isbn)/i,
+          ];
+
+          for (const pattern of ocrFilterPatterns) {
+            if (pattern.test(guess)) {
+              guess = "";
+              break;
+            }
+          }
+
+          // Only add meaningful content (at least 3 characters)
+          if (guess && guess.length >= 3) {
+            setDetected((d) => [
+              ...d,
+              { page: p, title: guess },
+            ]);
+          }
         }
       }
       try {
