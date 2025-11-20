@@ -92,5 +92,8 @@ export function createServer() {
   // EchoAi³ - OpenAI Collaborative Training (dialogue, knowledge capture, learning)
   app.use("/api/echo-training", echoOpenAITrainingRouter);
 
+  // EchoAi³ Unified Brain - Multi-domain engine orchestration
+  app.use("/api/echo-unified", echoUnifiedBrainRouter);
+
   return app;
 }
