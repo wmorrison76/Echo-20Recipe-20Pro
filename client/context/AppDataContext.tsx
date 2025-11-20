@@ -2796,14 +2796,17 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           // Pattern: "ingredient_name" followed by measurements and percentages
           // Examples: "Butter and/or shortening 8 oz 250 g 40"
           //           "Sugar 10 oz 310 g 50"
-          // Match: ingredient name(s) at start, followed by US/metric/percentage numbers
+          //           "Salt 0.16 oz (3/4 tsp) 5 g 0.8"
 
-          // Only apply table cleanup if the line appears to have measurements at the end
-          if (/\b(?:oz|g|tsp|tbsp|cup|lb|kg|ml|l)\b.*\d+\s*%?\s*$/i.test(result)) {
+          // Check if line appears to have measurement data (numbers followed by units)
+          if (/\d\s*(?:oz|g|cup|tsp|tbsp|lb|kg|ml|l|grams?|gram|ounces?|pound|lbs?|teaspoon|tablespoon)\b/i.test(result)) {
             // Try to extract ingredient name by removing measurement info
+            // This pattern matches numbers with optional fractions followed by units
             const cleaned = result
-              .replace(/\s+\d+(?:\s+\d+\/\d+)?(?:\s*(?:oz|g|cup|tsp|tbsp|lb|kg|ml|l|grams?|gram|ounces?|pound|lbs?|tsp|tbsp|teaspoon|tablespoon)?)\s*/gi, " ")
+              .replace(/\s+\d+(?:\s+\d+\/\d+|\.\d+)?(?:\s*(?:oz|g|cup|tsp|tbsp|lb|kg|ml|l|grams?|gram|ounces?|pound|lbs?|teaspoon|tablespoon))?(?:\s+\(\s*\d+\/\d+\s*[a-z]+\s*\))?/gi, "") // Remove US measurements with optional fractions
+              .replace(/\s+\d+(?:\.\d+)?\s*g\b/gi, "") // Remove metric grams
               .replace(/\s+\d+(?:\.\d+)?\s*%\s*$/i, "") // Remove trailing percentage
+              .replace(/\s+/g, " ") // Normalize spaces
               .trim();
             if (cleaned.length > 2) {
               result = cleaned;
