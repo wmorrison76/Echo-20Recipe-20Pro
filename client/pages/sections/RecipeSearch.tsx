@@ -1948,8 +1948,10 @@ export default function RecipeSearchSection() {
                   pageTexts.push(t);
                   setBookPage(p);
                   setScanPageNo(p);
+                  // Skip obvious TOC/chapter pages
+                  const isTocPage = /^(table\s+of\s+)?contents?|chapter\s+\d+|index|appendix|preface|foreword|introduction/im.test(t.slice(0, 500));
                   const hasIng =
-                    /\bingredients?\b/i.test(t) || isLikelyIngredientList(t);
+                    !isTocPage && (/\bingredients?\b/i.test(t) || isLikelyIngredientList(t));
                   if (hasIng) {
                     candidates.push(p);
                     let guess = "";
