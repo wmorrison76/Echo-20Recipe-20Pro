@@ -29,6 +29,7 @@ import {
   Palette,
   Cake,
   Wind,
+  Zap,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
