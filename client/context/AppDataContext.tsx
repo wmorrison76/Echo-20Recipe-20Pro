@@ -3690,50 +3690,66 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
               } catch {}
             }
           } else {
+            console.log("[Excel Import] Reading Excel file:", f.name);
             const ab = await f.arrayBuffer();
+            console.log("[Excel Import] File read as array buffer, size:", ab.byteLength);
             let XLSX: any;
 
             try {
+              console.log("[Excel Import] Loading XLSX library from CDN...");
               XLSX = await import("https://esm.sh/xlsx@0.18.5");
+              console.log("[Excel Import] XLSX library loaded successfully");
             } catch (importError: any) {
-              throw new Error(
-                `Failed to load Excel parser: ${importError?.message || "Network error or library unavailable"}`
-              );
+              const msg = `Failed to load Excel parser: ${importError?.message || "Network error or library unavailable"}`;
+              console.error("[Excel Import]", msg);
+              throw new Error(msg);
             }
 
             if (!XLSX || !XLSX.read) {
-              throw new Error("Excel parser (XLSX) is not available");
+              const msg = "Excel parser (XLSX) is not available";
+              console.error("[Excel Import]", msg);
+              throw new Error(msg);
             }
 
             let wb: any;
             try {
+              console.log("[Excel Import] Parsing Excel file...");
               wb = XLSX.read(new Uint8Array(ab), { type: "array" });
+              console.log("[Excel Import] Excel parsed successfully. Sheets:", wb.SheetNames);
             } catch (readError: any) {
-              throw new Error(
-                `Failed to parse Excel file: ${readError?.message || "Invalid format or corrupted file"}`
-              );
+              const msg = `Failed to parse Excel file: ${readError?.message || "Invalid format or corrupted file"}`;
+              console.error("[Excel Import]", msg);
+              throw new Error(msg);
             }
 
             if (!wb || !wb.SheetNames || wb.SheetNames.length === 0) {
-              throw new Error("Excel file has no readable sheets");
+              const msg = "Excel file has no readable sheets";
+              console.error("[Excel Import]", msg);
+              throw new Error(msg);
             }
 
             const ws = wb.Sheets[wb.SheetNames[0]];
             if (!ws) {
-              throw new Error("Failed to access the first sheet in the Excel file");
+              const msg = "Failed to access the first sheet in the Excel file";
+              console.error("[Excel Import]", msg);
+              throw new Error(msg);
             }
 
             let json: any[] = [];
             try {
+              console.log("[Excel Import] Converting sheet to JSON...");
               json = XLSX.utils.sheet_to_json(ws, { defval: "", blankrows: false });
+              console.log("[Excel Import] Sheet converted successfully. Rows:", json.length);
             } catch (jsonError: any) {
-              throw new Error(
-                `Failed to convert sheet to JSON: ${jsonError?.message || "Unknown error"}`
-              );
+              const msg = `Failed to convert sheet to JSON: ${jsonError?.message || "Unknown error"}`;
+              console.error("[Excel Import]", msg);
+              throw new Error(msg);
             }
 
             if (!Array.isArray(json) || json.length === 0) {
-              throw new Error("Sheet contains no data rows");
+              const msg = "Sheet contains no data rows";
+              console.error("[Excel Import]", msg);
+              throw new Error(msg);
             }
 
             for (const row of json) {
