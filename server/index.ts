@@ -96,5 +96,8 @@ export function createServer() {
   // EchoAi³ Unified Brain - Multi-domain engine orchestration
   app.use("/api/echo-unified", echoUnifiedBrainRouter);
 
+  // System Health Checks (Echo, OpenAI, Pinecone)
+  app.use("/api/health", systemHealthRouter);
+
   return app;
 }
