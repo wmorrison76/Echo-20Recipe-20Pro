@@ -1309,7 +1309,10 @@ export default function RecipeSearchSection() {
             added,
             errors: errs,
             titles,
-          } = await addRecipesFromJsonFiles([file]);
+          } = await importRecipesWithEchoTraining(
+            () => addRecipesFromJsonFiles([file]),
+            file.name.replace(/\.[^.]+$/, ""),
+          );
           setErrors(errs);
           setStatus(
             `Imported ${added} recipe(s) from JSON${titles.length ? `: ${titles.slice(0, 5).join(", ")}${titles.length > 5 ? " …" : ""}` : ""}.`,
@@ -3629,7 +3632,7 @@ export default function RecipeSearchSection() {
                     insights.commonCombinations.length > 0 && (
                       <div className="border-t pt-3">
                         <div className="font-medium mb-2">
-                          ����‍🍳 Common Ingredient Pairs
+                          👨‍🍳 Common Ingredient Pairs
                         </div>
                         <ul className="space-y-1 text-xs">
                           {insights.commonCombinations
