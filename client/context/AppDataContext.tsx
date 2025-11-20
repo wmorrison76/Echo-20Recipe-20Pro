@@ -2792,11 +2792,23 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
         const stripBullet = (line: string) => {
           let result = line.replace(/^[:•\-*\u2022\u2023\u2043]\s*/, "").trim();
-          // Also strip table column markers and percentages at the end
-          result = result
-            .replace(/\s+\d+\s*g\s*\d+\s*%?\s*$/, "") // Remove trailing metric/percentage
-            .replace(/\s+\d+\s*oz\s*[\d.]+\s*[a-z]*\s*\d+\s*%?\s*$/, "") // Remove trailing US measurements
-            .trim();
+          // For table-based recipes, try to extract just the ingredient name
+          // Pattern: "ingredient_name" followed by measurements and percentages
+          // Examples: "Butter and/or shortening 8 oz 250 g 40"
+          //           "Sugar 10 oz 310 g 50"
+          // Match: ingredient name(s) at start, followed by US/metric/percentage numbers
+
+          // Only apply table cleanup if the line appears to have measurements at the end
+          if (/\b(?:oz|g|tsp|tbsp|cup|lb|kg|ml|l)\b.*\d+\s*%?\s*$/i.test(result)) {
+            // Try to extract ingredient name by removing measurement info
+            const cleaned = result
+              .replace(/\s+\d+(?:\s+\d+\/\d+)?(?:\s*(?:oz|g|cup|tsp|tbsp|lb|kg|ml|l|grams?|gram|ounces?|pound|lbs?|tsp|tbsp|teaspoon|tablespoon)?)\s*/gi, " ")
+              .replace(/\s+\d+(?:\.\d+)?\s*%\s*$/i, "") // Remove trailing percentage
+              .trim();
+            if (cleaned.length > 2) {
+              result = cleaned;
+            }
+          }
           return result;
         };
         const getRange = (start: number, end: number) =>
