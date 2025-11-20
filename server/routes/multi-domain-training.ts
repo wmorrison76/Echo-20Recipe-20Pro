@@ -12,6 +12,14 @@ import {
   storeKnowledgeBatch,
   identifyKnowledgeGaps,
 } from "../lib/knowledge-vector-service";
+import {
+  saveTrainingSession,
+  saveDomainTrainingState,
+  saveLearnedKnowledgeToPinecone,
+  loadTrainingSession,
+  getCompletedTrainingSessions,
+} from "../lib/training-persistence-service";
+import { recordCompletedTrainingDomains } from "../lib/complete-training-domains";
 import type { AnyKnowledge } from "../../client/echo/types/knowledge";
 
 const router = Router();
