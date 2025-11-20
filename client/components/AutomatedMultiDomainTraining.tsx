@@ -17,7 +17,7 @@ import {
   Cpu,
 } from "lucide-react";
 import { useMultiDomainTraining } from "../hooks/use-multi-domain-training";
-import { MULTI_DOMAIN_TRAINING_PROFILES } from "../../server/lib/multi-domain-training-config";
+import { MULTI_DOMAIN_TRAINING_PROFILES } from "../lib/multi-domain-training-config";
 
 const DOMAIN_ICONS: Record<string, React.ReactNode> = {
   "culinary-science": <Flame className="w-5 h-5" />,

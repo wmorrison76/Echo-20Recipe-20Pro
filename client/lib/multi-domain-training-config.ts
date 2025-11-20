@@ -4,11 +4,7 @@
  * Each profile specifies focus areas, learning objectives, and dialogue exchanges
  */
 
-import type {
-  TrainingProfile,
-  MultiDomainTrainingSession,
-  DomainTrainingState,
-} from "../../shared/multi-domain-training";
+import type { TrainingProfile } from "@/shared/multi-domain-training";
 
 export const MULTI_DOMAIN_TRAINING_PROFILES: TrainingProfile[] = [
   {
@@ -426,41 +422,3 @@ export const MULTI_DOMAIN_TRAINING_PROFILES: TrainingProfile[] = [
     ],
   },
 ];
-
-
-export function initializeMultiDomainSession(): MultiDomainTrainingSession {
-  const sessionId = `multi-training-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-  const domainStates: Record<string, DomainTrainingState> = {};
-  for (const profile of MULTI_DOMAIN_TRAINING_PROFILES) {
-    domainStates[profile.id] = {
-      profileId: profile.id,
-      status: "pending",
-      exchangesCompleted: 0,
-      totalExchanges: profile.exchangeCount,
-      knowledgeItemsLearned: 0,
-    };
-  }
-
-  return {
-    id: sessionId,
-    createdAt: new Date().toISOString(),
-    status: "pending",
-    domainStates,
-    totalKnowledgeLearned: 0,
-    overallProgress: 0,
-  };
-}
-
-export function getTrainingProfile(profileId: string): TrainingProfile | null {
-  return (
-    MULTI_DOMAIN_TRAINING_PROFILES.find((p) => p.id === profileId) || null
-  );
-}
-
-export function getTotalExchanges(): number {
-  return MULTI_DOMAIN_TRAINING_PROFILES.reduce(
-    (sum, p) => sum + p.exchangeCount,
-    0,
-  );
-}

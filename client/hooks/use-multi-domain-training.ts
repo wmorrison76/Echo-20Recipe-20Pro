@@ -2,7 +2,7 @@ import { useCallback, useState, useEffect } from "react";
 import type {
   MultiDomainTrainingSession,
   DomainTrainingState,
-} from "../../server/lib/multi-domain-training-config";
+} from "@/shared/multi-domain-training";
 
 interface UseMultiDomainTrainingReturn {
   session: MultiDomainTrainingSession | null;

@@ -1,10 +1,12 @@
 import { Router, Request, Response } from "express";
+import type {
+  MultiDomainTrainingSession,
+  DomainTrainingState,
+} from "../../shared/multi-domain-training";
 import {
   MULTI_DOMAIN_TRAINING_PROFILES,
   initializeMultiDomainSession,
   getTrainingProfile,
-  type MultiDomainTrainingSession,
-  type DomainTrainingState,
 } from "../lib/multi-domain-training-config";
 import {
   storeKnowledgeBatch,
