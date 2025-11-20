@@ -62,8 +62,14 @@ export function useBackgroundCrawler() {
 
   // Initialize crawler on mount or when recipes change
   useEffect(() => {
+    console.log("🔍 Crawler init check:", {
+      isInitialized,
+      recipesCount: recipes?.length || 0,
+      hasMockRecipes: (recipes?.some((r) => r.id?.includes("mock")) || false),
+    });
+
     if (!isInitialized && recipes && recipes.length > 0) {
-      console.log(`Initializing background crawler with ${recipes.length} recipes...`);
+      console.log(`✅ Initializing background crawler with ${recipes.length} recipes...`);
 
       // Extract ingredients from recipes to build ingredients map
       const ingredientsMap: Record<string, any> = {};
@@ -85,10 +91,23 @@ export function useBackgroundCrawler() {
         }
       });
 
-      console.log(`Found ${Object.keys(ingredientsMap).length} unique ingredients`);
-      initializeBackgroundCrawler(recipes, ingredientsMap);
-      setIsInitialized(true);
-      updateStatus();
+      const uniqueIngredients = Object.keys(ingredientsMap).length;
+      console.log(`📚 Found ${uniqueIngredients} unique ingredients from ${recipes.length} recipes`);
+      console.log("🚀 Calling initializeBackgroundCrawler...");
+
+      try {
+        initializeBackgroundCrawler(recipes, ingredientsMap);
+        setIsInitialized(true);
+        console.log("✨ Crawler initialized successfully");
+
+        // Force status update
+        setTimeout(() => {
+          console.log("📊 Updating crawler status...");
+          updateStatus();
+        }, 100);
+      } catch (error) {
+        console.error("❌ Failed to initialize crawler:", error);
+      }
     }
   }, [recipes, isInitialized, updateStatus]);
 
