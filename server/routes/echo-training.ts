@@ -379,4 +379,130 @@ Source: ${sourceName}
   }
 });
 
+/**
+ * POST /api/echo-training/vision-extract-recipes
+ * Extract recipes from PDF using GPT-4V vision API
+ * Converts PDF pages to images and analyzes them
+ */
+router.post("/vision-extract-recipes", async (req: Request, res: Response) => {
+  try {
+    const { pdfBase64, pdfName } = req.body as {
+      pdfBase64: string;
+      pdfName: string;
+    };
+
+    if (!pdfBase64 || !pdfName) {
+      return res.status(400).json({ error: "PDF base64 and name required" });
+    }
+
+    const openaiApiKey = process.env.OPENAI_API_KEY;
+    if (!openaiApiKey) {
+      return res.status(500).json({ error: "OpenAI API key not configured" });
+    }
+
+    const recipes: Array<{
+      title: string;
+      ingredients: string[];
+      instructions: string[];
+      cuisine?: string;
+      servings?: string;
+      prepTime?: string;
+      cookTime?: string;
+    }> = [];
+
+    // GPT-4V can handle images directly
+    // Send the PDF as an image for analysis
+    const message = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${openaiApiKey}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4-vision-preview",
+        max_tokens: 4096,
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: `Extract ALL recipes from this PDF page. For each recipe, provide:
+- Title (exact name as shown)
+- Ingredients (as a list, exact measurements included)
+- Instructions/Directions (as numbered steps)
+- Optional: Servings, Prep Time, Cook Time, Cuisine type
+
+Return ONLY valid JSON array with recipes. Format:
+[
+  {
+    "title": "Recipe Name",
+    "ingredients": ["1 cup flour", "2 eggs"],
+    "instructions": ["Step 1", "Step 2"],
+    "servings": "4",
+    "prepTime": "15 min",
+    "cookTime": "30 min",
+    "cuisine": "French"
+  }
+]
+
+If no recipes found, return empty array [].`,
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: `data:application/pdf;base64,${pdfBase64}`,
+                },
+              },
+            ],
+          },
+        ],
+      }),
+    });
+
+    if (!message.ok) {
+      const error = await message.text();
+      console.error("OpenAI API error:", error);
+      return res.status(500).json({
+        error: "Failed to process PDF with vision API",
+        details: error,
+      });
+    }
+
+    const response = await message.json() as any;
+    const content = response.choices?.[0]?.message?.content;
+
+    if (!content) {
+      return res.status(500).json({ error: "No response from vision API" });
+    }
+
+    // Parse the JSON response
+    try {
+      const jsonMatch = content.match(/\[[\s\S]*\]/);
+      if (jsonMatch) {
+        const extractedRecipes = JSON.parse(jsonMatch[0]);
+        recipes.push(...extractedRecipes);
+      }
+    } catch (parseError) {
+      console.error("Failed to parse vision response:", content);
+      return res.status(500).json({
+        error: "Failed to parse recipe data from vision API",
+      });
+    }
+
+    return res.json({
+      success: true,
+      count: recipes.length,
+      recipes,
+      source: pdfName,
+    });
+  } catch (error: any) {
+    console.error("[EchoTraining] Vision extract failed:", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Internal server error",
+    });
+  }
+});
+
 export const echoTrainingRouter = router;
