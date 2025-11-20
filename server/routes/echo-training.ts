@@ -243,4 +243,97 @@ function inferComplexity(
   return 3;
 }
 
+/**
+ * POST /api/echo-training/store-definitions
+ * Store extracted culinary definitions and terminology for Echo knowledge base
+ */
+router.post("/store-definitions", async (req: Request, res: Response) => {
+  try {
+    const {
+      definitions,
+      terms,
+      bookName,
+    } = req.body as {
+      definitions: Array<{
+        term: string;
+        definition: string;
+        category?: string;
+        page?: number;
+      }>;
+      terms?: Record<string, number>;
+      bookName: string;
+    };
+
+    if (!definitions || definitions.length === 0) {
+      return res.status(400).json({ error: "Definitions array required" });
+    }
+
+    const results = {
+      total: definitions.length,
+      success: 0,
+      failed: 0,
+      terms: [] as Array<{
+        term: string;
+        success: boolean;
+        error?: string;
+      }>,
+    };
+
+    for (const def of definitions) {
+      try {
+        const definitionText = `
+Culinary Term: ${def.term}
+Definition: ${def.definition}
+${def.category ? `Category: ${def.category}` : ""}
+Source: ${bookName}${def.page ? ` (Page ${def.page})` : ""}
+        `.trim();
+
+        const embedding = await generateEmbedding(definitionText);
+
+        const tags = [
+          "definition",
+          "culinary-terminology",
+          `source:${bookName.replace(/\s+/g, "-")}`,
+          def.category ? `category:${def.category.toLowerCase()}` : "",
+          "echo-training",
+        ].filter(Boolean);
+
+        await storeRecipeVector(
+          {
+            id: `def-${def.term.replace(/\s+/g, "-")}-${Date.now()}`,
+            title: `Definition: ${def.term}`,
+            description: definitionText,
+            ingredients: [],
+            tags,
+          },
+          "manufacturing",
+          "echo-system",
+          "global-knowledge",
+        );
+
+        results.success++;
+        results.terms.push({
+          term: def.term,
+          success: true,
+        });
+      } catch (error) {
+        results.failed++;
+        results.terms.push({
+          term: def.term,
+          success: false,
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+    }
+
+    return res.json(results);
+  } catch (error: any) {
+    console.error("[EchoTraining] Store definitions failed:", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Internal server error",
+    });
+  }
+});
+
 export const echoTrainingRouter = router;
