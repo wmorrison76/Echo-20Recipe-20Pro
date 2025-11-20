@@ -154,6 +154,17 @@ export function EchoTrainingDashboard({
           <TabsTrigger value="progress">Progress</TabsTrigger>
         </TabsList>
 
+        {/* System Status Tab */}
+        <TabsContent value="status" className="space-y-4">
+          <SystemHealthDashboard
+            onStartTraining={() => {
+              setSelectedDomain("culinary");
+              setShowCollaborativeTraining(true);
+              setActiveTab("training");
+            }}
+          />
+        </TabsContent>
+
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-4">
           <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-indigo-200 p-6">
