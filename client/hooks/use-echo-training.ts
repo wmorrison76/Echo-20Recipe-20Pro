@@ -34,7 +34,9 @@ interface TrainingResult {
  */
 export function useEchoTraining() {
   const [isTraining, setIsTraining] = useState(false);
+  const [showTrainingResult, setShowTrainingResult] = useState(false);
   const [trainingProgress, setTrainingProgress] = useState<string>("");
+  const [trainingResult, setTrainingResult] = useState<TrainingResult | null>(null);
 
   const trainWithRecipes = useCallback(
     async (
