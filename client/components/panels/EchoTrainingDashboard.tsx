@@ -11,6 +11,7 @@ import {
   Upload,
   MessageSquare,
   Settings,
+  Rocket,
 } from "lucide-react";
 import { EchoOpenAITrainingMode } from "../EchoOpenAITrainingMode";
 import { useEchoOpenAITraining } from "../../hooks/use-echo-openai-training";
