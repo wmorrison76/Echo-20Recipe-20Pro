@@ -72,12 +72,12 @@ export class BackgroundKnowledgeCrawler {
 
     // Looser vetting criteria for initial knowledge gathering
     const vetCriteria = {
-      minAuthorityScore: 0.35,  // Lower from 0.6 - we'll be stricter later
-      minSourceTrust: 0.3,       // Lower from 0.5 - local recipes are trustworthy
+      minAuthorityScore: 0.3,   // Very low threshold for initial gathering
+      minSourceTrust: 0.2,      // Very low - user recipes are trusted
       requiresCulinaryBrainApproval: false, // Skip brain approval for speed
-      allergenValidationRequired: true,
+      allergenValidationRequired: false,  // Skip allergen check - recipes may not have this
       flavorBalanceValidation: false, // Skip for now
-      ingredientVerification: true,
+      ingredientVerification: false,  // Skip ingredient verification
       techniqueVerification: false,  // Skip for now
     };
 
