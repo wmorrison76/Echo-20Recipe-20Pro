@@ -1,0 +1,550 @@
+import { Router, Request, Response } from "express";
+import {
+  MULTI_DOMAIN_TRAINING_PROFILES,
+  initializeMultiDomainSession,
+  getTrainingProfile,
+  type MultiDomainTrainingSession,
+  type DomainTrainingState,
+} from "../lib/multi-domain-training-config";
+import {
+  storeKnowledgeBatch,
+  identifyKnowledgeGaps,
+} from "../lib/knowledge-vector-service";
+import type { AnyKnowledge } from "../../client/echo/types/knowledge";
+
+const router = Router();
+const openaiApiKey = process.env.OPENAI_API_KEY;
+
+// Store active sessions in memory (in production, use database)
+const activeSessions = new Map<string, MultiDomainTrainingSession>();
+
+/**
+ * POST /api/multi-domain-training/start
+ * Initialize and start autonomous multi-domain training
+ */
+router.post("/start", async (_req: Request, res: Response) => {
+  try {
+    if (!openaiApiKey) {
+      return res.status(500).json({ error: "OpenAI API key not configured" });
+    }
+
+    const session = initializeMultiDomainSession();
+    activeSessions.set(session.id, session);
+
+    console.log("[MultiDomainTraining] Starting session:", session.id);
+
+    return res.json({
+      success: true,
+      session,
+      message: "Multi-domain training session started",
+    });
+  } catch (error: any) {
+    console.error("[MultiDomainTraining] Start failed:", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Failed to start training",
+    });
+  }
+});
+
+/**
+ * POST /api/multi-domain-training/run-autonomous
+ * Run autonomous training for a specific domain
+ */
+router.post("/run-autonomous", async (req: Request, res: Response) => {
+  try {
+    const { sessionId, profileId } = req.body as {
+      sessionId: string;
+      profileId: string;
+    };
+
+    if (!sessionId || !profileId) {
+      return res.status(400).json({
+        error: "sessionId and profileId are required",
+      });
+    }
+
+    const session = activeSessions.get(sessionId);
+    if (!session) {
+      return res.status(404).json({ error: "Session not found" });
+    }
+
+    const profile = getTrainingProfile(profileId);
+    if (!profile) {
+      return res.status(404).json({ error: "Training profile not found" });
+    }
+
+    const domainState = session.domainStates[profileId];
+    domainState.status = "in_progress";
+    domainState.startedAt = new Date().toISOString();
+
+    console.log(
+      `[MultiDomainTraining] Starting autonomous training for ${profile.name}`,
+    );
+
+    let totalKnowledgeExtracted = 0;
+
+    // Run the configured number of exchanges for this domain
+    for (let i = 0; i < profile.exchangeCount; i++) {
+      try {
+        const result = await conductAutonomousExchange(
+          profile,
+          i + 1,
+          profile.exchangeCount,
+        );
+
+        if (result.success && result.knowledge) {
+          totalKnowledgeExtracted += result.knowledge.length;
+          domainState.exchangesCompleted = i + 1;
+          domainState.knowledgeItemsLearned = totalKnowledgeExtracted;
+
+          // Store knowledge immediately
+          if (result.knowledge.length > 0) {
+            await storeKnowledgeBatch(result.knowledge);
+            console.log(
+              `[MultiDomainTraining] Stored ${result.knowledge.length} knowledge items from exchange ${i + 1}/${profile.exchangeCount}`,
+            );
+          }
+        }
+
+        // Small delay between exchanges to avoid rate limiting
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      } catch (exchangeError: any) {
+        console.error(
+          `[MultiDomainTraining] Exchange ${i + 1} failed:`,
+          exchangeError,
+        );
+        // Continue with next exchange even if one fails
+      }
+    }
+
+    domainState.status = "completed";
+    domainState.completedAt = new Date().toISOString();
+    session.totalKnowledgeLearned += totalKnowledgeExtracted;
+    session.overallProgress = calculateSessionProgress(session);
+
+    console.log(
+      `[MultiDomainTraining] Completed ${profile.name}: ${totalKnowledgeExtracted} items learned`,
+    );
+
+    return res.json({
+      success: true,
+      profile,
+      domainState,
+      totalKnowledgeExtracted,
+      message: `Training completed for ${profile.name}`,
+    });
+  } catch (error: any) {
+    console.error("[MultiDomainTraining] Autonomous training failed:", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Autonomous training failed",
+    });
+  }
+});
+
+/**
+ * GET /api/multi-domain-training/session/:sessionId
+ * Get current session status
+ */
+router.get("/session/:sessionId", (req: Request, res: Response) => {
+  const { sessionId } = req.params;
+
+  const session = activeSessions.get(sessionId);
+  if (!session) {
+    return res.status(404).json({ error: "Session not found" });
+  }
+
+  return res.json({
+    success: true,
+    session,
+  });
+});
+
+/**
+ * POST /api/multi-domain-training/run-all-sequential
+ * Run all domains sequentially
+ */
+router.post("/run-all-sequential", async (req: Request, res: Response) => {
+  try {
+    if (!openaiApiKey) {
+      return res.status(500).json({ error: "OpenAI API key not configured" });
+    }
+
+    const { sessionId } = req.body as { sessionId: string };
+
+    if (!sessionId) {
+      return res.status(400).json({ error: "sessionId is required" });
+    }
+
+    const session = activeSessions.get(sessionId);
+    if (!session) {
+      return res.status(404).json({ error: "Session not found" });
+    }
+
+    session.status = "in_progress";
+    session.startedAt = new Date().toISOString();
+
+    console.log(
+      `[MultiDomainTraining] Starting sequential training for all ${MULTI_DOMAIN_TRAINING_PROFILES.length} domains`,
+    );
+
+    // Send initial response immediately
+    res.json({
+      success: true,
+      message: "Sequential multi-domain training started",
+      sessionId,
+      totalDomains: MULTI_DOMAIN_TRAINING_PROFILES.length,
+    });
+
+    // Run training asynchronously in background
+    (async () => {
+      for (const profile of MULTI_DOMAIN_TRAINING_PROFILES) {
+        try {
+          const profileId = profile.id;
+          const domainState = session.domainStates[profileId];
+
+          domainState.status = "in_progress";
+          domainState.startedAt = new Date().toISOString();
+
+          console.log(
+            `[MultiDomainTraining] Starting ${profile.name} (${profile.id})`,
+          );
+
+          let totalKnowledgeForDomain = 0;
+
+          // Run exchanges for this domain
+          for (let i = 0; i < profile.exchangeCount; i++) {
+            try {
+              const result = await conductAutonomousExchange(
+                profile,
+                i + 1,
+                profile.exchangeCount,
+              );
+
+              if (result.success && result.knowledge) {
+                totalKnowledgeForDomain += result.knowledge.length;
+                domainState.exchangesCompleted = i + 1;
+
+                if (result.knowledge.length > 0) {
+                  await storeKnowledgeBatch(result.knowledge);
+                  console.log(
+                    `[MultiDomainTraining] ${profile.name}: Stored ${result.knowledge.length} items (exchange ${i + 1}/${profile.exchangeCount})`,
+                  );
+                }
+              }
+
+              await new Promise((resolve) => setTimeout(resolve, 500));
+            } catch (exchangeError) {
+              console.error(
+                `[MultiDomainTraining] ${profile.name} exchange ${i + 1} failed:`,
+                exchangeError,
+              );
+            }
+          }
+
+          domainState.knowledgeItemsLearned = totalKnowledgeForDomain;
+          domainState.status = "completed";
+          domainState.completedAt = new Date().toISOString();
+          session.totalKnowledgeLearned += totalKnowledgeForDomain;
+          session.overallProgress = calculateSessionProgress(session);
+
+          console.log(
+            `[MultiDomainTraining] ✓ Completed ${profile.name}: ${totalKnowledgeForDomain} items`,
+          );
+        } catch (domainError: any) {
+          console.error(
+            `[MultiDomainTraining] Domain ${profile.name} failed:`,
+            domainError,
+          );
+          session.domainStates[profile.id].status = "failed";
+          session.domainStates[profile.id].error = domainError.message;
+        }
+      }
+
+      // Mark session as complete
+      session.status = "completed";
+      session.completedAt = new Date().toISOString();
+
+      console.log(
+        `[MultiDomainTraining] ✓ All training completed. Total knowledge learned: ${session.totalKnowledgeLearned}`,
+      );
+    })();
+  } catch (error: any) {
+    console.error(
+      "[MultiDomainTraining] Sequential training setup failed:",
+      error,
+    );
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Failed to setup sequential training",
+    });
+  }
+});
+
+/**
+ * Helper: Conduct a single autonomous exchange for a domain
+ */
+async function conductAutonomousExchange(
+  profile: (typeof MULTI_DOMAIN_TRAINING_PROFILES)[0],
+  exchangeNumber: number,
+  totalExchanges: number,
+): Promise<{ success: boolean; knowledge?: AnyKnowledge[] }> {
+  if (!openaiApiKey) {
+    throw new Error("OpenAI API key not configured");
+  }
+
+  // Generate Echo's question for this exchange
+  const echoPrompt = generateEchoQuestion(
+    profile,
+    exchangeNumber,
+    totalExchanges,
+  );
+
+  // Get OpenAI's comprehensive response
+  const openaiResponse = await getOpenAIResponse(echoPrompt);
+
+  if (!openaiResponse) {
+    return { success: false };
+  }
+
+  // Extract knowledge from OpenAI's response
+  const knowledge = await extractKnowledgeFromResponse(
+    openaiResponse,
+    profile,
+  );
+
+  return {
+    success: true,
+    knowledge,
+  };
+}
+
+/**
+ * Generate structured questions for Echo to ask OpenAI
+ */
+function generateEchoQuestion(
+  profile: (typeof MULTI_DOMAIN_TRAINING_PROFILES)[0],
+  exchangeNumber: number,
+  totalExchanges: number,
+): string {
+  const progressText = `(Exchange ${exchangeNumber}/${totalExchanges})`;
+
+  if (exchangeNumber === 1) {
+    return `As a training partner, provide a comprehensive overview of ${profile.name}. 
+
+Focus on: ${profile.focusAreas.slice(0, 2).join(", ")}
+
+Include:
+1. Core principles and concepts
+2. Key terminology and definitions
+3. Practical applications
+4. Common challenges and solutions
+
+Make this detailed and actionable for a culinary professional. ${progressText}`;
+  } else if (exchangeNumber === totalExchanges) {
+    return `Provide advanced insights and best practices for ${profile.name}.
+
+Build on previous exchanges and go deeper into: ${profile.focusAreas.slice(2).join(", ")}
+
+Include:
+1. Advanced techniques and methodologies
+2. Real-world case studies and examples
+3. Industry trends and innovations
+4. Integration with other culinary systems
+
+Focus on expertise and mastery. ${progressText}`;
+  } else {
+    const focusArea = profile.focusAreas[exchangeNumber % profile.focusAreas.length];
+    return `Dive deeper into ${focusArea} for ${profile.name}.
+
+Provide practical, detailed information on:
+1. Technical expertise in this area
+2. Common pitfalls and how to avoid them
+3. Performance optimization techniques
+4. Real-world applications and examples
+
+Make this highly practical and actionable. ${progressText}`;
+  }
+}
+
+/**
+ * Get comprehensive response from OpenAI
+ */
+async function getOpenAIResponse(prompt: string): Promise<string | null> {
+  if (!openaiApiKey) {
+    throw new Error("OpenAI API key not configured");
+  }
+
+  try {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${openaiApiKey}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4-turbo-preview",
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are an expert culinary and hospitality instructor. Provide detailed, practical, and comprehensive knowledge that can be applied immediately.",
+          },
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        temperature: 0.8,
+        max_tokens: 2500,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error(
+        `[MultiDomainTraining] OpenAI API error: ${response.status}`,
+      );
+      return null;
+    }
+
+    const data = (await response.json()) as any;
+    return data.choices?.[0]?.message?.content || null;
+  } catch (error) {
+    console.error("[MultiDomainTraining] Failed to get OpenAI response:", error);
+    return null;
+  }
+}
+
+/**
+ * Extract structured knowledge from OpenAI response
+ */
+async function extractKnowledgeFromResponse(
+  openaiResponse: string,
+  profile: (typeof MULTI_DOMAIN_TRAINING_PROFILES)[0],
+): Promise<AnyKnowledge[]> {
+  if (!openaiApiKey) {
+    throw new Error("OpenAI API key not configured");
+  }
+
+  try {
+    const extractionPrompt = `Extract ALL important knowledge items from this response about ${profile.name}.
+
+Response:
+"${openaiResponse}"
+
+Extract every significant concept, technique, principle, definition, or piece of actionable information.
+
+For each item, provide:
+1. Clear, concise title
+2. Detailed explanation (150-300 words)
+3. Relevant keywords/tags
+4. Type: technique, concept, principle, procedure, terminology, or guideline
+
+Return as JSON array with at least 4-6 items:
+[
+  {
+    "title": "Knowledge Title",
+    "content": "Detailed explanation...",
+    "type": "technique|concept|principle|procedure|terminology|guideline",
+    "tags": ["keyword1", "keyword2"]
+  }
+]
+
+Return ONLY valid JSON array.`;
+
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${openaiApiKey}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4-turbo-preview",
+        messages: [
+          {
+            role: "user",
+            content: extractionPrompt,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 3000,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error(
+        `[MultiDomainTraining] Knowledge extraction error: ${response.status}`,
+      );
+      return [];
+    }
+
+    const data = (await response.json()) as any;
+    const content = data.choices?.[0]?.message?.content;
+
+    if (!content) {
+      return [];
+    }
+
+    const knowledge: AnyKnowledge[] = [];
+
+    try {
+      const jsonMatch = content.match(/\[[\s\S]*\]/);
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]);
+
+        if (Array.isArray(parsed)) {
+          for (const item of parsed) {
+            if (item.title && item.content) {
+              knowledge.push({
+                id: `knowledge-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                type: item.type || "concept",
+                title: item.title.substring(0, 200),
+                description: item.content.substring(0, 1000),
+                content: item.content.substring(0, 2000),
+                source: "multi-domain-training",
+                sourceType: "openai",
+                tags: [
+                  profile.name,
+                  ...(item.tags || []),
+                  ...profile.focusAreas.slice(0, 2),
+                ],
+                domain: profile.domain,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                confidence: 0.9,
+              } as AnyKnowledge);
+            }
+          }
+        }
+      }
+    } catch (parseError) {
+      console.warn(
+        "[MultiDomainTraining] Failed to parse knowledge extraction:",
+        parseError,
+      );
+    }
+
+    return knowledge;
+  } catch (error) {
+    console.error(
+      "[MultiDomainTraining] Knowledge extraction failed:",
+      error,
+    );
+    return [];
+  }
+}
+
+/**
+ * Calculate overall session progress
+ */
+function calculateSessionProgress(session: MultiDomainTrainingSession): number {
+  const totalStates = Object.values(session.domainStates).length;
+  const completedStates = Object.values(session.domainStates).filter(
+    (state) => state.status === "completed",
+  ).length;
+
+  return Math.round((completedStates / totalStates) * 100);
+}
+
+export const multiDomainTrainingRouter = router;
