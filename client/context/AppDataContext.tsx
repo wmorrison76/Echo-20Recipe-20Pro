@@ -2867,8 +2867,12 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         // Filter out variations and other non-instruction content
         if (instructions && instructions.length) {
           const variationPatterns = [
-            /^(?:variations?|variation|substitutions?|chocolate|brown sugar|lemon|optional)/i,
-            /^(?:for the|make the following|increase|omit|substitute)/i,
+            /^(?:variations?|variation|substitutions?|chocolate|brown sugar|lemon|optional)\b/i,
+            /^(?:for the|make the following|increase|omit|substitute)\b/i,
+          ];
+
+          const procedureHeaderPatterns = [
+            /^(?:mixing|makeup|baking|heating|chilling|cooling|folding)\s*:?\s*$/i,
           ];
 
           // Find where variations start
@@ -2885,12 +2889,14 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             instructions = instructions.slice(0, variationStart);
           }
 
-          // Remove empty lines and metadata
+          // Remove empty lines, metadata, and procedure headers
           instructions = instructions
             .map(stripBullet)
             .filter((entry) => {
               if (!entry.length) return false;
               if (metaSuppress.test(entry)) return false;
+              // Skip procedure section headers (they're usually just labels)
+              if (procedureHeaderPatterns.some(p => p.test(entry))) return false;
               // Don't include lines that are just ingredient names or units
               if (qtyRegex.test(entry) && entry.length < 20) return false;
               return true;
