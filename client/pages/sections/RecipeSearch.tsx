@@ -3983,6 +3983,34 @@ export default function RecipeSearchSection() {
         isLoading={isImportingToKnowledge}
         bookName={importingBook || "Cookbook"}
       />
+
+      {/* Echo Training Progress Notification */}
+      {isTraining && (
+        <div className="fixed bottom-24 right-6 z-50 max-w-sm">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg p-4 space-y-3">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 mt-1">
+                <div className="flex items-center justify-center h-5 w-5">
+                  <div className="h-4 w-4 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
+                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                  🧠 Training Echo AI
+                </h3>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 break-words">
+                  {trainingProgress || "Preparing recipes..."}
+                </p>
+              </div>
+            </div>
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded px-3 py-2">
+              <p className="text-xs text-blue-700 dark:text-blue-300">
+                Echo is learning from your imported recipes. This window will close when complete.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
