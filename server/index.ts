@@ -100,5 +100,8 @@ export function createServer() {
   // System Health Checks (Echo, OpenAI, Pinecone)
   app.use("/api/health", systemHealthRouter);
 
+  // Multi-Domain Autonomous Training (all 13 engines)
+  app.use("/api/multi-domain-training", multiDomainTrainingRouter);
+
   return app;
 }
