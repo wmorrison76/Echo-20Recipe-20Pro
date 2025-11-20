@@ -591,22 +591,174 @@ export class KnowledgeCrawler {
     const queryLower = query.toLowerCase();
 
     try {
-      // Search through local recipes for matches
+      // Create topic keywords map for intelligent matching
+      const topicKeywords: Record<string, string[]> = {
+        "allergen safety": [
+          "allergen",
+          "dairy",
+          "gluten",
+          "nuts",
+          "peanuts",
+          "shellfish",
+          "egg",
+          "soy",
+          "tree nuts",
+        ],
+        "flavor chemistry": [
+          "acid",
+          "bitter",
+          "sweet",
+          "umami",
+          "salty",
+          "seasoning",
+          "balance",
+          "flavor",
+        ],
+        "pastry techniques": [
+          "pastry",
+          "dough",
+          "laminate",
+          "cream",
+          "custard",
+          "puff",
+          "tart",
+        ],
+        "baking science": [
+          "bake",
+          "flour",
+          "rise",
+          "yeast",
+          "ferment",
+          "proof",
+          "crust",
+          "bread",
+        ],
+        "banquet service": ["plating", "presentation", "garnish", "portion"],
+        "catering logistics": [
+          "scale",
+          "batch",
+          "prep",
+          "mise",
+          "efficiency",
+          "timing",
+        ],
+        "culinary terminology": ["brunoise", "julienne", "chiffonade", "roux"],
+        "ingredient sourcing": [
+          "local",
+          "seasonal",
+          "organic",
+          "suppliers",
+          "quality",
+        ],
+        "nutritional data": [
+          "calorie",
+          "protein",
+          "carb",
+          "fat",
+          "sodium",
+          "nutrition",
+        ],
+        "regional cuisines": [
+          "french",
+          "italian",
+          "asian",
+          "spanish",
+          "mexican",
+          "thai",
+          "japanese",
+          "indian",
+        ],
+        "molecular gastronomy": [
+          "sphere",
+          "gel",
+          "foam",
+          "air",
+          "technique",
+          "scientific",
+        ],
+        "preservation techniques": [
+          "cure",
+          "preserve",
+          "ferment",
+          "pickle",
+          "dry",
+          "smoke",
+        ],
+        "food safety": [
+          "temperature",
+          "sanitation",
+          "storage",
+          "cross-contamination",
+          "handling",
+        ],
+        "menu design": [
+          "menu",
+          "course",
+          "progression",
+          "balance",
+          "seasonal",
+        ],
+        "cost optimization": ["budget", "cost", "efficient", "yield", "waste"],
+        "sustainable cooking": [
+          "sustainable",
+          "waste",
+          "reduction",
+          "eco",
+          "local",
+        ],
+      };
+
+      // Determine relevant keywords for this query
+      const keywords = topicKeywords[queryLower] || [];
+
+      // Search through local recipes
       for (const [recipeId, recipe] of this.currentRecipes) {
-        // Check if query matches recipe title, ingredients, or instructions
+        let isRelevant = false;
+        let matchType = "general";
+
+        // Exact match check
         const titleMatch = recipe.title?.toLowerCase().includes(queryLower);
         const ingredientMatch = recipe.ingredients?.some((ing: string) =>
           ing.toLowerCase().includes(queryLower),
         );
-        const instructionMatch = recipe.instructions?.some((inst: string) =>
-          inst.toLowerCase().includes(queryLower),
-        );
-        const cuisineMatch = recipe.cuisine?.toLowerCase().includes(queryLower);
         const tagsMatch = recipe.tags?.some((tag: string) =>
           tag.toLowerCase().includes(queryLower),
         );
 
-        if (titleMatch || ingredientMatch || instructionMatch || cuisineMatch || tagsMatch) {
+        if (titleMatch || ingredientMatch || tagsMatch) {
+          isRelevant = true;
+          matchType = "exact";
+        }
+
+        // Keyword match check
+        if (!isRelevant && keywords.length > 0) {
+          const allText = [
+            recipe.title,
+            ...(recipe.ingredients || []),
+            ...(recipe.instructions || []),
+            ...(recipe.tags || []),
+            recipe.cuisine || "",
+            recipe.course || "",
+          ]
+            .join(" ")
+            .toLowerCase();
+
+          const matchedKeywords = keywords.filter((kw) =>
+            allText.includes(kw),
+          );
+          if (matchedKeywords.length > 0) {
+            isRelevant = true;
+            matchType = `keyword (${matchedKeywords.length}/${keywords.length})`;
+          }
+        }
+
+        // Include if no specific keywords (generic topic match)
+        if (!isRelevant && keywords.length === 0) {
+          isRelevant = true;
+          matchType = "generic";
+        }
+
+        if (isRelevant) {
           const extractedRecipes = this.extractRecipeData(recipe);
 
           knowledge.push({
@@ -627,6 +779,7 @@ export class KnowledgeCrawler {
               yield: extractedRecipes.yield,
               cookTime: extractedRecipes.cookTime,
               difficulty: extractedRecipes.difficulty,
+              matchType,
             },
             extractedRecipes: [extractedRecipes],
             rawData: recipe,
@@ -640,7 +793,9 @@ export class KnowledgeCrawler {
         }
       }
 
-      console.log(`✅ Found ${knowledge.length} matching recipes for query: "${query}"`);
+      console.log(
+        `  ✅ User content: Found ${knowledge.length} recipes for "${query}"`,
+      );
     } catch (error) {
       console.warn(`Failed to crawl user imported content:`, error);
     }
