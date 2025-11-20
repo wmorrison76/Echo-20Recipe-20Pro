@@ -2805,6 +2805,40 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
         let instructions =
           instIdx >= 0 ? getRange(instIdx, lines.length) : undefined;
+
+        // Filter out variations and other non-instruction content
+        if (instructions && instructions.length) {
+          const variationPatterns = [
+            /^(?:variations?|variation|substitutions?|chocolate|brown sugar|lemon|optional)/i,
+            /^(?:for the|make the following|increase|omit|substitute)/i,
+          ];
+
+          // Find where variations start
+          let variationStart = instructions.length;
+          for (let i = 0; i < instructions.length; i++) {
+            if (variationPatterns.some(p => p.test(instructions[i]))) {
+              variationStart = i;
+              break;
+            }
+          }
+
+          // Keep only instructions before variations
+          if (variationStart > 0) {
+            instructions = instructions.slice(0, variationStart);
+          }
+
+          // Remove empty lines and metadata
+          instructions = instructions
+            .map(stripBullet)
+            .filter((entry) => {
+              if (!entry.length) return false;
+              if (metaSuppress.test(entry)) return false;
+              // Don't include lines that are just ingredient names or units
+              if (qtyRegex.test(entry) && entry.length < 20) return false;
+              return true;
+            });
+        }
+
         if ((!instructions || instructions.length < 2) && lines.length) {
           const start = instIdx >= 0 ? instIdx + 1 : Math.max(ingIdx + 1, 0);
           const fallback = lines
