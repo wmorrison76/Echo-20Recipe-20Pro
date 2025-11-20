@@ -3643,9 +3643,13 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       const errors: { file: string; error: string }[] = [];
       const collected: Recipe[] = [];
       const titles: string[] = [];
+      console.log("[Excel Import] Starting import of", files.length, "file(s)");
       for (const f of files) {
+        console.log("[Excel Import] Processing file:", f.name, "Type:", f.type, "Size:", f.size);
         if (!/\.(xlsx|xls|csv)$/i.test(f.name)) {
-          errors.push({ file: f.name, error: "Unsupported spreadsheet type" });
+          const err = "Unsupported spreadsheet type";
+          console.error("[Excel Import]", f.name, "-", err);
+          errors.push({ file: f.name, error: err });
           continue;
         }
         try {
