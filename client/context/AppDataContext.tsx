@@ -2851,22 +2851,37 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
               continue;
             }
 
-            // Check if this line is a continuation of the previous one
-            // Lines are continuations if they don't start with a bullet/number and aren't isolated page references
-            const isContinuation = currentLine &&
-              !/^[•\-*0-9\(]/.test(trimmed) &&
-              !/(p\.?\s*\d+|pp\.?\s*\d+)/.test(trimmed) &&
-              !/^(?:[A-Z][a-z]+\s+){0,2}[a-z]/.test(trimmed); // Likely new item
+            // Check if this line is a pure measurement component (isolated number, unit, or percentage)
+            const isPureMeasurement = /^(?:\d+(?:\.\d+)?|oz|g|lb|kg|cup|tsp|tbsp|ml|l|%|grams?|ounces?|pounds?|teaspoons?|tablespoons?)$/i.test(trimmed);
 
-            if (isContinuation) {
-              // Merge with current line
+            // Check if line has parenthetical info like "(1/2 tsp)" or has measurements
+            const hasParentheses = /^\(.*\)$/.test(trimmed);
+
+            // Check if this line is clearly a new ingredient (starts with capital letter, not a number/unit)
+            const isNewIngredient = /^[A-Z][a-z]/.test(trimmed) && !isPureMeasurement && !hasParentheses;
+
+            // Lines that belong with the current ingredient (continuations or measurements)
+            const isPartOfCurrent = currentLine && (
+              isPureMeasurement ||
+              hasParentheses ||
+              (!isNewIngredient && !/^[•\-*0-9\(]/.test(trimmed) && !/(p\.?\s*\d+|pp\.?\s*\d+)/.test(trimmed))
+            );
+
+            if (isPartOfCurrent) {
+              // Merge with current line (add measurement or description)
               currentLine += " " + trimmed;
-            } else {
-              // Start new ingredient
+            } else if (isNewIngredient || (/^[A-Z]/.test(trimmed) && currentLine && !/\d\s*(?:oz|g|cup|tsp|tbsp|lb)/.test(currentLine))) {
+              // New ingredient detected
               if (currentLine) {
                 mergedIngredients.push(currentLine);
               }
               currentLine = trimmed;
+            } else if (!currentLine) {
+              // First item
+              currentLine = trimmed;
+            } else {
+              // Default: treat as continuation if we have a current line
+              currentLine += " " + trimmed;
             }
           }
 
