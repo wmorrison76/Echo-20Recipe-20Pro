@@ -2755,8 +2755,14 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         }
 
         let instIdx = -1;
+        const variationStartPattern = /^(?:variations?|variation|substitutions?|chocolate|brown sugar|lemon|optional)\b/i;
+
         for (let i = Math.max(ingIdx + 1, 0); i < cleaned.length; i++) {
           const line = cleaned[i];
+          // Skip variations section
+          if (variationStartPattern.test(line)) {
+            break;
+          }
           if (
             matchLabel(line, instructionLabels) ||
             /^to (?:assemble|finish|serve|prepare|cook|bake)\b/.test(line)
