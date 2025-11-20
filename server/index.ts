@@ -20,6 +20,7 @@ import { echoOpenAITrainingRouter } from "./routes/echo-openai-training";
 import { echoUnifiedBrainRouter } from "./routes/echo-unified-brain";
 import { systemHealthRouter } from "./routes/system-health";
 import { multiDomainTrainingRouter } from "./routes/multi-domain-training";
+import { recipeAPIRouter } from "./routes/recipe-api";
 import {
   proxyRecipeImage as proxyImageOptimized,
   serveRecipeImage,
@@ -102,6 +103,9 @@ export function createServer() {
 
   // Multi-Domain Autonomous Training (all 13 engines)
   app.use("/api/multi-domain-training", multiDomainTrainingRouter);
+
+  // Recipe API Integration (for crawler training)
+  app.use("/api/recipes", recipeAPIRouter);
 
   return app;
 }
