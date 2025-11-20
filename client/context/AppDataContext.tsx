@@ -2773,11 +2773,16 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         }
         if (instIdx < 0 && ingIdx >= 0) {
           for (let i = ingIdx + 1; i < lines.length; i++) {
+            const line = lines[i];
+            // Skip variations
+            if (variationStartPattern.test(line)) break;
             if (
-              /^(?:step\s*)?\d+\b/.test(lines[i]) ||
-              /^\d+\.\s+/.test(lines[i]) ||
-              /^•\s+/.test(lines[i]) ||
-              (lines[i].length > 30 && /[\.?!]/.test(lines[i]))
+              /^(?:step\s*)?\d+\b/.test(line) ||
+              /^\d+\.\s+/.test(line) ||
+              /^•\s+/.test(line) ||
+              // Check for procedure-style sections like "MIXING:" or "BAKING:"
+              /^(?:mixing|makeup|baking|chilling|cooling|heating|folding)[\s:]/i.test(line) ||
+              (line.length > 30 && /[\.?!]/.test(line))
             ) {
               instIdx = i;
               break;
