@@ -3688,12 +3688,17 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           } else {
             const ab = await f.arrayBuffer();
             let XLSX: any;
+
             try {
-              XLSX = await import("https://esm.sh/xlsx@0.18.5");
-            } catch (importError: any) {
-              throw new Error(
-                `Failed to load Excel parser: ${importError?.message || "Unknown error"}`
-              );
+              XLSX = await import("xlsx");
+            } catch (localImportError: any) {
+              try {
+                XLSX = await import("https://esm.sh/xlsx@0.18.5");
+              } catch (cdnImportError: any) {
+                throw new Error(
+                  `Failed to load Excel parser: ${localImportError?.message || cdnImportError?.message || "Unknown error"}`
+                );
+              }
             }
 
             if (!XLSX || !XLSX.read) {
@@ -3702,7 +3707,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
             let wb: any;
             try {
-              wb = XLSX.read(ab, { type: "array" });
+              wb = XLSX.read(new Uint8Array(ab), { type: "array" });
             } catch (readError: any) {
               throw new Error(
                 `Failed to parse Excel file: ${readError?.message || "Invalid format or corrupted file"}`
@@ -3720,7 +3725,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
             let json: any[] = [];
             try {
-              json = XLSX.utils.sheet_to_json(ws, { defval: "" });
+              json = XLSX.utils.sheet_to_json(ws, { defval: "", blankrows: false });
             } catch (jsonError: any) {
               throw new Error(
                 `Failed to convert sheet to JSON: ${jsonError?.message || "Unknown error"}`
