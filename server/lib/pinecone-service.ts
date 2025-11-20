@@ -59,15 +59,16 @@ interface EmbeddingResponse {
 }
 
 // Initialize Pinecone client
-let pineconeClient: Pinecone | null = null;
+let pineconeClient: any = null;
 
-function getPineconeClient(): Pinecone {
+async function getPineconeClient() {
   if (!pineconeClient && PINECONE_API_KEY) {
+    const Pinecone = await getPineconeModule();
     pineconeClient = new Pinecone({
       apiKey: PINECONE_API_KEY,
     });
   }
-  return pineconeClient!;
+  return pineconeClient;
 }
 
 /**
