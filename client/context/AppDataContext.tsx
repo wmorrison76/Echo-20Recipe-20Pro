@@ -3156,6 +3156,10 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
               .map((s) => s.trim())
               .filter(Boolean)
               .slice(0, 80);
+            // Check if there's an explicit ingredients label
+            if (/\bingredients?\b/i.test(txt.slice(0, 200))) {
+              return true;
+            }
             const qtyRe =
               /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
             let cnt = 0;
