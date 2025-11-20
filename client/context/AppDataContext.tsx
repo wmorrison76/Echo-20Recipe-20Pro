@@ -3738,8 +3738,40 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             let json: any[] = [];
             try {
               console.log("[Excel Import] Converting sheet to JSON...");
-              json = XLSX.utils.sheet_to_json(ws, { defval: "", blankrows: false });
-              console.log("[Excel Import] Sheet converted successfully. Rows:", json.length);
+
+              const allData = XLSX.utils.sheet_to_json(ws, { defval: "", blankrows: false });
+              console.log("[Excel Import] Total rows:", allData.length, "First row keys:", Object.keys(allData[0] || {}));
+
+              let dataToUse = allData;
+
+              if (allData.length > 0) {
+                const firstRowKeys = Object.keys(allData[0]);
+                const hasIngredientInFirst = firstRowKeys.some(k => k.toLowerCase().includes('ingredient'));
+                const hasRecipeInFirst = firstRowKeys.some(k =>
+                  k.toLowerCase().includes('title') || k.toLowerCase().includes('name') || k.toLowerCase().includes('recipe')
+                );
+
+                if (!hasIngredientInFirst && !hasRecipeInFirst && allData.length > 5) {
+                  console.log("[Excel Import] First row looks like metadata, searching for actual header row...");
+
+                  for (let i = 1; i < Math.min(20, allData.length); i++) {
+                    const rowKeys = Object.keys(allData[i]);
+                    const hasIngredient = rowKeys.some(k => k.toLowerCase().includes('ingredient'));
+                    const hasRecipe = rowKeys.some(k =>
+                      k.toLowerCase().includes('title') || k.toLowerCase().includes('name') || k.toLowerCase().includes('recipe')
+                    );
+
+                    if (hasIngredient || hasRecipe) {
+                      console.log("[Excel Import] Found data header at row", i + 1, "with keys:", rowKeys);
+                      dataToUse = allData.slice(i);
+                      break;
+                    }
+                  }
+                }
+              }
+
+              json = dataToUse;
+              console.log("[Excel Import] Sheet converted successfully. Using", json.length, "data rows");
             } catch (jsonError: any) {
               const msg = `Failed to convert sheet to JSON: ${jsonError?.message || "Unknown error"}`;
               console.error("[Excel Import]", msg);
