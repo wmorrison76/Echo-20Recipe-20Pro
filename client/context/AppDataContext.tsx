@@ -3139,7 +3139,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
           if (allPageTexts.length > 0) {
             const combinedText = allPageTexts.join("\n");
-            const sourceName = files[0]?.name.replace(/\.pdf$/i, "") || "Imported PDF";
+            const sourceName =
+              files[0]?.name.replace(/\.pdf$/i, "") || "Imported PDF";
 
             try {
               console.log(`📚 Extracting definitions from PDF...`);
@@ -3214,18 +3215,26 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
                         kb.culinaryTerms = culinaryTerms;
                         kb.definitions = definitions;
                         kb.definitionDetails = definitionDetails;
-                        kb.books = Array.from(new Set([...(kb.books || []), sourceName]));
+                        kb.books = Array.from(
+                          new Set([...(kb.books || []), sourceName]),
+                        );
 
                         localStorage.setItem("kb:cook", JSON.stringify(kb));
                         console.log(
                           `📖 Added ${result.definitions.length} definitions to local knowledge base`,
                         );
                       } catch (localError) {
-                        console.warn("Failed to add definitions to local KB:", localError);
+                        console.warn(
+                          "Failed to add definitions to local KB:",
+                          localError,
+                        );
                       }
                     }
                   } catch (storeError) {
-                    console.warn("Failed to store definitions in Echo:", storeError);
+                    console.warn(
+                      "Failed to store definitions in Echo:",
+                      storeError,
+                    );
                   }
                 }
               }

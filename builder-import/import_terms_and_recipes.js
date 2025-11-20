@@ -98,9 +98,7 @@ async function uploadRecipes() {
   for (const recipe of knowledge.recipes) {
     const errors = validateRecipe(recipe);
     if (errors.length > 0) {
-      console.log(
-        `⊘ Skipping recipe "${recipe.title}": ${errors.join(", ")}`,
-      );
+      console.log(`⊘ Skipping recipe "${recipe.title}": ${errors.join(", ")}`);
       skipCount++;
       continue;
     }
@@ -137,7 +135,9 @@ async function run() {
   const recipesResult = await uploadRecipes();
 
   console.log("============================================");
-  console.log(`Total Terms:   ${termsResult.success} ✔ ${termsResult.skipped} ⊘`);
+  console.log(
+    `Total Terms:   ${termsResult.success} ✔ ${termsResult.skipped} ⊘`,
+  );
   console.log(
     `Total Recipes: ${recipesResult.success} ✔ ${recipesResult.skipped} ⊘`,
   );

@@ -1,6 +1,6 @@
 /**
  * Echo Service Integration with Builder.io Culinary Knowledge
- * 
+ *
  * This service enriches Echo's responses by fetching real culinary
  * definitions, recipes, and techniques from Builder.io
  */
@@ -49,10 +49,7 @@ export async function suggestIngredientSubstitutes(
 
     const suggestions = substitutes
       .slice(0, 3)
-      .map(
-        (s) =>
-          `• **${s.term}**: ${s.definition.substring(0, 100)}...`,
-      )
+      .map((s) => `• **${s.term}**: ${s.definition.substring(0, 100)}...`)
       .join("\n");
 
     return `Possible substitutes for **${ingredient}**:\n${suggestions}`;
@@ -66,7 +63,9 @@ export async function suggestIngredientSubstitutes(
  * Get a full recipe from the culinary database
  * Useful for "what's this recipe" or "how to make..." questions
  */
-export async function getRecipeFromDatabase(slug: string): Promise<string | null> {
+export async function getRecipeFromDatabase(
+  slug: string,
+): Promise<string | null> {
   try {
     const recipe = await fetchRecipe(slug);
 
@@ -74,12 +73,8 @@ export async function getRecipeFromDatabase(slug: string): Promise<string | null
       return null;
     }
 
-    const ingredientsList = recipe.ingredients
-      .map((i) => `• ${i}`)
-      .join("\n");
-    const stepsList = recipe.steps
-      .map((s, i) => `${i + 1}. ${s}`)
-      .join("\n");
+    const ingredientsList = recipe.ingredients.map((i) => `• ${i}`).join("\n");
+    const stepsList = recipe.steps.map((s, i) => `${i + 1}. ${s}`).join("\n");
 
     return `
 # ${recipe.title}
@@ -141,9 +136,7 @@ export async function buildGlossaryIndex(): Promise<Record<string, number>> {
  * Call this to prepare Echo with relevant culinary knowledge
  * before processing a user query about cooking/recipes
  */
-export async function prepareEchoForCulinaryQuery(
-  userQuery: string,
-): Promise<{
+export async function prepareEchoForCulinaryQuery(userQuery: string): Promise<{
   enrichedContext: string;
   relevantTerms: string[];
   relevantRecipes: string[];

@@ -147,10 +147,7 @@ function firstLetter(str: string): string {
   return "#";
 }
 
-function classifyGlossaryEntry(
-  term: string,
-  definition: string,
-): string[] {
+function classifyGlossaryEntry(term: string, definition: string): string[] {
   const text = (term + " " + definition).toLowerCase();
   const categories: string[] = [];
 
@@ -214,15 +211,56 @@ function extractGlossaryEntries(text: string): Array<[string, string]> {
   // Look for capitalized multi-word phrases that appear with explanatory text
   const paragraphs = text.split(/\n{2,}/);
   const commonCulinaryTerms = [
-    "mise en place", "bain marie", "roux", "ganache", "emulsion",
-    "caramelize", "temper chocolate", "fold", "simmer", "whisk", "sear",
-    "poach", "blanch", "reduce", "deglaze", "knead", "proof", "laminate",
-    "macaronage", "pate a choux", "sabayon", "custard", "meringue",
-    "pate sucree", "pate brisee", "frangipane", "creme anglaise", "streusel",
-    "simple syrup", "brioche", "croissant", "puff pastry", "shortbread",
-    "choux", "genoise", "sponge cake", "buttercream", "fondant", "glaze",
-    "coulis", "mousse", "terrine", "consomme", "jus", "demi-glace",
-    "veloute", "bechamel", "hollandaise", "bearnaise", "vinaigrette"
+    "mise en place",
+    "bain marie",
+    "roux",
+    "ganache",
+    "emulsion",
+    "caramelize",
+    "temper chocolate",
+    "fold",
+    "simmer",
+    "whisk",
+    "sear",
+    "poach",
+    "blanch",
+    "reduce",
+    "deglaze",
+    "knead",
+    "proof",
+    "laminate",
+    "macaronage",
+    "pate a choux",
+    "sabayon",
+    "custard",
+    "meringue",
+    "pate sucree",
+    "pate brisee",
+    "frangipane",
+    "creme anglaise",
+    "streusel",
+    "simple syrup",
+    "brioche",
+    "croissant",
+    "puff pastry",
+    "shortbread",
+    "choux",
+    "genoise",
+    "sponge cake",
+    "buttercream",
+    "fondant",
+    "glaze",
+    "coulis",
+    "mousse",
+    "terrine",
+    "consomme",
+    "jus",
+    "demi-glace",
+    "veloute",
+    "bechamel",
+    "hollandaise",
+    "bearnaise",
+    "vinaigrette",
   ];
 
   for (const paragraph of paragraphs) {
@@ -236,8 +274,14 @@ function extractGlossaryEntries(text: string): Array<[string, string]> {
         // Try to find a sentence containing this term
         const sentences = trimmed.split(/[.!?]+/);
         for (const sentence of sentences) {
-          if (term.toLowerCase().includes(sentence.toLowerCase().substring(0, term.length))) {
-            const match = sentence.match(new RegExp(`(.{0,100}\\b${term}\\b.{0,100})`, "i"));
+          if (
+            term
+              .toLowerCase()
+              .includes(sentence.toLowerCase().substring(0, term.length))
+          ) {
+            const match = sentence.match(
+              new RegExp(`(.{0,100}\\b${term}\\b.{0,100})`, "i"),
+            );
             if (match && match[1]) {
               const context = match[1].trim();
               if (context.length > term.length + 10) {
@@ -256,7 +300,9 @@ function extractGlossaryEntries(text: string): Array<[string, string]> {
   // Add extracted culinary terms with their context as "definitions"
   for (const [term, contexts] of culinaryTermsMap) {
     if (contexts.length > 0) {
-      const definition = contexts[0].replace(new RegExp(term, "i"), `"${term}"`).substring(0, 150);
+      const definition = contexts[0]
+        .replace(new RegExp(term, "i"), `"${term}"`)
+        .substring(0, 150);
       if (definition.length > 10) {
         entries.push([term, definition]);
       }

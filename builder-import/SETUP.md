@@ -70,7 +70,10 @@ Now Echo can fetch and explain culinary terms on-demand.
 ## Example: Echo uses the knowledge
 
 ```typescript
-import { fetchCulinaryTerm, explainCulinaryTerm } from "@/lib/builder-culinary-knowledge";
+import {
+  fetchCulinaryTerm,
+  explainCulinaryTerm,
+} from "@/lib/builder-culinary-knowledge";
 
 // Echo explains a term
 const explanation = await explainCulinaryTerm("bain marie");

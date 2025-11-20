@@ -33,6 +33,7 @@ python3 echo_culinary_scanner.py path/to/cookbook.pdf
 This generates: `echo_culinary_knowledge.json`
 
 Example output:
+
 ```
 Done. Extracted:
   Terms:   1240
@@ -54,19 +55,19 @@ Go to [builder.io](https://builder.io) and sign in.
 2. Set **Name**: `echoculinaryterm`
 3. Add these fields:
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `term` | Text | Required |
-| `slug` | Text | Unique ID |
-| `letter` | Text | First letter for browsing |
-| `definition` | Long Text | Full definition |
-| `categories` | List → Text | e.g., "ingredient", "technique" |
-| `aliases` | List → Text | Alternative names |
-| `source_work` | Text | e.g., "Food Lover's Companion" |
-| `source_page` | Number | Optional |
-| `confidence_score` | Number | 0-100 |
-| `updated_at` | Date | Auto-populate |
-| `status` | Text | "verified" or "auto-imported" |
+| Field              | Type        | Notes                           |
+| ------------------ | ----------- | ------------------------------- |
+| `term`             | Text        | Required                        |
+| `slug`             | Text        | Unique ID                       |
+| `letter`           | Text        | First letter for browsing       |
+| `definition`       | Long Text   | Full definition                 |
+| `categories`       | List → Text | e.g., "ingredient", "technique" |
+| `aliases`          | List → Text | Alternative names               |
+| `source_work`      | Text        | e.g., "Food Lover's Companion"  |
+| `source_page`      | Number      | Optional                        |
+| `confidence_score` | Number      | 0-100                           |
+| `updated_at`       | Date        | Auto-populate                   |
+| `status`           | Text        | "verified" or "auto-imported"   |
 
 4. Enable **API**:
    - ✅ Read API
@@ -81,16 +82,16 @@ Go to [builder.io](https://builder.io) and sign in.
 2. Set **Name**: `echorecipe`
 3. Add these fields:
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `title` | Text | Required |
-| `slug` | Text | Required |
-| `ingredients` | List → Text | Raw ingredient lines |
-| `steps` | List → Text | Numbered instructions |
-| `source_work` | Text | Optional |
-| `source_page` | Number | Optional |
-| `updated_at` | Date | Auto-populate |
-| `status` | Text | "verified" or "auto-imported" |
+| Field         | Type        | Notes                         |
+| ------------- | ----------- | ----------------------------- |
+| `title`       | Text        | Required                      |
+| `slug`        | Text        | Required                      |
+| `ingredients` | List → Text | Raw ingredient lines          |
+| `steps`       | List → Text | Numbered instructions         |
+| `source_work` | Text        | Optional                      |
+| `source_page` | Number      | Optional                      |
+| `updated_at`  | Date        | Auto-populate                 |
+| `status`      | Text        | "verified" or "auto-imported" |
 
 4. Enable **API**:
    - ✅ Read API
@@ -103,7 +104,7 @@ Go to [builder.io](https://builder.io) and sign in.
 ## Stage 3: Generate Builder.io Write API Key
 
 1. Go to your **Organization Settings** (gear icon, top right)
-2. Click **API Keys** 
+2. Click **API Keys**
 3. Create a new **Write Key** for this app
 4. Copy the key
 
@@ -120,6 +121,7 @@ node import_terms_and_recipes.js
 ```
 
 This will:
+
 - Read `echo_culinary_knowledge.json`
 - Upload every term to `echoculinaryterm` model
 - Upload every recipe to `echorecipe` model
@@ -127,6 +129,7 @@ This will:
 - Log results
 
 Example output:
+
 ```
 ============================================
     Builder.io Culinary Knowledge Import
@@ -202,7 +205,7 @@ const recipe = await fetchRecipe("lemon-tart");
 
 ### 3. Example: Echo explains a term
 
-When user asks: *"What's a bain marie?"*
+When user asks: _"What's a bain marie?"_
 
 ```typescript
 const term = await fetchCulinaryTerm("bain marie");
@@ -235,17 +238,20 @@ builder-import/
 ### Python Scanner Issues
 
 **"ModuleNotFoundError: No module named 'PyPDF2'"**
+
 ```bash
 pip install PyPDF2
 ```
 
 **"No text extracted from PDF"**
+
 - The PDF might be scanned images only
 - We can add OCR support later using `pytesseract`
 
 ### Builder.io Upload Issues
 
 **"BUILDER_API_KEY not set"**
+
 ```bash
 export BUILDER_API_KEY="your_key_here"
 echo $BUILDER_API_KEY  # verify
@@ -253,16 +259,19 @@ node import_terms_and_recipes.js
 ```
 
 **"HTTP 401: Unauthorized"**
+
 - Your API key is invalid or expired
 - Get a new Write Key from Builder.io settings
 
 **"HTTP 400: Model not found"**
+
 - Make sure you created `echoculinaryterm` and `echorecipe` models
 - Check spelling (case-sensitive)
 
 ### Echo Knowledge Not Loading
 
 **"VITE_BUILDER_PUBLIC_API_KEY not set"**
+
 - Add to `.env.local` and restart dev server
 - Make sure it's a **Public** API key, not Write key
 

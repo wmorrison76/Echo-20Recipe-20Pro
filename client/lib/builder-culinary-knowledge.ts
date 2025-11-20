@@ -83,9 +83,7 @@ export async function fetchRecipe(slug: string): Promise<EchoRecipe | null> {
   try {
     const builderKey = import.meta.env.VITE_BUILDER_PUBLIC_API_KEY;
     if (!builderKey) {
-      console.warn(
-        "VITE_BUILDER_PUBLIC_API_KEY not set, cannot fetch recipes",
-      );
+      console.warn("VITE_BUILDER_PUBLIC_API_KEY not set, cannot fetch recipes");
       return null;
     }
 
@@ -108,7 +106,9 @@ export async function fetchRecipe(slug: string): Promise<EchoRecipe | null> {
 /**
  * Search for culinary terms by letter (for glossary browsing)
  */
-export async function fetchTermsByLetter(letter: string): Promise<CulinaryTerm[]> {
+export async function fetchTermsByLetter(
+  letter: string,
+): Promise<CulinaryTerm[]> {
   try {
     const builderKey = import.meta.env.VITE_BUILDER_PUBLIC_API_KEY;
     if (!builderKey) return [];
@@ -134,7 +134,9 @@ export async function fetchTermsByLetter(letter: string): Promise<CulinaryTerm[]
 /**
  * Search terms by category
  */
-export async function fetchTermsByCategory(category: string): Promise<CulinaryTerm[]> {
+export async function fetchTermsByCategory(
+  category: string,
+): Promise<CulinaryTerm[]> {
   try {
     const builderKey = import.meta.env.VITE_BUILDER_PUBLIC_API_KEY;
     if (!builderKey) return [];
@@ -188,7 +190,9 @@ export async function fetchAllRecipes(
  * Utility: Explain an ingredient or technique using culinary database
  * Returns a friendly explanation for Echo to use in responses
  */
-export async function explainCulinaryTerm(term: string): Promise<string | null> {
+export async function explainCulinaryTerm(
+  term: string,
+): Promise<string | null> {
   const termData = await fetchCulinaryTerm(term);
   if (!termData) return null;
 
