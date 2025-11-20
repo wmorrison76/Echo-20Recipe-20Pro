@@ -4152,6 +4152,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       addRecipe,
       addRecipesFromJsonFiles,
       addRecipesFromDocxFiles,
+      addRecipesFromPdfFilesVision,
       addFromZipArchive,
       updateRecipe,
       getRecipeById,
