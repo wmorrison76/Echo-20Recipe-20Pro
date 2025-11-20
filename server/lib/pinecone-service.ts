@@ -1,4 +1,14 @@
-import { Pinecone } from "@pinecone-database/pinecone";
+// Lazy import Pinecone to avoid bundling issues during Vite config loading
+let PineconeClass: any = null;
+let pineconeClientInstance: any = null;
+
+async function getPineconeModule() {
+  if (!PineconeClass) {
+    const module = await import("@pinecone-database/pinecone");
+    PineconeClass = module.Pinecone;
+  }
+  return PineconeClass;
+}
 
 const PINECONE_API_KEY = process.env.PINECONE_API_KEY || "";
 const PINECONE_INDEX = "echo-recipes";
