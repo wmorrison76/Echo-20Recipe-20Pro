@@ -2408,9 +2408,47 @@ export default function RecipeSearchSection() {
                             .sort((a, b) => b[1] - a[1])
                             .slice(0, n),
                         );
+
+                      // Culinary-specific terminology dictionary for intelligent extraction
+                      const culinaryKeywords = new Set([
+                        // Techniques
+                        "broil", "braise", "blanch", "bruise", "brunoise", "julienne", "chiffonade",
+                        "deglaze", "deminasse", "dice", "dredge", "fold", "fricassee", "fillet",
+                        "flambe", "garnish", "glaze", "grate", "grind", "infuse", "knead",
+                        "marinate", "mince", "mirepoix", "poach", "puree", "sauté", "scald",
+                        "score", "sear", "shred", "simmer", "skim", "slice", "steam", "strain",
+                        "temper", "thread", "toss", "truss", "whip", "zest", "caramelize",
+                        "char", "blanch", "shock", "braise", "brander", "butterfly", "chop",
+                        // Cooking methods
+                        "bake", "boil", "roast", "fry", "grill", "steam", "poach", "simmer",
+                        "broil", "sauté", "stir", "pan", "oven", "stovetop", "microwave",
+                        // Ingredients
+                        "flour", "butter", "sugar", "salt", "pepper", "oil", "cream", "milk",
+                        "egg", "yeast", "herb", "spice", "garlic", "onion", "stock", "broth",
+                        "sauce", "vinegar", "wine", "cheese", "meat", "fish", "vegetable",
+                        // Measurements
+                        "teaspoon", "tablespoon", "cup", "pint", "quart", "ounce", "pound",
+                        "gram", "milliliter", "liter", "pinch", "dash", "splash",
+                        // Equipment
+                        "knife", "pan", "pot", "bowl", "mixer", "blender", "whisk", "spatula",
+                        "spoon", "fork", "ladle", "skewer", "thermometer", "scale", "sifter",
+                        "grater", "peeler", "tongs", "sheet", "baking", "rack", "tray",
+                        // Flavor/Taste
+                        "sweet", "salty", "sour", "bitter", "umami", "savory", "spicy",
+                        "aromatic", "fragrant", "tender", "crispy", "flaky", "moist", "dry",
+                        // Cuisine types
+                        "french", "italian", "asian", "spanish", "mexican", "greek", "indian",
+                        "thai", "japanese", "chinese", "korean", "vietnamese", "middle eastern",
+                        // Food types
+                        "appetizer", "entree", "dessert", "soup", "salad", "bread", "pasta",
+                        "rice", "bean", "grain", "fruit", "vegetable", "protein", "dairy",
+                      ]);
+
                       const words: Record<string, number> = {},
                         bigrams: Record<string, number> = {},
-                        definitions: Record<string, string> = {};
+                        definitions: Record<string, string> = {},
+                        culinaryTerms: Record<string, number> = {};
+
                       const textAll = pageTexts
                         .join("\n")
                         .toLowerCase()
@@ -2423,32 +2461,84 @@ export default function RecipeSearchSection() {
                             w.length <= 24 &&
                             !STOP_WORDS.has(w),
                         );
+
+                      // Extract single words and culinary terms
                       for (let i = 0; i < arr.length; i++) {
                         const w = arr[i];
                         words[w] = (words[w] || 0) + 1;
+
+                        // Track culinary-specific terms separately
+                        if (culinaryKeywords.has(w)) {
+                          culinaryTerms[w] = (culinaryTerms[w] || 0) + 1;
+                        }
+
+                        // Extract 3-word phrases for compound culinary techniques/terms
+                        if (i < arr.length - 2) {
+                          const w1 = arr[i];
+                          const w2 = arr[i + 1];
+                          const w3 = arr[i + 2];
+
+                          if (
+                            !STOP_WORDS.has(w1) &&
+                            !STOP_WORDS.has(w2) &&
+                            !STOP_WORDS.has(w3)
+                          ) {
+                            const trigram = `${w1} ${w2} ${w3}`;
+                            if (trigram.length >= 5 && trigram.length <= 50) {
+                              const isCulinary =
+                                culinaryKeywords.has(w1) ||
+                                culinaryKeywords.has(w2) ||
+                                culinaryKeywords.has(w3);
+                              if (isCulinary) {
+                                bigrams[trigram] = (bigrams[trigram] || 0) + 1;
+                              }
+                            }
+                          }
+                        }
+
+                        // Extract 2-word phrases (bigrams)
                         if (i < arr.length - 1) {
                           const next = arr[i + 1];
                           if (!STOP_WORDS.has(next)) {
                             const g = `${arr[i]} ${next}`;
-                            if (g.length >= 5 && g.length <= 40)
-                              bigrams[g] = (bigrams[g] || 0) + 1;
+                            if (g.length >= 5 && g.length <= 40) {
+                              const isCulinary =
+                                culinaryKeywords.has(arr[i]) ||
+                                culinaryKeywords.has(next);
+                              if (isCulinary) {
+                                bigrams[g] = (bigrams[g] || 0) + 1;
+                              }
+                            }
                           }
                         }
                       }
-                      // Extract definitions from text (Term: definition or Term – definition patterns)
-                      const defPattern =
-                        /^\s*([A-Z][a-zA-Z\s]{2,50})\s*(?::|–|—|=)\s*(.{10,300})$/gm;
+
+                      // Extract definitions from text using multiple patterns
+                      const defPatterns = [
+                        // Pattern 1: "Term: definition"
+                        /^\s*([A-Z][a-zA-Z\s]{2,50})\s*:\s*(.{10,300})$/gm,
+                        // Pattern 2: "Term – definition"
+                        /^\s*([A-Z][a-zA-Z\s]{2,50})\s*(?:–|—|=)\s*(.{10,300})$/gm,
+                        // Pattern 3: Multi-line with term on one line, definition on next
+                        /^([A-Z][a-zA-Z\s]{2,50})$\n+(.{20,300}?)(?:\n\n|\n[A-Z]|$)/gm,
+                      ];
+
                       for (const text of pageTexts) {
-                        let match;
-                        while ((match = defPattern.exec(text)) !== null) {
-                          const term = match[1].trim().toLowerCase();
-                          const def = match[2].trim();
-                          if (
-                            term.length >= 3 &&
-                            term.length <= 50 &&
-                            def.length >= 10
-                          ) {
-                            definitions[term] = def;
+                        for (const pattern of defPatterns) {
+                          let match;
+                          while ((match = pattern.exec(text)) !== null) {
+                            const term = match[1]?.trim().toLowerCase() || "";
+                            const def = match[2]?.trim() || "";
+
+                            if (
+                              term.length >= 3 &&
+                              term.length <= 50 &&
+                              def.length >= 10 &&
+                              def.length <= 300 &&
+                              !definitions[term]
+                            ) {
+                              definitions[term] = def;
+                            }
                           }
                         }
                       }
