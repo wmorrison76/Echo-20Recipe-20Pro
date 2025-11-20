@@ -3784,39 +3784,106 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
               return "";
             };
 
-            for (const row of json) {
-              const titleKey = findColumn(row, ["title", "name", "recipe"]);
-              const ingredientsKey = findColumn(row, ["ingredient", "ingredients"]);
-              const instructionsKey = findColumn(row, ["instruction", "instructions", "directions", "method", "steps"]);
+            const tryParseCosting = (): Recipe | null => {
+              if (json.length === 0) return null;
 
-              const title = String(row[titleKey] ?? "").trim();
-              if (!title) {
-                console.log("[Excel Import] Skipping row with no title (checked column:", titleKey, "). Row data:", row);
-                continue;
+              const firstRowKeys = Object.keys(json[0] || {});
+              const hasIngredientColumn = firstRowKeys.some(
+                (k) => k.toLowerCase().includes("ingredient") || k.toLowerCase() === "ingredient"
+              );
+              const hasAmountColumn = firstRowKeys.some(
+                (k) => k.toLowerCase().includes("amount") || k.toLowerCase().includes("qty")
+              );
+              const hasUnitColumn = firstRowKeys.some(
+                (k) => k.toLowerCase().includes("unit") || k.toLowerCase() === "u/m"
+              );
+
+              if (!hasIngredientColumn) return null;
+
+              console.log("[Excel Import] Detected costing sheet format");
+
+              let title = f.name.replace(/\.[^.]+$/, "");
+              const ing: string[] = [];
+
+              for (const row of json) {
+                const ingredientKey = findColumn(row, ["ingredient"]);
+                const amountKey = findColumn(row, ["amount", "qty", "quantity"]);
+                const unitKey = findColumn(row, ["unit", "u/m", "uom"]);
+
+                const ingredient = String(row[ingredientKey] ?? "").trim();
+                if (!ingredient) continue;
+
+                const amount = String(row[amountKey] ?? "").trim();
+                const unit = String(row[unitKey] ?? "").trim();
+
+                let ingredientLine = ingredient;
+                if (amount && unit) {
+                  ingredientLine = `${amount} ${unit} ${ingredient}`;
+                } else if (amount) {
+                  ingredientLine = `${amount} ${ingredient}`;
+                } else if (unit) {
+                  ingredientLine = `${unit} ${ingredient}`;
+                }
+
+                ing.push(ingredientLine);
               }
-              console.log("[Excel Import] Found recipe:", title);
 
-              const ing = String(row[ingredientsKey] ?? "")
-                .split(/\n|;|\|/)
-                .map((s) => s.trim())
-                .filter(Boolean);
-              const ins = String(row[instructionsKey] ?? "")
-                .split(/\n|\.|;\s/)
-                .map((s) => s.trim())
-                .filter(Boolean);
-              collected.push({
+              if (ing.length === 0) return null;
+
+              console.log("[Excel Import] Parsed costing sheet as recipe:", title, "with", ing.length, "ingredients");
+              return {
                 id: uid(),
                 createdAt: Date.now(),
                 title,
                 ingredients: ing.length ? ing : undefined,
-                instructions: ins.length ? ins : undefined,
+                instructions: undefined,
                 sourceFile: f.name,
-              });
-              titles.push(title);
+              };
+            };
+
+            const costingRecipe = tryParseCosting();
+            if (costingRecipe) {
+              collected.push(costingRecipe);
+              titles.push(costingRecipe.title);
               try {
-                const chunk = [title, ...ing, ...ins].join("\n");
+                const chunk = [costingRecipe.title, ...(costingRecipe.ingredients || [])].join("\n");
                 learnFromTextChunks(f.name.replace(/\.[^.]+$/, ""), [chunk]);
               } catch {}
+            } else {
+              for (const row of json) {
+                const titleKey = findColumn(row, ["title", "name", "recipe"]);
+                const ingredientsKey = findColumn(row, ["ingredient", "ingredients"]);
+                const instructionsKey = findColumn(row, ["instruction", "instructions", "directions", "method", "steps"]);
+
+                const title = String(row[titleKey] ?? "").trim();
+                if (!title) {
+                  console.log("[Excel Import] Skipping row with no title (checked column:", titleKey, "). Row data:", row);
+                  continue;
+                }
+                console.log("[Excel Import] Found recipe:", title);
+
+                const ing = String(row[ingredientsKey] ?? "")
+                  .split(/\n|;|\|/)
+                  .map((s) => s.trim())
+                  .filter(Boolean);
+                const ins = String(row[instructionsKey] ?? "")
+                  .split(/\n|\.|;\s/)
+                  .map((s) => s.trim())
+                  .filter(Boolean);
+                collected.push({
+                  id: uid(),
+                  createdAt: Date.now(),
+                  title,
+                  ingredients: ing.length ? ing : undefined,
+                  instructions: ins.length ? ins : undefined,
+                  sourceFile: f.name,
+                });
+                titles.push(title);
+                try {
+                  const chunk = [title, ...ing, ...ins].join("\n");
+                  learnFromTextChunks(f.name.replace(/\.[^.]+$/, ""), [chunk]);
+                } catch {}
+              }
             }
           }
         } catch (e: any) {
