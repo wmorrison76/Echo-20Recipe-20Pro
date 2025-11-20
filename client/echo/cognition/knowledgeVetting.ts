@@ -828,6 +828,9 @@ VERDICT: APPROVED`;
       authority += 0.2;
     } else if (knowledge.source === "restaurant_menu") {
       authority += 0.15;
+    } else if (knowledge.source === "user_imported") {
+      // User's own recipes are authoritative
+      authority += 0.25;
     } else if (knowledge.source === "food_blog") {
       authority -= 0.1;
     }
