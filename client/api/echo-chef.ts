@@ -6,7 +6,6 @@ import {
   type ServiceContext,
 } from "../echo/brain/echoChefBrain";
 import { EchoRecipeGenerator } from "../echo/brain/echoRecipeGenerator";
-import { captureOpenAIKnowledgeAsync } from "../../server/lib/auto-knowledge-capture";
 
 interface EchoChefRequest {
   userPrompt: string;
