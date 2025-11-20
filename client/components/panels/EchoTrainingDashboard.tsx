@@ -17,6 +17,7 @@ import { EchoOpenAITrainingMode } from "../EchoOpenAITrainingMode";
 import { useEchoOpenAITraining } from "../../hooks/use-echo-openai-training";
 import { SystemHealthDashboard } from "../SystemHealthDashboard";
 import { AutomatedMultiDomainTraining } from "../AutomatedMultiDomainTraining";
+import { PineconeVerificationDashboard } from "../PineconeVerificationDashboard";
 
 interface EchoTrainingDashboardProps {
   onRecipeImport?: (recipes: any[]) => void;
@@ -144,12 +145,13 @@ export function EchoTrainingDashboard({
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="multi-domain" className="gap-1">
             <Rocket className="w-4 h-4" />
             <span className="hidden sm:inline">Automated</span>
           </TabsTrigger>
           <TabsTrigger value="status">System Status</TabsTrigger>
+          <TabsTrigger value="pinecone">Pinecone</TabsTrigger>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="training" className="relative">
             Training
@@ -174,6 +176,23 @@ export function EchoTrainingDashboard({
               setActiveTab("training");
             }}
           />
+        </TabsContent>
+
+        {/* Pinecone Verification Tab */}
+        <TabsContent value="pinecone" className="space-y-4">
+          <Card className="bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200 p-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-purple-900">
+                  Vector Database Status
+                </h2>
+                <p className="text-purple-700 mt-2">
+                  Verify that all training data has been safely stored in Pinecone
+                </p>
+              </div>
+            </div>
+          </Card>
+          <PineconeVerificationDashboard />
         </TabsContent>
 
         {/* Overview Tab */}
