@@ -2717,6 +2717,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         }
 
         let ingIdx = -1;
+        const tableHeaderPattern = /^(?:ingredients|u\.?s\.?|metric|%|\s*)+$/i;
+
         for (let i = 0; i < cleaned.length; i++) {
           const line = cleaned[i];
           if (
@@ -2724,6 +2726,10 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             /^for the [a-z]/.test(line)
           ) {
             ingIdx = i;
+            // Skip if it's just a table header row
+            if (i + 1 < cleaned.length && tableHeaderPattern.test(line)) {
+              ingIdx = i + 1;
+            }
             break;
           }
         }
@@ -2736,7 +2742,13 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
                 /^[:•\-*\u2022\u2023\u2043]\s*/.test(entry),
             );
             if (matches.length >= 3) {
-              ingIdx = Math.max(0, i - 1);
+              // Make sure we're not starting at a table header
+              const startIdx = Math.max(0, i - 1);
+              if (!tableHeaderPattern.test(cleaned[startIdx] || "")) {
+                ingIdx = startIdx;
+              } else {
+                ingIdx = i;
+              }
               break;
             }
           }
