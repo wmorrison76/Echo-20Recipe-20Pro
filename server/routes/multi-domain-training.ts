@@ -20,6 +20,11 @@ import {
   getCompletedTrainingSessions,
 } from "../lib/training-persistence-service";
 import { recordCompletedTrainingDomains } from "../lib/complete-training-domains";
+import {
+  getPineconeStatus,
+  verifyTrainingVectors,
+  storeTrainingDataToPinecone,
+} from "../lib/pinecone-verification-service";
 import type { AnyKnowledge } from "../../client/echo/types/knowledge";
 
 const router = Router();
@@ -664,6 +669,87 @@ router.get("/session/:sessionId", async (req: Request, res: Response) => {
     return res.status(500).json({
       success: false,
       error: error.message || "Failed to load session",
+    });
+  }
+});
+
+/**
+ * GET /api/multi-domain-training/pinecone/status
+ * Check Pinecone connection and training data storage status
+ */
+router.get("/pinecone/status", async (_req: Request, res: Response) => {
+  try {
+    const status = await getPineconeStatus();
+
+    return res.json({
+      success: true,
+      pinecone: status,
+    });
+  } catch (error: any) {
+    console.error("[MultiDomainTraining] Pinecone status check failed:", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Failed to check Pinecone status",
+    });
+  }
+});
+
+/**
+ * GET /api/multi-domain-training/pinecone/verify
+ * Verify all training vectors are stored in Pinecone
+ */
+router.get("/pinecone/verify", async (_req: Request, res: Response) => {
+  try {
+    const verification = await verifyTrainingVectors();
+
+    return res.json({
+      success: true,
+      verification,
+    });
+  } catch (error: any) {
+    console.error("[MultiDomainTraining] Pinecone verification failed:", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Failed to verify training vectors",
+    });
+  }
+});
+
+/**
+ * POST /api/multi-domain-training/pinecone/sync
+ * Sync training data to Pinecone (in case some vectors were missed)
+ */
+router.post("/pinecone/sync", async (req: Request, res: Response) => {
+  try {
+    const { sessionId, trainingData } = req.body as {
+      sessionId: string;
+      trainingData: Array<{
+        profileId: string;
+        domain: string;
+        title: string;
+        content: string;
+        confidence: number;
+      }>;
+    };
+
+    if (!sessionId || !trainingData) {
+      return res.status(400).json({
+        error: "sessionId and trainingData are required",
+      });
+    }
+
+    const result = await storeTrainingDataToPinecone(sessionId, trainingData);
+
+    return res.json({
+      success: result.success,
+      stored: result.stored,
+      error: result.error,
+    });
+  } catch (error: any) {
+    console.error("[MultiDomainTraining] Pinecone sync failed:", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Failed to sync training data",
     });
   }
 });
