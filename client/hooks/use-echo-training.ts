@@ -121,16 +121,33 @@ export function useEchoTraining() {
       setTrainingProgress(
         `Training complete: ${results.success} stored, ${results.failed} failed`,
       );
+      setTrainingResult(results);
       setIsTraining(false);
+      setShowTrainingResult(true);
+
+      // Auto-dismiss after 8 seconds if successful
+      if (results.failed === 0) {
+        setTimeout(() => {
+          setShowTrainingResult(false);
+        }, 8000);
+      }
 
       return results;
     },
     [],
   );
 
+  const dismissTrainingResult = () => {
+    setShowTrainingResult(false);
+    setTrainingResult(null);
+  };
+
   return {
     isTraining,
+    showTrainingResult,
     trainingProgress,
+    trainingResult,
     trainWithRecipes,
+    dismissTrainingResult,
   };
 }
