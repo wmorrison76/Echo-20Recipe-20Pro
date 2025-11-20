@@ -3687,21 +3687,89 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             }
           } else {
             const ab = await f.arrayBuffer();
-            const XLSX: any = await import("https://esm.sh/xlsx@0.18.5");
-            const wb = XLSX.read(ab, { type: "array" });
+            let XLSX: any;
+            try {
+              XLSX = await import("https://esm.sh/xlsx@0.18.5");
+            } catch (importError: any) {
+              throw new Error(
+                `Failed to load Excel parser: ${importError?.message || "Unknown error"}`
+              );
+            }
+
+            if (!XLSX || !XLSX.read) {
+              throw new Error("Excel parser (XLSX) is not available");
+            }
+
+            let wb: any;
+            try {
+              wb = XLSX.read(ab, { type: "array" });
+            } catch (readError: any) {
+              throw new Error(
+                `Failed to parse Excel file: ${readError?.message || "Invalid format or corrupted file"}`
+              );
+            }
+
+            if (!wb || !wb.SheetNames || wb.SheetNames.length === 0) {
+              throw new Error("Excel file has no readable sheets");
+            }
+
             const ws = wb.Sheets[wb.SheetNames[0]];
-            const json = XLSX.utils.sheet_to_json(ws, { defval: "" });
+            if (!ws) {
+              throw new Error("Failed to access the first sheet in the Excel file");
+            }
+
+            let json: any[] = [];
+            try {
+              json = XLSX.utils.sheet_to_json(ws, { defval: "" });
+            } catch (jsonError: any) {
+              throw new Error(
+                `Failed to convert sheet to JSON: ${jsonError?.message || "Unknown error"}`
+              );
+            }
+
+            if (!Array.isArray(json) || json.length === 0) {
+              throw new Error("Sheet contains no data rows");
+            }
+
             for (const row of json) {
               const title = String(
-                row.title ?? row.Name ?? row.Recipe ?? "",
+                row.title ??
+                  row.Title ??
+                  row.Name ??
+                  row.name ??
+                  row.Recipe ??
+                  row.recipe ??
+                  row["Recipe Name"] ??
+                  row["recipe name"] ??
+                  ""
               ).trim();
               if (!title) continue;
-              const ing = String(row.ingredients ?? row.Ingredients ?? "")
+              const ing = String(
+                row.ingredients ??
+                  row.Ingredients ??
+                  row.INGREDIENTS ??
+                  row.Ingredient ??
+                  row.ingredient ??
+                  row["Ingredient List"] ??
+                  row["ingredient list"] ??
+                  ""
+              )
                 .split(/\n|;|\|/)
                 .map((s) => s.trim())
                 .filter(Boolean);
               const ins = String(
-                row.instructions ?? row.Directions ?? row.Method ?? "",
+                row.instructions ??
+                  row.Instructions ??
+                  row.INSTRUCTIONS ??
+                  row.Directions ??
+                  row.directions ??
+                  row.Method ??
+                  row.method ??
+                  row.Steps ??
+                  row.steps ??
+                  row["Cooking Instructions"] ??
+                  row["cooking instructions"] ??
+                  ""
               )
                 .split(/\n|\.|;\s/)
                 .map((s) => s.trim())
