@@ -3782,7 +3782,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
                 }
               }
 
-              console.log("[Excel Import] Parsed', json.length, 'data rows");
+              console.log("[Excel Import] Parsed", json.length, "data rows");
             } catch (jsonError: any) {
               const msg = `Failed to convert sheet to JSON: ${jsonError?.message || "Unknown error"}`;
               console.error("[Excel Import]", msg);
