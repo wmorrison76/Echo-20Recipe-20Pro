@@ -3107,34 +3107,11 @@ export default function RecipeSearchSection() {
                     const jf = new File([blob], `${bookName}.json`, {
                       type: "application/json",
                     });
-                    const { added: importedCount } = await addRecipesFromJsonFiles([jf]);
+                    const { added: importedCount } = await importRecipesWithEchoTraining(
+                      () => addRecipesFromJsonFiles([jf]),
+                      bookName,
+                    );
                     setStatus(`Imported ${importedCount} recipes from detected list.`);
-
-                    // Train Echo with imported recipes
-                    if (importedCount > 0) {
-                      try {
-                        console.log(`🧠 Training Echo with ${importedCount} imported recipes...`);
-                        const trainingRecipes = withMeta.map((it: any) => ({
-                          id: `${bookName}_${it.title}`.toLowerCase().replace(/\s+/g, "_"),
-                          title: it.title,
-                          ingredients: it.ingredients || [],
-                          instructions: it.instructions || [],
-                          sourceBook: bookName,
-                          sourcePage: 0,
-                          cuisine: it.cuisine,
-                          course: it.course,
-                          difficulty: it.difficulty,
-                          prepTime: it.extra?.prepTime,
-                          cookTime: it.extra?.cookTime,
-                          yield: it.extra?.yield,
-                          tags: it.tags || [],
-                        }));
-                        const result = await trainWithRecipes(trainingRecipes, bookName);
-                        console.log(`✅ Echo training complete:`, result);
-                      } catch (error) {
-                        console.warn(`⚠️ Echo training failed:`, error);
-                      }
-                    }
                   }
                 } catch (e: any) {
                   setStatus(`Failed: ${e?.message || "error"}`);
