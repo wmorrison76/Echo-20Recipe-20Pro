@@ -3107,6 +3107,95 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
+      // Extract and send definitions to Echo from all PDF pages
+      if (files.length > 0) {
+        try {
+          // Collect all page texts from all PDFs
+          let allPageTexts: string[] = [];
+          for (const f of files) {
+            try {
+              const ab = await f.arrayBuffer();
+              const pdfjs: any = await import(
+                "https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs"
+              );
+              const workerSrc =
+                "https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs";
+              if (pdfjs.GlobalWorkerOptions)
+                pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
+              const doc = await pdfjs.getDocument({ data: ab }).promise;
+
+              for (let p = 1; p <= doc.numPages; p++) {
+                const page = await doc.getPage(p);
+                const tc = await page.getTextContent();
+                const pageLines = (tc.items as any[])
+                  .map((i: any) => String(i.str))
+                  .filter(Boolean);
+                allPageTexts.push(pageLines.join("\n"));
+              }
+            } catch (pdfError) {
+              console.warn(`Failed to extract definitions from ${f.name}`);
+            }
+          }
+
+          if (allPageTexts.length > 0) {
+            const combinedText = allPageTexts.join("\n");
+            const sourceName = files[0]?.name.replace(/\.pdf$/i, "") || "Imported PDF";
+
+            try {
+              console.log(`📚 Extracting definitions from PDF...`);
+              const response = await fetch(
+                "/api/echo-training/extract-definitions-from-pdf",
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    pdfText: combinedText,
+                    sourceName,
+                  }),
+                },
+              );
+
+              if (response.ok) {
+                const result = await response.json();
+                if (result.count > 0) {
+                  console.log(
+                    `✅ Extracted ${result.count} definitions from "${sourceName}"`,
+                  );
+
+                  // Store definitions in Echo knowledge base
+                  try {
+                    const storeResponse = await fetch(
+                      "/api/echo-training/store-definitions-batch",
+                      {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          definitions: result.definitions,
+                          sourceName,
+                        }),
+                      },
+                    );
+
+                    if (storeResponse.ok) {
+                      const storeResult = await storeResponse.json();
+                      console.log(
+                        `✅ Stored ${storeResult.success} definitions in Echo knowledge base`,
+                      );
+                    }
+                  } catch (storeError) {
+                    console.warn("Failed to store definitions in Echo:", storeError);
+                  }
+                }
+              }
+            } catch (extractError) {
+              console.warn("Failed to extract definitions:", extractError);
+            }
+          }
+        } catch (defError) {
+          console.warn("Error processing definitions:", defError);
+        }
+      }
+
       const { added } = appendRecipes(collected);
       return { added: added.length, errors, titles };
     },
