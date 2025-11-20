@@ -575,6 +575,7 @@ export default function RecipeSearchSection() {
     deleteCollection,
     setCollectionRecipes,
   } = useAppData();
+  const { trainWithRecipes } = useEchoTraining();
   const [q, setQ] = useState("");
   type Cat =
     | "all"
