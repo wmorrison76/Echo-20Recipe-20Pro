@@ -3752,51 +3752,55 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
               throw new Error(msg);
             }
 
-            console.log("[Excel Import] Processing rows. First row keys:", Object.keys(json[0] || {}));
+            const firstRow = json[0] || {};
+            const columnKeys = Object.keys(firstRow);
+            console.log("[Excel Import] Processing rows. Column headers found:", columnKeys);
+            console.log("[Excel Import] First row data:", firstRow);
+
+            const findColumn = (row: any, keywords: string[]): string => {
+              const lowerKeywords = keywords.map((k) => k.toLowerCase());
+
+              for (const key of Object.keys(row)) {
+                const lowerKey = key.toLowerCase();
+                for (const keyword of lowerKeywords) {
+                  if (lowerKey.includes(keyword) || keyword.includes(lowerKey)) {
+                    return key;
+                  }
+                }
+              }
+
+              for (const key of Object.keys(row)) {
+                const lowerKey = key.toLowerCase();
+                for (const keyword of lowerKeywords) {
+                  if (
+                    lowerKey.split(/[\s\-_]/).some((part) => part === keyword) ||
+                    keyword.split(/[\s\-_]/).some((part) => part === lowerKey)
+                  ) {
+                    return key;
+                  }
+                }
+              }
+
+              return "";
+            };
+
             for (const row of json) {
-              const title = String(
-                row.title ??
-                  row.Title ??
-                  row.Name ??
-                  row.name ??
-                  row.Recipe ??
-                  row.recipe ??
-                  row["Recipe Name"] ??
-                  row["recipe name"] ??
-                  ""
-              ).trim();
+              const titleKey = findColumn(row, ["title", "name", "recipe"]);
+              const ingredientsKey = findColumn(row, ["ingredient", "ingredients"]);
+              const instructionsKey = findColumn(row, ["instruction", "instructions", "directions", "method", "steps"]);
+
+              const title = String(row[titleKey] ?? "").trim();
               if (!title) {
-                console.log("[Excel Import] Skipping row with no title. Row data:", row);
+                console.log("[Excel Import] Skipping row with no title (checked column:", titleKey, "). Row data:", row);
                 continue;
               }
               console.log("[Excel Import] Found recipe:", title);
-              const ing = String(
-                row.ingredients ??
-                  row.Ingredients ??
-                  row.INGREDIENTS ??
-                  row.Ingredient ??
-                  row.ingredient ??
-                  row["Ingredient List"] ??
-                  row["ingredient list"] ??
-                  ""
-              )
+
+              const ing = String(row[ingredientsKey] ?? "")
                 .split(/\n|;|\|/)
                 .map((s) => s.trim())
                 .filter(Boolean);
-              const ins = String(
-                row.instructions ??
-                  row.Instructions ??
-                  row.INSTRUCTIONS ??
-                  row.Directions ??
-                  row.directions ??
-                  row.Method ??
-                  row.method ??
-                  row.Steps ??
-                  row.steps ??
-                  row["Cooking Instructions"] ??
-                  row["cooking instructions"] ??
-                  ""
-              )
+              const ins = String(row[instructionsKey] ?? "")
                 .split(/\n|\.|;\s/)
                 .map((s) => s.trim())
                 .filter(Boolean);
