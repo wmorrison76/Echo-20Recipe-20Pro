@@ -72,8 +72,12 @@ export const echoChefHandler = async (req: Request, res: Response) => {
     // Get suggestions from Chef Brain
     const suggestions = await EchoChefBrain.suggestRecipes(baseQuery);
 
-    // If mode is "generate", also produce a full recipe draft
-    if (mode === "generate") {
+    // Check if we should auto-enable generation mode due to low knowledge base coverage
+    const hasNoGoodResults = !suggestions.some(s => s.type === "existing_recipe");
+    const shouldAutoGenerate = hasNoGoodResults && mode === "suggest";
+
+    // If mode is "generate" or we need to auto-generate due to low coverage
+    if (mode === "generate" || shouldAutoGenerate) {
       try {
         const generationResult =
           await EchoRecipeGenerator.generateFullRecipeDraft({
@@ -86,6 +90,8 @@ export const echoChefHandler = async (req: Request, res: Response) => {
           suggestions,
           recipeDraft: generationResult.recipeDraft,
           neighbors: generationResult.neighborsUsed,
+          usedOpenAI: shouldAutoGenerate,
+          openAIReason: shouldAutoGenerate ? "Knowledge base coverage insufficient, using OpenAI" : undefined,
         });
       } catch (genErr: any) {
         console.error("[EchoChef] Recipe generation failed:", genErr);
