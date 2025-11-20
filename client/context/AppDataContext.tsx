@@ -181,6 +181,11 @@ type AppData = {
     errors: { file: string; error: string }[];
     titles: string[];
   }>;
+  addRecipesFromPdfFilesVision: (files: File[]) => Promise<{
+    added: number;
+    errors: { file: string; error: string }[];
+    titles: string[];
+  }>;
   addRecipesFromExcelFiles: (files: File[]) => Promise<{
     added: number;
     errors: { file: string; error: string }[];
