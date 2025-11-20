@@ -2965,7 +2965,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
               /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[¼½¾⅓⅔⅛⅜⅝⅞])(?:\s*[a-zA-Z]+)?\b/;
             let cnt = 0;
             for (const L of lines) {
-              if (qtyRe.test(L) || /^[•\-*]\s+/.test(L)) cnt++;
+              if (qtyRe.test(L) || /^[���\-*]\s+/.test(L)) cnt++;
             }
             return cnt >= 3;
           };
@@ -3162,7 +3162,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
                     `✅ Extracted ${result.count} definitions from "${sourceName}"`,
                   );
 
-                  // Store definitions in Echo knowledge base
+                  // Store definitions in Echo knowledge base AND local knowledge base
                   try {
                     const storeResponse = await fetch(
                       "/api/echo-training/store-definitions-batch",
@@ -3181,6 +3181,42 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
                       console.log(
                         `✅ Stored ${storeResult.success} definitions in Echo knowledge base`,
                       );
+
+                      // Also add definitions to local knowledge base for UI display
+                      try {
+                        const kbRaw = localStorage.getItem("kb:cook") || "{}";
+                        const kb = JSON.parse(kbRaw);
+                        const culinaryTerms = kb.culinaryTerms || {};
+                        const definitions = kb.definitions || {};
+
+                        // Add extracted definitions to the knowledge base
+                        for (const def of result.definitions) {
+                          const term = def.term.toLowerCase();
+                          if (!culinaryTerms[term]) {
+                            culinaryTerms[term] = 1;
+                          } else {
+                            culinaryTerms[term] += 1;
+                          }
+
+                          // Store the actual definition text
+                          definitions[term] = {
+                            definition: def.definition,
+                            categories: def.categories || [],
+                            source: sourceName,
+                          };
+                        }
+
+                        kb.culinaryTerms = culinaryTerms;
+                        kb.definitions = definitions;
+                        kb.books = Array.from(new Set([...(kb.books || []), sourceName]));
+
+                        localStorage.setItem("kb:cook", JSON.stringify(kb));
+                        console.log(
+                          `📖 Added ${result.definitions.length} definitions to local knowledge base`,
+                        );
+                      } catch (localError) {
+                        console.warn("Failed to add definitions to local KB:", localError);
+                      }
                     }
                   } catch (storeError) {
                     console.warn("Failed to store definitions in Echo:", storeError);
