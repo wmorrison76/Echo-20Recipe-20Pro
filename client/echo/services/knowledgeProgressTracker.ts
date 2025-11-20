@@ -122,13 +122,21 @@ export class KnowledgeProgressTracker {
       "catering",
     ];
 
+    // Guard against empty or invalid metadata
+    if (!metadata || typeof metadata !== "object") {
+      return;
+    }
+
     types.forEach((type) => {
       const metric = this.state.culinaryMetrics.find((m) => m.type === type);
       if (metric) {
         // Count items for this type
-        const typeItems = Object.values(metadata).filter((m: any) => {
+        const metadataValues = Object.values(metadata).filter(
+          (m) => m && typeof m === "object"
+        );
+        const typeItems = metadataValues.filter((m: any) => {
           const category = m.category || m.type || "";
-          return category.toLowerCase().includes(type);
+          return typeof category === "string" && category.toLowerCase().includes(type);
         }).length;
 
         // Calculate coverage based on checkpoints
