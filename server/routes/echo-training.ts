@@ -419,7 +419,7 @@ router.post("/vision-extract-recipes", async (req: Request, res: Response) => {
         Authorization: `Bearer ${openaiApiKey}`,
       },
       body: JSON.stringify({
-        model: "gpt-4-vision-preview",
+        model: "gpt-4-turbo",
         max_tokens: 4096,
         messages: [
           {
