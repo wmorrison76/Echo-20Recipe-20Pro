@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { EchoOpenAITrainingMode } from "../EchoOpenAITrainingMode";
 import { useEchoOpenAITraining } from "../../hooks/use-echo-openai-training";
+import { SystemHealthDashboard } from "../SystemHealthDashboard";
 
 interface EchoTrainingDashboardProps {
   onRecipeImport?: (recipes: any[]) => void;
