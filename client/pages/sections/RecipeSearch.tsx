@@ -1241,6 +1241,39 @@ export default function RecipeSearchSection() {
     setStatus(
       titleSummary ? `${statusMessage} ${titleSummary}` : statusMessage,
     );
+
+    // Train Echo with all imported recipes
+    if (importedCount > 0 && collectedTitles.length > 0) {
+      try {
+        console.log(`🧠 Training Echo with ${collectedTitles.length} imported recipes...`);
+        const newRecipes = recipes
+          .filter((r) => collectedTitles.includes(r.title))
+          .slice(-collectedTitles.length)
+          .map((r) => ({
+            id: r.id,
+            title: r.title,
+            ingredients: r.ingredients || [],
+            instructions: r.instructions || [],
+            sourceBook: r.extra?.sourceFile || r.sourceFile || "Import",
+            sourcePage: r.extra?.page || 0,
+            cuisine: r.extra?.cuisine,
+            course: r.extra?.course,
+            difficulty: r.extra?.difficulty,
+            prepTime: r.extra?.prepTime,
+            cookTime: r.extra?.cookTime,
+            yield: r.extra?.yield,
+            tags: r.tags || [],
+          }));
+
+        if (newRecipes.length > 0) {
+          const trainingResult = await trainWithRecipes(newRecipes, "Bulk Import");
+          console.log(`✅ Echo training complete:`, trainingResult);
+        }
+      } catch (error) {
+        console.warn(`⚠️ Echo training failed (will continue anyway):`, error);
+      }
+    }
+
     toast({
       title: "Recipe import complete",
       description: [summary, issueSummary, titleSummary]
@@ -3596,7 +3629,7 @@ export default function RecipeSearchSection() {
                     insights.commonCombinations.length > 0 && (
                       <div className="border-t pt-3">
                         <div className="font-medium mb-2">
-                          👨‍🍳 Common Ingredient Pairs
+                          ����‍🍳 Common Ingredient Pairs
                         </div>
                         <ul className="space-y-1 text-xs">
                           {insights.commonCombinations
