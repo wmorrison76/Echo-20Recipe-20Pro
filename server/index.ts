@@ -88,5 +88,8 @@ export function createServer() {
   // EchoAi³ Training API (stores recipes for Chef Brain suggestions)
   app.use("/api/echo-training", echoTrainingRouter);
 
+  // EchoAi³ - OpenAI Collaborative Training (dialogue, knowledge capture, learning)
+  app.use("/api/echo-training", echoOpenAITrainingRouter);
+
   return app;
 }
