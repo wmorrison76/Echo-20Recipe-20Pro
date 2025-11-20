@@ -2835,8 +2835,47 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           const isTableHeader = (line: string) =>
             tableHeaderPatterns.some(pattern => pattern.test(line.trim()));
 
+          // Merge multi-line ingredients (table-based recipes often split ingredients across lines)
+          const mergedIngredients: string[] = [];
+          let currentLine = "";
+
+          for (const line of ingredients) {
+            const trimmed = line.trim();
+
+            // Skip empty lines and headers
+            if (!trimmed || isTableHeader(trimmed)) {
+              if (currentLine) {
+                mergedIngredients.push(currentLine);
+                currentLine = "";
+              }
+              continue;
+            }
+
+            // Check if this line is a continuation of the previous one
+            // Lines are continuations if they don't start with a bullet/number and aren't isolated page references
+            const isContinuation = currentLine &&
+              !/^[•\-*0-9\(]/.test(trimmed) &&
+              !/(p\.?\s*\d+|pp\.?\s*\d+)/.test(trimmed) &&
+              !/^(?:[A-Z][a-z]+\s+){0,2}[a-z]/.test(trimmed); // Likely new item
+
+            if (isContinuation) {
+              // Merge with current line
+              currentLine += " " + trimmed;
+            } else {
+              // Start new ingredient
+              if (currentLine) {
+                mergedIngredients.push(currentLine);
+              }
+              currentLine = trimmed;
+            }
+          }
+
+          if (currentLine) {
+            mergedIngredients.push(currentLine);
+          }
+
           // Filter and clean
-          ingredients = ingredients
+          ingredients = mergedIngredients
             .filter((line) => {
               const trimmed = line.trim();
               if (!trimmed || isTableHeader(trimmed)) return false;
