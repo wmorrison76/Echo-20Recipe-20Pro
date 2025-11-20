@@ -1,6 +1,10 @@
 import { Router, Request, Response } from "express";
 import { generateEmbedding, storeRecipeVector } from "../lib/vector-engine";
 import type { RecipeCodexMetadata } from "../../client/echo/codex";
+import {
+  extractDefinitionsFromPdfText,
+  formatDefinitionsForBuilder,
+} from "../lib/pdf-definition-extractor";
 
 const router = Router();
 
