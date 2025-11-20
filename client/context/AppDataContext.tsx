@@ -3110,6 +3110,17 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       // Extract and send definitions to Echo from all PDF pages
       if (files.length > 0) {
         try {
+          type PdfRow = {
+            y: number;
+            items: {
+              x: number;
+              xEnd: number;
+              width: number;
+              height: number;
+              str: string;
+            }[];
+          };
+
           // Collect all page texts from all PDFs using the same intelligent extraction
           let allPageTexts: string[] = [];
           for (const f of files) {
@@ -3132,17 +3143,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
                 const items = (tc.items || []) as any[];
                 if (!items.length) continue;
 
-                type Row = {
-                  y: number;
-                  items: {
-                    x: number;
-                    xEnd: number;
-                    width: number;
-                    height: number;
-                    str: string;
-                  }[];
-                };
-                const rowMap = new Map<number, Row>();
+                const rowMap = new Map<number, PdfRow>();
                 const yTolerance = 3;
                 for (const raw of items) {
                   const str = typeof raw.str === "string" ? raw.str : "";
