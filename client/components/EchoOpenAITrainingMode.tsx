@@ -175,7 +175,7 @@ export function EchoOpenAITrainingMode({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             openaiResponse,
-            context: `Training dialogue for ${domain}`,
+            context: `Training dialogue for ${domain}. Focus areas: ${focusAreas.join(", ")}`,
             domain,
           }),
         },
@@ -183,19 +183,37 @@ export function EchoOpenAITrainingMode({
 
       if (response.ok) {
         const data = await response.json();
+        console.log(
+          `[Knowledge Capture] Extracted ${data.extracted} items:`,
+          data.knowledge,
+        );
+
         if (data.knowledge && data.knowledge.length > 0) {
+          const numItems = data.knowledge.length;
           setStats((s) => ({
             ...s,
-            knowledgeItems: s.knowledgeItems + data.knowledge.length,
+            knowledgeItems: s.knowledgeItems + numItems,
           }));
+
+          const learningMessage: DialogueMessage = {
+            id: `msg-learning-${Date.now()}`,
+            timestamp: new Date().toISOString(),
+            speaker: "system",
+            content: `📚 Captured ${numItems} new knowledge item${numItems !== 1 ? "s" : ""}: ${data.knowledge.map((k: any) => k.title).join(", ")}`,
+            messageType: "confirmation",
+          };
+          setMessages((prev) => [...prev, learningMessage]);
 
           if (onKnowledgeCapture) {
             onKnowledgeCapture(data.knowledge);
           }
         }
+      } else {
+        const errorData = await response.text();
+        console.error("[Knowledge Capture] Server error:", errorData);
       }
     } catch (error) {
-      console.error("Failed to capture knowledge:", error);
+      console.error("[Knowledge Capture] Failed to capture knowledge:", error);
     }
   };
 
