@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Alert, AlertDescription } from "./ui/alert";
-import { AlertCircle, CheckCircle, Database, Zap, RefreshCw } from "lucide-react";
+import { AlertCircle, CheckCircle, Database, Zap, RefreshCw, Download } from "lucide-react";
 
 interface PineconeStatus {
   connected: boolean;
@@ -36,6 +36,8 @@ export function PineconeVerificationDashboard() {
     null,
   );
   const [isLoading, setIsLoading] = useState(false);
+  const [isStoring, setIsStoring] = useState(false);
+  const [storeMessage, setStoreMessage] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const checkStatus = async () => {
@@ -56,6 +58,37 @@ export function PineconeVerificationDashboard() {
       console.error("Failed to check Pinecone status:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const storeCompletedTraining = async () => {
+    setIsStoring(true);
+    setStoreMessage(null);
+    try {
+      const response = await fetch(
+        "/api/multi-domain-training/pinecone/store-completed",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        setStoreMessage(
+          `✓ Successfully stored ${data.stored}/${data.total} training vectors!`,
+        );
+        // Refresh status after storing
+        setTimeout(() => checkStatus(), 1000);
+      } else {
+        setStoreMessage(`✗ Failed to store: ${data.error}`);
+      }
+    } catch (error) {
+      console.error("Failed to store training data:", error);
+      setStoreMessage("✗ Error storing training data");
+    } finally {
+      setIsStoring(false);
     }
   };
 
@@ -101,11 +134,41 @@ export function PineconeVerificationDashboard() {
               </p>
             </div>
           </div>
-          {status.error && (
-            <span className="text-sm text-red-600">{status.error}</span>
-          )}
+          <div className="text-right">
+            {status.error && (
+              <p className="text-sm text-amber-600 mb-2">{status.error}</p>
+            )}
+            {status.connected && !verification?.found && (
+              <Button
+                size="sm"
+                onClick={storeCompletedTraining}
+                disabled={isStoring}
+                className="gap-2 bg-green-600 hover:bg-green-700"
+              >
+                <Download className="h-4 w-4" />
+                {isStoring ? "Storing..." : "Store 246 Vectors"}
+              </Button>
+            )}
+          </div>
         </div>
       </Card>
+
+      {/* Store Message */}
+      {storeMessage && (
+        <Alert
+          className={
+            storeMessage.startsWith("✓")
+              ? "border-green-200 bg-green-50"
+              : "border-red-200 bg-red-50"
+          }
+        >
+          <AlertDescription
+            className={storeMessage.startsWith("✓") ? "text-green-800" : "text-red-800"}
+          >
+            {storeMessage}
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Index Stats */}
       {status.connected && status.indexStats && (
