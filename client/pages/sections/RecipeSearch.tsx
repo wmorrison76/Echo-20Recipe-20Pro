@@ -2867,7 +2867,11 @@ export default function RecipeSearchSection() {
                         `${f.name.replace(/\.[^.]+$/, "")}.json`,
                         { type: "application/json" },
                       );
-                      const { added } = await addRecipesFromJsonFiles([jf]);
+                      const bookName = f.name.replace(/\.[^.]+$/, "");
+                      const { added } = await importRecipesWithEchoTraining(
+                        () => addRecipesFromJsonFiles([jf]),
+                        bookName,
+                      );
                       setStatus(`Imported ${added} recipes from book.`);
                     } else {
                       setStatus("No recipes detected.");
