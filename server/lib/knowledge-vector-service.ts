@@ -1,0 +1,365 @@
+import type { AnyKnowledge, KnowledgeType } from "../../client/echo/types/knowledge";
+import { generateEmbedding } from "./pinecone-service";
+
+let PineconeClass: any = null;
+let pineconeClientInstance: any = null;
+
+async function getPineconeModule() {
+  if (!PineconeClass) {
+    const module = await import("@pinecone-database/pinecone");
+    PineconeClass = module.Pinecone;
+  }
+  return PineconeClass;
+}
+
+const PINECONE_API_KEY = process.env.PINECONE_API_KEY || "";
+const KNOWLEDGE_INDEX = "echo-knowledge";
+
+async function getPineconeClient() {
+  if (!pineconeClientInstance && PINECONE_API_KEY) {
+    const Pinecone = await getPineconeModule();
+    pineconeClientInstance = new Pinecone({
+      apiKey: PINECONE_API_KEY,
+    });
+  }
+  return pineconeClientInstance;
+}
+
+export interface KnowledgeVector {
+  id: string;
+  knowledge: AnyKnowledge;
+  embedding: number[];
+  metadata: {
+    type: KnowledgeType;
+    domain: string;
+    title: string;
+    sourceType: "openai" | "user_imported" | "user_trained";
+    tags: string[];
+    createdAt: string;
+    confidence?: number;
+  };
+}
+
+export interface KnowledgeSearchOptions {
+  topK?: number;
+  type?: KnowledgeType;
+  domain?: string;
+  sourceType?: "openai" | "user_imported" | "user_trained";
+  minConfidence?: number;
+}
+
+/**
+ * Store knowledge in Pinecone with embeddings
+ */
+export async function storeKnowledgeVector(
+  knowledge: AnyKnowledge,
+): Promise<void> {
+  if (!PINECONE_API_KEY) {
+    console.warn("Pinecone API key not configured, skipping knowledge storage");
+    return;
+  }
+
+  try {
+    const client = await getPineconeClient();
+    const index = client.Index(KNOWLEDGE_INDEX);
+
+    const knowledgeText = buildKnowledgeText(knowledge);
+    const embedding = await generateEmbedding(knowledgeText);
+
+    const vectorId = `${knowledge.type}-${knowledge.id}`;
+    const metadata = {
+      type: knowledge.type,
+      domain: knowledge.domain,
+      title: knowledge.title,
+      sourceType: knowledge.sourceType,
+      tags: knowledge.tags,
+      createdAt: knowledge.createdAt,
+      confidence: knowledge.confidence || 0.8,
+      relatedKnowledge: knowledge.relatedKnowledge || [],
+    };
+
+    await index.upsert([
+      {
+        id: vectorId,
+        values: embedding,
+        metadata,
+      },
+    ]);
+  } catch (error) {
+    console.error("Error storing knowledge vector:", error);
+    throw error;
+  }
+}
+
+/**
+ * Store multiple knowledge items in batch
+ */
+export async function storeKnowledgeBatch(
+  knowledgeItems: AnyKnowledge[],
+): Promise<{ success: number; failed: number }> {
+  if (!PINECONE_API_KEY) {
+    console.warn("Pinecone API key not configured");
+    return { success: 0, failed: knowledgeItems.length };
+  }
+
+  const results = { success: 0, failed: 0 };
+
+  for (const knowledge of knowledgeItems) {
+    try {
+      await storeKnowledgeVector(knowledge);
+      results.success++;
+    } catch (error) {
+      console.error(`Failed to store knowledge ${knowledge.id}:`, error);
+      results.failed++;
+    }
+  }
+
+  return results;
+}
+
+/**
+ * Search knowledge by query text
+ */
+export async function searchKnowledge(
+  queryText: string,
+  options: KnowledgeSearchOptions = {},
+): Promise<Array<{ knowledge: AnyKnowledge; similarity: number }>> {
+  if (!PINECONE_API_KEY) {
+    console.warn("Pinecone API key not configured");
+    return [];
+  }
+
+  try {
+    const client = await getPineconeClient();
+    const index = client.Index(KNOWLEDGE_INDEX);
+
+    const embedding = await generateEmbedding(queryText);
+    const topK = options.topK || 10;
+
+    const filters: Record<string, any> = {};
+    if (options.type) {
+      filters.type = { $eq: options.type };
+    }
+    if (options.domain) {
+      filters.domain = { $eq: options.domain };
+    }
+    if (options.sourceType) {
+      filters.sourceType = { $eq: options.sourceType };
+    }
+
+    const results = await index.query({
+      vector: embedding,
+      topK,
+      includeMetadata: true,
+      filter: Object.keys(filters).length > 0 ? filters : undefined,
+    });
+
+    return results.matches
+      .filter((match) => {
+        if (options.minConfidence) {
+          const confidence = match.metadata?.confidence || 0.8;
+          return confidence >= options.minConfidence;
+        }
+        return true;
+      })
+      .map((match) => ({
+        knowledge: match.metadata as unknown as AnyKnowledge,
+        similarity: match.score || 0,
+      }));
+  } catch (error) {
+    console.error("Error searching knowledge:", error);
+    return [];
+  }
+}
+
+/**
+ * Search knowledge by domain
+ */
+export async function searchKnowledgeByDomain(
+  domain: string,
+  limit: number = 20,
+): Promise<Array<{ knowledge: AnyKnowledge; similarity: number }>> {
+  if (!PINECONE_API_KEY) {
+    return [];
+  }
+
+  try {
+    const client = await getPineconeClient();
+    const index = client.Index(KNOWLEDGE_INDEX);
+
+    const results = await index.query({
+      vector: new Array(1536).fill(0),
+      topK: limit,
+      includeMetadata: true,
+      filter: { domain: { $eq: domain } },
+    });
+
+    return results.matches.map((match) => ({
+      knowledge: match.metadata as unknown as AnyKnowledge,
+      similarity: match.score || 0,
+    }));
+  } catch (error) {
+    console.error("Error searching by domain:", error);
+    return [];
+  }
+}
+
+/**
+ * Get knowledge gaps by analyzing existing knowledge
+ */
+export async function identifyKnowledgeGaps(
+  domain: string,
+  focusAreas: string[],
+): Promise<string[]> {
+  try {
+    const existingKnowledge = await searchKnowledgeByDomain(domain, 100);
+
+    const coveredAreas = new Set(
+      existingKnowledge
+        .flatMap((item) => item.knowledge.tags)
+        .filter(Boolean),
+    );
+
+    const gaps: string[] = [];
+    for (const area of focusAreas) {
+      if (!coveredAreas.has(area)) {
+        gaps.push(area);
+      }
+    }
+
+    return gaps;
+  } catch (error) {
+    console.error("Error identifying knowledge gaps:", error);
+    return focusAreas;
+  }
+}
+
+/**
+ * Link related knowledge items
+ */
+export async function linkRelatedKnowledge(
+  sourceId: string,
+  relatedIds: string[],
+): Promise<void> {
+  if (!PINECONE_API_KEY) {
+    return;
+  }
+
+  try {
+    const client = await getPineconeClient();
+    const index = client.Index(KNOWLEDGE_INDEX);
+
+    await index.update({
+      id: sourceId,
+      setMetadata: {
+        relatedKnowledge: relatedIds,
+      },
+    });
+  } catch (error) {
+    console.error("Error linking knowledge:", error);
+    throw error;
+  }
+}
+
+/**
+ * Delete knowledge item
+ */
+export async function deleteKnowledgeVector(id: string): Promise<void> {
+  if (!PINECONE_API_KEY) {
+    return;
+  }
+
+  try {
+    const client = await getPineconeClient();
+    const index = client.Index(KNOWLEDGE_INDEX);
+    await index.deleteOne(id);
+  } catch (error) {
+    console.error("Error deleting knowledge:", error);
+  }
+}
+
+/**
+ * Build searchable text from knowledge
+ */
+function buildKnowledgeText(knowledge: AnyKnowledge): string {
+  const parts: string[] = [knowledge.title, knowledge.description, knowledge.content];
+
+  const typed = knowledge as any;
+
+  if (typed.ingredients) {
+    parts.push(typed.ingredients.join(" "));
+  }
+  if (typed.instructions) {
+    parts.push(typed.instructions.join(" "));
+  }
+  if (typed.definition) {
+    parts.push(typed.definition);
+  }
+  if (typed.steps) {
+    parts.push(typed.steps.join(" "));
+  }
+  if (typed.guidelines) {
+    parts.push(typed.guidelines.join(" "));
+  }
+  if (typed.techniques) {
+    parts.push(typed.techniques.join(" "));
+  }
+  if (typed.flavorProfile) {
+    parts.push(typed.flavorProfile.join(" "));
+  }
+
+  return parts.filter(Boolean).join(" ");
+}
+
+/**
+ * Get knowledge statistics
+ */
+export async function getKnowledgeStats(): Promise<{
+  total: number;
+  byType: Record<string, number>;
+  byDomain: Record<string, number>;
+  bySource: Record<string, number>;
+}> {
+  if (!PINECONE_API_KEY) {
+    return { total: 0, byType: {}, byDomain: {}, bySource: {} };
+  }
+
+  try {
+    const client = await getPineconeClient();
+    const index = client.Index(KNOWLEDGE_INDEX);
+
+    const stats = {
+      total: 0,
+      byType: {} as Record<string, number>,
+      byDomain: {} as Record<string, number>,
+      bySource: {} as Record<string, number>,
+    };
+
+    const results = await index.query({
+      vector: new Array(1536).fill(0),
+      topK: 1000,
+      includeMetadata: true,
+    });
+
+    stats.total = results.matches.length;
+
+    for (const match of results.matches) {
+      const metadata = match.metadata as any;
+
+      if (metadata.type) {
+        stats.byType[metadata.type] = (stats.byType[metadata.type] || 0) + 1;
+      }
+      if (metadata.domain) {
+        stats.byDomain[metadata.domain] = (stats.byDomain[metadata.domain] || 0) + 1;
+      }
+      if (metadata.sourceType) {
+        stats.bySource[metadata.sourceType] = (stats.bySource[metadata.sourceType] || 0) + 1;
+      }
+    }
+
+    return stats;
+  } catch (error) {
+    console.error("Error getting knowledge stats:", error);
+    return { total: 0, byType: {}, byDomain: {}, bySource: {} };
+  }
+}
