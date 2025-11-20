@@ -177,7 +177,7 @@ export class BackgroundKnowledgeCrawler {
 
           console.log(`    Found ${result.crawlResult.knowledge.length} items, vetting results:`);
           console.log(`      ✅ Approved: ${approved.length}`);
-          console.log(`      ⚠���  Quarantined: ${quarantined.length}`);
+          console.log(`      ⚠️  Quarantined: ${quarantined.length}`);
           console.log(`      ❌ Rejected: ${rejected.length}`);
 
           // Log details of approved items
@@ -227,6 +227,10 @@ export class BackgroundKnowledgeCrawler {
           });
 
           try {
+            console.log(`  📊 Metadata for ${topic}:`, {
+              metadataCount: Object.keys(metadata).length,
+              sampleMetadata: Object.values(metadata).slice(0, 2),
+            });
             this.tracker.updateWithCrawlResults(
               approved.length,
               rejected.length,
