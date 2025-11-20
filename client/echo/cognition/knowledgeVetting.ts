@@ -807,6 +807,11 @@ VERDICT: APPROVED`;
       consistency += 0.15;
     }
 
+    // User-imported content gets a consistency boost
+    if (knowledge.source === "user_imported") {
+      consistency += 0.1;
+    }
+
     return Math.min(consistency, 1);
   }
 
