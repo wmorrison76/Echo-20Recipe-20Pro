@@ -22,6 +22,7 @@
     "seed:builder": "node builder_seed_upload.mjs"
   },
   "dependencies": {
+    "@pinecone-database/pinecone": "^6.1.3",
     "@sentry/react": "^10.25.0",
     "@sentry/replay": "^7.116.0",
     "@supabase/supabase-js": "^2.38.4",
