@@ -118,6 +118,12 @@ const navGroups: NavGroup[] = [
         fallback: "R&D LABS",
         icon: Atom,
       },
+      {
+        to: "/?tab=echo-training",
+        labelKey: "nav.echoTraining",
+        fallback: "ECHO TRAINING",
+        icon: Zap,
+      },
     ],
   },
   {
