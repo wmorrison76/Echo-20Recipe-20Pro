@@ -2380,9 +2380,31 @@ export default function RecipeSearchSection() {
                           .split(/\n/)
                           .map(normLine)
                           .filter(Boolean);
+                        // Filter out common OCR artifacts and non-content
+                        const ocrArtifacts = [
+                          "scan to download",
+                          "visit us online",
+                          "qr code",
+                          "page",
+                          "contents",
+                          "index",
+                          "glossary",
+                          "appendix",
+                          "copyright",
+                          "isbn",
+                          "download",
+                        ];
+
                         let guess = "";
                         for (let k = 0; k < Math.min(lines.length, 10); k++) {
                           const L = lines[k];
+                          const isArtifact = ocrArtifacts.some((artifact) =>
+                            L.toLowerCase().includes(artifact),
+                          );
+
+                          // Skip OCR artifacts
+                          if (isArtifact) continue;
+
                           if (
                             /^[A-Z][A-Za-z0-9\-\'\s]{2,80}$/.test(L) ||
                             /^([A-Z]\s+){2,}[A-Z][\s:]*$/.test(L)
@@ -2391,10 +2413,14 @@ export default function RecipeSearchSection() {
                             break;
                           }
                         }
-                        setDetected((d) => [
-                          ...d,
-                          { page: p, title: guess || `Candidate p.${p}` },
-                        ]);
+
+                        // Only add if we found meaningful content (not just OCR artifacts)
+                        if (guess && guess.length >= 3) {
+                          setDetected((d) => [
+                            ...d,
+                            { page: p, title: guess },
+                          ]);
+                        }
                       }
                     }
                     // Learn cookbook terminology and definitions
