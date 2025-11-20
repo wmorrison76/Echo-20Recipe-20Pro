@@ -2605,7 +2605,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           /\b(?:cup|cups?|tsp|teaspoons?|tbsp|tablespoons?|grams?|gram|kg|kilograms?|g|ml|milliliters?|l|liters?|oz|ounces?|lb|lbs|pounds?|serves?|makes|yield|minutes?|minute|mins?|hours?|hour|°f|°c|step|steps?)\b/i;
         const tocPatterns = [
           /^.{3,160}?[.\s·•]{2,}\d{1,4}(?:\D.*)?$/i,
-          /^.{3,160}?\s[-–���]\s*\d{1,4}(?:\D.*)?$/i,
+          /^.{3,160}?\s[-������]\s*\d{1,4}(?:\D.*)?$/i,
         ];
         const looksLikeIndexEntry = (line: string) => {
           if (line.length > 160) return false;
@@ -2790,8 +2790,15 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           }
         }
 
-        const stripBullet = (line: string) =>
-          line.replace(/^[:•\-*\u2022\u2023\u2043]\s*/, "").trim();
+        const stripBullet = (line: string) => {
+          let result = line.replace(/^[:•\-*\u2022\u2023\u2043]\s*/, "").trim();
+          // Also strip table column markers and percentages at the end
+          result = result
+            .replace(/\s+\d+\s*g\s*\d+\s*%?\s*$/, "") // Remove trailing metric/percentage
+            .replace(/\s+\d+\s*oz\s*[\d.]+\s*[a-z]*\s*\d+\s*%?\s*$/, "") // Remove trailing US measurements
+            .trim();
+          return result;
+        };
         const getRange = (start: number, end: number) =>
           lines
             .slice(start + 1, end > start ? end : undefined)
