@@ -33,7 +33,10 @@ async function getPineconeClient() {
         apiKey: PINECONE_API_KEY,
       });
     } catch (error) {
-      console.error("[PineconeVerification] Failed to initialize Pinecone:", error);
+      console.error(
+        "[PineconeVerification] Failed to initialize Pinecone:",
+        error,
+      );
       return null;
     }
   }
@@ -97,7 +100,7 @@ export async function getPineconeStatus(): Promise<PineconeStatus> {
       // Count by domain
       if (results.matches) {
         for (const match of results.matches) {
-          const domain = match.metadata?.domain as string || "unknown";
+          const domain = (match.metadata?.domain as string) || "unknown";
           trainingStats[domain] = (trainingStats[domain] || 0) + 1;
           totalTrainingVectors++;
         }

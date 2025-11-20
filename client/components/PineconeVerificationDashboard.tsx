@@ -2,7 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Alert, AlertDescription } from "./ui/alert";
-import { AlertCircle, CheckCircle, Database, Zap, RefreshCw, Download } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle,
+  Database,
+  Zap,
+  RefreshCw,
+  Download,
+} from "lucide-react";
 
 interface PineconeStatus {
   connected: boolean;
@@ -163,7 +170,9 @@ export function PineconeVerificationDashboard() {
           }
         >
           <AlertDescription
-            className={storeMessage.startsWith("✓") ? "text-green-800" : "text-red-800"}
+            className={
+              storeMessage.startsWith("✓") ? "text-green-800" : "text-red-800"
+            }
           >
             {storeMessage}
           </AlertDescription>
@@ -200,7 +209,9 @@ export function PineconeVerificationDashboard() {
       {/* Training Data Vectors */}
       {status.connected && status.trainingDataVectors && (
         <Card className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
-          <h4 className="font-semibold mb-3 text-green-900">Training Vectors</h4>
+          <h4 className="font-semibold mb-3 text-green-900">
+            Training Vectors
+          </h4>
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <span className="text-green-800">Total Training Vectors</span>
@@ -244,9 +255,11 @@ export function PineconeVerificationDashboard() {
           <div className="flex items-start justify-between">
             <div>
               <h4 className="font-semibold mb-2">Training Data Verification</h4>
-              <p className={`text-sm ${
-                verification.found ? "text-green-700" : "text-amber-700"
-              }`}>
+              <p
+                className={`text-sm ${
+                  verification.found ? "text-green-700" : "text-amber-700"
+                }`}
+              >
                 {verification.found
                   ? `✓ Found ${verification.count} training vectors in Pinecone`
                   : "⚠ No training vectors found"}

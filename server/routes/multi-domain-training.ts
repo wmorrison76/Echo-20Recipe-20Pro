@@ -324,10 +324,7 @@ async function conductAutonomousExchange(
   }
 
   // Extract knowledge from OpenAI's response
-  const knowledge = await extractKnowledgeFromResponse(
-    openaiResponse,
-    profile,
-  );
+  const knowledge = await extractKnowledgeFromResponse(openaiResponse, profile);
 
   return {
     success: true,
@@ -370,7 +367,8 @@ Include:
 
 Focus on expertise and mastery. ${progressText}`;
   } else {
-    const focusArea = profile.focusAreas[exchangeNumber % profile.focusAreas.length];
+    const focusArea =
+      profile.focusAreas[exchangeNumber % profile.focusAreas.length];
     return `Dive deeper into ${focusArea} for ${profile.name}.
 
 Provide practical, detailed information on:
@@ -426,7 +424,10 @@ async function getOpenAIResponse(prompt: string): Promise<string | null> {
     const data = (await response.json()) as any;
     return data.choices?.[0]?.message?.content || null;
   } catch (error) {
-    console.error("[MultiDomainTraining] Failed to get OpenAI response:", error);
+    console.error(
+      "[MultiDomainTraining] Failed to get OpenAI response:",
+      error,
+    );
     return null;
   }
 }
@@ -542,10 +543,7 @@ Return ONLY valid JSON array.`;
 
     return knowledge;
   } catch (error) {
-    console.error(
-      "[MultiDomainTraining] Knowledge extraction failed:",
-      error,
-    );
+    console.error("[MultiDomainTraining] Knowledge extraction failed:", error);
     return [];
   }
 }
@@ -603,7 +601,9 @@ router.post("/record-completed", async (_req: Request, res: Response) => {
 
     const session = await recordCompletedTrainingDomains();
 
-    console.log("[MultiDomainTraining] Successfully recorded completed domains");
+    console.log(
+      "[MultiDomainTraining] Successfully recorded completed domains",
+    );
 
     return res.json({
       success: true,
@@ -633,7 +633,10 @@ router.get("/sessions/completed", async (_req: Request, res: Response) => {
       count: completedSessions.length,
     });
   } catch (error: any) {
-    console.error("[MultiDomainTraining] Get completed sessions failed:", error);
+    console.error(
+      "[MultiDomainTraining] Get completed sessions failed:",
+      error,
+    );
     return res.status(500).json({
       success: false,
       error: error.message || "Failed to get completed sessions",
@@ -759,140 +762,143 @@ router.post("/pinecone/sync", async (req: Request, res: Response) => {
  * Store the 246 completed training vectors to Pinecone
  * This should be called after training completes if Pinecone wasn't available
  */
-router.post("/pinecone/store-completed", async (_req: Request, res: Response) => {
-  try {
-    const sessionId = `training-sync-${Date.now()}`;
+router.post(
+  "/pinecone/store-completed",
+  async (_req: Request, res: Response) => {
+    try {
+      const sessionId = `training-sync-${Date.now()}`;
 
-    // Training data from all 13 completed domains
-    const trainingData = [
-      // Culinary Science (27 items)
-      ...Array.from({ length: 27 }, (_, i) => ({
-        profileId: "culinary-science",
-        domain: "culinary",
-        title: `Culinary Science - Flavor Chemistry ${i + 1}`,
-        content: `Training knowledge about flavor chemistry, thermal dynamics, and texture transformation for modern culinary approaches. Item ${i + 1} of 27.`,
-        confidence: 0.85,
-      })),
-      // Pastry Science (27 items)
-      ...Array.from({ length: 27 }, (_, i) => ({
-        profileId: "pastry-science",
-        domain: "culinary",
-        title: `Pastry Science - Baking Formulas ${i + 1}`,
-        content: `Training knowledge about baker's percentages, dough science, fermentation control, and shelf-life optimization. Item ${i + 1} of 27.`,
-        confidence: 0.85,
-      })),
-      // Beverage Flavor (19 items)
-      ...Array.from({ length: 19 }, (_, i) => ({
-        profileId: "beverage-flavor",
-        domain: "beverage",
-        title: `Beverage Flavor - Flavor Profiles ${i + 1}`,
-        content: `Training knowledge about beverage flavor profiles, ingredient blending, taste balance, and infusion techniques. Item ${i + 1} of 19.`,
-        confidence: 0.85,
-      })),
-      // Mixology (20 items)
-      ...Array.from({ length: 20 }, (_, i) => ({
-        profileId: "mixology",
-        domain: "beverage",
-        title: `Mixology - Cocktail Composition ${i + 1}`,
-        content: `Training knowledge about cocktail structures, spirit pairing, mixing techniques, and balance ratios. Item ${i + 1} of 20.`,
-        confidence: 0.85,
-      })),
-      // Sommelier (16 items)
-      ...Array.from({ length: 16 }, (_, i) => ({
-        profileId: "sommelier",
-        domain: "beverage",
-        title: `Sommelier - Wine Expertise ${i + 1}`,
-        content: `Training knowledge about wine varietals, food pairing, terroir understanding, and service protocols. Item ${i + 1} of 16.`,
-        confidence: 0.85,
-      })),
-      // Hospitality Operations (14 items)
-      ...Array.from({ length: 14 }, (_, i) => ({
-        profileId: "hospitality-ops",
-        domain: "hospitality",
-        title: `Hospitality Operations - Service Standards ${i + 1}`,
-        content: `Training knowledge about restaurant operations, service standards, guest experience excellence, and quality control. Item ${i + 1} of 14.`,
-        confidence: 0.85,
-      })),
-      // Banquet Operations (21 items)
-      ...Array.from({ length: 21 }, (_, i) => ({
-        profileId: "banquet-ops",
-        domain: "hospitality",
-        title: `Banquet Operations - Event Planning ${i + 1}`,
-        content: `Training knowledge about event planning, banquet menu development, logistics coordination, and vendor management. Item ${i + 1} of 21.`,
-        confidence: 0.85,
-      })),
-      // Finance (22 items)
-      ...Array.from({ length: 22 }, (_, i) => ({
-        profileId: "finance",
-        domain: "finance",
-        title: `Finance - Food Cost Analysis ${i + 1}`,
-        content: `Training knowledge about food cost analysis, pricing strategies, profit margin optimization, and financial reporting. Item ${i + 1} of 22.`,
-        confidence: 0.85,
-      })),
-      // Inventory (16 items)
-      ...Array.from({ length: 16 }, (_, i) => ({
-        profileId: "inventory",
-        domain: "operations",
-        title: `Inventory - Stock Control ${i + 1}`,
-        content: `Training knowledge about inventory tracking, supplier management, stock optimization, and waste reduction. Item ${i + 1} of 16.`,
-        confidence: 0.85,
-      })),
-      // Labor (14 items)
-      ...Array.from({ length: 14 }, (_, i) => ({
-        profileId: "labor",
-        domain: "operations",
-        title: `Labor - Staff Scheduling ${i + 1}`,
-        content: `Training knowledge about labor scheduling, staff efficiency, team development, and performance metrics. Item ${i + 1} of 14.`,
-        confidence: 0.85,
-      })),
-      // CRM (13 items)
-      ...Array.from({ length: 13 }, (_, i) => ({
-        profileId: "crm",
-        domain: "sales",
-        title: `CRM - Customer Relationships ${i + 1}`,
-        content: `Training knowledge about customer relationship management, loyalty programs, customer segmentation, and retention strategy. Item ${i + 1} of 13.`,
-        confidence: 0.85,
-      })),
-      // Forecast (16 items)
-      ...Array.from({ length: 16 }, (_, i) => ({
-        profileId: "forecast",
-        domain: "operations",
-        title: `Forecast - Demand Forecasting ${i + 1}`,
-        content: `Training knowledge about demand forecasting, resource planning, trend analysis, and seasonal planning. Item ${i + 1} of 16.`,
-        confidence: 0.85,
-      })),
-      // Unified Brain (24 items)
-      ...Array.from({ length: 24 }, (_, i) => ({
-        profileId: "unified-brain",
-        domain: "orchestration",
-        title: `Echo Unified Brain - Multi-Engine Coordination ${i + 1}`,
-        content: `Training knowledge about orchestrating all 12 specialized engines, decision integration, knowledge synthesis, and cross-domain analysis. Item ${i + 1} of 24.`,
-        confidence: 0.85,
-      })),
-    ];
+      // Training data from all 13 completed domains
+      const trainingData = [
+        // Culinary Science (27 items)
+        ...Array.from({ length: 27 }, (_, i) => ({
+          profileId: "culinary-science",
+          domain: "culinary",
+          title: `Culinary Science - Flavor Chemistry ${i + 1}`,
+          content: `Training knowledge about flavor chemistry, thermal dynamics, and texture transformation for modern culinary approaches. Item ${i + 1} of 27.`,
+          confidence: 0.85,
+        })),
+        // Pastry Science (27 items)
+        ...Array.from({ length: 27 }, (_, i) => ({
+          profileId: "pastry-science",
+          domain: "culinary",
+          title: `Pastry Science - Baking Formulas ${i + 1}`,
+          content: `Training knowledge about baker's percentages, dough science, fermentation control, and shelf-life optimization. Item ${i + 1} of 27.`,
+          confidence: 0.85,
+        })),
+        // Beverage Flavor (19 items)
+        ...Array.from({ length: 19 }, (_, i) => ({
+          profileId: "beverage-flavor",
+          domain: "beverage",
+          title: `Beverage Flavor - Flavor Profiles ${i + 1}`,
+          content: `Training knowledge about beverage flavor profiles, ingredient blending, taste balance, and infusion techniques. Item ${i + 1} of 19.`,
+          confidence: 0.85,
+        })),
+        // Mixology (20 items)
+        ...Array.from({ length: 20 }, (_, i) => ({
+          profileId: "mixology",
+          domain: "beverage",
+          title: `Mixology - Cocktail Composition ${i + 1}`,
+          content: `Training knowledge about cocktail structures, spirit pairing, mixing techniques, and balance ratios. Item ${i + 1} of 20.`,
+          confidence: 0.85,
+        })),
+        // Sommelier (16 items)
+        ...Array.from({ length: 16 }, (_, i) => ({
+          profileId: "sommelier",
+          domain: "beverage",
+          title: `Sommelier - Wine Expertise ${i + 1}`,
+          content: `Training knowledge about wine varietals, food pairing, terroir understanding, and service protocols. Item ${i + 1} of 16.`,
+          confidence: 0.85,
+        })),
+        // Hospitality Operations (14 items)
+        ...Array.from({ length: 14 }, (_, i) => ({
+          profileId: "hospitality-ops",
+          domain: "hospitality",
+          title: `Hospitality Operations - Service Standards ${i + 1}`,
+          content: `Training knowledge about restaurant operations, service standards, guest experience excellence, and quality control. Item ${i + 1} of 14.`,
+          confidence: 0.85,
+        })),
+        // Banquet Operations (21 items)
+        ...Array.from({ length: 21 }, (_, i) => ({
+          profileId: "banquet-ops",
+          domain: "hospitality",
+          title: `Banquet Operations - Event Planning ${i + 1}`,
+          content: `Training knowledge about event planning, banquet menu development, logistics coordination, and vendor management. Item ${i + 1} of 21.`,
+          confidence: 0.85,
+        })),
+        // Finance (22 items)
+        ...Array.from({ length: 22 }, (_, i) => ({
+          profileId: "finance",
+          domain: "finance",
+          title: `Finance - Food Cost Analysis ${i + 1}`,
+          content: `Training knowledge about food cost analysis, pricing strategies, profit margin optimization, and financial reporting. Item ${i + 1} of 22.`,
+          confidence: 0.85,
+        })),
+        // Inventory (16 items)
+        ...Array.from({ length: 16 }, (_, i) => ({
+          profileId: "inventory",
+          domain: "operations",
+          title: `Inventory - Stock Control ${i + 1}`,
+          content: `Training knowledge about inventory tracking, supplier management, stock optimization, and waste reduction. Item ${i + 1} of 16.`,
+          confidence: 0.85,
+        })),
+        // Labor (14 items)
+        ...Array.from({ length: 14 }, (_, i) => ({
+          profileId: "labor",
+          domain: "operations",
+          title: `Labor - Staff Scheduling ${i + 1}`,
+          content: `Training knowledge about labor scheduling, staff efficiency, team development, and performance metrics. Item ${i + 1} of 14.`,
+          confidence: 0.85,
+        })),
+        // CRM (13 items)
+        ...Array.from({ length: 13 }, (_, i) => ({
+          profileId: "crm",
+          domain: "sales",
+          title: `CRM - Customer Relationships ${i + 1}`,
+          content: `Training knowledge about customer relationship management, loyalty programs, customer segmentation, and retention strategy. Item ${i + 1} of 13.`,
+          confidence: 0.85,
+        })),
+        // Forecast (16 items)
+        ...Array.from({ length: 16 }, (_, i) => ({
+          profileId: "forecast",
+          domain: "operations",
+          title: `Forecast - Demand Forecasting ${i + 1}`,
+          content: `Training knowledge about demand forecasting, resource planning, trend analysis, and seasonal planning. Item ${i + 1} of 16.`,
+          confidence: 0.85,
+        })),
+        // Unified Brain (24 items)
+        ...Array.from({ length: 24 }, (_, i) => ({
+          profileId: "unified-brain",
+          domain: "orchestration",
+          title: `Echo Unified Brain - Multi-Engine Coordination ${i + 1}`,
+          content: `Training knowledge about orchestrating all 12 specialized engines, decision integration, knowledge synthesis, and cross-domain analysis. Item ${i + 1} of 24.`,
+          confidence: 0.85,
+        })),
+      ];
 
-    const result = await storeTrainingDataToPinecone(sessionId, trainingData);
+      const result = await storeTrainingDataToPinecone(sessionId, trainingData);
 
-    return res.json({
-      success: result.success,
-      stored: result.stored,
-      total: trainingData.length,
-      message: result.success
-        ? `Successfully stored ${result.stored} training vectors to Pinecone`
-        : `Failed to store training vectors: ${result.error}`,
-      error: result.error,
-    });
-  } catch (error: any) {
-    console.error(
-      "[MultiDomainTraining] Store completed training failed:",
-      error,
-    );
-    return res.status(500).json({
-      success: false,
-      error: error.message || "Failed to store completed training",
-    });
-  }
-});
+      return res.json({
+        success: result.success,
+        stored: result.stored,
+        total: trainingData.length,
+        message: result.success
+          ? `Successfully stored ${result.stored} training vectors to Pinecone`
+          : `Failed to store training vectors: ${result.error}`,
+        error: result.error,
+      });
+    } catch (error: any) {
+      console.error(
+        "[MultiDomainTraining] Store completed training failed:",
+        error,
+      );
+      return res.status(500).json({
+        success: false,
+        error: error.message || "Failed to store completed training",
+      });
+    }
+  },
+);
 
 /**
  * Calculate overall session progress
