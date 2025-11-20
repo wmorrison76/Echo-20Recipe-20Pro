@@ -3690,15 +3690,11 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             let XLSX: any;
 
             try {
-              XLSX = await import("xlsx");
-            } catch (localImportError: any) {
-              try {
-                XLSX = await import("https://esm.sh/xlsx@0.18.5");
-              } catch (cdnImportError: any) {
-                throw new Error(
-                  `Failed to load Excel parser: ${localImportError?.message || cdnImportError?.message || "Unknown error"}`
-                );
-              }
+              XLSX = await import("https://esm.sh/xlsx@0.18.5");
+            } catch (importError: any) {
+              throw new Error(
+                `Failed to load Excel parser: ${importError?.message || "Network error or library unavailable"}`
+              );
             }
 
             if (!XLSX || !XLSX.read) {
