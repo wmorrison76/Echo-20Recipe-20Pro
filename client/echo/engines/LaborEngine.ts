@@ -22,7 +22,7 @@ export class LaborEngine {
   static assessLaborPlan(plan: LaborPlanInput): LaborPlanAssessment {
     const totalLaborCost = plan.laborShifts.reduce(
       (sum, s) => sum + s.hours * s.wageRate,
-      0
+      0,
     );
     const laborHours = plan.laborShifts.reduce((sum, s) => sum + s.hours, 0);
 
@@ -37,12 +37,14 @@ export class LaborEngine {
 
     if (neededMinutes > totalMinutesCapacity) {
       notes.push(
-        "Forecasted covers may exceed labor capacity; consider adding shifts or simplifying menu."
+        "Forecasted covers may exceed labor capacity; consider adding shifts or simplifying menu.",
       );
     }
 
     if (laborCostPerCover > 15) {
-      notes.push("Labor cost per cover is high; evaluate scheduling and productivity.");
+      notes.push(
+        "Labor cost per cover is high; evaluate scheduling and productivity.",
+      );
     }
 
     return {

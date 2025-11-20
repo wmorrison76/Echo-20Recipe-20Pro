@@ -27,7 +27,10 @@ export interface PairingAssessment {
 }
 
 export class SommelierEngine {
-  static assessPairing(wine: WineProfile, dish: DishProfile): PairingAssessment {
+  static assessPairing(
+    wine: WineProfile,
+    dish: DishProfile,
+  ): PairingAssessment {
     let score = 0.5;
     const reasons: string[] = [];
     const suggestions: string[] = [];
@@ -44,7 +47,9 @@ export class SommelierEngine {
       score += 0.1;
       reasons.push("Wine acidity cuts through dish richness.");
     } else if (dish.fatLevel >= 3 && wine.acidity <= 2) {
-      suggestions.push("Richer dishes often benefit from higher acidity wines.");
+      suggestions.push(
+        "Richer dishes often benefit from higher acidity wines.",
+      );
     }
 
     if (dish.spiceHeat >= 3 && wine.sweetness !== "dry") {
@@ -64,7 +69,9 @@ export class SommelierEngine {
     }
 
     if (dish.saltiness >= 3 && wine.tannin >= 3) {
-      suggestions.push("High salt with high tannin can feel astringent; consider lower tannin.");
+      suggestions.push(
+        "High salt with high tannin can feel astringent; consider lower tannin.",
+      );
     }
 
     const joinedWineNotes = wine.flavorNotes.join(" ").toLowerCase();

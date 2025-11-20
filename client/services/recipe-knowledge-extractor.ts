@@ -43,11 +43,13 @@ export class RecipeKnowledgeExtractor {
     // Extract techniques
     const techniques = CulinaryScienceEngine.extractTechniquesFromRecipe(
       recipe.ingredients.map((i) => i.name),
-      recipe.instructions
+      recipe.instructions,
     );
 
     for (const technique of techniques) {
-      items.push(this.extractTechniqueKnowledge(technique, recipe, recipe.source));
+      items.push(
+        this.extractTechniqueKnowledge(technique, recipe, recipe.source),
+      );
     }
 
     // Extract flavor profile
@@ -66,7 +68,7 @@ export class RecipeKnowledgeExtractor {
    */
   private static extractIngredientKnowledge(
     ingredient: ParsedRecipe["ingredients"][0],
-    source: string
+    source: string,
   ): KnowledgeItem {
     return {
       id: `ingredient-${ingredient.id}-${Date.now()}`,
@@ -103,11 +105,12 @@ export class RecipeKnowledgeExtractor {
   private static extractTechniqueKnowledge(
     techniqueName: string,
     recipe: ParsedRecipe,
-    source: string
+    source: string,
   ): KnowledgeItem {
-    const technique = recipe.instructions.find(
-      (inst) => inst.toLowerCase().includes(techniqueName.toLowerCase())
-    ) || "";
+    const technique =
+      recipe.instructions.find((inst) =>
+        inst.toLowerCase().includes(techniqueName.toLowerCase()),
+      ) || "";
 
     return {
       id: `technique-${techniqueName}-${recipe.id}-${Date.now()}`,
@@ -116,7 +119,11 @@ export class RecipeKnowledgeExtractor {
       title: `${techniqueName.charAt(0).toUpperCase()}${techniqueName.slice(1)}`,
       description: `${techniqueName} technique from ${recipe.title}`,
       content: technique,
-      tags: [techniqueName, "cooking_technique", recipe.metadata?.cuisine || ""].filter(Boolean),
+      tags: [
+        techniqueName,
+        "cooking_technique",
+        recipe.metadata?.cuisine || "",
+      ].filter(Boolean),
       confidenceScore: 0.8,
       sources: [source, recipe.title],
       createdAt: new Date().toISOString(),
@@ -126,8 +133,13 @@ export class RecipeKnowledgeExtractor {
         steps: [technique],
         equipment: [],
         temperatureRange: undefined,
-        timeMinutes: [recipe.metadata?.cookTime || 0, recipe.metadata?.cookTime || 0],
-        difficulty: this.inferDifficulty(recipe.metadata?.difficulty || "medium"),
+        timeMinutes: [
+          recipe.metadata?.cookTime || 0,
+          recipe.metadata?.cookTime || 0,
+        ],
+        difficulty: this.inferDifficulty(
+          recipe.metadata?.difficulty || "medium",
+        ),
         applicableIngredients: recipe.ingredients.map((i) => i.name),
       },
     } as any;
@@ -138,7 +150,7 @@ export class RecipeKnowledgeExtractor {
    */
   private static extractFlavorProfileKnowledge(
     recipe: ParsedRecipe,
-    source: string
+    source: string,
   ): KnowledgeItem {
     return {
       id: `flavor-${recipe.id}-${Date.now()}`,
@@ -176,7 +188,7 @@ export class RecipeKnowledgeExtractor {
    */
   private static extractFinancialKnowledge(
     recipe: ParsedRecipe,
-    source: string
+    source: string,
   ): KnowledgeItem {
     return {
       id: `cost-${recipe.id}-${Date.now()}`,
@@ -243,10 +255,15 @@ export class RecipeKnowledgeExtractor {
       for (const item of items) {
         // TODO: Implement vector storage
         // await storeKnowledgeVector(item);
-        console.log(`[RecipeKnowledgeExtractor] Storing knowledge item: ${item.title}`);
+        console.log(
+          `[RecipeKnowledgeExtractor] Storing knowledge item: ${item.title}`,
+        );
       }
     } catch (error) {
-      console.error("[RecipeKnowledgeExtractor] Failed to store knowledge items:", error);
+      console.error(
+        "[RecipeKnowledgeExtractor] Failed to store knowledge items:",
+        error,
+      );
       throw error;
     }
   }

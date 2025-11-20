@@ -21,7 +21,7 @@ export interface BeverageProfile {
 export class BeverageFlavorEngine {
   static computeProfile(
     components: BeverageComponent[],
-    iceMeltMl: number = 0
+    iceMeltMl: number = 0,
   ): BeverageProfile {
     let totalVolume = iceMeltMl;
     let alcoholMl = 0;
@@ -46,9 +46,10 @@ export class BeverageFlavorEngine {
     }
 
     const abvPercent = totalVolume > 0 ? (alcoholMl / totalVolume) * 100 : 0;
-    const sugarGPerL = totalVolume > 0 ? (sugarG / (totalVolume / 1000)) : 0;
-    const acidGPerL = totalVolume > 0 ? (acidG / (totalVolume / 1000)) : 0;
-    const bitternessIndex = totalVolume > 0 ? (bitterness / (totalVolume / 100)) : 0;
+    const sugarGPerL = totalVolume > 0 ? sugarG / (totalVolume / 1000) : 0;
+    const acidGPerL = totalVolume > 0 ? acidG / (totalVolume / 1000) : 0;
+    const bitternessIndex =
+      totalVolume > 0 ? bitterness / (totalVolume / 100) : 0;
     const dilutionPercent =
       totalVolume > 0 ? (iceMeltMl / (totalVolume - iceMeltMl)) * 100 : 0;
 
@@ -60,7 +61,9 @@ export class BeverageFlavorEngine {
     const balanceNotes: string[] = [];
 
     if (sweetnessPerceived === "dry" && acidGPerL < 2) {
-      balanceNotes.push("Very dry profile; consider adding sweetness or acidity.");
+      balanceNotes.push(
+        "Very dry profile; consider adding sweetness or acidity.",
+      );
     }
 
     if (sweetnessPerceived !== "dry" && acidGPerL < 3) {
@@ -68,7 +71,9 @@ export class BeverageFlavorEngine {
     }
 
     if (bitternessIndex > 20 && sweetnessPerceived === "dry") {
-      balanceNotes.push("Bitterness may dominate without sweetness or acid buffering.");
+      balanceNotes.push(
+        "Bitterness may dominate without sweetness or acid buffering.",
+      );
     }
 
     if (dilutionPercent > 40) {

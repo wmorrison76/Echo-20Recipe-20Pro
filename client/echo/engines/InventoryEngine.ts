@@ -18,7 +18,7 @@ export interface ReorderRecommendation {
 export class InventoryEngine {
   static recommendReorders(
     items: InventoryItemSnapshot[],
-    safetyDays: number = 2
+    safetyDays: number = 2,
   ): ReorderRecommendation[] {
     const recs: ReorderRecommendation[] = [];
 
@@ -40,7 +40,7 @@ export class InventoryEngine {
           name: item.name,
           recommendedOrderQty: Math.round(orderQty),
           reason: `Coverage (${daysCover.toFixed(
-            1
+            1,
           )} days) below target of ~${targetDays} days.`,
         });
       }

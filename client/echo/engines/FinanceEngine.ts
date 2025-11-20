@@ -38,7 +38,7 @@ export class FinanceEngine {
   static calculateRecipeCost(
     lines: RecipeCostLine[],
     portions: number,
-    targetFoodCostPercentRange: [number, number] = [0.25, 0.35]
+    targetFoodCostPercentRange: [number, number] = [0.25, 0.35],
   ): RecipeCostSummary {
     let totalCost = 0;
     for (const line of lines) {
@@ -59,8 +59,10 @@ export class FinanceEngine {
       costPerPortion,
       suggestedPriceLow,
       suggestedPriceHigh,
-      foodCostPercentAtSuggestedPriceLow: totalCost / (suggestedPriceLow * portions || 1),
-      foodCostPercentAtSuggestedPriceHigh: totalCost / (suggestedPriceHigh * portions || 1),
+      foodCostPercentAtSuggestedPriceLow:
+        totalCost / (suggestedPriceLow * portions || 1),
+      foodCostPercentAtSuggestedPriceHigh:
+        totalCost / (suggestedPriceHigh * portions || 1),
     };
   }
 
@@ -81,11 +83,15 @@ export class FinanceEngine {
     const notes: string[] = [];
 
     if (primeCostPercent > 0.65) {
-      notes.push("Prime cost is high; investigate labor and food/bev efficiency.");
+      notes.push(
+        "Prime cost is high; investigate labor and food/bev efficiency.",
+      );
     }
 
     if (laborPercent > 0.35) {
-      notes.push("Labor percent appears elevated; consider schedule optimization.");
+      notes.push(
+        "Labor percent appears elevated; consider schedule optimization.",
+      );
     }
 
     if (foodCostPercent > 0.35) {

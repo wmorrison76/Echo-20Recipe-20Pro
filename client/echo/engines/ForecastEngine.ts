@@ -16,10 +16,14 @@ export interface ForecastResult {
 export class ForecastEngine {
   static forecastFromHistory(
     history: HistoricalDataPoint[],
-    horizonDays: number = 7
+    horizonDays: number = 7,
   ): ForecastResult {
     if (!history.length) {
-      return { horizonDays, dailyForecast: [], notes: ["No history provided."] };
+      return {
+        horizonDays,
+        dailyForecast: [],
+        notes: ["No history provided."],
+      };
     }
 
     const notes: string[] = [];
@@ -31,8 +35,8 @@ export class ForecastEngine {
 
     notes.push(
       `Baseline derived from last ${recent.length} days: ~${avgCovers.toFixed(
-        0
-      )} covers/day, revenue ~${avgRevenue.toFixed(0)}.`
+        0,
+      )} covers/day, revenue ~${avgRevenue.toFixed(0)}.`,
     );
 
     const lastDate = new Date(history[history.length - 1].date);

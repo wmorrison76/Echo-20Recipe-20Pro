@@ -1,5 +1,8 @@
 import { useCallback, useState } from "react";
-import type { UnifiedRequest, UnifiedResponse } from "../echo/engines/EchoUnifiedBrain";
+import type {
+  UnifiedRequest,
+  UnifiedResponse,
+} from "../echo/engines/EchoUnifiedBrain";
 
 interface UseEchoUnifiedBrainState {
   response: UnifiedResponse | null;
@@ -17,29 +20,32 @@ export function useEchoUnifiedBrain() {
     error: null,
   });
 
-  const query = useCallback(async (request: UnifiedRequest): Promise<UnifiedResponse | null> => {
-    setState({ response: null, isLoading: true, error: null });
+  const query = useCallback(
+    async (request: UnifiedRequest): Promise<UnifiedResponse | null> => {
+      setState({ response: null, isLoading: true, error: null });
 
-    try {
-      const response = await fetch("/api/echo-unified/query", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(request),
-      });
+      try {
+        const response = await fetch("/api/echo-unified/query", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(request),
+        });
 
-      if (!response.ok) {
-        throw new Error(`API error: ${response.statusText}`);
+        if (!response.ok) {
+          throw new Error(`API error: ${response.statusText}`);
+        }
+
+        const data = (await response.json()) as UnifiedResponse;
+        setState({ response: data, isLoading: false, error: null });
+        return data;
+      } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error));
+        setState({ response: null, isLoading: false, error: err });
+        throw err;
       }
-
-      const data = (await response.json()) as UnifiedResponse;
-      setState({ response: data, isLoading: false, error: null });
-      return data;
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      setState({ response: null, isLoading: false, error: err });
-      throw err;
-    }
-  }, []);
+    },
+    [],
+  );
 
   const batchQuery = useCallback(
     async (requests: UnifiedRequest[]): Promise<UnifiedResponse[]> => {
@@ -65,7 +71,7 @@ export function useEchoUnifiedBrain() {
         throw err;
       }
     },
-    []
+    [],
   );
 
   const getCapabilities = useCallback(async () => {

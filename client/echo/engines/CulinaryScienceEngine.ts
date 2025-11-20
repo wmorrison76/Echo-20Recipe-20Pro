@@ -48,7 +48,7 @@ export interface ThermalAssessment {
 export class CulinaryScienceEngine {
   static assessFlavorBalance(
     ingredients: IngredientAmount[],
-    profiles: Record<string, IngredientChemistryProfile>
+    profiles: Record<string, IngredientChemistryProfile>,
   ): FlavorBalance {
     let acid = 0;
     let fat = 0;
@@ -70,13 +70,17 @@ export class CulinaryScienceEngine {
       if (p.fatPercentage) fat += weight * (p.fatPercentage / 100);
       if (p.sugarPercentage) sweet += weight * (p.sugarPercentage / 100);
       if (p.saltinessFactor) salty += weight * p.saltinessFactor * 0.03;
-      if (p.proteinPercentage) umami += weight * (p.proteinPercentage / 100) * 0.2;
+      if (p.proteinPercentage)
+        umami += weight * (p.proteinPercentage / 100) * 0.2;
 
       if (p.volatiles?.length) {
         for (const v of p.volatiles) {
           const intensity = v.intensity ?? 0.2;
           aromatic += weight * intensity * 0.01;
-          if (/capsaicin|chili|pepper|pungent/i.test(v.name) || /spicy|picante/i.test(v.notes ?? "")) {
+          if (
+            /capsaicin|chili|pepper|pungent/i.test(v.name) ||
+            /spicy|picante/i.test(v.notes ?? "")
+          ) {
             spice += weight * intensity * 0.01;
           }
           if (/bitter|tannin|charred/i.test(v.notes ?? "")) {
@@ -114,7 +118,9 @@ export class CulinaryScienceEngine {
     }
 
     if (flavor.spice > 0.4) {
-      notes.push("Spice is a prominent element; balance salt and sour accordingly.");
+      notes.push(
+        "Spice is a prominent element; balance salt and sour accordingly.",
+      );
     }
 
     if (flavor.umami > 0.5) {
@@ -155,19 +161,52 @@ export class CulinaryScienceEngine {
       notes.push("Extended cooking time; risk of over-reduction or dryness.");
     }
 
-    return { safeCooked, likelyMaillard, likelyCaramelization, overReductionRisk, notes };
+    return {
+      safeCooked,
+      likelyMaillard,
+      likelyCaramelization,
+      overReductionRisk,
+      notes,
+    };
   }
 
-  static extractTechniquesFromRecipe(ingredients: string[], instructions: string[]): string[] {
+  static extractTechniquesFromRecipe(
+    ingredients: string[],
+    instructions: string[],
+  ): string[] {
     const techniques: string[] = [];
     const commonTechniques = [
-      "dice", "julienne", "brunoise", "chiffonade", "blanch", "sauté", "braise",
-      "poach", "sous-vide", "deglaze", "emulsify", "temper", "caramelize",
-      "reduce", "infuse", "clarify", "rest", "bloom", "proof", "roast",
-      "grill", "smoke", "fry", "bake", "simmer", "steep", "macerate"
+      "dice",
+      "julienne",
+      "brunoise",
+      "chiffonade",
+      "blanch",
+      "sauté",
+      "braise",
+      "poach",
+      "sous-vide",
+      "deglaze",
+      "emulsify",
+      "temper",
+      "caramelize",
+      "reduce",
+      "infuse",
+      "clarify",
+      "rest",
+      "bloom",
+      "proof",
+      "roast",
+      "grill",
+      "smoke",
+      "fry",
+      "bake",
+      "simmer",
+      "steep",
+      "macerate",
     ];
 
-    const combinedText = `${ingredients.join(" ")} ${instructions.join(" ")}`.toLowerCase();
+    const combinedText =
+      `${ingredients.join(" ")} ${instructions.join(" ")}`.toLowerCase();
 
     for (const technique of commonTechniques) {
       if (combinedText.includes(technique)) {

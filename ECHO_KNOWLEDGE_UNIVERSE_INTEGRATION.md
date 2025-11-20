@@ -5,7 +5,7 @@
 The Echo Knowledge Universe is a comprehensive multi-domain AI learning system that powers Echo AI with knowledge across 12 domains:
 
 1. **Culinary Science** - Ingredients, techniques, flavor chemistry
-2. **Pastry & Baking** - Formulas, rheology, texture science  
+2. **Pastry & Baking** - Formulas, rheology, texture science
 3. **Mixology** - Cocktail chemistry, bar techniques
 4. **Wine & Sommelier** - Varietals, regions, food pairing
 5. **Hospitality Ops** - Service standards, FOH/BOH workflows
@@ -97,7 +97,7 @@ export function RecipePage() {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Left column: Existing progress tracker */}
       <EchoKnowledgeBaseProgress />
-      
+
       {/* Right column: Knowledge Universe Dashboard */}
       <KnowledgeUniverseDashboard />
     </div>
@@ -162,6 +162,7 @@ export function RecipeAnalyzer() {
 ### Culinary Domain
 
 #### flavor_balance
+
 ```typescript
 {
   type: "flavor_balance",
@@ -173,6 +174,7 @@ export function RecipeAnalyzer() {
 ```
 
 #### thermal_profile
+
 ```typescript
 {
   type: "thermal_profile",
@@ -185,6 +187,7 @@ export function RecipeAnalyzer() {
 ### Pastry Domain
 
 #### pastry_texture
+
 ```typescript
 {
   type: "pastry_texture",
@@ -195,6 +198,7 @@ export function RecipeAnalyzer() {
 ```
 
 #### pastry_defects
+
 ```typescript
 {
   type: "pastry_defects",
@@ -208,6 +212,7 @@ export function RecipeAnalyzer() {
 ### Beverage Domain
 
 #### cocktail_analysis
+
 ```typescript
 {
   type: "cocktail_analysis",
@@ -221,6 +226,7 @@ export function RecipeAnalyzer() {
 ### Wine Domain
 
 #### wine_pairing
+
 ```typescript
 {
   type: "wine_pairing",
@@ -234,6 +240,7 @@ export function RecipeAnalyzer() {
 ### Finance Domain
 
 #### recipe_cost
+
 ```typescript
 {
   type: "recipe_cost",
@@ -245,6 +252,7 @@ export function RecipeAnalyzer() {
 ```
 
 #### pnl_analysis
+
 ```typescript
 {
   type: "pnl_analysis",
@@ -257,6 +265,7 @@ export function RecipeAnalyzer() {
 ### Operations Domain
 
 #### hospitality_load
+
 ```typescript
 {
   type: "hospitality_load",
@@ -267,6 +276,7 @@ export function RecipeAnalyzer() {
 ```
 
 #### banquet_timing
+
 ```typescript
 {
   type: "banquet_timing",
@@ -280,6 +290,7 @@ export function RecipeAnalyzer() {
 ### Inventory Domain
 
 #### inventory_reorder
+
 ```typescript
 {
   type: "inventory_reorder",
@@ -292,6 +303,7 @@ export function RecipeAnalyzer() {
 ### Labor Domain
 
 #### labor_plan
+
 ```typescript
 {
   type: "labor_plan",
@@ -304,6 +316,7 @@ export function RecipeAnalyzer() {
 ### Forecasting Domain
 
 #### forecast
+
 ```typescript
 {
   type: "forecast",
@@ -317,6 +330,7 @@ export function RecipeAnalyzer() {
 ### CRM Domain
 
 #### guest_profile
+
 ```typescript
 {
   type: "guest_profile",
@@ -336,16 +350,22 @@ const { batchQuery } = useEchoUnifiedBrain();
 const results = await batchQuery([
   {
     type: "flavor_balance",
-    payload: { /* ... */ }
+    payload: {
+      /* ... */
+    },
   },
   {
     type: "recipe_cost",
-    payload: { /* ... */ }
+    payload: {
+      /* ... */
+    },
   },
   {
     type: "wine_pairing",
-    payload: { /* ... */ }
-  }
+    payload: {
+      /* ... */
+    },
+  },
 ]);
 
 // Results is an array of UnifiedResponse[]
@@ -382,7 +402,7 @@ async function importRecipeAndTrain(recipe: Recipe) {
       relatedItems: [],
       properties: {
         // Populate from recipe metadata
-      }
+      },
     });
   }
 
@@ -429,16 +449,19 @@ useEffect(() => {
 ## Troubleshooting
 
 ### Engine not returning results
+
 - Check that your payload matches the required fields
 - Verify data types match interface definitions
 - Check `/api/echo-unified/capabilities` for exact requirements
 
 ### Knowledge not persisting
+
 - Ensure knowledge items are stored in Pinecone or graph DB
 - Verify knowledge codex schema is correct
 - Check knowledge ingestion pipeline
 
 ### Dashboard not updating
+
 - Verify knowledge stats endpoint is returning data
 - Check that knowledge items have `createdAt` and `updatedAt` timestamps
 - Ensure dashboard polling interval is appropriate

@@ -53,7 +53,9 @@ export interface ShelfLifeEstimate {
 }
 
 export class PastryScienceEngine {
-  static predictTexture(formula: BakersPercentageFormula): PastryTextureProfile {
+  static predictTexture(
+    formula: BakersPercentageFormula,
+  ): PastryTextureProfile {
     const {
       category,
       waterPercent,
@@ -88,7 +90,9 @@ export class PastryScienceEngine {
       airiness = 0.7;
       crustCrispness = 0.1;
       richness = fatPercent > 30 ? 0.8 : 0.6;
-      notes.push("High-ratio cake: very tender, moist crumb with fine texture.");
+      notes.push(
+        "High-ratio cake: very tender, moist crumb with fine texture.",
+      );
     }
 
     if (category === "pate_sablée" || category === "cookie") {
@@ -96,7 +100,9 @@ export class PastryScienceEngine {
       crustCrispness = 0.7;
       tenderness = 0.7;
       chewiness = sugarPercent > 40 ? 0.5 : 0.2;
-      notes.push("High fat + sugar: sandy/tender texture, good snap if baked well.");
+      notes.push(
+        "High fat + sugar: sandy/tender texture, good snap if baked well.",
+      );
     }
 
     if (sugarPercent > 80) {
@@ -108,7 +114,9 @@ export class PastryScienceEngine {
     if (eggPercent > 40) {
       airiness += 0.1;
       richness += 0.1;
-      notes.push("High egg content: custardy richness and structure from proteins.");
+      notes.push(
+        "High egg content: custardy richness and structure from proteins.",
+      );
     }
 
     if (additionalSolidsPercent > 30) {
@@ -133,7 +141,7 @@ export class PastryScienceEngine {
 
   static diagnoseDefects(
     observations: string[],
-    formula: BakersPercentageFormula
+    formula: BakersPercentageFormula,
   ): PastryDefect[] {
     const defects: PastryDefect[] = [];
 
@@ -142,7 +150,8 @@ export class PastryScienceEngine {
     if (/sank|collapsed|sunken/.test(obs)) {
       defects.push({
         code: "CAKE_COLLAPSE",
-        description: "Cake or batter-based product collapsed or sank in the center.",
+        description:
+          "Cake or batter-based product collapsed or sank in the center.",
         likelyCauses: [
           "Excess sugar or leavening relative to structure.",
           "Underbaking (center not fully set).",
@@ -160,7 +169,10 @@ export class PastryScienceEngine {
       defects.push({
         code: "TUNNELING",
         description: "Tunnels or large holes in crumb.",
-        likelyCauses: ["Overmixing in muffin/quick bread methods.", "Excess leavening."],
+        likelyCauses: [
+          "Overmixing in muffin/quick bread methods.",
+          "Excess leavening.",
+        ],
         suggestedFixes: [
           "Use gentle mixing; stop when dry ingredients are just incorporated.",
           "Reduce chemical leavening slightly.",
@@ -188,7 +200,9 @@ export class PastryScienceEngine {
     return defects;
   }
 
-  static estimateShelfLife(formula: BakersPercentageFormula): ShelfLifeEstimate {
+  static estimateShelfLife(
+    formula: BakersPercentageFormula,
+  ): ShelfLifeEstimate {
     const { category, sugarPercent, fatPercent } = formula;
 
     let roomTempHours = 8;

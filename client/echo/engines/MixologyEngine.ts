@@ -1,4 +1,8 @@
-import { BeverageComponent, BeverageProfile, BeverageFlavorEngine } from "./BeverageFlavorEngine";
+import {
+  BeverageComponent,
+  BeverageProfile,
+  BeverageFlavorEngine,
+} from "./BeverageFlavorEngine";
 
 export type CocktailFamily =
   | "sour"
@@ -18,7 +22,10 @@ export interface CocktailAnalysis {
 }
 
 export class MixologyEngine {
-  static analyzeCocktail(components: BeverageComponent[], iceMeltMl: number = 0): CocktailAnalysis {
+  static analyzeCocktail(
+    components: BeverageComponent[],
+    iceMeltMl: number = 0,
+  ): CocktailAnalysis {
     const profile = BeverageFlavorEngine.computeProfile(components, iceMeltMl);
 
     let familyGuess: CocktailFamily | "unknown" = "unknown";
@@ -27,7 +34,8 @@ export class MixologyEngine {
 
     if (abv >= 18 && sweetness === "dry") familyGuess = "martini";
     if (abv >= 18 && sweetness !== "dry") familyGuess = "old_fashioned";
-    if (abv < 18 && sweetness !== "dry" && profile.acidGPerL > 4) familyGuess = "sour";
+    if (abv < 18 && sweetness !== "dry" && profile.acidGPerL > 4)
+      familyGuess = "sour";
     if (abv < 15 && profile.totalVolumeMl > 200) familyGuess = "highball";
 
     const structureNotes: string[] = [];
@@ -41,11 +49,15 @@ export class MixologyEngine {
     }
 
     if (familyGuess === "sour" && profile.acidGPerL < 3.5) {
-      improvementSuggestions.push("Increase acid component for a more defined sour profile.");
+      improvementSuggestions.push(
+        "Increase acid component for a more defined sour profile.",
+      );
     }
 
     if (familyGuess === "old_fashioned" && profile.sugarGPerL < 40) {
-      improvementSuggestions.push("Old Fashioned style may feel too dry; consider more sugar or syrup.");
+      improvementSuggestions.push(
+        "Old Fashioned style may feel too dry; consider more sugar or syrup.",
+      );
     }
 
     return { familyGuess, profile, structureNotes, improvementSuggestions };

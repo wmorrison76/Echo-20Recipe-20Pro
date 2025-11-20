@@ -57,7 +57,12 @@ export function KnowledgeUniverseDashboard() {
         progress: 15,
         itemCount: 342,
         lastUpdated: new Date().toISOString(),
-        checkpoints: ["Ingredients", "Techniques", "Flavor Chemistry", "Thermodynamics"],
+        checkpoints: [
+          "Ingredients",
+          "Techniques",
+          "Flavor Chemistry",
+          "Thermodynamics",
+        ],
         completedCheckpoints: 1,
       },
       {
@@ -66,7 +71,12 @@ export function KnowledgeUniverseDashboard() {
         progress: 8,
         itemCount: 189,
         lastUpdated: new Date().toISOString(),
-        checkpoints: ["Baker's Percentages", "Rheology", "Texture Profiles", "Defect Diagnosis"],
+        checkpoints: [
+          "Baker's Percentages",
+          "Rheology",
+          "Texture Profiles",
+          "Defect Diagnosis",
+        ],
         completedCheckpoints: 0,
       },
       {
@@ -75,7 +85,12 @@ export function KnowledgeUniverseDashboard() {
         progress: 5,
         itemCount: 127,
         lastUpdated: new Date().toISOString(),
-        checkpoints: ["Spirits", "Cocktail Families", "Bar Techniques", "Costing"],
+        checkpoints: [
+          "Spirits",
+          "Cocktail Families",
+          "Bar Techniques",
+          "Costing",
+        ],
         completedCheckpoints: 0,
       },
       {
@@ -84,7 +99,12 @@ export function KnowledgeUniverseDashboard() {
         progress: 12,
         itemCount: 356,
         lastUpdated: new Date().toISOString(),
-        checkpoints: ["Varietals", "Regions", "Wine Chemistry", "Pairing Logic"],
+        checkpoints: [
+          "Varietals",
+          "Regions",
+          "Wine Chemistry",
+          "Pairing Logic",
+        ],
         completedCheckpoints: 1,
       },
       {
@@ -93,7 +113,12 @@ export function KnowledgeUniverseDashboard() {
         progress: 6,
         itemCount: 234,
         lastUpdated: new Date().toISOString(),
-        checkpoints: ["FOH Standards", "BOH Workflows", "Guest Recovery", "Service Flow"],
+        checkpoints: [
+          "FOH Standards",
+          "BOH Workflows",
+          "Guest Recovery",
+          "Service Flow",
+        ],
         completedCheckpoints: 0,
       },
       {
@@ -102,7 +127,12 @@ export function KnowledgeUniverseDashboard() {
         progress: 4,
         itemCount: 198,
         lastUpdated: new Date().toISOString(),
-        checkpoints: ["BEO Structure", "Multi-Room Service", "Course Timing", "Buffet Logic"],
+        checkpoints: [
+          "BEO Structure",
+          "Multi-Room Service",
+          "Course Timing",
+          "Buffet Logic",
+        ],
         completedCheckpoints: 0,
       },
       {
@@ -111,7 +141,12 @@ export function KnowledgeUniverseDashboard() {
         progress: 7,
         itemCount: 267,
         lastUpdated: new Date().toISOString(),
-        checkpoints: ["Chart of Accounts", "P&L Models", "KPI Tracking", "Forecasting"],
+        checkpoints: [
+          "Chart of Accounts",
+          "P&L Models",
+          "KPI Tracking",
+          "Forecasting",
+        ],
         completedCheckpoints: 0,
       },
       {
@@ -120,7 +155,12 @@ export function KnowledgeUniverseDashboard() {
         progress: 9,
         itemCount: 301,
         lastUpdated: new Date().toISOString(),
-        checkpoints: ["Vendor Management", "PAR Levels", "FIFO Logic", "Yield Systems"],
+        checkpoints: [
+          "Vendor Management",
+          "PAR Levels",
+          "FIFO Logic",
+          "Yield Systems",
+        ],
         completedCheckpoints: 0,
       },
       {
@@ -138,7 +178,12 @@ export function KnowledgeUniverseDashboard() {
         progress: 5,
         itemCount: 213,
         lastUpdated: new Date().toISOString(),
-        checkpoints: ["Guest Profiles", "Journey Mapping", "Feedback", "Personalization"],
+        checkpoints: [
+          "Guest Profiles",
+          "Journey Mapping",
+          "Feedback",
+          "Personalization",
+        ],
         completedCheckpoints: 0,
       },
       {
@@ -147,7 +192,12 @@ export function KnowledgeUniverseDashboard() {
         progress: 4,
         itemCount: 184,
         lastUpdated: new Date().toISOString(),
-        checkpoints: ["Dashboards", "AI Forecasting", "Insights", "Trend Analysis"],
+        checkpoints: [
+          "Dashboards",
+          "AI Forecasting",
+          "Insights",
+          "Trend Analysis",
+        ],
         completedCheckpoints: 0,
       },
       {
@@ -156,13 +206,19 @@ export function KnowledgeUniverseDashboard() {
         progress: 6,
         itemCount: 245,
         lastUpdated: new Date().toISOString(),
-        checkpoints: ["Spirits", "Cocktails", "Non-Alcoholic", "Beverage Costing"],
+        checkpoints: [
+          "Spirits",
+          "Cocktails",
+          "Non-Alcoholic",
+          "Beverage Costing",
+        ],
         completedCheckpoints: 0,
       },
     ];
 
     const totalItems = domains.reduce((sum, d) => sum + d.itemCount, 0);
-    const avgProgress = domains.reduce((sum, d) => sum + d.progress, 0) / domains.length;
+    const avgProgress =
+      domains.reduce((sum, d) => sum + d.progress, 0) / domains.length;
 
     setStats({
       totalItems,
@@ -191,13 +247,17 @@ export function KnowledgeUniverseDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Knowledge Universe</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Knowledge Universe
+          </h2>
           <p className="text-sm text-gray-600">
             Echo's comprehensive knowledge across {stats.totalDomains} domains
           </p>
         </div>
         <div className="text-right">
-          <p className="text-3xl font-bold text-indigo-600">{stats.overallProgress}%</p>
+          <p className="text-3xl font-bold text-indigo-600">
+            {stats.overallProgress}%
+          </p>
           <p className="text-sm text-gray-600">Overall Coverage</p>
         </div>
       </div>
@@ -241,21 +301,29 @@ export function KnowledgeUniverseDashboard() {
         <TabsContent value="domains" className="space-y-3">
           <div className="grid grid-cols-1 gap-3">
             {stats.domainBreakdown.map((domain) => (
-              <Card key={domain.domain} className="hover:border-indigo-300 transition-colors p-3">
+              <Card
+                key={domain.domain}
+                className="hover:border-indigo-300 transition-colors p-3"
+              >
                 <div className="space-y-2">
                   {/* Domain Header */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="text-indigo-600">{domain.icon}</div>
                       <div>
-                        <h4 className="font-semibold text-sm text-gray-900">{domain.domain}</h4>
-                        <p className="text-xs text-gray-600">{domain.itemCount} items</p>
+                        <h4 className="font-semibold text-sm text-gray-900">
+                          {domain.domain}
+                        </h4>
+                        <p className="text-xs text-gray-600">
+                          {domain.itemCount} items
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">
                       <Badge className="text-xs">{domain.progress}%</Badge>
                       <p className="text-xs text-gray-600 mt-1">
-                        {domain.completedCheckpoints}/{domain.checkpoints.length}
+                        {domain.completedCheckpoints}/
+                        {domain.checkpoints.length}
                       </p>
                     </div>
                   </div>
@@ -268,7 +336,11 @@ export function KnowledgeUniverseDashboard() {
                     {domain.checkpoints.map((checkpoint, idx) => (
                       <Badge
                         key={checkpoint}
-                        variant={idx < domain.completedCheckpoints ? "default" : "outline"}
+                        variant={
+                          idx < domain.completedCheckpoints
+                            ? "default"
+                            : "outline"
+                        }
                         className="text-xs py-0.5"
                       >
                         {checkpoint}
@@ -285,41 +357,111 @@ export function KnowledgeUniverseDashboard() {
           <Card className="p-4 space-y-3">
             <h3 className="font-semibold text-gray-900">Learning Roadmap</h3>
             <p className="text-sm text-gray-600">
-              Echo AI learns domains sequentially to build a comprehensive understanding
+              Echo AI learns domains sequentially to build a comprehensive
+              understanding
             </p>
 
             <div className="space-y-2 mt-4">
               {[
-                { phase: 1, domain: "Culinary Science", status: "in_progress", percent: 15 },
-                { phase: 2, domain: "Pastry & Baking", status: "pending", percent: 8 },
-                { phase: 3, domain: "Wine & Sommelier", status: "pending", percent: 12 },
-                { phase: 4, domain: "Mixology & Beverages", status: "pending", percent: 6 },
-                { phase: 5, domain: "Hospitality Operations", status: "pending", percent: 6 },
-                { phase: 6, domain: "Banquets & Events", status: "pending", percent: 4 },
-                { phase: 7, domain: "Finance & Accounting", status: "pending", percent: 7 },
-                { phase: 8, domain: "Inventory & Supply", status: "pending", percent: 9 },
-                { phase: 9, domain: "Labor & HR", status: "pending", percent: 3 },
-                { phase: 10, domain: "CRM & Guest Experience", status: "pending", percent: 5 },
-                { phase: 11, domain: "Business Intelligence", status: "pending", percent: 4 },
-                { phase: 12, domain: "Connection Engine", status: "pending", percent: 0 },
+                {
+                  phase: 1,
+                  domain: "Culinary Science",
+                  status: "in_progress",
+                  percent: 15,
+                },
+                {
+                  phase: 2,
+                  domain: "Pastry & Baking",
+                  status: "pending",
+                  percent: 8,
+                },
+                {
+                  phase: 3,
+                  domain: "Wine & Sommelier",
+                  status: "pending",
+                  percent: 12,
+                },
+                {
+                  phase: 4,
+                  domain: "Mixology & Beverages",
+                  status: "pending",
+                  percent: 6,
+                },
+                {
+                  phase: 5,
+                  domain: "Hospitality Operations",
+                  status: "pending",
+                  percent: 6,
+                },
+                {
+                  phase: 6,
+                  domain: "Banquets & Events",
+                  status: "pending",
+                  percent: 4,
+                },
+                {
+                  phase: 7,
+                  domain: "Finance & Accounting",
+                  status: "pending",
+                  percent: 7,
+                },
+                {
+                  phase: 8,
+                  domain: "Inventory & Supply",
+                  status: "pending",
+                  percent: 9,
+                },
+                {
+                  phase: 9,
+                  domain: "Labor & HR",
+                  status: "pending",
+                  percent: 3,
+                },
+                {
+                  phase: 10,
+                  domain: "CRM & Guest Experience",
+                  status: "pending",
+                  percent: 5,
+                },
+                {
+                  phase: 11,
+                  domain: "Business Intelligence",
+                  status: "pending",
+                  percent: 4,
+                },
+                {
+                  phase: 12,
+                  domain: "Connection Engine",
+                  status: "pending",
+                  percent: 0,
+                },
               ].map((phase) => (
-                <div key={phase.phase} className="flex items-center gap-3 pb-2 border-b">
+                <div
+                  key={phase.phase}
+                  className="flex items-center gap-3 pb-2 border-b"
+                >
                   <div className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 text-sm font-semibold">
                     {phase.phase}
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-sm text-gray-900">{phase.domain}</p>
+                    <p className="font-medium text-sm text-gray-900">
+                      {phase.domain}
+                    </p>
                     <div className="w-full bg-gray-200 rounded h-1.5 mt-1">
                       <div
                         className={`h-full rounded ${
-                          phase.status === "in_progress" ? "bg-indigo-600" : "bg-gray-400"
+                          phase.status === "in_progress"
+                            ? "bg-indigo-600"
+                            : "bg-gray-400"
                         }`}
                         style={{ width: `${phase.percent}%` }}
                       />
                     </div>
                   </div>
                   <Badge
-                    variant={phase.status === "in_progress" ? "default" : "outline"}
+                    variant={
+                      phase.status === "in_progress" ? "default" : "outline"
+                    }
                     className="text-xs"
                   >
                     {phase.status === "in_progress" ? "In Progress" : "Pending"}

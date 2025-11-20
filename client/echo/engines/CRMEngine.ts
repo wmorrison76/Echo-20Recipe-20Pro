@@ -19,7 +19,7 @@ export interface GuestProfileSummary {
 export class CRMEngine {
   static summarizeGuest(visits: GuestVisit[]): GuestProfileSummary | null {
     if (!visits.length) return null;
-    
+
     const guestId = visits[0].guestId;
     const totalVisits = visits.length;
     const totalSpend = visits.reduce((s, v) => s + v.spend, 0);
@@ -41,7 +41,9 @@ export class CRMEngine {
     if ([...allTags].includes("birthday")) segments.push("celebration_guest");
 
     if (segments.includes("high_value")) {
-      personalizationHints.push("Offer proactive greetings and occasional upgrades.");
+      personalizationHints.push(
+        "Offer proactive greetings and occasional upgrades.",
+      );
     }
     if (segments.includes("celebration_guest")) {
       personalizationHints.push("Suggest celebration packages and desserts.");

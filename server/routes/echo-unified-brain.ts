@@ -1,5 +1,9 @@
 import { Router, Request, Response } from "express";
-import { EchoUnifiedBrain, UnifiedRequest, UnifiedResponse } from "../../client/echo/engines/EchoUnifiedBrain";
+import {
+  EchoUnifiedBrain,
+  UnifiedRequest,
+  UnifiedResponse,
+} from "../../client/echo/engines/EchoUnifiedBrain";
 
 const router = Router();
 
