@@ -3099,33 +3099,6 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
               titles.push(title);
             }
           }
-
-          // Extract definitions from the PDF and send to Echo
-          if (pageTexts.length > 0) {
-            try {
-              const bookName = f.name.replace(/\.pdf$/i, "");
-              const allPageText = pageTexts.join("\n");
-
-              // Extract definitions using the new extraction utility
-              const definitions = extractDefinitionsFromText(allPageText);
-
-              // Send definitions to Echo knowledge base if any were found
-              if (definitions.length > 0) {
-                console.log(
-                  `📚 Sending ${definitions.length} definitions from "${bookName}" to Echo...`,
-                );
-                const result = await sendDefinitionsToEcho(definitions, bookName);
-                console.log(
-                  `✅ Echo received ${result.success} definitions, ${result.failed} failed`,
-                );
-              }
-            } catch (defError) {
-              console.warn(
-                "⚠️ Failed to send definitions to Echo (continuing anyway):",
-                defError,
-              );
-            }
-          }
         } catch (e: any) {
           errors.push({
             file: f.name,
