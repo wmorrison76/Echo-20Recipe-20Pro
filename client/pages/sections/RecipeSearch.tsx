@@ -3510,12 +3510,16 @@ export default function RecipeSearchSection() {
               const raw = localStorage.getItem("kb:cook") || "{}";
               const kb = JSON.parse(raw);
               const definitions = kb.definitions || {};
-              const terms = kb.terms || {};
+              const culinaryTerms = kb.culinaryTerms || {};
+              const allTerms = kb.terms || {};
               const books = kb.books || [];
+
+              // Use culinary terms for display if available, otherwise fall back to all terms
+              const displayTerms = Object.keys(culinaryTerms).length > 0 ? culinaryTerms : allTerms;
 
               if (
                 Object.keys(definitions).length === 0 &&
-                Object.keys(terms).length === 0
+                Object.keys(displayTerms).length === 0
               ) {
                 return (
                   <div className="text-muted-foreground">
@@ -3598,19 +3602,20 @@ export default function RecipeSearchSection() {
                     </div>
                   )}
 
-                  {Object.keys(terms).length > 0 && (
+                  {Object.keys(displayTerms).length > 0 && (
                     <div className="border-t pt-3">
                       <div className="font-medium mb-2">
-                        🔤 Top Culinary Terms
+                        🔤 Top Culinary Terms ({Object.keys(displayTerms).length})
                       </div>
                       <div className="flex flex-wrap gap-1.5">
-                        {Object.entries(terms)
+                        {Object.entries(displayTerms)
                           .sort((a: any, b: any) => b[1] - a[1])
                           .slice(0, 20)
                           .map(([term, count]) => (
                             <span
                               key={term}
                               className="px-1.5 py-0.5 bg-muted rounded text-xs group relative cursor-default hover:bg-muted/80 transition-colors"
+                              title={`${term} (appears ${count} times)`}
                             >
                               {term}{" "}
                               <span className="text-muted-foreground">
@@ -3621,14 +3626,18 @@ export default function RecipeSearchSection() {
                                   const raw =
                                     localStorage.getItem("kb:cook") || "{}";
                                   const kb = JSON.parse(raw);
+                                  // Delete from both culinary and general terms
+                                  if (kb.culinaryTerms && kb.culinaryTerms[term]) {
+                                    delete kb.culinaryTerms[term];
+                                  }
                                   if (kb.terms && kb.terms[term]) {
                                     delete kb.terms[term];
-                                    localStorage.setItem(
-                                      "kb:cook",
-                                      JSON.stringify(kb),
-                                    );
-                                    window.location.reload();
                                   }
+                                  localStorage.setItem(
+                                    "kb:cook",
+                                    JSON.stringify(kb),
+                                  );
+                                  window.location.reload();
                                 }}
                                 className="opacity-0 group-hover:opacity-100 transition-opacity absolute -right-2 -top-2 p-0.5 bg-destructive text-white rounded-full text-xs"
                                 title="Delete this term"
@@ -3638,6 +3647,12 @@ export default function RecipeSearchSection() {
                             </span>
                           ))}
                       </div>
+                      {Object.keys(allTerms).length > Object.keys(displayTerms).length && (
+                        <div className="text-muted-foreground italic text-xs mt-2">
+                          Showing {Object.keys(displayTerms).length} culinary-specific terms
+                          from {Object.keys(allTerms).length} total terms learned
+                        </div>
+                      )}
                     </div>
                   )}
 
