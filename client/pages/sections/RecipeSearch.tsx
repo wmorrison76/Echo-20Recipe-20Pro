@@ -4011,6 +4011,43 @@ export default function RecipeSearchSection() {
           </div>
         </div>
       )}
+
+      {/* Echo Training Result Notification - Persists after training */}
+      {showTrainingResult && trainingResult && (
+        <div className="fixed bottom-24 right-6 z-50 max-w-sm">
+          <div className="bg-white dark:bg-zinc-900 border border-green-200 dark:border-green-700/50 rounded-lg shadow-lg p-4 space-y-3">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-3 flex-1">
+                <div className="flex-shrink-0 mt-1">
+                  <div className="flex items-center justify-center h-5 w-5">
+                    <span className="text-lg">✅</span>
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                    Knowledge Base Updated
+                  </h3>
+                  <p className="mt-1 text-xs text-gray-600 dark:text-gray-300">
+                    {trainingResult.success} recipe{trainingResult.success !== 1 ? "s" : ""} stored
+                    {trainingResult.failed > 0 && ` (${trainingResult.failed} failed)`}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={dismissTrainingResult}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="bg-green-50 dark:bg-green-900/20 rounded px-3 py-2">
+              <p className="text-xs text-green-700 dark:text-green-300">
+                Echo AI can now recall these recipes instantly during culinary questions.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
