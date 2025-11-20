@@ -3121,108 +3121,128 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             }[];
           };
 
-          // Collect all page texts from all PDFs using the same intelligent extraction
+          // Collect all page texts from all PDFs for definition extraction
+          // This is wrapped in a try-catch to avoid breaking the main PDF import
           let allPageTexts: string[] = [];
-          for (const f of files) {
-            try {
-              const ab = await f.arrayBuffer();
-              const pdfjs: any = await import(
-                "https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs"
-              );
-              const workerSrc =
-                "https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs";
-              if (pdfjs.GlobalWorkerOptions)
-                pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
-              const doc = await pdfjs.getDocument({ data: ab }).promise;
+          try {
+            for (const f of files) {
+              try {
+                const ab = await f.arrayBuffer();
+                let pdfjs: any;
+                try {
+                  pdfjs = await import(
+                    "https://esm.sh/pdfjs-dist@4.7.76/build/pdf.mjs"
+                  );
+                } catch (importError) {
+                  console.warn(
+                    "Could not load pdfjs from esm.sh, skipping definition extraction"
+                  );
+                  continue;
+                }
 
-              for (let p = 1; p <= doc.numPages; p++) {
-                const page = await doc.getPage(p);
-                const tc = await page.getTextContent({
-                  disableCombineTextItems: true,
-                });
-                const items = (tc.items || []) as any[];
-                if (!items.length) continue;
+                const workerSrc =
+                  "https://esm.sh/pdfjs-dist@4.7.76/build/pdf.worker.mjs";
+                if (pdfjs?.GlobalWorkerOptions)
+                  pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
 
-                const rowMap = new Map<number, PdfRow>();
-                const yTolerance = 3;
-                for (const raw of items) {
-                  const str = typeof raw.str === "string" ? raw.str : "";
-                  if (!str.trim()) continue;
-                  const transform = Array.isArray(raw.transform)
-                    ? raw.transform
-                    : [0, 0, 0, 0, raw.x || 0, raw.y || 0];
-                  const x = typeof transform[4] === "number" ? transform[4] : 0;
-                  const y = typeof transform[5] === "number" ? transform[5] : 0;
-                  const widthCandidate =
-                    typeof raw.width === "number"
-                      ? raw.width
-                      : typeof transform[0] === "number"
-                        ? Math.abs(transform[0])
-                        : str.length * 4;
-                  const heightCandidate =
-                    typeof raw.height === "number"
-                      ? raw.height
-                      : typeof transform[3] === "number"
-                        ? Math.abs(transform[3])
-                        : 0;
-                  const key = Math.round(y / yTolerance) * yTolerance;
-                  let row = rowMap.get(key);
-                  if (!row) {
-                    row = { y, items: [] };
-                    rowMap.set(key, row);
-                  }
-                  row.items.push({
-                    x,
-                    xEnd: x + widthCandidate,
-                    width: widthCandidate,
-                    height: heightCandidate,
-                    str,
+                const doc = await pdfjs.getDocument({ data: ab }).promise;
+
+                for (let p = 1; p <= doc.numPages; p++) {
+                  const page = await doc.getPage(p);
+                  const tc = await page.getTextContent({
+                    disableCombineTextItems: true,
                   });
-                }
-                const rows = Array.from(rowMap.values()).sort(
-                  (a, b) => b.y - a.y
-                );
-                const pageLines: string[] = [];
-                const newColumnGap = 48;
-                const wordGap = 4;
-                for (const row of rows) {
-                  const sortedItems = row.items.sort((a, b) => a.x - b.x);
-                  let buffer = "";
-                  let bufferStart = sortedItems[0]?.x ?? 0;
-                  let bufferEnd = sortedItems[0]?.xEnd ?? bufferStart;
-                  for (let i = 0; i < sortedItems.length; i++) {
-                    const current = sortedItems[i];
-                    const text = current.str.replace(/\s+/g, " ").trim();
-                    if (!text) continue;
-                    if (!buffer) {
-                      buffer = text;
-                      bufferStart = current.x;
-                      bufferEnd = current.xEnd;
-                      continue;
+                  const items = (tc.items || []) as any[];
+                  if (!items.length) continue;
+
+                  const rowMap = new Map<number, PdfRow>();
+                  const yTolerance = 3;
+                  for (const raw of items) {
+                    const str = typeof raw.str === "string" ? raw.str : "";
+                    if (!str.trim()) continue;
+                    const transform = Array.isArray(raw.transform)
+                      ? raw.transform
+                      : [0, 0, 0, 0, raw.x || 0, raw.y || 0];
+                    const x =
+                      typeof transform[4] === "number" ? transform[4] : 0;
+                    const y =
+                      typeof transform[5] === "number" ? transform[5] : 0;
+                    const widthCandidate =
+                      typeof raw.width === "number"
+                        ? raw.width
+                        : typeof transform[0] === "number"
+                          ? Math.abs(transform[0])
+                          : str.length * 4;
+                    const heightCandidate =
+                      typeof raw.height === "number"
+                        ? raw.height
+                        : typeof transform[3] === "number"
+                          ? Math.abs(transform[3])
+                          : 0;
+                    const key = Math.round(y / yTolerance) * yTolerance;
+                    let row = rowMap.get(key);
+                    if (!row) {
+                      row = { y, items: [] };
+                      rowMap.set(key, row);
                     }
-                    const gap = current.x - bufferEnd;
-                    if (gap > newColumnGap) {
-                      if (buffer.trim()) {
-                        pageLines.push(buffer.trim());
+                    row.items.push({
+                      x,
+                      xEnd: x + widthCandidate,
+                      width: widthCandidate,
+                      height: heightCandidate,
+                      str,
+                    });
+                  }
+                  const rows = Array.from(rowMap.values()).sort(
+                    (a, b) => b.y - a.y
+                  );
+                  const pageLines: string[] = [];
+                  const newColumnGap = 48;
+                  const wordGap = 4;
+                  for (const row of rows) {
+                    const sortedItems = row.items.sort(
+                      (a, b) => a.x - b.x
+                    );
+                    let buffer = "";
+                    let bufferStart = sortedItems[0]?.x ?? 0;
+                    let bufferEnd = sortedItems[0]?.xEnd ?? bufferStart;
+                    for (let i = 0; i < sortedItems.length; i++) {
+                      const current = sortedItems[i];
+                      const text = current.str.replace(/\s+/g, " ").trim();
+                      if (!text) continue;
+                      if (!buffer) {
+                        buffer = text;
+                        bufferStart = current.x;
+                        bufferEnd = current.xEnd;
+                        continue;
                       }
-                      buffer = text;
-                      bufferStart = current.x;
-                      bufferEnd = current.xEnd;
-                      continue;
+                      const gap = current.x - bufferEnd;
+                      if (gap > newColumnGap) {
+                        if (buffer.trim()) {
+                          pageLines.push(buffer.trim());
+                        }
+                        buffer = text;
+                        bufferStart = current.x;
+                        bufferEnd = current.xEnd;
+                        continue;
+                      }
+                      if (gap > wordGap && !buffer.endsWith(" "))
+                        buffer += " ";
+                      buffer += text;
+                      bufferEnd = Math.max(bufferEnd, current.xEnd);
                     }
-                    if (gap > wordGap && !buffer.endsWith(" ")) buffer += " ";
-                    buffer += text;
-                    bufferEnd = Math.max(bufferEnd, current.xEnd);
+                    if (buffer.trim()) {
+                      pageLines.push(buffer.trim());
+                    }
                   }
-                  if (buffer.trim()) {
-                    pageLines.push(buffer.trim());
-                  }
+                  allPageTexts.push(pageLines.join("\n"));
                 }
-                allPageTexts.push(pageLines.join("\n"));
+              } catch (pdfError) {
+                console.warn(`Failed to extract definitions from ${f.name}`);
               }
-            } catch (pdfError) {
-              console.warn(`Failed to extract definitions from ${f.name}`);
             }
+          } catch (outerError) {
+            console.warn("Error in definition extraction block:", outerError);
           }
 
           if (allPageTexts.length > 0) {
