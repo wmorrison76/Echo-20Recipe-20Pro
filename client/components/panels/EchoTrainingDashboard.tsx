@@ -17,7 +17,6 @@ import { EchoOpenAITrainingMode } from "../EchoOpenAITrainingMode";
 import { useEchoOpenAITraining } from "../../hooks/use-echo-openai-training";
 import { SystemHealthDashboard } from "../SystemHealthDashboard";
 import { AutomatedMultiDomainTraining } from "../AutomatedMultiDomainTraining";
-import { Rocket } from "lucide-react";
 
 interface EchoTrainingDashboardProps {
   onRecipeImport?: (recipes: any[]) => void;
