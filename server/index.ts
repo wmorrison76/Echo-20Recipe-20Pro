@@ -18,6 +18,7 @@ import proceduresRouter from "./routes/procedures";
 import { echoTrainingRouter } from "./routes/echo-training";
 import { echoOpenAITrainingRouter } from "./routes/echo-openai-training";
 import { echoUnifiedBrainRouter } from "./routes/echo-unified-brain";
+import { systemHealthRouter } from "./routes/system-health";
 import {
   proxyRecipeImage as proxyImageOptimized,
   serveRecipeImage,
