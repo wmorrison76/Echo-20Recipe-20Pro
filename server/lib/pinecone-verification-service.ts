@@ -122,6 +122,17 @@ export async function getPineconeStatus(): Promise<PineconeStatus> {
       },
     };
   } catch (error: any) {
+    // Check if it's a 404 (index not found)
+    if (error.message && error.message.includes("404")) {
+      return {
+        connected: true,
+        indexName: KNOWLEDGE_INDEX,
+        indexStats: null,
+        trainingDataVectors: null,
+        error: `Index "${KNOWLEDGE_INDEX}" does not exist yet. It will be created on first knowledge store.`,
+      };
+    }
+
     console.error("[PineconeVerification] Error getting status:", error);
     return {
       connected: false,
