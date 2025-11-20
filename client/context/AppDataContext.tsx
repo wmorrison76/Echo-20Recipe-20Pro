@@ -2674,6 +2674,13 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
           "finishing",
           "finishing steps",
           "to finish",
+          "mixing",
+          "makeup",
+          "baking",
+          "heating",
+          "chilling",
+          "folding",
+          "cooling",
         ];
         const matchLabel = (line: string, labels: string[]) =>
           labels.some(
