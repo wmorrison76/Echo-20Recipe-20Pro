@@ -2,6 +2,7 @@ import RecipeSearchSection from "./sections/RecipeSearch";
 import GallerySection from "./sections/Gallery";
 import AddRecipeSection from "./sections/AddRecipe";
 import SaasRoadmapSection from "./sections/SaasRoadmap";
+import { EchoTrainingDashboard } from "@/components/panels/EchoTrainingDashboard";
 import InventorySuppliesWorkspace from "./sections/saas/InventorySuppliesWorkspace";
 import NutritionAllergensWorkspace from "./sections/saas/NutritionAllergensWorkspace";
 import HaccpComplianceWorkspace from "./sections/saas/HaccpComplianceWorkspace";
