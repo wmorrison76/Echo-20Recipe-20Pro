@@ -1,5 +1,4 @@
-// import { Pinecone } from "@pinecone-database/pinecone";
-// NOTE: Pinecone SDK temporarily disabled - install with: pnpm add @pinecone-database/pinecone
+import { Pinecone } from "@pinecone-database/pinecone";
 
 const PINECONE_API_KEY = process.env.PINECONE_API_KEY || "";
 const PINECONE_INDEX = "echo-recipes";
