@@ -29,6 +29,23 @@ export function useMultiDomainTraining(): UseMultiDomainTrainingReturn {
   const [error, setError] = useState<string | null>(null);
   const [storedVectorCount, setStoredVectorCount] = useState(0);
 
+  // Load stored vector count on mount
+  useEffect(() => {
+    const loadStoredVectors = async () => {
+      try {
+        const response = await fetch("/api/multi-domain-training/pinecone/status");
+        if (response.ok) {
+          const data = await response.json();
+          setStoredVectorCount(data.pinecone.trainingDataVectors?.total || 0);
+        }
+      } catch (err) {
+        console.error("Failed to load stored vector count:", err);
+      }
+    };
+
+    loadStoredVectors();
+  }, []);
+
   // Poll for session updates every 2 seconds
   useEffect(() => {
     if (!session || !isRunning) return;
