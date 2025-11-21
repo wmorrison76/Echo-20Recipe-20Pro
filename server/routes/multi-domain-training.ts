@@ -34,6 +34,28 @@ const openaiApiKey = process.env.OPENAI_API_KEY;
 const activeSessions = new Map<string, MultiDomainTrainingSession>();
 
 /**
+ * Simple concurrency limiter for controlled parallelization
+ */
+function createConcurrencyLimiter(maxConcurrent: number) {
+  let running = 0;
+  const queue: Array<() => Promise<any>> = [];
+
+  const run = async (fn: () => Promise<any>) => {
+    while (running >= maxConcurrent) {
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    }
+    running++;
+    try {
+      return await fn();
+    } finally {
+      running--;
+    }
+  };
+
+  return { run };
+}
+
+/**
  * POST /api/multi-domain-training/start
  * Initialize and start autonomous multi-domain training
  */
