@@ -26,6 +26,7 @@ export interface PDFProcessResult {
 /**
  * Extract text from PDF buffer using pattern matching and text stream extraction
  * Handles text-based PDFs without requiring external libraries
+ * Implements multiple extraction strategies to maximize text recovery
  */
 export async function extractTextFromPDFBuffer(
   buffer: Buffer,
@@ -33,119 +34,186 @@ export async function extractTextFromPDFBuffer(
 ): Promise<string> {
   try {
     let text = buffer.toString('binary');
-    let extractedText = '';
+    const extractedParts: string[] = [];
 
-    // Strategy 1: Extract from text streams using regex
-    // PDFs encode text in various ways - try to extract from common patterns
+    // Strategy 1: Extract from BT...ET text objects (text operators)
+    {
+      const textObjectPattern = /BT\s([\s\S]*?)ET/g;
+      let match;
 
-    // Look for text objects that contain readable strings
-    // Pattern: (text) or <hexstring> within text streams
-    const textObjectPattern = /BT\s([\s\S]*?)ET/g;
-    let match;
-    const textObjects: string[] = [];
+      while ((match = textObjectPattern.exec(text)) !== null) {
+        const obj = match[1];
 
-    while ((match = textObjectPattern.exec(text)) !== null) {
-      textObjects.push(match[1]);
-    }
-
-    // Extract strings from text objects
-    for (const obj of textObjects) {
-      // Match text in parentheses: (text)
-      const stringsInParens = obj.match(/\(([^()\\]|\\.)*\)/g);
-      if (stringsInParens) {
-        for (const str of stringsInParens) {
-          const content = str.slice(1, -1) // Remove parentheses
-            .replace(/\\\(/g, '(')
-            .replace(/\\\)/g, ')')
-            .replace(/\\\\/g, '\\');
-          extractedText += content + ' ';
-        }
-      }
-
-      // Match hex encoded strings: <hexstring>
-      const hexStrings = obj.match(/<([0-9A-Fa-f]+)>/g);
-      if (hexStrings) {
-        for (const hexStr of hexStrings) {
-          const hex = hexStr.slice(1, -1);
-          try {
-            const decoded = Buffer.from(hex, 'hex').toString('binary');
-            // Filter for readable characters
-            const readable = decoded.replace(/[^\x20-\x7E\n\r\t]/g, ' ');
-            if (readable.trim().length > 0) {
-              extractedText += readable + ' ';
-            }
-          } catch (e) {
-            // Skip malformed hex strings
-          }
-        }
-      }
-    }
-
-    // Strategy 2: Look for streams marked as "stream...endstream"
-    const streamPattern = /stream\s*([\s\S]*?)\s*endstream/g;
-    while ((match = streamPattern.exec(text)) !== null) {
-      let streamContent = match[1];
-
-      // Try to extract text from various PDF encodings
-      // Remove common PDF operators
-      streamContent = streamContent
-        .replace(/Tj|TJ|\'|\"|Tf|Tm|Td|TD|T\*/g, ' ') // PDF text operators
-        .replace(/[\x00]/g, ''); // Remove nulls
-
-      // Look for readable text
-      const readable = streamContent.replace(/[^\x20-\x7E\n\r\t]/g, ' ');
-      if (readable.trim().length > 10) {
-        extractedText += readable + ' ';
-      }
-    }
-
-    // Strategy 3: Look for embedded text in content streams
-    // Find objects that contain readable text
-    const objectPattern = /obj\s*([\s\S]*?)\s*endobj/g;
-    let objectCount = 0;
-    while ((match = objectPattern.exec(text)) !== null && objectCount < 500) {
-      const obj = match[1];
-      // Check if this looks like a content stream
-      if (obj.includes('stream') || obj.match(/\(.*\)/)) {
-        // Extract parenthetical text
-        const parenthetical = obj.match(/\(([^()\\]|\\.)*\)/g);
-        if (parenthetical) {
-          for (const str of parenthetical) {
+        // Match text in parentheses: (text)
+        const stringsInParens = obj.match(/\(([^()\\]|\\.)*\)/g);
+        if (stringsInParens) {
+          for (const str of stringsInParens) {
             const content = str.slice(1, -1)
               .replace(/\\\(/g, '(')
               .replace(/\\\)/g, ')')
               .replace(/\\\\/g, '\\');
-            if (content.length > 2) {
-              extractedText += content + ' ';
+            if (content.length > 1) {
+              extractedParts.push(content);
+            }
+          }
+        }
+
+        // Match hex encoded strings: <hexstring>
+        const hexStrings = obj.match(/<([0-9A-Fa-f]+)>/g);
+        if (hexStrings) {
+          for (const hexStr of hexStrings) {
+            const hex = hexStr.slice(1, -1);
+            try {
+              const decoded = Buffer.from(hex, 'hex').toString('latin1');
+              const readable = decoded.replace(/[^\x20-\x7E\t]/g, ' ');
+              if (readable.trim().length > 1) {
+                extractedParts.push(readable);
+              }
+            } catch (e) {
+              // Skip malformed hex strings
             }
           }
         }
       }
-      objectCount++;
     }
 
-    // Clean up the extracted text
-    let cleaned = extractedText
+    // Strategy 2: Extract from content streams (more general)
+    {
+      const streamPattern = /stream\s*([\s\S]*?)\s*endstream/g;
+      let match;
+      let streamCount = 0;
+
+      while ((match = streamPattern.exec(text)) !== null && streamCount < 1000) {
+        let streamContent = match[1];
+
+        // Try to extract readable text
+        // Remove PDF operators but preserve spaces and newlines
+        streamContent = streamContent
+          .replace(/BT[\s\S]*?ET/g, ' ') // Remove other BT...ET blocks
+          .replace(/\/F\d+\s+\d+\s+Tf/g, ' ') // Font selection
+          .replace(/\d+\s+Tz/g, ' ') // Horizontal scaling
+          .replace(/\d+\s+TL/g, ' ') // Text leading
+          .replace(/Tj|TJ|T'|T"|Td|TD|T\*|Tm|Tw|Tc/g, ' ') // Text positioning/showing
+          .replace(/[()[\]{}]/g, ' ') // Brackets
+          .replace(/\x00/g, ''); // Nulls
+
+        // Extract readable characters but preserve word boundaries
+        const readable = streamContent
+          .replace(/[^\x20-\x7E\n\r\t]/g, ' ')
+          .replace(/\s+/g, ' ');
+
+        if (readable.trim().length > 20) {
+          extractedParts.push(readable);
+        }
+        streamCount++;
+      }
+    }
+
+    // Strategy 3: Look for text in dictionary values and arrays
+    {
+      // Look for /Contents, /Resources and other text-bearing objects
+      const objPattern = /obj\s*([\s\S]*?)\s*endobj/g;
+      let match;
+      let objCount = 0;
+
+      while ((match = objPattern.exec(text)) !== null && objCount < 500) {
+        const obj = match[1];
+
+        // Only process objects that likely contain text
+        if (/\(.*\)|<[0-9A-Fa-f]+>|\/Type/.test(obj)) {
+          // Extract parenthetical strings
+          const parens = obj.match(/\(([^()\\]|\\.)*\)/g);
+          if (parens) {
+            for (const p of parens) {
+              const content = p.slice(1, -1)
+                .replace(/\\\(/g, '(')
+                .replace(/\\\)/g, ')')
+                .replace(/\\\\/g, '\\')
+                .replace(/\\/g, '');
+              if (content.length > 2 && /[a-z0-9]/i.test(content)) {
+                extractedParts.push(content);
+              }
+            }
+          }
+
+          // Extract hex strings
+          const hexes = obj.match(/<([0-9A-Fa-f]+)>/g);
+          if (hexes) {
+            for (const h of hexes) {
+              const hex = h.slice(1, -1);
+              if (hex.length > 4) {
+                try {
+                  const decoded = Buffer.from(hex, 'hex').toString('latin1');
+                  const clean = decoded.replace(/[^\x20-\x7E\t]/g, ' ');
+                  if (clean.trim().length > 2) {
+                    extractedParts.push(clean);
+                  }
+                } catch (e) {
+                  // Skip
+                }
+              }
+            }
+          }
+        }
+        objCount++;
+      }
+    }
+
+    // Strategy 4: As a fallback, look for any readable ASCII sequences
+    {
+      let current = '';
+      for (let i = 0; i < text.length; i++) {
+        const code = text.charCodeAt(i);
+        if ((code >= 32 && code <= 126) || code === 9 || code === 10 || code === 13) {
+          // Printable ASCII or tab/newline
+          current += text[i];
+        } else {
+          if (current.length > 5) {
+            extractedParts.push(current);
+          }
+          current = '';
+        }
+      }
+      if (current.length > 5) {
+        extractedParts.push(current);
+      }
+    }
+
+    // Combine all extracted parts
+    let combined = extractedParts.join('\n');
+
+    // Clean up the combined text
+    let cleaned = combined
       .replace(/\s+/g, ' ') // Normalize whitespace
-      .replace(/[^\x20-\x7E\n\r\t]/g, '') // Remove non-ASCII
       .trim();
 
     // Remove common PDF artifacts
     cleaned = cleaned
-      .replace(/(%[^\n]*)/g, '') // Comments
-      .replace(/(\d+\s+\d+\s+obj|\s+endobj)/g, '') // Object markers
-      .replace(/stream\s+endstream/g, '') // Stream markers
+      .replace(/\d+\s+\d+\s+obj\s+/g, '') // Object markers
+      .replace(/\s+endobj\s+/g, '\n') // Object ends
+      .replace(/%.*?(?=\n)/g, '') // Comments
+      .replace(/stream\s+endstream/gi, '') // Stream markers
       .replace(/PDF\s+version/i, '')
-      .replace(/%%EOF/g, '')
-      .replace(/\s+/g, ' '); // Final whitespace normalization
+      .replace(/%%EOF/i, '')
+      .replace(/\s+/g, ' '); // Final normalization
 
-    // Split into lines and remove very short lines that are probably noise
+    // Split into lines
     const lines = cleaned
       .split(/[\n\r]+/)
       .map(line => line.trim())
-      .filter(line => line.length > 2);
+      .filter(line => line.length > 1);
 
-    const finalText = lines.join('\n');
+    // Remove noise: lines that are pure numbers, pure operators, etc
+    const cleanedLines = lines.filter(line => {
+      // Skip pure numbers or pure operators
+      if (/^[\d\s.(),<>-]*$/.test(line)) return false;
+      // Skip very long lines that are probably encoded data
+      if (line.length > 500) return false;
+      // Must have at least some alphabetic characters
+      return /[a-zA-Z]/.test(line);
+    });
+
+    const finalText = cleanedLines.join('\n');
 
     if (finalText.length < 100) {
       throw new Error('Insufficient text extracted from PDF (less than 100 characters). The PDF may be image-based or encrypted. Please ensure the PDF contains selectable text.');
