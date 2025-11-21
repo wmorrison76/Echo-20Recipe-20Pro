@@ -119,41 +119,75 @@ export async function storeKnowledgeVector(
 }
 
 /**
- * Store multiple knowledge items in batch
+ * Store multiple knowledge items in batch with proper concurrency control
  */
 export async function storeKnowledgeBatch(
   knowledgeItems: AnyKnowledge[],
-): Promise<{ success: number; failed: number }> {
+  maxConcurrent = 5,
+): Promise<{ success: number; failed: number; errors: Array<{ id: string; error: string }> }> {
   if (!PINECONE_API_KEY) {
-    console.warn("Pinecone API key not configured");
-    return { success: 0, failed: knowledgeItems.length };
+    console.warn("[Knowledge] Pinecone API key not configured");
+    return {
+      success: 0,
+      failed: knowledgeItems.length,
+      errors: knowledgeItems.map(item => ({ id: item.id, error: 'API key not configured' }))
+    };
   }
 
-  const results = { success: 0, failed: 0 };
+  if (knowledgeItems.length === 0) {
+    return { success: 0, failed: 0, errors: [] };
+  }
 
-  // Optimized: Store up to 5 vectors in parallel for faster persistence
-  const maxConcurrent = 5;
+  const results = { success: 0, failed: 0, errors: [] as Array<{ id: string; error: string }> };
   let running = 0;
+  let completed = 0;
 
-  await Promise.all(
-    knowledgeItems.map(async (knowledge) => {
-      // Wait if we're at max concurrency
-      while (running >= maxConcurrent) {
-        await new Promise((resolve) => setTimeout(resolve, 10));
-      }
+  console.log(`[Knowledge] Starting batch storage of ${knowledgeItems.length} items with ${maxConcurrent} concurrent workers`);
 
-      running++;
-      try {
-        await storeKnowledgeVector(knowledge);
-        results.success++;
-      } catch (error) {
-        console.error(`Failed to store knowledge ${knowledge.id}:`, error);
-        results.failed++;
-      } finally {
-        running--;
-      }
-    }),
+  // Create a queue-based system for proper concurrency control
+  const queue = [...knowledgeItems];
+  const workers: Promise<void>[] = [];
+
+  // Create worker functions that process items from the queue
+  for (let i = 0; i < Math.min(maxConcurrent, knowledgeItems.length); i++) {
+    workers.push(
+      (async () => {
+        while (queue.length > 0) {
+          const knowledge = queue.shift();
+          if (!knowledge) break;
+
+          try {
+            running++;
+            await storeKnowledgeVector(knowledge);
+            results.success++;
+            completed++;
+
+            if (completed % 10 === 0) {
+              console.log(`[Knowledge] Progress: ${completed}/${knowledgeItems.length} stored`);
+            }
+          } catch (error) {
+            const errorMsg = error instanceof Error ? error.message : String(error);
+            results.failed++;
+            results.errors.push({ id: knowledge.id, error: errorMsg });
+            console.error(`[Knowledge] Failed to store ${knowledge.id}: ${errorMsg}`);
+          } finally {
+            running--;
+          }
+        }
+      })(),
+    );
+  }
+
+  // Wait for all workers to complete
+  await Promise.all(workers);
+
+  console.log(
+    `[Knowledge] Batch storage complete. Success: ${results.success}, Failed: ${results.failed}`,
   );
+
+  if (results.failed > 0) {
+    console.warn(`[Knowledge] ${results.failed} items failed to store. Errors: ${JSON.stringify(results.errors.slice(0, 5))}`);
+  }
 
   return results;
 }
