@@ -138,16 +138,26 @@ export async function uploadPDFFile(req: Request, res: Response) {
 /**
  * POST /api/pdf-library/upload-batch
  * Upload multiple PDF files at once
- * Expects multipart/form-data with multiple files
+ * Expects JSON body with:
+ * - pdfs: Array of { pdfBase64, pdfName, title?, author?, cuisine? }
  */
 export async function uploadPDFBatch(req: Request, res: Response) {
   try {
-    const files = (req as any).files;
+    const { pdfs } = req.body as { pdfs: Array<{ pdfBase64: string; pdfName: string; title?: string; author?: string; cuisine?: string }> };
 
-    if (!Array.isArray(files) || files.length === 0) {
+    if (!Array.isArray(pdfs) || pdfs.length === 0) {
       return res.status(400).json({
         status: 'error',
-        message: 'No PDF files provided',
+        message: 'Array of PDFs required',
+        example: {
+          pdfs: [
+            {
+              pdfBase64: 'JVBERi0xLjQK...',
+              pdfName: 'book1.pdf',
+              title: 'Book Title',
+            },
+          ],
+        },
       });
     }
 
@@ -156,15 +166,28 @@ export async function uploadPDFBatch(req: Request, res: Response) {
     let totalExtracted = 0;
     const failedFiles = [];
 
-    // Process each file
-    for (const file of files) {
+    // Process each PDF
+    for (const pdfData of pdfs) {
       try {
+        if (!pdfData.pdfBase64 || !pdfData.pdfName) {
+          failedFiles.push({
+            file: pdfData.pdfName || 'unknown',
+            error: 'Missing pdfBase64 or pdfName',
+          });
+          continue;
+        }
+
+        // Convert base64 to buffer
+        const pdfBuffer = Buffer.from(pdfData.pdfBase64, 'base64');
+
         // Extract text from PDF
-        const pdfText = await extractTextFromPDFBuffer(file.buffer, file.filename);
-        
+        const pdfText = await extractTextFromPDFBuffer(pdfBuffer, pdfData.pdfName);
+
         // Create metadata
         const metadata: PDFMetadata = {
-          title: extractPDFMetadata(file.filename, pdfText).title,
+          title: pdfData.title || extractPDFMetadata(pdfData.pdfName, pdfText).title,
+          author: pdfData.author,
+          cuisine: pdfData.cuisine,
           language: 'English',
           specialization: 'culinary-book',
         };
@@ -186,7 +209,7 @@ export async function uploadPDFBatch(req: Request, res: Response) {
         totalAdded += addedCount;
 
         importResults.push({
-          file: file.filename,
+          file: pdfData.pdfName,
           source: metadata.title,
           termsExtracted: extraction.terms.length,
           termsAdded: addedCount,
@@ -194,7 +217,7 @@ export async function uploadPDFBatch(req: Request, res: Response) {
         });
       } catch (error) {
         failedFiles.push({
-          file: file.filename,
+          file: pdfData.pdfName,
           error: error instanceof Error ? error.message : 'Unknown error',
         });
       }
@@ -205,7 +228,7 @@ export async function uploadPDFBatch(req: Request, res: Response) {
     res.json({
       status: 'success',
       import: {
-        totalFiles: files.length,
+        totalFiles: pdfs.length,
         successfulFiles: importResults.length,
         failedFiles: failedFiles.length,
         totalTermsExtracted,
