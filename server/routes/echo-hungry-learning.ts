@@ -15,6 +15,62 @@ import { recipePersistenceService } from '../lib/recipe-persistence-service';
 import type { PDFMetadata } from '../lib/pdf-knowledge-extractor';
 
 /**
+ * POST /api/echo/hungry-learning/crawl-and-store-recipes
+ * Immediately crawl recipes from web and store them for Echo analysis
+ * Used to populate the recipe database
+ */
+export async function crawlAndStoreRecipes(req: Request, res: Response) {
+  try {
+    console.log('🚀 Starting recipe crawler with automatic storage...');
+    const startTime = Date.now();
+
+    // Crawl recipes from web
+    const recipes = await webRecipeCrawler.crawlRecipes({
+      query: '*',
+      limit: 500, // Start with 500 recipes
+    });
+
+    console.log(`📥 Crawled ${recipes.length} recipes, now storing them for Echo...`);
+
+    // Store all recipes immediately
+    const stored = await recipePersistenceService.storeRecipeBatch(recipes);
+    const duration = Date.now() - startTime;
+
+    const stats = recipePersistenceService.getStatistics();
+
+    res.json({
+      status: 'success',
+      crawling: {
+        crawledRecipes: recipes.length,
+        storedRecipes: stored.length,
+        durationMs: duration,
+        timestamp: new Date().toISOString(),
+      },
+      databaseStats: {
+        totalRecipesInSystem: stats.totalRecipes,
+        cuisines: stats.cuisineBreakdown,
+        difficulties: stats.difficultyBreakdown,
+        averageCookTime: stats.averageCookTime,
+        averageCalories: stats.averageCalories,
+      },
+      echoLearning: {
+        ready: stats.totalRecipes > 0,
+        message: stats.totalRecipes > 0
+          ? `✅ Echo can now analyze ${stats.totalRecipes} recipes for flavor profiles and ingredient ratios!`
+          : 'No recipes stored yet',
+      },
+    });
+  } catch (error) {
+    console.error('Error crawling and storing recipes:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to crawl and store recipes',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
  * POST /api/echo/hungry-learning/start
  * Initiates comprehensive knowledge acquisition
  */
@@ -551,7 +607,7 @@ export async function importPDFBatch(req: Request, res: Response) {
         averageConfidence: merged.metadata.confidence,
         timestamp: new Date().toISOString(),
       },
-      message: `��� Echo imported ${totalTermsAdded} master-level culinary terms from ${extractions.length} PDFs!`,
+      message: `📚 Echo imported ${totalTermsAdded} master-level culinary terms from ${extractions.length} PDFs!`,
       dictionaryStats: masterCulinaryDictionary.getStatistics(),
     });
   } catch (error) {
