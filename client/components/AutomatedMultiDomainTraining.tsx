@@ -55,6 +55,11 @@ export function AutomatedMultiDomainTraining({
     getTotalDomains,
   } = useMultiDomainTraining();
 
+  // Calculate previously stored knowledge vs current session
+  const totalKnowledge = getTotalKnowledgeLearned();
+  const currentSessionKnowledge = session?.totalKnowledgeLearned || 0;
+  const previouslyStoredKnowledge = totalKnowledge - currentSessionKnowledge;
+
   const sortedProfiles = useMemo(() => {
     return MULTI_DOMAIN_TRAINING_PROFILES.sort((a, b) => {
       const stateA = session?.domainStates[a.id];
