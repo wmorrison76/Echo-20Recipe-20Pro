@@ -52,80 +52,132 @@ export default function AskEchoPanel() {
     setLoading(true);
 
     try {
-      // Search for relevant procedures
-      const results = await searchProcedures(userMessage, 3);
+      // First, try searching the master dictionary
+      const dictionaryResult = await searchTerm(userMessage);
 
-      if (results.length === 0) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "echo",
-            content: `I couldn't find specific procedures matching "${userMessage}". This could be because:
-1. The knowledge hasn't been imported yet from a textbook
-2. The procedure is stored under different terminology
-3. Try asking with similar terms (e.g., "butchering", "breaking down", "fabrication")
+      if (dictionaryResult?.entry?.term) {
+        // Found in master dictionary
+        const term = dictionaryResult.entry.term;
+        let response = `📚 **${term.term}**\n\n`;
+        response += `**Definition:** ${term.definition}\n\n`;
 
-Would you like me to show you available categories instead?`,
-            procedures: [],
-          },
-        ]);
-      } else {
-        // Build response from procedures
-        let response = `I found ${results.length} relevant procedure(s) for "${userMessage}":\n\n`;
+        response += `**Usage:** ${term.usage.primary}`;
+        if (term.usage.secondary && term.usage.secondary.length > 0) {
+          response += `\n- Also used for: ${term.usage.secondary.join(', ')}`;
+        }
+        response += `\n\n`;
 
-        results.forEach((result, index) => {
-          response += `**${index + 1}. ${result.procedure.title}** (${result.procedure.category})`;
-          if (result.procedure.time_estimate) {
-            response += ` - ${result.procedure.time_estimate}`;
+        if (term.etymology) {
+          response += `**Etymology:** From ${term.etymology.origin}`;
+          if (term.etymology.originalWord) {
+            response += ` - "${term.etymology.originalWord}"`;
           }
-          if (result.procedure.difficulty) {
-            response += ` - ${result.procedure.difficulty} level`;
+          if (term.etymology.meaning) {
+            response += ` meaning "${term.etymology.meaning}"`;
           }
           response += `\n\n`;
+        }
 
-          // Add steps
-          response += `Steps:\n`;
-          result.procedure.steps.forEach((step) => {
-            response += `${step.number}. ${step.instruction}\n`;
-            if (step.tips) {
-              response += `   💡 Tip: ${step.tips}\n`;
-            }
-          });
-
-          // Add tools if available
-          if (result.procedure.tools && result.procedure.tools.length > 0) {
-            response += `\nTools needed: ${result.procedure.tools.join(", ")}\n`;
+        if (term.applications) {
+          response += `**Applications:** ${term.applications.primary}\n`;
+          if (term.applications.examples && term.applications.examples.length > 0) {
+            response += `- Examples: ${term.applications.examples.join(', ')}\n`;
           }
-
-          // Add materials if available
-          if (
-            result.procedure.materials &&
-            result.procedure.materials.length > 0
-          ) {
-            response += `Materials: ${result.procedure.materials.join(", ")}\n`;
+          if (term.applications.dishes && term.applications.dishes.length > 0) {
+            response += `- Used in: ${term.applications.dishes.join(', ')}\n`;
           }
+          response += '\n';
+        }
 
-          response += "\n---\n\n";
-        });
+        if (term.relatedTerms && term.relatedTerms.length > 0) {
+          response += `**Related terms:** ${term.relatedTerms.join(', ')}\n`;
+        }
+
+        response += `\n✨ **Mastery Level:** ${term.masteryLevel} | **Confidence:** ${(term.confidence * 100).toFixed(0)}%`;
 
         setMessages((prev) => [
           ...prev,
           {
             role: "echo",
             content: response,
-            procedures: results,
+            isDictionaryResult: true,
           },
         ]);
+      } else {
+        // Not found in master dictionary, try procedures
+        const results = await searchProcedures(userMessage, 3);
+
+        if (results.length === 0) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: "echo",
+              content: `I couldn't find specific information matching "${userMessage}".
+
+Try asking about cooking terms like: "sauté", "simmer", "brunoise", "mise-en-place", "emulsion"
+
+Or tell me what you'd like to learn about culinary techniques!`,
+              procedures: [],
+            },
+          ]);
+        } else {
+          // Build response from procedures
+          let response = `I found ${results.length} relevant procedure(s) for "${userMessage}":\n\n`;
+
+          results.forEach((result, index) => {
+            response += `**${index + 1}. ${result.procedure.title}** (${result.procedure.category})`;
+            if (result.procedure.time_estimate) {
+              response += ` - ${result.procedure.time_estimate}`;
+            }
+            if (result.procedure.difficulty) {
+              response += ` - ${result.procedure.difficulty} level`;
+            }
+            response += `\n\n`;
+
+            // Add steps
+            response += `Steps:\n`;
+            result.procedure.steps.forEach((step) => {
+              response += `${step.number}. ${step.instruction}\n`;
+              if (step.tips) {
+                response += `   💡 Tip: ${step.tips}\n`;
+              }
+            });
+
+            // Add tools if available
+            if (result.procedure.tools && result.procedure.tools.length > 0) {
+              response += `\nTools needed: ${result.procedure.tools.join(", ")}\n`;
+            }
+
+            // Add materials if available
+            if (
+              result.procedure.materials &&
+              result.procedure.materials.length > 0
+            ) {
+              response += `Materials: ${result.procedure.materials.join(", ")}\n`;
+            }
+
+            response += "\n---\n\n";
+          });
+
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: "echo",
+              content: response,
+              procedures: results,
+            },
+          ]);
+        }
       }
     } catch (error) {
-      console.error("Error searching procedures:", error);
+      console.error("Error searching knowledge:", error);
       toast.error("Failed to search culinary knowledge");
       setMessages((prev) => [
         ...prev,
         {
           role: "echo",
           content:
-            "I encountered an error while searching for procedures. Please try again with a different question.",
+            "I encountered an error while searching for knowledge. Please try again with a different question.",
         },
       ]);
     } finally {
