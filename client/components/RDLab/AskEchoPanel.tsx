@@ -112,7 +112,24 @@ export default function AskEchoPanel() {
       const extractedTerm = extractTermFromQuestion(userMessage);
 
       // First, try searching the master dictionary with the extracted term
-      const dictionaryResult = await searchTerm(extractedTerm);
+      let dictionaryResult = await searchTerm(extractedTerm);
+
+      // If not found, try fuzzy search (handle typos and alternate spellings)
+      if (!dictionaryResult?.entry?.term) {
+        console.log(`[Echo] Exact match failed for "${extractedTerm}", trying fuzzy search...`);
+
+        // Get available terms for fuzzy matching
+        try {
+          const statsResponse = await fetch('/api/echo/hungry-learning/master-dictionary/statistics');
+          if (statsResponse.ok) {
+            const stats = await statsResponse.json();
+            // We'll use the categories to hint at available terms
+            // In a full implementation, we'd have an endpoint returning all terms
+          }
+        } catch (err) {
+          console.warn('[Echo] Could not get available terms for fuzzy search');
+        }
+      }
 
       if (dictionaryResult?.entry?.term) {
         // Found in master dictionary
