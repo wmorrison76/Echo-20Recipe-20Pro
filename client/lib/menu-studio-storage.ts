@@ -17,9 +17,39 @@ export function getSavedDesigns(): MenuDesignData[] {
   try {
     const data = localStorage.getItem(STORAGE_KEY);
     if (!data) return [];
-    return JSON.parse(data) as MenuDesignData[];
+
+    const designs = JSON.parse(data) as MenuDesignData[];
+
+    // Validate and filter out corrupted designs
+    const validDesigns = designs.filter((design) => {
+      try {
+        // Validate required properties
+        if (!design || typeof design !== "object") return false;
+        if (!design.id || !design.name) return false;
+        if (!Array.isArray(design.elements)) return false;
+        if (!design.pageSize || !design.canvasSettings) return false;
+        return true;
+      } catch {
+        console.warn("Invalid design detected, filtering out:", design);
+        return false;
+      }
+    });
+
+    // If we filtered out corrupted designs, save the cleaned list
+    if (validDesigns.length !== designs.length) {
+      console.warn(`Removed ${designs.length - validDesigns.length} corrupted designs`);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(validDesigns));
+    }
+
+    return validDesigns;
   } catch (error) {
     console.error("Failed to load designs from storage:", error);
+    // Clear corrupted data
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // Ignore errors clearing storage
+    }
     return [];
   }
 }
