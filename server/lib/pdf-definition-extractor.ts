@@ -16,30 +16,15 @@ interface ExtractedDefinition {
 }
 
 const INGREDIENT_KEYWORDS = [
-  "herb",
-  "spice",
-  "salt",
-  "pepper",
-  "flour",
-  "fat",
-  "oil",
-  "vinegar",
-  "cheese",
-  "meat",
-  "fish",
-  "shellfish",
-  "bean",
-  "grain",
-  "rice",
-  "fruit",
-  "vegetable",
-  "nut",
-  "seed",
-  "sugar",
-  "honey",
-  "chile",
-  "mushroom",
-  "wine",
+  "herb", "spice", "salt", "pepper", "flour", "fat", "oil", "vinegar",
+  "cheese", "meat", "fish", "shellfish", "bean", "grain", "rice",
+  "fruit", "vegetable", "nut", "seed", "sugar", "honey", "chile",
+  "mushroom", "wine", "butter", "cream", "egg", "milk", "juice",
+  "extract", "essence", "zest", "peel", "rind", "curd", "whey",
+  "stock", "broth", "jus", "reduction", "sauce", "paste", "puree",
+  "gelatin", "agar", "pectin", "starch", "yeast", "baking powder",
+  "chocolate", "cocoa", "vanilla", "almond", "sesame", "soy",
+  "miso", "koji", "fermented", "cured", "smoked", "dried",
 ];
 
 const TECHNIQUE_KEYWORDS = [
@@ -352,7 +337,7 @@ export function extractDefinitionsFromPdfText(
     // Technical specs that aren't culinary
     /(flexipan|inch|inches|cm|diameter|copyright|isbn|published)/i,
     // Only exclude "recipe" if it's the whole entry, not technique recipes
-    /^recipe\s*[:—\-]?\s*[a-z]*\s*(serves|ingredients|instructions)$/i,
+    /^recipe\s*[:���\-]?\s*[a-z]*\s*(serves|ingredients|instructions)$/i,
     /^(serves|yields?|portions?|prep time|cook time|baking time|oven temp)\s*[:—]/i,
   ];
 
