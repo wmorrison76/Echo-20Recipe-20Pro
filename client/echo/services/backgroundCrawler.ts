@@ -416,10 +416,10 @@ let globalCrawler: BackgroundKnowledgeCrawler | null = null;
 export function getBackgroundCrawler(): BackgroundKnowledgeCrawler {
   if (!globalCrawler) {
     globalCrawler = new BackgroundKnowledgeCrawler({
-      enabled: true,
-      mode: "learning",
-      crawlIntervalMs: 60000, // Optimized: 1 minute between batches (reduced from 2 minutes)
-      batchSize: 8, // Optimized: 8 topics per batch (increased from 3) for 2.7x faster collection
+      enabled: false,
+      mode: "on_demand",
+      crawlIntervalMs: 60000,
+      batchSize: 8,
       autoSwitchWhenReady: true,
     });
   }
