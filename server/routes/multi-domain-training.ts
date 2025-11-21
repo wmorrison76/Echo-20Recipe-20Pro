@@ -732,9 +732,16 @@ router.get("/pinecone/status", async (_req: Request, res: Response) => {
     });
   } catch (error: any) {
     console.error("[MultiDomainTraining] Pinecone status check failed:", error);
-    return res.status(500).json({
-      success: false,
-      error: error.message || "Failed to check Pinecone status",
+    // Return partial response instead of 500 error to avoid breaking the UI
+    return res.status(200).json({
+      success: true,
+      pinecone: {
+        connected: false,
+        indexName: "echo-knowledge",
+        indexStats: null,
+        trainingDataVectors: null,
+        error: error.message || "Failed to check Pinecone status",
+      },
     });
   }
 });
