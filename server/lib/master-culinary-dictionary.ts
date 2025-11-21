@@ -351,6 +351,37 @@ class MasterCulinaryDictionary {
     // In production, this would contain 10,000 complete entries
 
     // BASIC COOKING TECHNIQUES (Fundamental)
+    this.addTerm('sauce', {
+      term: 'Sauce',
+      definition: 'A liquid or semi-liquid preparation served with food to enhance flavor, add moisture, or provide visual appeal. Can be hot or cold, thin or thick, and derived from broths, emulsions, or reductions.',
+      usage: {
+        primary: 'Accompanying dishes to enhance flavor and presentation',
+        secondary: ['binding ingredient', 'flavor foundation', 'visual garnish'],
+        context: 'All cuisines and cooking styles, from basic to haute cuisine',
+      },
+      categories: ['technique', 'ingredient', 'method'],
+      etymology: {
+        origin: 'French',
+        originalWord: 'sauce',
+        meaning: 'Derived from Latin "salsa" (salted)',
+        period: 'Medieval and classical European cooking',
+      },
+      applications: {
+        primary: 'Enhancing main dishes, vegetables, and proteins with flavor and moisture',
+        examples: ['Tomato sauce for pasta', 'Béarnaise for steak', 'Hollandaise for eggs'],
+        dishes: ['Pasta dishes', 'Meat preparations', 'Poached eggs', 'Steamed vegetables'],
+      },
+      relatedTerms: ['gravy', 'coulis', 'jus', 'reduction', 'emulsion', 'beurre-blanc', 'hollandaise', 'béarnaise'],
+      history: {
+        period: 'Medieval period to modern',
+        culture: 'French culinary tradition (codified by Escoffier)',
+        significance: 'Fundamental element of professional cooking, one of five mother sauces in classical French cuisine',
+      },
+      confidence: 1.0,
+      sources: ['Escoffier Guide Culinaire', 'Classic Culinary Training'],
+      masteryLevel: 'fundamental',
+    });
+
     this.addTerm('saute', {
       term: 'Sauté',
       definition: 'Cooking technique using high heat with minimal fat in a shallow pan, tossing or stirring food frequently to ensure even cooking and browning. From French "sauté" meaning "jumped."',
@@ -371,7 +402,7 @@ class MasterCulinaryDictionary {
         examples: ['Sauté onions until golden', 'Sauté mushrooms until liquid evaporates', 'Sauté proteins until browned on exterior'],
         dishes: ['All stir-fries', 'French sauces and preparations', 'Asian cuisine', 'Mediterranean cooking'],
       },
-      relatedTerms: ['pan-fry', 'stir-fry', 'fond', 'caramelize', 'browning'],
+      relatedTerms: ['pan-fry', 'stir-fry', 'fond', 'sauce', 'caramelize', 'browning'],
       history: {
         period: '18th-19th century French cuisine development',
         culture: 'French classical cooking',
