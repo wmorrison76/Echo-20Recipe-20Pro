@@ -2236,6 +2236,32 @@ export default function RecipeSearchSection() {
             <div className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
               Import from the web
             </div>
+            <div className="p-2 rounded border border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800">
+              <div className="flex gap-2 items-center">
+                <span className="text-xs font-medium">🚀 Auto-populate 500+ recipes:</span>
+                <Button
+                  size="sm"
+                  onClick={async () => {
+                    try {
+                      setStatus("Crawling recipes from web (this may take 30-60 seconds)...");
+                      const response = await fetch(
+                        "/api/echo/hungry-learning/crawl-and-store-recipes",
+                        { method: "POST" }
+                      );
+                      if (!response.ok) throw new Error("Crawl failed");
+                      const data = await response.json();
+                      setStatus(
+                        `✅ Added ${data.crawling?.storedRecipes || 0} recipes to system! Echo can now analyze flavor profiles and ingredient ratios.`
+                      );
+                    } catch (e: any) {
+                      setStatus(`Failed to crawl: ${e?.message || "error"}`);
+                    }
+                  }}
+                >
+                  Crawl Now
+                </Button>
+              </div>
+            </div>
             <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 lg:flex-1">
                 <input
