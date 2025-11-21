@@ -109,3 +109,9 @@ echoHungryLearningRouter.post('/hungry-learning/import-pdf-batch', importPDFBatc
  * Get status of PDF library import and Echo's knowledge acquisition progress
  */
 echoHungryLearningRouter.get('/hungry-learning/library-status', getLibraryImportStatus);
+
+/**
+ * GET /api/echo/hungry-learning/recipe-statistics
+ * Get recipe collection statistics for Echo's flavor and ingredient analysis
+ */
+echoHungryLearningRouter.get('/hungry-learning/recipe-statistics', getRecipeStatistics);
