@@ -15,6 +15,7 @@ import {
   importPDFKnowledge,
   importPDFBatch,
   getLibraryImportStatus,
+  getRecipeStatistics,
 } from './echo-hungry-learning';
 
 export const echoHungryLearningRouter = express.Router();
