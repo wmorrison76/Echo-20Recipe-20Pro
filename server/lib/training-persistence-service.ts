@@ -138,49 +138,52 @@ export async function saveLearnedKnowledgeToPinecone(
   sessionId: string,
   profileId: string,
   knowledge: PersistedDomainKnowledge[],
-): Promise<void> {
+): Promise<{ success: number; failed: number }> {
   if (!knowledge || knowledge.length === 0) {
     console.log(
       `[TrainingPersistence] No knowledge to save for ${profileId}`,
     );
-    return;
+    return { success: 0, failed: 0 };
   }
 
   try {
-    // Convert domain knowledge to vectors
+    // Convert domain knowledge to proper AnyKnowledge structure for storeKnowledgeBatch
     const knowledgeVectors = knowledge.map((item) => ({
       id: `${sessionId}-${item.id}`,
-      metadata: {
-        type: item.type,
-        domain: item.domain,
-        title: item.title,
-        sourceType: "user_trained" as const,
-        tags: [
-          item.profileId,
-          item.domain,
-          item.focusArea,
-          `exchange-${item.exchangeNumber}`,
-        ],
-        createdAt: new Date().toISOString(),
-        confidence: item.confidence,
-        sessionId,
+      type: item.type || "concept",
+      title: item.title,
+      description: item.content.substring(0, 1000),
+      content: item.content,
+      domain: item.domain,
+      source: "training-session",
+      sourceType: "user_trained" as const,
+      tags: [
         profileId,
-      },
-      values: item.content, // Will be embedded by storeKnowledgeVector
-    }));
+        item.domain,
+        item.focusArea,
+        `exchange-${item.exchangeNumber}`,
+      ],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      confidence: item.confidence || 0.85,
+      relatedKnowledge: [],
+    })) as any[];
 
-    // Store in Pinecone
-    await storeKnowledgeBatch(knowledgeVectors);
+    // Store in Pinecone with proper error handling
+    const result = await storeKnowledgeBatch(knowledgeVectors);
 
     console.log(
-      `[TrainingPersistence] Saved ${knowledge.length} knowledge vectors for ${profileId}`,
+      `[TrainingPersistence] Saved ${result.success}/${knowledge.length} knowledge vectors for ${profileId}` +
+      (result.failed > 0 ? ` (${result.failed} failed)` : ""),
     );
+
+    return { success: result.success, failed: result.failed };
   } catch (error) {
     console.error(
       "[TrainingPersistence] Error saving knowledge to Pinecone:",
       error,
     );
-    throw error;
+    return { success: 0, failed: knowledge.length };
   }
 }
 
