@@ -24,48 +24,134 @@ export interface PDFProcessResult {
 }
 
 /**
- * Extract text from PDF buffer using basic pattern matching
- * For production use with actual PDFs, integrate with pdf-parse or pdfjs-dist
+ * Extract text from PDF buffer using pattern matching and text stream extraction
+ * Handles text-based PDFs without requiring external libraries
  */
 export async function extractTextFromPDFBuffer(
   buffer: Buffer,
   filename: string
 ): Promise<string> {
-  // For a production system, you would use:
-  // const pdfParse = require('pdf-parse');
-  // const data = await pdfParse(buffer);
-  // return data.text;
-
-  // For now, we'll implement a pattern-based approach that works with text-based PDFs
-  // This is a simplified implementation - production should use proper PDF parsing library
-
   try {
-    // Try to extract text by looking for common PDF text patterns
-    const text = buffer.toString('binary');
-    
-    // Remove PDF stream markers and metadata
-    let cleaned = text
-      .replace(/BT\s[\s\S]*?ET/g, '') // Remove binary text streams
-      .replace(/%[^\n]*\n/g, '') // Remove comments
-      .replace(/\x00/g, '') // Remove null bytes
-      .replace(/[^\x20-\x7E\n\r\t]/g, ' '); // Keep only printable ASCII and whitespace
+    let text = buffer.toString('binary');
+    let extractedText = '';
 
-    // Decode common PDF text encodings
-    const lines = cleaned.split(/[\n\r]+/).map(line => {
-      // Remove stream markers
-      return line
-        .replace(/^stream\s*/i, '')
-        .replace(/\s*endstream\s*$/i, '')
-        .trim();
-    }).filter(line => line.length > 0);
+    // Strategy 1: Extract from text streams using regex
+    // PDFs encode text in various ways - try to extract from common patterns
 
-    const extractedText = lines.join('\n');
+    // Look for text objects that contain readable strings
+    // Pattern: (text) or <hexstring> within text streams
+    const textObjectPattern = /BT\s([\s\S]*?)ET/g;
+    let match;
+    const textObjects: string[] = [];
 
-    if (extractedText.length < 100) {
-      throw new Error('Insufficient text extracted from PDF - may require OCR');
+    while ((match = textObjectPattern.exec(text)) !== null) {
+      textObjects.push(match[1]);
     }
 
-    return extractedText;
+    // Extract strings from text objects
+    for (const obj of textObjects) {
+      // Match text in parentheses: (text)
+      const stringsInParens = obj.match(/\(([^()\\]|\\.)*\)/g);
+      if (stringsInParens) {
+        for (const str of stringsInParens) {
+          const content = str.slice(1, -1) // Remove parentheses
+            .replace(/\\\(/g, '(')
+            .replace(/\\\)/g, ')')
+            .replace(/\\\\/g, '\\');
+          extractedText += content + ' ';
+        }
+      }
+
+      // Match hex encoded strings: <hexstring>
+      const hexStrings = obj.match(/<([0-9A-Fa-f]+)>/g);
+      if (hexStrings) {
+        for (const hexStr of hexStrings) {
+          const hex = hexStr.slice(1, -1);
+          try {
+            const decoded = Buffer.from(hex, 'hex').toString('binary');
+            // Filter for readable characters
+            const readable = decoded.replace(/[^\x20-\x7E\n\r\t]/g, ' ');
+            if (readable.trim().length > 0) {
+              extractedText += readable + ' ';
+            }
+          } catch (e) {
+            // Skip malformed hex strings
+          }
+        }
+      }
+    }
+
+    // Strategy 2: Look for streams marked as "stream...endstream"
+    const streamPattern = /stream\s*([\s\S]*?)\s*endstream/g;
+    while ((match = streamPattern.exec(text)) !== null) {
+      let streamContent = match[1];
+
+      // Try to extract text from various PDF encodings
+      // Remove common PDF operators
+      streamContent = streamContent
+        .replace(/Tj|TJ|\'|\"|Tf|Tm|Td|TD|T\*/g, ' ') // PDF text operators
+        .replace(/[\x00]/g, ''); // Remove nulls
+
+      // Look for readable text
+      const readable = streamContent.replace(/[^\x20-\x7E\n\r\t]/g, ' ');
+      if (readable.trim().length > 10) {
+        extractedText += readable + ' ';
+      }
+    }
+
+    // Strategy 3: Look for embedded text in content streams
+    // Find objects that contain readable text
+    const objectPattern = /obj\s*([\s\S]*?)\s*endobj/g;
+    let objectCount = 0;
+    while ((match = objectPattern.exec(text)) !== null && objectCount < 500) {
+      const obj = match[1];
+      // Check if this looks like a content stream
+      if (obj.includes('stream') || obj.match(/\(.*\)/)) {
+        // Extract parenthetical text
+        const parenthetical = obj.match(/\(([^()\\]|\\.)*\)/g);
+        if (parenthetical) {
+          for (const str of parenthetical) {
+            const content = str.slice(1, -1)
+              .replace(/\\\(/g, '(')
+              .replace(/\\\)/g, ')')
+              .replace(/\\\\/g, '\\');
+            if (content.length > 2) {
+              extractedText += content + ' ';
+            }
+          }
+        }
+      }
+      objectCount++;
+    }
+
+    // Clean up the extracted text
+    let cleaned = extractedText
+      .replace(/\s+/g, ' ') // Normalize whitespace
+      .replace(/[^\x20-\x7E\n\r\t]/g, '') // Remove non-ASCII
+      .trim();
+
+    // Remove common PDF artifacts
+    cleaned = cleaned
+      .replace(/(%[^\n]*)/g, '') // Comments
+      .replace(/(\d+\s+\d+\s+obj|\s+endobj)/g, '') // Object markers
+      .replace(/stream\s+endstream/g, '') // Stream markers
+      .replace(/PDF\s+version/i, '')
+      .replace(/%%EOF/g, '')
+      .replace(/\s+/g, ' '); // Final whitespace normalization
+
+    // Split into lines and remove very short lines that are probably noise
+    const lines = cleaned
+      .split(/[\n\r]+/)
+      .map(line => line.trim())
+      .filter(line => line.length > 2);
+
+    const finalText = lines.join('\n');
+
+    if (finalText.length < 100) {
+      throw new Error('Insufficient text extracted from PDF (less than 100 characters). The PDF may be image-based or encrypted. Please ensure the PDF contains selectable text.');
+    }
+
+    return finalText;
   } catch (error) {
     throw new Error(`Failed to extract text from PDF: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
