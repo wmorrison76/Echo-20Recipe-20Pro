@@ -27,12 +27,18 @@ export async function startHungryLearning(req: Request, res: Response) {
 
     const learningPromises = [
       (async () => {
-        console.log('📖 Starting recipe crawler...');
+        console.log('📖 Starting recipe crawler and storing recipes...');
         const recipes = await webRecipeCrawler.crawlRecipes({
           query: '*',
           limit: 1000,
         });
-        return { type: 'recipes', count: recipes.length };
+
+        // IMPORTANT: Actually save the recipes so Echo can analyze them
+        console.log(`📥 Storing ${recipes.length} discovered recipes...`);
+        const stored = await recipePersistenceService.storeRecipeBatch(recipes);
+        console.log(`✅ Successfully stored ${stored.length} recipes for Echo analysis`);
+
+        return { type: 'recipes', count: stored.length, stored: true };
       })(),
 
       (async () => {
