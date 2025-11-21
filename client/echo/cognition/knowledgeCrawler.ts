@@ -118,7 +118,7 @@ export class KnowledgeCrawler {
       includePdf: true,
       includeVideo: true,
       maxDepth: 3,
-      rateLimitDelayMs: 500,
+      rateLimitDelayMs: 200, // Optimized: reduced from 500ms to 200ms for faster crawling
       ...config,
     };
     this.currentRecipes = new Map();
