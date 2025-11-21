@@ -3,6 +3,7 @@
 ## Optimization 1: Regional Metrics Processing
 
 ### BEFORE (Bottleneck)
+
 ```typescript
 // File: client/echo/services/knowledgeProgressTracker.ts
 private updateRegionalMetrics(metadata: Record<string, any>): void {
@@ -74,6 +75,7 @@ private updateRegionalMetrics(metadata: Record<string, any>): void {
 ```
 
 ### AFTER (Optimized)
+
 ```typescript
 // Pre-computed cuisine mappings for O(1) lookups
 const REGION_CUISINE_ALIASES: Record<Region, Set<string>> = {
@@ -129,6 +131,7 @@ private updateMetricsInSinglePass(): void {
 ```
 
 **Key Improvements:**
+
 - ✅ Sets for O(1) cuisine lookups (vs array filtering)
 - ✅ Single pass instead of 16 iterations
 - ✅ Pre-normalized strings (no repeated `.toLowerCase()`)
@@ -139,6 +142,7 @@ private updateMetricsInSinglePass(): void {
 ## Optimization 2: Culinary Types Metrics
 
 ### BEFORE (Bottleneck)
+
 ```typescript
 // Separate method for culinary metrics (multiple passes!)
 private updateCulinaryMetrics(metadata: Record<string, any>): void {
@@ -224,6 +228,7 @@ private updateCheckpoints(
 ```
 
 ### AFTER (Optimized)
+
 ```typescript
 private updateMetricsInSinglePass(): void {
   // Initialize accumulators for all types
@@ -252,7 +257,7 @@ private updateMetricsInSinglePass(): void {
       if (categoryLower.includes(type)) {
         const acc = culinaryAccumulators[type];
         acc.count++;
-        
+
         // FAST: Batch checkpoint tracking (no separate iterations!)
         if (Array.isArray(original.allergens) && original.allergens.length > 0) {
           acc.hasAllergens = true;
@@ -290,6 +295,7 @@ private updateMetricsInSinglePass(): void {
 ```
 
 **Key Improvements:**
+
 - ✅ Single pass instead of 5 separate `.some()` calls
 - ✅ Eliminates separate `updateCheckpoints()` method
 - ✅ Accumulators instead of repeated filtering
@@ -300,6 +306,7 @@ private updateMetricsInSinglePass(): void {
 ## Optimization 3: Parallel Source Crawling
 
 ### BEFORE (Bottleneck)
+
 ```typescript
 // File: client/echo/cognition/knowledgeCrawler.ts
 async crawlByQuery(
@@ -361,6 +368,7 @@ async crawlScheduled(topics: string[]): Promise<CrawlerResult[]> {
 ```
 
 ### AFTER (Optimized)
+
 ```typescript
 async crawlByQuery(
   query: string,
@@ -423,6 +431,7 @@ async crawlScheduled(topics: string[]): Promise<CrawlerResult[]> {
 ```
 
 **Key Improvements:**
+
 - ✅ `Promise.all()` for parallel execution
 - ✅ Eliminated sequential delays (1.4s → 0.2s)
 - ✅ Network-bound operations now truly parallel
@@ -433,19 +442,20 @@ async crawlScheduled(topics: string[]): Promise<CrawlerResult[]> {
 ## Optimization 4: Pre-Normalized Metadata
 
 ### BEFORE (Bottleneck)
+
 ```typescript
 // No pre-normalization - .toLowerCase() called repeatedly in inner loops
 const regionMetadata = metadataValues.filter((m: any) =>
-  cuisines.some(
-    (cuisine) =>
-      (m.cuisineRegion || m.cuisine || "")
-        .toLowerCase()  // Called 16 times per item!
-        .includes(cuisine.toLowerCase())
+  cuisines.some((cuisine) =>
+    (m.cuisineRegion || m.cuisine || "")
+      .toLowerCase() // Called 16 times per item!
+      .includes(cuisine.toLowerCase()),
   ),
 );
 ```
 
 ### AFTER (Optimized)
+
 ```typescript
 // Pre-normalize once at the start
 private normalizeMetadata(metadata: Record<string, any>): void {
@@ -477,6 +487,7 @@ for (const normalized of this.normalizedMetadataCache) {
 ```
 
 **Key Improvements:**
+
 - ✅ `.toLowerCase()` called once per item (not 16+ times)
 - ✅ Pre-computed before any comparisons
 - ✅ Reusable across all metric calculations
@@ -485,14 +496,14 @@ for (const normalized of this.normalizedMetadataCache) {
 
 ## Performance Summary Table
 
-| Operation | Before | After | Speedup |
-|-----------|--------|-------|---------|
-| **Regional metrics (1000 items)** | 600ms | 80ms | **7.5x** |
-| **Culinary metrics (1000 items)** | 400ms | 60ms | **6.7x** |
-| **Total metrics (1000 items)** | 1000ms | 150ms | **6.7x** |
-| **Crawl delay (7 sources)** | 1400ms | 200ms | **7x** |
-| **Full crawl (7 sources)** | 5-8s | 1-2s | **3-4x** |
-| **E2E update cycle** | 8-10s | 2-3s | **3-4x** |
+| Operation                         | Before | After | Speedup  |
+| --------------------------------- | ------ | ----- | -------- |
+| **Regional metrics (1000 items)** | 600ms  | 80ms  | **7.5x** |
+| **Culinary metrics (1000 items)** | 400ms  | 60ms  | **6.7x** |
+| **Total metrics (1000 items)**    | 1000ms | 150ms | **6.7x** |
+| **Crawl delay (7 sources)**       | 1400ms | 200ms | **7x**   |
+| **Full crawl (7 sources)**        | 5-8s   | 1-2s  | **3-4x** |
+| **E2E update cycle**              | 8-10s  | 2-3s  | **3-4x** |
 
 ---
 

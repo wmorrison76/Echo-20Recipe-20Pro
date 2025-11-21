@@ -72,13 +72,13 @@ export class BackgroundKnowledgeCrawler {
 
     // Looser vetting criteria for initial knowledge gathering
     const vetCriteria = {
-      minAuthorityScore: 0.3,   // Very low threshold for initial gathering
-      minSourceTrust: 0.2,      // Very low - user recipes are trusted
+      minAuthorityScore: 0.3, // Very low threshold for initial gathering
+      minSourceTrust: 0.2, // Very low - user recipes are trusted
       requiresCulinaryBrainApproval: false, // Skip brain approval for speed
-      allergenValidationRequired: false,  // Skip allergen check - recipes may not have this
+      allergenValidationRequired: false, // Skip allergen check - recipes may not have this
       flavorBalanceValidation: false, // Skip for now
-      ingredientVerification: false,  // Skip ingredient verification
-      techniqueVerification: false,  // Skip for now
+      ingredientVerification: false, // Skip ingredient verification
+      techniqueVerification: false, // Skip for now
     };
 
     this.manager = new KnowledgeManager({
@@ -114,7 +114,9 @@ export class BackgroundKnowledgeCrawler {
     }
 
     if (!this.manager) {
-      console.warn("❌ Crawler not initialized - initializing with empty data...");
+      console.warn(
+        "❌ Crawler not initialized - initializing with empty data...",
+      );
       // Initialize with empty data so crawler can still function
       this.manager = new KnowledgeManager({
         enableAutoCrawl: false,
@@ -171,11 +173,19 @@ export class BackgroundKnowledgeCrawler {
           const result = await this.manager.expandKnowledge(topic, "scheduled");
 
           // Detailed logging of vetting results
-          const approved = result.vetResult.filter((v) => v.level === "approved" || v.level === "approved_with_notes");
-          const rejected = result.vetResult.filter((v) => v.level === "rejected");
-          const quarantined = result.vetResult.filter((v) => v.level === "quarantined");
+          const approved = result.vetResult.filter(
+            (v) => v.level === "approved" || v.level === "approved_with_notes",
+          );
+          const rejected = result.vetResult.filter(
+            (v) => v.level === "rejected",
+          );
+          const quarantined = result.vetResult.filter(
+            (v) => v.level === "quarantined",
+          );
 
-          console.log(`    Found ${result.crawlResult.knowledge.length} items, vetting results:`);
+          console.log(
+            `    Found ${result.crawlResult.knowledge.length} items, vetting results:`,
+          );
           console.log(`      ✅ Approved: ${approved.length}`);
           console.log(`      ⚠️  Quarantined: ${quarantined.length}`);
           console.log(`      ❌ Rejected: ${rejected.length}`);
@@ -189,8 +199,11 @@ export class BackgroundKnowledgeCrawler {
           // Log details of rejected items with reasons
           rejected.slice(0, 3).forEach((item) => {
             const vet = result.vetResult.find((v) => v.id === item.id);
-            const issues = vet?.issues.map((i) => i.message).join(", ") || "Unknown";
-            console.log(`        ✗ [${vet?.score.toFixed(2)}] ${item.id}: ${issues}`);
+            const issues =
+              vet?.issues.map((i) => i.message).join(", ") || "Unknown";
+            console.log(
+              `        ✗ [${vet?.score.toFixed(2)}] ${item.id}: ${issues}`,
+            );
           });
 
           // Update progress tracker with approved items' metadata
@@ -198,14 +211,35 @@ export class BackgroundKnowledgeCrawler {
           approved.forEach((vetResult) => {
             const title = vetResult.metadata?.title || "";
 
-            let cuisineRegion = vetResult.metadata?.cuisine || vetResult.metadata?.cuisineRegion || "";
+            let cuisineRegion =
+              vetResult.metadata?.cuisine ||
+              vetResult.metadata?.cuisineRegion ||
+              "";
 
             if (!cuisineRegion && title) {
               const cuisineKeywords = [
-                "chinese", "japanese", "thai", "korean", "indian", "vietnamese",
-                "french", "italian", "spanish", "german", "mexican", "brazilian",
-                "american", "middle eastern", "african", "oceanic", "asian",
-                "mediterranean", "greek", "portuguese", "indian", "fusion"
+                "chinese",
+                "japanese",
+                "thai",
+                "korean",
+                "indian",
+                "vietnamese",
+                "french",
+                "italian",
+                "spanish",
+                "german",
+                "mexican",
+                "brazilian",
+                "american",
+                "middle eastern",
+                "african",
+                "oceanic",
+                "asian",
+                "mediterranean",
+                "greek",
+                "portuguese",
+                "indian",
+                "fusion",
               ];
 
               const lowerTitle = title.toLowerCase();
@@ -238,7 +272,10 @@ export class BackgroundKnowledgeCrawler {
               metadata,
             );
           } catch (trackerError) {
-            console.error(`  ❌ Failed to update progress tracker:`, trackerError);
+            console.error(
+              `  ❌ Failed to update progress tracker:`,
+              trackerError,
+            );
           }
 
           console.log(

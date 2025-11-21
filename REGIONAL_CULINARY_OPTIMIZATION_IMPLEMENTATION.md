@@ -1,9 +1,11 @@
 # Regional & Cuisine Coverage Optimization - Implementation Guide
 
 ## Overview
+
 This document describes the optimizations implemented to fix bottlenecks in regional cuisine and culinary types coverage processing.
 
 **Results:**
+
 - 🚀 **6-10x faster** overall performance
 - ⚡ Single-pass metric calculations (O(51n) → O(21n))
 - 🔄 Parallel source crawling (1.4s → 0.2s for 7 sources)
@@ -17,11 +19,13 @@ This document describes the optimizations implemented to fix bottlenecks in regi
 **File:** `client/echo/services/knowledgeProgressTracker.ts`
 
 **What Changed:**
+
 - Added `REGION_CUISINE_ALIASES` Map with pre-computed Set lookups for instant O(1) cuisine matching
 - Replaced repeated string `.includes()` comparisons with Set `.has()` lookups
 - Pre-normalized all metadata strings in `normalizeMetadata()` method
 
 **Before (O(51n)):**
+
 ```typescript
 // Iterates metadata 16 times (once per region)
 Object.entries(regionCuisineMap).forEach(([region, cuisines]) => {
@@ -35,13 +39,15 @@ Object.entries(regionCuisineMap).forEach(([region, cuisines]) => {
 ```
 
 **After (O(21n)):**
+
 ```typescript
 // Single pass through metadata, O(1) region lookups
 for (const normalized of this.normalizedMetadataCache) {
   const regionKeys = Object.keys(REGION_CUISINE_ALIASES) as Region[];
   for (const region of regionKeys) {
-    const cuisineSet = REGION_CUISINE_ALIASES[region];  // O(1) lookup
-    if (cuisineSet.has(cuisineLower)) {  // Set.has() is faster than string.includes()
+    const cuisineSet = REGION_CUISINE_ALIASES[region]; // O(1) lookup
+    if (cuisineSet.has(cuisineLower)) {
+      // Set.has() is faster than string.includes()
       regionalAccumulators[region]++;
     }
   }
@@ -49,6 +55,7 @@ for (const normalized of this.normalizedMetadataCache) {
 ```
 
 **Performance Impact:**
+
 - String normalization: Called once per item, not 16 times
 - Cuisine matching: O(1) Set lookup vs O(n) array iteration
 - **Overall:** ~60% faster metric calculations
@@ -60,11 +67,13 @@ for (const normalized of this.normalizedMetadataCache) {
 **File:** `client/echo/services/knowledgeProgressTracker.ts`
 
 **What Changed:**
+
 - Replaced `updateCulinaryMetrics()` and `updateRegionalMetrics()` with unified `updateMetricsInSinglePass()`
 - Combined culinary type + regional calculations into single iteration
 - Batch checkpoint evaluation instead of 5 separate `.some()` calls
 
 **Before (O(51n)):**
+
 ```typescript
 // Method 1: Filter for culinary types (5 types × 2 passes = 10 iterations)
 types.forEach((type) => {
@@ -80,6 +89,7 @@ Object.entries(regionCuisineMap).forEach(([region, cuisines]) => {
 ```
 
 **After (O(21n)):**
+
 ```typescript
 // Single loop through all metadata items
 for (const normalized of this.normalizedMetadataCache) {
@@ -94,7 +104,7 @@ for (const normalized of this.normalizedMetadataCache) {
       // ... other checkpoints ...
     }
   }
-  
+
   // Check all regions (16 regions in one pass)
   for (const region of regionKeys) {
     if (cuisineSet.has(cuisineLower)) {
@@ -106,6 +116,7 @@ for (const normalized of this.normalizedMetadataCache) {
 ```
 
 **Performance Impact:**
+
 - Reduces filter operations from 26+ to 3
 - Eliminates redundant metadata iterations
 - **Overall:** ~40% faster than Step 1 alone
@@ -117,14 +128,16 @@ for (const normalized of this.normalizedMetadataCache) {
 **File:** `client/echo/cognition/knowledgeCrawler.ts`
 
 **What Changed:**
+
 - Replaced sequential `for` loop with `Promise.all()` for parallel crawling
 - Applies to both `crawlByQuery()` and `crawlScheduled()`
 - Removed sequential 200ms delays between sources
 
 **Before (Sequential):**
+
 ```typescript
 for (const source of mergedConfig.sources) {
-  await this.delay(mergedConfig.rateLimitDelayMs);  // 200ms wait
+  await this.delay(mergedConfig.rateLimitDelayMs); // 200ms wait
   const sourceKnowledge = await this.crawlSource(query, source, mergedConfig);
   knowledge.push(...sourceKnowledge);
 }
@@ -132,6 +145,7 @@ for (const source of mergedConfig.sources) {
 ```
 
 **After (Parallel):**
+
 ```typescript
 const crawlResults = await Promise.all(
   mergedConfig.sources.map((source) =>
@@ -144,18 +158,20 @@ const crawlResults = await Promise.all(
         console.warn(`Failed to crawl ${source}:`, error);
         failureCount++;
         return [];
-      })
-  )
+      }),
+  ),
 );
 // All sources fetched in parallel, ~200ms total
 ```
 
 **Performance Impact:**
+
 - Sequential: 7 × 200ms = 1.4s delay
 - Parallel: 1 × 200ms = 0.2s delay (network time, not sequential)
 - **Overall:** ~7x faster crawling
 
 **Scheduled Crawling Optimization:**
+
 ```typescript
 // Also parallelized topic crawling with concurrency limit
 const maxConcurrentTopics = 5;
@@ -173,6 +189,7 @@ for (let i = 0; i < topics.length; i += maxConcurrentTopics) {
 ## Performance Benchmarks
 
 ### Before Optimization
+
 ```
 Metrics Update (1,000 items):
   - Culinary types: ~400ms
@@ -188,6 +205,7 @@ E2E Update Cycle:
 ```
 
 ### After Optimization
+
 ```
 Metrics Update (1,000 items):
   - Culinary types: ~60ms
@@ -203,42 +221,55 @@ E2E Update Cycle:
 ```
 
 ### Overall Performance Improvement
-| Operation | Before | After | Speedup |
-|-----------|--------|-------|---------|
-| Metrics Update | 1000ms | 150ms | **6.7x** |
-| Source Crawling | 1400ms delay | 200ms delay | **7x** |
-| Total E2E | 8-10s | 2-3s | **3-4x** |
+
+| Operation       | Before       | After       | Speedup  |
+| --------------- | ------------ | ----------- | -------- |
+| Metrics Update  | 1000ms       | 150ms       | **6.7x** |
+| Source Crawling | 1400ms delay | 200ms delay | **7x**   |
+| Total E2E       | 8-10s        | 2-3s        | **3-4x** |
 
 ---
 
 ## How to Verify the Optimizations
 
 ### 1. Monitor Metrics Update Performance
+
 ```typescript
 // In KnowledgeProgressTracker
 const startTime = performance.now();
-this.updateWithCrawlResults(approvedCount, rejectedCount, quarantinedCount, metadata);
+this.updateWithCrawlResults(
+  approvedCount,
+  rejectedCount,
+  quarantinedCount,
+  metadata,
+);
 const duration = performance.now() - startTime;
 console.log(`📊 Metrics update took ${duration}ms`);
 ```
 
 **Expected:**
+
 - < 200ms for 1,000 items
 - < 2s for 10,000 items
 
 ### 2. Monitor Crawler Performance
+
 ```typescript
 // In knowledgeCrawler
 const result = await crawler.crawlByQuery("cheese");
 console.log(`⏱️ Crawl completed in ${result.duration}ms`);
-console.log(`✅ Found ${result.successCount} items from ${result.knowledge.length} sources`);
+console.log(
+  `✅ Found ${result.successCount} items from ${result.knowledge.length} sources`,
+);
 ```
 
 **Expected:**
+
 - < 500ms sequential delay
 - All 7 sources returning results concurrently
 
 ### 3. Browser DevTools Timeline
+
 - Open DevTools → Performance tab
 - Trigger a metrics update or crawl
 - Look for:
@@ -246,6 +277,7 @@ console.log(`✅ Found ${result.successCount} items from ${result.knowledge.leng
   - **After:** Short bursts of activity, no sequential waits
 
 ### 4. Check Console Output
+
 ```
 ✅ User content: Found 12 recipes for "sauce"
 ✅ Academic papers: Found 3 papers for "sauce"
@@ -259,23 +291,29 @@ console.log(`✅ Found ${result.successCount} items from ${result.knowledge.leng
 ## Future Optimization Opportunities
 
 ### Priority 1: Incremental Updates (25% improvement)
+
 Currently, entire metrics recalculated on each update. Could:
+
 - Only recalculate affected regions/types
 - Maintain running totals
 - Skip unchanged items
 
 ### Priority 2: Result Caching (20% improvement)
+
 Could:
+
 - Cache metadata index between updates
 - Cache cuisine-region assignments
 - Invalidate only on new items
 
 ### Priority 3: Gap Detection Parallelization (30% improvement)
+
 Currently gap detection methods run sequentially:
+
 ```typescript
 // Current: sequential
-gaps.push(...this.detectAllergenGaps());  // O(n)
-gaps.push(...this.detectNutritionGaps());  // O(n)
+gaps.push(...this.detectAllergenGaps()); // O(n)
+gaps.push(...this.detectNutritionGaps()); // O(n)
 // ... 10 more sequential ...
 
 // Could be: parallel
@@ -287,6 +325,7 @@ const gapResults = await Promise.all([
 ```
 
 ### Priority 4: Indexed Gap Detection (40% improvement)
+
 Pre-compute gaps in single pass instead of multiple passes.
 
 ---
@@ -294,6 +333,7 @@ Pre-compute gaps in single pass instead of multiple passes.
 ## Breaking Changes
 
 None! The optimizations are internal and maintain the same public API:
+
 - `updateWithCrawlResults()` - Same signature, faster execution
 - `crawlByQuery()` - Same signature, returns faster
 - `KnowledgeProgressTracker` - Same interface, optimized internals
@@ -303,6 +343,7 @@ None! The optimizations are internal and maintain the same public API:
 ## Rollback Instructions
 
 If issues arise, revert:
+
 ```bash
 git checkout HEAD -- client/echo/services/knowledgeProgressTracker.ts
 git checkout HEAD -- client/echo/cognition/knowledgeCrawler.ts
@@ -322,17 +363,22 @@ git checkout HEAD -- client/echo/cognition/knowledgeCrawler.ts
 ## Monitoring in Production
 
 Add these metrics to monitor performance:
+
 ```typescript
 // Track metric update times
-performance.mark('metrics-update-start');
+performance.mark("metrics-update-start");
 // ... update code ...
-performance.mark('metrics-update-end');
-performance.measure('metrics-update', 'metrics-update-start', 'metrics-update-end');
+performance.mark("metrics-update-end");
+performance.measure(
+  "metrics-update",
+  "metrics-update-start",
+  "metrics-update-end",
+);
 
 // Track crawl times
-console.time('crawl-query');
+console.time("crawl-query");
 const result = await crawler.crawlByQuery(query);
-console.timeEnd('crawl-query');
+console.timeEnd("crawl-query");
 ```
 
 Then view in DevTools Performance tab or send to analytics.

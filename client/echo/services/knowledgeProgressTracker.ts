@@ -145,7 +145,7 @@ export class KnowledgeProgressTracker {
    */
   private normalizeMetadata(metadata: Record<string, any>): void {
     const metadataValues = Object.values(metadata).filter(
-      (m) => m && typeof m === "object"
+      (m) => m && typeof m === "object",
     );
 
     this.normalizedMetadataCache = metadataValues.map((m: any) => ({
@@ -163,25 +163,76 @@ export class KnowledgeProgressTracker {
    */
   private updateMetricsInSinglePass(): void {
     // Reset metrics to recalculate
-    const culinaryAccumulators: Record<CulinaryType, {
-      count: number;
-      hasAllergens: boolean;
-      hasNutrition: boolean;
-      hasTechniques: boolean;
-      hasFlavorBalance: boolean;
-      hasSubstitutions: boolean;
-    }> = {
-      general: { count: 0, hasAllergens: false, hasNutrition: false, hasTechniques: false, hasFlavorBalance: false, hasSubstitutions: false },
-      pastry: { count: 0, hasAllergens: false, hasNutrition: false, hasTechniques: false, hasFlavorBalance: false, hasSubstitutions: false },
-      baking: { count: 0, hasAllergens: false, hasNutrition: false, hasTechniques: false, hasFlavorBalance: false, hasSubstitutions: false },
-      banquet: { count: 0, hasAllergens: false, hasNutrition: false, hasTechniques: false, hasFlavorBalance: false, hasSubstitutions: false },
-      catering: { count: 0, hasAllergens: false, hasNutrition: false, hasTechniques: false, hasFlavorBalance: false, hasSubstitutions: false },
+    const culinaryAccumulators: Record<
+      CulinaryType,
+      {
+        count: number;
+        hasAllergens: boolean;
+        hasNutrition: boolean;
+        hasTechniques: boolean;
+        hasFlavorBalance: boolean;
+        hasSubstitutions: boolean;
+      }
+    > = {
+      general: {
+        count: 0,
+        hasAllergens: false,
+        hasNutrition: false,
+        hasTechniques: false,
+        hasFlavorBalance: false,
+        hasSubstitutions: false,
+      },
+      pastry: {
+        count: 0,
+        hasAllergens: false,
+        hasNutrition: false,
+        hasTechniques: false,
+        hasFlavorBalance: false,
+        hasSubstitutions: false,
+      },
+      baking: {
+        count: 0,
+        hasAllergens: false,
+        hasNutrition: false,
+        hasTechniques: false,
+        hasFlavorBalance: false,
+        hasSubstitutions: false,
+      },
+      banquet: {
+        count: 0,
+        hasAllergens: false,
+        hasNutrition: false,
+        hasTechniques: false,
+        hasFlavorBalance: false,
+        hasSubstitutions: false,
+      },
+      catering: {
+        count: 0,
+        hasAllergens: false,
+        hasNutrition: false,
+        hasTechniques: false,
+        hasFlavorBalance: false,
+        hasSubstitutions: false,
+      },
     };
 
     const regionalAccumulators: Record<Region, number> = {
-      chinese: 0, japanese: 0, thai: 0, korean: 0, indian: 0, vietnamese: 0,
-      french: 0, italian: 0, spanish: 0, german: 0, mexican: 0, brazilian: 0,
-      american: 0, middle_eastern: 0, african: 0, oceanic: 0,
+      chinese: 0,
+      japanese: 0,
+      thai: 0,
+      korean: 0,
+      indian: 0,
+      vietnamese: 0,
+      french: 0,
+      italian: 0,
+      spanish: 0,
+      german: 0,
+      mexican: 0,
+      brazilian: 0,
+      american: 0,
+      middle_eastern: 0,
+      african: 0,
+      oceanic: 0,
     };
 
     // Single pass through all normalized metadata
@@ -189,18 +240,30 @@ export class KnowledgeProgressTracker {
       const { original, cuisineLower, categoryLower } = normalized;
 
       // CULINARY TYPE MATCHING (single pass for all 5 types)
-      const types: CulinaryType[] = ["general", "pastry", "baking", "banquet", "catering"];
+      const types: CulinaryType[] = [
+        "general",
+        "pastry",
+        "baking",
+        "banquet",
+        "catering",
+      ];
       for (const type of types) {
         if (categoryLower.includes(type) || cuisineLower.includes(type)) {
           const acc = culinaryAccumulators[type];
           acc.count++;
-          if (Array.isArray(original.allergens) && original.allergens.length > 0) {
+          if (
+            Array.isArray(original.allergens) &&
+            original.allergens.length > 0
+          ) {
             acc.hasAllergens = true;
           }
           if (original.nutrition) {
             acc.hasNutrition = true;
           }
-          if (Array.isArray(original.technique) && original.technique.length > 0) {
+          if (
+            Array.isArray(original.technique) &&
+            original.technique.length > 0
+          ) {
             acc.hasTechniques = true;
           }
           if (original.flavorBalance) {
@@ -216,8 +279,10 @@ export class KnowledgeProgressTracker {
       const regionKeys = Object.keys(REGION_CUISINE_ALIASES) as Region[];
       for (const region of regionKeys) {
         const cuisineSet = REGION_CUISINE_ALIASES[region];
-        if (cuisineSet.has(cuisineLower) ||
-            Array.from(cuisineSet).some(c => normalized.titleLower.includes(c))) {
+        if (
+          cuisineSet.has(cuisineLower) ||
+          Array.from(cuisineSet).some((c) => normalized.titleLower.includes(c))
+        ) {
           regionalAccumulators[region]++;
         }
       }
@@ -227,7 +292,9 @@ export class KnowledgeProgressTracker {
     this.state.culinaryMetrics.forEach((metric) => {
       const acc = culinaryAccumulators[metric.type];
       metric.itemsApproved = acc.count;
-      metric.coverage = Math.min(100, acc.count * 5) + (Object.values(acc).filter(v => v === true).length * 10);
+      metric.coverage =
+        Math.min(100, acc.count * 5) +
+        Object.values(acc).filter((v) => v === true).length * 10;
       metric.checkpoints = {
         allergens: acc.hasAllergens,
         nutrition: acc.hasNutrition,
@@ -242,11 +309,13 @@ export class KnowledgeProgressTracker {
       const count = regionalAccumulators[metric.region];
       metric.recipesCount = count;
       metric.coverage = Math.min(100, (count / 100) * 100);
-      metric.cuisinesRepresented = Array.from(REGION_CUISINE_ALIASES[metric.region])
-        .filter(c => this.normalizedMetadataCache.some(n => n.cuisineLower.includes(c)));
+      metric.cuisinesRepresented = Array.from(
+        REGION_CUISINE_ALIASES[metric.region],
+      ).filter((c) =>
+        this.normalizedMetadataCache.some((n) => n.cuisineLower.includes(c)),
+      );
     });
   }
-
 
   /**
    * Calculate overall coverage percentage

@@ -130,12 +130,11 @@ export class KnowledgeCrawler {
   registerLocalRecipes(recipes: Record<string, any>[]): void {
     this.currentRecipes.clear();
     recipes.forEach((recipe, index) => {
-      this.currentRecipes.set(
-        recipe.id || `recipe_${index}`,
-        recipe
-      );
+      this.currentRecipes.set(recipe.id || `recipe_${index}`, recipe);
     });
-    console.log(`📚 Registered ${this.currentRecipes.size} local recipes for crawling`);
+    console.log(
+      `📚 Registered ${this.currentRecipes.size} local recipes for crawling`,
+    );
   }
 
   /**
@@ -165,8 +164,8 @@ export class KnowledgeCrawler {
             console.warn(`Failed to crawl ${source}:`, error);
             failureCount++;
             return [];
-          })
-      )
+          }),
+      ),
     );
 
     const knowledge = crawlResults.flat();
@@ -209,8 +208,8 @@ export class KnowledgeCrawler {
         batch.map((topic) =>
           this.crawlByQuery(topic, {
             maxResultsPerSource: 20,
-          })
-        )
+          }),
+        ),
       );
       results.push(...batchResults);
     }
@@ -701,13 +700,7 @@ export class KnowledgeCrawler {
           "cross-contamination",
           "handling",
         ],
-        "menu design": [
-          "menu",
-          "course",
-          "progression",
-          "balance",
-          "seasonal",
-        ],
+        "menu design": ["menu", "course", "progression", "balance", "seasonal"],
         "cost optimization": ["budget", "cost", "efficient", "yield", "waste"],
         "sustainable cooking": [
           "sustainable",
@@ -753,9 +746,7 @@ export class KnowledgeCrawler {
             .join(" ")
             .toLowerCase();
 
-          const matchedKeywords = keywords.filter((kw) =>
-            allText.includes(kw),
-          );
+          const matchedKeywords = keywords.filter((kw) => allText.includes(kw));
           if (matchedKeywords.length > 0) {
             isRelevant = true;
             matchType = `keyword (${matchedKeywords.length}/${keywords.length})`;
@@ -864,7 +855,10 @@ export class KnowledgeCrawler {
           return { name: ing, amount: 1, unit: "" };
         }
         return {
-          name: typeof ing === "object" ? (ing.name || ing.item || ing.ingredient || "") : String(ing),
+          name:
+            typeof ing === "object"
+              ? ing.name || ing.item || ing.ingredient || ""
+              : String(ing),
           amount: ing.amount || ing.qty || ing.quantity || 1,
           unit: ing.unit || ing.unitOfMeasure || "",
         };
@@ -883,7 +877,9 @@ export class KnowledgeCrawler {
       techniques = [...new Set([...techniques, ...recipe.selectedPrepMethod])];
     }
     if (recipe.selectedCookingEquipment) {
-      techniques = [...new Set([...techniques, ...recipe.selectedCookingEquipment])];
+      techniques = [
+        ...new Set([...techniques, ...recipe.selectedCookingEquipment]),
+      ];
     }
 
     // Parse difficulty

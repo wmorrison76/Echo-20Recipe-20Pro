@@ -1,8 +1,10 @@
 # Regional & Cuisine Coverage - Bottleneck Analysis
 
 ## Executive Summary
+
 The regional cuisine and culinary types coverage system has **4 major performance bottlenecks** causing:
-- Slow metadata processing (O(n*m) complexity)
+
+- Slow metadata processing (O(n\*m) complexity)
 - Sequential crawling across sources
 - Redundant filtering operations
 - Inefficient checkpoint calculations
@@ -11,11 +13,12 @@ The regional cuisine and culinary types coverage system has **4 major performanc
 
 ---
 
-## 🔴 BOTTLENECK #1: Regional Metrics Update (O(n*m) Complexity)
+## 🔴 BOTTLENECK #1: Regional Metrics Update (O(n\*m) Complexity)
 
 **Location:** `client/echo/services/knowledgeProgressTracker.ts:182-230`
 
 **Problem:**
+
 ```typescript
 Object.entries(regionCuisineMap).forEach(([region, cuisines]) => {
   const metric = this.state.regionalMetrics.find((m) => m.region === (region as Region));
@@ -34,12 +37,14 @@ Object.entries(regionCuisineMap).forEach(([region, cuisines]) => {
 ```
 
 **Impact:**
+
 - With 1,000 metadata items and 16 regions: **16,000 iterations**
 - String comparisons done with `.toLowerCase()` on every filter
 - 5+ substring searches per item per region
 - No caching of normalized strings
 
 **Why It's Slow:**
+
 1. `metadataValues` array iterated 16 times (once per region)
 2. Each iteration does `.toLowerCase()` and multiple `.includes()` calls
 3. Cuisine arrays checked with `.some()` for each metadata item
@@ -47,11 +52,12 @@ Object.entries(regionCuisineMap).forEach(([region, cuisines]) => {
 
 ---
 
-## 🔴 BOTTLENECK #2: Culinary Type Metrics Update (O(n*m) Complexity)
+## 🔴 BOTTLENECK #2: Culinary Type Metrics Update (O(n\*m) Complexity)
 
 **Location:** `client/echo/services/knowledgeProgressTracker.ts:144-180`
 
 **Problem:**
+
 ```typescript
 types.forEach((type) => {
   const metric = this.state.culinaryMetrics.find((m) => m.type === type);
@@ -68,14 +74,16 @@ types.forEach((type) => {
 ```
 
 **Impact:**
+
 - With 1,000 items and 5 culinary types: **5,000+ iterations**
 - `updateCheckpoints()` iterates the filtered subset again (5+ more iterations)
 - `.toLowerCase()` called 10+ times per item
 - Checkbox state calculated with O(n) operations
 
 **Why It's Slow:**
+
 1. 5 types × N items = O(5n) filtering
-2. Each checkpoint update does another filter pass: O(5n*5) = O(25n)
+2. Each checkpoint update does another filter pass: O(5n\*5) = O(25n)
 3. No indexing by cuisine/type for O(1) lookups
 
 ---
@@ -85,6 +93,7 @@ types.forEach((type) => {
 **Location:** `client/echo/cognition/knowledgeCrawler.ts:154-168`
 
 **Problem:**
+
 ```typescript
 for (const source of mergedConfig.sources) {
   try {
@@ -94,11 +103,13 @@ for (const source of mergedConfig.sources) {
 ```
 
 **Impact:**
+
 - With 7 sources × 200ms delay = **1.4 seconds minimum** per crawl operation
 - No parallelization of independent sources
 - Rate-limiting applied serially instead of per-source
 
 **Why It's Slow:**
+
 1. Each source awaited sequentially
 2. Global 200ms delay between ALL sources
 3. Can only crawl one source at a time
@@ -111,6 +122,7 @@ for (const source of mergedConfig.sources) {
 **Location:** `client/echo/services/knowledgeProgressTracker.ts:168-180`
 
 **Problem:**
+
 ```typescript
 private updateCheckpoints(metric: CulinaryTypeMetrics, metadata: Record<string, any>): void {
   // Filters the SAME data 5 times for 5 different checkpoints
@@ -126,11 +138,13 @@ private updateCheckpoints(metric: CulinaryTypeMetrics, metadata: Record<string, 
 ```
 
 **Impact:**
+
 - 5 sequential `.some()` iterations on same data = **O(5n)**
 - Could be done in single O(n) pass
 - No memoization of earlier results
 
 **Why It's Slow:**
+
 1. Iterates the same dataset 5 times
 2. Each iteration stops at first match (not fully optimized)
 3. No batch checkpoint evaluation
@@ -142,6 +156,7 @@ private updateCheckpoints(metric: CulinaryTypeMetrics, metadata: Record<string, 
 **Location:** `client/echo/cognition/gapDetector.ts:101-117`
 
 **Problem:**
+
 ```typescript
 detectAllGaps(): GapAnalysis {
   const gaps: KnowledgeGap[] = [];
@@ -154,6 +169,7 @@ detectAllGaps(): GapAnalysis {
 ```
 
 **Impact:**
+
 - 12 sequential passes over data = **O(12n)**
 - Each method scans recipes, ingredients, techniques independently
 - No shared iteration or caching
@@ -163,6 +179,7 @@ detectAllGaps(): GapAnalysis {
 ## Performance Comparison
 
 ### Current Flow (Bottleneck Mode)
+
 ```
 updateWithCrawlResults()
   → updateCulinaryMetrics()  [O(5n) + O(25n) for checkpoints]
@@ -173,11 +190,13 @@ updateWithCrawlResults()
 ```
 
 ### With 1,000 items:
+
 - **51,000 operations per update**
 - Each operation involves string comparisons
 - Result: ~500ms-2s per update on typical hardware
 
 ### With 10,000 items:
+
 - **510,000 operations per update**
 - Result: ~5-20s per update (noticeable UI lag)
 
@@ -197,21 +216,25 @@ updateWithCrawlResults()
 ## Recommended Solutions Priority
 
 ### Priority 1: Index-Based Lookups (50% improvement)
+
 - Pre-index cuisine/type metadata during crawl
 - Use Maps for O(1) region/type lookups
 - Cache normalized cuisine names
 
 ### Priority 2: Single-Pass Processing (40% improvement)
+
 - Combine regional + culinary metrics into single iteration
 - Calculate all checkpoints in one pass
 - Batch metadata normalization
 
 ### Priority 3: Parallel Source Crawling (30% improvement)
+
 - Use Promise.all() for concurrent source crawling
 - Implement per-source rate limiting instead of global
 - Queue sources with max concurrent limit (3-5)
 
 ### Priority 4: Incremental Updates (25% improvement)
+
 - Only recalculate affected regions/types
 - Maintain running metrics instead of recalculating from scratch
 - Implement change tracking
@@ -220,12 +243,12 @@ updateWithCrawlResults()
 
 ## Estimated Results After Optimization
 
-| Operation | Current | Optimized | Improvement |
-|-----------|---------|-----------|------------|
-| Update 1,000 items | ~2s | ~300ms | **6.7x faster** |
-| Update 10,000 items | ~20s | ~2s | **10x faster** |
-| Crawl 7 sources | ~1.4s delay | ~200ms | **7x faster** |
-| Total E2E (100 items) | ~3-5s | ~500ms | **6-10x faster** |
+| Operation             | Current     | Optimized | Improvement      |
+| --------------------- | ----------- | --------- | ---------------- |
+| Update 1,000 items    | ~2s         | ~300ms    | **6.7x faster**  |
+| Update 10,000 items   | ~20s        | ~2s       | **10x faster**   |
+| Crawl 7 sources       | ~1.4s delay | ~200ms    | **7x faster**    |
+| Total E2E (100 items) | ~3-5s       | ~500ms    | **6-10x faster** |
 
 ---
 
