@@ -147,7 +147,7 @@ export default function AskEchoPanel() {
           },
         ]);
       } else {
-        // Not found in master dictionary, try procedures
+        // Not found in master dictionary, try procedures with original message
         const results = await searchProcedures(userMessage, 3);
 
         if (results.length === 0) {
