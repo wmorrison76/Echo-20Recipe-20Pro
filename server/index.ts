@@ -108,5 +108,8 @@ export function createServer() {
   // Recipe API Integration (for crawler training)
   app.use("/api/recipes", recipeAPIRouter);
 
+  // Echo Hungry Learning - Aggressive knowledge acquisition across food & hospitality
+  app.use("/api/echo", echoHungryLearningRouter);
+
   return app;
 }
