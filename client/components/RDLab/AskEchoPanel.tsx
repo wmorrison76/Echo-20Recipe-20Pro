@@ -94,6 +94,20 @@ export default function AskEchoPanel() {
     setLoading(true);
 
     try {
+      // Check if content is appropriate
+      const safetyCheck = filterContent(userMessage);
+      if (!safetyCheck.isSafe) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "echo",
+            content: `${getFilterMessage(safetyCheck)}\n\n💡 Try asking about cooking techniques, ingredients, recipes, kitchen management, food safety, or restaurant operations instead.`,
+          },
+        ]);
+        setLoading(false);
+        return;
+      }
+
       // Extract the actual culinary term from the question
       const extractedTerm = extractTermFromQuestion(userMessage);
 
