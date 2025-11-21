@@ -82,7 +82,7 @@ class RecipePersistenceService {
       this.recipes.set(storedRecipe.id, storedRecipe);
 
       // Save to Supabase if available
-      if (process.env.SUPABASE_URL) {
+      if (this.supabase) {
         const { error } = await this.supabase
           .from('recipes')
           .upsert(
