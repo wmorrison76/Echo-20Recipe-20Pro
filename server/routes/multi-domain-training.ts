@@ -234,78 +234,98 @@ router.post("/run-all-sequential", async (req: Request, res: Response) => {
       totalDomains: MULTI_DOMAIN_TRAINING_PROFILES.length,
     });
 
-    // Run training asynchronously in background
+    // Run training asynchronously in background with optimized parallelization
     (async () => {
-      for (const profile of MULTI_DOMAIN_TRAINING_PROFILES) {
-        try {
-          const profileId = profile.id;
-          const domainState = session.domainStates[profileId];
+      try {
+        const limiter = createConcurrencyLimiter(3); // Max 3 concurrent exchanges
+        const allExchanges: Array<{
+          profile: (typeof MULTI_DOMAIN_TRAINING_PROFILES)[0];
+          exchangeIndex: number;
+        }> = [];
 
-          domainState.status = "in_progress";
-          domainState.startedAt = new Date().toISOString();
-
-          console.log(
-            `[MultiDomainTraining] Starting ${profile.name} (${profile.id})`,
-          );
-
-          let totalKnowledgeForDomain = 0;
-
-          // Run exchanges for this domain
+        // Build queue of all exchanges across all domains
+        for (const profile of MULTI_DOMAIN_TRAINING_PROFILES) {
           for (let i = 0; i < profile.exchangeCount; i++) {
+            allExchanges.push({ profile, exchangeIndex: i });
+          }
+        }
+
+        console.log(
+          `[MultiDomainTraining] Starting ${allExchanges.length} exchanges across ${MULTI_DOMAIN_TRAINING_PROFILES.length} domains with 3x parallelization`,
+        );
+
+        // Run all exchanges with controlled concurrency
+        const exchangePromises = allExchanges.map((exchange) =>
+          limiter.run(async () => {
+            const { profile, exchangeIndex } = exchange;
+            const domainState = session.domainStates[profile.id];
+
+            if (domainState.status === "pending") {
+              domainState.status = "in_progress";
+              domainState.startedAt = new Date().toISOString();
+            }
+
             try {
               const result = await conductAutonomousExchange(
                 profile,
-                i + 1,
+                exchangeIndex + 1,
                 profile.exchangeCount,
               );
 
               if (result.success && result.knowledge) {
-                totalKnowledgeForDomain += result.knowledge.length;
-                domainState.exchangesCompleted = i + 1;
+                domainState.exchangesCompleted = Math.min(
+                  domainState.exchangesCompleted + 1,
+                  profile.exchangeCount,
+                );
+                domainState.knowledgeItemsLearned += result.knowledge.length;
+                session.totalKnowledgeLearned += result.knowledge.length;
 
                 if (result.knowledge.length > 0) {
                   await storeKnowledgeBatch(result.knowledge);
                   console.log(
-                    `[MultiDomainTraining] ${profile.name}: Stored ${result.knowledge.length} items (exchange ${i + 1}/${profile.exchangeCount})`,
+                    `[MultiDomainTraining] ${profile.name}: Stored ${result.knowledge.length} items (exchange ${exchangeIndex + 1}/${profile.exchangeCount})`,
                   );
                 }
               }
 
-              await new Promise((resolve) => setTimeout(resolve, 500));
+              // Reduced delay from 500ms to 200ms
+              await new Promise((resolve) => setTimeout(resolve, 200));
             } catch (exchangeError) {
               console.error(
-                `[MultiDomainTraining] ${profile.name} exchange ${i + 1} failed:`,
+                `[MultiDomainTraining] ${profile.name} exchange ${exchangeIndex + 1} failed:`,
                 exchangeError,
               );
+              domainState.status = "failed";
+              domainState.error = (exchangeError as any).message;
             }
+          }),
+        );
+
+        await Promise.all(exchangePromises);
+
+        // Mark all domains as completed
+        for (const profile of MULTI_DOMAIN_TRAINING_PROFILES) {
+          const domainState = session.domainStates[profile.id];
+          if (domainState.status !== "failed") {
+            domainState.status = "completed";
+            domainState.completedAt = new Date().toISOString();
           }
-
-          domainState.knowledgeItemsLearned = totalKnowledgeForDomain;
-          domainState.status = "completed";
-          domainState.completedAt = new Date().toISOString();
-          session.totalKnowledgeLearned += totalKnowledgeForDomain;
-          session.overallProgress = calculateSessionProgress(session);
-
-          console.log(
-            `[MultiDomainTraining] ✓ Completed ${profile.name}: ${totalKnowledgeForDomain} items`,
-          );
-        } catch (domainError: any) {
-          console.error(
-            `[MultiDomainTraining] Domain ${profile.name} failed:`,
-            domainError,
-          );
-          session.domainStates[profile.id].status = "failed";
-          session.domainStates[profile.id].error = domainError.message;
         }
+
+        session.overallProgress = calculateSessionProgress(session);
+
+        // Mark session as complete
+        session.status = "completed";
+        session.completedAt = new Date().toISOString();
+
+        console.log(
+          `[MultiDomainTraining] ✓ All training completed. Total knowledge learned: ${session.totalKnowledgeLearned}`,
+        );
+      } catch (error: any) {
+        console.error("[MultiDomainTraining] Optimized training error:", error);
+        session.status = "failed";
+        session.completedAt = new Date().toISOString();
       }
-
-      // Mark session as complete
-      session.status = "completed";
-      session.completedAt = new Date().toISOString();
-
-      console.log(
-        `[MultiDomainTraining] ✓ All training completed. Total knowledge learned: ${session.totalKnowledgeLearned}`,
-      );
     })();
   } catch (error: any) {
     console.error(
