@@ -196,16 +196,23 @@ export class KnowledgeCrawler {
 
   /**
    * Scheduled crawl to update knowledge base periodically
+   * OPTIMIZED: Parallel topic crawling with max 5 concurrent topics
    */
   async crawlScheduled(topics: string[]): Promise<CrawlerResult[]> {
+    const maxConcurrentTopics = 5;
     const results: CrawlerResult[] = [];
 
-    for (const topic of topics) {
-      const result = await this.crawlByQuery(topic, {
-        maxResultsPerSource: 20,
-      });
-      results.push(result);
-      await this.delay(this.config.rateLimitDelayMs * 2);
+    // Process topics in batches to avoid overwhelming the system
+    for (let i = 0; i < topics.length; i += maxConcurrentTopics) {
+      const batch = topics.slice(i, i + maxConcurrentTopics);
+      const batchResults = await Promise.all(
+        batch.map((topic) =>
+          this.crawlByQuery(topic, {
+            maxResultsPerSource: 20,
+          })
+        )
+      );
+      results.push(...batchResults);
     }
 
     return results;
