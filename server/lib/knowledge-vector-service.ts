@@ -107,15 +107,29 @@ export async function storeKnowledgeBatch(
 
   const results = { success: 0, failed: 0 };
 
-  for (const knowledge of knowledgeItems) {
-    try {
-      await storeKnowledgeVector(knowledge);
-      results.success++;
-    } catch (error) {
-      console.error(`Failed to store knowledge ${knowledge.id}:`, error);
-      results.failed++;
-    }
-  }
+  // Optimized: Store up to 5 vectors in parallel for faster persistence
+  const maxConcurrent = 5;
+  let running = 0;
+
+  await Promise.all(
+    knowledgeItems.map(async (knowledge) => {
+      // Wait if we're at max concurrency
+      while (running >= maxConcurrent) {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+      }
+
+      running++;
+      try {
+        await storeKnowledgeVector(knowledge);
+        results.success++;
+      } catch (error) {
+        console.error(`Failed to store knowledge ${knowledge.id}:`, error);
+        results.failed++;
+      } finally {
+        running--;
+      }
+    }),
+  );
 
   return results;
 }
