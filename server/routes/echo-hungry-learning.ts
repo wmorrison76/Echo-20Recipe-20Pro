@@ -551,7 +551,7 @@ export async function importPDFBatch(req: Request, res: Response) {
         averageConfidence: merged.metadata.confidence,
         timestamp: new Date().toISOString(),
       },
-      message: `📚 Echo imported ${totalTermsAdded} master-level culinary terms from ${extractions.length} PDFs!`,
+      message: `��� Echo imported ${totalTermsAdded} master-level culinary terms from ${extractions.length} PDFs!`,
       dictionaryStats: masterCulinaryDictionary.getStatistics(),
     });
   } catch (error) {
@@ -573,6 +573,7 @@ export async function getLibraryImportStatus(req: Request, res: Response) {
     const stats = masterCulinaryDictionary.getStatistics();
     const cuisineStats = culinaryTerminologyDictionary.getSummary();
     const hospitalityStats = hospitalityKnowledgeCrawler.getSummary();
+    const recipeStats = recipePersistenceService.getStatistics();
 
     res.json({
       status: 'success',
@@ -583,6 +584,14 @@ export async function getLibraryImportStatus(req: Request, res: Response) {
           masteryLevels: stats.masteryLevels,
           averageConfidence: stats.averageConfidence,
         },
+        recipes: {
+          totalRecipes: recipeStats.totalRecipes,
+          cuisines: recipeStats.cuisineBreakdown,
+          difficulties: recipeStats.difficultyBreakdown,
+          averageCookTime: recipeStats.averageCookTime,
+          averageCalories: recipeStats.averageCalories,
+          distinctCuisines: recipeStats.distinctCuisines,
+        },
         culinaryTerminology: {
           totalTerms: cuisineStats.totalTerms,
           categories: cuisineStats.categories,
@@ -591,10 +600,11 @@ export async function getLibraryImportStatus(req: Request, res: Response) {
           totalKnowledge: hospitalityStats.totalKnowledge,
           categories: hospitalityStats.categories,
         },
-        combinedKnowledgeBase: stats.totalTerms + cuisineStats.totalTerms + hospitalityStats.totalKnowledge,
+        combinedKnowledgeBase: stats.totalTerms + cuisineStats.totalTerms + hospitalityStats.totalKnowledge + recipeStats.totalRecipes,
       },
       readiness: {
         masterLevel: stats.totalTerms >= 10000 ? '✓ Master dictionary complete' : `${stats.totalTerms} / 10,000 terms`,
+        recipesReady: recipeStats.totalRecipes > 0 ? `✓ ${recipeStats.totalRecipes} recipes ready for flavor analysis` : 'No recipes yet - run crawler',
         culinaryAuthority: 'Echo is a culinary authority',
         knowledgeRetention: 'All knowledge retained for search and learning',
       },
@@ -604,6 +614,43 @@ export async function getLibraryImportStatus(req: Request, res: Response) {
     res.status(500).json({
       status: 'error',
       message: 'Failed to get library import status',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * GET /api/echo/hungry-learning/recipe-statistics
+ * Get recipe collection statistics and availability for Echo
+ */
+export async function getRecipeStatistics(req: Request, res: Response) {
+  try {
+    const stats = recipePersistenceService.getStatistics();
+
+    res.json({
+      status: 'success',
+      recipes: {
+        total: stats.totalRecipes,
+        cuisines: stats.cuisineBreakdown,
+        difficulties: stats.difficultyBreakdown,
+        averageCookTime: stats.averageCookTime,
+        averageCalories: stats.averageCalories,
+        distinctCuisines: stats.distinctCuisines,
+        readyForAnalysis: stats.ecoLearningReady,
+      },
+      echoLearning: {
+        canAnalyzeFlavors: stats.totalRecipes > 0,
+        canLearnIngredientRatios: stats.totalRecipes > 0,
+        message: stats.totalRecipes > 0
+          ? `Echo is analyzing ${stats.totalRecipes} recipes for flavor profiles and ingredient ratios`
+          : 'No recipes available - run the crawler to populate the database',
+      },
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to get recipe statistics',
       error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
