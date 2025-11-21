@@ -21,6 +21,8 @@ import type { Recipe } from "@shared/recipes";
 import type { RecipeCollection } from "@shared/server-notes";
 import { defaultLanguage, type LanguageCode } from "@/i18n/config";
 import { downloadZip } from "@/lib/download-utils";
+import { useAuth } from "./AuthContext";
+import { cloudRecipeSync } from "@/lib/cloud-recipe-sync";
 export type { Recipe } from "@shared/recipes";
 // Mammoth is loaded on-demand to keep bundle small and avoid init errors in some environments
 
