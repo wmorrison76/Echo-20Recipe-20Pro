@@ -368,10 +368,143 @@ export async function importFromText(req: Request, res: Response) {
   }
 }
 
+/**
+ * POST /api/pdf-library/debug
+ * Debug PDF extraction issues
+ * Expects multipart/form-data with:
+ * - file: PDF file
+ * - title: (optional) Book title
+ */
+export async function debugPDFExtraction(req: Request, res: Response) {
+  try {
+    const fileData = (req as any).fileData;
+
+    if (!fileData) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'No PDF file provided',
+      });
+    }
+
+    // Step 1: Extract text
+    let pdfText: string;
+    let textExtractionError: string | null = null;
+
+    try {
+      pdfText = await extractTextFromPDFBuffer(fileData.buffer, fileData.filename);
+    } catch (error) {
+      textExtractionError = error instanceof Error ? error.message : 'Unknown error';
+      pdfText = '';
+    }
+
+    // Step 2: Extract definitions
+    const metadata: PDFMetadata = {
+      title: req.body.title || fileData.filename,
+      language: 'English',
+      specialization: 'culinary-book',
+    };
+
+    let extraction = null;
+    let extractionError: string | null = null;
+
+    try {
+      extraction = convertPDFToMasterTerms(pdfText, metadata);
+    } catch (error) {
+      extractionError = error instanceof Error ? error.message : 'Unknown error';
+    }
+
+    // Return detailed debug info
+    res.json({
+      status: 'debug',
+      file: {
+        filename: fileData.filename,
+        sizeBytes: fileData.buffer.length,
+      },
+      textExtraction: {
+        success: textExtractionError === null,
+        error: textExtractionError,
+        textLength: pdfText.length,
+        lineCount: pdfText.split('\n').length,
+        preview: pdfText.substring(0, 500),
+        sampleLines: pdfText
+          .split('\n')
+          .slice(0, 10)
+          .map((line, i) => ({
+            lineNum: i + 1,
+            content: line.substring(0, 100),
+            length: line.length,
+          })),
+      },
+      definitionExtraction: {
+        success: extractionError === null,
+        error: extractionError,
+        termsExtracted: extraction?.terms.length || 0,
+        averageConfidence: extraction?.metadata.confidence || 0,
+        sampleTerms: extraction?.terms.slice(0, 5).map(t => ({
+          term: t.term,
+          definition: t.definition.substring(0, 80),
+          categories: t.categories,
+          confidence: t.confidence,
+        })) || [],
+      },
+      recommendations: generateDebugRecommendations(
+        textExtractionError,
+        extractionError,
+        pdfText.length,
+        extraction?.terms.length || 0
+      ),
+    });
+  } catch (error) {
+    console.error('Error debugging PDF file:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to debug PDF',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * Generate debugging recommendations based on extraction results
+ */
+function generateDebugRecommendations(
+  textError: string | null,
+  extractionError: string | null,
+  textLength: number,
+  termCount: number
+): string[] {
+  const recommendations: string[] = [];
+
+  if (textError) {
+    recommendations.push(`Text extraction failed: ${textError}`);
+    recommendations.push('The PDF might be image-based or encrypted. Try converting it with OCR first.');
+  } else if (textLength < 500) {
+    recommendations.push('Very little text was extracted (less than 500 chars). The PDF might be mostly images or have encoding issues.');
+  }
+
+  if (extractionError) {
+    recommendations.push(`Definition extraction failed: ${extractionError}`);
+  } else if (termCount === 0) {
+    recommendations.push('No definitions were extracted. This might be because:');
+    recommendations.push('  - The PDF format doesn\'t match expected glossary patterns');
+    recommendations.push('  - Terms may be formatted differently than expected');
+    recommendations.push('  - Try checking the PDF format and structure');
+  } else if (termCount < 10) {
+    recommendations.push(`Only ${termCount} terms extracted. The glossary patterns might not match this PDF format well.`);
+  }
+
+  if (recommendations.length === 0) {
+    recommendations.push('PDF extraction appears to be working correctly.');
+  }
+
+  return recommendations;
+}
+
 // Register routes
 pdfLibraryImportRouter.post('/pdf-library/upload', uploadPDFFile);
 pdfLibraryImportRouter.post('/pdf-library/upload-batch', uploadPDFBatch);
 pdfLibraryImportRouter.get('/pdf-library/status', getPDFImportStatus);
 pdfLibraryImportRouter.post('/pdf-library/import-from-text', importFromText);
+pdfLibraryImportRouter.post('/pdf-library/debug', debugPDFExtraction);
 
 export default pdfLibraryImportRouter;
