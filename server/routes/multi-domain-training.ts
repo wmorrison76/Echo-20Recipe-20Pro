@@ -272,7 +272,7 @@ router.post("/run-all-sequential", async (req: Request, res: Response) => {
                 profile.exchangeCount,
               );
 
-              if (result.success && result.knowledge) {
+              if (result.success && result.knowledge && result.knowledge.length > 0) {
                 domainState.exchangesCompleted = Math.min(
                   domainState.exchangesCompleted + 1,
                   profile.exchangeCount,
@@ -280,12 +280,23 @@ router.post("/run-all-sequential", async (req: Request, res: Response) => {
                 domainState.knowledgeItemsLearned += result.knowledge.length;
                 session.totalKnowledgeLearned += result.knowledge.length;
 
-                if (result.knowledge.length > 0) {
-                  await storeKnowledgeBatch(result.knowledge);
-                  console.log(
-                    `[MultiDomainTraining] ${profile.name}: Stored ${result.knowledge.length} items (exchange ${exchangeIndex + 1}/${profile.exchangeCount})`,
+                // Store knowledge with detailed logging
+                const storageResult = await storeKnowledgeBatch(result.knowledge, 5);
+                console.log(
+                  `[MultiDomainTraining] ${profile.name} exchange ${exchangeIndex + 1}/${profile.exchangeCount}: ` +
+                  `Extracted ${result.knowledge.length} knowledge items, ` +
+                  `Stored ${storageResult.success} successfully${storageResult.failed > 0 ? `, ${storageResult.failed} failed` : ""}`,
+                );
+
+                if (storageResult.failed > 0) {
+                  console.warn(
+                    `[MultiDomainTraining] Storage failures in ${profile.name}: ${JSON.stringify(storageResult.errors?.slice(0, 3) || [])}`,
                   );
                 }
+              } else if (!result.success) {
+                console.warn(
+                  `[MultiDomainTraining] ${profile.name} exchange ${exchangeIndex + 1} failed to extract knowledge`,
+                );
               }
 
               // Reduced delay from 500ms to 200ms
