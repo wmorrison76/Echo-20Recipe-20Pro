@@ -27,6 +27,7 @@ export function useMultiDomainTraining(): UseMultiDomainTrainingReturn {
   const [isRunning, setIsRunning] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [storedVectorCount, setStoredVectorCount] = useState(0);
 
   // Poll for session updates every 2 seconds
   useEffect(() => {
