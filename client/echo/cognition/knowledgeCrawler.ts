@@ -237,36 +237,41 @@ export class KnowledgeCrawler {
   ): Promise<CrawledKnowledge[]> {
     const knowledge: CrawledKnowledge[] = [];
 
-    switch (source) {
-      case "recipe_database":
-        knowledge.push(...(await this.crawlRecipeDatabases(query, config)));
-        break;
+    try {
+      switch (source) {
+        case "recipe_database":
+          knowledge.push(...(await this.crawlRecipeDatabases(query, config)));
+          break;
 
-      case "academic_paper":
-        knowledge.push(...(await this.crawlAcademicPapers(query, config)));
-        break;
+        case "academic_paper":
+          knowledge.push(...(await this.crawlAcademicPapers(query, config)));
+          break;
 
-      case "restaurant_menu":
-        knowledge.push(...(await this.crawlRestaurantMenus(query, config)));
-        break;
+        case "restaurant_menu":
+          knowledge.push(...(await this.crawlRestaurantMenus(query, config)));
+          break;
 
-      case "youtube_video":
-        if (config.includeVideo) {
-          knowledge.push(...(await this.crawlYouTubeVideos(query, config)));
-        }
-        break;
+        case "youtube_video":
+          if (config.includeVideo) {
+            knowledge.push(...(await this.crawlYouTubeVideos(query, config)));
+          }
+          break;
 
-      case "food_blog":
-        knowledge.push(...(await this.crawlFoodBlogs(query, config)));
-        break;
+        case "food_blog":
+          knowledge.push(...(await this.crawlFoodBlogs(query, config)));
+          break;
 
-      case "ingredient_supplier":
-        knowledge.push(...(await this.crawlIngredientSuppliers(query, config)));
-        break;
+        case "ingredient_supplier":
+          knowledge.push(...(await this.crawlIngredientSuppliers(query, config)));
+          break;
 
-      case "user_imported":
-        knowledge.push(...(await this.crawlUserImportedContent(query, config)));
-        break;
+        case "user_imported":
+          knowledge.push(...(await this.crawlUserImportedContent(query, config)));
+          break;
+      }
+    } catch (error) {
+      console.warn(`[Knowledge Crawler] Error crawling ${source} for "${query}":`, error);
+      // Continue with other sources, return what we have so far
     }
 
     return knowledge.slice(0, config.maxResultsPerSource);
