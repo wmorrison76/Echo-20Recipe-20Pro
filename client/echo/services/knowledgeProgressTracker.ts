@@ -109,6 +109,7 @@ export class KnowledgeProgressTracker {
 
   /**
    * Update progress with crawler results
+   * OPTIMIZED: Single-pass processing with pre-normalized strings
    */
   updateWithCrawlResults(
     approvedCount: number,
@@ -120,11 +121,11 @@ export class KnowledgeProgressTracker {
     this.state.totalRejectedItems += rejectedCount;
     this.state.totalQuarantinedItems += quarantinedCount;
 
-    // Update culinary type metrics
-    this.updateCulinaryMetrics(metadataByCategory);
+    // Pre-normalize metadata once for all calculations
+    this.normalizeMetadata(metadataByCategory);
 
-    // Update regional metrics
-    this.updateRegionalMetrics(metadataByCategory);
+    // Single-pass update for both culinary and regional metrics
+    this.updateMetricsInSinglePass();
 
     // Calculate overall coverage
     this.state.overallCoverage = this.calculateOverallCoverage();
@@ -136,6 +137,114 @@ export class KnowledgeProgressTracker {
     this.saveState();
 
     return this.state;
+  }
+
+  /**
+   * Pre-normalize metadata strings once to avoid repeated .toLowerCase() calls
+   * Time complexity: O(n) where n is metadata items
+   */
+  private normalizeMetadata(metadata: Record<string, any>): void {
+    const metadataValues = Object.values(metadata).filter(
+      (m) => m && typeof m === "object"
+    );
+
+    this.normalizedMetadataCache = metadataValues.map((m: any) => ({
+      original: m,
+      cuisineLower: (m.cuisineRegion || m.cuisine || "").toLowerCase(),
+      titleLower: (m.title || "").toLowerCase(),
+      categoryLower: (m.category || m.type || "").toLowerCase(),
+    }));
+  }
+
+  /**
+   * Update both culinary and regional metrics in single pass
+   * OPTIMIZED: O(n) instead of O(35n)
+   * Time complexity: O(n * (5 + 16)) = O(21n) but with optimized comparisons
+   */
+  private updateMetricsInSinglePass(): void {
+    // Reset metrics to recalculate
+    const culinaryAccumulators: Record<CulinaryType, {
+      count: number;
+      hasAllergens: boolean;
+      hasNutrition: boolean;
+      hasTechniques: boolean;
+      hasFlavorBalance: boolean;
+      hasSubstitutions: boolean;
+    }> = {
+      general: { count: 0, hasAllergens: false, hasNutrition: false, hasTechniques: false, hasFlavorBalance: false, hasSubstitutions: false },
+      pastry: { count: 0, hasAllergens: false, hasNutrition: false, hasTechniques: false, hasFlavorBalance: false, hasSubstitutions: false },
+      baking: { count: 0, hasAllergens: false, hasNutrition: false, hasTechniques: false, hasFlavorBalance: false, hasSubstitutions: false },
+      banquet: { count: 0, hasAllergens: false, hasNutrition: false, hasTechniques: false, hasFlavorBalance: false, hasSubstitutions: false },
+      catering: { count: 0, hasAllergens: false, hasNutrition: false, hasTechniques: false, hasFlavorBalance: false, hasSubstitutions: false },
+    };
+
+    const regionalAccumulators: Record<Region, number> = {
+      chinese: 0, japanese: 0, thai: 0, korean: 0, indian: 0, vietnamese: 0,
+      french: 0, italian: 0, spanish: 0, german: 0, mexican: 0, brazilian: 0,
+      american: 0, middle_eastern: 0, african: 0, oceanic: 0,
+    };
+
+    // Single pass through all normalized metadata
+    for (const normalized of this.normalizedMetadataCache) {
+      const { original, cuisineLower, categoryLower } = normalized;
+
+      // CULINARY TYPE MATCHING (single pass for all 5 types)
+      const types: CulinaryType[] = ["general", "pastry", "baking", "banquet", "catering"];
+      for (const type of types) {
+        if (categoryLower.includes(type) || cuisineLower.includes(type)) {
+          const acc = culinaryAccumulators[type];
+          acc.count++;
+          if (Array.isArray(original.allergens) && original.allergens.length > 0) {
+            acc.hasAllergens = true;
+          }
+          if (original.nutrition) {
+            acc.hasNutrition = true;
+          }
+          if (Array.isArray(original.technique) && original.technique.length > 0) {
+            acc.hasTechniques = true;
+          }
+          if (original.flavorBalance) {
+            acc.hasFlavorBalance = true;
+          }
+          if (original.substitutions) {
+            acc.hasSubstitutions = true;
+          }
+        }
+      }
+
+      // REGIONAL MATCHING (optimized with Set lookups)
+      const regionKeys = Object.keys(REGION_CUISINE_ALIASES) as Region[];
+      for (const region of regionKeys) {
+        const cuisineSet = REGION_CUISINE_ALIASES[region];
+        if (cuisineSet.has(cuisineLower) ||
+            Array.from(cuisineSet).some(c => normalized.titleLower.includes(c))) {
+          regionalAccumulators[region]++;
+        }
+      }
+    }
+
+    // Update culinary metrics from accumulators
+    this.state.culinaryMetrics.forEach((metric) => {
+      const acc = culinaryAccumulators[metric.type];
+      metric.itemsApproved = acc.count;
+      metric.coverage = Math.min(100, acc.count * 5) + (Object.values(acc).filter(v => v === true).length * 10);
+      metric.checkpoints = {
+        allergens: acc.hasAllergens,
+        nutrition: acc.hasNutrition,
+        techniques: acc.hasTechniques,
+        flavorBalance: acc.hasFlavorBalance,
+        substitutions: acc.hasSubstitutions,
+      };
+    });
+
+    // Update regional metrics from accumulators
+    this.state.regionalMetrics.forEach((metric) => {
+      const count = regionalAccumulators[metric.region];
+      metric.recipesCount = count;
+      metric.coverage = Math.min(100, (count / 100) * 100);
+      metric.cuisinesRepresented = Array.from(REGION_CUISINE_ALIASES[metric.region])
+        .filter(c => this.normalizedMetadataCache.some(n => n.cuisineLower.includes(c)));
+    });
   }
 
   /**
