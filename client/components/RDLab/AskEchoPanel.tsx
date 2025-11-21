@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Send, Loader2, BookOpen, AlertCircle, Sparkles } from "lucide-react";
+import { Send, Loader2, BookOpen, AlertCircle, Sparkles, Shield } from "lucide-react";
 import { toast } from "sonner";
 import {
   searchProcedures,
@@ -16,6 +16,8 @@ import {
 } from "@/lib/echo-procedures-service";
 import { useMasterDictionary } from "@/hooks/use-master-dictionary";
 import type { ProcedureSearchResult } from "@/lib/echo-procedures-service";
+import { fuzzySearchTerms, fuzzySearchMultiple } from "@/lib/fuzzy-search";
+import { filterContent, getFilterMessage } from "@/lib/content-safety-filter";
 
 interface Message {
   role: "user" | "echo";
