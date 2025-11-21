@@ -5,7 +5,7 @@
  */
 
 import type { Recipe } from "@shared/recipes";
-import { supabase } from "./supabase";
+import { supabase } from "./auth-service";
 
 interface CloudRecipe extends Recipe {
   synced_at?: string;
