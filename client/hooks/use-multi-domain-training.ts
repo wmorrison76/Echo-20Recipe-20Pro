@@ -42,10 +42,19 @@ export function useMultiDomainTraining(): UseMultiDomainTrainingReturn {
         );
         if (response.ok) {
           const data = await response.json();
-          setStoredVectorCount(data.pinecone.trainingDataVectors?.total || 0);
+          setStoredVectorCount(data.pinecone?.trainingDataVectors?.total || 0);
+        } else {
+          const errorData = await response.json().catch(() => ({}));
+          console.error(
+            "Failed to load stored vector count:",
+            errorData.error || response.statusText,
+          );
         }
       } catch (err) {
-        console.error("Failed to load stored vector count:", err);
+        console.error(
+          "Failed to load stored vector count:",
+          err instanceof Error ? err.message : String(err),
+        );
       }
     };
 
