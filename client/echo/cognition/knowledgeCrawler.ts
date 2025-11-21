@@ -149,45 +149,26 @@ export class KnowledgeCrawler {
   ): Promise<CrawlerResult> {
     const startTime = Date.now();
     const mergedConfig = { ...this.config, ...options };
-    const knowledge: CrawledKnowledge[] = [];
     let successCount = 0;
     let failureCount = 0;
 
-    // Parallel crawling with concurrency limiter (max 3 concurrent sources)
-    const maxConcurrent = 3;
-    const sourceQueue = [...mergedConfig.sources];
-    const inProgress: Promise<CrawledKnowledge[]>[] = [];
+    // Create parallel crawl tasks with concurrency limiter (max 3 concurrent)
+    const crawlTasks = mergedConfig.sources.map((source) =>
+      this.crawlSource(query, source, mergedConfig)
+        .then((sourceKnowledge) => {
+          successCount += sourceKnowledge.length;
+          return sourceKnowledge;
+        })
+        .catch((error) => {
+          console.warn(`Failed to crawl ${source}:`, error);
+          failureCount++;
+          return [];
+        })
+    );
 
-    while (sourceQueue.length > 0 || inProgress.length > 0) {
-      // Keep queue filled up to maxConcurrent
-      while (inProgress.length < maxConcurrent && sourceQueue.length > 0) {
-        const source = sourceQueue.shift()!;
-        const promise = this.crawlSource(query, source, mergedConfig)
-          .then((sourceKnowledge) => {
-            successCount += sourceKnowledge.length;
-            return sourceKnowledge;
-          })
-          .catch((error) => {
-            console.warn(`Failed to crawl ${source}:`, error);
-            failureCount++;
-            return [];
-          });
-        inProgress.push(promise);
-      }
-
-      // Wait for first to complete
-      if (inProgress.length > 0) {
-        const results = await Promise.race(inProgress);
-        knowledge.push(...results);
-        inProgress.splice(inProgress.indexOf(inProgress[0]), 1);
-      }
-    }
-
-    // Wait for any remaining promises
-    const remainingResults = await Promise.all(inProgress);
-    for (const results of remainingResults) {
-      knowledge.push(...results);
-    }
+    // Use concurrency limiter to run max 3 sources in parallel
+    const results = await this.runWithConcurrencyLimit(crawlTasks, 3);
+    const knowledge = results.flat();
 
     const duration = Date.now() - startTime;
 
@@ -197,6 +178,40 @@ export class KnowledgeCrawler {
       failureCount,
       duration,
     };
+  }
+
+  /**
+   * Helper: Run promises with concurrency limit
+   * Prevents overwhelming system with too many parallel requests
+   */
+  private async runWithConcurrencyLimit<T>(
+    tasks: Promise<T>[],
+    maxConcurrent: number,
+  ): Promise<T[]> {
+    const results: T[] = [];
+    const executing: Promise<T>[] = [];
+
+    for (const task of tasks) {
+      const promise = Promise.resolve(task).then((result) => {
+        executing.splice(executing.indexOf(promise), 1);
+        return result;
+      });
+
+      results.push(
+        promise.then((result) => {
+          results[tasks.indexOf(task)] = result;
+          return result;
+        })
+      );
+
+      executing.push(promise);
+      if (executing.length >= maxConcurrent) {
+        await Promise.race(executing);
+      }
+    }
+
+    await Promise.all(executing);
+    return results;
   }
 
   /**
