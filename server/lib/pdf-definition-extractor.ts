@@ -340,11 +340,14 @@ export function extractDefinitionsFromPdfText(
   // Extract glossary entries
   const entries = extractGlossaryEntries(text);
 
-  // Filter out common false positives
+  // Filter out common false positives and recipe-related content
   const filterPatterns = [
     /^(page|contents|index|glossary|appendix|chapter|figure|table|plate|photo|illustration|yield|convert|see|note|tip|warning)/i,
     /^(scan to download|visit us online|qr code)/i,
     /(flexipan|inch|inches|cm|diameter|copyright|isbn|author|published)/i,
+    // Exclude recipes (temporarily disabled per user request - focus on knowledge, not recipes)
+    /^(recipe|serves|ingredients|instructions|preparation|cooking|baking|makes|portions?)/i,
+    /ingredients:|instructions:|method:|direction:|prep time:|cook time:|baking time:/i,
   ];
 
   const definitions = entries
