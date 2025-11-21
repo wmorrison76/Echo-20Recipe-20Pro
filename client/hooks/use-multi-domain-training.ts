@@ -40,21 +40,27 @@ export function useMultiDomainTraining(): UseMultiDomainTrainingReturn {
         const response = await fetch(
           "/api/multi-domain-training/pinecone/status",
         );
-        if (response.ok) {
-          const data = await response.json();
-          setStoredVectorCount(data.pinecone?.trainingDataVectors?.total || 0);
-        } else {
-          const errorData = await response.json().catch(() => ({}));
-          console.error(
-            "Failed to load stored vector count:",
-            errorData.error || response.statusText,
+
+        if (!response.ok) {
+          console.warn(
+            `[useMultiDomainTraining] Status endpoint returned ${response.status}: ${response.statusText}`,
           );
+          // Gracefully degrade - set count to 0 if status check fails
+          setStoredVectorCount(0);
+          return;
         }
+
+        const data = await response.json();
+        const count = data.pinecone?.trainingDataVectors?.total ?? 0;
+        setStoredVectorCount(count);
+        console.log(`[useMultiDomainTraining] Loaded ${count} stored vectors`);
       } catch (err) {
         console.error(
-          "Failed to load stored vector count:",
+          "[useMultiDomainTraining] Failed to load stored vector count:",
           err instanceof Error ? err.message : String(err),
         );
+        // Gracefully degrade on error
+        setStoredVectorCount(0);
       }
     };
 
