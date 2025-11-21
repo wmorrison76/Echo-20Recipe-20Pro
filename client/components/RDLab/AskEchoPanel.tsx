@@ -8,18 +8,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Send, Loader2, BookOpen, AlertCircle } from "lucide-react";
+import { Send, Loader2, BookOpen, AlertCircle, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import {
   searchProcedures,
   getProceduresByCategory,
 } from "@/lib/echo-procedures-service";
+import { useMasterDictionary } from "@/hooks/use-master-dictionary";
 import type { ProcedureSearchResult } from "@/lib/echo-procedures-service";
 
 interface Message {
   role: "user" | "echo";
   content: string;
   procedures?: ProcedureSearchResult[];
+  isDictionaryResult?: boolean;
 }
 
 export default function AskEchoPanel() {
