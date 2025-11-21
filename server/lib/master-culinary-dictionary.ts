@@ -350,6 +350,98 @@ class MasterCulinaryDictionary {
     // Due to size constraints, showing the pattern for first 10 entries
     // In production, this would contain 10,000 complete entries
 
+    // BASIC COOKING TECHNIQUES (Fundamental)
+    this.addTerm('saute', {
+      term: 'Sauté',
+      definition: 'Cooking technique using high heat with minimal fat in a shallow pan, tossing or stirring food frequently to ensure even cooking and browning. From French "sauté" meaning "jumped."',
+      usage: {
+        primary: 'Quick-cooking vegetables, proteins, and aromatics with browning',
+        secondary: ['building flavor foundation', 'developing fond for sauces', 'caramelizing vegetables'],
+        context: 'Professional and home kitchens, French cooking foundation',
+      },
+      categories: ['technique', 'method'],
+      etymology: {
+        origin: 'French',
+        originalWord: 'sauté',
+        meaning: 'jumped (past participle of sauter)',
+        period: 'Classical French culinary technique',
+      },
+      applications: {
+        primary: 'Cooking vegetables, proteins, and aromatic ingredients quickly with color development',
+        examples: ['Sauté onions until golden', 'Sauté mushrooms until liquid evaporates', 'Sauté proteins until browned on exterior'],
+        dishes: ['All stir-fries', 'French sauces and preparations', 'Asian cuisine', 'Mediterranean cooking'],
+      },
+      relatedTerms: ['pan-fry', 'stir-fry', 'fond', 'caramelize', 'browning'],
+      history: {
+        period: '18th-19th century French cuisine development',
+        culture: 'French classical cooking',
+        significance: 'Essential technique for developing flavor in professional cooking',
+      },
+      confidence: 1.0,
+      sources: ['Classical French Training', 'Le Cordon Bleu'],
+      masteryLevel: 'fundamental',
+    });
+
+    this.addTerm('simmer', {
+      term: 'Simmer',
+      definition: 'Cooking method using gentle heat with small, occasional bubbles breaking the surface (around 180-205°F / 82-96°C). Slower than boiling, maintains texture better for delicate foods.',
+      usage: {
+        primary: 'Gentle cooking of stocks, soups, stews, and sauces',
+        secondary: ['cooking delicate foods', 'reducing sauces', 'poaching'],
+        context: 'All professional and home cooking',
+      },
+      categories: ['technique', 'method'],
+      etymology: {
+        origin: 'English',
+        meaning: 'Cooking at a gentle bubbling state',
+        period: 'Medieval cooking technique',
+      },
+      applications: {
+        primary: 'Cooking foods gently without breaking apart or becoming tough',
+        examples: ['Simmer stock for flavor extraction', 'Simmer sauce for thickness reduction', 'Simmer soup for flavor development'],
+        dishes: ['Stocks', 'Consommés', 'Soups', 'Braises', 'Stews'],
+      },
+      relatedTerms: ['boil', 'poach', 'braise', 'reduce', 'stock'],
+      history: {
+        period: 'Medieval to modern cooking',
+        culture: 'Universal cooking technique',
+        significance: 'Essential for proper stock and sauce preparation',
+      },
+      confidence: 1.0,
+      sources: ['Culinary Training', 'Le Cordon Bleu'],
+      masteryLevel: 'fundamental',
+    });
+
+    this.addTerm('boil', {
+      term: 'Boil',
+      definition: 'Cooking method using rapid heating where water bubbles vigorously at 212°F (100°C) at sea level. Used for pasta, potatoes, eggs, and making stocks.',
+      usage: {
+        primary: 'Cooking pasta, vegetables, and making stocks quickly',
+        secondary: ['pasta cooking', 'vegetable blanching', 'stock-making'],
+        context: 'All cooking environments',
+      },
+      categories: ['technique', 'method'],
+      etymology: {
+        origin: 'English',
+        meaning: 'Rapid bubbling of liquid',
+        period: 'Ancient cooking method',
+      },
+      applications: {
+        primary: 'Cooking foods quickly or extracting flavor from bones',
+        examples: ['Boil pasta until al dente', 'Boil potatoes for cooking', 'Boil bones for stock'],
+        dishes: ['All pasta dishes', 'Vegetable dishes', 'Stocks', 'Soups'],
+      },
+      relatedTerms: ['simmer', 'poach', 'blanch', 'stock'],
+      history: {
+        period: 'Ancient cooking technique',
+        culture: 'Universal across all cuisines',
+        significance: 'Fundamental cooking method for many dishes',
+      },
+      confidence: 1.0,
+      sources: ['Basic Culinary Training'],
+      masteryLevel: 'fundamental',
+    });
+
     // INGREDIENTS & FLAVOR (50 sample entries shown, 2000+ in full version)
     this.addTerm('umami', {
       term: 'Umami',
@@ -382,7 +474,7 @@ class MasterCulinaryDictionary {
       masteryLevel: 'advanced',
     });
 
-    // Continue with 9,990 more terms...
+    // Continue with 9,990+ more terms...
     // This is the structure, fully implemented version would have all 10,000+
   }
 
