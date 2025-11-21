@@ -11,6 +11,7 @@ import { culinaryTerminologyDictionary } from '../lib/culinary-terminology-dicti
 import { hospitalityKnowledgeCrawler } from '../lib/hospitality-knowledge-crawler';
 import { masterCulinaryDictionary } from '../lib/master-culinary-dictionary';
 import { convertPDFToMasterTerms, mergePDFExtractions } from '../lib/pdf-knowledge-extractor';
+import { recipePersistenceService } from '../lib/recipe-persistence-service';
 import type { PDFMetadata } from '../lib/pdf-knowledge-extractor';
 
 /**
