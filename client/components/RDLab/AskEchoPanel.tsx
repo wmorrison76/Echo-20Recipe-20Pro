@@ -44,6 +44,45 @@ export default function AskEchoPanel() {
     }
   }, [messages]);
 
+  /**
+   * Extract culinary term from natural language question
+   */
+  const extractTermFromQuestion = (question: string): string => {
+    const q = question.toLowerCase().trim();
+
+    // Patterns: "what does X mean?", "what is X?", "define X", "X is what?"
+    const patterns = [
+      /what\s+(?:does|is)\s+([a-z\s\-]+?)\s+mean\??/i,
+      /what\s+(?:does|is)\s+([a-z\s\-]+?)\s*\??$/i,
+      /define\s+([a-z\s\-]+?)\s*\??$/i,
+      /(?:tell me about|explain|describe)\s+([a-z\s\-]+?)\s*\??$/i,
+      /^([a-z\s\-]+?)\s+is\s+what\??$/i,
+      /how\s+(?:do you|do we|do i)\s+([a-z\s\-]+?)\s*\??$/i,
+    ];
+
+    for (const pattern of patterns) {
+      const match = q.match(pattern);
+      if (match && match[1]) {
+        let term = match[1]
+          .trim()
+          .replace(/\s+/g, '-') // Replace spaces with hyphens for compound terms
+          .replace(/[^a-z\-]/g, ''); // Remove any non-alphanumeric except hyphens
+
+        if (term.length > 1) {
+          return term;
+        }
+      }
+    }
+
+    // Fallback: if no pattern matches, use first 1-2 words as term
+    const words = q.split(/\s+/).filter(w => w.length > 2 && !['what', 'does', 'mean', 'is', 'the', 'a', 'an', 'define', 'explain', 'tell', 'about', 'describe', 'how', 'do', 'you', 'we', 'this', 'that'].includes(w));
+    if (words.length > 0) {
+      return words[0].replace(/[?.,!]/g, '');
+    }
+
+    return question.trim(); // Last resort: return original
+  };
+
   const handleAsk = async () => {
     if (!query.trim()) return;
 
@@ -53,8 +92,11 @@ export default function AskEchoPanel() {
     setLoading(true);
 
     try {
-      // First, try searching the master dictionary
-      const dictionaryResult = await searchTerm(userMessage);
+      // Extract the actual culinary term from the question
+      const extractedTerm = extractTermFromQuestion(userMessage);
+
+      // First, try searching the master dictionary with the extracted term
+      const dictionaryResult = await searchTerm(extractedTerm);
 
       if (dictionaryResult?.entry?.term) {
         // Found in master dictionary
