@@ -436,6 +436,7 @@ function createRecipeDeduper(current: Recipe[]) {
 // --- end helpers ---
 
 export function AppDataProvider({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [images, setImages] = useState<GalleryImage[]>([]);
   const [lookbooks, setLookbooks] = useState<LookBook[]>([]);
@@ -446,6 +447,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const mountedRef = useRef(true);
   const imageObjectUrlsRef = useRef<Map<string, string>>(new Map());
   const [imagesHydrated, setImagesHydrated] = useState(false);
+  const [recipesLoading, setRecipesLoading] = useState(true);
 
   const createObjectUrl = useCallback((id: string, blob: Blob) => {
     const cache = imageObjectUrlsRef.current;
