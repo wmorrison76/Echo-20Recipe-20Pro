@@ -381,8 +381,8 @@ export function getBackgroundCrawler(): BackgroundKnowledgeCrawler {
     globalCrawler = new BackgroundKnowledgeCrawler({
       enabled: true,
       mode: "learning",
-      crawlIntervalMs: 120000, // 2 minutes between batches
-      batchSize: 3,
+      crawlIntervalMs: 60000, // Optimized: 1 minute between batches (reduced from 2 minutes)
+      batchSize: 8, // Optimized: 8 topics per batch (increased from 3) for 2.7x faster collection
       autoSwitchWhenReady: true,
     });
   }
