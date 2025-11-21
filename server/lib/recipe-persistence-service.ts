@@ -16,12 +16,17 @@ export interface StoredRecipe extends CrawledRecipe {
 
 class RecipePersistenceService {
   private recipes: Map<string, StoredRecipe> = new Map();
-  private supabase = createClient(
-    process.env.SUPABASE_URL || '',
-    process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-  );
+  private supabase: any = null;
 
   constructor() {
+    // Only create Supabase client if configured
+    if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      this.supabase = createClient(
+        process.env.SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+      );
+    }
+
     this.initializeFromDatabase();
   }
 
