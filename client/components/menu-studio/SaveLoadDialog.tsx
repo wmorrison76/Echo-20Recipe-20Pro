@@ -48,8 +48,22 @@ export function SaveLoadDialog({
   };
 
   const handleLoad = (design: MenuDesignData) => {
-    onLoad(design);
-    onClose();
+    // Validate design before loading
+    try {
+      if (!design || typeof design !== "object") {
+        throw new Error("Invalid design object");
+      }
+      if (!design.id || !design.name) {
+        throw new Error("Design is missing required properties (id or name)");
+      }
+      onLoad(design);
+      onClose();
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : "Unknown error";
+      console.error("Failed to load design:", errorMsg);
+      // Fallback: reload designs from storage
+      window.location.reload();
+    }
   };
 
   const formatDate = (timestamp: number) => {
