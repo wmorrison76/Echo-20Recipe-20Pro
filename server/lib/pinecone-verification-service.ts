@@ -74,6 +74,19 @@ export async function getPineconeStatus(): Promise<PineconeStatus> {
   }
 
   try {
+    // Ensure index exists first
+    const indexExists = await ensureIndexExists();
+
+    if (!indexExists) {
+      return {
+        connected: true,
+        indexName: KNOWLEDGE_INDEX,
+        indexStats: null,
+        trainingDataVectors: null,
+        error: `Failed to create Pinecone index "${KNOWLEDGE_INDEX}"`,
+      };
+    }
+
     // Get index stats
     const index = client.Index(KNOWLEDGE_INDEX);
     const stats = await index.describeIndexStats();
