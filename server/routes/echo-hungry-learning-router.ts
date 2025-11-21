@@ -90,3 +90,21 @@ echoHungryLearningRouter.get('/hungry-learning/master-dictionary/mastery/:level'
  * Get master dictionary statistics and coverage
  */
 echoHungryLearningRouter.get('/hungry-learning/master-dictionary/statistics', getMasterDictionaryStatistics);
+
+/**
+ * POST /api/echo/hungry-learning/import-pdf
+ * Import culinary knowledge from a single PDF file
+ */
+echoHungryLearningRouter.post('/hungry-learning/import-pdf', importPDFKnowledge);
+
+/**
+ * POST /api/echo/hungry-learning/import-pdf-batch
+ * Import knowledge from multiple PDF files at once
+ */
+echoHungryLearningRouter.post('/hungry-learning/import-pdf-batch', importPDFBatch);
+
+/**
+ * GET /api/echo/hungry-learning/library-status
+ * Get status of PDF library import and Echo's knowledge acquisition progress
+ */
+echoHungryLearningRouter.get('/hungry-learning/library-status', getLibraryImportStatus);
