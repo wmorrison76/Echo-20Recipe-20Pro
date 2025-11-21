@@ -169,24 +169,45 @@ function extractGlossaryEntries(text: string): Array<[string, string]> {
   const entries: Array<[string, string]> = [];
   const culinaryTermsMap = new Map<string, string[]>();
 
+  // More flexible patterns for glossary entries
   const inlinePatterns = [
+    // "Term  Definition" (2+ spaces)
     /^([A-Z][A-Za-z0-9''()\-/\s]+?)\s{2,}(.+)$/,
-    /^([A-Z][A-Za-z0-9''()\-/\s]+?)\s*[:—-]\s+(.+)$/,
+    // "Term: Definition" or "Term — Definition" or "Term - Definition"
+    /^([A-Z][A-Za-z0-9''()\-/\s]+?)\s*[:—\-]\s+(.+)$/,
+    // "TERM Definition" (capitalized term followed by lowercase definition)
+    /^([A-Z][A-Z\s]+?)\s+([a-z].+)$/,
+    // "term definition" (for lowercase dictionary entries)
+    /^([a-z][a-z0-9''()\-/\s]+?)\s{1,}([A-Z].+)$/,
+    // Term with parenthetical: "Term (description) definition"
+    /^([A-Z][A-Za-z0-9''()\-/\s]+?)\s+\(([^)]+)\)\s+(.+)$/,
   ];
 
   // First pass: Look for explicit glossary entries
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i].trim();
-    if (!line) continue;
+    if (!line || line.length < 5) continue;
 
     let matchedInline = false;
+
+    // Try standard patterns first
     for (const pattern of inlinePatterns) {
       const m = line.match(pattern);
       if (m) {
-        const term = m[1].trim();
-        const definition = m[2].trim();
+        let term = '';
+        let definition = '';
 
-        if (term.length > 2 && term.length < 100 && definition.length > 10) {
+        if (m.length === 3) {
+          // Patterns with 2 capture groups
+          term = m[1].trim();
+          definition = m[2].trim();
+        } else if (m.length === 4) {
+          // Pattern with parenthetical (4 groups)
+          term = m[1].trim();
+          definition = `${m[2].trim()} - ${m[3].trim()}`;
+        }
+
+        if (term.length > 2 && term.length < 150 && definition.length > 10) {
           entries.push([term, definition]);
           matchedInline = true;
           break;
@@ -196,95 +217,77 @@ function extractGlossaryEntries(text: string): Array<[string, string]> {
 
     if (matchedInline) continue;
 
-    // Term on one line, definition on next
-    if (/^[A-Z][A-Za-z0-9''()\-/\s]+$/.test(line)) {
+    // Looser pattern: Term on one line, definition on next
+    // Look for a line that starts with capital letter and is relatively short
+    if (/^[A-Z][A-Za-z0-9''()\-/\s]*$/.test(line) && line.length < 100) {
       if (i + 1 < lines.length) {
         const nextLine = lines[i + 1].trim();
-        if (nextLine && /^[a-z0-9]/.test(nextLine)) {
+        // Definition should start with lowercase or number (or common words)
+        if (nextLine && /^[a-z0-9the(]/.test(nextLine) && nextLine.length > 10) {
           entries.push([line, nextLine]);
         }
+      }
+    }
+
+    // Also try if definition is on following lines combined
+    if (/^[A-Z][A-Za-z0-9''()\-/\s]*$/.test(line) && line.length < 80) {
+      let definition = '';
+      let j = i + 1;
+      while (j < lines.length && j <= i + 3) {
+        const defLine = lines[j].trim();
+        if (!defLine) break;
+        // Stop if we hit another potential term (capital letter at start)
+        if (/^[A-Z][A-Za-z0-9''()\-/\s]*$/.test(defLine) && j > i + 1) break;
+        definition += (definition ? ' ' : '') + defLine;
+        j++;
+      }
+      if (definition.length > 15) {
+        entries.push([line, definition]);
       }
     }
   }
 
   // Second pass: Extract common culinary terms from paragraphs
-  // Look for capitalized multi-word phrases that appear with explanatory text
   const paragraphs = text.split(/\n{2,}/);
   const commonCulinaryTerms = [
-    "mise en place",
-    "bain marie",
-    "roux",
-    "ganache",
-    "emulsion",
-    "caramelize",
-    "temper chocolate",
-    "fold",
-    "simmer",
-    "whisk",
-    "sear",
-    "poach",
-    "blanch",
-    "reduce",
-    "deglaze",
-    "knead",
-    "proof",
-    "laminate",
-    "macaronage",
-    "pate a choux",
-    "sabayon",
-    "custard",
-    "meringue",
-    "pate sucree",
-    "pate brisee",
-    "frangipane",
-    "creme anglaise",
-    "streusel",
-    "simple syrup",
-    "brioche",
-    "croissant",
-    "puff pastry",
-    "shortbread",
-    "choux",
-    "genoise",
-    "sponge cake",
-    "buttercream",
-    "fondant",
-    "glaze",
-    "coulis",
-    "mousse",
-    "terrine",
-    "consomme",
-    "jus",
-    "demi-glace",
-    "veloute",
-    "bechamel",
-    "hollandaise",
-    "bearnaise",
-    "vinaigrette",
+    "mise en place", "bain marie", "roux", "ganache", "emulsion",
+    "caramelize", "temper chocolate", "fold", "simmer", "whisk", "sear",
+    "poach", "blanch", "reduce", "deglaze", "knead", "proof", "laminate",
+    "macaronage", "pate a choux", "sabayon", "custard", "meringue",
+    "pate sucree", "pate brisee", "frangipane", "creme anglaise", "streusel",
+    "simple syrup", "brioche", "croissant", "puff pastry", "shortbread",
+    "choux", "genoise", "sponge cake", "buttercream", "fondant", "glaze",
+    "coulis", "mousse", "terrine", "consomme", "jus", "demi-glace", "veloute",
+    "bechamel", "hollandaise", "bearnaise", "vinaigrette", "brunoise",
+    "julienne", "chiffonade", "mirepoix", "sachet", "bouquet garni",
+    "beurre blanc", "beurre noir", "gastrique", "fond", "stock", "broth",
+    "sauce", "gravy", "relish", "compote", "jam", "preserve", "pickle",
+    "infusion", "reduction", "glaze", "marinade", "brine", "cure", "smoke",
+    "sous vide", "spherification", "gel", "foam", "dust", "air", "spray",
+    "tempering", "crystallization", "fermentation", "koji", "miso",
+    "umami", "savory", "herbs", "spices", "seasoning", "condiment"
   ];
 
   for (const paragraph of paragraphs) {
     const trimmed = paragraph.trim();
-    if (trimmed.length < 20) continue;
+    if (trimmed.length < 30) continue;
 
     // Look for culinary terms with explanatory context
     for (const term of commonCulinaryTerms) {
-      const termRegex = new RegExp(`\\b${term}\\b`, "gi");
-      if (termRegex.test(trimmed)) {
-        // Try to find a sentence containing this term
+      const termRegex = new RegExp(`\\b${term.replace(/\s+/g, '\\s+')}\\b`, "gi");
+      const matches = trimmed.match(termRegex);
+
+      if (matches && matches.length > 0) {
         const sentences = trimmed.split(/[.!?]+/);
         for (const sentence of sentences) {
-          if (
-            term
-              .toLowerCase()
-              .includes(sentence.toLowerCase().substring(0, term.length))
-          ) {
+          if (new RegExp(`\\b${term.replace(/\s+/g, '\\s+')}\\b`, "i").test(sentence)) {
+            // Get a reasonable context window
             const match = sentence.match(
-              new RegExp(`(.{0,100}\\b${term}\\b.{0,100})`, "i"),
+              new RegExp(`(.{0,150}\\b${term.replace(/\s+/g, '\\s+')}\\b.{0,150})`, "i"),
             );
             if (match && match[1]) {
               const context = match[1].trim();
-              if (context.length > term.length + 10) {
+              if (context.length > term.length + 20) {
                 if (!culinaryTermsMap.has(term)) {
                   culinaryTermsMap.set(term, []);
                 }
@@ -301,9 +304,9 @@ function extractGlossaryEntries(text: string): Array<[string, string]> {
   for (const [term, contexts] of culinaryTermsMap) {
     if (contexts.length > 0) {
       const definition = contexts[0]
-        .replace(new RegExp(term, "i"), `"${term}"`)
-        .substring(0, 150);
-      if (definition.length > 10) {
+        .replace(new RegExp(`\\b${term.replace(/\s+/g, '\\s+')}\\b`, "i"), `"${term}"`)
+        .substring(0, 200);
+      if (definition.length > 20) {
         entries.push([term, definition]);
       }
     }
@@ -313,7 +316,7 @@ function extractGlossaryEntries(text: string): Array<[string, string]> {
   const seen = new Set<string>();
   const unique: Array<[string, string]> = [];
   for (const [term, definition] of entries) {
-    const key = `${term.toLowerCase()}|${definition.toLowerCase()}`;
+    const key = `${term.toLowerCase()}|${definition.toLowerCase().substring(0, 50)}`;
     if (!seen.has(key)) {
       seen.add(key);
       unique.push([term, definition]);
