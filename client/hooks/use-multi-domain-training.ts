@@ -172,8 +172,9 @@ export function useMultiDomainTraining(): UseMultiDomainTrainingReturn {
   }, [session]);
 
   const getTotalKnowledgeLearned = useCallback(() => {
-    return session?.totalKnowledgeLearned || 0;
-  }, [session]);
+    const currentSessionKnowledge = session?.totalKnowledgeLearned || 0;
+    return currentSessionKnowledge + storedVectorCount;
+  }, [session, storedVectorCount]);
 
   const getCompletedDomains = useCallback(() => {
     if (!session) return 0;
