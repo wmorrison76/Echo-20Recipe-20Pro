@@ -12,6 +12,9 @@ import {
   getMasterDictionaryByCategory,
   getMasterDictionaryByMasteryLevel,
   getMasterDictionaryStatistics,
+  importPDFKnowledge,
+  importPDFBatch,
+  getLibraryImportStatus,
 } from './echo-hungry-learning';
 
 export const echoHungryLearningRouter = express.Router();
