@@ -8,6 +8,10 @@ import {
   getTerminologySummary,
   getHospitalityKnowledge,
   searchAllKnowledge,
+  getMasterDictionaryEntry,
+  getMasterDictionaryByCategory,
+  getMasterDictionaryByMasteryLevel,
+  getMasterDictionaryStatistics,
 } from './echo-hungry-learning';
 
 export const echoHungryLearningRouter = express.Router();
