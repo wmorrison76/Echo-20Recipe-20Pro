@@ -4,8 +4,6 @@
  * Builds a comprehensive master ingredient database
  */
 
-import fetch from 'node-fetch';
-
 export interface RegionalIngredient {
   id: string;
   name: string;
