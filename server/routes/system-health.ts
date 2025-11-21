@@ -1,4 +1,11 @@
 import { Router, Request, Response } from "express";
+import {
+  runStorageDiagnostics,
+  formatDiagnosticsReport,
+  logStorageMetrics,
+  getMonitoringHistory,
+  analyzeGrowthTrends,
+} from "../lib/pinecone-storage-diagnostics";
 
 const router = Router();
 
