@@ -151,15 +151,17 @@ export default function AskEchoPanel() {
         const results = await searchProcedures(userMessage, 3);
 
         if (results.length === 0) {
+          const termHint = extractedTerm !== userMessage ? `\n\n💡 I searched for "${extractedTerm}" but didn't find it.` : '';
+
           setMessages((prev) => [
             ...prev,
             {
               role: "echo",
-              content: `I couldn't find specific information matching "${userMessage}".
+              content: `I couldn't find information about "${extractedTerm || userMessage}".${termHint}
 
-Try asking about cooking terms like: "sauté", "simmer", "brunoise", "mise-en-place", "emulsion"
+Available terms include: sauté, simmer, boil, brunoise, julienne, mise-en-place, beurre-blanc, mirepoix, umami
 
-Or tell me what you'd like to learn about culinary techniques!`,
+Try asking: "What does sauté mean?" or "Define mise-en-place"`,
               procedures: [],
             },
           ]);
