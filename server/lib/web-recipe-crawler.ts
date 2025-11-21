@@ -4,8 +4,6 @@
  * Includes: AllRecipes, Food Network, Serious Eats, RecipeDB, Spoonacular, and more
  */
 
-import fetch from 'node-fetch';
-
 export interface CrawledRecipe {
   id: string;
   title: string;
