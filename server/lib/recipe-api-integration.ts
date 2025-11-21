@@ -52,9 +52,8 @@ class USDAFoodDataAPI {
       });
 
       if (!response.ok) {
-        console.warn(
-          `[USDA] API error: ${response.status} ${response.statusText}`,
-        );
+        // Silently fail USDA API calls to avoid console spam
+        // console.warn(`[USDA] API error: ${response.status} ${response.statusText}`);
         return [];
       }
 
