@@ -147,71 +147,112 @@ export default function AskEchoPanel() {
           },
         ]);
       } else {
-        // Not found in master dictionary, try procedures with original message
-        const results = await searchProcedures(userMessage, 3);
+        // Not found in master dictionary, try searching all knowledge first
+        const allKnowledgeResults = await searchAllKnowledge(extractedTerm);
 
-        if (results.length === 0) {
-          const termHint = extractedTerm !== userMessage ? `\n\n💡 I searched for "${extractedTerm}" but didn't find it in my knowledge base yet.` : '';
+        // If found in other knowledge sources, use that
+        if (allKnowledgeResults && allKnowledgeResults.results &&
+            (allKnowledgeResults.results.masterDictionary?.length > 0 ||
+             allKnowledgeResults.results.terminology?.length > 0 ||
+             allKnowledgeResults.results.hospitality?.length > 0)) {
 
-          setMessages((prev) => [
-            ...prev,
-            {
-              role: "echo",
-              content: `I couldn't find information about "${extractedTerm || userMessage}".${termHint}
+          let response = `✨ I was able to research and find information about **${extractedTerm}**:\n\n`;
 
-Available terms I know: sauce, sauté, simmer, boil, roast, braise, poach, mise-en-place, brunoise, julienne, mirepoix, beurre-blanc, umami
-
-Try asking: "What does sauce mean?" or "What is braising?" or "Define mise-en-place"`,
-              procedures: [],
-            },
-          ]);
-        } else {
-          // Build response from procedures
-          let response = `I found ${results.length} relevant procedure(s) for "${userMessage}":\n\n`;
-
-          results.forEach((result, index) => {
-            response += `**${index + 1}. ${result.procedure.title}** (${result.procedure.category})`;
-            if (result.procedure.time_estimate) {
-              response += ` - ${result.procedure.time_estimate}`;
+          if (allKnowledgeResults.results.masterDictionary?.length > 0) {
+            const term = allKnowledgeResults.results.masterDictionary[0];
+            response += `📚 **Definition:** ${term.definition || 'A culinary technique or ingredient'}\n\n`;
+            if (term.usage) {
+              response += `**Usage:** ${term.usage}\n\n`;
             }
-            if (result.procedure.difficulty) {
-              response += ` - ${result.procedure.difficulty} level`;
-            }
-            response += `\n\n`;
+          }
 
-            // Add steps
-            response += `Steps:\n`;
-            result.procedure.steps.forEach((step) => {
-              response += `${step.number}. ${step.instruction}\n`;
-              if (step.tips) {
-                response += `   💡 Tip: ${step.tips}\n`;
-              }
-            });
+          if (allKnowledgeResults.results.terminology?.length > 0) {
+            const term = allKnowledgeResults.results.terminology[0];
+            response += `📖 **From Terminology:** ${term.definition || ''}\n\n`;
+          }
 
-            // Add tools if available
-            if (result.procedure.tools && result.procedure.tools.length > 0) {
-              response += `\nTools needed: ${result.procedure.tools.join(", ")}\n`;
-            }
+          if (allKnowledgeResults.results.hospitality?.length > 0) {
+            const item = allKnowledgeResults.results.hospitality[0];
+            response += `🏨 **From Hospitality Knowledge:** ${item.description || ''}\n\n`;
+          }
 
-            // Add materials if available
-            if (
-              result.procedure.materials &&
-              result.procedure.materials.length > 0
-            ) {
-              response += `Materials: ${result.procedure.materials.join(", ")}\n`;
-            }
-
-            response += "\n---\n\n";
-          });
+          response += `💡 Tip: Ask me "How do I use ${extractedTerm}?" or "Tell me more about ${extractedTerm}" for additional details.`;
 
           setMessages((prev) => [
             ...prev,
             {
               role: "echo",
               content: response,
-              procedures: results,
+              isDictionaryResult: true,
             },
           ]);
+        } else {
+          // Not found in knowledge, try procedures with original message
+          const results = await searchProcedures(userMessage, 3);
+
+          if (results.length === 0) {
+            const termHint = extractedTerm !== userMessage ? `\n\n💡 I searched for "${extractedTerm}" but didn't find it in my knowledge base yet.` : '';
+
+            setMessages((prev) => [
+              ...prev,
+              {
+                role: "echo",
+                content: `I couldn't find information about "${extractedTerm || userMessage}".${termHint}
+
+Available terms I know: sauce, sauté, simmer, boil, roast, braise, poach, mise-en-place, brunoise, julienne, mirepoix, beurre-blanc, umami
+
+Try asking: "What does sauce mean?" or "What is braising?" or "Define mise-en-place"`,
+                procedures: [],
+              },
+            ]);
+          } else {
+            // Build response from procedures
+            let response = `I found ${results.length} relevant procedure(s) for "${userMessage}":\n\n`;
+
+            results.forEach((result, index) => {
+              response += `**${index + 1}. ${result.procedure.title}** (${result.procedure.category})`;
+              if (result.procedure.time_estimate) {
+                response += ` - ${result.procedure.time_estimate}`;
+              }
+              if (result.procedure.difficulty) {
+                response += ` - ${result.procedure.difficulty} level`;
+              }
+              response += `\n\n`;
+
+              // Add steps
+              response += `Steps:\n`;
+              result.procedure.steps.forEach((step) => {
+                response += `${step.number}. ${step.instruction}\n`;
+                if (step.tips) {
+                  response += `   💡 Tip: ${step.tips}\n`;
+                }
+              });
+
+              // Add tools if available
+              if (result.procedure.tools && result.procedure.tools.length > 0) {
+                response += `\nTools needed: ${result.procedure.tools.join(", ")}\n`;
+              }
+
+              // Add materials if available
+              if (
+                result.procedure.materials &&
+                result.procedure.materials.length > 0
+              ) {
+                response += `Materials: ${result.procedure.materials.join(", ")}\n`;
+              }
+
+              response += "\n---\n\n";
+            });
+
+            setMessages((prev) => [
+              ...prev,
+              {
+                role: "echo",
+                content: response,
+                procedures: results,
+              },
+            ]);
+          }
         }
       }
     } catch (error) {
