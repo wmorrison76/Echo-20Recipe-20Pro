@@ -52,10 +52,12 @@ export interface KnowledgeSearchOptions {
 }
 
 /**
- * Store knowledge in Pinecone with embeddings
+ * Store knowledge in Pinecone with embeddings and retry logic
  */
 export async function storeKnowledgeVector(
   knowledge: AnyKnowledge,
+  retryCount = 0,
+  maxRetries = 3,
 ): Promise<void> {
   if (!PINECONE_API_KEY) {
     console.warn("Pinecone API key not configured, skipping knowledge storage");
@@ -67,6 +69,12 @@ export async function storeKnowledgeVector(
     const index = client.Index(KNOWLEDGE_INDEX);
 
     const knowledgeText = buildKnowledgeText(knowledge);
+
+    if (!knowledgeText || knowledgeText.trim().length === 0) {
+      console.warn(`[Knowledge] Skipping vector with empty text: ${knowledge.id}`);
+      return;
+    }
+
     const embedding = await generateEmbedding(knowledgeText);
 
     const vectorId = `${knowledge.type}-${knowledge.id}`;
@@ -75,7 +83,7 @@ export async function storeKnowledgeVector(
       domain: knowledge.domain,
       title: knowledge.title,
       sourceType: knowledge.sourceType,
-      tags: knowledge.tags,
+      tags: knowledge.tags || [],
       createdAt: knowledge.createdAt,
       confidence: knowledge.confidence || 0.8,
       relatedKnowledge: knowledge.relatedKnowledge || [],
@@ -88,8 +96,24 @@ export async function storeKnowledgeVector(
         metadata,
       },
     ]);
+
+    console.log(`[Knowledge] Successfully stored vector: ${vectorId}`);
   } catch (error) {
-    console.error("Error storing knowledge vector:", error);
+    const errorMsg = error instanceof Error ? error.message : String(error);
+
+    if (retryCount < maxRetries) {
+      const delayMs = Math.pow(2, retryCount) * 500; // Exponential backoff: 500ms, 1s, 2s
+      console.warn(
+        `[Knowledge] Retrying storage for ${knowledge.id} (attempt ${retryCount + 1}/${maxRetries}) after ${delayMs}ms. Error: ${errorMsg}`,
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+      return storeKnowledgeVector(knowledge, retryCount + 1, maxRetries);
+    }
+
+    console.error(
+      `[Knowledge] Failed to store vector ${knowledge.id} after ${maxRetries} retries: ${errorMsg}`,
+    );
     throw error;
   }
 }
