@@ -21,45 +21,62 @@ export const pdfLibraryImportRouter = Router();
 /**
  * POST /api/pdf-library/upload
  * Upload a single PDF file and import knowledge
- * Expects multipart/form-data with:
- * - file: PDF file
- * - title: (optional) Book title
+ * Expects JSON body with:
+ * - pdfBase64: Base64-encoded PDF file content (required)
+ * - pdfName: Original PDF filename (required)
+ * - title: (optional) Book title override
  * - author: (optional) Book author
  * - cuisine: (optional) Cuisine type
  * - publicationYear: (optional) Publication year
  */
 export async function uploadPDFFile(req: Request, res: Response) {
   try {
-    // Get file from request
-    const fileData = (req as any).fileData;
-    
-    if (!fileData) {
+    const { pdfBase64, pdfName, title, author, cuisine, publicationYear, language } = req.body;
+
+    if (!pdfBase64 || !pdfName) {
       return res.status(400).json({
         status: 'error',
-        message: 'No PDF file provided',
+        message: 'PDF base64 content and filename are required',
+        example: {
+          pdfBase64: 'JVBERi0xLjQK...',
+          pdfName: 'food-lovers-companion.pdf',
+          title: 'The Food Lovers Companion',
+        },
+      });
+    }
+
+    // Convert base64 to buffer
+    let pdfBuffer: Buffer;
+    try {
+      pdfBuffer = Buffer.from(pdfBase64, 'base64');
+    } catch (error) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid base64 encoding for PDF',
       });
     }
 
     // Extract text from PDF
     let pdfText: string;
     try {
-      pdfText = await extractTextFromPDFBuffer(fileData.buffer, fileData.filename);
+      pdfText = await extractTextFromPDFBuffer(pdfBuffer, pdfName);
     } catch (error) {
       return res.status(400).json({
         status: 'error',
         message: `Failed to extract text from PDF: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        suggestion: 'The PDF might be image-based. Please try OCR or ensure the PDF has selectable text.',
+        suggestion: 'The PDF might be image-based or encrypted. Ensure it contains selectable text.',
+        pdfName,
       });
     }
 
     // Extract or create metadata
     const metadata: PDFMetadata = {
-      title: req.body.title || extractPDFMetadata(fileData.filename, pdfText).title,
-      author: req.body.author,
-      publicationYear: req.body.publicationYear ? parseInt(req.body.publicationYear, 10) : undefined,
-      language: req.body.language || 'English',
-      cuisine: req.body.cuisine,
-      specialization: req.body.specialization || 'culinary-book',
+      title: title || extractPDFMetadata(pdfName, pdfText).title,
+      author,
+      publicationYear: publicationYear ? parseInt(publicationYear, 10) : undefined,
+      language: language || 'English',
+      cuisine,
+      specialization: 'culinary-book',
     };
 
     // Convert PDF to master culinary terms
@@ -84,7 +101,7 @@ export async function uploadPDFFile(req: Request, res: Response) {
     res.json({
       status: 'success',
       import: {
-        file: fileData.filename,
+        file: pdfName,
         source: metadata.title,
         author: metadata.author,
         cuisine: metadata.cuisine,
