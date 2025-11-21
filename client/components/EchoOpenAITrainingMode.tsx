@@ -82,11 +82,31 @@ export function EchoOpenAITrainingMode({
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error("Failed to initialize dialogue");
+        const errorMessage =
+          data.code === "insufficient_quota"
+            ? "OpenAI API quota exceeded. Please check your billing settings and try again."
+            : data.error ||
+              "Failed to initialize dialogue. Please check your connection and try again.";
+
+        const errorMsg: DialogueMessage = {
+          id: `msg-error-${Date.now()}`,
+          timestamp: new Date().toISOString(),
+          speaker: "system",
+          content: `❌ Initialization Error: ${errorMessage}`,
+          messageType: "correction",
+        };
+        setMessages([errorMsg]);
+        console.error(
+          "Dialogue initialization failed:",
+          data.code || "unknown error",
+          data.message,
+        );
+        return;
       }
 
-      const data = await response.json();
       const dialogue = data.dialogue;
 
       setDialogueId(dialogue.id);
@@ -95,6 +115,15 @@ export function EchoOpenAITrainingMode({
       setStats((s) => ({ ...s, questionsAsked: 1 }));
     } catch (error) {
       console.error("Dialogue initialization failed:", error);
+      const errorMsg: DialogueMessage = {
+        id: `msg-error-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        speaker: "system",
+        content:
+          "❌ Network error: Unable to connect to training service. Please check your connection and try again.",
+        messageType: "correction",
+      };
+      setMessages([errorMsg]);
     } finally {
       setIsInitializing(false);
     }

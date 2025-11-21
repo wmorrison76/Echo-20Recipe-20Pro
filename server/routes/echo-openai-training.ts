@@ -33,6 +33,95 @@ const openaiApiKey = process.env.OPENAI_API_KEY;
  * POST /api/echo-training/init-dialogue
  * Initialize a new Echo-OpenAI training dialogue
  */
+async function callOpenAIWithRetry(
+  messages: any[],
+  maxRetries = 3,
+): Promise<any> {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${openaiApiKey}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4-turbo-preview",
+          messages,
+          temperature: 0.7,
+          max_tokens: 1000,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        const errorCode = errorData?.error?.code;
+        const errorMessage = errorData?.error?.message;
+
+        if (errorCode === "insufficient_quota") {
+          console.error("[OpenAI] API quota exceeded:", errorMessage);
+          return {
+            error: true,
+            code: "insufficient_quota",
+            message:
+              "OpenAI API quota exceeded. Please check your billing settings.",
+            userMessage:
+              "Unable to initialize training - API quota exceeded. Please contact support.",
+            status: 429,
+          };
+        }
+
+        if (response.status === 429 && attempt < maxRetries - 1) {
+          const delayMs = Math.pow(2, attempt) * 1000;
+          console.warn(
+            `[OpenAI] Rate limited. Retrying in ${delayMs}ms (attempt ${attempt + 1}/${maxRetries})`,
+          );
+          await new Promise((resolve) => setTimeout(resolve, delayMs));
+          continue;
+        }
+
+        console.error("[OpenAI] API error:", errorData);
+        return {
+          error: true,
+          code: errorCode || "api_error",
+          message: errorMessage || "OpenAI API error",
+          userMessage: "Failed to communicate with OpenAI. Please try again.",
+          status: response.status,
+        };
+      }
+
+      const data = await response.json();
+      return { error: false, data };
+    } catch (error: any) {
+      if (attempt === maxRetries - 1) {
+        console.error("[OpenAI] Network error:", error.message);
+        return {
+          error: true,
+          code: "network_error",
+          message: error.message,
+          userMessage: "Network error connecting to OpenAI. Please try again.",
+          status: 500,
+        };
+      }
+
+      const delayMs = Math.pow(2, attempt) * 1000;
+      console.warn(
+        `[OpenAI] Network error, retrying in ${delayMs}ms:`,
+        error.message,
+      );
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+
+  return {
+    error: true,
+    code: "max_retries_exceeded",
+    message: "Max retries exceeded",
+    userMessage: "Unable to reach OpenAI after multiple attempts.",
+    status: 503,
+  };
+}
+
 router.post("/init-dialogue", async (req: Request, res: Response) => {
   try {
     const { domain, focusAreas } = req.body as TrainingInitRequest;
@@ -44,7 +133,10 @@ router.post("/init-dialogue", async (req: Request, res: Response) => {
     }
 
     if (!openaiApiKey) {
-      return res.status(500).json({ error: "OpenAI API key not configured" });
+      return res.status(500).json({
+        error: "OpenAI API key not configured",
+        details: "Please set OPENAI_API_KEY environment variable",
+      });
     }
 
     const dialogueId = `dialogue-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -66,44 +158,36 @@ Guidelines:
 
 Start by introducing the training session and asking the first question about the focus areas.`;
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${openaiApiKey}`,
+    const result = await callOpenAIWithRetry([
+      {
+        role: "system",
+        content: systemPrompt,
       },
-      body: JSON.stringify({
-        model: "gpt-4-turbo-preview",
-        messages: [
-          {
-            role: "system",
-            content: systemPrompt,
-          },
-          {
-            role: "user",
-            content: `Initialize a training dialogue for ${domain}. Focus areas: ${focusAreas.join(", ")}. Start the dialogue.`,
-          },
-        ],
-        temperature: 0.7,
-        max_tokens: 1000,
-      }),
-    });
+      {
+        role: "user",
+        content: `Initialize a training dialogue for ${domain}. Focus areas: ${focusAreas.join(", ")}. Start the dialogue.`,
+      },
+    ]);
 
-    if (!response.ok) {
-      const error = await response.text();
-      console.error("OpenAI API error:", error);
-      return res.status(500).json({
-        error: "Failed to initialize dialogue with OpenAI",
-        details: error,
+    if (result.error) {
+      console.error(
+        `[EchoTraining] OpenAI error [${result.code}]:`,
+        result.message,
+      );
+      return res.status(result.status).json({
+        error: result.userMessage,
+        code: result.code,
+        message: result.message,
       });
     }
 
-    const data = (await response.json()) as any;
+    const data = result.data as any;
     const echoInitialMessage = data.choices?.[0]?.message?.content;
 
     if (!echoInitialMessage) {
       return res.status(500).json({
         error: "No response from OpenAI",
+        code: "no_response",
       });
     }
 
@@ -137,6 +221,7 @@ Start by introducing the training session and asking the first question about th
     return res.status(500).json({
       success: false,
       error: error.message || "Internal server error",
+      code: "initialization_error",
     });
   }
 });
@@ -179,39 +264,29 @@ Your role:
 
 Always be specific and actionable. Format your response clearly.`;
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${openaiApiKey}`,
+    const result = await callOpenAIWithRetry([
+      {
+        role: "system",
+        content: systemPrompt,
       },
-      body: JSON.stringify({
-        model: "gpt-4-turbo-preview",
-        messages: [
-          {
-            role: "system",
-            content: systemPrompt,
-          },
-          {
-            role: "user",
-            content: `Echo says: "${currentMessage}"`,
-          },
-        ],
-        temperature: 0.7,
-        max_tokens: 1000,
-      }),
-    });
+      {
+        role: "user",
+        content: `Echo says: "${currentMessage}"`,
+      },
+    ]);
 
-    if (!response.ok) {
-      const error = await response.text();
-      console.error("OpenAI API error:", error);
-      return res.status(500).json({
-        error: "Failed to process dialogue turn",
-        details: error,
+    if (result.error) {
+      console.error(
+        `[EchoTraining] OpenAI error [${result.code}]:`,
+        result.message,
+      );
+      return res.status(result.status).json({
+        error: result.userMessage,
+        code: result.code,
       });
     }
 
-    const data = (await response.json()) as any;
+    const data = result.data as any;
     const openaiResponse = data.choices?.[0]?.message?.content;
 
     if (!openaiResponse) {
