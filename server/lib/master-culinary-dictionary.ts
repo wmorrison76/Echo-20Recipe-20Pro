@@ -473,6 +473,98 @@ class MasterCulinaryDictionary {
       masteryLevel: 'fundamental',
     });
 
+    this.addTerm('roast', {
+      term: 'Roast',
+      definition: 'Cooking method using dry heat in an oven at high temperatures (typically 350-450°F / 175-230°C) to cook foods surrounded by hot air, creating browning and caramelization.',
+      usage: {
+        primary: 'Cooking large cuts of meat, poultry, and vegetables with browning',
+        secondary: ['flavor development through caramelization', 'creating crispy exteriors'],
+        context: 'Professional and home kitchens, all cuisines',
+      },
+      categories: ['technique', 'method'],
+      etymology: {
+        origin: 'English/Germanic',
+        meaning: 'To cook with dry heat',
+        period: 'Ancient cooking method',
+      },
+      applications: {
+        primary: 'Cooking proteins and vegetables until golden with caramelized exterior',
+        examples: ['Roast chicken', 'Roast vegetables', 'Roast root vegetables'],
+        dishes: ['Whole roasted chickens', 'Prime rib', 'Root vegetable medleys', 'Roasted meats'],
+      },
+      relatedTerms: ['bake', 'grill', 'broil', 'caramelize', 'browning'],
+      history: {
+        period: 'Ancient to modern cooking',
+        culture: 'Universal across all cuisines',
+        significance: 'Essential cooking method for meats and vegetables',
+      },
+      confidence: 1.0,
+      sources: ['Basic Culinary Training', 'Professional Cooking'],
+      masteryLevel: 'fundamental',
+    });
+
+    this.addTerm('braise', {
+      term: 'Braise',
+      definition: 'Cooking method combining dry heat (browning) followed by moist heat (simmering in liquid) in a covered pot. Creates tender meat and deep flavors.',
+      usage: {
+        primary: 'Cooking tough cuts of meat and vegetables until tender',
+        secondary: ['developing rich flavors', 'making stews and braises'],
+        context: 'Professional and home cooking',
+      },
+      categories: ['technique', 'method'],
+      etymology: {
+        origin: 'French',
+        originalWord: 'braiser',
+        meaning: 'To stew or braise',
+        period: 'Classical French cooking technique',
+      },
+      applications: {
+        primary: 'Rendering tough meat tender while developing rich, complex flavors',
+        examples: ['Braise beef short ribs', 'Braise braising greens', 'Braise chicken thighs'],
+        dishes: ['Beef bourguignon', 'Coq au vin', 'Pot roast', 'Braised greens'],
+      },
+      relatedTerms: ['stew', 'broth', 'simmer', 'reduction', 'mirepoix'],
+      history: {
+        period: '17th-18th century French cuisine',
+        culture: 'French culinary tradition',
+        significance: 'Essential technique for transforming tough cuts into delicate dishes',
+      },
+      confidence: 1.0,
+      sources: ['Escoffier', 'Classic French Cooking', 'Le Cordon Bleu'],
+      masteryLevel: 'intermediate',
+    });
+
+    this.addTerm('poach', {
+      term: 'Poach',
+      definition: 'Cooking method using gentle heat with food partially or fully submerged in simmering (not boiling) liquid, typically 160-180°F (71-82°C). Maintains delicate texture.',
+      usage: {
+        primary: 'Cooking delicate foods like eggs, fish, and chicken while maintaining tenderness',
+        secondary: ['infusing with flavor', 'cooking gently'],
+        context: 'Professional and home cooking',
+      },
+      categories: ['technique', 'method'],
+      etymology: {
+        origin: 'French',
+        originalWord: 'pocher',
+        meaning: 'To thrust or push',
+        period: 'Medieval French cooking',
+      },
+      applications: {
+        primary: 'Cooking delicate foods in flavored liquid without breaking apart',
+        examples: ['Poach eggs in water', 'Poach salmon in court bouillon', 'Poach chicken breasts'],
+        dishes: ['Eggs Benedict', 'Poached salmon', 'Poached pears', 'Poached chicken'],
+      },
+      relatedTerms: ['simmer', 'court-bouillon', 'broth', 'delicate-cooking'],
+      history: {
+        period: 'Medieval to modern cooking',
+        culture: 'French culinary tradition',
+        significance: 'Essential for cooking delicate proteins without compromising texture',
+      },
+      confidence: 1.0,
+      sources: ['Classical French Training', 'Professional Cooking'],
+      masteryLevel: 'intermediate',
+    });
+
     // INGREDIENTS & FLAVOR (50 sample entries shown, 2000+ in full version)
     this.addTerm('umami', {
       term: 'Umami',
