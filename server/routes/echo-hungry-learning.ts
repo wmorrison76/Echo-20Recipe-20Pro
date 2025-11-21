@@ -9,6 +9,7 @@ import { webRecipeCrawler } from '../lib/web-recipe-crawler';
 import { ingredientRegionalCrawler } from '../lib/ingredient-regional-crawler';
 import { culinaryTerminologyDictionary } from '../lib/culinary-terminology-dictionary';
 import { hospitalityKnowledgeCrawler } from '../lib/hospitality-knowledge-crawler';
+import { masterCulinaryDictionary } from '../lib/master-culinary-dictionary';
 
 /**
  * POST /api/echo/hungry-learning/start
@@ -16,7 +17,7 @@ import { hospitalityKnowledgeCrawler } from '../lib/hospitality-knowledge-crawle
  */
 export async function startHungryLearning(req: Request, res: Response) {
   try {
-    console.log('🍽️ ACTIVATING ECHO HUNGRY LEARNING MODE...');
+    console.log('🍽��� ACTIVATING ECHO HUNGRY LEARNING MODE...');
 
     // Start all crawlers in parallel
     const startTime = Date.now();
