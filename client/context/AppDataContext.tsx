@@ -505,12 +505,39 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let cancelled = false;
 
-    const storedRecipes = readLS<Recipe[]>(LS_RECIPES, []);
-    setRecipes(
-      sanitizeRecipeCollection(
-        storedRecipes.length ? storedRecipes : mockRecipes,
-      ),
-    );
+    const initializeRecipes = async () => {
+      try {
+        setRecipesLoading(true);
+        // Initialize cloud sync with user ID
+        const cloudRecipes = await cloudRecipeSync.initialize(user?.id || null);
+
+        if (!cancelled && mountedRef.current) {
+          // Use cloud recipes if available, otherwise use mock recipes
+          const recipesToUse = cloudRecipes.length > 0
+            ? cloudRecipes
+            : readLS<Recipe[]>(LS_RECIPES, []);
+
+          setRecipes(
+            sanitizeRecipeCollection(
+              recipesToUse.length ? recipesToUse : mockRecipes,
+            ),
+          );
+
+          // Setup periodic sync if user is logged in
+          if (user?.id) {
+            const stopSync = cloudRecipeSync.startPeriodicSync(user.id);
+            return () => stopSync();
+          }
+        }
+      } finally {
+        if (!cancelled) {
+          setRecipesLoading(false);
+        }
+      }
+    };
+
+    initializeRecipes();
+
     setLookbooks(readLS<LookBook[]>(LS_LOOKBOOKS, []));
     setTileBoards(readLS<TileBoard[]>(LS_TILE_BOARDS, []));
     setCollections(readLS<RecipeCollection[]>(LS_COLLECTIONS, []));
