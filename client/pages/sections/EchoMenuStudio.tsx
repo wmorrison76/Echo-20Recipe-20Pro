@@ -3054,24 +3054,48 @@ export default function MenuDesignStudioSection() {
   const handleLoadDesign = useCallback(
     (design: any) => {
       try {
-        setElements(design.elements || []);
-        setPageSize(design.pageSize || INITIAL_PAGE_SIZE);
-        setCanvasSettings(design.canvasSettings || INITIAL_CANVAS);
-        setPagePreset(design.pagePreset || DEFAULT_PRESET.id);
-        setPrintPreset(design.printPreset || DEFAULT_PRESET);
-        setDocumentName(design.name || "Untitled Menu");
-        setSelectedId(design.elements?.[0]?.id ?? null);
+        // Validate design object
+        if (!design || typeof design !== "object") {
+          throw new Error("Invalid design object");
+        }
+
+        // Validate and extract design properties with defaults
+        const designElements = Array.isArray(design.elements) ? design.elements : [];
+        const designPageSize = design.pageSize || INITIAL_PAGE_SIZE;
+        const designCanvasSettings = design.canvasSettings || INITIAL_CANVAS;
+        const designPagePreset = design.pagePreset || DEFAULT_PRESET.id;
+        const designPrintPreset = design.printPreset || DEFAULT_PRESET;
+        const designName = design.name || "Untitled Menu";
+
+        // Validate elements before using them
+        const validElements = designElements.every((el: any) => el && typeof el === "object");
+        if (!validElements) {
+          console.warn("Some design elements are invalid, using valid ones only");
+        }
+
+        // Update state in sequence with error handling
+        setElements(designElements);
+        setPageSize(designPageSize);
+        setCanvasSettings(designCanvasSettings);
+        setPagePreset(designPagePreset);
+        setPrintPreset(designPrintPreset);
+        setDocumentName(designName);
+        setSelectedId(designElements?.[0]?.id ?? null);
         setHasUnsavedChanges(false);
-        elementsHistory.reset(design.elements || []);
+
+        // Reset history with validated elements
+        elementsHistory.reset(designElements);
+
         toast({
           title: "Design loaded",
-          description: `${design.name} has been loaded successfully.`,
+          description: `${designName} has been loaded successfully.`,
         });
       } catch (error) {
-        console.error("Load failed:", error);
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        console.error("Load failed:", errorMessage, error);
         toast({
           title: "Load failed",
-          description: "Failed to load design.",
+          description: `Failed to load design: ${errorMessage}`,
           variant: "destructive",
         });
       }
