@@ -10,6 +10,8 @@ import { ingredientRegionalCrawler } from '../lib/ingredient-regional-crawler';
 import { culinaryTerminologyDictionary } from '../lib/culinary-terminology-dictionary';
 import { hospitalityKnowledgeCrawler } from '../lib/hospitality-knowledge-crawler';
 import { masterCulinaryDictionary } from '../lib/master-culinary-dictionary';
+import { convertPDFToMasterTerms, mergePDFExtractions } from '../lib/pdf-knowledge-extractor';
+import type { PDFMetadata } from '../lib/pdf-knowledge-extractor';
 
 /**
  * POST /api/echo/hungry-learning/start
