@@ -22,6 +22,7 @@ import { systemHealthRouter } from "./routes/system-health";
 import { multiDomainTrainingRouter } from "./routes/multi-domain-training";
 import { recipeAPIRouter } from "./routes/recipe-api";
 import { echoHungryLearningRouter } from "./routes/echo-hungry-learning-router";
+import pdfLibraryImportRouter from "./routes/pdf-library-import";
 import {
   proxyRecipeImage as proxyImageOptimized,
   serveRecipeImage,
