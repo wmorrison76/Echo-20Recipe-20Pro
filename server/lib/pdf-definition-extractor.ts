@@ -343,25 +343,41 @@ export function extractDefinitionsFromPdfText(
   // Extract glossary entries
   const entries = extractGlossaryEntries(text);
 
-  // Filter out common false positives and recipe-related content
+  // Filter out common false positives but be lenient for culinary content
+  // We specifically want to include pastry, baking, and culinary terms
   const filterPatterns = [
-    /^(page|contents|index|glossary|appendix|chapter|figure|table|plate|photo|illustration|yield|convert|see|note|tip|warning)/i,
+    // Navigation and metadata - but not culinary terms
+    /^(page|contents|index|glossary|appendix|chapter|figure|table|photo|illustration)/i,
     /^(scan to download|visit us online|qr code)/i,
-    /(flexipan|inch|inches|cm|diameter|copyright|isbn|author|published)/i,
-    // Exclude recipes (temporarily disabled per user request - focus on knowledge, not recipes)
-    /^(recipe|serves|ingredients|instructions|preparation|cooking|baking|makes|portions?)/i,
-    /ingredients:|instructions:|method:|direction:|prep time:|cook time:|baking time:/i,
+    // Technical specs that aren't culinary
+    /(flexipan|inch|inches|cm|diameter|copyright|isbn|published)/i,
+    // Only exclude "recipe" if it's the whole entry, not technique recipes
+    /^recipe\s*[:—\-]?\s*[a-z]*\s*(serves|ingredients|instructions)$/i,
+    /^(serves|yields?|portions?|prep time|cook time|baking time|oven temp)\s*[:—]/i,
   ];
 
   const definitions = entries
-    .filter(([term]) => {
-      // Skip very short or very long terms
-      if (term.length < 2 || term.length > 150) return false;
+    .filter(([term, definition]) => {
+      // Skip very short terms
+      if (term.length < 2) return false;
+
+      // Allow longer terms for multi-word culinary terms
+      if (term.length > 150) return false;
 
       // Skip common false positives
       for (const pattern of filterPatterns) {
         if (pattern.test(term)) return false;
       }
+
+      // Skip if definition is too short
+      if (definition.length < 10) return false;
+
+      // Skip entries that look like page numbers or table of contents
+      if (/^\d+$/.test(term)) return false;
+      if (/^(table of contents|index|chapter \d+)/i.test(term)) return false;
+
+      // Skip if term is mostly numbers
+      if ((term.match(/\d/g) || []).length / term.length > 0.5) return false;
 
       return true;
     })
