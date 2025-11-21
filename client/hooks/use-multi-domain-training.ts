@@ -11,7 +11,9 @@ interface UseMultiDomainTrainingReturn {
   error: string | null;
   initializeSession: () => Promise<void>;
   startSequentialTraining: () => Promise<void>;
-  getSessionStatus: (sessionId: string) => Promise<MultiDomainTrainingSession | null>;
+  getSessionStatus: (
+    sessionId: string,
+  ) => Promise<MultiDomainTrainingSession | null>;
   getDomainStatus: (
     sessionId: string,
     profileId: string,
@@ -23,7 +25,9 @@ interface UseMultiDomainTrainingReturn {
 }
 
 export function useMultiDomainTraining(): UseMultiDomainTrainingReturn {
-  const [session, setSession] = useState<MultiDomainTrainingSession | null>(null);
+  const [session, setSession] = useState<MultiDomainTrainingSession | null>(
+    null,
+  );
   const [isRunning, setIsRunning] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +37,9 @@ export function useMultiDomainTraining(): UseMultiDomainTrainingReturn {
   useEffect(() => {
     const loadStoredVectors = async () => {
       try {
-        const response = await fetch("/api/multi-domain-training/pinecone/status");
+        const response = await fetch(
+          "/api/multi-domain-training/pinecone/status",
+        );
         if (response.ok) {
           const data = await response.json();
           setStoredVectorCount(data.pinecone.trainingDataVectors?.total || 0);

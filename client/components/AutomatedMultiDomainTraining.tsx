@@ -172,10 +172,7 @@ export function AutomatedMultiDomainTraining({
               <p className="text-3xl font-bold text-indigo-900">
                 {getProgressPercentage()}%
               </p>
-              <Progress
-                value={getProgressPercentage()}
-                className="mt-2 h-2"
-              />
+              <Progress value={getProgressPercentage()} className="mt-2 h-2" />
             </div>
             <div>
               <p className="text-sm text-gray-600">Domains Completed</p>
@@ -190,9 +187,7 @@ export function AutomatedMultiDomainTraining({
               </p>
               <p className="text-xs text-gray-500 mt-1">
                 {previouslyStoredKnowledge > 0 && (
-                  <>
-                    {previouslyStoredKnowledge} stored +{" "}
-                  </>
+                  <>{previouslyStoredKnowledge} stored + </>
                 )}
                 {currentSessionKnowledge} this session
               </p>
@@ -374,9 +369,7 @@ export function AutomatedMultiDomainTraining({
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
             <div>
               <p className="text-gray-600">Total Domains</p>
-              <p className="font-semibold text-gray-900">
-                {getTotalDomains()}
-              </p>
+              <p className="font-semibold text-gray-900">{getTotalDomains()}</p>
             </div>
             <div>
               <p className="text-gray-600">Session ID</p>
