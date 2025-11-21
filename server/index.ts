@@ -21,6 +21,7 @@ import { echoUnifiedBrainRouter } from "./routes/echo-unified-brain";
 import { systemHealthRouter } from "./routes/system-health";
 import { multiDomainTrainingRouter } from "./routes/multi-domain-training";
 import { recipeAPIRouter } from "./routes/recipe-api";
+import { echoHungryLearningRouter } from "./routes/echo-hungry-learning-router";
 import {
   proxyRecipeImage as proxyImageOptimized,
   serveRecipeImage,
