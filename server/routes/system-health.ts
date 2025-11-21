@@ -300,4 +300,95 @@ router.post("/verify", async (_req: Request, res: Response) => {
   });
 });
 
+/**
+ * GET /api/health/pinecone-diagnostics
+ * Run comprehensive Pinecone storage diagnostics
+ */
+router.get("/pinecone-diagnostics", async (_req: Request, res: Response) => {
+  try {
+    const diagnostics = await runStorageDiagnostics();
+    const report = formatDiagnosticsReport(diagnostics);
+
+    res.json({
+      diagnostics,
+      report,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    res.status(500).json({
+      error: "Diagnostics failed",
+      message: errorMsg,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+/**
+ * POST /api/health/log-storage-metrics
+ * Log current storage metrics for monitoring
+ */
+router.post("/log-storage-metrics", async (_req: Request, res: Response) => {
+  try {
+    const log = await logStorageMetrics();
+    res.json({
+      success: true,
+      log,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    res.status(500).json({
+      error: "Failed to log metrics",
+      message: errorMsg,
+    });
+  }
+});
+
+/**
+ * GET /api/health/storage-history
+ * Get recent storage monitoring history
+ */
+router.get("/storage-history", async (req: Request, res: Response) => {
+  try {
+    const hours = parseInt((req.query.hours as string) || "24", 10);
+    const history = getMonitoringHistory(hours);
+
+    res.json({
+      hours,
+      entries: history.length,
+      history,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    res.status(500).json({
+      error: "Failed to retrieve history",
+      message: errorMsg,
+    });
+  }
+});
+
+/**
+ * GET /api/health/growth-analysis
+ * Analyze storage growth trends
+ */
+router.get("/growth-analysis", async (req: Request, res: Response) => {
+  try {
+    const hours = parseInt((req.query.hours as string) || "24", 10);
+    const analysis = analyzeGrowthTrends(hours);
+
+    res.json({
+      analysis,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    res.status(500).json({
+      error: "Failed to analyze growth",
+      message: errorMsg,
+    });
+  }
+});
+
 export const systemHealthRouter = router;
