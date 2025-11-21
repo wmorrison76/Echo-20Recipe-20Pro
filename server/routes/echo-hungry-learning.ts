@@ -17,7 +17,7 @@ import { masterCulinaryDictionary } from '../lib/master-culinary-dictionary';
  */
 export async function startHungryLearning(req: Request, res: Response) {
   try {
-    console.log('🍽��� ACTIVATING ECHO HUNGRY LEARNING MODE...');
+    console.log('🍽️ ACTIVATING ECHO HUNGRY LEARNING MODE...');
 
     // Start all crawlers in parallel
     const startTime = Date.now();
@@ -275,20 +275,136 @@ export async function searchAllKnowledge(req: Request, res: Response) {
 
     const terminology = culinaryTerminologyDictionary.searchTerms(query);
     const hospitality = hospitalityKnowledgeCrawler.searchKnowledge(query);
+    const masterDict = masterCulinaryDictionary.searchTerms(query);
 
     res.json({
       status: 'success',
       results: {
+        masterDictionary: masterDict.slice(0, 5),
         terminology: terminology.slice(0, 5),
         hospitality: hospitality.slice(0, 5),
       },
-      totalResults: terminology.length + hospitality.length,
-      message: `Echo found ${terminology.length + hospitality.length} results for "${query}"!`,
+      totalResults: masterDict.length + terminology.length + hospitality.length,
+      message: `Echo found ${masterDict.length + terminology.length + hospitality.length} results for "${query}"!`,
     });
   } catch (error) {
     res.status(500).json({
       status: 'error',
       message: 'Failed to search knowledge',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * GET /api/echo/hungry-learning/master-dictionary/:term
+ * Get comprehensive master dictionary entry
+ */
+export async function getMasterDictionaryEntry(req: Request, res: Response) {
+  try {
+    const { term } = req.params;
+    const entry = masterCulinaryDictionary.getFullTermContext(term);
+
+    if (!entry) {
+      const suggestions = masterCulinaryDictionary.searchTerms(term).slice(0, 5);
+      return res.status(404).json({
+        status: 'not_found',
+        message: `Master dictionary entry for "${term}" not found`,
+        suggestions: suggestions.map(t => ({
+          term: t.term,
+          definition: t.definition.substring(0, 100) + '...',
+        })),
+      });
+    }
+
+    res.json({
+      status: 'success',
+      entry,
+      message: `Echo knows "${term}" at master level!`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to get master dictionary entry',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * GET /api/echo/hungry-learning/master-dictionary/category/:category
+ * Get all master dictionary entries by category
+ */
+export async function getMasterDictionaryByCategory(req: Request, res: Response) {
+  try {
+    const { category } = req.params;
+    const entries = masterCulinaryDictionary.getTermsByCategory(category);
+
+    res.json({
+      status: 'success',
+      category,
+      entries: entries.slice(0, 50),
+      total: entries.length,
+      message: `Echo knows ${entries.length} ${category} terms at master level!`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to get dictionary entries by category',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * GET /api/echo/hungry-learning/master-dictionary/mastery/:level
+ * Get master dictionary entries by mastery level
+ */
+export async function getMasterDictionaryByMasteryLevel(req: Request, res: Response) {
+  try {
+    const { level } = req.params;
+    const entries = masterCulinaryDictionary.getTermsByMasteryLevel(level);
+
+    res.json({
+      status: 'success',
+      masteryLevel: level,
+      entries: entries.slice(0, 50),
+      total: entries.length,
+      message: `Echo has ${entries.length} ${level}-level culinary terms!`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to get dictionary entries by mastery level',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * GET /api/echo/hungry-learning/master-dictionary/statistics
+ * Get master dictionary statistics
+ */
+export async function getMasterDictionaryStatistics(req: Request, res: Response) {
+  try {
+    const stats = masterCulinaryDictionary.getStatistics();
+
+    res.json({
+      status: 'success',
+      statistics: stats,
+      message: `Echo's Master Culinary Dictionary: ${stats.totalTerms} authoritative terms!`,
+      masteryBreakdown: {
+        fundamental: 'Essential cooking basics and techniques',
+        intermediate: 'Professional cooking knowledge and methods',
+        advanced: 'Specialized techniques and deep culinary theory',
+        expert: 'Master-level knowledge and rare specializations',
+        master: 'Authority-level understanding, culinary mastery',
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to get master dictionary statistics',
       error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
