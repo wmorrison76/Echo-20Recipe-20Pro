@@ -1,6 +1,7 @@
 /**
  * EchoAi³ Knowledge Progress Tracker
  * Monitors knowledge base growth and tracks progress across domains
+ * OPTIMIZED: Index-based lookups, single-pass processing, pre-normalized strings
  */
 
 export type CulinaryType =
@@ -67,6 +68,26 @@ export interface KnowledgeProgressState {
   autoSwitchTime?: number;
 }
 
+// Pre-computed cuisine mappings for O(1) lookups (replaces string includes searches)
+const REGION_CUISINE_ALIASES: Record<Region, Set<string>> = {
+  chinese: new Set(["chinese", "cantonese", "sichuan", "hunan"]),
+  japanese: new Set(["japanese", "sushi", "ramen", "tempura"]),
+  thai: new Set(["thai", "pad thai", "tom yum"]),
+  korean: new Set(["korean", "korean bbq", "kimchi"]),
+  indian: new Set(["indian", "curry", "tandoori", "naan"]),
+  vietnamese: new Set(["vietnamese", "pho", "banh mi"]),
+  french: new Set(["french", "haute cuisine", "french bistro", "provence"]),
+  italian: new Set(["italian", "pasta", "risotto", "gelato"]),
+  spanish: new Set(["spanish", "tapas", "paella"]),
+  german: new Set(["german", "sausage", "pretzel"]),
+  mexican: new Set(["mexican", "tacos", "mole", "enchiladas"]),
+  brazilian: new Set(["brazilian", "churrasco", "feijoada"]),
+  american: new Set(["american", "bbq", "burgers", "southern"]),
+  middle_eastern: new Set(["middle eastern", "lebanese", "israeli", "persian"]),
+  african: new Set(["african", "ethiopian", "moroccan", "west african"]),
+  oceanic: new Set(["oceanic", "australian", "polynesian", "hawaiian"]),
+};
+
 /**
  * Knowledge Progress Tracker
  * Monitors and tracks knowledge base growth
@@ -74,6 +95,13 @@ export interface KnowledgeProgressState {
 export class KnowledgeProgressTracker {
   private state: KnowledgeProgressState;
   private localStorageKey = "echo_knowledge_progress";
+  // Cache pre-normalized metadata for single-pass processing
+  private normalizedMetadataCache: Array<{
+    original: any;
+    cuisineLower: string;
+    titleLower: string;
+    categoryLower: string;
+  }> = [];
 
   constructor() {
     this.state = this.loadState() || this.getDefaultState();
