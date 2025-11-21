@@ -83,9 +83,15 @@ export function PineconeVerificationDashboard() {
       const data = await response.json();
 
       if (data.success) {
-        setStoreMessage(
-          `✓ Successfully stored ${data.stored}/${data.total} training vectors!`,
-        );
+        if (data.alreadyStored) {
+          setStoreMessage(
+            `ℹ Vectors already stored in Pinecone (${data.total} vectors found). Skipping duplicate storage.`,
+          );
+        } else {
+          setStoreMessage(
+            `✓ Successfully stored ${data.stored}/${data.total} training vectors!`,
+          );
+        }
         // Refresh status after storing
         setTimeout(() => checkStatus(), 1000);
       } else {
