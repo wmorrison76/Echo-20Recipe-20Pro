@@ -210,6 +210,43 @@ export async function verifyTrainingVectors(): Promise<{
 }
 
 /**
+ * Ensure the knowledge index exists, create if needed
+ */
+async function ensureIndexExists(): Promise<boolean> {
+  const client = await getPineconeClient();
+  if (!client) return false;
+
+  try {
+    await client.describeIndex(KNOWLEDGE_INDEX);
+    return true;
+  } catch (error: any) {
+    if (error.message && error.message.includes("404")) {
+      // Index doesn't exist, create it
+      try {
+        console.log(`[PineconeVerification] Creating index "${KNOWLEDGE_INDEX}"...`);
+        await client.createIndex({
+          name: KNOWLEDGE_INDEX,
+          dimension: 1536, // OpenAI embedding dimension
+          metric: "cosine",
+          spec: {
+            serverless: {
+              cloud: "aws",
+              region: "us-east-1",
+            },
+          },
+        });
+        console.log(`[PineconeVerification] Index "${KNOWLEDGE_INDEX}" created successfully`);
+        return true;
+      } catch (createError: any) {
+        console.error(`[PineconeVerification] Failed to create index:`, createError.message);
+        return false;
+      }
+    }
+    return false;
+  }
+}
+
+/**
  * Store training data to Pinecone (fallback for failed attempts)
  */
 export async function storeTrainingDataToPinecone(
@@ -233,6 +270,16 @@ export async function storeTrainingDataToPinecone(
   }
 
   try {
+    // Ensure index exists before storing
+    const indexExists = await ensureIndexExists();
+    if (!indexExists) {
+      return {
+        success: false,
+        stored: 0,
+        error: "Failed to create or access Pinecone index",
+      };
+    }
+
     const index = client.Index(KNOWLEDGE_INDEX);
     const vectors: any[] = [];
 
