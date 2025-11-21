@@ -656,7 +656,13 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     writeLS(LS_RECIPES, recipes);
-  }, [recipes]);
+    // Sync recipes to cloud if user is logged in
+    if (user?.id && recipes.length > 0) {
+      cloudRecipeSync.saveRecipeBatchToCloud(user.id, recipes).catch((error) => {
+        console.error("[AppDataContext] Failed to sync recipes to cloud:", error);
+      });
+    }
+  }, [recipes, user?.id]);
 
   useEffect(() => {
     if (images.length > 0) {
