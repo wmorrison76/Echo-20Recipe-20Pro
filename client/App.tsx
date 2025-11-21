@@ -198,12 +198,12 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <LanguageProvider>
-          <AppDataProvider>
-            <FuzzySuggestionManager />
-            <YieldProvider>
-              <CollaborationProvider>
-                <AuthProvider>
+        <AuthProvider>
+          <LanguageProvider>
+            <AppDataProvider>
+              <FuzzySuggestionManager />
+              <YieldProvider>
+                <CollaborationProvider>
                   <KeyboardShortcutsProvider>
                     <BrowserRouter>
                       <Suspense fallback={<LoadingFallback />}>
@@ -243,11 +243,11 @@ const App = () => (
                       </Suspense>
                     </BrowserRouter>
                   </KeyboardShortcutsProvider>
-                </AuthProvider>
-              </CollaborationProvider>
-            </YieldProvider>
-          </AppDataProvider>
-        </LanguageProvider>
+                </CollaborationProvider>
+              </YieldProvider>
+            </AppDataProvider>
+          </LanguageProvider>
+        </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
   </ErrorBoundary>
