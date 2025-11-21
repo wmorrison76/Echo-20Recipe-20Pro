@@ -63,3 +63,27 @@ echoHungryLearningRouter.get('/hungry-learning/hospitality/:category', getHospit
  * Search across all knowledge domains
  */
 echoHungryLearningRouter.post('/hungry-learning/search', searchAllKnowledge);
+
+/**
+ * GET /api/echo/hungry-learning/master-dictionary/:term
+ * Get comprehensive master dictionary entry with usage, etymology, and applications
+ */
+echoHungryLearningRouter.get('/hungry-learning/master-dictionary/:term', getMasterDictionaryEntry);
+
+/**
+ * GET /api/echo/hungry-learning/master-dictionary/category/:category
+ * Get master dictionary entries by category (technique, ingredient, method, equipment, theory, etc.)
+ */
+echoHungryLearningRouter.get('/hungry-learning/master-dictionary/category/:category', getMasterDictionaryByCategory);
+
+/**
+ * GET /api/echo/hungry-learning/master-dictionary/mastery/:level
+ * Get master dictionary entries by mastery level (fundamental, intermediate, advanced, expert, master)
+ */
+echoHungryLearningRouter.get('/hungry-learning/master-dictionary/mastery/:level', getMasterDictionaryByMasteryLevel);
+
+/**
+ * GET /api/echo/hungry-learning/master-dictionary/statistics
+ * Get master dictionary statistics and coverage
+ */
+echoHungryLearningRouter.get('/hungry-learning/master-dictionary/statistics', getMasterDictionaryStatistics);
