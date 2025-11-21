@@ -28,28 +28,18 @@ const INGREDIENT_KEYWORDS = [
 ];
 
 const TECHNIQUE_KEYWORDS = [
-  "method",
-  "technique",
-  "process",
-  "to cook",
-  "to bake",
-  "to roast",
-  "cooked by",
-  "to simmer",
-  "to braise",
-  "to poach",
-  "to sauté",
-  "to fry",
-  "used to thicken",
-  "emulsion",
-  "whipped",
-  "folded",
-  "fermented",
-  "ferment",
-  "knead",
-  "proof",
-  "temper",
-  "bloom",
+  "method", "technique", "process", "to cook", "to bake", "to roast",
+  "cooked by", "to simmer", "to braise", "to poach", "to sauté",
+  "to fry", "to grill", "to steam", "to blanch", "to shock",
+  "to reduce", "to deglaze", "to glaze", "to caramelize",
+  "used to thicken", "emulsion", "whipped", "folded", "fermented",
+  "ferment", "knead", "proof", "temper", "bloom", "crystallize",
+  "laminate", "score", "sear", "cure", "smoke", "pickle", "brine",
+  "marinate", "infuse", "clarify", "strain", "sift", "cream",
+  "whisk", "beat", "chop", "mince", "dice", "slice", "julienne",
+  "brunoise", "chiffonade", "blanch", "shock", "deglaze", "flambé",
+  "fold", "mount", "spherify", "gel", "foam", "dust", "air",
+  "sous vide", "moderate", "rest", "set", "cure",
 ];
 
 const EQUIPMENT_KEYWORDS = [
@@ -337,7 +327,7 @@ export function extractDefinitionsFromPdfText(
     // Technical specs that aren't culinary
     /(flexipan|inch|inches|cm|diameter|copyright|isbn|published)/i,
     // Only exclude "recipe" if it's the whole entry, not technique recipes
-    /^recipe\s*[:���\-]?\s*[a-z]*\s*(serves|ingredients|instructions)$/i,
+    /^recipe\s*[:—\-]?\s*[a-z]*\s*(serves|ingredients|instructions)$/i,
     /^(serves|yields?|portions?|prep time|cook time|baking time|oven temp)\s*[:—]/i,
   ];
 
