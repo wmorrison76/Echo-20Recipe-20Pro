@@ -411,3 +411,193 @@ export async function getMasterDictionaryStatistics(req: Request, res: Response)
     });
   }
 }
+
+/**
+ * POST /api/echo/hungry-learning/import-pdf
+ * Import culinary knowledge from PDF file
+ * Body: { pdfText: string, metadata: PDFMetadata }
+ */
+export async function importPDFKnowledge(req: Request, res: Response) {
+  try {
+    const { pdfText, metadata } = req.body;
+
+    if (!pdfText) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'PDF text content is required',
+      });
+    }
+
+    if (!metadata || !metadata.title) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'PDF metadata with title is required',
+      });
+    }
+
+    const defaultMetadata: PDFMetadata = {
+      title: metadata.title || 'Imported PDF',
+      author: metadata.author,
+      publicationYear: metadata.publicationYear,
+      language: metadata.language || 'English',
+      cuisine: metadata.cuisine,
+      specialization: metadata.specialization || 'culinary-book',
+    };
+
+    // Convert PDF text to master culinary terms
+    const extraction = convertPDFToMasterTerms(pdfText, defaultMetadata);
+
+    // Add all extracted terms to master dictionary
+    let addedCount = 0;
+    for (const term of extraction.terms) {
+      try {
+        masterCulinaryDictionary.addTerm(term.term.toLowerCase(), term);
+        addedCount++;
+      } catch (error) {
+        console.error(`Failed to add term "${term.term}":`, error);
+      }
+    }
+
+    res.json({
+      status: 'success',
+      import: {
+        source: extraction.metadata.source,
+        termsExtracted: extraction.terms.length,
+        termsAdded: addedCount,
+        averageConfidence: extraction.metadata.confidence,
+        timestamp: extraction.metadata.extractedAt,
+      },
+      message: `📚 Echo imported ${addedCount} master-level culinary terms from "${metadata.title}"!`,
+      dictionaryStats: masterCulinaryDictionary.getStatistics(),
+    });
+  } catch (error) {
+    console.error('Error importing PDF knowledge:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to import PDF knowledge',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * POST /api/echo/hungry-learning/import-pdf-batch
+ * Import multiple PDFs and merge knowledge
+ * Body: { pdfs: Array<{pdfText: string, metadata: PDFMetadata}> }
+ */
+export async function importPDFBatch(req: Request, res: Response) {
+  try {
+    const { pdfs } = req.body;
+
+    if (!Array.isArray(pdfs) || pdfs.length === 0) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Array of PDFs is required',
+      });
+    }
+
+    const extractions = [];
+    let totalTermsExtracted = 0;
+    let totalTermsAdded = 0;
+
+    // Process each PDF
+    for (const pdf of pdfs) {
+      if (!pdf.pdfText || !pdf.metadata || !pdf.metadata.title) {
+        console.warn('Skipping invalid PDF entry');
+        continue;
+      }
+
+      const defaultMetadata: PDFMetadata = {
+        title: pdf.metadata.title || 'Imported PDF',
+        author: pdf.metadata.author,
+        publicationYear: pdf.metadata.publicationYear,
+        language: pdf.metadata.language || 'English',
+        cuisine: pdf.metadata.cuisine,
+        specialization: pdf.metadata.specialization || 'culinary-book',
+      };
+
+      const extraction = convertPDFToMasterTerms(pdf.pdfText, defaultMetadata);
+      extractions.push(extraction);
+      totalTermsExtracted += extraction.terms.length;
+
+      // Add terms to master dictionary
+      for (const term of extraction.terms) {
+        try {
+          masterCulinaryDictionary.addTerm(term.term.toLowerCase(), term);
+          totalTermsAdded++;
+        } catch (error) {
+          console.error(`Failed to add term "${term.term}":`, error);
+        }
+      }
+    }
+
+    // Merge all extractions for summary
+    const merged = mergePDFExtractions(extractions);
+
+    res.json({
+      status: 'success',
+      import: {
+        pdfCount: pdfs.length,
+        successfulPDFs: extractions.length,
+        totalTermsExtracted,
+        totalTermsAdded,
+        averageConfidence: merged.metadata.confidence,
+        timestamp: new Date().toISOString(),
+      },
+      message: `📚 Echo imported ${totalTermsAdded} master-level culinary terms from ${extractions.length} PDFs!`,
+      dictionaryStats: masterCulinaryDictionary.getStatistics(),
+    });
+  } catch (error) {
+    console.error('Error importing PDF batch:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to import PDF batch',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * GET /api/echo/hungry-learning/library-status
+ * Get status of PDF library import and Echo's knowledge acquisition
+ */
+export async function getLibraryImportStatus(req: Request, res: Response) {
+  try {
+    const stats = masterCulinaryDictionary.getStatistics();
+    const cuisineStats = culinaryTerminologyDictionary.getSummary();
+    const hospitalityStats = hospitalityKnowledgeCrawler.getSummary();
+
+    res.json({
+      status: 'success',
+      knowledge: {
+        masterDictionary: {
+          totalTerms: stats.totalTerms,
+          categories: stats.categories,
+          masteryLevels: stats.masteryLevels,
+          averageConfidence: stats.averageConfidence,
+        },
+        culinaryTerminology: {
+          totalTerms: cuisineStats.totalTerms,
+          categories: cuisineStats.categories,
+        },
+        hospitalityKnowledge: {
+          totalKnowledge: hospitalityStats.totalKnowledge,
+          categories: hospitalityStats.categories,
+        },
+        combinedKnowledgeBase: stats.totalTerms + cuisineStats.totalTerms + hospitalityStats.totalKnowledge,
+      },
+      readiness: {
+        masterLevel: stats.totalTerms >= 10000 ? '✓ Master dictionary complete' : `${stats.totalTerms} / 10,000 terms`,
+        culinaryAuthority: 'Echo is a culinary authority',
+        knowledgeRetention: 'All knowledge retained for search and learning',
+      },
+      message: '🍽️ Echo\'s knowledge acquisition system is active!',
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to get library import status',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
