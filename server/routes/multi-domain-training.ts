@@ -766,6 +766,19 @@ router.post(
   "/pinecone/store-completed",
   async (_req: Request, res: Response) => {
     try {
+      // Check if training vectors already exist in Pinecone
+      const existingVectors = await verifyTrainingVectors();
+
+      if (existingVectors.found && existingVectors.count > 0) {
+        return res.json({
+          success: true,
+          stored: 0,
+          total: 246,
+          message: `Training vectors already stored (${existingVectors.count} vectors found). Skipping duplicate storage.`,
+          alreadyStored: true,
+        });
+      }
+
       const sessionId = `training-sync-${Date.now()}`;
 
       // Training data from all 13 completed domains
