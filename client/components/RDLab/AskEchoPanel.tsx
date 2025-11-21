@@ -200,7 +200,7 @@ Or tell me what you'd like to learn about culinary techniques!`,
           <div>
             <CardTitle>Ask Echo</CardTitle>
             <CardDescription>
-              Culinary knowledge assistant powered by your textbooks
+              Master culinary knowledge assistant with 10,000+ terms
             </CardDescription>
           </div>
         </div>
