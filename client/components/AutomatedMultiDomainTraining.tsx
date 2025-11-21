@@ -184,9 +184,17 @@ export function AutomatedMultiDomainTraining({
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Knowledge Learned</p>
+              <p className="text-sm text-gray-600">Total Knowledge</p>
               <p className="text-3xl font-bold text-blue-600">
-                {getTotalKnowledgeLearned()}
+                {totalKnowledge}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                {previouslyStoredKnowledge > 0 && (
+                  <>
+                    {previouslyStoredKnowledge} stored +{" "}
+                  </>
+                )}
+                {currentSessionKnowledge} this session
               </p>
             </div>
             <div>
