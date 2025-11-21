@@ -22,6 +22,12 @@ import {
 export const echoHungryLearningRouter = express.Router();
 
 /**
+ * POST /api/echo/hungry-learning/crawl-and-store-recipes
+ * Immediately crawl recipes from web and store them in the system for Echo
+ */
+echoHungryLearningRouter.post('/hungry-learning/crawl-and-store-recipes', crawlAndStoreRecipes);
+
+/**
  * POST /api/echo/hungry-learning/start
  * Initiate comprehensive knowledge acquisition
  */
