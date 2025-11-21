@@ -35,8 +35,8 @@ class RecipePersistenceService {
    */
   private async initializeFromDatabase(): Promise<void> {
     try {
-      if (!process.env.SUPABASE_URL) {
-        console.log('[RecipePersistence] Supabase not configured, using in-memory storage');
+      if (!this.supabase) {
+        console.log('[RecipePersistence] Supabase not configured, using in-memory storage only');
         return;
       }
 
