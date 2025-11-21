@@ -411,35 +411,46 @@ export async function importFromText(req: Request, res: Response) {
 /**
  * POST /api/pdf-library/debug
  * Debug PDF extraction issues
- * Expects multipart/form-data with:
- * - file: PDF file
+ * Expects JSON body with:
+ * - pdfBase64: Base64-encoded PDF file content (required)
+ * - pdfName: Original PDF filename (required)
  * - title: (optional) Book title
  */
 export async function debugPDFExtraction(req: Request, res: Response) {
   try {
-    const fileData = (req as any).fileData;
+    const { pdfBase64, pdfName, title } = req.body;
 
-    if (!fileData) {
+    if (!pdfBase64 || !pdfName) {
       return res.status(400).json({
         status: 'error',
-        message: 'No PDF file provided',
+        message: 'PDF base64 content and filename are required',
+      });
+    }
+
+    // Convert base64 to buffer
+    let pdfBuffer: Buffer;
+    try {
+      pdfBuffer = Buffer.from(pdfBase64, 'base64');
+    } catch (error) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Invalid base64 encoding for PDF',
       });
     }
 
     // Step 1: Extract text
-    let pdfText: string;
+    let pdfText: string = '';
     let textExtractionError: string | null = null;
 
     try {
-      pdfText = await extractTextFromPDFBuffer(fileData.buffer, fileData.filename);
+      pdfText = await extractTextFromPDFBuffer(pdfBuffer, pdfName);
     } catch (error) {
       textExtractionError = error instanceof Error ? error.message : 'Unknown error';
-      pdfText = '';
     }
 
     // Step 2: Extract definitions
     const metadata: PDFMetadata = {
-      title: req.body.title || fileData.filename,
+      title: title || pdfName,
       language: 'English',
       specialization: 'culinary-book',
     };
@@ -448,7 +459,9 @@ export async function debugPDFExtraction(req: Request, res: Response) {
     let extractionError: string | null = null;
 
     try {
-      extraction = convertPDFToMasterTerms(pdfText, metadata);
+      if (pdfText.length > 0) {
+        extraction = convertPDFToMasterTerms(pdfText, metadata);
+      }
     } catch (error) {
       extractionError = error instanceof Error ? error.message : 'Unknown error';
     }
@@ -457,8 +470,8 @@ export async function debugPDFExtraction(req: Request, res: Response) {
     res.json({
       status: 'debug',
       file: {
-        filename: fileData.filename,
-        sizeBytes: fileData.buffer.length,
+        filename: pdfName,
+        sizeBytes: pdfBuffer.length,
       },
       textExtraction: {
         success: textExtractionError === null,
