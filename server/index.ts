@@ -112,5 +112,8 @@ export function createServer() {
   // Echo Hungry Learning - Aggressive knowledge acquisition across food & hospitality
   app.use("/api/echo", echoHungryLearningRouter);
 
+  // PDF Library Import - Learn from culinary books and references
+  app.use("/api", pdfLibraryImportRouter);
+
   return app;
 }
