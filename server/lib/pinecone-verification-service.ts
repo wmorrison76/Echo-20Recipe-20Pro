@@ -236,7 +236,9 @@ async function ensureIndexExists(): Promise<boolean> {
     if (error.message && error.message.includes("404")) {
       // Index doesn't exist, create it
       try {
-        console.log(`[PineconeVerification] Creating index "${KNOWLEDGE_INDEX}"...`);
+        console.log(
+          `[PineconeVerification] Creating index "${KNOWLEDGE_INDEX}"...`,
+        );
         await client.createIndex({
           name: KNOWLEDGE_INDEX,
           dimension: 1536, // OpenAI embedding dimension
@@ -248,10 +250,15 @@ async function ensureIndexExists(): Promise<boolean> {
             },
           },
         });
-        console.log(`[PineconeVerification] Index "${KNOWLEDGE_INDEX}" created successfully`);
+        console.log(
+          `[PineconeVerification] Index "${KNOWLEDGE_INDEX}" created successfully`,
+        );
         return true;
       } catch (createError: any) {
-        console.error(`[PineconeVerification] Failed to create index:`, createError.message);
+        console.error(
+          `[PineconeVerification] Failed to create index:`,
+          createError.message,
+        );
         return false;
       }
     }
