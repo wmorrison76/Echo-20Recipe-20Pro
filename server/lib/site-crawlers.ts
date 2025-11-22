@@ -1,0 +1,654 @@
+import type { SiteCrawlerAdapter, CrawlerOptions, FlavorMatrixEntry, FlavorProfile } from './crawler-framework';
+import type { CrawledRecipe } from './web-recipe-crawler';
+
+/**
+ * Base class for HTML-based recipe crawlers
+ */
+export abstract class HTMLRecipeCrawlerAdapter implements SiteCrawlerAdapter {
+  abstract name: string;
+  abstract domain: string;
+  abstract language: string;
+  abstract region: string;
+  abstract category: 'megaplatform' | 'regional' | 'blog' | 'editorial';
+  abstract baseUrl: string;
+  abstract isActive: boolean;
+
+  canCrawl(url: string): boolean {
+    return url.includes(this.domain);
+  }
+
+  abstract crawlRecipes(options: CrawlerOptions): Promise<CrawledRecipe[]>;
+
+  extractFlavorData(recipe: CrawledRecipe): FlavorMatrixEntry {
+    return {
+      id: `flavor_${recipe.id}`,
+      recipeId: recipe.id,
+      recipeName: recipe.title,
+      source: this.name,
+      cuisine: recipe.cuisine || 'Unknown',
+      region: this.region,
+      flavorProfile: recipe.flavor || this.defaultFlavorProfile(),
+      mainIngredients: recipe.ingredients.slice(0, 5).map(i => i.name),
+      techniques: recipe.techniques || [],
+      sensoryDescriptors: this.extractSensoryDescriptors(recipe),
+      confidence: 0.7,
+      createdAt: new Date().toISOString(),
+    };
+  }
+
+  protected defaultFlavorProfile(): FlavorProfile {
+    return {
+      sweet: 3,
+      salty: 3,
+      sour: 2,
+      bitter: 1,
+      umami: 3,
+      spicy: 1,
+      richness: 3,
+      brightness: 2,
+    };
+  }
+
+  protected extractSensoryDescriptors(recipe: CrawledRecipe): string[] {
+    const descriptors: string[] = [];
+    
+    if (recipe.flavor) {
+      if (recipe.flavor.sweet > 6) descriptors.push('sweet');
+      if (recipe.flavor.salty > 6) descriptors.push('savory');
+      if (recipe.flavor.sour > 5) descriptors.push('bright', 'acidic');
+      if (recipe.flavor.bitter > 4) descriptors.push('complex');
+      if (recipe.flavor.umami > 6) descriptors.push('umami-rich', 'savory');
+      if (recipe.flavor.spicy > 5) descriptors.push('spicy', 'heat');
+    }
+
+    return [...new Set(descriptors)];
+  }
+
+  protected async fetchWithRetry(url: string, maxRetries = 3): Promise<Response> {
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        const response = await fetch(url, {
+          headers: {
+            'User-Agent': 'EchoCulinaryBot/1.0 (+http://echo.local/bot)',
+          },
+        });
+        if (response.ok) return response;
+        if (response.status === 429) {
+          await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+          continue;
+        }
+        throw new Error(`HTTP ${response.status}`);
+      } catch (error) {
+        if (attempt === maxRetries - 1) throw error;
+        await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+      }
+    }
+    throw new Error('Max retries exceeded');
+  }
+}
+
+/**
+ * AllRecipes - World's largest recipe site
+ */
+export class AllRecipesCrawler extends HTMLRecipeCrawlerAdapter {
+  name = 'AllRecipes';
+  domain = 'allrecipes.com';
+  language = 'English';
+  region = 'Global (US-centric)';
+  category = 'megaplatform';
+  baseUrl = 'https://www.allrecipes.com';
+  isActive = true;
+
+  async crawlRecipes(options: CrawlerOptions): Promise<CrawledRecipe[]> {
+    const recipes: CrawledRecipe[] = [];
+    const searchUrl = new URL(`${this.baseUrl}/search`);
+    
+    if (options.query) searchUrl.searchParams.set('q', options.query);
+    if (options.cuisine) searchUrl.searchParams.set('cuisines', options.cuisine);
+    
+    try {
+      const html = await (await this.fetchWithRetry(searchUrl.toString())).text();
+      
+      // Parse JSON-LD structured data from HTML
+      const jsonLdMatch = html.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g);
+      if (jsonLdMatch) {
+        for (const match of jsonLdMatch) {
+          try {
+            const json = JSON.parse(match.replace(/<script[^>]*>|<\/script>/g, ''));
+            if (json['@type'] === 'Recipe') {
+              recipes.push(this.parseRecipeSchema(json));
+            }
+          } catch (e) {
+            // Parse error, skip
+          }
+        }
+      }
+    } catch (error) {
+      console.error('AllRecipes crawl error:', error);
+    }
+
+    return recipes.slice(0, options.limit || 50);
+  }
+
+  private parseRecipeSchema(schema: any): CrawledRecipe {
+    return {
+      id: `allrecipes_${schema.name?.replace(/\s+/g, '_').toLowerCase() || Date.now()}`,
+      title: schema.name || 'Unknown Recipe',
+      source: 'AllRecipes',
+      url: schema.url || this.baseUrl,
+      cuisine: schema.recipeCategory?.[0] || 'Unknown',
+      difficulty: this.parseRating(schema.recipeInstructions?.length || 0),
+      cookTime: this.parseDuration(schema.cookTime) || 30,
+      prepTime: this.parseDuration(schema.prepTime) || 15,
+      servings: parseInt(schema.recipeYield?.[0] || '4') || 4,
+      ingredients: (schema.recipeIngredient || []).map((ing: string) => ({
+        name: ing.split(/[\d\s]+/)[0].trim(),
+        amount: 1,
+        unit: 'unit',
+      })),
+      instructions: Array.isArray(schema.recipeInstructions)
+        ? schema.recipeInstructions.map((inst: any) => inst.text || inst)
+        : [schema.recipeInstructions?.text || ''],
+      tags: [schema.keywords || ''].filter(Boolean).split(','),
+      calories: parseInt(schema.nutrition?.calories || '0'),
+      crawledAt: Date.now(),
+    };
+  }
+
+  private parseRating(instructionCount: number): 1 | 2 | 3 | 4 | 5 {
+    if (instructionCount <= 3) return 1;
+    if (instructionCount <= 6) return 2;
+    if (instructionCount <= 10) return 3;
+    if (instructionCount <= 15) return 4;
+    return 5;
+  }
+
+  private parseDuration(duration: string | undefined): number | undefined {
+    if (!duration) return undefined;
+    const match = duration.match(/PT(\d+)M/);
+    return match ? parseInt(match[1]) : undefined;
+  }
+}
+
+/**
+ * BBC Good Food - Massive structured recipe index
+ */
+export class BBCGoodFoodCrawler extends HTMLRecipeCrawlerAdapter {
+  name = 'BBC Good Food';
+  domain = 'bbcgoodfood.com';
+  language = 'English';
+  region = 'Global (UK-centric)';
+  category = 'megaplatform';
+  baseUrl = 'https://www.bbcgoodfood.com';
+  isActive = true;
+
+  async crawlRecipes(options: CrawlerOptions): Promise<CrawledRecipe[]> {
+    const recipes: CrawledRecipe[] = [];
+    const searchUrl = `${this.baseUrl}/search/recipes`;
+    
+    try {
+      const html = await (await this.fetchWithRetry(searchUrl)).text();
+      const jsonLdMatches = html.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g) || [];
+
+      for (const match of jsonLdMatches) {
+        try {
+          const json = JSON.parse(match.replace(/<script[^>]*>|<\/script>/g, ''));
+          if (json['@type'] === 'Recipe' || json.type === 'recipe') {
+            recipes.push(this.parseRecipeSchema(json));
+          }
+        } catch (e) {
+          // Parse error
+        }
+      }
+    } catch (error) {
+      console.error('BBC Good Food crawl error:', error);
+    }
+
+    return recipes.slice(0, options.limit || 50);
+  }
+
+  private parseRecipeSchema(schema: any): CrawledRecipe {
+    return {
+      id: `bbc_${schema.name?.replace(/\s+/g, '_').toLowerCase() || Date.now()}`,
+      title: schema.name || 'Unknown Recipe',
+      source: 'BBC Good Food',
+      url: schema.url || this.baseUrl,
+      cuisine: schema.recipeCuisine?.[0] || 'British',
+      difficulty: this.extractDifficulty(schema.recipeDifficulty),
+      cookTime: this.parseDuration(schema.cookTime) || 30,
+      prepTime: this.parseDuration(schema.prepTime) || 15,
+      servings: parseInt(schema.recipeYield?.[0] || '4') || 4,
+      ingredients: (schema.recipeIngredient || []).map((ing: string) => ({
+        name: ing.replace(/^\d+\s*[\w\s]*/, '').trim(),
+        amount: 1,
+        unit: 'unit',
+      })),
+      instructions: Array.isArray(schema.recipeInstructions)
+        ? schema.recipeInstructions.map((inst: any) => inst.text || inst)
+        : [schema.recipeInstructions?.text || ''],
+      tags: schema.keywords ? schema.keywords.split(',') : [],
+      allergens: schema.recipeIngredient?.filter((ing: string) => 
+        /gluten|dairy|nut|shellfish/i.test(ing)
+      ),
+      crawledAt: Date.now(),
+    };
+  }
+
+  private extractDifficulty(difficulty: string | undefined): 1 | 2 | 3 | 4 | 5 {
+    if (!difficulty) return 2;
+    const lower = difficulty.toLowerCase();
+    if (lower.includes('easy')) return 1;
+    if (lower.includes('intermediate')) return 3;
+    if (lower.includes('challenging')) return 5;
+    return 2;
+  }
+
+  private parseDuration(duration: string | undefined): number | undefined {
+    if (!duration) return undefined;
+    const match = duration.match(/PT(\d+)M/);
+    return match ? parseInt(match[1]) : undefined;
+  }
+}
+
+/**
+ * Cookpad - Global, user-generated recipes
+ */
+export class CookpadCrawler extends HTMLRecipeCrawlerAdapter {
+  name = 'Cookpad';
+  domain = 'cookpad.com';
+  language = 'Multiple';
+  region = 'Global (Japan-origin)';
+  category = 'megaplatform';
+  baseUrl = 'https://cookpad.com';
+  isActive = true;
+
+  async crawlRecipes(options: CrawlerOptions): Promise<CrawledRecipe[]> {
+    const recipes: CrawledRecipe[] = [];
+    const region = options.region || 'global';
+    const url = `${this.baseUrl}/${region}/search/${options.query || 'popular'}`;
+
+    try {
+      const html = await (await this.fetchWithRetry(url)).text();
+      const recipeMatches = html.match(/recipe_id["\']?\s*[:=]\s*["\']?(\d+)/g) || [];
+
+      for (const match of recipeMatches.slice(0, options.limit || 20)) {
+        const recipeId = match.match(/\d+/)?.[0];
+        if (recipeId) {
+          const recipe = await this.fetchRecipeDetails(recipeId);
+          if (recipe) recipes.push(recipe);
+        }
+      }
+    } catch (error) {
+      console.error('Cookpad crawl error:', error);
+    }
+
+    return recipes;
+  }
+
+  private async fetchRecipeDetails(recipeId: string): Promise<CrawledRecipe | null> {
+    try {
+      const url = `${this.baseUrl}/api/recipes/${recipeId}.json`;
+      const response = await this.fetchWithRetry(url);
+      const data = await response.json() as any;
+
+      return {
+        id: `cookpad_${recipeId}`,
+        title: data.title || 'Unknown',
+        source: 'Cookpad',
+        url: data.url || `${this.baseUrl}/recipes/${recipeId}`,
+        cuisine: data.cuisine_name || 'Various',
+        difficulty: data.difficulty || 2,
+        cookTime: data.cooking_time_minutes || 30,
+        prepTime: data.prep_time_minutes || 15,
+        servings: data.servings || 4,
+        ingredients: (data.ingredients || []).map((ing: any) => ({
+          name: ing.name || '',
+          amount: ing.quantity || 1,
+          unit: ing.unit || '',
+        })),
+        instructions: (data.directions || []).map((dir: any) => dir.text || dir),
+        tags: data.tags || [],
+        crawledAt: Date.now(),
+      };
+    } catch (error) {
+      console.error(`Failed to fetch Cookpad recipe ${recipeId}:`, error);
+      return null;
+    }
+  }
+}
+
+/**
+ * Serious Eats - Food science and technique focus
+ */
+export class SeriousEatsCrawler extends HTMLRecipeCrawlerAdapter {
+  name = 'Serious Eats';
+  domain = 'seriouseats.com';
+  language = 'English';
+  region = 'Global (US)';
+  category = 'megaplatform';
+  baseUrl = 'https://www.seriouseats.com';
+  isActive = true;
+
+  async crawlRecipes(options: CrawlerOptions): Promise<CrawledRecipe[]> {
+    const recipes: CrawledRecipe[] = [];
+
+    try {
+      const url = `${this.baseUrl}/search?query=${options.query || 'recipes'}`;
+      const html = await (await this.fetchWithRetry(url)).text();
+      
+      const jsonLdMatches = html.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g) || [];
+      
+      for (const match of jsonLdMatches) {
+        try {
+          const json = JSON.parse(match.replace(/<script[^>]*>|<\/script>/g, ''));
+          if (json['@type'] === 'Recipe') {
+            recipes.push(this.parseRecipeSchema(json));
+          }
+        } catch (e) {
+          // Parse error
+        }
+      }
+    } catch (error) {
+      console.error('Serious Eats crawl error:', error);
+    }
+
+    return recipes.slice(0, options.limit || 50);
+  }
+
+  private parseRecipeSchema(schema: any): CrawledRecipe {
+    return {
+      id: `seriouseats_${schema.name?.replace(/\s+/g, '_').toLowerCase() || Date.now()}`,
+      title: schema.name || 'Unknown',
+      source: 'Serious Eats',
+      url: schema.url || this.baseUrl,
+      cuisine: schema.recipeCuisine?.[0] || 'International',
+      difficulty: 3,
+      cookTime: this.parseDuration(schema.cookTime) || 45,
+      prepTime: this.parseDuration(schema.prepTime) || 20,
+      servings: parseInt(schema.recipeYield?.[0] || '4') || 4,
+      ingredients: (schema.recipeIngredient || []).map((ing: string) => ({
+        name: ing.replace(/[\d\s\W]*$/, '').trim(),
+        amount: 1,
+        unit: 'unit',
+      })),
+      instructions: (schema.recipeInstructions || []).map((inst: any) => inst.text || inst),
+      tags: ['technique-focused', 'food-science'],
+      techniques: this.extractTechniques(schema.recipeInstructions || []),
+      crawledAt: Date.now(),
+    };
+  }
+
+  private extractTechniques(instructions: any[]): string[] {
+    const techniques: string[] = [];
+    const techniquPatterns = ['sear', 'braise', 'roast', 'simmer', 'blanch', 'shock', 'fold', 'whisk', 'blend'];
+    
+    const instructionText = Array.isArray(instructions)
+      ? instructions.map(i => (typeof i === 'string' ? i : i.text || '').toLowerCase()).join(' ')
+      : '';
+
+    for (const technique of techniquPatterns) {
+      if (instructionText.includes(technique)) {
+        techniques.push(technique);
+      }
+    }
+
+    return techniques;
+  }
+
+  private parseDuration(duration: string | undefined): number | undefined {
+    if (!duration) return undefined;
+    const match = duration.match(/PT(\d+)M/);
+    return match ? parseInt(match[1]) : undefined;
+  }
+}
+
+/**
+ * Food Network - TV-tied standardized recipes
+ */
+export class FoodNetworkCrawler extends HTMLRecipeCrawlerAdapter {
+  name = 'Food Network';
+  domain = 'foodnetwork.com';
+  language = 'English';
+  region = 'Global (US)';
+  category = 'megaplatform';
+  baseUrl = 'https://www.foodnetwork.com';
+  isActive = true;
+
+  async crawlRecipes(options: CrawlerOptions): Promise<CrawledRecipe[]> {
+    const recipes: CrawledRecipe[] = [];
+
+    try {
+      const searchUrl = `${this.baseUrl}/search/${options.query || 'recipes'}`;
+      const html = await (await this.fetchWithRetry(searchUrl)).text();
+      
+      const recipeUrls = html.match(/href="(\/recipes\/[^"]+)"/g) || [];
+
+      for (const urlMatch of recipeUrls.slice(0, options.limit || 20)) {
+        const recipeUrl = urlMatch.replace(/href="|"/g, '');
+        const recipe = await this.fetchRecipeDetails(`${this.baseUrl}${recipeUrl}`);
+        if (recipe) recipes.push(recipe);
+      }
+    } catch (error) {
+      console.error('Food Network crawl error:', error);
+    }
+
+    return recipes;
+  }
+
+  private async fetchRecipeDetails(url: string): Promise<CrawledRecipe | null> {
+    try {
+      const html = await (await this.fetchWithRetry(url)).text();
+      const jsonLdMatch = html.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/);
+      
+      if (!jsonLdMatch) return null;
+
+      const schema = JSON.parse(jsonLdMatch[0].replace(/<script[^>]*>|<\/script>/g, ''));
+
+      return {
+        id: `foodnetwork_${schema.name?.replace(/\s+/g, '_').toLowerCase()}`,
+        title: schema.name || 'Unknown',
+        source: 'Food Network',
+        url: url,
+        cuisine: schema.recipeCuisine?.[0] || 'American',
+        difficulty: 2,
+        cookTime: this.parseDuration(schema.cookTime) || 45,
+        prepTime: this.parseDuration(schema.prepTime) || 15,
+        servings: parseInt(schema.recipeYield?.[0] || '4') || 4,
+        ingredients: (schema.recipeIngredient || []).map((ing: string) => ({
+          name: ing.replace(/^\d+\s*[\w]*/, '').trim(),
+          amount: 1,
+          unit: 'unit',
+        })),
+        instructions: (schema.recipeInstructions || []).map((inst: any) => inst.text || inst),
+        tags: ['food-network', 'tv-tested'],
+        crawledAt: Date.now(),
+      };
+    } catch (error) {
+      console.error(`Failed to fetch Food Network recipe:`, error);
+      return null;
+    }
+  }
+
+  private parseDuration(duration: string | undefined): number | undefined {
+    if (!duration) return undefined;
+    const match = duration.match(/PT(\d+)M/);
+    return match ? parseInt(match[1]) : undefined;
+  }
+}
+
+/**
+ * Just One Cookbook - Japanese recipes in English
+ */
+export class JustOneCookbookCrawler extends HTMLRecipeCrawlerAdapter {
+  name = 'Just One Cookbook';
+  domain = 'justonecookbook.com';
+  language = 'English';
+  region = 'East Asia (Japan)';
+  category = 'editorial';
+  baseUrl = 'https://www.justonecookbook.com';
+  isActive = true;
+
+  async crawlRecipes(options: CrawlerOptions): Promise<CrawledRecipe[]> {
+    const recipes: CrawledRecipe[] = [];
+
+    try {
+      const url = `${this.baseUrl}/?s=${options.query || 'japanese'}`;
+      const html = await (await this.fetchWithRetry(url)).text();
+      
+      const jsonLdMatches = html.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g) || [];
+
+      for (const match of jsonLdMatches) {
+        try {
+          const json = JSON.parse(match.replace(/<script[^>]*>|<\/script>/g, ''));
+          if (json['@type'] === 'Recipe') {
+            recipes.push(this.parseRecipeSchema(json));
+          }
+        } catch (e) {
+          // Parse error
+        }
+      }
+    } catch (error) {
+      console.error('Just One Cookbook crawl error:', error);
+    }
+
+    return recipes.slice(0, options.limit || 50);
+  }
+
+  private parseRecipeSchema(schema: any): CrawledRecipe {
+    return {
+      id: `joc_${schema.name?.replace(/\s+/g, '_').toLowerCase()}`,
+      title: schema.name || 'Unknown',
+      source: 'Just One Cookbook',
+      url: schema.url || this.baseUrl,
+      cuisine: 'Japanese',
+      difficulty: this.parseDifficulty(schema.recipeDifficulty),
+      cookTime: this.parseDuration(schema.cookTime) || 30,
+      prepTime: this.parseDuration(schema.prepTime) || 20,
+      servings: parseInt(schema.recipeYield?.[0] || '4') || 4,
+      ingredients: (schema.recipeIngredient || []).map((ing: string) => ({
+        name: ing.trim(),
+        amount: 1,
+        unit: 'unit',
+      })),
+      instructions: (schema.recipeInstructions || []).map((inst: any) => inst.text || inst),
+      tags: ['japanese', 'authentic', 'step-by-step'],
+      crawledAt: Date.now(),
+    };
+  }
+
+  private parseDifficulty(difficulty: string | undefined): 1 | 2 | 3 | 4 | 5 {
+    if (!difficulty) return 2;
+    const lower = difficulty.toLowerCase();
+    if (lower.includes('easy')) return 1;
+    if (lower.includes('moderate')) return 2;
+    if (lower.includes('difficult')) return 4;
+    return 2;
+  }
+
+  private parseDuration(duration: string | undefined): number | undefined {
+    if (!duration) return undefined;
+    const match = duration.match(/PT(\d+)M/);
+    return match ? parseInt(match[1]) : undefined;
+  }
+}
+
+/**
+ * Tarla Dalal - Indian recipes
+ */
+export class TarlaDalalCrawler extends HTMLRecipeCrawlerAdapter {
+  name = 'Tarla Dalal';
+  domain = 'tarladalal.com';
+  language = 'English, Hindi';
+  region = 'South Asia (India)';
+  category = 'megaplatform';
+  baseUrl = 'https://www.tarladalal.com';
+  isActive = true;
+
+  async crawlRecipes(options: CrawlerOptions): Promise<CrawledRecipe[]> {
+    const recipes: CrawledRecipe[] = [];
+
+    try {
+      const url = `${this.baseUrl}/search?q=${options.query || 'recipes'}&rpp=${options.limit || 20}`;
+      const html = await (await this.fetchWithRetry(url)).text();
+      
+      const recipeIds = html.match(/\/recipe\/(\d+)/g) || [];
+
+      for (const idMatch of recipeIds.slice(0, options.limit || 20)) {
+        const recipeId = idMatch.replace('/recipe/', '');
+        const recipe = await this.fetchRecipeDetails(recipeId);
+        if (recipe) recipes.push(recipe);
+      }
+    } catch (error) {
+      console.error('Tarla Dalal crawl error:', error);
+    }
+
+    return recipes;
+  }
+
+  private async fetchRecipeDetails(recipeId: string): Promise<CrawledRecipe | null> {
+    try {
+      const url = `${this.baseUrl}/recipe/${recipeId}`;
+      const html = await (await this.fetchWithRetry(url)).text();
+      
+      const jsonLdMatch = html.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/);
+      if (!jsonLdMatch) return null;
+
+      const schema = JSON.parse(jsonLdMatch[0].replace(/<script[^>]*>|<\/script>/g, ''));
+
+      return {
+        id: `tarladalal_${recipeId}`,
+        title: schema.name || 'Unknown',
+        source: 'Tarla Dalal',
+        url: url,
+        cuisine: 'Indian',
+        difficulty: this.extractDifficulty(schema.recipeCategory),
+        cookTime: this.parseDuration(schema.cookTime) || 30,
+        prepTime: this.parseDuration(schema.prepTime) || 20,
+        servings: parseInt(schema.recipeYield?.[0] || '4') || 4,
+        ingredients: (schema.recipeIngredient || []).map((ing: string) => ({
+          name: ing.trim(),
+          amount: 1,
+          unit: 'unit',
+        })),
+        instructions: (schema.recipeInstructions || []).map((inst: any) => inst.text || inst),
+        tags: ['indian', 'traditional', 'spice-focused'],
+        allergens: this.extractAllergens(schema.recipeIngredient || []),
+        crawledAt: Date.now(),
+      };
+    } catch (error) {
+      console.error(`Failed to fetch Tarla Dalal recipe ${recipeId}:`, error);
+      return null;
+    }
+  }
+
+  private extractDifficulty(categories: string[] | undefined): 1 | 2 | 3 | 4 | 5 {
+    if (!categories) return 2;
+    const allCats = categories.join(' ').toLowerCase();
+    if (allCats.includes('easy')) return 1;
+    if (allCats.includes('advanced')) return 4;
+    return 2;
+  }
+
+  private extractAllergens(ingredients: string[]): string[] {
+    const allergenPatterns = ['nut', 'peanut', 'milk', 'dairy', 'gluten', 'sesame', 'soy'];
+    return ingredients.filter(ing => 
+      allergenPatterns.some(allergen => ing.toLowerCase().includes(allergen))
+    );
+  }
+
+  private parseDuration(duration: string | undefined): number | undefined {
+    if (!duration) return undefined;
+    const match = duration.match(/PT(\d+)M/);
+    return match ? parseInt(match[1]) : undefined;
+  }
+}
+
+export const siteCrawlers = [
+  new AllRecipesCrawler(),
+  new BBCGoodFoodCrawler(),
+  new CookpadCrawler(),
+  new SeriousEatsCrawler(),
+  new FoodNetworkCrawler(),
+  new JustOneCookbookCrawler(),
+  new TarlaDalalCrawler(),
+];
