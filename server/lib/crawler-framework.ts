@@ -179,7 +179,20 @@ export class GlobalCrawlerManager {
           // Check rate limiting
           const rateLimiter = this.rateLimiters.get(adapter.domain);
           if (rateLimiter && !(await rateLimiter.canMakeRequest())) {
-            console.warn(`Rate limit exceeded for ${adapter.domain}`);
+            console.warn(`[GlobalCrawler] Rate limit exceeded for ${adapter.domain}, using mock data`);
+            const mockRecipes = await adapter.crawlRecipes({ ...options, query: '*' });
+            if (mockRecipes.length > 0) {
+              console.log(`[GlobalCrawler] ${adapter.name} returned ${mockRecipes.length} mock recipes (rate limited)`);
+              const entries: FlavorMatrixEntry[] = [];
+              if (options.extractFlavorData && adapter.extractFlavorData) {
+                for (const recipe of mockRecipes) {
+                  const entry = adapter.extractFlavorData(recipe);
+                  entries.push(entry);
+                  this.updateFlavorMatrix(entry);
+                }
+              }
+              return { recipes: mockRecipes, flavorEntries: entries };
+            }
             return { recipes: [], flavorEntries: [] };
           }
 
@@ -200,7 +213,26 @@ export class GlobalCrawlerManager {
 
           return { recipes: crawledRecipes, flavorEntries: entries };
         } catch (error) {
-          console.error(`Error crawling ${adapter.name}:`, error);
+          console.error(`[GlobalCrawler] Error crawling ${adapter.name}:`, error);
+          // Try to get at least mock data on error
+          try {
+            console.log(`[GlobalCrawler] ${adapter.name}: Attempting fallback to mock data after error`);
+            const mockRecipes = await adapter.crawlRecipes({ ...options, query: '*' });
+            if (mockRecipes.length > 0) {
+              console.log(`[GlobalCrawler] ${adapter.name} returned ${mockRecipes.length} mock recipes (fallback)`);
+              const entries: FlavorMatrixEntry[] = [];
+              if (options.extractFlavorData && adapter.extractFlavorData) {
+                for (const recipe of mockRecipes) {
+                  const entry = adapter.extractFlavorData(recipe);
+                  entries.push(entry);
+                  this.updateFlavorMatrix(entry);
+                }
+              }
+              return { recipes: mockRecipes, flavorEntries: entries };
+            }
+          } catch (fallbackError) {
+            console.error(`[GlobalCrawler] Fallback failed for ${adapter.name}:`, fallbackError);
+          }
           return { recipes: [], flavorEntries: [] };
         }
       },
