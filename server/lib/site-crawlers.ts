@@ -378,7 +378,7 @@ export class CookpadCrawler extends HTMLRecipeCrawlerAdapter {
         ],
         instructions: ['Cook rice', 'Prepare fillings', 'Roll sushi', 'Slice and serve'],
         tags: ['japanese', 'sushi', 'seafood'],
-        flavor: { sweet: 2, salty: 4, sour: 3, bitter: 1, umami: 6, spicy: 1, richness: 4, brightness: 3 },
+        flavor: { sweet: 2, salty: 4, sour: 3, bitter: 1, umami: 6 },
         crawledAt: Date.now(),
       },
     ];
