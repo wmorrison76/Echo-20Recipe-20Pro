@@ -705,7 +705,7 @@ export default function RecipeSearchSection() {
   }, [q, searchRecipes, cat, fcuisine, ftech, fcourse, fdiet]);
 
   const [status, setStatus] = useState<string | null>(null);
-  const [mode, setMode] = useState<"cards" | "grid4" | "rows">("cards");
+  const [mode, setMode] = useState<"cards" | "grid4" | "rows">("grid4");
   const [query, setQuery] = useState("");
   const [errors, setErrors] = useState<{ file: string; error: string }[]>([]);
   const [url, setUrl] = useState("");
@@ -1525,14 +1525,6 @@ export default function RecipeSearchSection() {
           </div>
           {recipes.length > 0 && (
             <div className="flex items-center gap-1 rounded-lg bg-muted p-0.5">
-              <button
-                onClick={() => setMode("cards")}
-                className={`p-1 rounded text-sm ${mode === "cards" ? "bg-background shadow" : "text-foreground/70 hover:text-foreground"}`}
-                title="Card view"
-                aria-label="Card view"
-              >
-                <LayoutGrid size={16} />
-              </button>
               <button
                 onClick={() => setMode("grid4")}
                 className={`p-1 rounded text-sm ${mode === "grid4" ? "bg-background shadow" : "text-foreground/70 hover:text-foreground"}`}
@@ -3439,7 +3431,7 @@ export default function RecipeSearchSection() {
         </div>
       ) : (
         <div
-          className="grid grid-cols-1 md:grid-cols-2 gap-3 rounded-lg border glow p-3"
+          className="grid grid-cols-3 gap-3 rounded-lg border glow p-3"
           data-echo-key="section:recipes:results"
         >
           {results.filter(Boolean).map((r) => {
