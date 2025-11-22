@@ -269,8 +269,21 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
               return (
                 <div
                   key={row.subId ?? `${index}-${row.item || "divider"}`}
-                  className={`flex items-center gap-2.5 rounded-2xl border px-2.5 py-1.5 transition-colors ${rowTone}`}
-                  onDragOver={handleRowDragOver}
+                  className={`flex items-center gap-2.5 rounded-2xl border px-2.5 py-1.5 transition-all ${rowTone} ${
+                    draggedRowIndex === index
+                      ? isDarkMode
+                        ? "opacity-40 bg-slate-900/20"
+                        : "opacity-40 bg-slate-100/50"
+                      : ""
+                  } ${
+                    dragOverRowIndex === index
+                      ? isDarkMode
+                        ? "ring-2 ring-cyan-400 bg-cyan-500/10"
+                        : "ring-2 ring-blue-400 bg-blue-50"
+                      : ""
+                  }`}
+                  onDragOver={handleRowDragOver(index)}
+                  onDragLeave={handleRowDragLeave}
                   onDrop={handleRowDrop(index)}
                   data-row-kind={row.type}
                 >
