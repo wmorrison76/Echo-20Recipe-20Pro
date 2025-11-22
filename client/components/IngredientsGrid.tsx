@@ -484,16 +484,18 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                     </PopoverContent>
                   </Popover>
                 </div>
-                <input
-                  data-row={index}
-                  data-col={3}
-                  value={row.prep}
-                  onChange={onFieldChange(index, "prep")}
-                  onKeyDown={onGridKeyDown}
-                  list={methodOptions.length ? methodOptionsId : undefined}
-                  className={inputTone(isDarkMode, undefined, false, false)}
-                  placeholder={t("recipe.ingredients.placeholders.prep", "Method or prep notes")}
-                />
+                <div className="relative w-full flex items-center gap-1">
+                  <input
+                    data-row={index}
+                    data-col={3}
+                    value={row.prep}
+                    onChange={onFieldChange(index, "prep")}
+                    onKeyDown={onGridKeyDown}
+                    list={methodOptions.length ? methodOptionsId : undefined}
+                    className={`${inputTone(isDarkMode, undefined, false, false)} flex-1`}
+                    placeholder={t("recipe.ingredients.placeholders.prep", "Method or prep notes")}
+                  />
+                </div>
                 <div className="flex flex-col gap-1">
                   <input
                     data-row={index}
