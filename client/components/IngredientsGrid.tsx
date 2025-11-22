@@ -424,11 +424,44 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                     data-row={index}
                     data-col={2}
                     value={row.item}
-                    onChange={onFieldChange(index, "item")}
+                    onChange={(e) => {
+                      onFieldChange(index, "item")(e);
+
+                      if (e.target.value.trim().length > 0) {
+                        const misspelled = isMisspelled(e.target.value);
+                        setMisspelledIngredients(prev => {
+                          const next = new Set(prev);
+                          if (misspelled) {
+                            next.add(index);
+                          } else {
+                            next.delete(index);
+                          }
+                          return next;
+                        });
+                      } else {
+                        setMisspelledIngredients(prev => {
+                          const next = new Set(prev);
+                          next.delete(index);
+                          return next;
+                        });
+                      }
+                    }}
                     onKeyDown={onGridKeyDown}
-                    className={inputTone(isDarkMode, undefined, false, false)}
+                    className={`${inputTone(isDarkMode, undefined, false, false)} ${
+                      misspelledIngredients.has(index)
+                        ? isDarkMode
+                          ? "border-orange-400/50"
+                          : "border-orange-300"
+                        : ""
+                    }`}
                     placeholder={t("recipe.ingredients.placeholders.item", "Ingredient")}
+                    title={misspelledIngredients.has(index) ? "Possible misspelling - check culinary dictionary" : ""}
                   />
+                  {misspelledIngredients.has(index) && (
+                    <AlertCircle className={`h-4 w-4 shrink-0 ${
+                      isDarkMode ? "text-orange-400" : "text-orange-500"
+                    }`} title="Possible misspelling in culinary terms" />
+                  )}
                   <Popover open={selectedSelectorRow === index} onOpenChange={(open) => setSelectedSelectorRow(open ? index : null)}>
                     <PopoverTrigger asChild>
                       <button
