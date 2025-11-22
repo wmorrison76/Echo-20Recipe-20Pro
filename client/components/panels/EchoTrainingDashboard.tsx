@@ -18,6 +18,7 @@ import { useEchoOpenAITraining } from "../../hooks/use-echo-openai-training";
 import { SystemHealthDashboard } from "../SystemHealthDashboard";
 import { AutomatedMultiDomainTraining } from "../AutomatedMultiDomainTraining";
 import { PineconeVerificationDashboard } from "../PineconeVerificationDashboard";
+import { CrawlerProgressPanel } from "./CrawlerProgressPanel";
 
 interface EchoTrainingDashboardProps {
   onRecipeImport?: (recipes: any[]) => void;
