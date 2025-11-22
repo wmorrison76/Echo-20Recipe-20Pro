@@ -424,7 +424,6 @@ async function crawlGlobalAndReportProgress(
     autoLearn: boolean;
   },
 ) {
-  const connection = activeConnections.get(sessionId);
   const knowledgeState = {
     flavorProfilesAnalyzed: 0,
     unknownTermsIdentified: new Set<string>(),
@@ -433,7 +432,11 @@ async function crawlGlobalAndReportProgress(
     sourcesUsed: new Set<string>(),
   };
 
+  // Helper to get current connection (handles race condition)
+  const getConnection = () => activeConnections.get(sessionId);
+
   try {
+    const connection = getConnection();
     if (connection) {
       sendEvent(connection, {
         type: "recipe",
