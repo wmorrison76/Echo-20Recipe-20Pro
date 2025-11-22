@@ -182,6 +182,11 @@ export function CrawlerProgressPanel({
   const [termsBeingLearned, setTermsBeingLearned] = useState<string[]>([]);
   const [termsLearned, setTermsLearned] = useState(0);
   const [termsFailedToLearn, setTermsFailedToLearn] = useState(0);
+  const [crawlerMode, setCrawlerMode] = useState<'legacy' | 'global'>('global');
+  const [extractFlavorData, setExtractFlavorData] = useState(true);
+  const [autoLearn, setAutoLearn] = useState(true);
+  const [sourcesUsed, setSourcesUsed] = useState<string[]>([]);
+  const [flavorMatrixStats, setFlavorMatrixStats] = useState<any>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
 
   const startCrawler = useCallback(async () => {
