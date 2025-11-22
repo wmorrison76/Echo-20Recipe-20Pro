@@ -161,200 +161,39 @@ export function CrawlerProgressPanel({
   onComplete,
   className = '',
 }: CrawlerProgressPanelProps) {
-  const [isRunning, setIsRunning] = useState(false);
-  const [sessionId] = useState(() => `session-${Date.now()}`);
-  const [currentUrl, setCurrentUrl] = useState<string>('');
-  const [currentRecipe, setCurrentRecipe] = useState<string>('');
-  const [recipesProcessed, setRecipesProcessed] = useState(0);
-  const [totalRecipes, setTotalRecipes] = useState(0);
-  const [knowledge, setKnowledge] = useState<KnowledgeUpdate>({
-    ingredientsTaught: 0,
-    techniquesLearned: 0,
-    flavorProfilesAnalyzed: 0,
-    unknownTermsIdentified: [],
-  });
+  const crawler = useCrawler();
+  const { state, startCrawler, stopCrawler } = crawler;
+  const [showReport, setShowReport] = useState(false);
+  const [trainingReport, setTrainingReport] = useState<any>(null);
   const [recentIngredients, setRecentIngredients] = useState<string[]>([]);
   const [recentTechniques, setRecentTechniques] = useState<string[]>([]);
-  const [messages, setMessages] = useState<string[]>([]);
-  const [error, setError] = useState<string>('');
-  const [trainingReport, setTrainingReport] = useState<any>(null);
-  const [showReport, setShowReport] = useState(false);
   const [isLearning, setIsLearning] = useState(false);
   const [termsBeingLearned, setTermsBeingLearned] = useState<string[]>([]);
   const [termsLearned, setTermsLearned] = useState(0);
   const [termsFailedToLearn, setTermsFailedToLearn] = useState(0);
-  const [crawlerMode, setCrawlerMode] = useState<'legacy' | 'global'>('global');
-  const [extractFlavorData, setExtractFlavorData] = useState(true);
-  const [autoLearn, setAutoLearn] = useState(true);
-  const [sourcesUsed, setSourcesUsed] = useState<string[]>([]);
-  const [flavorMatrixStats, setFlavorMatrixStats] = useState<any>(null);
-  const eventSourceRef = useRef<EventSource | null>(null);
 
-  const startCrawler = useCallback(async () => {
-    try {
-      setIsRunning(true);
-      setError('');
-      setMessages([]);
-      setRecipesProcessed(0);
-      setTotalRecipes(0);
-      setIsLearning(false);
-      setTermsBeingLearned([]);
-      setTermsLearned(0);
-      setTermsFailedToLearn(0);
-      setKnowledge({
-        ingredientsTaught: 0,
-        techniquesLearned: 0,
-        flavorProfilesAnalyzed: 0,
-        unknownTermsIdentified: [],
-      });
-
-      // Start crawler session with Phase 4 support
-      const startResponse = await fetch('/api/echo/crawler/start-crawl', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sessionId,
-          maxRecipes: crawlerMode === 'global' ? 1000 : 500,
-          mode: crawlerMode,
-          extractFlavorData,
-          autoLearn,
-        }),
-      });
-
-      if (!startResponse.ok) {
-        throw new Error('Failed to start crawler session');
-      }
-
-      // Connect to progress stream
-      const eventSource = new EventSource(
-        `/api/echo/crawler/progress?sessionId=${sessionId}`
+  useEffect(() => {
+    // Generate training report when crawler completes
+    if (!state.isRunning && state.knowledge.ingredientsTaught > 0) {
+      const report = generateTrainingReport(
+        state.sessionId || 'unknown',
+        state.recipesProcessed,
+        state.knowledge
       );
-
-      eventSourceRef.current = eventSource;
-
-      eventSource.onmessage = (event) => {
-        try {
-          const crawlerEvent: CrawlerEvent = JSON.parse(event.data);
-
-          switch (crawlerEvent.type) {
-            case 'start':
-              setMessages((prev) => [
-                ...prev,
-                `✅ ${crawlerEvent.data.message}`,
-              ]);
-              break;
-
-            case 'recipe':
-              if (crawlerEvent.data.currentRecipe) {
-                setCurrentRecipe(crawlerEvent.data.currentRecipe);
-              }
-              if (crawlerEvent.data.currentUrl) {
-                setCurrentUrl(crawlerEvent.data.currentUrl);
-              }
-              if (crawlerEvent.data.recipesProcessed !== undefined) {
-                setRecipesProcessed(crawlerEvent.data.recipesProcessed);
-              }
-              if (crawlerEvent.data.totalRecipes !== undefined) {
-                setTotalRecipes(crawlerEvent.data.totalRecipes);
-              }
-              if (crawlerEvent.data.message) {
-                setMessages((prev) => [...prev.slice(-9), crawlerEvent.data.message!]);
-              }
-              break;
-
-            case 'knowledge':
-              if (crawlerEvent.data.knowledgeUpdates) {
-                setKnowledge(crawlerEvent.data.knowledgeUpdates);
-              }
-              if (crawlerEvent.data.ingredientsFound) {
-                setRecentIngredients(crawlerEvent.data.ingredientsFound);
-              }
-              if (crawlerEvent.data.techniqueFound) {
-                setRecentTechniques(crawlerEvent.data.techniqueFound);
-              }
-              break;
-
-            case 'learning':
-              setIsLearning(true);
-              if (crawlerEvent.data.termsBeingLearned) {
-                setTermsBeingLearned(crawlerEvent.data.termsBeingLearned);
-              }
-              if (crawlerEvent.data.termsLearned !== undefined) {
-                setTermsLearned(crawlerEvent.data.termsLearned);
-              }
-              if (crawlerEvent.data.termsFailedToLearn !== undefined) {
-                setTermsFailedToLearn(crawlerEvent.data.termsFailedToLearn);
-              }
-              if (crawlerEvent.data.message) {
-                setMessages((prev) => [...prev.slice(-9), crawlerEvent.data.message!]);
-              }
-              break;
-
-            case 'complete':
-              setIsRunning(false);
-              setIsLearning(false);
-              if (crawlerEvent.data.knowledgeUpdates) {
-                setKnowledge(crawlerEvent.data.knowledgeUpdates);
-                if (crawlerEvent.data.knowledgeUpdates.sourcesUsed) {
-                  setSourcesUsed(crawlerEvent.data.knowledgeUpdates.sourcesUsed);
-                }
-                if (crawlerEvent.data.knowledgeUpdates.flavorMatrixStats) {
-                  setFlavorMatrixStats(crawlerEvent.data.knowledgeUpdates.flavorMatrixStats);
-                }
-                onComplete?.(crawlerEvent.data.knowledgeUpdates);
-
-                // Generate training report
-                const report = generateTrainingReport(
-                  sessionId,
-                  recipesProcessed,
-                  crawlerEvent.data.knowledgeUpdates
-                );
-                setTrainingReport(report);
-                setShowReport(true);
-              }
-              setMessages((prev) => [
-                ...prev,
-                crawlerMode === 'global' ? '🌍 Phase 4 Global Crawl Complete!' : '🎉 Crawler completed successfully!',
-                `✅ Learned ${termsLearned} new concepts!`,
-                '📊 Generating training report...',
-              ]);
-              eventSourceRef.current?.close();
-              break;
-
-            case 'error':
-              setIsRunning(false);
-              setError(crawlerEvent.data.error || 'Unknown error');
-              setMessages((prev) => [
-                ...prev,
-                `❌ ${crawlerEvent.data.error}`,
-              ]);
-              eventSourceRef.current?.close();
-              break;
-          }
-        } catch (e) {
-          console.error('Failed to parse crawler event:', e);
-        }
-      };
-
-      eventSource.onerror = () => {
-        setIsRunning(false);
-        setError('Connection to crawler lost');
-        eventSourceRef.current?.close();
-      };
-    } catch (err) {
-      setIsRunning(false);
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      setTrainingReport(report);
+      if (onComplete) {
+        onComplete(state.knowledge);
+      }
     }
-  }, [sessionId, onComplete]);
+  }, [state.isRunning, state.knowledge, state.recipesProcessed, state.sessionId, onComplete]);
 
-  const stopCrawler = useCallback(() => {
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-    }
-    setIsRunning(false);
-  }, []);
-
-  const progress = totalRecipes > 0 ? (recipesProcessed / totalRecipes) * 100 : 0;
+  const handleStartCrawler = useCallback(async () => {
+    await startCrawler({
+      mode: state.crawlerMode,
+      extractFlavorData: state.extractFlavorData,
+      autoLearn: state.autoLearn,
+    });
+  }, [startCrawler, state.crawlerMode, state.extractFlavorData, state.autoLearn]);
 
   return (
     <div className={`space-y-4 ${className}`}>
