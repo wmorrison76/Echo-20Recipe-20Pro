@@ -1692,6 +1692,14 @@ const RecipeInputPage = () => {
     [focusIngredientCell, ingredients.length, setIngredients],
   );
 
+  const handleAddIngredientWithContext = useCallback(() => {
+    if (focusedIngredientRow !== null && focusedIngredientRow >= 0) {
+      addIngredientRow(focusedIngredientRow);
+    } else {
+      addIngredientRow();
+    }
+  }, [addIngredientRow, focusedIngredientRow]);
+
   const addDividerRow = useCallback(() => {
     let insertedIndex = 0;
     setIngredients((prev) => {
