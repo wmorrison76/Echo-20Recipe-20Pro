@@ -717,7 +717,7 @@ export class JustOneCookbookCrawler extends HTMLRecipeCrawlerAdapter {
       return this.getMockRecipes().slice(0, options.limit || 50);
     }
 
-    return recipes.slice(0, options.limit || 50);
+    return recipes.slice(0, options.limit || 50) || this.getMockRecipes().slice(0, options.limit || 50);
   }
 
   private parseRecipeSchema(schema: any): CrawledRecipe {
