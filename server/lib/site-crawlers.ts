@@ -171,7 +171,7 @@ export class AllRecipesCrawler extends HTMLRecipeCrawlerAdapter {
 
       // Parse JSON-LD structured data from HTML
       const jsonLdMatch = html.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g);
-      if (jsonLdMatch) {
+      if (jsonLdMatch && jsonLdMatch.length > 0) {
         for (const match of jsonLdMatch) {
           try {
             const json = JSON.parse(match.replace(/<script[^>]*>|<\/script>/g, ''));
@@ -183,13 +183,18 @@ export class AllRecipesCrawler extends HTMLRecipeCrawlerAdapter {
           }
         }
       }
+
+      // If we got recipes, return them
+      if (recipes.length > 0) {
+        return recipes.slice(0, options.limit || 50);
+      }
     } catch (error) {
       console.error('AllRecipes crawl error:', error);
-      console.log('AllRecipes: Using fallback mock data');
-      return this.mockRecipes().slice(0, options.limit || 50);
     }
 
-    return recipes.slice(0, options.limit || 50) || this.mockRecipes().slice(0, options.limit || 50);
+    // Fallback to mock recipes if no real recipes found
+    console.log('AllRecipes: Using fallback mock data');
+    return this.mockRecipes().slice(0, options.limit || 50);
   }
 
   private parseRecipeSchema(schema: any): CrawledRecipe {
