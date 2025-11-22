@@ -747,6 +747,13 @@ const RecipeInputPage = () => {
     setFinalizeState("saving");
     try {
       const title = (recipeName || "").trim() || "Untitled Recipe";
+      const menuDescription = (() => {
+        try {
+          return localStorage.getItem("recipe:add:description") || "";
+        } catch {
+          return "";
+        }
+      })();
       const ingLines = ingredients
         .map((r) =>
           [r.qty, r.unit, r.item, r.prep].filter(Boolean).join(" ").trim(),
@@ -779,6 +786,7 @@ const RecipeInputPage = () => {
         source: "manual",
         taxonomy,
         published: true,
+        description: menuDescription,
         yield: { quantity: yieldQty, unit: yieldUnit },
         portion: { count: portionCount, unit: portionUnit },
         times: { cook: cookTime, temp: cookTemp, prep: prepTime },
