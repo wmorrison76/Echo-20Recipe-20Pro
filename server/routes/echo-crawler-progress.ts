@@ -333,14 +333,17 @@ async function crawlAndReportProgress(
           );
 
           // Send progress during storage
-          sendEvent(connection, {
-            type: "learning",
-            timestamp: Date.now(),
-            data: {
-              message: `📚 Storing ${knowledgeItems.length} learned concepts...`,
-              termsLearned: enrichmentResults.length,
-            },
-          });
+          connection = getConnection();
+          if (connection) {
+            sendEvent(connection, {
+              type: "learning",
+              timestamp: Date.now(),
+              data: {
+                message: `📚 Storing ${knowledgeItems.length} learned concepts...`,
+                termsLearned: enrichmentResults.length,
+              },
+            });
+          }
 
           // Store enriched knowledge
           learningStats = await knowledgeUpdater.storeEnrichedKnowledge(
@@ -349,26 +352,32 @@ async function crawlAndReportProgress(
           );
 
           // Send learning completion stats
+          connection = getConnection();
+          if (connection) {
+            sendEvent(connection, {
+              type: "learning",
+              timestamp: Date.now(),
+              data: {
+                message: `✅ Auto-learning complete: ${learningStats.successful} concepts learned, ${learningStats.failed} failed`,
+                termsLearned: learningStats.successful,
+                termsFailedToLearn: learningStats.failed,
+              },
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Auto-learning failed:", error);
+        connection = getConnection();
+        if (connection) {
           sendEvent(connection, {
             type: "learning",
             timestamp: Date.now(),
             data: {
-              message: `✅ Auto-learning complete: ${learningStats.successful} concepts learned, ${learningStats.failed} failed`,
-              termsLearned: learningStats.successful,
-              termsFailedToLearn: learningStats.failed,
+              message: `⚠️ Auto-learning encountered an error: ${error instanceof Error ? error.message : "Unknown error"}`,
+              termsFailedToLearn: unknownTermsList.length,
             },
           });
         }
-      } catch (error) {
-        console.error("Auto-learning failed:", error);
-        sendEvent(connection, {
-          type: "learning",
-          timestamp: Date.now(),
-          data: {
-            message: `⚠️ Auto-learning encountered an error: ${error instanceof Error ? error.message : "Unknown error"}`,
-            termsFailedToLearn: unknownTermsList.length,
-          },
-        });
       }
 
       // Complete the learning session
@@ -376,6 +385,7 @@ async function crawlAndReportProgress(
     }
 
     // Final report
+    connection = getConnection();
     if (connection) {
       const sessionSummary = knowledgeUpdater.getSessionStats(sessionId);
       sendEvent(connection, {
@@ -400,6 +410,7 @@ async function crawlAndReportProgress(
       });
     }
   } catch (error) {
+    connection = getConnection();
     if (connection) {
       sendEvent(connection, {
         type: "error",
