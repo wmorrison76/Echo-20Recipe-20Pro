@@ -617,8 +617,8 @@ async function crawlGlobalAndReportProgress(
         data: {
           message: `🎉 Phase 4 Global Crawl Complete! 🌍`,
           knowledgeUpdates: {
-            ingredientsTaught: knowledgeState.ingredientsTaught,
-            techniquesLearned: knowledgeState.techniquesLearned,
+            ingredientsTaught: knowledgeState.ingredientsLearned.size,
+            techniquesLearned: knowledgeState.techniquesLearned.size,
             flavorProfilesAnalyzed: knowledgeState.flavorProfilesAnalyzed,
             unknownTermsIdentified: Array.from(knowledgeState.unknownTermsIdentified),
             sourcesUsed: Array.from(knowledgeState.sourcesUsed),
