@@ -98,6 +98,41 @@ export function useMultiDomainTraining(): UseMultiDomainTrainingReturn {
     return () => clearInterval(interval);
   }, [session, isRunning]);
 
+  // Poll for stored vector count updates every 5 seconds during training
+  useEffect(() => {
+    if (!isRunning) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(
+          "/api/multi-domain-training/pinecone/status",
+        );
+
+        if (!response.ok) {
+          console.warn(
+            `[useMultiDomainTraining] Status endpoint returned ${response.status}`,
+          );
+          return;
+        }
+
+        const data = await response.json();
+        const count = data.pinecone?.trainingDataVectors?.total ?? 0;
+
+        if (count !== storedVectorCount) {
+          console.log(`[useMultiDomainTraining] Updated stored vectors from ${storedVectorCount} to ${count}`);
+          setStoredVectorCount(count);
+        }
+      } catch (err) {
+        console.error(
+          "[useMultiDomainTraining] Failed to refresh stored vector count:",
+          err instanceof Error ? err.message : String(err),
+        );
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [isRunning, storedVectorCount]);
+
   const initializeSession = useCallback(async () => {
     setIsInitializing(true);
     setError(null);
