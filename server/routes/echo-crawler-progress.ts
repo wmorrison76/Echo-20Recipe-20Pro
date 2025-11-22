@@ -596,8 +596,12 @@ async function crawlGlobalAndReportProgress(
  */
 function sendEvent(connection: Response, event: CrawlerProgressEvent) {
   try {
-    connection.write(`data: ${JSON.stringify(event)}\n\n`);
+    if (!connection.writableEnded && !connection.destroyed) {
+      const data = JSON.stringify(event);
+      connection.write(`data: ${data}\n\n`);
+    }
   } catch (e) {
+    console.error('Error sending SSE event:', e);
     // Connection may be closed
   }
 }
