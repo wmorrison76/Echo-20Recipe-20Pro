@@ -1,6 +1,8 @@
 import type { Request, Response } from 'express';
 import { webRecipeCrawler } from '../lib/web-recipe-crawler';
 import { ingredientRegionalCrawler } from '../lib/ingredient-regional-crawler';
+import { llmKnowledgeEnricher } from '../lib/llm-knowledge-enricher';
+import { knowledgeUpdater } from '../lib/knowledge-updater';
 
 interface CrawlerProgressEvent {
   type: 'start' | 'recipe' | 'knowledge' | 'complete' | 'error';
