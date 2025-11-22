@@ -19,6 +19,13 @@ export abstract class HTMLRecipeCrawlerAdapter implements SiteCrawlerAdapter {
 
   abstract crawlRecipes(options: CrawlerOptions): Promise<CrawledRecipe[]>;
 
+  /**
+   * Get fallback mock recipes for testing when crawling fails
+   */
+  protected getMockRecipes(): CrawledRecipe[] {
+    return [];
+  }
+
   extractFlavorData(recipe: CrawledRecipe): FlavorMatrixEntry {
     return {
       id: `flavor_${recipe.id}`,
