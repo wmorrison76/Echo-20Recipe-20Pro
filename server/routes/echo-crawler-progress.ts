@@ -281,16 +281,22 @@ async function crawlAndReportProgress(
 
     // Final report
     if (connection) {
+      const sessionSummary = knowledgeUpdater.getSessionStats(sessionId);
       sendEvent(connection, {
         type: 'complete',
         timestamp: Date.now(),
         data: {
-          message: 'Crawl and knowledge extraction complete!',
+          message: '🎉 Crawl and auto-learning complete!',
           knowledgeUpdates: {
             ingredientsTaught: knowledgeState.ingredientsLearned.size,
             techniquesLearned: knowledgeState.techniquesLearned.size,
             flavorProfilesAnalyzed: knowledgeState.flavorProfilesAnalyzed,
             unknownTermsIdentified: Array.from(knowledgeState.unknownTermsIdentified),
+            autoLearningComplete: true,
+            autoLearningStats: {
+              successful: learningStats.successful,
+              failed: learningStats.failed,
+            }
           }
         }
       });
