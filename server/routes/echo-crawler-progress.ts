@@ -40,17 +40,39 @@ interface CrawlerProgressEvent {
 const activeConnections = new Map<string, Response>();
 
 // Initialize Phase 4 global crawler with all site adapters
+let crawlerInitialized = false;
+
 function initializeGlobalCrawler() {
+  if (crawlerInitialized) return;
+
   console.log('[Crawler] Initializing global crawler with site adapters...');
-  for (const crawler of siteCrawlers) {
-    globalCrawlerManager.registerAdapter(crawler);
-    console.log(`[Crawler] Registered: ${crawler.name} (${crawler.domain})`);
+  console.log(`[Crawler] siteCrawlers array length: ${siteCrawlers?.length || 0}`);
+
+  if (!siteCrawlers || siteCrawlers.length === 0) {
+    console.warn('[Crawler] No site crawlers found to register!');
+    return;
   }
-  console.log(`[Crawler] Total adapters registered: ${globalCrawlerManager.getAllAdapters().length}`);
+
+  for (const crawler of siteCrawlers) {
+    try {
+      globalCrawlerManager.registerAdapter(crawler);
+      console.log(`[Crawler] ✓ Registered: ${crawler.name} (${crawler.domain})`);
+    } catch (error) {
+      console.error(`[Crawler] ✗ Failed to register ${crawler.name}:`, error);
+    }
+  }
+
+  const registeredCount = globalCrawlerManager.getAllAdapters().length;
+  console.log(`[Crawler] ✓ Total adapters registered: ${registeredCount}/${siteCrawlers.length}`);
+  crawlerInitialized = true;
 }
 
 // Initialize on module load
-initializeGlobalCrawler();
+try {
+  initializeGlobalCrawler();
+} catch (error) {
+  console.error('[Crawler] Failed to initialize global crawler:', error);
+}
 
 /**
  * GET /api/echo/crawler/progress?sessionId=xxx
