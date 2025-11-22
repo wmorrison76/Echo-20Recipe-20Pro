@@ -202,11 +202,12 @@ const App = () => (
         <AuthProvider>
           <LanguageProvider>
             <AppDataProvider>
-              <FuzzySuggestionManager />
-              <YieldProvider>
-                <CollaborationProvider>
-                  <KeyboardShortcutsProvider>
-                    <BrowserRouter>
+              <CrawlerProvider>
+                <FuzzySuggestionManager />
+                <YieldProvider>
+                  <CollaborationProvider>
+                    <KeyboardShortcutsProvider>
+                      <BrowserRouter>
                       <Suspense fallback={<LoadingFallback />}>
                         <Routes>
                           <Route path="/login" element={<Login />} />
@@ -242,10 +243,11 @@ const App = () => (
                           <Route path="*" element={<NotFound />} />
                         </Routes>
                       </Suspense>
-                    </BrowserRouter>
-                  </KeyboardShortcutsProvider>
-                </CollaborationProvider>
-              </YieldProvider>
+                      </BrowserRouter>
+                    </KeyboardShortcutsProvider>
+                  </CollaborationProvider>
+                </YieldProvider>
+              </CrawlerProvider>
             </AppDataProvider>
           </LanguageProvider>
         </AuthProvider>
