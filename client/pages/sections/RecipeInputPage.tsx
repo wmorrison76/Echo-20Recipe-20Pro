@@ -1711,6 +1711,7 @@ const RecipeInputPage = () => {
     (index: number, field: keyof IngredientRow) =>
       (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const raw = event.target.value;
+        setFocusedIngredientRow(index);
         setIngredients((prev) => {
           if (index < 0 || index >= prev.length) return prev;
           const next = prev.slice();
@@ -2505,7 +2506,7 @@ const RecipeInputPage = () => {
       "⅝": "5/8",
       "⅞": "7/8",
     };
-    let t = s.trim().replace(/[¼��¾⅓⅔⅛���⅝���]/g, (ch) => map[ch] || ch);
+    let t = s.trim().replace(/[¼��¾⅓⅔⅛⅜⅝���]/g, (ch) => map[ch] || ch);
     t = t.replace(/^(?:\s*)\/(\d+)/, "1/$1");
     t = t.replace(/(\d)(\s*)(\d\/\d)/, "$1 $3");
     const m = t.match(
