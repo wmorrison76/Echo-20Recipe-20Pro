@@ -302,7 +302,7 @@ export default function RecipeTemplate() {
               <img
                 src={cover}
                 alt={recipe.title}
-                className="w-full max-w-xl rounded-xl shadow object-cover print:max-h-48"
+                className="w-full max-w-xl rounded-xl shadow object-cover print:max-h-48 print:w-[70%]"
               />
             </div>
           )}
