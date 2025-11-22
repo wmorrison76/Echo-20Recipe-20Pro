@@ -100,22 +100,42 @@ export async function getCrawlerProgress(req: Request, res: Response) {
 /**
  * POST /api/echo/crawler/start-crawl
  * Start crawling with real-time progress reporting
+ * Supports Phase 1 (legacy) and Phase 4 (global) crawling modes
  */
 export async function startCrawlerSession(req: Request, res: Response) {
-  const { sessionId, maxRecipes = 500, cuisines = [], sources = [] } = req.body;
+  const {
+    sessionId,
+    maxRecipes = 500,
+    cuisines = [],
+    sources = [],
+    mode = 'legacy', // 'legacy' or 'global'
+    extractFlavorData = false,
+    autoLearn = true,
+  } = req.body;
 
   if (!sessionId) {
     return res.status(400).json({ error: 'sessionId required' });
   }
 
-  res.json({ 
-    success: true, 
+  res.json({
+    success: true,
     sessionId,
-    message: 'Crawler session started. Connect to /api/echo/crawler/progress for updates.'
+    mode,
+    message: `Crawler session started in ${mode} mode. Connect to /api/echo/crawler/progress for updates.`
   });
 
   // Start crawling asynchronously
-  crawlAndReportProgress(sessionId, { maxRecipes, cuisines, sources });
+  if (mode === 'global') {
+    crawlGlobalAndReportProgress(sessionId, {
+      maxRecipes,
+      cuisines,
+      sources,
+      extractFlavorData,
+      autoLearn,
+    });
+  } else {
+    crawlAndReportProgress(sessionId, { maxRecipes, cuisines, sources });
+  }
 }
 
 /**
