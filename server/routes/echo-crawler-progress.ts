@@ -479,9 +479,7 @@ async function crawlGlobalAndReportProgress(
         flavorCount++;
       }
 
-      // Update current values
-      knowledgeState.ingredientsTaught = knowledgeState.ingredientsLearned.size;
-      knowledgeState.techniquesLearned = knowledgeState.techniquesLearned.size;
+      // Update flavor count
       knowledgeState.flavorProfilesAnalyzed = flavorCount;
 
       // Send progress update
@@ -503,14 +501,17 @@ async function crawlGlobalAndReportProgress(
 
         // Send knowledge update every 5 recipes
         if ((i + 1) % 5 === 0 || i === crawledRecipes.length - 1) {
+          const ingredientCount = knowledgeState.ingredientsLearned.size;
+          const techniqueCount = knowledgeState.techniquesLearned.size;
+
           sendEvent(connection, {
             type: 'knowledge',
             timestamp: Date.now(),
             data: {
-              message: `Learned: ${knowledgeState.ingredientsTaught} ingredients, ${knowledgeState.techniquesLearned} techniques, ${knowledgeState.flavorProfilesAnalyzed} flavor profiles`,
+              message: `Learned: ${ingredientCount} ingredients, ${techniqueCount} techniques, ${knowledgeState.flavorProfilesAnalyzed} flavor profiles`,
               knowledgeUpdates: {
-                ingredientsTaught: knowledgeState.ingredientsTaught,
-                techniquesLearned: knowledgeState.techniquesLearned,
+                ingredientsTaught: ingredientCount,
+                techniquesLearned: techniqueCount,
                 flavorProfilesAnalyzed: knowledgeState.flavorProfilesAnalyzed,
                 unknownTermsIdentified: Array.from(knowledgeState.unknownTermsIdentified),
               }
