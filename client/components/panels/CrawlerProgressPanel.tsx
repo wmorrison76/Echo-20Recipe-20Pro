@@ -519,6 +519,29 @@ export function CrawlerProgressPanel({
           </CardContent>
         </Card>
       )}
+
+      {/* Training Report */}
+      {showReport && trainingReport && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-950 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 p-4 flex justify-between items-center">
+              <h2 className="text-xl font-bold">Training Report</h2>
+              <button
+                onClick={() => setShowReport(false)}
+                className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-6">
+              <TrainingReportPanel
+                report={trainingReport}
+                onClose={() => setShowReport(false)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
