@@ -216,26 +216,12 @@ async function crawlAndReportProgress(
     for (let i = 0; i < crawledRecipes.length; i++) {
       const recipe = crawledRecipes[i];
 
-      if (connection) {
-        sendEvent(connection, {
-          type: 'recipe',
-          timestamp: Date.now(),
-          data: {
-            currentUrl: recipe.url,
-            currentRecipe: recipe.title,
-            recipesProcessed: i + 1,
-            totalRecipes: crawledRecipes.length,
-            message: `Processing: ${recipe.title}`,
-          }
-        });
-      }
-
       // Extract ingredients and check for unknown terms
       const unknownTerms: string[] = [];
       if (recipe.ingredients) {
         for (const ingredient of recipe.ingredients) {
           knowledgeState.ingredientsLearned.add(ingredient.name);
-          
+
           // Simple check: if ingredient contains unusual characters or is longer than typical, flag it
           if (ingredient.name.length > 20 || /[^a-z\s\-]/i.test(ingredient.name)) {
             unknownTerms.push(ingredient.name);
@@ -258,23 +244,38 @@ async function crawlAndReportProgress(
       // Add unknown terms to tracking
       unknownTerms.forEach(term => knowledgeState.unknownTermsIdentified.add(term));
 
-      // Send knowledge update
-      if (connection && (i % 5 === 0 || unknownTerms.length > 0)) {
+      if (connection) {
+        // Always send recipe progress
         sendEvent(connection, {
-          type: 'knowledge',
+          type: 'recipe',
           timestamp: Date.now(),
           data: {
+            currentUrl: recipe.url,
             currentRecipe: recipe.title,
-            ingredientsFound: Array.from(knowledgeState.ingredientsLearned).slice(-10),
-            techniqueFound: Array.from(knowledgeState.techniquesLearned).slice(-5),
-            knowledgeUpdates: {
-              ingredientsTaught: knowledgeState.ingredientsLearned.size,
-              techniquesLearned: knowledgeState.techniquesLearned.size,
-              flavorProfilesAnalyzed: knowledgeState.flavorProfilesAnalyzed,
-              unknownTermsIdentified: Array.from(knowledgeState.unknownTermsIdentified),
-            }
+            recipesProcessed: i + 1,
+            totalRecipes: crawledRecipes.length,
+            message: `Processing: ${recipe.title}`,
           }
         });
+
+        // Send knowledge update frequently
+        if ((i + 1) % 5 === 0 || unknownTerms.length > 0 || i === crawledRecipes.length - 1) {
+          sendEvent(connection, {
+            type: 'knowledge',
+            timestamp: Date.now(),
+            data: {
+              currentRecipe: recipe.title,
+              ingredientsFound: Array.from(knowledgeState.ingredientsLearned).slice(-10),
+              techniqueFound: Array.from(knowledgeState.techniquesLearned).slice(-5),
+              knowledgeUpdates: {
+                ingredientsTaught: knowledgeState.ingredientsLearned.size,
+                techniquesLearned: knowledgeState.techniquesLearned.size,
+                flavorProfilesAnalyzed: knowledgeState.flavorProfilesAnalyzed,
+                unknownTermsIdentified: Array.from(knowledgeState.unknownTermsIdentified),
+              }
+            }
+          });
+        }
       }
     }
 
