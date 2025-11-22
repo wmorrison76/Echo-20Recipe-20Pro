@@ -3,6 +3,9 @@ import { webRecipeCrawler } from '../lib/web-recipe-crawler';
 import { ingredientRegionalCrawler } from '../lib/ingredient-regional-crawler';
 import { llmKnowledgeEnricher } from '../lib/llm-knowledge-enricher';
 import { knowledgeUpdater } from '../lib/knowledge-updater';
+import { globalCrawlerManager } from '../lib/crawler-framework';
+import { siteCrawlers } from '../lib/site-crawlers';
+import { flavorMatrixService } from '../lib/flavor-matrix-service';
 
 interface CrawlerProgressEvent {
   type: 'start' | 'recipe' | 'knowledge' | 'learning' | 'complete' | 'error';
