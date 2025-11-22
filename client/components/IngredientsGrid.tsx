@@ -292,10 +292,17 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
                       type="button"
                       draggable
                       onDragStart={handleDragStart(index)}
-                      className={`flex h-6 w-6 items-center justify-center rounded-full border text-xs ${
+                      onDragEnd={handleDragEnd}
+                      className={`flex h-6 w-6 items-center justify-center rounded-full border text-xs transition-colors ${
                         isDarkMode
                           ? "border-cyan-500/40 text-cyan-200 hover:bg-cyan-500/10"
                           : "border-slate-300 text-slate-500 hover:bg-slate-200/80"
+                      } ${
+                        draggedRowIndex === index
+                          ? isDarkMode
+                            ? "bg-cyan-500/30 border-cyan-400"
+                            : "bg-blue-200 border-blue-400"
+                          : ""
                       }`}
                       title={t("recipe.ingredients.dragHandle", "Drag to reorder")}
                       aria-label={t("recipe.ingredients.dragHandle", "Drag to reorder")}
