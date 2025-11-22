@@ -350,8 +350,21 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
             return (
               <div
                 key={row.subId ?? `${index}-${row.item || "blank"}`}
-                className={`grid grid-cols-[minmax(2.75rem,3.5rem),5rem,7ch,minmax(18rem,2fr),minmax(13.5rem,1.25fr),6.5ch,14.5ch,2.5rem] items-stretch gap-2.5 rounded-2xl border px-2.5 py-1.5 transition-colors ${rowTone}`}
-                onDragOver={handleRowDragOver}
+                className={`grid grid-cols-[minmax(2.75rem,3.5rem),5rem,7ch,minmax(18rem,2fr),minmax(13.5rem,1.25fr),6.5ch,14.5ch,2.5rem] items-stretch gap-2.5 rounded-2xl border px-2.5 py-1.5 transition-all ${rowTone} ${
+                  draggedRowIndex === index
+                    ? isDarkMode
+                      ? "opacity-40 bg-slate-900/20"
+                      : "opacity-40 bg-slate-100/50"
+                    : ""
+                } ${
+                  dragOverRowIndex === index
+                    ? isDarkMode
+                      ? "ring-2 ring-cyan-400 bg-cyan-500/10"
+                      : "ring-2 ring-blue-400 bg-blue-50"
+                    : ""
+                }`}
+                onDragOver={handleRowDragOver(index)}
+                onDragLeave={handleRowDragLeave}
                 onDrop={handleRowDrop(index)}
                 data-row-kind={row.type}
               >
