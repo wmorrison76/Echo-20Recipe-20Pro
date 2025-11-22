@@ -893,7 +893,7 @@ function IngredientsTable({ recipeId }: { recipeId: string }) {
       if (parts.length) {
         const candidate = parts[0];
         if (isLikelyUnit(candidate)) {
-          blank.unit = candidate;
+          blank.unit = candidate.toUpperCase();
           parts.shift();
         }
       }
