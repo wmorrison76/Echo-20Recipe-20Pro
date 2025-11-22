@@ -54,6 +54,8 @@ export function CrawlerProgressPanel({
   const [recentTechniques, setRecentTechniques] = useState<string[]>([]);
   const [messages, setMessages] = useState<string[]>([]);
   const [error, setError] = useState<string>('');
+  const [trainingReport, setTrainingReport] = useState<any>(null);
+  const [showReport, setShowReport] = useState(false);
   const eventSourceRef = useRef<EventSource | null>(null);
 
   const startCrawler = useCallback(async () => {
