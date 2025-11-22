@@ -41,9 +41,12 @@ const activeConnections = new Map<string, Response>();
 
 // Initialize Phase 4 global crawler with all site adapters
 function initializeGlobalCrawler() {
+  console.log('[Crawler] Initializing global crawler with site adapters...');
   for (const crawler of siteCrawlers) {
     globalCrawlerManager.registerAdapter(crawler);
+    console.log(`[Crawler] Registered: ${crawler.name} (${crawler.domain})`);
   }
+  console.log(`[Crawler] Total adapters registered: ${globalCrawlerManager.getAllAdapters().length}`);
 }
 
 // Initialize on module load
