@@ -236,45 +236,32 @@ export class GlobalCrawlerManager {
     processor: (item: T) => Promise<R>,
     maxConcurrent: number,
   ): Promise<R[]> {
-    const results: R[] = [];
-    const queue = [...items];
-    const inProgress: { promise: Promise<R>; index: number }[] = [];
-    let resultIndex = 0;
-    const resultMap = new Map<number, R>();
+    const results: R[] = new Array(items.length);
+    let activeIndex = 0;
 
-    while (queue.length > 0 || inProgress.length > 0) {
-      // Start new tasks up to maxConcurrent
-      while (inProgress.length < maxConcurrent && queue.length > 0) {
-        const item = queue.shift()!;
-        const index = resultIndex++;
-        const promise = processor(item)
-          .then((result) => ({ result, index }))
-          .catch((error) => {
-            console.error("Processor error:", error);
-            return { result: {} as R, index };
-          });
-        inProgress.push({ promise, index });
+    const processItem = async (index: number) => {
+      const item = items[index];
+      try {
+        const result = await processor(item);
+        results[index] = result;
+      } catch (error) {
+        console.error(`Processor error at index ${index}:`, error);
+        results[index] = {} as R;
+      }
+    };
+
+    // Process items with concurrency control
+    while (activeIndex < items.length) {
+      const batch: Promise<void>[] = [];
+
+      // Create batch of up to maxConcurrent tasks
+      for (let i = 0; i < maxConcurrent && activeIndex < items.length; i++) {
+        batch.push(processItem(activeIndex));
+        activeIndex++;
       }
 
-      if (inProgress.length > 0) {
-        // Wait for the first one to complete
-        const { result, index } = await Promise.race(
-          inProgress.map((p) => p.promise),
-        );
-
-        resultMap.set(index, result);
-
-        // Remove the completed promise from inProgress
-        const completedIndex = inProgress.findIndex((p) => p.index === index);
-        if (completedIndex >= 0) {
-          inProgress.splice(completedIndex, 1);
-        }
-      }
-    }
-
-    // Return results in order
-    for (let i = 0; i < resultIndex; i++) {
-      results.push(resultMap.get(i) || ({} as R));
+      // Wait for this batch to complete before starting next batch
+      await Promise.all(batch);
     }
 
     return results;
