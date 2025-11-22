@@ -55,54 +55,50 @@ interface CrawlerContextType {
 const CrawlerContext = createContext<CrawlerContextType | undefined>(undefined);
 
 export function CrawlerProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<CrawlerState>({
-    isRunning: false,
-    sessionId: null,
-    currentUrl: '',
-    currentRecipe: '',
-    recipesProcessed: 0,
-    totalRecipes: 0,
-    knowledge: {
-      ingredientsTaught: 0,
-      techniquesLearned: 0,
-      flavorProfilesAnalyzed: 0,
-      unknownTermsIdentified: [],
-    },
-    messages: [],
-    error: '',
-    crawlerMode: 'global',
-    extractFlavorData: true,
-    autoLearn: true,
-    sourcesUsed: [],
-    flavorMatrixStats: null,
-    progress: 0,
-  });
+  const [sessions, setSessions] = useState<CrawlerSession[]>([]);
+  const eventSourcesRef = useRef<Map<string, EventSource>>(new Map());
 
-  const eventSourceRef = useRef<EventSource | null>(null);
+  const getSession = useCallback((sessionId: string) => {
+    return sessions.find(s => s.sessionId === sessionId);
+  }, [sessions]);
 
-  const startCrawler = useCallback(async (options: { mode: 'legacy' | 'global'; extractFlavorData?: boolean; autoLearn?: boolean }) => {
+  const startCrawler = useCallback(async (options: {
+    mode: 'legacy' | 'global';
+    extractFlavorData?: boolean;
+    autoLearn?: boolean;
+    name?: string;
+  }): Promise<string> => {
+    const sessionId = `session-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+    const id = `crawler-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+
+    const newSession: CrawlerSession = {
+      id,
+      isRunning: true,
+      sessionId,
+      currentUrl: '',
+      currentRecipe: '',
+      recipesProcessed: 0,
+      totalRecipes: 0,
+      knowledge: {
+        ingredientsTaught: 0,
+        techniquesLearned: 0,
+        flavorProfilesAnalyzed: 0,
+        unknownTermsIdentified: [],
+      },
+      messages: [],
+      error: '',
+      crawlerMode: options.mode,
+      extractFlavorData: options.extractFlavorData ?? true,
+      autoLearn: options.autoLearn ?? true,
+      sourcesUsed: [],
+      flavorMatrixStats: null,
+      progress: 0,
+      startedAt: Date.now(),
+    };
+
+    setSessions(prev => [...prev, newSession]);
+
     try {
-      const sessionId = `session-${Date.now()}`;
-      
-      setState(prev => ({
-        ...prev,
-        isRunning: true,
-        sessionId,
-        error: '',
-        messages: [],
-        recipesProcessed: 0,
-        totalRecipes: 0,
-        knowledge: {
-          ingredientsTaught: 0,
-          techniquesLearned: 0,
-          flavorProfilesAnalyzed: 0,
-          unknownTermsIdentified: [],
-        },
-        crawlerMode: options.mode,
-        extractFlavorData: options.extractFlavorData ?? true,
-        autoLearn: options.autoLearn ?? true,
-      }));
-
       // Start crawler session
       const startResponse = await fetch('/api/echo/crawler/start-crawl', {
         method: 'POST',
@@ -122,7 +118,7 @@ export function CrawlerProvider({ children }: { children: React.ReactNode }) {
 
       // Connect to progress stream
       const eventSource = new EventSource(`/api/echo/crawler/progress?sessionId=${sessionId}`);
-      eventSourceRef.current = eventSource;
+      eventSourcesRef.current.set(id, eventSource);
 
       eventSource.onmessage = (event) => {
         try {
@@ -130,54 +126,76 @@ export function CrawlerProvider({ children }: { children: React.ReactNode }) {
 
           switch (crawlerEvent.type) {
             case 'recipe':
-              setState(prev => {
-                const totalRecipes = crawlerEvent.data.totalRecipes ?? prev.totalRecipes;
-                const recipesProcessed = crawlerEvent.data.recipesProcessed ?? prev.recipesProcessed;
-                const progress = totalRecipes > 0 ? (recipesProcessed / totalRecipes) * 100 : 0;
-
-                return {
-                  ...prev,
-                  currentRecipe: crawlerEvent.data.currentRecipe || prev.currentRecipe,
-                  currentUrl: crawlerEvent.data.currentUrl || prev.currentUrl,
-                  recipesProcessed,
-                  totalRecipes,
-                  progress: Math.round(progress),
-                  messages: crawlerEvent.data.message
-                    ? [...prev.messages.slice(-9), crawlerEvent.data.message]
-                    : prev.messages,
-                };
-              });
+              setSessions(prev =>
+                prev.map(s =>
+                  s.id === id
+                    ? {
+                        ...s,
+                        currentRecipe: crawlerEvent.data.currentRecipe || s.currentRecipe,
+                        currentUrl: crawlerEvent.data.currentUrl || s.currentUrl,
+                        recipesProcessed: crawlerEvent.data.recipesProcessed ?? s.recipesProcessed,
+                        totalRecipes: crawlerEvent.data.totalRecipes ?? s.totalRecipes,
+                        progress: crawlerEvent.data.totalRecipes
+                          ? Math.round((crawlerEvent.data.recipesProcessed / crawlerEvent.data.totalRecipes) * 100)
+                          : s.progress,
+                        messages: crawlerEvent.data.message
+                          ? [...s.messages.slice(-9), crawlerEvent.data.message]
+                          : s.messages,
+                      }
+                    : s
+                )
+              );
               break;
 
             case 'knowledge':
               if (crawlerEvent.data.knowledgeUpdates) {
-                setState(prev => ({
-                  ...prev,
-                  knowledge: crawlerEvent.data.knowledgeUpdates,
-                }));
+                setSessions(prev =>
+                  prev.map(s =>
+                    s.id === id
+                      ? {
+                          ...s,
+                          knowledge: crawlerEvent.data.knowledgeUpdates,
+                        }
+                      : s
+                  )
+                );
               }
               break;
 
             case 'complete':
-              setState(prev => ({
-                ...prev,
-                isRunning: false,
-                knowledge: crawlerEvent.data.knowledgeUpdates || prev.knowledge,
-                sourcesUsed: crawlerEvent.data.knowledgeUpdates?.sourcesUsed || prev.sourcesUsed,
-                flavorMatrixStats: crawlerEvent.data.knowledgeUpdates?.flavorMatrixStats || prev.flavorMatrixStats,
-                messages: [...prev.messages, '🎉 Crawler completed successfully!'],
-              }));
-              eventSourceRef.current?.close();
+              setSessions(prev =>
+                prev.map(s =>
+                  s.id === id
+                    ? {
+                        ...s,
+                        isRunning: false,
+                        knowledge: crawlerEvent.data.knowledgeUpdates || s.knowledge,
+                        sourcesUsed: crawlerEvent.data.knowledgeUpdates?.sourcesUsed || s.sourcesUsed,
+                        flavorMatrixStats: crawlerEvent.data.knowledgeUpdates?.flavorMatrixStats || s.flavorMatrixStats,
+                        messages: [...s.messages, '🎉 Crawler completed successfully!'],
+                        completedAt: Date.now(),
+                      }
+                    : s
+                )
+              );
+              eventSourcesRef.current.delete(id);
               break;
 
             case 'error':
-              setState(prev => ({
-                ...prev,
-                isRunning: false,
-                error: crawlerEvent.data.error || 'Unknown error',
-                messages: [...prev.messages, `❌ ${crawlerEvent.data.error}`],
-              }));
-              eventSourceRef.current?.close();
+              setSessions(prev =>
+                prev.map(s =>
+                  s.id === id
+                    ? {
+                        ...s,
+                        isRunning: false,
+                        error: crawlerEvent.data.error || 'Unknown error',
+                        messages: [...s.messages, `❌ ${crawlerEvent.data.error}`],
+                        completedAt: Date.now(),
+                      }
+                    : s
+                )
+              );
+              eventSourcesRef.current.delete(id);
               break;
           }
         } catch (e) {
@@ -186,82 +204,113 @@ export function CrawlerProvider({ children }: { children: React.ReactNode }) {
       };
 
       eventSource.onerror = () => {
-        setState(prev => ({
-          ...prev,
-          isRunning: false,
-          error: 'Connection to crawler lost',
-        }));
-        eventSourceRef.current?.close();
+        setSessions(prev =>
+          prev.map(s =>
+            s.id === id
+              ? {
+                  ...s,
+                  isRunning: false,
+                  error: 'Connection to crawler lost',
+                  completedAt: Date.now(),
+                }
+              : s
+          )
+        );
+        eventSourcesRef.current.delete(id);
       };
+
+      return id;
     } catch (err) {
-      setState(prev => ({
-        ...prev,
+      setSessions(prev =>
+        prev.map(s =>
+          s.id === id
+            ? {
+                ...s,
+                isRunning: false,
+                error: err instanceof Error ? err.message : 'Unknown error',
+              }
+            : s
+        )
+      );
+      throw err;
+    }
+  }, []);
+
+  const stopCrawler = useCallback((crawlerId: string) => {
+    const eventSource = eventSourcesRef.current.get(crawlerId);
+    if (eventSource) {
+      eventSource.close();
+      eventSourcesRef.current.delete(crawlerId);
+    }
+    setSessions(prev =>
+      prev.map(s =>
+        s.id === crawlerId
+          ? {
+              ...s,
+              isRunning: false,
+              completedAt: Date.now(),
+            }
+          : s
+      )
+    );
+  }, []);
+
+  const stopAllCrawlers = useCallback(() => {
+    eventSourcesRef.current.forEach(eventSource => eventSource.close());
+    eventSourcesRef.current.clear();
+    setSessions(prev =>
+      prev.map(s => ({
+        ...s,
         isRunning: false,
-        error: err instanceof Error ? err.message : 'Unknown error',
-      }));
-    }
+        completedAt: Date.now(),
+      }))
+    );
   }, []);
 
-  const stopCrawler = useCallback(() => {
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-    }
-    setState(prev => ({
-      ...prev,
-      isRunning: false,
-    }));
-  }, []);
-
-  const resetCrawler = useCallback(() => {
-    stopCrawler();
-    setState({
-      isRunning: false,
-      sessionId: null,
-      currentUrl: '',
-      currentRecipe: '',
-      recipesProcessed: 0,
-      totalRecipes: 0,
-      knowledge: {
-        ingredientsTaught: 0,
-        techniquesLearned: 0,
-        flavorProfilesAnalyzed: 0,
-        unknownTermsIdentified: [],
-      },
-      messages: [],
-      error: '',
-      crawlerMode: 'global',
-      extractFlavorData: true,
-      autoLearn: true,
-      sourcesUsed: [],
-      flavorMatrixStats: null,
-      progress: 0,
-    });
+  const resetCrawler = useCallback((crawlerId: string) => {
+    stopCrawler(crawlerId);
+    setSessions(prev => prev.filter(s => s.id !== crawlerId));
   }, [stopCrawler]);
 
-  const clearMessages = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      messages: [],
-    }));
+  const resetAllCrawlers = useCallback(() => {
+    stopAllCrawlers();
+    setSessions([]);
+  }, [stopAllCrawlers]);
+
+  const clearMessages = useCallback((crawlerId: string) => {
+    setSessions(prev =>
+      prev.map(s =>
+        s.id === crawlerId
+          ? {
+              ...s,
+              messages: [],
+            }
+          : s
+      )
+    );
   }, []);
+
+  const activeSessions = sessions.filter(s => s.isRunning).map(s => s.id);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-      }
+      eventSourcesRef.current.forEach(eventSource => eventSource.close());
     };
   }, []);
 
   return (
     <CrawlerContext.Provider
       value={{
-        state,
+        sessions,
+        activeSessions,
         startCrawler,
         stopCrawler,
+        stopAllCrawlers,
         resetCrawler,
+        resetAllCrawlers,
         clearMessages,
+        getSession,
       }}
     >
       {children}
