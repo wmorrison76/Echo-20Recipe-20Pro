@@ -269,7 +269,7 @@ export class BBCGoodFoodCrawler extends HTMLRecipeCrawlerAdapter {
         ],
         instructions: ['Sear beef', 'Make mushroom duxelles', 'Wrap in pastry', 'Bake until golden'],
         tags: ['british', 'beef', 'dinner', 'special-occasion'],
-        flavor: { sweet: 2, salty: 7, sour: 1, bitter: 1, umami: 9, spicy: 1, richness: 9, brightness: 1 },
+        flavor: { sweet: 2, salty: 7, sour: 1, bitter: 1, umami: 9 },
         crawledAt: Date.now(),
       },
     ];
