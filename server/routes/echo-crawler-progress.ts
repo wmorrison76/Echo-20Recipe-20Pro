@@ -460,20 +460,6 @@ async function crawlGlobalAndReportProgress(
 
       knowledgeState.sourcesUsed.add(recipe.source);
 
-      if (connection) {
-        sendEvent(connection, {
-          type: 'recipe',
-          timestamp: Date.now(),
-          data: {
-            currentRecipe: recipe.title,
-            currentUrl: recipe.url,
-            recipesProcessed: i + 1,
-            totalRecipes: crawledRecipes.length,
-            message: `Processing: ${recipe.title} (${recipe.source})`,
-          }
-        });
-      }
-
       // Extract ingredients and techniques
       if (recipe.ingredients) {
         for (const ingredient of recipe.ingredients) {
@@ -493,11 +479,47 @@ async function crawlGlobalAndReportProgress(
       if (recipe.flavor) {
         flavorCount++;
       }
-    }
 
-    knowledgeState.ingredientsTaught = knowledgeState.ingredientsLearned.size;
-    knowledgeState.techniquesLearned = knowledgeState.techniquesLearned.size;
-    knowledgeState.flavorProfilesAnalyzed = flavorCount;
+      // Update current values
+      knowledgeState.ingredientsTaught = knowledgeState.ingredientsLearned.size;
+      knowledgeState.techniquesLearned = knowledgeState.techniquesLearned.size;
+      knowledgeState.flavorProfilesAnalyzed = flavorCount;
+
+      // Send progress update
+      if (connection) {
+        const message = `Processing: ${recipe.title} (${recipe.source})`;
+
+        // Always send recipe progress
+        sendEvent(connection, {
+          type: 'recipe',
+          timestamp: Date.now(),
+          data: {
+            currentRecipe: recipe.title,
+            currentUrl: recipe.url,
+            recipesProcessed: i + 1,
+            totalRecipes: crawledRecipes.length,
+            message,
+          }
+        });
+
+        // Send knowledge update every 5 recipes
+        if ((i + 1) % 5 === 0 || i === crawledRecipes.length - 1) {
+          sendEvent(connection, {
+            type: 'knowledge',
+            timestamp: Date.now(),
+            data: {
+              message: `Learned: ${knowledgeState.ingredientsTaught} ingredients, ${knowledgeState.techniquesLearned} techniques, ${knowledgeState.flavorProfilesAnalyzed} flavor profiles`,
+              knowledgeUpdates: {
+                ingredientsTaught: knowledgeState.ingredientsTaught,
+                techniquesLearned: knowledgeState.techniquesLearned,
+                flavorProfilesAnalyzed: knowledgeState.flavorProfilesAnalyzed,
+                unknownTermsIdentified: Array.from(knowledgeState.unknownTermsIdentified),
+              }
+            }
+          });
+        }
+      }
+    }
 
     // Stage 3: Store flavor matrix entries
     if (options.extractFlavorData && flavorMatrix.length > 0) {
