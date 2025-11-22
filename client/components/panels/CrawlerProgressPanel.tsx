@@ -207,13 +207,16 @@ export function CrawlerProgressPanel({
         unknownTermsIdentified: [],
       });
 
-      // Start crawler session
+      // Start crawler session with Phase 4 support
       const startResponse = await fetch('/api/echo/crawler/start-crawl', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sessionId,
-          maxRecipes: 500,
+          maxRecipes: crawlerMode === 'global' ? 1000 : 500,
+          mode: crawlerMode,
+          extractFlavorData,
+          autoLearn,
         }),
       });
 
