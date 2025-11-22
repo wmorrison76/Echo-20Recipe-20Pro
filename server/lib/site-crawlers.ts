@@ -474,7 +474,7 @@ export class SeriousEatsCrawler extends HTMLRecipeCrawlerAdapter {
         instructions: ['Vacuum seal steak with seasonings', 'Cook in water bath at 129F for 1 hour', 'Sear in hot pan'],
         tags: ['technique', 'sous-vide', 'beef', 'precision-cooking'],
         techniques: ['sous-vide', 'searing'],
-        flavor: { sweet: 1, salty: 7, sour: 1, bitter: 1, umami: 9, spicy: 1, richness: 9, brightness: 1 },
+        flavor: { sweet: 1, salty: 7, sour: 1, bitter: 1, umami: 9 },
         crawledAt: Date.now(),
       },
     ];
