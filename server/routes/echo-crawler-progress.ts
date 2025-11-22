@@ -491,7 +491,7 @@ async function crawlGlobalAndReportProgress(
       `[Crawler] ✓ Crawl completed in ${crawlDuration}ms: ${crawledRecipes.length} recipes found`,
     );
 
-    let connection = getConnection();
+    connection = getConnection();
     if (connection) {
       sendEvent(connection, {
         type: "recipe",
