@@ -3356,7 +3356,7 @@ const RecipeInputPage = () => {
                 methodOptionsId={methodOptionsId}
                 onFieldChange={handleIngredientFieldChange}
                 onFieldBlur={handleIngredientBlur}
-                onAddRow={addIngredientRow}
+                onAddRow={handleAddIngredientWithContext}
                 onRemoveRow={removeIngredientRow}
                 onReorderRow={reorderIngredientRows}
                 onGridKeyDown={onGridKeyDown}
