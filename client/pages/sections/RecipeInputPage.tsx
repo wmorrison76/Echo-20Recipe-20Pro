@@ -1939,6 +1939,9 @@ const RecipeInputPage = () => {
     const row = Number(target.dataset.row);
     const col = Number(target.dataset.col);
     if (Number.isNaN(row) || Number.isNaN(col)) return;
+
+    setFocusedIngredientRow(row);
+
     const move = (r: number, c: number) => {
       const next = document.querySelector<HTMLInputElement>(
         `input[data-row="${r}"][data-col="${c}"]`,
@@ -2502,7 +2505,7 @@ const RecipeInputPage = () => {
       "⅝": "5/8",
       "⅞": "7/8",
     };
-    let t = s.trim().replace(/[¼��¾⅓⅔⅛⅜⅝���]/g, (ch) => map[ch] || ch);
+    let t = s.trim().replace(/[¼��¾⅓⅔⅛���⅝���]/g, (ch) => map[ch] || ch);
     t = t.replace(/^(?:\s*)\/(\d+)/, "1/$1");
     t = t.replace(/(\d)(\s*)(\d\/\d)/, "$1 $3");
     const m = t.match(
