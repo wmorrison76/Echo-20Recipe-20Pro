@@ -140,10 +140,20 @@ export function CrawlerProgressPanel({
               if (crawlerEvent.data.knowledgeUpdates) {
                 setKnowledge(crawlerEvent.data.knowledgeUpdates);
                 onComplete?.(crawlerEvent.data.knowledgeUpdates);
+
+                // Generate training report
+                const report = generateTrainingReport(
+                  sessionId,
+                  recipesProcessed,
+                  crawlerEvent.data.knowledgeUpdates
+                );
+                setTrainingReport(report);
+                setShowReport(true);
               }
               setMessages((prev) => [
                 ...prev,
                 '🎉 Crawler completed successfully!',
+                '📊 Generating training report...',
               ]);
               eventSourceRef.current?.close();
               break;
