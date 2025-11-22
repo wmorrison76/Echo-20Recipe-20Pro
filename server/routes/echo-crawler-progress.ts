@@ -58,7 +58,7 @@ initializeGlobalCrawler();
  */
 export async function getCrawlerProgress(req: Request, res: Response) {
   const sessionId = req.query.sessionId as string;
-  
+
   if (!sessionId) {
     return res.status(400).json({ error: 'sessionId required' });
   }
@@ -68,6 +68,7 @@ export async function getCrawlerProgress(req: Request, res: Response) {
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
   res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
 
   // Send initial connection confirmation
   sendEvent(res, {
@@ -78,26 +79,36 @@ export async function getCrawlerProgress(req: Request, res: Response) {
     }
   });
 
+  console.log(`[SSE] Client connected for session: ${sessionId}`);
+
   // Store connection
   activeConnections.set(sessionId, res);
 
   // Cleanup on disconnect
-  req.on('close', () => {
+  const cleanup = () => {
+    console.log(`[SSE] Client disconnected for session: ${sessionId}`);
     activeConnections.delete(sessionId);
+    clearInterval(keepAliveInterval);
+    res.end();
+  };
+
+  req.on('close', cleanup);
+  res.on('close', cleanup);
+  res.on('error', (error) => {
+    console.error(`[SSE] Error for session ${sessionId}:`, error);
+    cleanup();
   });
 
-  // Keep connection alive
-  const keepAlive = setInterval(() => {
-    sendEvent(res, {
-      type: 'ping',
-      timestamp: Date.now(),
-      data: { message: 'Connection active' }
-    });
-  }, 30000);
-
-  res.on('close', () => {
-    clearInterval(keepAlive);
-  });
+  // Keep connection alive with more frequent pings
+  const keepAliveInterval = setInterval(() => {
+    if (!res.destroyed && !res.writableEnded) {
+      sendEvent(res, {
+        type: 'ping',
+        timestamp: Date.now(),
+        data: { message: 'Connection active' }
+      });
+    }
+  }, 15000);
 }
 
 /**
