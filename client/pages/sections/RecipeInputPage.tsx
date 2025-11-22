@@ -2838,14 +2838,13 @@ const RecipeInputPage = () => {
               <div
                 className={`flex-1 min-w-0 border p-3 rounded-xl shadow-lg ${isDarkMode ? "border-cyan-400/30 bg-black/50 shadow-cyan-400/20" : "border-gray-200 bg-white shadow-gray-200/50"} backdrop-blur-sm`}
               >
-                <input
-                  type="text"
-                  maxLength={50}
+                <CulinaryAutocompleteInput
                   value={recipeName}
-                  onChange={(e) => setRecipeName(e.target.value)}
+                  onChange={setRecipeName}
                   placeholder={t("recipe.fields.recipeName", "RECIPE NAME")}
-                  className={`w-full text-lg font-semibold uppercase bg-transparent focus:outline-none transition-colors ${isDarkMode ? "text-cyan-400 placeholder-cyan-600" : "text-gray-900 placeholder-gray-500"} focus:placeholder-gray-400`}
-                  data-echo-key="field:add:name"
+                  isDarkMode={isDarkMode}
+                  showSpellCheck={true}
+                  className={`text-lg font-semibold uppercase ${isDarkMode ? "text-cyan-400 placeholder-cyan-600" : "text-gray-900 placeholder-gray-500"}`}
                 />
                 <textarea
                   placeholder={t("recipe.fields.description", "Description")}
@@ -4062,7 +4061,7 @@ const RecipeInputPage = () => {
                   "⅗": "3/5",
                   "⅘": "4/5",
                   "⅙": "1/6",
-                  "���": "5/6",
+                  "⅚": "5/6",
                   "⅛": "1/8",
                   "⅜": "3/8",
                   "⅝": "5/8",
