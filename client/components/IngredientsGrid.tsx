@@ -1,4 +1,4 @@
-import { GripVertical, Link2, MinusCircle, PlusCircle } from "lucide-react";
+import { GripVertical, Link2, MinusCircle, PlusCircle, AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "@/context/LanguageContext";
 import type { SupplierQuoteMap } from "@/hooks/use-supplier-quotes";
@@ -8,6 +8,7 @@ import { IngredientSelector } from "@/components/IngredientSelector";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { getCurrentCostPerUnit } from "@/data/inventoryItems";
 import { enrichIngredientWithYield, getYieldMethodsForIngredient } from "@/lib/yield-lookup";
+import { isMisspelled } from "@/lib/culinary-fuzzy-match";
 
 type IngredientsGridProps = {
   isDarkMode: boolean;
