@@ -280,11 +280,15 @@ router.post("/run-all-sequential", async (req: Request, res: Response) => {
                 domainState.knowledgeItemsLearned += result.knowledge.length;
                 session.totalKnowledgeLearned += result.knowledge.length;
 
+                console.log(
+                  `[MultiDomainTraining] ✓ ${profile.name} exchange ${exchangeIndex + 1}/${profile.exchangeCount}: ` +
+                  `Extracted ${result.knowledge.length} items (total session: ${session.totalKnowledgeLearned})`,
+                );
+
                 // Store knowledge with detailed logging
                 const storageResult = await storeKnowledgeBatch(result.knowledge, 5);
                 console.log(
                   `[MultiDomainTraining] ${profile.name} exchange ${exchangeIndex + 1}/${profile.exchangeCount}: ` +
-                  `Extracted ${result.knowledge.length} knowledge items, ` +
                   `Stored ${storageResult.success} successfully${storageResult.failed > 0 ? `, ${storageResult.failed} failed` : ""}`,
                 );
 
@@ -296,6 +300,10 @@ router.post("/run-all-sequential", async (req: Request, res: Response) => {
               } else if (!result.success) {
                 console.warn(
                   `[MultiDomainTraining] ${profile.name} exchange ${exchangeIndex + 1} failed to extract knowledge`,
+                );
+              } else if (!result.knowledge || result.knowledge.length === 0) {
+                console.warn(
+                  `[MultiDomainTraining] ${profile.name} exchange ${exchangeIndex + 1} returned 0 knowledge items`,
                 );
               }
 
