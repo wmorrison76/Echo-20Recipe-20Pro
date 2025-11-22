@@ -113,6 +113,9 @@ export function createServer() {
   // Echo Hungry Learning - Aggressive knowledge acquisition across food & hospitality
   app.use("/api/echo", echoHungryLearningRouter);
 
+  // Echo Crawler - Real-time web recipe crawling with progress tracking
+  app.use("/api/echo", echoCrawlerRouter);
+
   // PDF Library Import - Learn from culinary books and references
   app.use("/api", pdfLibraryImportRouter);
 
