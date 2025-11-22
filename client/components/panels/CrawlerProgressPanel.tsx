@@ -11,6 +11,13 @@ interface KnowledgeUpdate {
   techniquesLearned: number;
   flavorProfilesAnalyzed: number;
   unknownTermsIdentified: string[];
+  sourcesUsed?: string[];
+  flavorMatrixStats?: {
+    totalRecipes: number;
+    totalCuisines: number;
+    totalIngredients: number;
+    totalTechniques: number;
+  };
 }
 
 interface CrawlerEvent {
