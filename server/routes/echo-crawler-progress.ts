@@ -474,9 +474,10 @@ async function crawlGlobalAndReportProgress(
 
     const crawlDuration = Date.now() - crawlStartTime;
     console.log(
-      `[Crawler] ✓ Crawl completed in ${crawlDuration}ms: ${crawledRecipes.length} recipes found`,
+      `[Crawler] �� Crawl completed in ${crawlDuration}ms: ${crawledRecipes.length} recipes found`,
     );
 
+    let connection = getConnection();
     if (connection) {
       sendEvent(connection, {
         type: "recipe",
@@ -523,6 +524,7 @@ async function crawlGlobalAndReportProgress(
       knowledgeState.flavorProfilesAnalyzed = flavorCount;
 
       // Send progress update
+      connection = getConnection();
       if (connection) {
         const message = `Processing: ${recipe.title} (${recipe.source})`;
 
@@ -565,6 +567,7 @@ async function crawlGlobalAndReportProgress(
 
     // Stage 3: Store flavor matrix entries
     if (options.extractFlavorData && flavorMatrix.length > 0) {
+      connection = getConnection();
       if (connection) {
         sendEvent(connection, {
           type: "knowledge",
@@ -578,6 +581,7 @@ async function crawlGlobalAndReportProgress(
       const { stored, failed } =
         await flavorMatrixService.storeEntries(flavorMatrix);
 
+      connection = getConnection();
       if (connection) {
         sendEvent(connection, {
           type: "knowledge",
@@ -599,6 +603,7 @@ async function crawlGlobalAndReportProgress(
       if (unknownTermsList.length > 0) {
         knowledgeUpdater.createSession(sessionId, "crawler");
 
+        connection = getConnection();
         if (connection) {
           sendEvent(connection, {
             type: "learning",
@@ -621,6 +626,7 @@ async function crawlGlobalAndReportProgress(
               (result) => result.knowledge,
             );
 
+            connection = getConnection();
             if (connection) {
               sendEvent(connection, {
                 type: "learning",
@@ -637,6 +643,7 @@ async function crawlGlobalAndReportProgress(
               knowledgeItems,
             );
 
+            connection = getConnection();
             if (connection) {
               sendEvent(connection, {
                 type: "learning",
@@ -658,6 +665,7 @@ async function crawlGlobalAndReportProgress(
     }
 
     // Final report
+    connection = getConnection();
     if (connection) {
       const flavorMatrixStats = flavorMatrixService.getStatistics();
       sendEvent(connection, {
@@ -684,6 +692,7 @@ async function crawlGlobalAndReportProgress(
       });
     }
   } catch (error) {
+    connection = getConnection();
     if (connection) {
       sendEvent(connection, {
         type: "error",
