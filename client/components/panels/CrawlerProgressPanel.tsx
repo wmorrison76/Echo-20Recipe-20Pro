@@ -254,6 +254,22 @@ export function CrawlerProgressPanel({
               }
               break;
 
+            case 'learning':
+              setIsLearning(true);
+              if (crawlerEvent.data.termsBeingLearned) {
+                setTermsBeingLearned(crawlerEvent.data.termsBeingLearned);
+              }
+              if (crawlerEvent.data.termsLearned !== undefined) {
+                setTermsLearned(crawlerEvent.data.termsLearned);
+              }
+              if (crawlerEvent.data.termsFailedToLearn !== undefined) {
+                setTermsFailedToLearn(crawlerEvent.data.termsFailedToLearn);
+              }
+              if (crawlerEvent.data.message) {
+                setMessages((prev) => [...prev.slice(-9), crawlerEvent.data.message!]);
+              }
+              break;
+
             case 'complete':
               setIsRunning(false);
               if (crawlerEvent.data.knowledgeUpdates) {
@@ -506,7 +522,7 @@ export function CrawlerProgressPanel({
             {knowledge.unknownTermsIdentified.length > 0 && (
               <div className="space-y-2 bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded border border-yellow-200 dark:border-yellow-800">
                 <div className="text-sm font-medium text-yellow-900 dark:text-yellow-100">
-                  📚 Unknown Terms (Learning Next)
+                  �� Unknown Terms (Learning Next)
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {knowledge.unknownTermsIdentified.slice(0, 10).map((term, i) => (
