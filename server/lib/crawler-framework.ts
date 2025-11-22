@@ -164,11 +164,15 @@ export class GlobalCrawlerManager {
     const flavorEntries: FlavorMatrixEntry[] = [];
     const activeAdapters = Array.from(this.adapters.values()).filter(a => a.isActive);
 
+    console.log(`[GlobalCrawler] Starting crawl with ${activeAdapters.length} active adapters`);
+
     // Process adapters with concurrency control
     const results = await this.processConcurrent(
       activeAdapters,
       async (adapter) => {
         try {
+          console.log(`[GlobalCrawler] Crawling ${adapter.name}...`);
+
           // Check rate limiting
           const rateLimiter = this.rateLimiters.get(adapter.domain);
           if (rateLimiter && !await rateLimiter.canMakeRequest()) {
@@ -177,6 +181,8 @@ export class GlobalCrawlerManager {
           }
 
           const crawledRecipes = await adapter.crawlRecipes(options);
+          console.log(`[GlobalCrawler] ${adapter.name} returned ${crawledRecipes.length} recipes`);
+
           const entries: FlavorMatrixEntry[] = [];
 
           if (options.extractFlavorData && adapter.extractFlavorData) {
@@ -202,8 +208,12 @@ export class GlobalCrawlerManager {
       flavorEntries.push(...result.flavorEntries);
     }
 
+    console.log(`[GlobalCrawler] Total recipes collected: ${recipes.length}`);
+
     // Deduplicate
     const uniqueRecipes = this.deduplicateRecipes(recipes);
+
+    console.log(`[GlobalCrawler] After deduplication: ${uniqueRecipes.length} unique recipes`);
 
     return {
       recipes: uniqueRecipes,
