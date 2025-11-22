@@ -207,19 +207,76 @@ async function crawlAndReportProgress(
       }
     }
 
-    // Stage 3: Query unknown terms via Claude
+    // Stage 3: Auto-Learning - Query unknown terms via OpenAI
     const unknownTermsList = Array.from(knowledgeState.unknownTermsIdentified);
+    let learningStats = { successful: 0, failed: 0 };
+
     if (unknownTermsList.length > 0 && connection) {
+      // Initialize learning session
+      knowledgeUpdater.createSession(sessionId, 'crawler');
+
+      // Send learning start message
       sendEvent(connection, {
-        type: 'recipe',
+        type: 'learning',
         timestamp: Date.now(),
         data: {
-          message: `Learning ${unknownTermsList.length} unknown ingredients/terms...`
+          message: `🧠 Starting auto-learning: Enriching ${unknownTermsList.length} unknown ingredients/terms...`,
+          termsBeingLearned: unknownTermsList.slice(0, 10),
         }
       });
 
-      // TODO: Call Claude/OpenAI API for unknown terms
-      // This would happen asynchronously and results would be cached
+      try {
+        // Enrich terms using LLM (with rate limiting)
+        const enrichmentResults = await llmKnowledgeEnricher.enrichTerms(
+          unknownTermsList,
+          3 // Max 3 concurrent requests
+        );
+
+        if (enrichmentResults.length > 0) {
+          // Extract knowledge items from enrichment results
+          const knowledgeItems = enrichmentResults.map(result => result.knowledge);
+
+          // Send progress during storage
+          sendEvent(connection, {
+            type: 'learning',
+            timestamp: Date.now(),
+            data: {
+              message: `📚 Storing ${knowledgeItems.length} learned concepts...`,
+              termsLearned: enrichmentResults.length,
+            }
+          });
+
+          // Store enriched knowledge
+          learningStats = await knowledgeUpdater.storeEnrichedKnowledge(
+            sessionId,
+            knowledgeItems
+          );
+
+          // Send learning completion stats
+          sendEvent(connection, {
+            type: 'learning',
+            timestamp: Date.now(),
+            data: {
+              message: `✅ Auto-learning complete: ${learningStats.successful} concepts learned, ${learningStats.failed} failed`,
+              termsLearned: learningStats.successful,
+              termsFailedToLearn: learningStats.failed,
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Auto-learning failed:', error);
+        sendEvent(connection, {
+          type: 'learning',
+          timestamp: Date.now(),
+          data: {
+            message: `⚠️ Auto-learning encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            termsFailedToLearn: unknownTermsList.length,
+          }
+        });
+      }
+
+      // Complete the learning session
+      knowledgeUpdater.completeSession(sessionId);
     }
 
     // Final report
