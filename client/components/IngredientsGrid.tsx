@@ -139,19 +139,37 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
   };
 
   const handleDragStart = (index: number) => (event: React.DragEvent<HTMLButtonElement>) => {
+    setDraggedRowIndex(index);
     event.dataTransfer.setData("text/plain", String(index));
     event.dataTransfer.effectAllowed = "move";
+    if (event.dataTransfer.setDragImage) {
+      const dragImage = new Image();
+      dragImage.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+      event.dataTransfer.setDragImage(dragImage, 0, 0);
+    }
   };
 
-  const handleRowDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+  const handleDragEnd = () => {
+    setDraggedRowIndex(null);
+    setDragOverRowIndex(null);
+  };
+
+  const handleRowDragOver = (index: number) => (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
+    setDragOverRowIndex(index);
+  };
+
+  const handleRowDragLeave = () => {
+    setDragOverRowIndex(null);
   };
 
   const handleRowDrop = (targetIndex: number) => (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     const sourceIndex = Number(event.dataTransfer.getData("text/plain"));
     if (Number.isNaN(sourceIndex)) return;
+    setDraggedRowIndex(null);
+    setDragOverRowIndex(null);
     onReorderRow(sourceIndex, targetIndex);
   };
 
@@ -159,6 +177,8 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
     event.preventDefault();
     const sourceIndex = Number(event.dataTransfer.getData("text/plain"));
     if (Number.isNaN(sourceIndex)) return;
+    setDraggedRowIndex(null);
+    setDragOverRowIndex(null);
     onReorderRow(sourceIndex, ingredients.length);
   };
 
