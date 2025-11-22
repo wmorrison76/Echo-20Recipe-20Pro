@@ -189,8 +189,6 @@ async function crawlAndReportProgress(
     unknownTermsIdentified: new Set<string>(),
     ingredientsLearned: new Set<string>(),
     techniquesLearned: new Set<string>(),
-    get ingredientsTaught() { return this.ingredientsLearned.size; },
-    get techniquesLearnedCount() { return this.techniquesLearned.size; },
   };
 
   try {
