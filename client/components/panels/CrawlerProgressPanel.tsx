@@ -276,6 +276,7 @@ export function CrawlerProgressPanel({
 
             case 'complete':
               setIsRunning(false);
+              setIsLearning(false);
               if (crawlerEvent.data.knowledgeUpdates) {
                 setKnowledge(crawlerEvent.data.knowledgeUpdates);
                 onComplete?.(crawlerEvent.data.knowledgeUpdates);
@@ -292,6 +293,7 @@ export function CrawlerProgressPanel({
               setMessages((prev) => [
                 ...prev,
                 '🎉 Crawler completed successfully!',
+                `✅ Learned ${termsLearned} new concepts!`,
                 '📊 Generating training report...',
               ]);
               eventSourceRef.current?.close();
