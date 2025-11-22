@@ -604,3 +604,65 @@ export async function getCrawlerStats(req: Request, res: Response) {
 
   res.json(stats);
 }
+
+/**
+ * GET /api/echo/crawler/flavor-matrix
+ * Get global flavor matrix data
+ */
+export async function getFlavorMatrix(req: Request, res: Response) {
+  const flavorMatrix = flavorMatrixService.getMatrix();
+  const statistics = flavorMatrixService.getStatistics();
+
+  res.json({
+    matrix: flavorMatrix,
+    statistics,
+    topCuisines: flavorMatrixService.getTopCuisines(10),
+    topSensoryDescriptors: flavorMatrixService.getTopSensoryDescriptors(15),
+    topIngredients: flavorMatrixService.getMostDocumentedIngredients(15),
+    topTechniques: flavorMatrixService.getMostDocumentedTechniques(10),
+  });
+}
+
+/**
+ * GET /api/echo/crawler/ingredient-flavor/:ingredient
+ * Get flavor profile for a specific ingredient
+ */
+export async function getIngredientFlavorProfile(req: Request, res: Response) {
+  const { ingredient } = req.params;
+  const profile = flavorMatrixService.getIngredientProfile(ingredient);
+  const similar = flavorMatrixService.findSimilarIngredients(ingredient, 10);
+
+  if (!profile) {
+    return res.status(404).json({
+      error: `No flavor profile found for ingredient: ${ingredient}`,
+      similar,
+    });
+  }
+
+  res.json({
+    ingredient,
+    profile,
+    similar,
+  });
+}
+
+/**
+ * GET /api/echo/crawler/cuisine-flavor/:cuisine
+ * Get flavor pattern for a specific cuisine
+ */
+export async function getCuisineFlavor(req: Request, res: Response) {
+  const { cuisine } = req.params;
+  const profile = flavorMatrixService.getCulturalFlavorPattern(cuisine);
+
+  if (!profile) {
+    return res.status(404).json({
+      error: `No flavor pattern found for cuisine: ${cuisine}`,
+      availableCuisines: flavorMatrixService.getTopCuisines(20),
+    });
+  }
+
+  res.json({
+    cuisine,
+    profile,
+  });
+}
