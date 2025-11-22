@@ -5,7 +5,7 @@ import { llmKnowledgeEnricher } from '../lib/llm-knowledge-enricher';
 import { knowledgeUpdater } from '../lib/knowledge-updater';
 
 interface CrawlerProgressEvent {
-  type: 'start' | 'recipe' | 'knowledge' | 'complete' | 'error';
+  type: 'start' | 'recipe' | 'knowledge' | 'learning' | 'complete' | 'error';
   timestamp: number;
   data: {
     currentUrl?: string;
@@ -14,11 +14,19 @@ interface CrawlerProgressEvent {
     totalRecipes?: number;
     ingredientsFound?: string[];
     techniqueFound?: string[];
+    termsBeingLearned?: string[];
+    termsLearned?: number;
+    termsFailedToLearn?: number;
     knowledgeUpdates?: {
       ingredientsTaught: number;
       techniquesLearned: number;
       flavorProfilesAnalyzed: number;
       unknownTermsIdentified: string[];
+      autoLearningComplete?: boolean;
+      autoLearningStats?: {
+        successful: number;
+        failed: number;
+      };
     };
     message?: string;
     error?: string;
