@@ -1,4 +1,4 @@
-import type { CrawledRecipe } from './web-recipe-crawler';
+import type { CrawledRecipe } from "./web-recipe-crawler";
 
 /**
  * Base interface for all site crawlers
@@ -9,11 +9,11 @@ export interface SiteCrawlerAdapter {
   domain: string;
   language: string;
   region: string;
-  category: 'megaplatform' | 'regional' | 'blog' | 'editorial';
+  category: "megaplatform" | "regional" | "blog" | "editorial";
   robotsUrl?: string;
   baseUrl: string;
   isActive: boolean;
-  
+
   canCrawl(url: string): boolean;
   crawlRecipes(options: CrawlerOptions): Promise<CrawledRecipe[]>;
   extractFlavorData?(recipe: CrawledRecipe): FlavorMatrixEntry;
@@ -23,13 +23,13 @@ export interface SiteCrawlerAdapter {
  * Flavor matrix schema for comprehensive flavor analysis
  */
 export interface FlavorProfile {
-  sweet: number;     // 0-10
-  salty: number;     // 0-10
-  sour: number;      // 0-10
-  bitter: number;    // 0-10
-  umami: number;     // 0-10
-  spicy: number;     // 0-10
-  richness: number;  // 0-10 (fat/oils)
+  sweet: number; // 0-10
+  salty: number; // 0-10
+  sour: number; // 0-10
+  bitter: number; // 0-10
+  umami: number; // 0-10
+  spicy: number; // 0-10
+  richness: number; // 0-10 (fat/oils)
   brightness: number; // 0-10 (acids, citrus)
 }
 
@@ -116,20 +116,17 @@ export class GlobalCrawlerManager {
    */
   registerAdapter(adapter: SiteCrawlerAdapter): void {
     this.adapters.set(adapter.domain, adapter);
-    
+
     // Create rate limiter for this domain
     const rateLimitConfig: RateLimitConfig = {
       domain: adapter.domain,
       requestsPerMinute: 30,
       requestsPerHour: 1000,
       respectRobotsTxt: true,
-      userAgent: 'EchoCulinaryBot/1.0 (+http://echo.local/bot)',
+      userAgent: "EchoCulinaryBot/1.0 (+http://echo.local/bot)",
     };
-    
-    this.rateLimiters.set(
-      adapter.domain,
-      new RateLimiter(rateLimitConfig)
-    );
+
+    this.rateLimiters.set(adapter.domain, new RateLimiter(rateLimitConfig));
   }
 
   /**
@@ -150,7 +147,9 @@ export class GlobalCrawlerManager {
    * Get adapters by category
    */
   getAdaptersByCategory(category: string): SiteCrawlerAdapter[] {
-    return Array.from(this.adapters.values()).filter(a => a.category === category);
+    return Array.from(this.adapters.values()).filter(
+      (a) => a.category === category,
+    );
   }
 
   /**
@@ -158,13 +157,17 @@ export class GlobalCrawlerManager {
    */
   async crawlGlobal(
     options: CrawlerOptions,
-    maxConcurrent: number = 3
+    maxConcurrent: number = 3,
   ): Promise<{ recipes: CrawledRecipe[]; flavorMatrix: FlavorMatrixEntry[] }> {
     const recipes: CrawledRecipe[] = [];
     const flavorEntries: FlavorMatrixEntry[] = [];
-    const activeAdapters = Array.from(this.adapters.values()).filter(a => a.isActive);
+    const activeAdapters = Array.from(this.adapters.values()).filter(
+      (a) => a.isActive,
+    );
 
-    console.log(`[GlobalCrawler] Starting crawl with ${activeAdapters.length} active adapters`);
+    console.log(
+      `[GlobalCrawler] Starting crawl with ${activeAdapters.length} active adapters`,
+    );
 
     // Process adapters with concurrency control
     const results = await this.processConcurrent(
@@ -175,13 +178,15 @@ export class GlobalCrawlerManager {
 
           // Check rate limiting
           const rateLimiter = this.rateLimiters.get(adapter.domain);
-          if (rateLimiter && !await rateLimiter.canMakeRequest()) {
+          if (rateLimiter && !(await rateLimiter.canMakeRequest())) {
             console.warn(`Rate limit exceeded for ${adapter.domain}`);
             return { recipes: [], flavorEntries: [] };
           }
 
           const crawledRecipes = await adapter.crawlRecipes(options);
-          console.log(`[GlobalCrawler] ${adapter.name} returned ${crawledRecipes.length} recipes`);
+          console.log(
+            `[GlobalCrawler] ${adapter.name} returned ${crawledRecipes.length} recipes`,
+          );
 
           const entries: FlavorMatrixEntry[] = [];
 
@@ -199,7 +204,7 @@ export class GlobalCrawlerManager {
           return { recipes: [], flavorEntries: [] };
         }
       },
-      maxConcurrent
+      maxConcurrent,
     );
 
     // Aggregate results
@@ -213,7 +218,9 @@ export class GlobalCrawlerManager {
     // Deduplicate
     const uniqueRecipes = this.deduplicateRecipes(recipes);
 
-    console.log(`[GlobalCrawler] After deduplication: ${uniqueRecipes.length} unique recipes`);
+    console.log(
+      `[GlobalCrawler] After deduplication: ${uniqueRecipes.length} unique recipes`,
+    );
 
     return {
       recipes: uniqueRecipes,
@@ -227,7 +234,7 @@ export class GlobalCrawlerManager {
   private async processConcurrent<T, R>(
     items: T[],
     processor: (item: T) => Promise<R>,
-    maxConcurrent: number
+    maxConcurrent: number,
   ): Promise<R[]> {
     const results: R[] = [];
     const queue = [...items];
@@ -241,9 +248,9 @@ export class GlobalCrawlerManager {
         const item = queue.shift()!;
         const index = resultIndex++;
         const promise = processor(item)
-          .then(result => ({ result, index }))
-          .catch(error => {
-            console.error('Processor error:', error);
+          .then((result) => ({ result, index }))
+          .catch((error) => {
+            console.error("Processor error:", error);
             return { result: {} as R, index };
           });
         inProgress.push({ promise, index });
@@ -252,13 +259,13 @@ export class GlobalCrawlerManager {
       if (inProgress.length > 0) {
         // Wait for the first one to complete
         const { result, index } = await Promise.race(
-          inProgress.map(p => p.promise)
+          inProgress.map((p) => p.promise),
         );
 
         resultMap.set(index, result);
 
         // Remove the completed promise from inProgress
-        const completedIndex = inProgress.findIndex(p => p.index === index);
+        const completedIndex = inProgress.findIndex((p) => p.index === index);
         if (completedIndex >= 0) {
           inProgress.splice(completedIndex, 1);
         }
@@ -292,7 +299,7 @@ export class GlobalCrawlerManager {
         this.flavorMatrix.ingredientFlavorMap[ingredient] =
           this.averageFlavorProfiles(
             this.flavorMatrix.ingredientFlavorMap[ingredient],
-            entry.flavorProfile
+            entry.flavorProfile,
           );
       }
     }
@@ -305,7 +312,7 @@ export class GlobalCrawlerManager {
         this.flavorMatrix.techniqueFlavorMap[technique] =
           this.averageFlavorProfiles(
             this.flavorMatrix.techniqueFlavorMap[technique],
-            entry.flavorProfile
+            entry.flavorProfile,
           );
       }
     }
@@ -322,7 +329,7 @@ export class GlobalCrawlerManager {
         this.flavorMatrix.culturalFlavorPatterns[entry.culturalContext] = [];
       }
       this.flavorMatrix.culturalFlavorPatterns[entry.culturalContext].push(
-        entry.flavorProfile
+        entry.flavorProfile,
       );
     }
 
@@ -334,7 +341,7 @@ export class GlobalCrawlerManager {
    */
   private averageFlavorProfiles(
     profile1: FlavorProfile,
-    profile2: FlavorProfile
+    profile2: FlavorProfile,
   ): FlavorProfile {
     return {
       sweet: (profile1.sweet + profile2.sweet) / 2,
@@ -354,7 +361,7 @@ export class GlobalCrawlerManager {
   private deduplicateRecipes(recipes: CrawledRecipe[]): CrawledRecipe[] {
     const unique = new Map<string, CrawledRecipe>();
     for (const recipe of recipes) {
-      const key = recipe.title.toLowerCase().replace(/\s+/g, '_');
+      const key = recipe.title.toLowerCase().replace(/\s+/g, "_");
       if (!unique.has(key)) {
         unique.set(key, recipe);
       }
@@ -415,10 +422,14 @@ class RateLimiter {
     const oneHourAgo = now - 3600000;
 
     // Clean old timestamps
-    this.requestTimestamps = this.requestTimestamps.filter(t => t > oneHourAgo);
+    this.requestTimestamps = this.requestTimestamps.filter(
+      (t) => t > oneHourAgo,
+    );
 
     // Check minute limit
-    const minuteRequests = this.requestTimestamps.filter(t => t > oneMinuteAgo).length;
+    const minuteRequests = this.requestTimestamps.filter(
+      (t) => t > oneMinuteAgo,
+    ).length;
     if (minuteRequests >= this.config.requestsPerMinute) {
       return false;
     }
@@ -446,22 +457,22 @@ class RateLimiter {
     const cacheExpiry = 24 * 60 * 60 * 1000; // 24 hours
 
     if (
-      this.robotsData.has('checked') &&
+      this.robotsData.has("checked") &&
       now - this.lastRobotsCheck < cacheExpiry
     ) {
-      return this.robotsData.get('allowed') !== 'false';
+      return this.robotsData.get("allowed") !== "false";
     }
 
     try {
       const robotsUrl = `https://${this.config.domain}/robots.txt`;
       const response = await fetch(robotsUrl, {
-        headers: { 'User-Agent': this.config.userAgent },
+        headers: { "User-Agent": this.config.userAgent },
       });
 
       if (response.ok) {
         const content = await response.text();
         const allowed = this.parseRobotsTxt(content);
-        this.robotsData.set('allowed', allowed ? 'true' : 'false');
+        this.robotsData.set("allowed", allowed ? "true" : "false");
         this.lastRobotsCheck = now;
         return allowed;
       }
@@ -469,7 +480,10 @@ class RateLimiter {
       // If robots.txt not found, assume allowed
       return true;
     } catch (error) {
-      console.warn(`Failed to check robots.txt for ${this.config.domain}:`, error);
+      console.warn(
+        `Failed to check robots.txt for ${this.config.domain}:`,
+        error,
+      );
       return true;
     }
   }
@@ -478,27 +492,27 @@ class RateLimiter {
    * Parse robots.txt to check if EchoCulinaryBot is allowed
    */
   private parseRobotsTxt(content: string): boolean {
-    const lines = content.split('\n');
+    const lines = content.split("\n");
     let inOurSection = false;
     let inWildcard = false;
 
     for (const line of lines) {
       const trimmed = line.trim().toLowerCase();
 
-      if (trimmed.startsWith('user-agent:')) {
-        const agent = trimmed.split(':')[1].trim();
-        inOurSection = agent === '*' || agent === 'echocolinarybot';
-        inWildcard = agent === '*';
+      if (trimmed.startsWith("user-agent:")) {
+        const agent = trimmed.split(":")[1].trim();
+        inOurSection = agent === "*" || agent === "echocolinarybot";
+        inWildcard = agent === "*";
       }
 
-      if ((inOurSection || inWildcard) && trimmed.startsWith('disallow:')) {
-        const path = trimmed.split(':')[1].trim();
-        if (path === '/' || path === '') {
+      if ((inOurSection || inWildcard) && trimmed.startsWith("disallow:")) {
+        const path = trimmed.split(":")[1].trim();
+        if (path === "/" || path === "") {
           return false;
         }
       }
 
-      if ((inOurSection || inWildcard) && trimmed.startsWith('allow:')) {
+      if ((inOurSection || inWildcard) && trimmed.startsWith("allow:")) {
         return true;
       }
     }

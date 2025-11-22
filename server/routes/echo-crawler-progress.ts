@@ -1,14 +1,14 @@
-import type { Request, Response } from 'express';
-import { webRecipeCrawler } from '../lib/web-recipe-crawler';
-import { ingredientRegionalCrawler } from '../lib/ingredient-regional-crawler';
-import { llmKnowledgeEnricher } from '../lib/llm-knowledge-enricher';
-import { knowledgeUpdater } from '../lib/knowledge-updater';
-import { globalCrawlerManager } from '../lib/crawler-framework';
-import { siteCrawlers } from '../lib/site-crawlers';
-import { flavorMatrixService } from '../lib/flavor-matrix-service';
+import type { Request, Response } from "express";
+import { webRecipeCrawler } from "../lib/web-recipe-crawler";
+import { ingredientRegionalCrawler } from "../lib/ingredient-regional-crawler";
+import { llmKnowledgeEnricher } from "../lib/llm-knowledge-enricher";
+import { knowledgeUpdater } from "../lib/knowledge-updater";
+import { globalCrawlerManager } from "../lib/crawler-framework";
+import { siteCrawlers } from "../lib/site-crawlers";
+import { flavorMatrixService } from "../lib/flavor-matrix-service";
 
 interface CrawlerProgressEvent {
-  type: 'start' | 'recipe' | 'knowledge' | 'learning' | 'complete' | 'error';
+  type: "start" | "recipe" | "knowledge" | "learning" | "complete" | "error";
   timestamp: number;
   data: {
     currentUrl?: string;
@@ -45,25 +45,31 @@ let crawlerInitialized = false;
 function initializeGlobalCrawler() {
   if (crawlerInitialized) return;
 
-  console.log('[Crawler] Initializing global crawler with site adapters...');
-  console.log(`[Crawler] siteCrawlers array length: ${siteCrawlers?.length || 0}`);
+  console.log("[Crawler] Initializing global crawler with site adapters...");
+  console.log(
+    `[Crawler] siteCrawlers array length: ${siteCrawlers?.length || 0}`,
+  );
 
   if (!siteCrawlers || siteCrawlers.length === 0) {
-    console.warn('[Crawler] No site crawlers found to register!');
+    console.warn("[Crawler] No site crawlers found to register!");
     return;
   }
 
   for (const crawler of siteCrawlers) {
     try {
       globalCrawlerManager.registerAdapter(crawler);
-      console.log(`[Crawler] ✓ Registered: ${crawler.name} (${crawler.domain})`);
+      console.log(
+        `[Crawler] ✓ Registered: ${crawler.name} (${crawler.domain})`,
+      );
     } catch (error) {
       console.error(`[Crawler] ✗ Failed to register ${crawler.name}:`, error);
     }
   }
 
   const registeredCount = globalCrawlerManager.getAllAdapters().length;
-  console.log(`[Crawler] ✓ Total adapters registered: ${registeredCount}/${siteCrawlers.length}`);
+  console.log(
+    `[Crawler] ✓ Total adapters registered: ${registeredCount}/${siteCrawlers.length}`,
+  );
   crawlerInitialized = true;
 }
 
@@ -71,7 +77,7 @@ function initializeGlobalCrawler() {
 try {
   initializeGlobalCrawler();
 } catch (error) {
-  console.error('[Crawler] Failed to initialize global crawler:', error);
+  console.error("[Crawler] Failed to initialize global crawler:", error);
 }
 
 /**
@@ -82,23 +88,23 @@ export async function getCrawlerProgress(req: Request, res: Response) {
   const sessionId = req.query.sessionId as string;
 
   if (!sessionId) {
-    return res.status(400).json({ error: 'sessionId required' });
+    return res.status(400).json({ error: "sessionId required" });
   }
 
   // Setup SSE headers
-  res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.setHeader('Connection', 'keep-alive');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
 
   // Send initial connection confirmation
   sendEvent(res, {
-    type: 'start',
+    type: "start",
     timestamp: Date.now(),
     data: {
-      message: 'Connected to crawler progress stream'
-    }
+      message: "Connected to crawler progress stream",
+    },
   });
 
   console.log(`[SSE] Client connected for session: ${sessionId}`);
@@ -114,9 +120,9 @@ export async function getCrawlerProgress(req: Request, res: Response) {
     res.end();
   };
 
-  req.on('close', cleanup);
-  res.on('close', cleanup);
-  res.on('error', (error) => {
+  req.on("close", cleanup);
+  res.on("close", cleanup);
+  res.on("error", (error) => {
     console.error(`[SSE] Error for session ${sessionId}:`, error);
     cleanup();
   });
@@ -125,9 +131,9 @@ export async function getCrawlerProgress(req: Request, res: Response) {
   const keepAliveInterval = setInterval(() => {
     if (!res.destroyed && !res.writableEnded) {
       sendEvent(res, {
-        type: 'ping',
+        type: "ping",
         timestamp: Date.now(),
-        data: { message: 'Connection active' }
+        data: { message: "Connection active" },
       });
     }
   }, 15000);
@@ -144,25 +150,25 @@ export async function startCrawlerSession(req: Request, res: Response) {
     maxRecipes = 500,
     cuisines = [],
     sources = [],
-    mode = 'legacy', // 'legacy' or 'global'
+    mode = "legacy", // 'legacy' or 'global'
     extractFlavorData = false,
     autoLearn = true,
   } = req.body;
 
   if (!sessionId) {
-    return res.status(400).json({ error: 'sessionId required' });
+    return res.status(400).json({ error: "sessionId required" });
   }
 
   res.json({
     success: true,
     sessionId,
     mode,
-    message: `Crawler session started in ${mode} mode. Connect to /api/echo/crawler/progress for updates.`
+    message: `Crawler session started in ${mode} mode. Connect to /api/echo/crawler/progress for updates.`,
   });
 
   // Start crawling asynchronously (with small delay to let SSE connection establish)
   setTimeout(() => {
-    if (mode === 'global') {
+    if (mode === "global") {
       crawlGlobalAndReportProgress(sessionId, {
         maxRecipes,
         cuisines,
@@ -181,7 +187,7 @@ export async function startCrawlerSession(req: Request, res: Response) {
  */
 async function crawlAndReportProgress(
   sessionId: string,
-  options: { maxRecipes: number; cuisines: string[]; sources: string[] }
+  options: { maxRecipes: number; cuisines: string[]; sources: string[] },
 ) {
   const connection = activeConnections.get(sessionId);
   const knowledgeState = {
@@ -194,19 +200,19 @@ async function crawlAndReportProgress(
   try {
     // Stage 1: Crawl recipes
     const crawledRecipes = await webRecipeCrawler.crawlRecipes({
-      query: '*',
+      query: "*",
       limit: options.maxRecipes,
     });
 
     if (connection) {
       sendEvent(connection, {
-        type: 'recipe',
+        type: "recipe",
         timestamp: Date.now(),
         data: {
           message: `Crawled ${crawledRecipes.length} recipes`,
           recipesProcessed: 0,
           totalRecipes: crawledRecipes.length,
-        }
+        },
       });
     }
 
@@ -221,7 +227,10 @@ async function crawlAndReportProgress(
           knowledgeState.ingredientsLearned.add(ingredient.name);
 
           // Simple check: if ingredient contains unusual characters or is longer than typical, flag it
-          if (ingredient.name.length > 20 || /[^a-z\s\-]/i.test(ingredient.name)) {
+          if (
+            ingredient.name.length > 20 ||
+            /[^a-z\s\-]/i.test(ingredient.name)
+          ) {
             unknownTerms.push(ingredient.name);
           }
         }
@@ -240,12 +249,14 @@ async function crawlAndReportProgress(
       }
 
       // Add unknown terms to tracking
-      unknownTerms.forEach(term => knowledgeState.unknownTermsIdentified.add(term));
+      unknownTerms.forEach((term) =>
+        knowledgeState.unknownTermsIdentified.add(term),
+      );
 
       if (connection) {
         // Always send recipe progress
         sendEvent(connection, {
-          type: 'recipe',
+          type: "recipe",
           timestamp: Date.now(),
           data: {
             currentUrl: recipe.url,
@@ -253,25 +264,35 @@ async function crawlAndReportProgress(
             recipesProcessed: i + 1,
             totalRecipes: crawledRecipes.length,
             message: `Processing: ${recipe.title}`,
-          }
+          },
         });
 
         // Send knowledge update frequently
-        if ((i + 1) % 5 === 0 || unknownTerms.length > 0 || i === crawledRecipes.length - 1) {
+        if (
+          (i + 1) % 5 === 0 ||
+          unknownTerms.length > 0 ||
+          i === crawledRecipes.length - 1
+        ) {
           sendEvent(connection, {
-            type: 'knowledge',
+            type: "knowledge",
             timestamp: Date.now(),
             data: {
               currentRecipe: recipe.title,
-              ingredientsFound: Array.from(knowledgeState.ingredientsLearned).slice(-10),
-              techniqueFound: Array.from(knowledgeState.techniquesLearned).slice(-5),
+              ingredientsFound: Array.from(
+                knowledgeState.ingredientsLearned,
+              ).slice(-10),
+              techniqueFound: Array.from(
+                knowledgeState.techniquesLearned,
+              ).slice(-5),
               knowledgeUpdates: {
                 ingredientsTaught: knowledgeState.ingredientsLearned.size,
                 techniquesLearned: knowledgeState.techniquesLearned.size,
                 flavorProfilesAnalyzed: knowledgeState.flavorProfilesAnalyzed,
-                unknownTermsIdentified: Array.from(knowledgeState.unknownTermsIdentified),
-              }
-            }
+                unknownTermsIdentified: Array.from(
+                  knowledgeState.unknownTermsIdentified,
+                ),
+              },
+            },
           });
         }
       }
@@ -283,65 +304,67 @@ async function crawlAndReportProgress(
 
     if (unknownTermsList.length > 0 && connection) {
       // Initialize learning session
-      knowledgeUpdater.createSession(sessionId, 'crawler');
+      knowledgeUpdater.createSession(sessionId, "crawler");
 
       // Send learning start message
       sendEvent(connection, {
-        type: 'learning',
+        type: "learning",
         timestamp: Date.now(),
         data: {
           message: `🧠 Starting auto-learning: Enriching ${unknownTermsList.length} unknown ingredients/terms...`,
           termsBeingLearned: unknownTermsList.slice(0, 10),
-        }
+        },
       });
 
       try {
         // Enrich terms using LLM (with rate limiting)
         const enrichmentResults = await llmKnowledgeEnricher.enrichTerms(
           unknownTermsList,
-          3 // Max 3 concurrent requests
+          3, // Max 3 concurrent requests
         );
 
         if (enrichmentResults.length > 0) {
           // Extract knowledge items from enrichment results
-          const knowledgeItems = enrichmentResults.map(result => result.knowledge);
+          const knowledgeItems = enrichmentResults.map(
+            (result) => result.knowledge,
+          );
 
           // Send progress during storage
           sendEvent(connection, {
-            type: 'learning',
+            type: "learning",
             timestamp: Date.now(),
             data: {
               message: `📚 Storing ${knowledgeItems.length} learned concepts...`,
               termsLearned: enrichmentResults.length,
-            }
+            },
           });
 
           // Store enriched knowledge
           learningStats = await knowledgeUpdater.storeEnrichedKnowledge(
             sessionId,
-            knowledgeItems
+            knowledgeItems,
           );
 
           // Send learning completion stats
           sendEvent(connection, {
-            type: 'learning',
+            type: "learning",
             timestamp: Date.now(),
             data: {
               message: `✅ Auto-learning complete: ${learningStats.successful} concepts learned, ${learningStats.failed} failed`,
               termsLearned: learningStats.successful,
               termsFailedToLearn: learningStats.failed,
-            }
+            },
           });
         }
       } catch (error) {
-        console.error('Auto-learning failed:', error);
+        console.error("Auto-learning failed:", error);
         sendEvent(connection, {
-          type: 'learning',
+          type: "learning",
           timestamp: Date.now(),
           data: {
-            message: `⚠️ Auto-learning encountered an error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            message: `⚠️ Auto-learning encountered an error: ${error instanceof Error ? error.message : "Unknown error"}`,
             termsFailedToLearn: unknownTermsList.length,
-          }
+          },
         });
       }
 
@@ -353,34 +376,36 @@ async function crawlAndReportProgress(
     if (connection) {
       const sessionSummary = knowledgeUpdater.getSessionStats(sessionId);
       sendEvent(connection, {
-        type: 'complete',
+        type: "complete",
         timestamp: Date.now(),
         data: {
-          message: '🎉 Crawl and auto-learning complete!',
+          message: "🎉 Crawl and auto-learning complete!",
           knowledgeUpdates: {
             ingredientsTaught: knowledgeState.ingredientsLearned.size,
             techniquesLearned: knowledgeState.techniquesLearned.size,
             flavorProfilesAnalyzed: knowledgeState.flavorProfilesAnalyzed,
-            unknownTermsIdentified: Array.from(knowledgeState.unknownTermsIdentified),
+            unknownTermsIdentified: Array.from(
+              knowledgeState.unknownTermsIdentified,
+            ),
             autoLearningComplete: true,
             autoLearningStats: {
               successful: learningStats.successful,
               failed: learningStats.failed,
-            }
-          }
-        }
+            },
+          },
+        },
       });
     }
-
   } catch (error) {
     if (connection) {
       sendEvent(connection, {
-        type: 'error',
+        type: "error",
         timestamp: Date.now(),
         data: {
-          error: error instanceof Error ? error.message : 'Unknown error occurred',
-          message: 'Crawler failed'
-        }
+          error:
+            error instanceof Error ? error.message : "Unknown error occurred",
+          message: "Crawler failed",
+        },
       });
     }
   }
@@ -397,7 +422,7 @@ async function crawlGlobalAndReportProgress(
     sources: string[];
     extractFlavorData: boolean;
     autoLearn: boolean;
-  }
+  },
 ) {
   const connection = activeConnections.get(sessionId);
   const knowledgeState = {
@@ -411,24 +436,33 @@ async function crawlGlobalAndReportProgress(
   try {
     if (connection) {
       sendEvent(connection, {
-        type: 'recipe',
+        type: "recipe",
         timestamp: Date.now(),
         data: {
-          message: '🌍 Starting Phase 4 Global Crawler - Multi-source learning in progress...'
-        }
+          message:
+            "🌍 Starting Phase 4 Global Crawler - Multi-source learning in progress...",
+        },
       });
     }
 
     // Stage 1: Crawl from all active sources globally
     const crawlerOptions = {
-      query: '*',
+      query: "*",
       limit: options.maxRecipes,
       extractFlavorData: options.extractFlavorData,
     };
 
-    const activeAdapters = globalCrawlerManager.getAllAdapters().filter(a => a.isActive);
-    console.log('[Crawler] Starting global crawl with options:', crawlerOptions);
-    console.log('[Crawler] Active adapters:', activeAdapters.map(a => a.name).join(', '));
+    const activeAdapters = globalCrawlerManager
+      .getAllAdapters()
+      .filter((a) => a.isActive);
+    console.log(
+      "[Crawler] Starting global crawl with options:",
+      crawlerOptions,
+    );
+    console.log(
+      "[Crawler] Active adapters:",
+      activeAdapters.map((a) => a.name).join(", "),
+    );
     console.log(`[Crawler] Total active adapters: ${activeAdapters.length}`);
 
     const crawlStartTime = Date.now();
@@ -436,17 +470,19 @@ async function crawlGlobalAndReportProgress(
       await globalCrawlerManager.crawlGlobal(crawlerOptions, 5);
 
     const crawlDuration = Date.now() - crawlStartTime;
-    console.log(`[Crawler] ✓ Crawl completed in ${crawlDuration}ms: ${crawledRecipes.length} recipes found`);
+    console.log(
+      `[Crawler] ✓ Crawl completed in ${crawlDuration}ms: ${crawledRecipes.length} recipes found`,
+    );
 
     if (connection) {
       sendEvent(connection, {
-        type: 'recipe',
+        type: "recipe",
         timestamp: Date.now(),
         data: {
-          message: `✅ Crawled ${crawledRecipes.length} recipes from ${globalCrawlerManager.getAllAdapters().filter(a => a.isActive).length} global sources`,
+          message: `✅ Crawled ${crawledRecipes.length} recipes from ${globalCrawlerManager.getAllAdapters().filter((a) => a.isActive).length} global sources`,
           recipesProcessed: 0,
           totalRecipes: crawledRecipes.length,
-        }
+        },
       });
     }
 
@@ -461,7 +497,10 @@ async function crawlGlobalAndReportProgress(
       if (recipe.ingredients) {
         for (const ingredient of recipe.ingredients) {
           knowledgeState.ingredientsLearned.add(ingredient.name);
-          if (ingredient.name.length > 20 || /[^a-z\s\-]/i.test(ingredient.name)) {
+          if (
+            ingredient.name.length > 20 ||
+            /[^a-z\s\-]/i.test(ingredient.name)
+          ) {
             knowledgeState.unknownTermsIdentified.add(ingredient.name);
           }
         }
@@ -486,7 +525,7 @@ async function crawlGlobalAndReportProgress(
 
         // Always send recipe progress
         sendEvent(connection, {
-          type: 'recipe',
+          type: "recipe",
           timestamp: Date.now(),
           data: {
             currentRecipe: recipe.title,
@@ -494,7 +533,7 @@ async function crawlGlobalAndReportProgress(
             recipesProcessed: i + 1,
             totalRecipes: crawledRecipes.length,
             message,
-          }
+          },
         });
 
         // Send knowledge update every 5 recipes
@@ -503,7 +542,7 @@ async function crawlGlobalAndReportProgress(
           const techniqueCount = knowledgeState.techniquesLearned.size;
 
           sendEvent(connection, {
-            type: 'knowledge',
+            type: "knowledge",
             timestamp: Date.now(),
             data: {
               message: `Learned: ${ingredientCount} ingredients, ${techniqueCount} techniques, ${knowledgeState.flavorProfilesAnalyzed} flavor profiles`,
@@ -511,9 +550,11 @@ async function crawlGlobalAndReportProgress(
                 ingredientsTaught: ingredientCount,
                 techniquesLearned: techniqueCount,
                 flavorProfilesAnalyzed: knowledgeState.flavorProfilesAnalyzed,
-                unknownTermsIdentified: Array.from(knowledgeState.unknownTermsIdentified),
-              }
-            }
+                unknownTermsIdentified: Array.from(
+                  knowledgeState.unknownTermsIdentified,
+                ),
+              },
+            },
           });
         }
       }
@@ -523,85 +564,90 @@ async function crawlGlobalAndReportProgress(
     if (options.extractFlavorData && flavorMatrix.length > 0) {
       if (connection) {
         sendEvent(connection, {
-          type: 'knowledge',
+          type: "knowledge",
           timestamp: Date.now(),
           data: {
-            message: `📊 Building global flavor matrix from ${flavorMatrix.length} recipes...`
-          }
+            message: `📊 Building global flavor matrix from ${flavorMatrix.length} recipes...`,
+          },
         });
       }
 
-      const { stored, failed } = await flavorMatrixService.storeEntries(flavorMatrix);
+      const { stored, failed } =
+        await flavorMatrixService.storeEntries(flavorMatrix);
 
       if (connection) {
         sendEvent(connection, {
-          type: 'knowledge',
+          type: "knowledge",
           timestamp: Date.now(),
           data: {
-            message: `✅ Flavor matrix updated: ${stored} recipes analyzed, ${failed} failed`
-          }
+            message: `✅ Flavor matrix updated: ${stored} recipes analyzed, ${failed} failed`,
+          },
         });
       }
     }
 
     // Stage 4: Auto-Learning
     if (options.autoLearn) {
-      const unknownTermsList = Array.from(knowledgeState.unknownTermsIdentified);
+      const unknownTermsList = Array.from(
+        knowledgeState.unknownTermsIdentified,
+      );
       let learningStats = { successful: 0, failed: 0 };
 
       if (unknownTermsList.length > 0) {
-        knowledgeUpdater.createSession(sessionId, 'crawler');
+        knowledgeUpdater.createSession(sessionId, "crawler");
 
         if (connection) {
           sendEvent(connection, {
-            type: 'learning',
+            type: "learning",
             timestamp: Date.now(),
             data: {
               message: `🧠 Auto-Learning: Enriching ${unknownTermsList.length} unknown terms from global recipes...`,
               termsBeingLearned: unknownTermsList.slice(0, 10),
-            }
+            },
           });
         }
 
         try {
           const enrichmentResults = await llmKnowledgeEnricher.enrichTerms(
             unknownTermsList,
-            3
+            3,
           );
 
           if (enrichmentResults.length > 0) {
-            const knowledgeItems = enrichmentResults.map(result => result.knowledge);
+            const knowledgeItems = enrichmentResults.map(
+              (result) => result.knowledge,
+            );
 
             if (connection) {
               sendEvent(connection, {
-                type: 'learning',
+                type: "learning",
                 timestamp: Date.now(),
                 data: {
                   message: `📚 Storing ${knowledgeItems.length} globally-sourced concepts...`,
                   termsLearned: enrichmentResults.length,
-                }
+                },
               });
             }
 
             learningStats = await knowledgeUpdater.storeEnrichedKnowledge(
               sessionId,
-              knowledgeItems
+              knowledgeItems,
             );
 
             if (connection) {
               sendEvent(connection, {
-                type: 'learning',
+                type: "learning",
                 timestamp: Date.now(),
                 data: {
                   message: `✅ Global learning complete: ${learningStats.successful} concepts learned`,
                   termsLearned: learningStats.successful,
                   termsFailedToLearn: learningStats.failed,
-                }
+                },
               });
             }
           }
         } catch (error) {
-          console.error('Global auto-learning failed:', error);
+          console.error("Global auto-learning failed:", error);
         }
 
         knowledgeUpdater.completeSession(sessionId);
@@ -612,7 +658,7 @@ async function crawlGlobalAndReportProgress(
     if (connection) {
       const flavorMatrixStats = flavorMatrixService.getStatistics();
       sendEvent(connection, {
-        type: 'complete',
+        type: "complete",
         timestamp: Date.now(),
         data: {
           message: `🎉 Phase 4 Global Crawl Complete! 🌍`,
@@ -620,7 +666,9 @@ async function crawlGlobalAndReportProgress(
             ingredientsTaught: knowledgeState.ingredientsLearned.size,
             techniquesLearned: knowledgeState.techniquesLearned.size,
             flavorProfilesAnalyzed: knowledgeState.flavorProfilesAnalyzed,
-            unknownTermsIdentified: Array.from(knowledgeState.unknownTermsIdentified),
+            unknownTermsIdentified: Array.from(
+              knowledgeState.unknownTermsIdentified,
+            ),
             sourcesUsed: Array.from(knowledgeState.sourcesUsed),
             flavorMatrixStats: {
               totalRecipes: flavorMatrixStats.totalRecipes,
@@ -628,23 +676,23 @@ async function crawlGlobalAndReportProgress(
               totalIngredients: flavorMatrixStats.totalIngredients,
               totalTechniques: flavorMatrixStats.totalTechniques,
             },
-          }
-        }
+          },
+        },
       });
     }
-
   } catch (error) {
     if (connection) {
       sendEvent(connection, {
-        type: 'error',
+        type: "error",
         timestamp: Date.now(),
         data: {
-          error: error instanceof Error ? error.message : 'Unknown error occurred',
-          message: 'Global crawler failed'
-        }
+          error:
+            error instanceof Error ? error.message : "Unknown error occurred",
+          message: "Global crawler failed",
+        },
       });
     }
-    console.error('Global crawling error:', error);
+    console.error("Global crawling error:", error);
   }
 }
 
@@ -658,7 +706,7 @@ function sendEvent(connection: Response, event: CrawlerProgressEvent) {
       connection.write(`data: ${data}\n\n`);
     }
   } catch (e) {
-    console.error('Error sending SSE event:', e);
+    console.error("Error sending SSE event:", e);
     // Connection may be closed
   }
 }
