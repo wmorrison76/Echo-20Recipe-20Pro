@@ -150,7 +150,10 @@ export default function RecipeTemplate() {
   };
 
   const extra = ((recipe as any)?.extra ?? {}) as Record<string, any>;
-  const serverNotes = (extra?.serverNotes ?? extra?.recipe ?? {}) as Record<string, any>;
+  const serverNotes = (extra?.serverNotes ?? extra?.recipe ?? {}) as Record<
+    string,
+    any
+  >;
 
   const basePortionCount = pickNumber(
     serverNotes?.portionCount,
@@ -208,10 +211,14 @@ export default function RecipeTemplate() {
     totals?: MacroTotals;
   };
 
-  const Nut = nutrition as (NutritionAnalysis | null);
+  const Nut = nutrition as NutritionAnalysis | null;
   const labelPortion: MacroTotals | null = (() => {
     if (!Nut) return null;
-    if (Nut.perServing && Number.isFinite(basePortionCount) && (basePortionCount ?? 0) > 0) {
+    if (
+      Nut.perServing &&
+      Number.isFinite(basePortionCount) &&
+      (basePortionCount ?? 0) > 0
+    ) {
       return Nut.perServing;
     }
     return Nut.totals;
@@ -219,7 +226,8 @@ export default function RecipeTemplate() {
   const cal =
     labelPortion?.calories ?? (recipe as any)?.extra?.nutrition?.calories ?? "";
   const fat = labelPortion?.fat ?? (recipe as any)?.extra?.nutrition?.fat ?? "";
-  const carbs = labelPortion?.carbs ?? (recipe as any)?.extra?.nutrition?.carbs ?? "";
+  const carbs =
+    labelPortion?.carbs ?? (recipe as any)?.extra?.nutrition?.carbs ?? "";
   const protein =
     labelPortion?.protein ?? (recipe as any)?.extra?.nutrition?.protein ?? "";
 
