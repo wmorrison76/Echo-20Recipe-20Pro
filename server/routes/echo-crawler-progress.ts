@@ -39,6 +39,16 @@ interface CrawlerProgressEvent {
 // Store active SSE connections for a user session
 const activeConnections = new Map<string, Response>();
 
+// Initialize Phase 4 global crawler with all site adapters
+function initializeGlobalCrawler() {
+  for (const crawler of siteCrawlers) {
+    globalCrawlerManager.registerAdapter(crawler);
+  }
+}
+
+// Initialize on module load
+initializeGlobalCrawler();
+
 /**
  * GET /api/echo/crawler/progress?sessionId=xxx
  * Server-Sent Events endpoint for real-time crawler progress
