@@ -18,6 +18,7 @@ import { CollaborationProvider } from "@/context/CollaborationContext";
 import { FuzzySuggestionManager } from "@/components/FuzzySuggestionManager";
 import { KeyboardShortcutsProvider } from "@/context/KeyboardShortcutsContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { CrawlerProvider } from "@/context/CrawlerContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 // Initialize Sentry for error tracking
