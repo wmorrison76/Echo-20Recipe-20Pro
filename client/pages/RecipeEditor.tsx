@@ -991,9 +991,9 @@ function IngredientsTable({ recipeId }: { recipeId: string }) {
               </td>
               <td className="p-1">
                 <input
-                  value={r.unit}
-                  onChange={(e) => setRow(i, { unit: e.target.value })}
-                  className="w-24 rounded border bg-background px-2 py-1"
+                  value={r.unit.toUpperCase()}
+                  onChange={(e) => setRow(i, { unit: e.target.value.toUpperCase() })}
+                  className="w-24 rounded border bg-background px-2 py-1 uppercase"
                   data-fuzzy-scope="tags"
                   data-fuzzy-min="1"
                 />
