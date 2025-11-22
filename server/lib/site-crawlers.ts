@@ -798,7 +798,7 @@ export class TarlaDalalCrawler extends HTMLRecipeCrawlerAdapter {
         ],
         instructions: ['Marinate chicken', 'Cook in tandoor or pan', 'Make tomato cream sauce', 'Combine and simmer'],
         tags: ['indian', 'chicken', 'curry', 'restaurant-style'],
-        flavor: { sweet: 2, salty: 6, sour: 2, bitter: 1, umami: 8, spicy: 4, richness: 9, brightness: 2 },
+        flavor: { sweet: 2, salty: 6, sour: 2, bitter: 1, umami: 8 },
         crawledAt: Date.now(),
       },
     ];
