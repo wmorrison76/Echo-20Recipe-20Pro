@@ -691,7 +691,7 @@ export class JustOneCookbookCrawler extends HTMLRecipeCrawlerAdapter {
         ],
         instructions: ['Heat dashi broth', 'Dissolve miso paste', 'Add tofu and seaweed', 'Serve hot'],
         tags: ['japanese', 'soup', 'comfort-food'],
-        flavor: { sweet: 1, salty: 5, sour: 1, bitter: 1, umami: 8, spicy: 0, richness: 3, brightness: 2 },
+        flavor: { sweet: 1, salty: 5, sour: 1, bitter: 1, umami: 8 },
         crawledAt: Date.now(),
       },
     ];
