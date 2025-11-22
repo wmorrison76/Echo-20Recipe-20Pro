@@ -4,6 +4,7 @@ import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { AlertCircle, Play, X, Zap, Brain, BookOpen } from 'lucide-react';
 import { Progress } from '../ui/progress';
+import { TrainingReportPanel } from './TrainingReportPanel';
 
 interface KnowledgeUpdate {
   ingredientsTaught: number;
