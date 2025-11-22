@@ -933,7 +933,7 @@ function IngredientsTable({ recipeId }: { recipeId: string }) {
     if (!recipe) return;
     const next = rows.map((r, i) => (i === idx ? { ...r, ...patch } : r)).map((row) => ({
       qty: normalizeValue(row.qty).trim(),
-      unit: normalizeValue(row.unit).trim(),
+      unit: normalizeValue(row.unit).trim().toUpperCase(),
       item: normalizeValue(row.item).trim(),
       prep: normalizeValue(row.prep).trim(),
       yield: normalizeValue(row.yield).trim(),
