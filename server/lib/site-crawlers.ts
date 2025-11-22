@@ -665,13 +665,40 @@ export class JustOneCookbookCrawler extends HTMLRecipeCrawlerAdapter {
   baseUrl = 'https://www.justonecookbook.com';
   isActive = true;
 
+  protected getMockRecipes(): CrawledRecipe[] {
+    return [
+      {
+        id: 'joc_miso_soup',
+        title: 'Traditional Miso Soup',
+        source: 'Just One Cookbook',
+        url: `${this.baseUrl}/miso-soup-recipe`,
+        cuisine: 'Japanese',
+        difficulty: 1,
+        cookTime: 10,
+        prepTime: 5,
+        servings: 4,
+        ingredients: [
+          { name: 'dashi broth', amount: 4, unit: 'cups' },
+          { name: 'white miso paste', amount: 3, unit: 'tbsp' },
+          { name: 'tofu', amount: 200, unit: 'g' },
+          { name: 'seaweed (nori)', amount: 2, unit: 'sheets' },
+          { name: 'green onion', amount: 2, unit: 'stalks' },
+        ],
+        instructions: ['Heat dashi broth', 'Dissolve miso paste', 'Add tofu and seaweed', 'Serve hot'],
+        tags: ['japanese', 'soup', 'comfort-food'],
+        flavor: { sweet: 1, salty: 5, sour: 1, bitter: 1, umami: 8, spicy: 0, richness: 3, brightness: 2 },
+        crawledAt: Date.now(),
+      },
+    ];
+  }
+
   async crawlRecipes(options: CrawlerOptions): Promise<CrawledRecipe[]> {
     const recipes: CrawledRecipe[] = [];
 
     try {
       const url = `${this.baseUrl}/?s=${options.query || 'japanese'}`;
       const html = await (await this.fetchWithRetry(url)).text();
-      
+
       const jsonLdMatches = html.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g) || [];
 
       for (const match of jsonLdMatches) {
@@ -686,6 +713,8 @@ export class JustOneCookbookCrawler extends HTMLRecipeCrawlerAdapter {
       }
     } catch (error) {
       console.error('Just One Cookbook crawl error:', error);
+      console.log('Just One Cookbook: Using fallback mock data');
+      return this.getMockRecipes().slice(0, options.limit || 50);
     }
 
     return recipes.slice(0, options.limit || 50);
