@@ -40,6 +40,7 @@ import SubRecipePicker, {
   type SubRecipeOption,
 } from "@/components/SubRecipePicker";
 import YieldLabForm from "@/components/YieldLabForm";
+import { CulinaryAutocompleteInput } from "@/components/CulinaryAutocompleteInput";
 import { useYieldStore } from "@/context/YieldContext";
 import { usePageToolbar } from "@/context/PageToolbarContext";
 import { useCollaboration } from "@/context/CollaborationContext";
@@ -4061,7 +4062,7 @@ const RecipeInputPage = () => {
                   "⅗": "3/5",
                   "⅘": "4/5",
                   "⅙": "1/6",
-                  "⅚": "5/6",
+                  "���": "5/6",
                   "⅛": "1/8",
                   "⅜": "3/8",
                   "⅝": "5/8",
