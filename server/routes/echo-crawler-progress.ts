@@ -401,8 +401,6 @@ async function crawlGlobalAndReportProgress(
 ) {
   const connection = activeConnections.get(sessionId);
   const knowledgeState = {
-    ingredientsTaught: 0,
-    techniquesLearnedCount: 0,
     flavorProfilesAnalyzed: 0,
     unknownTermsIdentified: new Set<string>(),
     ingredientsLearned: new Set<string>(),
