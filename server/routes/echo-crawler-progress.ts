@@ -429,13 +429,17 @@ async function crawlGlobalAndReportProgress(
       extractFlavorData: options.extractFlavorData,
     };
 
+    const activeAdapters = globalCrawlerManager.getAllAdapters().filter(a => a.isActive);
     console.log('[Crawler] Starting global crawl with options:', crawlerOptions);
-    console.log('[Crawler] Active adapters:', globalCrawlerManager.getAllAdapters().filter(a => a.isActive).map(a => a.name));
+    console.log('[Crawler] Active adapters:', activeAdapters.map(a => a.name).join(', '));
+    console.log(`[Crawler] Total active adapters: ${activeAdapters.length}`);
 
+    const crawlStartTime = Date.now();
     const { recipes: crawledRecipes, flavorMatrix } =
       await globalCrawlerManager.crawlGlobal(crawlerOptions, 5);
 
-    console.log(`[Crawler] Crawl completed: ${crawledRecipes.length} recipes found`);
+    const crawlDuration = Date.now() - crawlStartTime;
+    console.log(`[Crawler] ✓ Crawl completed in ${crawlDuration}ms: ${crawledRecipes.length} recipes found`);
 
     if (connection) {
       sendEvent(connection, {
