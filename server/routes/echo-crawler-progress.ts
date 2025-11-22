@@ -350,6 +350,238 @@ async function crawlAndReportProgress(
 }
 
 /**
+ * Phase 4: Global crawling function with multi-source support
+ */
+async function crawlGlobalAndReportProgress(
+  sessionId: string,
+  options: {
+    maxRecipes: number;
+    cuisines: string[];
+    sources: string[];
+    extractFlavorData: boolean;
+    autoLearn: boolean;
+  }
+) {
+  const connection = activeConnections.get(sessionId);
+  const knowledgeState = {
+    ingredientsTaught: 0,
+    techniquesLearned: 0,
+    flavorProfilesAnalyzed: 0,
+    unknownTermsIdentified: new Set<string>(),
+    ingredientsLearned: new Set<string>(),
+    techniquesLearned: new Set<string>(),
+    sourcesUsed: new Set<string>(),
+  };
+
+  try {
+    if (connection) {
+      sendEvent(connection, {
+        type: 'recipe',
+        timestamp: Date.now(),
+        data: {
+          message: '🌍 Starting Phase 4 Global Crawler - Multi-source learning in progress...'
+        }
+      });
+    }
+
+    // Stage 1: Crawl from all active sources globally
+    const crawlerOptions = {
+      query: '*',
+      limit: options.maxRecipes,
+      extractFlavorData: options.extractFlavorData,
+    };
+
+    const { recipes: crawledRecipes, flavorMatrix } =
+      await globalCrawlerManager.crawlGlobal(crawlerOptions, 5);
+
+    if (connection) {
+      sendEvent(connection, {
+        type: 'recipe',
+        timestamp: Date.now(),
+        data: {
+          message: `✅ Crawled ${crawledRecipes.length} recipes from ${globalCrawlerManager.getAllAdapters().filter(a => a.isActive).length} global sources`,
+          recipesProcessed: 0,
+          totalRecipes: crawledRecipes.length,
+        }
+      });
+    }
+
+    // Stage 2: Process recipes and extract flavor data
+    let flavorCount = 0;
+    for (let i = 0; i < crawledRecipes.length; i++) {
+      const recipe = crawledRecipes[i];
+
+      knowledgeState.sourcesUsed.add(recipe.source);
+
+      if (connection && i % 10 === 0) {
+        sendEvent(connection, {
+          type: 'recipe',
+          timestamp: Date.now(),
+          data: {
+            currentRecipe: recipe.title,
+            currentUrl: recipe.url,
+            recipesProcessed: i + 1,
+            totalRecipes: crawledRecipes.length,
+            message: `Processing: ${recipe.title} (${recipe.source})`,
+          }
+        });
+      }
+
+      // Extract ingredients and techniques
+      if (recipe.ingredients) {
+        for (const ingredient of recipe.ingredients) {
+          knowledgeState.ingredientsLearned.add(ingredient.name);
+          if (ingredient.name.length > 20 || /[^a-z\s\-]/i.test(ingredient.name)) {
+            knowledgeState.unknownTermsIdentified.add(ingredient.name);
+          }
+        }
+      }
+
+      if (recipe.techniques) {
+        for (const technique of recipe.techniques) {
+          knowledgeState.techniquesLearned.add(technique);
+        }
+      }
+
+      if (recipe.flavor) {
+        flavorCount++;
+      }
+    }
+
+    knowledgeState.ingredientsTaught = knowledgeState.ingredientsLearned.size;
+    knowledgeState.techniquesLearned = knowledgeState.techniquesLearned.size;
+    knowledgeState.flavorProfilesAnalyzed = flavorCount;
+
+    // Stage 3: Store flavor matrix entries
+    if (options.extractFlavorData && flavorMatrix.length > 0) {
+      if (connection) {
+        sendEvent(connection, {
+          type: 'knowledge',
+          timestamp: Date.now(),
+          data: {
+            message: `📊 Building global flavor matrix from ${flavorMatrix.length} recipes...`
+          }
+        });
+      }
+
+      const { stored, failed } = await flavorMatrixService.storeEntries(flavorMatrix);
+
+      if (connection) {
+        sendEvent(connection, {
+          type: 'knowledge',
+          timestamp: Date.now(),
+          data: {
+            message: `✅ Flavor matrix updated: ${stored} recipes analyzed, ${failed} failed`
+          }
+        });
+      }
+    }
+
+    // Stage 4: Auto-Learning
+    if (options.autoLearn) {
+      const unknownTermsList = Array.from(knowledgeState.unknownTermsIdentified);
+      let learningStats = { successful: 0, failed: 0 };
+
+      if (unknownTermsList.length > 0) {
+        knowledgeUpdater.createSession(sessionId, 'crawler');
+
+        if (connection) {
+          sendEvent(connection, {
+            type: 'learning',
+            timestamp: Date.now(),
+            data: {
+              message: `🧠 Auto-Learning: Enriching ${unknownTermsList.length} unknown terms from global recipes...`,
+              termsBeingLearned: unknownTermsList.slice(0, 10),
+            }
+          });
+        }
+
+        try {
+          const enrichmentResults = await llmKnowledgeEnricher.enrichTerms(
+            unknownTermsList,
+            3
+          );
+
+          if (enrichmentResults.length > 0) {
+            const knowledgeItems = enrichmentResults.map(result => result.knowledge);
+
+            if (connection) {
+              sendEvent(connection, {
+                type: 'learning',
+                timestamp: Date.now(),
+                data: {
+                  message: `📚 Storing ${knowledgeItems.length} globally-sourced concepts...`,
+                  termsLearned: enrichmentResults.length,
+                }
+              });
+            }
+
+            learningStats = await knowledgeUpdater.storeEnrichedKnowledge(
+              sessionId,
+              knowledgeItems
+            );
+
+            if (connection) {
+              sendEvent(connection, {
+                type: 'learning',
+                timestamp: Date.now(),
+                data: {
+                  message: `✅ Global learning complete: ${learningStats.successful} concepts learned`,
+                  termsLearned: learningStats.successful,
+                  termsFailedToLearn: learningStats.failed,
+                }
+              });
+            }
+          }
+        } catch (error) {
+          console.error('Global auto-learning failed:', error);
+        }
+
+        knowledgeUpdater.completeSession(sessionId);
+      }
+    }
+
+    // Final report
+    if (connection) {
+      const flavorMatrixStats = flavorMatrixService.getStatistics();
+      sendEvent(connection, {
+        type: 'complete',
+        timestamp: Date.now(),
+        data: {
+          message: `🎉 Phase 4 Global Crawl Complete! 🌍`,
+          knowledgeUpdates: {
+            ingredientsTaught: knowledgeState.ingredientsTaught,
+            techniquesLearned: knowledgeState.techniquesLearned,
+            flavorProfilesAnalyzed: knowledgeState.flavorProfilesAnalyzed,
+            unknownTermsIdentified: Array.from(knowledgeState.unknownTermsIdentified),
+            sourcesUsed: Array.from(knowledgeState.sourcesUsed),
+            flavorMatrixStats: {
+              totalRecipes: flavorMatrixStats.totalRecipes,
+              totalCuisines: flavorMatrixStats.totalCuisines,
+              totalIngredients: flavorMatrixStats.totalIngredients,
+              totalTechniques: flavorMatrixStats.totalTechniques,
+            },
+          }
+        }
+      });
+    }
+
+  } catch (error) {
+    if (connection) {
+      sendEvent(connection, {
+        type: 'error',
+        timestamp: Date.now(),
+        data: {
+          error: error instanceof Error ? error.message : 'Unknown error occurred',
+          message: 'Global crawler failed'
+        }
+      });
+    }
+    console.error('Global crawling error:', error);
+  }
+}
+
+/**
  * Helper function to send SSE events
  */
 function sendEvent(connection: Response, event: CrawlerProgressEvent) {
