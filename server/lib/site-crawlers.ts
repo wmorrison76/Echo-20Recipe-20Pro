@@ -129,7 +129,7 @@ export class AllRecipesCrawler extends HTMLRecipeCrawlerAdapter {
         ],
         instructions: ['Preheat oven to 375F', 'Brown meat', 'Layer noodles and sauce', 'Bake 45 minutes'],
         tags: ['italian', 'main-dish', 'pasta'],
-        flavor: { sweet: 2, salty: 6, sour: 4, bitter: 1, umami: 7, spicy: 2, richness: 8, brightness: 3 },
+        flavor: { sweet: 2, salty: 6, sour: 4, bitter: 1, umami: 7 },
         crawledAt: Date.now(),
       },
       {
@@ -153,7 +153,7 @@ export class AllRecipesCrawler extends HTMLRecipeCrawlerAdapter {
         ],
         instructions: ['Mix butter and sugar', 'Add eggs and vanilla', 'Mix in flour', 'Add chips', 'Bake at 375F for 12 minutes'],
         tags: ['dessert', 'cookies', 'american'],
-        flavor: { sweet: 8, salty: 2, sour: 1, bitter: 2, umami: 2, spicy: 1, richness: 7, brightness: 1 },
+        flavor: { sweet: 8, salty: 2, sour: 1, bitter: 2, umami: 2 },
         crawledAt: Date.now(),
       },
     ];
