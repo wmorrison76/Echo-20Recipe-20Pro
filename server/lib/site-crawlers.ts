@@ -588,7 +588,7 @@ export class FoodNetworkCrawler extends HTMLRecipeCrawlerAdapter {
         ],
         instructions: ['Season flour', 'Coat chicken', 'Fry in 350F oil until golden'],
         tags: ['american', 'chicken', 'fried'],
-        flavor: { sweet: 1, salty: 6, sour: 1, bitter: 1, umami: 6, spicy: 2, richness: 8, brightness: 1 },
+        flavor: { sweet: 1, salty: 6, sour: 1, bitter: 1, umami: 6 },
         crawledAt: Date.now(),
       },
     ];
