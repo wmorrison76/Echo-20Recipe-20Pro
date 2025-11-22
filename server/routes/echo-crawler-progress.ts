@@ -127,18 +127,20 @@ export async function startCrawlerSession(req: Request, res: Response) {
     message: `Crawler session started in ${mode} mode. Connect to /api/echo/crawler/progress for updates.`
   });
 
-  // Start crawling asynchronously
-  if (mode === 'global') {
-    crawlGlobalAndReportProgress(sessionId, {
-      maxRecipes,
-      cuisines,
-      sources,
-      extractFlavorData,
-      autoLearn,
-    });
-  } else {
-    crawlAndReportProgress(sessionId, { maxRecipes, cuisines, sources });
-  }
+  // Start crawling asynchronously (with small delay to let SSE connection establish)
+  setTimeout(() => {
+    if (mode === 'global') {
+      crawlGlobalAndReportProgress(sessionId, {
+        maxRecipes,
+        cuisines,
+        sources,
+        extractFlavorData,
+        autoLearn,
+      });
+    } else {
+      crawlAndReportProgress(sessionId, { maxRecipes, cuisines, sources });
+    }
+  }, 200);
 }
 
 /**
