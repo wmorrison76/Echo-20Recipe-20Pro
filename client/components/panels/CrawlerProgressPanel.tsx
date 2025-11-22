@@ -699,6 +699,79 @@ export function CrawlerProgressPanel({
         </Card>
       )}
 
+      {/* Flavor Matrix Statistics (Phase 4) */}
+      {crawlerMode === 'global' && flavorMatrixStats && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">🎨 Global Flavor Matrix</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="bg-indigo-50 dark:bg-indigo-900/20 p-3 rounded border border-indigo-200 dark:border-indigo-800">
+                <div className="text-xs font-medium text-indigo-600 dark:text-indigo-400 mb-1">
+                  Recipes Analyzed
+                </div>
+                <div className="text-2xl font-bold text-indigo-900 dark:text-indigo-100">
+                  {flavorMatrixStats.totalRecipes}
+                </div>
+              </div>
+
+              <div className="bg-violet-50 dark:bg-violet-900/20 p-3 rounded border border-violet-200 dark:border-violet-800">
+                <div className="text-xs font-medium text-violet-600 dark:text-violet-400 mb-1">
+                  Cuisines Mapped
+                </div>
+                <div className="text-2xl font-bold text-violet-900 dark:text-violet-100">
+                  {flavorMatrixStats.totalCuisines}
+                </div>
+              </div>
+
+              <div className="bg-fuchsia-50 dark:bg-fuchsia-900/20 p-3 rounded border border-fuchsia-200 dark:border-fuchsia-800">
+                <div className="text-xs font-medium text-fuchsia-600 dark:text-fuchsia-400 mb-1">
+                  Ingredients Profiled
+                </div>
+                <div className="text-2xl font-bold text-fuchsia-900 dark:text-fuchsia-100">
+                  {flavorMatrixStats.totalIngredients}
+                </div>
+              </div>
+
+              <div className="bg-pink-50 dark:bg-pink-900/20 p-3 rounded border border-pink-200 dark:border-pink-800">
+                <div className="text-xs font-medium text-pink-600 dark:text-pink-400 mb-1">
+                  Techniques Studied
+                </div>
+                <div className="text-2xl font-bold text-pink-900 dark:text-pink-100">
+                  {flavorMatrixStats.totalTechniques}
+                </div>
+              </div>
+            </div>
+
+            {/* Sources Used */}
+            {sourcesUsed.length > 0 && (
+              <div className="space-y-2">
+                <div className="text-sm font-medium">Sources Used ({sourcesUsed.length})</div>
+                <div className="flex flex-wrap gap-2">
+                  {sourcesUsed.map((source, i) => (
+                    <Badge
+                      key={i}
+                      variant="outline"
+                      className="text-xs"
+                    >
+                      {source}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded border border-blue-200 dark:border-blue-800">
+              <p className="text-sm text-blue-900 dark:text-blue-100">
+                ℹ️ The global flavor matrix aggregates culinary data across cuisines, techniques, and sensory descriptors.
+                This enables Echo to make flavor predictions and find ingredient substitutions.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Training Report */}
       {showReport && trainingReport && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
