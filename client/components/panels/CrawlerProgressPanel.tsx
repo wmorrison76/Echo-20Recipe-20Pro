@@ -522,7 +522,7 @@ export function CrawlerProgressPanel({
             {knowledge.unknownTermsIdentified.length > 0 && (
               <div className="space-y-2 bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded border border-yellow-200 dark:border-yellow-800">
                 <div className="text-sm font-medium text-yellow-900 dark:text-yellow-100">
-                  �� Unknown Terms (Learning Next)
+                  📚 Unknown Terms (Learning Next)
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {knowledge.unknownTermsIdentified.slice(0, 10).map((term, i) => (
@@ -545,6 +545,84 @@ export function CrawlerProgressPanel({
                 </div>
               </div>
             )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Auto-Learning Progress Section */}
+      {isLearning && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Brain className="w-5 h-5 animate-pulse" />
+              🧠 Auto-Learning Engine in Progress
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Learning Stats */}
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded border border-green-200 dark:border-green-800">
+                <div className="text-xs font-medium text-green-600 dark:text-green-400 mb-1">
+                  Concepts Learned
+                </div>
+                <div className="text-2xl font-bold text-green-900 dark:text-green-100">
+                  {termsLearned}
+                </div>
+              </div>
+
+              <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded border border-red-200 dark:border-red-800">
+                <div className="text-xs font-medium text-red-600 dark:text-red-400 mb-1">
+                  Failed to Learn
+                </div>
+                <div className="text-2xl font-bold text-red-900 dark:text-red-100">
+                  {termsFailedToLearn}
+                </div>
+              </div>
+
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded border border-blue-200 dark:border-blue-800">
+                <div className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">
+                  Success Rate
+                </div>
+                <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+                  {termsLearned + termsFailedToLearn > 0
+                    ? Math.round((termsLearned / (termsLearned + termsFailedToLearn)) * 100)
+                    : 0}%
+                </div>
+              </div>
+            </div>
+
+            {/* Terms Being Learned */}
+            {termsBeingLearned.length > 0 && (
+              <div className="space-y-2">
+                <div className="text-sm font-medium flex items-center gap-2">
+                  <BookOpen className="w-4 h-4" />
+                  Currently Learning
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {termsBeingLearned.slice(0, 8).map((term, i) => (
+                    <Badge
+                      key={i}
+                      className="text-xs bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100 animate-pulse"
+                    >
+                      {term}
+                    </Badge>
+                  ))}
+                  {termsBeingLearned.length > 8 && (
+                    <Badge className="text-xs bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100">
+                      +{termsBeingLearned.length - 8} more
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Learning Info */}
+            <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded border border-blue-200 dark:border-blue-800">
+              <p className="text-sm text-blue-900 dark:text-blue-100">
+                ℹ️ Echo is automatically learning from unknown ingredients and techniques discovered during crawling.
+                Each term is being enriched with detailed culinary knowledge using AI analysis.
+              </p>
+            </div>
           </CardContent>
         </Card>
       )}
