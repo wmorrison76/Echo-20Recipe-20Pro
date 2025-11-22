@@ -171,6 +171,15 @@ export function EchoTrainingDashboard({
           <AutomatedMultiDomainTraining />
         </TabsContent>
 
+        {/* Web Recipe Crawler Tab */}
+        <TabsContent value="crawler" className="py-4">
+          <CrawlerProgressPanel
+            onComplete={(stats) => {
+              console.log("Crawler completed with stats:", stats);
+            }}
+          />
+        </TabsContent>
+
         {/* System Status Tab */}
         <TabsContent value="status" className="space-y-4">
           <SystemHealthDashboard
