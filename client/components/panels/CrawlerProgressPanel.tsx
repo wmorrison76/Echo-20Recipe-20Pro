@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { AlertCircle, Play, X, Zap, Brain, BookOpen } from 'lucide-react';
 import { Progress } from '../ui/progress';
 import { TrainingReportPanel } from './TrainingReportPanel';
+import { useCrawler } from '@/context/CrawlerContext';
 
 interface KnowledgeUpdate {
   ingredientsTaught: number;
