@@ -184,6 +184,10 @@ export function CrawlerProgressPanel({
       setMessages([]);
       setRecipesProcessed(0);
       setTotalRecipes(0);
+      setIsLearning(false);
+      setTermsBeingLearned([]);
+      setTermsLearned(0);
+      setTermsFailedToLearn(0);
       setKnowledge({
         ingredientsTaught: 0,
         techniquesLearned: 0,
