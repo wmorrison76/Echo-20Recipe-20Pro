@@ -14,9 +14,10 @@ interface KnowledgeUpdate {
   };
 }
 
-interface CrawlerState {
+interface CrawlerSession {
+  id: string;
   isRunning: boolean;
-  sessionId: string | null;
+  sessionId: string;
   currentUrl: string;
   currentRecipe: string;
   recipesProcessed: number;
@@ -30,14 +31,25 @@ interface CrawlerState {
   sourcesUsed: string[];
   flavorMatrixStats: any;
   progress: number; // 0-100
+  startedAt: number;
+  completedAt?: number;
 }
 
 interface CrawlerContextType {
-  state: CrawlerState;
-  startCrawler: (options: { mode: 'legacy' | 'global'; extractFlavorData?: boolean; autoLearn?: boolean }) => Promise<void>;
-  stopCrawler: () => void;
-  resetCrawler: () => void;
-  clearMessages: () => void;
+  sessions: CrawlerSession[];
+  activeSessions: string[]; // IDs of currently running sessions
+  startCrawler: (options: {
+    mode: 'legacy' | 'global';
+    extractFlavorData?: boolean;
+    autoLearn?: boolean;
+    name?: string;
+  }) => Promise<string>; // Returns session ID
+  stopCrawler: (sessionId: string) => void;
+  stopAllCrawlers: () => void;
+  resetCrawler: (sessionId: string) => void;
+  resetAllCrawlers: () => void;
+  clearMessages: (sessionId: string) => void;
+  getSession: (sessionId: string) => CrawlerSession | undefined;
 }
 
 const CrawlerContext = createContext<CrawlerContextType | undefined>(undefined);
