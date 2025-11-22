@@ -450,7 +450,7 @@ async function crawlGlobalAndReportProgress(
   const getConnection = () => activeConnections.get(sessionId);
 
   try {
-    const connection = getConnection();
+    let connection = getConnection();
     if (connection) {
       sendEvent(connection, {
         type: "recipe",
