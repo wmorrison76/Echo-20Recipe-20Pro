@@ -80,6 +80,8 @@ const IngredientsGrid: React.FC<IngredientsGridProps> = ({
 }) => {
   const { t } = useTranslation();
   const [selectedSelectorRow, setSelectedSelectorRow] = useState<number | null>(null);
+  const [draggedRowIndex, setDraggedRowIndex] = useState<number | null>(null);
+  const [dragOverRowIndex, setDragOverRowIndex] = useState<number | null>(null);
 
   const handleIngredientSelect = (index: number, inventoryId: string, inventoryItem: any) => {
     try {
