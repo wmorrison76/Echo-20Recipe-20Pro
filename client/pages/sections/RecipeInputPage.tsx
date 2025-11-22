@@ -1923,10 +1923,14 @@ const RecipeInputPage = () => {
         (part) => String(part || "").trim().length > 0,
       );
       if (hasContent) active += 1;
-      const value = Number(String(row.yield || "").replace(/[^0-9.]/g, ""));
-      if (Number.isFinite(value)) {
-        sum += value;
-        count += 1;
+
+      // Only count yield for rows that have actual ingredient content
+      if (hasContent) {
+        const value = Number(String(row.yield || "").replace(/[^0-9.]/g, ""));
+        if (Number.isFinite(value) && value > 0) {
+          sum += value;
+          count += 1;
+        }
       }
     }
     return {
