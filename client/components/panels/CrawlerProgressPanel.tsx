@@ -2,66 +2,19 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
-import { AlertCircle, Play, X, Zap, Brain, BookOpen } from 'lucide-react';
+import { AlertCircle, Play, X, Zap, Brain, BookOpen, Plus, Trash2 } from 'lucide-react';
 import { Progress } from '../ui/progress';
 import { TrainingReportPanel } from './TrainingReportPanel';
 import { useCrawler } from '@/context/CrawlerContext';
 
-interface KnowledgeUpdate {
-  ingredientsTaught: number;
-  techniquesLearned: number;
-  flavorProfilesAnalyzed: number;
-  unknownTermsIdentified: string[];
-  sourcesUsed?: string[];
-  flavorMatrixStats?: {
-    totalRecipes: number;
-    totalCuisines: number;
-    totalIngredients: number;
-    totalTechniques: number;
-  };
-}
-
-interface CrawlerEvent {
-  type: string;
-  timestamp: number;
-  data: {
-    currentUrl?: string;
-    currentRecipe?: string;
-    recipesProcessed?: number;
-    totalRecipes?: number;
-    ingredientsFound?: string[];
-    techniqueFound?: string[];
-    termsBeingLearned?: string[];
-    termsLearned?: number;
-    termsFailedToLearn?: number;
-    knowledgeUpdates?: KnowledgeUpdate & {
-      autoLearningComplete?: boolean;
-      autoLearningStats?: {
-        successful: number;
-        failed: number;
-      };
-    };
-    message?: string;
-    error?: string;
-  };
-}
-
-interface CrawlerProgressPanelProps {
-  onComplete?: (stats: KnowledgeUpdate) => void;
-  className?: string;
-}
-
-/**
- * Generate a training report from crawler session data
- */
 function generateTrainingReport(
   sessionId: string,
   recipesProcessed: number,
-  knowledge: KnowledgeUpdate
+  knowledge: any
 ): any {
   const timestamp = Date.now();
   const startTime = timestamp;
-  const duration = 300000; // 5 minutes (example)
+  const duration = 300000;
 
   return {
     sessionId,
@@ -76,80 +29,12 @@ function generateTrainingReport(
     knowledgeAcquired: {
       section: "Knowledge Acquired",
       ingredientsTaught: knowledge.ingredientsTaught,
-      ingredientsByCategory: {
-        Produce: Math.floor(knowledge.ingredientsTaught * 0.3),
-        Proteins: Math.floor(knowledge.ingredientsTaught * 0.25),
-        Grains: Math.floor(knowledge.ingredientsTaught * 0.15),
-        Spices: Math.floor(knowledge.ingredientsTaught * 0.15),
-        Dairy: Math.floor(knowledge.ingredientsTaught * 0.1),
-        Other: Math.floor(knowledge.ingredientsTaught * 0.05),
-      },
       techniquesLearned: knowledge.techniquesLearned,
-      techniquesByCategory: {
-        "Heat Transfer": Math.floor(knowledge.techniquesLearned * 0.35),
-        Mixing: Math.floor(knowledge.techniquesLearned * 0.2),
-        Cutting: Math.floor(knowledge.techniquesLearned * 0.15),
-        Fermentation: Math.floor(knowledge.techniquesLearned * 0.1),
-        Plating: Math.floor(knowledge.techniquesLearned * 0.1),
-        Preservation: Math.floor(knowledge.techniquesLearned * 0.1),
-      },
       flavorProfilesAnalyzed: knowledge.flavorProfilesAnalyzed,
-      flavorProfileBreakdown: {
-        "Sweet-Forward": Math.floor(Math.random() * 100),
-        "Savory-Umami": Math.floor(Math.random() * 100),
-        "Sour-Acidic": Math.floor(Math.random() * 100),
-        "Bitter-Herbal": Math.floor(Math.random() * 100),
-        "Spicy-Heat": Math.floor(Math.random() * 100),
-      },
     },
-    unknownTermsDiscovered: {
-      section: "Unknown Terms Discovered",
-      total: knowledge.unknownTermsIdentified.length,
-      terms: knowledge.unknownTermsIdentified.slice(0, 20),
-      recommendedLearningActions: [
-        `Query Claude API for ${knowledge.unknownTermsIdentified.length} unknown ingredients`,
-        "Enrich culinary dictionary with discovered terms",
-        "Cross-reference with existing ingredient database",
-        "Flag specialty/regional ingredients for expert review",
-      ],
-    },
-    sourcesCrawled: {
-      section: "Sources Crawled",
-      sources: [
-        { name: "AllRecipes.com", recipesFound: 142, uniqueIngredients: 87 },
-        { name: "Food Network", recipesFound: 98, uniqueIngredients: 65 },
-        { name: "Serious Eats", recipesFound: 76, uniqueIngredients: 52 },
-        { name: "Simply Recipes", recipesFound: 64, uniqueIngredients: 43 },
-        { name: "Epicurious", recipesFound: 58, uniqueIngredients: 39 },
-      ],
-    },
-    recommendations: {
-      nextSteps: [
-        `Enrich culinary dictionary with ${knowledge.unknownTermsIdentified.length} discovered terms`,
-        "Cross-validate ingredient data with external sources",
-        "Auto-generate recipe variations using new knowledge",
-        "Update flavor profile predictions with new data",
-      ],
-      areasForImprovement: [
-        "Increase coverage of regional cuisines (Asian, African, Latin American)",
-        "Deepen understanding of baking/pastry techniques",
-        "Expand beverage pairing knowledge",
-        "Add more molecular gastronomy techniques",
-      ],
-      suggestedCrawlTargets: [
-        "Cookpad Japan (Asian cuisines)",
-        "BBC Good Food (global coverage)",
-        "GialloZafferano (Italian specialization)",
-        "Tarla Dalal (Indian spice complexity)",
-      ],
-    },
-    markdown: `# Echo AI Training Report\n\n## Summary\n- Recipes Processed: ${recipesProcessed}\n- Knowledge Learned: ${knowledge.ingredientsTaught} ingredients, ${knowledge.techniquesLearned} techniques`,
   };
 }
 
-/**
- * Format duration in human-readable format
- */
 function formatDuration(ms: number): string {
   const totalSeconds = Math.floor(ms / 1000);
   const minutes = Math.floor(totalSeconds / 60);
@@ -157,43 +42,51 @@ function formatDuration(ms: number): string {
   return `${minutes}m ${seconds}s`;
 }
 
+interface CrawlerProgressPanelProps {
+  onComplete?: (stats: any) => void;
+  className?: string;
+}
+
 export function CrawlerProgressPanel({
   onComplete,
   className = '',
 }: CrawlerProgressPanelProps) {
-  const crawler = useCrawler();
-  const { state, startCrawler, stopCrawler } = crawler;
+  const { sessions, startCrawler, stopCrawler, resetCrawler, clearMessages } = useCrawler();
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
   const [showReport, setShowReport] = useState(false);
   const [trainingReport, setTrainingReport] = useState<any>(null);
-  const [recentIngredients, setRecentIngredients] = useState<string[]>([]);
-  const [recentTechniques, setRecentTechniques] = useState<string[]>([]);
-  const [isLearning, setIsLearning] = useState(false);
-  const [termsBeingLearned, setTermsBeingLearned] = useState<string[]>([]);
-  const [termsLearned, setTermsLearned] = useState(0);
-  const [termsFailedToLearn, setTermsFailedToLearn] = useState(0);
+  const [defaultMode, setDefaultMode] = useState<'legacy' | 'global'>('global');
+  const [defaultExtractFlavor, setDefaultExtractFlavor] = useState(true);
+  const [defaultAutoLearn, setDefaultAutoLearn] = useState(true);
+
+  const selectedSession = selectedSessionId ? sessions.find(s => s.id === selectedSessionId) : sessions[0];
 
   useEffect(() => {
-    // Generate training report when crawler completes
-    if (!state.isRunning && state.knowledge.ingredientsTaught > 0) {
+    if (selectedSession && !selectedSession.isRunning && selectedSession.knowledge.ingredientsTaught > 0) {
       const report = generateTrainingReport(
-        state.sessionId || 'unknown',
-        state.recipesProcessed,
-        state.knowledge
+        selectedSession.sessionId,
+        selectedSession.recipesProcessed,
+        selectedSession.knowledge
       );
       setTrainingReport(report);
       if (onComplete) {
-        onComplete(state.knowledge);
+        onComplete(selectedSession.knowledge);
       }
     }
-  }, [state.isRunning, state.knowledge, state.recipesProcessed, state.sessionId, onComplete]);
+  }, [selectedSession, onComplete]);
 
   const handleStartCrawler = useCallback(async () => {
-    await startCrawler({
-      mode: state.crawlerMode,
-      extractFlavorData: state.extractFlavorData,
-      autoLearn: state.autoLearn,
-    });
-  }, [startCrawler, state.crawlerMode, state.extractFlavorData, state.autoLearn]);
+    try {
+      const newSessionId = await startCrawler({
+        mode: defaultMode,
+        extractFlavorData: defaultExtractFlavor,
+        autoLearn: defaultAutoLearn,
+      });
+      setSelectedSessionId(newSessionId);
+    } catch (error) {
+      console.error('Failed to start crawler:', error);
+    }
+  }, [startCrawler, defaultMode, defaultExtractFlavor, defaultAutoLearn]);
 
   return (
     <div className={`space-y-4 ${className}`}>
@@ -204,45 +97,32 @@ export function CrawlerProgressPanel({
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Zap className="w-5 h-5" />
-                {crawlerMode === 'global' ? '🌍 Phase 4: Global Recipe Crawler' : 'Web Recipe Crawler'}
+                🌍 Phase 4: Global Recipe Crawler
               </CardTitle>
               <CardDescription>
-                {crawlerMode === 'global'
-                  ? 'Multi-source learning from 30+ global recipe platforms'
-                  : 'Real-time learning from global recipe sources'}
+                Run multiple trainings simultaneously from 30+ global recipe platforms
               </CardDescription>
             </div>
-            {isRunning ? (
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={stopCrawler}
-              >
-                <X className="w-4 h-4 mr-1" />
-                Stop
-              </Button>
-            ) : (
-              <Button
-                size="sm"
-                onClick={startCrawler}
-                disabled={isRunning}
-              >
-                <Play className="w-4 h-4 mr-1" />
-                Crawl Now
-              </Button>
-            )}
+            <Button
+              size="sm"
+              onClick={handleStartCrawler}
+              disabled={sessions.some(s => s.isRunning)}
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              New Training
+            </Button>
           </div>
         </CardHeader>
 
         {/* Mode Selection & Options */}
-        {!isRunning && (
+        {sessions.length === 0 || !sessions.some(s => s.isRunning) ? (
           <CardContent className="space-y-3">
             <div className="grid grid-cols-1 gap-3">
               <div className="flex items-center gap-2">
                 <label className="text-sm font-medium flex-shrink-0">Mode:</label>
                 <select
-                  value={crawlerMode}
-                  onChange={(e) => setCrawlerMode(e.target.value as 'legacy' | 'global')}
+                  value={defaultMode}
+                  onChange={(e) => setDefaultMode(e.target.value as 'legacy' | 'global')}
                   className="text-sm px-2 py-1 rounded border border-gray-300 dark:border-gray-600"
                 >
                   <option value="legacy">Phase 1 (Legacy)</option>
@@ -250,96 +130,148 @@ export function CrawlerProgressPanel({
                 </select>
               </div>
 
-              {crawlerMode === 'global' && (
-                <>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={extractFlavorData}
-                      onChange={(e) => setExtractFlavorData(e.target.checked)}
-                      className="rounded"
-                    />
-                    <span className="text-sm">Extract Flavor Matrix Data</span>
-                  </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={defaultExtractFlavor}
+                  onChange={(e) => setDefaultExtractFlavor(e.target.checked)}
+                  className="rounded"
+                />
+                <span className="text-sm">Extract Flavor Matrix Data</span>
+              </label>
 
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={autoLearn}
-                      onChange={(e) => setAutoLearn(e.target.checked)}
-                      className="rounded"
-                    />
-                    <span className="text-sm">Enable Auto-Learning Engine</span>
-                  </label>
-                </>
-              )}
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={defaultAutoLearn}
+                  onChange={(e) => setDefaultAutoLearn(e.target.checked)}
+                  className="rounded"
+                />
+                <span className="text-sm">Enable Auto-Learning Engine</span>
+              </label>
             </div>
           </CardContent>
-        )}
+        ) : null}
       </Card>
 
-      {/* Progress Section */}
-      {isRunning || (recipesProcessed > 0 && totalRecipes > 0) ? (
+      {/* Active Sessions */}
+      {sessions.length > 0 && (
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Processing Progress</CardTitle>
+            <CardTitle className="text-base">
+              Active Trainings ({sessions.filter(s => s.isRunning).length})
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Progress Bar */}
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="font-medium">
-                  Recipes Processed: {recipesProcessed}/{totalRecipes}
-                </span>
-                <span className="text-gray-600">
-                  {totalRecipes > 0 ? Math.round(progress) : 0}%
-                </span>
-              </div>
-              <Progress value={progress} className="h-2" />
+            {/* Session Tabs */}
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {sessions.map(session => (
+                <button
+                  key={session.id}
+                  onClick={() => setSelectedSessionId(session.id)}
+                  className={`px-3 py-2 rounded text-sm font-medium whitespace-nowrap transition-colors ${
+                    selectedSessionId === session.id
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted hover:bg-muted/80'
+                  }`}
+                >
+                  {session.crawlerMode === 'global' ? '🌍' : '📚'} {session.progress}%
+                </button>
+              ))}
             </div>
 
-            {/* Current URL and Recipe */}
-            {currentRecipe && (
-              <div className="space-y-2 bg-gray-50 dark:bg-gray-900 p-3 rounded border border-gray-200 dark:border-gray-700">
-                <div className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  Currently Analyzing:
+            {/* Selected Session Details */}
+            {selectedSession && (
+              <div className="space-y-4">
+                {/* Controls */}
+                <div className="flex gap-2">
+                  {selectedSession.isRunning ? (
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => stopCrawler(selectedSession.id)}
+                    >
+                      <X className="w-4 h-4 mr-1" />
+                      Stop
+                    </Button>
+                  ) : null}
+                  {!selectedSession.isRunning && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => resetCrawler(selectedSession.id)}
+                    >
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      Remove
+                    </Button>
+                  )}
+                  {selectedSession.messages.length > 0 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => clearMessages(selectedSession.id)}
+                    >
+                      Clear Messages
+                    </Button>
+                  )}
                 </div>
-                <div className="font-medium text-gray-900 dark:text-gray-100 truncate">
-                  {currentRecipe}
+
+                {/* Progress Bar */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="font-medium">
+                      Recipes Processed: {selectedSession.recipesProcessed}/{selectedSession.totalRecipes}
+                    </span>
+                    <span className="text-gray-600">
+                      {selectedSession.progress}%
+                    </span>
+                  </div>
+                  <Progress value={selectedSession.progress} className="h-2" />
                 </div>
-                {currentUrl && (
-                  <div className="text-xs text-gray-500 dark:text-gray-400 truncate hover:text-blue-600 cursor-pointer" title={currentUrl}>
-                    {currentUrl}
+
+                {/* Current Recipe */}
+                {selectedSession.currentRecipe && (
+                  <div className="space-y-2 bg-gray-50 dark:bg-gray-900 p-3 rounded border border-gray-200 dark:border-gray-700">
+                    <div className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                      Currently Analyzing:
+                    </div>
+                    <div className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                      {selectedSession.currentRecipe}
+                    </div>
+                    {selectedSession.currentUrl && (
+                      <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                        {selectedSession.currentUrl}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Status Messages */}
+                {selectedSession.messages.length > 0 && (
+                  <div className="space-y-1 max-h-24 overflow-y-auto bg-muted p-3 rounded border border-border/40">
+                    {selectedSession.messages.map((msg, i) => (
+                      <div key={i} className="text-xs text-muted-foreground">
+                        {msg}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Error */}
+                {selectedSession.error && (
+                  <div className="flex gap-2 p-2 bg-red-50 dark:bg-red-900/20 rounded border border-red-200 dark:border-red-800">
+                    <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                    <div className="text-sm text-red-600 dark:text-red-400">{selectedSession.error}</div>
                   </div>
                 )}
               </div>
             )}
-
-            {/* Status Messages */}
-            {messages.length > 0 && (
-              <div className="space-y-1 max-h-24 overflow-y-auto">
-                {messages.map((msg, i) => (
-                  <div key={i} className="text-xs text-gray-600 dark:text-gray-400">
-                    {msg}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {error && (
-              <div className="flex gap-2 p-2 bg-red-50 dark:bg-red-900/20 rounded border border-red-200 dark:border-red-800">
-                <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-                <div className="text-sm text-red-600 dark:text-red-400">{error}</div>
-              </div>
-            )}
           </CardContent>
         </Card>
-      ) : null}
+      )}
 
       {/* Knowledge Updates Section */}
-      {(knowledge.ingredientsTaught > 0 ||
-        knowledge.techniquesLearned > 0 ||
-        knowledge.flavorProfilesAnalyzed > 0) && (
+      {selectedSession && (
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
@@ -355,7 +287,7 @@ export function CrawlerProgressPanel({
                   Ingredients Taught
                 </div>
                 <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
-                  {knowledge.ingredientsTaught}
+                  {selectedSession.knowledge.ingredientsTaught}
                 </div>
               </div>
 
@@ -364,7 +296,7 @@ export function CrawlerProgressPanel({
                   Techniques Learned
                 </div>
                 <div className="text-2xl font-bold text-purple-900 dark:text-purple-100">
-                  {knowledge.techniquesLearned}
+                  {selectedSession.knowledge.techniquesLearned}
                 </div>
               </div>
 
@@ -373,266 +305,26 @@ export function CrawlerProgressPanel({
                   Flavor Profiles
                 </div>
                 <div className="text-2xl font-bold text-amber-900 dark:text-amber-100">
-                  {knowledge.flavorProfilesAnalyzed}
-                </div>
-              </div>
-            </div>
-
-            {/* Recent Ingredients */}
-            {recentIngredients.length > 0 && (
-              <div className="space-y-2">
-                <div className="text-sm font-medium flex items-center gap-2">
-                  <BookOpen className="w-4 h-4" />
-                  Recent Ingredients Discovered
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {recentIngredients.slice(0, 8).map((ingredient, i) => (
-                    <Badge
-                      key={i}
-                      variant="secondary"
-                      className="text-xs"
-                    >
-                      {ingredient}
-                    </Badge>
-                  ))}
-                  {recentIngredients.length > 8 && (
-                    <Badge variant="secondary" className="text-xs">
-                      +{recentIngredients.length - 8} more
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Recent Techniques */}
-            {recentTechniques.length > 0 && (
-              <div className="space-y-2">
-                <div className="text-sm font-medium flex items-center gap-2">
-                  <Zap className="w-4 h-4" />
-                  Recent Techniques Discovered
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {recentTechniques.slice(0, 6).map((technique, i) => (
-                    <Badge
-                      key={i}
-                      variant="outline"
-                      className="text-xs"
-                    >
-                      {technique}
-                    </Badge>
-                  ))}
-                  {recentTechniques.length > 6 && (
-                    <Badge variant="outline" className="text-xs">
-                      +{recentTechniques.length - 6} more
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Unknown Terms */}
-            {knowledge.unknownTermsIdentified.length > 0 && (
-              <div className="space-y-2 bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded border border-yellow-200 dark:border-yellow-800">
-                <div className="text-sm font-medium text-yellow-900 dark:text-yellow-100">
-                  📚 Unknown Terms (Learning Next)
-                </div>
-                <div className="flex flex-wrap gap-1">
-                  {knowledge.unknownTermsIdentified.slice(0, 10).map((term, i) => (
-                    <Badge
-                      key={i}
-                      variant="secondary"
-                      className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-900 dark:text-yellow-100"
-                    >
-                      {term}
-                    </Badge>
-                  ))}
-                  {knowledge.unknownTermsIdentified.length > 10 && (
-                    <Badge
-                      variant="secondary"
-                      className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-900 dark:text-yellow-100"
-                    >
-                      +{knowledge.unknownTermsIdentified.length - 10} more
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Auto-Learning Progress Section */}
-      {isLearning && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Brain className="w-5 h-5 animate-pulse" />
-              🧠 Auto-Learning Engine in Progress
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Learning Stats */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded border border-green-200 dark:border-green-800">
-                <div className="text-xs font-medium text-green-600 dark:text-green-400 mb-1">
-                  Concepts Learned
-                </div>
-                <div className="text-2xl font-bold text-green-900 dark:text-green-100">
-                  {termsLearned}
-                </div>
-              </div>
-
-              <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded border border-red-200 dark:border-red-800">
-                <div className="text-xs font-medium text-red-600 dark:text-red-400 mb-1">
-                  Failed to Learn
-                </div>
-                <div className="text-2xl font-bold text-red-900 dark:text-red-100">
-                  {termsFailedToLearn}
-                </div>
-              </div>
-
-              <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded border border-blue-200 dark:border-blue-800">
-                <div className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">
-                  Success Rate
-                </div>
-                <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
-                  {termsLearned + termsFailedToLearn > 0
-                    ? Math.round((termsLearned / (termsLearned + termsFailedToLearn)) * 100)
-                    : 0}%
-                </div>
-              </div>
-            </div>
-
-            {/* Terms Being Learned */}
-            {termsBeingLearned.length > 0 && (
-              <div className="space-y-2">
-                <div className="text-sm font-medium flex items-center gap-2">
-                  <BookOpen className="w-4 h-4" />
-                  Currently Learning
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {termsBeingLearned.slice(0, 8).map((term, i) => (
-                    <Badge
-                      key={i}
-                      className="text-xs bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100 animate-pulse"
-                    >
-                      {term}
-                    </Badge>
-                  ))}
-                  {termsBeingLearned.length > 8 && (
-                    <Badge className="text-xs bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100">
-                      +{termsBeingLearned.length - 8} more
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Learning Info */}
-            <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded border border-blue-200 dark:border-blue-800">
-              <p className="text-sm text-blue-900 dark:text-blue-100">
-                ℹ️ Echo is automatically learning from unknown ingredients and techniques discovered during crawling.
-                Each term is being enriched with detailed culinary knowledge using AI analysis.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Flavor Matrix Statistics (Phase 4) */}
-      {crawlerMode === 'global' && flavorMatrixStats && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">🎨 Global Flavor Matrix</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div className="bg-indigo-50 dark:bg-indigo-900/20 p-3 rounded border border-indigo-200 dark:border-indigo-800">
-                <div className="text-xs font-medium text-indigo-600 dark:text-indigo-400 mb-1">
-                  Recipes Analyzed
-                </div>
-                <div className="text-2xl font-bold text-indigo-900 dark:text-indigo-100">
-                  {flavorMatrixStats.totalRecipes}
-                </div>
-              </div>
-
-              <div className="bg-violet-50 dark:bg-violet-900/20 p-3 rounded border border-violet-200 dark:border-violet-800">
-                <div className="text-xs font-medium text-violet-600 dark:text-violet-400 mb-1">
-                  Cuisines Mapped
-                </div>
-                <div className="text-2xl font-bold text-violet-900 dark:text-violet-100">
-                  {flavorMatrixStats.totalCuisines}
-                </div>
-              </div>
-
-              <div className="bg-fuchsia-50 dark:bg-fuchsia-900/20 p-3 rounded border border-fuchsia-200 dark:border-fuchsia-800">
-                <div className="text-xs font-medium text-fuchsia-600 dark:text-fuchsia-400 mb-1">
-                  Ingredients Profiled
-                </div>
-                <div className="text-2xl font-bold text-fuchsia-900 dark:text-fuchsia-100">
-                  {flavorMatrixStats.totalIngredients}
-                </div>
-              </div>
-
-              <div className="bg-pink-50 dark:bg-pink-900/20 p-3 rounded border border-pink-200 dark:border-pink-800">
-                <div className="text-xs font-medium text-pink-600 dark:text-pink-400 mb-1">
-                  Techniques Studied
-                </div>
-                <div className="text-2xl font-bold text-pink-900 dark:text-pink-100">
-                  {flavorMatrixStats.totalTechniques}
+                  {selectedSession.knowledge.flavorProfilesAnalyzed}
                 </div>
               </div>
             </div>
 
             {/* Sources Used */}
-            {sourcesUsed.length > 0 && (
+            {selectedSession.sourcesUsed.length > 0 && (
               <div className="space-y-2">
-                <div className="text-sm font-medium">Sources Used ({sourcesUsed.length})</div>
+                <div className="text-sm font-medium">Sources Used ({selectedSession.sourcesUsed.length})</div>
                 <div className="flex flex-wrap gap-2">
-                  {sourcesUsed.map((source, i) => (
-                    <Badge
-                      key={i}
-                      variant="outline"
-                      className="text-xs"
-                    >
+                  {selectedSession.sourcesUsed.map((source, i) => (
+                    <Badge key={i} variant="outline" className="text-xs">
                       {source}
                     </Badge>
                   ))}
                 </div>
               </div>
             )}
-
-            <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded border border-blue-200 dark:border-blue-800">
-              <p className="text-sm text-blue-900 dark:text-blue-100">
-                ℹ️ The global flavor matrix aggregates culinary data across cuisines, techniques, and sensory descriptors.
-                This enables Echo to make flavor predictions and find ingredient substitutions.
-              </p>
-            </div>
           </CardContent>
         </Card>
-      )}
-
-      {/* Training Report */}
-      {showReport && trainingReport && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-950 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 p-4 flex justify-between items-center">
-              <h2 className="text-xl font-bold">Training Report</h2>
-              <button
-                onClick={() => setShowReport(false)}
-                className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-              >
-                ✕
-              </button>
-            </div>
-            <div className="p-6">
-              <TrainingReportPanel
-                report={trainingReport}
-                onClose={() => setShowReport(false)}
-              />
-            </div>
-          </div>
-        </div>
       )}
     </div>
   );
