@@ -124,7 +124,17 @@ export function CrawlerProvider({ children }: { children: React.ReactNode }) {
         try {
           const crawlerEvent = JSON.parse(event.data);
 
+          if (!crawlerEvent.type) {
+            console.warn('Received SSE message without type:', crawlerEvent);
+            return;
+          }
+
           switch (crawlerEvent.type) {
+            case 'start':
+            case 'ping':
+              // Connection established or keep-alive ping
+              break;
+
             case 'recipe':
               setSessions(prev =>
                 prev.map(s =>
@@ -135,8 +145,8 @@ export function CrawlerProvider({ children }: { children: React.ReactNode }) {
                         currentUrl: crawlerEvent.data.currentUrl || s.currentUrl,
                         recipesProcessed: crawlerEvent.data.recipesProcessed ?? s.recipesProcessed,
                         totalRecipes: crawlerEvent.data.totalRecipes ?? s.totalRecipes,
-                        progress: crawlerEvent.data.totalRecipes
-                          ? Math.round((crawlerEvent.data.recipesProcessed / crawlerEvent.data.totalRecipes) * 100)
+                        progress: crawlerEvent.data.totalRecipes && crawlerEvent.data.recipesProcessed !== undefined
+                          ? Math.min(99, Math.round((crawlerEvent.data.recipesProcessed / crawlerEvent.data.totalRecipes) * 100))
                           : s.progress,
                         messages: crawlerEvent.data.message
                           ? [...s.messages.slice(-9), crawlerEvent.data.message]
@@ -148,18 +158,37 @@ export function CrawlerProvider({ children }: { children: React.ReactNode }) {
               break;
 
             case 'knowledge':
-              if (crawlerEvent.data.knowledgeUpdates) {
-                setSessions(prev =>
-                  prev.map(s =>
-                    s.id === id
-                      ? {
-                          ...s,
-                          knowledge: crawlerEvent.data.knowledgeUpdates,
-                        }
-                      : s
-                  )
-                );
-              }
+              setSessions(prev =>
+                prev.map(s =>
+                  s.id === id
+                    ? {
+                        ...s,
+                        knowledge: {
+                          ...s.knowledge,
+                          ...crawlerEvent.data.knowledgeUpdates,
+                        },
+                        messages: crawlerEvent.data.message
+                          ? [...s.messages.slice(-9), crawlerEvent.data.message]
+                          : s.messages,
+                      }
+                    : s
+                )
+              );
+              break;
+
+            case 'learning':
+              setSessions(prev =>
+                prev.map(s =>
+                  s.id === id
+                    ? {
+                        ...s,
+                        messages: crawlerEvent.data.message
+                          ? [...s.messages.slice(-9), crawlerEvent.data.message]
+                          : s.messages,
+                      }
+                    : s
+                )
+              );
               break;
 
             case 'complete':
@@ -169,10 +198,14 @@ export function CrawlerProvider({ children }: { children: React.ReactNode }) {
                     ? {
                         ...s,
                         isRunning: false,
-                        knowledge: crawlerEvent.data.knowledgeUpdates || s.knowledge,
+                        progress: 100,
+                        knowledge: {
+                          ...s.knowledge,
+                          ...(crawlerEvent.data.knowledgeUpdates || {}),
+                        },
                         sourcesUsed: crawlerEvent.data.knowledgeUpdates?.sourcesUsed || s.sourcesUsed,
                         flavorMatrixStats: crawlerEvent.data.knowledgeUpdates?.flavorMatrixStats || s.flavorMatrixStats,
-                        messages: [...s.messages, '🎉 Crawler completed successfully!'],
+                        messages: [...s.messages.slice(-9), '🎉 Crawler completed successfully!'],
                         completedAt: Date.now(),
                       }
                     : s
@@ -189,7 +222,7 @@ export function CrawlerProvider({ children }: { children: React.ReactNode }) {
                         ...s,
                         isRunning: false,
                         error: crawlerEvent.data.error || 'Unknown error',
-                        messages: [...s.messages, `❌ ${crawlerEvent.data.error}`],
+                        messages: [...s.messages.slice(-9), `❌ ${crawlerEvent.data.error}`],
                         completedAt: Date.now(),
                       }
                     : s
@@ -197,9 +230,12 @@ export function CrawlerProvider({ children }: { children: React.ReactNode }) {
               );
               eventSourcesRef.current.delete(id);
               break;
+
+            default:
+              console.warn('Unknown crawler event type:', crawlerEvent.type);
           }
         } catch (e) {
-          console.error('Failed to parse crawler event:', e);
+          console.error('Failed to parse crawler event:', e, 'raw data:', event.data);
         }
       };
 
