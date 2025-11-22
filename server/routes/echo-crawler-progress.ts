@@ -423,7 +423,7 @@ async function crawlGlobalAndReportProgress(
 
       knowledgeState.sourcesUsed.add(recipe.source);
 
-      if (connection && i % 10 === 0) {
+      if (connection) {
         sendEvent(connection, {
           type: 'recipe',
           timestamp: Date.now(),
