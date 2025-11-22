@@ -189,13 +189,15 @@ async function crawlAndReportProgress(
   sessionId: string,
   options: { maxRecipes: number; cuisines: string[]; sources: string[] },
 ) {
-  const connection = activeConnections.get(sessionId);
   const knowledgeState = {
     flavorProfilesAnalyzed: 0,
     unknownTermsIdentified: new Set<string>(),
     ingredientsLearned: new Set<string>(),
     techniquesLearned: new Set<string>(),
   };
+
+  // Helper to get current connection (handles race condition)
+  const getConnection = () => activeConnections.get(sessionId);
 
   try {
     // Stage 1: Crawl recipes
@@ -204,6 +206,7 @@ async function crawlAndReportProgress(
       limit: options.maxRecipes,
     });
 
+    let connection = getConnection();
     if (connection) {
       sendEvent(connection, {
         type: "recipe",
@@ -474,7 +477,7 @@ async function crawlGlobalAndReportProgress(
 
     const crawlDuration = Date.now() - crawlStartTime;
     console.log(
-      `[Crawler] �� Crawl completed in ${crawlDuration}ms: ${crawledRecipes.length} recipes found`,
+      `[Crawler] ✓ Crawl completed in ${crawlDuration}ms: ${crawledRecipes.length} recipes found`,
     );
 
     let connection = getConnection();
