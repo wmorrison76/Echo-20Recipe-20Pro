@@ -294,6 +294,12 @@ export function CrawlerProgressPanel({
               setIsLearning(false);
               if (crawlerEvent.data.knowledgeUpdates) {
                 setKnowledge(crawlerEvent.data.knowledgeUpdates);
+                if (crawlerEvent.data.knowledgeUpdates.sourcesUsed) {
+                  setSourcesUsed(crawlerEvent.data.knowledgeUpdates.sourcesUsed);
+                }
+                if (crawlerEvent.data.knowledgeUpdates.flavorMatrixStats) {
+                  setFlavorMatrixStats(crawlerEvent.data.knowledgeUpdates.flavorMatrixStats);
+                }
                 onComplete?.(crawlerEvent.data.knowledgeUpdates);
 
                 // Generate training report
@@ -307,7 +313,7 @@ export function CrawlerProgressPanel({
               }
               setMessages((prev) => [
                 ...prev,
-                '🎉 Crawler completed successfully!',
+                crawlerMode === 'global' ? '🌍 Phase 4 Global Crawl Complete!' : '🎉 Crawler completed successfully!',
                 `✅ Learned ${termsLearned} new concepts!`,
                 '📊 Generating training report...',
               ]);
