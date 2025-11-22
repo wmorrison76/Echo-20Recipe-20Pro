@@ -364,10 +364,12 @@ export function CrawlerProgressPanel({
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Zap className="w-5 h-5" />
-                Web Recipe Crawler
+                {crawlerMode === 'global' ? '🌍 Phase 4: Global Recipe Crawler' : 'Web Recipe Crawler'}
               </CardTitle>
               <CardDescription>
-                Real-time learning from global recipe sources
+                {crawlerMode === 'global'
+                  ? 'Multi-source learning from 30+ global recipe platforms'
+                  : 'Real-time learning from global recipe sources'}
               </CardDescription>
             </div>
             {isRunning ? (
@@ -391,6 +393,49 @@ export function CrawlerProgressPanel({
             )}
           </div>
         </CardHeader>
+
+        {/* Mode Selection & Options */}
+        {!isRunning && (
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-1 gap-3">
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium flex-shrink-0">Mode:</label>
+                <select
+                  value={crawlerMode}
+                  onChange={(e) => setCrawlerMode(e.target.value as 'legacy' | 'global')}
+                  className="text-sm px-2 py-1 rounded border border-gray-300 dark:border-gray-600"
+                >
+                  <option value="legacy">Phase 1 (Legacy)</option>
+                  <option value="global">Phase 4 (Global - Multi-source)</option>
+                </select>
+              </div>
+
+              {crawlerMode === 'global' && (
+                <>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={extractFlavorData}
+                      onChange={(e) => setExtractFlavorData(e.target.checked)}
+                      className="rounded"
+                    />
+                    <span className="text-sm">Extract Flavor Matrix Data</span>
+                  </label>
+
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={autoLearn}
+                      onChange={(e) => setAutoLearn(e.target.checked)}
+                      className="rounded"
+                    />
+                    <span className="text-sm">Enable Auto-Learning Engine</span>
+                  </label>
+                </>
+              )}
+            </div>
+          </CardContent>
+        )}
       </Card>
 
       {/* Progress Section */}
