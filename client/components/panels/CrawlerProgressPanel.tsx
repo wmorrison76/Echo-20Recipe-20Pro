@@ -23,7 +23,16 @@ interface CrawlerEvent {
     totalRecipes?: number;
     ingredientsFound?: string[];
     techniqueFound?: string[];
-    knowledgeUpdates?: KnowledgeUpdate;
+    termsBeingLearned?: string[];
+    termsLearned?: number;
+    termsFailedToLearn?: number;
+    knowledgeUpdates?: KnowledgeUpdate & {
+      autoLearningComplete?: boolean;
+      autoLearningStats?: {
+        successful: number;
+        failed: number;
+      };
+    };
     message?: string;
     error?: string;
   };
