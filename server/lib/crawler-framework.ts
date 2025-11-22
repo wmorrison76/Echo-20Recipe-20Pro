@@ -231,24 +231,44 @@ export class GlobalCrawlerManager {
   ): Promise<R[]> {
     const results: R[] = [];
     const queue = [...items];
-    const inProgress: Promise<R>[] = [];
+    const inProgress: { promise: Promise<R>; index: number }[] = [];
+    let resultIndex = 0;
+    const resultMap = new Map<number, R>();
 
     while (queue.length > 0 || inProgress.length > 0) {
+      // Start new tasks up to maxConcurrent
       while (inProgress.length < maxConcurrent && queue.length > 0) {
         const item = queue.shift()!;
-        const promise = processor(item).catch(() => ({} as R));
-        inProgress.push(promise);
+        const index = resultIndex++;
+        const promise = processor(item)
+          .then(result => ({ result, index }))
+          .catch(error => {
+            console.error('Processor error:', error);
+            return { result: {} as R, index };
+          });
+        inProgress.push({ promise, index });
       }
 
       if (inProgress.length > 0) {
-        const result = await Promise.race(inProgress);
-        inProgress.splice(inProgress.indexOf(Promise.resolve(result)), 1);
-        results.push(result);
+        // Wait for the first one to complete
+        const { result, index } = await Promise.race(
+          inProgress.map(p => p.promise)
+        );
+
+        resultMap.set(index, result);
+
+        // Remove the completed promise from inProgress
+        const completedIndex = inProgress.findIndex(p => p.index === index);
+        if (completedIndex >= 0) {
+          inProgress.splice(completedIndex, 1);
+        }
       }
     }
 
-    const remaining = await Promise.all(inProgress);
-    results.push(...remaining);
+    // Return results in order
+    for (let i = 0; i < resultIndex; i++) {
+      results.push(resultMap.get(i) || ({} as R));
+    }
 
     return results;
   }
