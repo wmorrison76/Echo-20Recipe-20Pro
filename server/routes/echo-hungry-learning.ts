@@ -12,6 +12,7 @@ import { hospitalityKnowledgeCrawler } from '../lib/hospitality-knowledge-crawle
 import { masterCulinaryDictionary } from '../lib/master-culinary-dictionary';
 import { convertPDFToMasterTerms, mergePDFExtractions } from '../lib/pdf-knowledge-extractor';
 import { recipePersistenceService } from '../lib/recipe-persistence-service';
+import { llmKnowledgeEnricher } from '../lib/llm-knowledge-enricher';
 import type { PDFMetadata } from '../lib/pdf-knowledge-extractor';
 
 /**
