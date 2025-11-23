@@ -654,10 +654,38 @@ async function crawlGlobalAndReportProgress(
               });
             }
 
-            learningStats = await knowledgeUpdater.storeEnrichedKnowledge(
-              sessionId,
-              knowledgeItems,
+            // Directly store knowledge items to Pinecone with retry logic
+            console.log(
+              `[Crawler] Storing ${knowledgeItems.length} knowledge items to Pinecone...`,
             );
+            learningStats = { successful: 0, failed: 0 };
+
+            for (const item of knowledgeItems) {
+              try {
+                // Ensure knowledge item has required fields
+                const knowledgeToStore: AnyKnowledge = {
+                  ...item,
+                  id: item.id || `crawler-${Date.now()}-${Math.random()}`,
+                  type: item.type || "ingredient",
+                  title: item.title || "Unknown Term",
+                  description: item.description || "",
+                  domain: item.domain || "culinary",
+                  sourceType: "openai" as const,
+                  tags: item.tags || [],
+                  createdAt: item.createdAt || new Date().toISOString(),
+                };
+
+                // Store directly to Pinecone
+                await storeKnowledgeVector(knowledgeToStore);
+                learningStats.successful++;
+                console.log(
+                  `[Crawler] ✅ Stored knowledge: ${knowledgeToStore.title}`,
+                );
+              } catch (itemError) {
+                console.error(`[Crawler] Failed to store item:`, itemError);
+                learningStats.failed++;
+              }
+            }
 
             connection = getConnection();
             if (connection) {
