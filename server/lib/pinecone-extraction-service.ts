@@ -307,12 +307,19 @@ export function transformPineconeToInternalFormat(
 } {
   const metadata = pineconeItem.metadata || {};
 
+  // Handle tags - could be array or comma-separated string
+  const tagsArray = Array.isArray(metadata.tags)
+    ? metadata.tags
+    : typeof metadata.tags === "string"
+      ? metadata.tags.split(",").map((t: string) => t.trim())
+      : [];
+
   return {
     title: metadata.title || "Untitled",
     content: metadata.content || metadata.description || "",
     description: metadata.description,
     sourceType: metadata.sourceType || "user-imported",
-    categories: metadata.tags ? metadata.tags.split(",").map((t: string) => t.trim()) : [],
+    categories: tagsArray,
     source: metadata.source || "Pinecone Migration",
     domain: metadata.domain || "culinary",
     metadata: {
@@ -320,7 +327,7 @@ export function transformPineconeToInternalFormat(
       publicationYear: metadata.publicationYear,
       cuisine: metadata.cuisine,
       confidence: metadata.confidence || 0.85,
-      tags: Array.isArray(metadata.tags) ? metadata.tags : metadata.tags ? [metadata.tags] : [],
+      tags: tagsArray,
       relatedTerms: Array.isArray(metadata.relatedTerms) ? metadata.relatedTerms : [],
       createdAt: metadata.createdAt || new Date().toISOString(),
       updatedAt: metadata.updatedAt || new Date().toISOString(),
