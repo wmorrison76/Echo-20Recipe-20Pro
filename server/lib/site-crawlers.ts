@@ -1,5 +1,10 @@
-import type { SiteCrawlerAdapter, CrawlerOptions, FlavorMatrixEntry, FlavorProfile } from './crawler-framework';
-import type { CrawledRecipe } from './web-recipe-crawler';
+import type {
+  SiteCrawlerAdapter,
+  CrawlerOptions,
+  FlavorMatrixEntry,
+  FlavorProfile,
+} from "./crawler-framework";
+import type { CrawledRecipe } from "./web-recipe-crawler";
 
 /**
  * Base class for HTML-based recipe crawlers
@@ -9,7 +14,7 @@ export abstract class HTMLRecipeCrawlerAdapter implements SiteCrawlerAdapter {
   abstract domain: string;
   abstract language: string;
   abstract region: string;
-  abstract category: 'megaplatform' | 'regional' | 'blog' | 'editorial';
+  abstract category: "megaplatform" | "regional" | "blog" | "editorial";
   abstract baseUrl: string;
   abstract isActive: boolean;
 
@@ -32,10 +37,10 @@ export abstract class HTMLRecipeCrawlerAdapter implements SiteCrawlerAdapter {
       recipeId: recipe.id,
       recipeName: recipe.title,
       source: this.name,
-      cuisine: recipe.cuisine || 'Unknown',
+      cuisine: recipe.cuisine || "Unknown",
       region: this.region,
       flavorProfile: recipe.flavor || this.defaultFlavorProfile(),
-      mainIngredients: recipe.ingredients.slice(0, 5).map(i => i.name),
+      mainIngredients: recipe.ingredients.slice(0, 5).map((i) => i.name),
       techniques: recipe.techniques || [],
       sensoryDescriptors: this.extractSensoryDescriptors(recipe),
       confidence: 0.7,
@@ -58,39 +63,42 @@ export abstract class HTMLRecipeCrawlerAdapter implements SiteCrawlerAdapter {
 
   protected extractSensoryDescriptors(recipe: CrawledRecipe): string[] {
     const descriptors: string[] = [];
-    
+
     if (recipe.flavor) {
-      if (recipe.flavor.sweet > 6) descriptors.push('sweet');
-      if (recipe.flavor.salty > 6) descriptors.push('savory');
-      if (recipe.flavor.sour > 5) descriptors.push('bright', 'acidic');
-      if (recipe.flavor.bitter > 4) descriptors.push('complex');
-      if (recipe.flavor.umami > 6) descriptors.push('umami-rich', 'savory');
-      if (recipe.flavor.spicy > 5) descriptors.push('spicy', 'heat');
+      if (recipe.flavor.sweet > 6) descriptors.push("sweet");
+      if (recipe.flavor.salty > 6) descriptors.push("savory");
+      if (recipe.flavor.sour > 5) descriptors.push("bright", "acidic");
+      if (recipe.flavor.bitter > 4) descriptors.push("complex");
+      if (recipe.flavor.umami > 6) descriptors.push("umami-rich", "savory");
+      if (recipe.flavor.spicy > 5) descriptors.push("spicy", "heat");
     }
 
     return [...new Set(descriptors)];
   }
 
-  protected async fetchWithRetry(url: string, maxRetries = 3): Promise<Response> {
+  protected async fetchWithRetry(
+    url: string,
+    maxRetries = 3,
+  ): Promise<Response> {
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
         const response = await fetch(url, {
           headers: {
-            'User-Agent': 'EchoCulinaryBot/1.0 (+http://echo.local/bot)',
+            "User-Agent": "EchoCulinaryBot/1.0 (+http://echo.local/bot)",
           },
         });
         if (response.ok) return response;
         if (response.status === 429) {
-          await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+          await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
           continue;
         }
         throw new Error(`HTTP ${response.status}`);
       } catch (error) {
         if (attempt === maxRetries - 1) throw error;
-        await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+        await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
       }
     }
-    throw new Error('Max retries exceeded');
+    throw new Error("Max retries exceeded");
   }
 }
 
@@ -98,61 +106,72 @@ export abstract class HTMLRecipeCrawlerAdapter implements SiteCrawlerAdapter {
  * AllRecipes - World's largest recipe site
  */
 export class AllRecipesCrawler extends HTMLRecipeCrawlerAdapter {
-  name = 'AllRecipes';
-  domain = 'allrecipes.com';
-  language = 'English';
-  region = 'Global (US-centric)';
-  category = 'megaplatform';
-  baseUrl = 'https://www.allrecipes.com';
+  name = "AllRecipes";
+  domain = "allrecipes.com";
+  language = "English";
+  region = "Global (US-centric)";
+  category = "megaplatform";
+  baseUrl = "https://www.allrecipes.com";
   isActive = true;
 
   private mockRecipes(): CrawledRecipe[] {
     return [
       {
-        id: 'allrecipes_classic_lasagna',
-        title: 'Classic Lasagna',
-        source: 'AllRecipes',
+        id: "allrecipes_classic_lasagna",
+        title: "Classic Lasagna",
+        source: "AllRecipes",
         url: `${this.baseUrl}/recipe/12345/`,
-        cuisine: 'Italian',
+        cuisine: "Italian",
         difficulty: 3,
         cookTime: 45,
         prepTime: 20,
         servings: 8,
         ingredients: [
-          { name: 'ground beef', amount: 2, unit: 'lb' },
-          { name: 'italian sausage', amount: 1, unit: 'lb' },
-          { name: 'marinara sauce', amount: 32, unit: 'oz' },
-          { name: 'ricotta cheese', amount: 15, unit: 'oz' },
-          { name: 'mozzarella cheese', amount: 2, unit: 'cups' },
-          { name: 'parmesan cheese', amount: 1, unit: 'cup' },
-          { name: 'lasagna noodles', amount: 1, unit: 'lb' },
+          { name: "ground beef", amount: 2, unit: "lb" },
+          { name: "italian sausage", amount: 1, unit: "lb" },
+          { name: "marinara sauce", amount: 32, unit: "oz" },
+          { name: "ricotta cheese", amount: 15, unit: "oz" },
+          { name: "mozzarella cheese", amount: 2, unit: "cups" },
+          { name: "parmesan cheese", amount: 1, unit: "cup" },
+          { name: "lasagna noodles", amount: 1, unit: "lb" },
         ],
-        instructions: ['Preheat oven to 375F', 'Brown meat', 'Layer noodles and sauce', 'Bake 45 minutes'],
-        tags: ['italian', 'main-dish', 'pasta'],
+        instructions: [
+          "Preheat oven to 375F",
+          "Brown meat",
+          "Layer noodles and sauce",
+          "Bake 45 minutes",
+        ],
+        tags: ["italian", "main-dish", "pasta"],
         flavor: { sweet: 2, salty: 6, sour: 4, bitter: 1, umami: 7 },
         crawledAt: Date.now(),
       },
       {
-        id: 'allrecipes_chocolate_chip_cookies',
-        title: 'Chocolate Chip Cookies',
-        source: 'AllRecipes',
+        id: "allrecipes_chocolate_chip_cookies",
+        title: "Chocolate Chip Cookies",
+        source: "AllRecipes",
         url: `${this.baseUrl}/recipe/12346/`,
-        cuisine: 'American',
+        cuisine: "American",
         difficulty: 1,
         cookTime: 12,
         prepTime: 10,
         servings: 24,
         ingredients: [
-          { name: 'butter', amount: 1, unit: 'cup' },
-          { name: 'sugar', amount: 0.75, unit: 'cup' },
-          { name: 'brown sugar', amount: 0.75, unit: 'cup' },
-          { name: 'eggs', amount: 2, unit: 'each' },
-          { name: 'vanilla extract', amount: 1, unit: 'tsp' },
-          { name: 'all-purpose flour', amount: 2.25, unit: 'cups' },
-          { name: 'chocolate chips', amount: 2, unit: 'cups' },
+          { name: "butter", amount: 1, unit: "cup" },
+          { name: "sugar", amount: 0.75, unit: "cup" },
+          { name: "brown sugar", amount: 0.75, unit: "cup" },
+          { name: "eggs", amount: 2, unit: "each" },
+          { name: "vanilla extract", amount: 1, unit: "tsp" },
+          { name: "all-purpose flour", amount: 2.25, unit: "cups" },
+          { name: "chocolate chips", amount: 2, unit: "cups" },
         ],
-        instructions: ['Mix butter and sugar', 'Add eggs and vanilla', 'Mix in flour', 'Add chips', 'Bake at 375F for 12 minutes'],
-        tags: ['dessert', 'cookies', 'american'],
+        instructions: [
+          "Mix butter and sugar",
+          "Add eggs and vanilla",
+          "Mix in flour",
+          "Add chips",
+          "Bake at 375F for 12 minutes",
+        ],
+        tags: ["dessert", "cookies", "american"],
         flavor: { sweet: 8, salty: 2, sour: 1, bitter: 2, umami: 2 },
         crawledAt: Date.now(),
       },
@@ -166,7 +185,7 @@ export class AllRecipesCrawler extends HTMLRecipeCrawlerAdapter {
       // Try recipes endpoint first
       let searchUrl = `${this.baseUrl}/recipes`;
 
-      if (options.query && options.query !== '*') {
+      if (options.query && options.query !== "*") {
         // AllRecipes search endpoint
         searchUrl = `${this.baseUrl}/search?q=${encodeURIComponent(options.query)}`;
       }
@@ -174,12 +193,16 @@ export class AllRecipesCrawler extends HTMLRecipeCrawlerAdapter {
       const html = await (await this.fetchWithRetry(searchUrl)).text();
 
       // Parse JSON-LD structured data from HTML
-      const jsonLdMatch = html.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g);
+      const jsonLdMatch = html.match(
+        /<script type="application\/ld\+json">[\s\S]*?<\/script>/g,
+      );
       if (jsonLdMatch && jsonLdMatch.length > 0) {
         for (const match of jsonLdMatch) {
           try {
-            const json = JSON.parse(match.replace(/<script[^>]*>|<\/script>/g, ''));
-            if (json['@type'] === 'Recipe') {
+            const json = JSON.parse(
+              match.replace(/<script[^>]*>|<\/script>/g, ""),
+            );
+            if (json["@type"] === "Recipe") {
               recipes.push(this.parseRecipeSchema(json));
             }
           } catch (e) {
@@ -193,35 +216,35 @@ export class AllRecipesCrawler extends HTMLRecipeCrawlerAdapter {
         return recipes.slice(0, options.limit || 50);
       }
     } catch (error) {
-      console.error('AllRecipes crawl error:', error);
+      console.error("AllRecipes crawl error:", error);
     }
 
     // Fallback to mock recipes if no real recipes found
-    console.log('AllRecipes: Using fallback mock data');
+    console.log("AllRecipes: Using fallback mock data");
     return this.mockRecipes().slice(0, options.limit || 50);
   }
 
   private parseRecipeSchema(schema: any): CrawledRecipe {
     return {
-      id: `allrecipes_${schema.name?.replace(/\s+/g, '_').toLowerCase() || Date.now()}`,
-      title: schema.name || 'Unknown Recipe',
-      source: 'AllRecipes',
+      id: `allrecipes_${schema.name?.replace(/\s+/g, "_").toLowerCase() || Date.now()}`,
+      title: schema.name || "Unknown Recipe",
+      source: "AllRecipes",
       url: schema.url || this.baseUrl,
-      cuisine: schema.recipeCategory?.[0] || 'Unknown',
+      cuisine: schema.recipeCategory?.[0] || "Unknown",
       difficulty: this.parseRating(schema.recipeInstructions?.length || 0),
       cookTime: this.parseDuration(schema.cookTime) || 30,
       prepTime: this.parseDuration(schema.prepTime) || 15,
-      servings: parseInt(schema.recipeYield?.[0] || '4') || 4,
+      servings: parseInt(schema.recipeYield?.[0] || "4") || 4,
       ingredients: (schema.recipeIngredient || []).map((ing: string) => ({
         name: ing.split(/[\d\s]+/)[0].trim(),
         amount: 1,
-        unit: 'unit',
+        unit: "unit",
       })),
       instructions: Array.isArray(schema.recipeInstructions)
         ? schema.recipeInstructions.map((inst: any) => inst.text || inst)
-        : [schema.recipeInstructions?.text || ''],
-      tags: [schema.keywords || ''].filter(Boolean).split(','),
-      calories: parseInt(schema.nutrition?.calories || '0'),
+        : [schema.recipeInstructions?.text || ""],
+      tags: [schema.keywords || ""].filter(Boolean).split(","),
+      calories: parseInt(schema.nutrition?.calories || "0"),
       crawledAt: Date.now(),
     };
   }
@@ -245,34 +268,39 @@ export class AllRecipesCrawler extends HTMLRecipeCrawlerAdapter {
  * BBC Good Food - Massive structured recipe index
  */
 export class BBCGoodFoodCrawler extends HTMLRecipeCrawlerAdapter {
-  name = 'BBC Good Food';
-  domain = 'bbcgoodfood.com';
-  language = 'English';
-  region = 'Global (UK-centric)';
-  category = 'megaplatform';
-  baseUrl = 'https://www.bbcgoodfood.com';
+  name = "BBC Good Food";
+  domain = "bbcgoodfood.com";
+  language = "English";
+  region = "Global (UK-centric)";
+  category = "megaplatform";
+  baseUrl = "https://www.bbcgoodfood.com";
   isActive = true;
 
   protected getMockRecipes(): CrawledRecipe[] {
     return [
       {
-        id: 'bbc_beef_wellington',
-        title: 'Beef Wellington',
-        source: 'BBC Good Food',
+        id: "bbc_beef_wellington",
+        title: "Beef Wellington",
+        source: "BBC Good Food",
         url: `${this.baseUrl}/recipes/beef-wellington`,
-        cuisine: 'British',
+        cuisine: "British",
         difficulty: 4,
         cookTime: 45,
         prepTime: 60,
         servings: 4,
         ingredients: [
-          { name: 'beef fillet', amount: 750, unit: 'g' },
-          { name: 'mushrooms', amount: 250, unit: 'g' },
-          { name: 'pâté', amount: 200, unit: 'g' },
-          { name: 'puff pastry', amount: 500, unit: 'g' },
+          { name: "beef fillet", amount: 750, unit: "g" },
+          { name: "mushrooms", amount: 250, unit: "g" },
+          { name: "pâté", amount: 200, unit: "g" },
+          { name: "puff pastry", amount: 500, unit: "g" },
         ],
-        instructions: ['Sear beef', 'Make mushroom duxelles', 'Wrap in pastry', 'Bake until golden'],
-        tags: ['british', 'beef', 'dinner', 'special-occasion'],
+        instructions: [
+          "Sear beef",
+          "Make mushroom duxelles",
+          "Wrap in pastry",
+          "Bake until golden",
+        ],
+        tags: ["british", "beef", "dinner", "special-occasion"],
         flavor: { sweet: 2, salty: 7, sour: 1, bitter: 1, umami: 9 },
         crawledAt: Date.now(),
       },
@@ -283,18 +311,23 @@ export class BBCGoodFoodCrawler extends HTMLRecipeCrawlerAdapter {
     const recipes: CrawledRecipe[] = [];
     let searchUrl = `${this.baseUrl}/food/recipes`;
 
-    if (options.query && options.query !== '*') {
+    if (options.query && options.query !== "*") {
       searchUrl = `${this.baseUrl}/search/recipes?q=${encodeURIComponent(options.query)}`;
     }
 
     try {
       const html = await (await this.fetchWithRetry(searchUrl)).text();
-      const jsonLdMatches = html.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g) || [];
+      const jsonLdMatches =
+        html.match(
+          /<script type="application\/ld\+json">[\s\S]*?<\/script>/g,
+        ) || [];
 
       for (const match of jsonLdMatches) {
         try {
-          const json = JSON.parse(match.replace(/<script[^>]*>|<\/script>/g, ''));
-          if (json['@type'] === 'Recipe' || json.type === 'recipe') {
+          const json = JSON.parse(
+            match.replace(/<script[^>]*>|<\/script>/g, ""),
+          );
+          if (json["@type"] === "Recipe" || json.type === "recipe") {
             recipes.push(this.parseRecipeSchema(json));
           }
         } catch (e) {
@@ -306,35 +339,35 @@ export class BBCGoodFoodCrawler extends HTMLRecipeCrawlerAdapter {
         return recipes.slice(0, options.limit || 50);
       }
     } catch (error) {
-      console.error('BBC Good Food crawl error:', error);
+      console.error("BBC Good Food crawl error:", error);
     }
 
-    console.log('BBC Good Food: Using fallback mock data');
+    console.log("BBC Good Food: Using fallback mock data");
     return this.getMockRecipes().slice(0, options.limit || 50);
   }
 
   private parseRecipeSchema(schema: any): CrawledRecipe {
     return {
-      id: `bbc_${schema.name?.replace(/\s+/g, '_').toLowerCase() || Date.now()}`,
-      title: schema.name || 'Unknown Recipe',
-      source: 'BBC Good Food',
+      id: `bbc_${schema.name?.replace(/\s+/g, "_").toLowerCase() || Date.now()}`,
+      title: schema.name || "Unknown Recipe",
+      source: "BBC Good Food",
       url: schema.url || this.baseUrl,
-      cuisine: schema.recipeCuisine?.[0] || 'British',
+      cuisine: schema.recipeCuisine?.[0] || "British",
       difficulty: this.extractDifficulty(schema.recipeDifficulty),
       cookTime: this.parseDuration(schema.cookTime) || 30,
       prepTime: this.parseDuration(schema.prepTime) || 15,
-      servings: parseInt(schema.recipeYield?.[0] || '4') || 4,
+      servings: parseInt(schema.recipeYield?.[0] || "4") || 4,
       ingredients: (schema.recipeIngredient || []).map((ing: string) => ({
-        name: ing.replace(/^\d+\s*[\w\s]*/, '').trim(),
+        name: ing.replace(/^\d+\s*[\w\s]*/, "").trim(),
         amount: 1,
-        unit: 'unit',
+        unit: "unit",
       })),
       instructions: Array.isArray(schema.recipeInstructions)
         ? schema.recipeInstructions.map((inst: any) => inst.text || inst)
-        : [schema.recipeInstructions?.text || ''],
-      tags: schema.keywords ? schema.keywords.split(',') : [],
-      allergens: schema.recipeIngredient?.filter((ing: string) => 
-        /gluten|dairy|nut|shellfish/i.test(ing)
+        : [schema.recipeInstructions?.text || ""],
+      tags: schema.keywords ? schema.keywords.split(",") : [],
+      allergens: schema.recipeIngredient?.filter((ing: string) =>
+        /gluten|dairy|nut|shellfish/i.test(ing),
       ),
       crawledAt: Date.now(),
     };
@@ -343,9 +376,9 @@ export class BBCGoodFoodCrawler extends HTMLRecipeCrawlerAdapter {
   private extractDifficulty(difficulty: string | undefined): 1 | 2 | 3 | 4 | 5 {
     if (!difficulty) return 2;
     const lower = difficulty.toLowerCase();
-    if (lower.includes('easy')) return 1;
-    if (lower.includes('intermediate')) return 3;
-    if (lower.includes('challenging')) return 5;
+    if (lower.includes("easy")) return 1;
+    if (lower.includes("intermediate")) return 3;
+    if (lower.includes("challenging")) return 5;
     return 2;
   }
 
@@ -360,35 +393,40 @@ export class BBCGoodFoodCrawler extends HTMLRecipeCrawlerAdapter {
  * Cookpad - Global, user-generated recipes
  */
 export class CookpadCrawler extends HTMLRecipeCrawlerAdapter {
-  name = 'Cookpad';
-  domain = 'cookpad.com';
-  language = 'Multiple';
-  region = 'Global (Japan-origin)';
-  category = 'megaplatform';
-  baseUrl = 'https://cookpad.com';
+  name = "Cookpad";
+  domain = "cookpad.com";
+  language = "Multiple";
+  region = "Global (Japan-origin)";
+  category = "megaplatform";
+  baseUrl = "https://cookpad.com";
   isActive = true;
 
   protected getMockRecipes(): CrawledRecipe[] {
     return [
       {
-        id: 'cookpad_sushi_roll',
-        title: 'California Roll Sushi',
-        source: 'Cookpad',
+        id: "cookpad_sushi_roll",
+        title: "California Roll Sushi",
+        source: "Cookpad",
         url: `${this.baseUrl}/recipes/123456`,
-        cuisine: 'Japanese',
+        cuisine: "Japanese",
         difficulty: 3,
         cookTime: 20,
         prepTime: 30,
         servings: 4,
         ingredients: [
-          { name: 'sushi rice', amount: 2, unit: 'cups' },
-          { name: 'nori (seaweed sheets)', amount: 4, unit: 'sheets' },
-          { name: 'crab meat', amount: 1, unit: 'cup' },
-          { name: 'avocado', amount: 2, unit: 'each' },
-          { name: 'cucumber', amount: 1, unit: 'each' },
+          { name: "sushi rice", amount: 2, unit: "cups" },
+          { name: "nori (seaweed sheets)", amount: 4, unit: "sheets" },
+          { name: "crab meat", amount: 1, unit: "cup" },
+          { name: "avocado", amount: 2, unit: "each" },
+          { name: "cucumber", amount: 1, unit: "each" },
         ],
-        instructions: ['Cook rice', 'Prepare fillings', 'Roll sushi', 'Slice and serve'],
-        tags: ['japanese', 'sushi', 'seafood'],
+        instructions: [
+          "Cook rice",
+          "Prepare fillings",
+          "Roll sushi",
+          "Slice and serve",
+        ],
+        tags: ["japanese", "sushi", "seafood"],
         flavor: { sweet: 2, salty: 4, sour: 3, bitter: 1, umami: 6 },
         crawledAt: Date.now(),
       },
@@ -402,7 +440,7 @@ export class CookpadCrawler extends HTMLRecipeCrawlerAdapter {
       // Use Cookpad's recipe search or directory
       let url = `${this.baseUrl}/search/recipes`;
 
-      if (options.query && options.query !== '*') {
+      if (options.query && options.query !== "*") {
         url = `${this.baseUrl}/search/recipes?q=${encodeURIComponent(options.query)}`;
       } else {
         // Use trending/popular recipes if no specific query
@@ -413,7 +451,9 @@ export class CookpadCrawler extends HTMLRecipeCrawlerAdapter {
 
       // Extract recipe links and IDs
       const recipeMatches = html.match(/\/recipes\/(\d+)/g) || [];
-      const uniqueIds = [...new Set(recipeMatches.map(m => m.match(/\d+/)?.[0]))].filter(Boolean);
+      const uniqueIds = [
+        ...new Set(recipeMatches.map((m) => m.match(/\d+/)?.[0])),
+      ].filter(Boolean);
 
       for (const recipeId of uniqueIds.slice(0, options.limit || 20)) {
         try {
@@ -428,35 +468,39 @@ export class CookpadCrawler extends HTMLRecipeCrawlerAdapter {
         return recipes.slice(0, options.limit || 50);
       }
     } catch (error) {
-      console.error('Cookpad crawl error:', error);
+      console.error("Cookpad crawl error:", error);
     }
 
-    console.log('Cookpad: Using fallback mock data');
+    console.log("Cookpad: Using fallback mock data");
     return this.getMockRecipes().slice(0, options.limit || 50);
   }
 
-  private async fetchRecipeDetails(recipeId: string): Promise<CrawledRecipe | null> {
+  private async fetchRecipeDetails(
+    recipeId: string,
+  ): Promise<CrawledRecipe | null> {
     try {
       const url = `${this.baseUrl}/api/recipes/${recipeId}.json`;
       const response = await this.fetchWithRetry(url);
-      const data = await response.json() as any;
+      const data = (await response.json()) as any;
 
       return {
         id: `cookpad_${recipeId}`,
-        title: data.title || 'Unknown',
-        source: 'Cookpad',
+        title: data.title || "Unknown",
+        source: "Cookpad",
         url: data.url || `${this.baseUrl}/recipes/${recipeId}`,
-        cuisine: data.cuisine_name || 'Various',
+        cuisine: data.cuisine_name || "Various",
         difficulty: data.difficulty || 2,
         cookTime: data.cooking_time_minutes || 30,
         prepTime: data.prep_time_minutes || 15,
         servings: data.servings || 4,
         ingredients: (data.ingredients || []).map((ing: any) => ({
-          name: ing.name || '',
+          name: ing.name || "",
           amount: ing.quantity || 1,
-          unit: ing.unit || '',
+          unit: ing.unit || "",
         })),
-        instructions: (data.directions || []).map((dir: any) => dir.text || dir),
+        instructions: (data.directions || []).map(
+          (dir: any) => dir.text || dir,
+        ),
         tags: data.tags || [],
         crawledAt: Date.now(),
       };
@@ -471,35 +515,39 @@ export class CookpadCrawler extends HTMLRecipeCrawlerAdapter {
  * Serious Eats - Food science and technique focus
  */
 export class SeriousEatsCrawler extends HTMLRecipeCrawlerAdapter {
-  name = 'Serious Eats';
-  domain = 'seriouseats.com';
-  language = 'English';
-  region = 'Global (US)';
-  category = 'megaplatform';
-  baseUrl = 'https://www.seriouseats.com';
+  name = "Serious Eats";
+  domain = "seriouseats.com";
+  language = "English";
+  region = "Global (US)";
+  category = "megaplatform";
+  baseUrl = "https://www.seriouseats.com";
   isActive = true;
 
   protected getMockRecipes(): CrawledRecipe[] {
     return [
       {
-        id: 'seriouseats_sous_vide_steak',
-        title: 'Sous Vide Perfect Steak',
-        source: 'Serious Eats',
+        id: "seriouseats_sous_vide_steak",
+        title: "Sous Vide Perfect Steak",
+        source: "Serious Eats",
         url: `${this.baseUrl}/recipes/sous-vide-steak`,
-        cuisine: 'American',
+        cuisine: "American",
         difficulty: 3,
         cookTime: 60,
         prepTime: 15,
         servings: 2,
         ingredients: [
-          { name: 'ribeye steak', amount: 2, unit: 'each' },
-          { name: 'butter', amount: 2, unit: 'tbsp' },
-          { name: 'rosemary', amount: 2, unit: 'sprigs' },
-          { name: 'garlic', amount: 3, unit: 'cloves' },
+          { name: "ribeye steak", amount: 2, unit: "each" },
+          { name: "butter", amount: 2, unit: "tbsp" },
+          { name: "rosemary", amount: 2, unit: "sprigs" },
+          { name: "garlic", amount: 3, unit: "cloves" },
         ],
-        instructions: ['Vacuum seal steak with seasonings', 'Cook in water bath at 129F for 1 hour', 'Sear in hot pan'],
-        tags: ['technique', 'sous-vide', 'beef', 'precision-cooking'],
-        techniques: ['sous-vide', 'searing'],
+        instructions: [
+          "Vacuum seal steak with seasonings",
+          "Cook in water bath at 129F for 1 hour",
+          "Sear in hot pan",
+        ],
+        tags: ["technique", "sous-vide", "beef", "precision-cooking"],
+        techniques: ["sous-vide", "searing"],
         flavor: { sweet: 1, salty: 7, sour: 1, bitter: 1, umami: 9 },
         crawledAt: Date.now(),
       },
@@ -512,18 +560,23 @@ export class SeriousEatsCrawler extends HTMLRecipeCrawlerAdapter {
     try {
       let url = `${this.baseUrl}/recipes`;
 
-      if (options.query && options.query !== '*') {
+      if (options.query && options.query !== "*") {
         url = `${this.baseUrl}/search?query=${encodeURIComponent(options.query)}`;
       }
 
       const html = await (await this.fetchWithRetry(url)).text();
 
-      const jsonLdMatches = html.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g) || [];
+      const jsonLdMatches =
+        html.match(
+          /<script type="application\/ld\+json">[\s\S]*?<\/script>/g,
+        ) || [];
 
       for (const match of jsonLdMatches) {
         try {
-          const json = JSON.parse(match.replace(/<script[^>]*>|<\/script>/g, ''));
-          if (json['@type'] === 'Recipe') {
+          const json = JSON.parse(
+            match.replace(/<script[^>]*>|<\/script>/g, ""),
+          );
+          if (json["@type"] === "Recipe") {
             recipes.push(this.parseRecipeSchema(json));
           }
         } catch (e) {
@@ -535,31 +588,33 @@ export class SeriousEatsCrawler extends HTMLRecipeCrawlerAdapter {
         return recipes.slice(0, options.limit || 50);
       }
     } catch (error) {
-      console.error('Serious Eats crawl error:', error);
+      console.error("Serious Eats crawl error:", error);
     }
 
-    console.log('Serious Eats: Using fallback mock data');
+    console.log("Serious Eats: Using fallback mock data");
     return this.getMockRecipes().slice(0, options.limit || 50);
   }
 
   private parseRecipeSchema(schema: any): CrawledRecipe {
     return {
-      id: `seriouseats_${schema.name?.replace(/\s+/g, '_').toLowerCase() || Date.now()}`,
-      title: schema.name || 'Unknown',
-      source: 'Serious Eats',
+      id: `seriouseats_${schema.name?.replace(/\s+/g, "_").toLowerCase() || Date.now()}`,
+      title: schema.name || "Unknown",
+      source: "Serious Eats",
       url: schema.url || this.baseUrl,
-      cuisine: schema.recipeCuisine?.[0] || 'International',
+      cuisine: schema.recipeCuisine?.[0] || "International",
       difficulty: 3,
       cookTime: this.parseDuration(schema.cookTime) || 45,
       prepTime: this.parseDuration(schema.prepTime) || 20,
-      servings: parseInt(schema.recipeYield?.[0] || '4') || 4,
+      servings: parseInt(schema.recipeYield?.[0] || "4") || 4,
       ingredients: (schema.recipeIngredient || []).map((ing: string) => ({
-        name: ing.replace(/[\d\s\W]*$/, '').trim(),
+        name: ing.replace(/[\d\s\W]*$/, "").trim(),
         amount: 1,
-        unit: 'unit',
+        unit: "unit",
       })),
-      instructions: (schema.recipeInstructions || []).map((inst: any) => inst.text || inst),
-      tags: ['technique-focused', 'food-science'],
+      instructions: (schema.recipeInstructions || []).map(
+        (inst: any) => inst.text || inst,
+      ),
+      tags: ["technique-focused", "food-science"],
       techniques: this.extractTechniques(schema.recipeInstructions || []),
       crawledAt: Date.now(),
     };
@@ -567,11 +622,23 @@ export class SeriousEatsCrawler extends HTMLRecipeCrawlerAdapter {
 
   private extractTechniques(instructions: any[]): string[] {
     const techniques: string[] = [];
-    const techniquPatterns = ['sear', 'braise', 'roast', 'simmer', 'blanch', 'shock', 'fold', 'whisk', 'blend'];
-    
+    const techniquPatterns = [
+      "sear",
+      "braise",
+      "roast",
+      "simmer",
+      "blanch",
+      "shock",
+      "fold",
+      "whisk",
+      "blend",
+    ];
+
     const instructionText = Array.isArray(instructions)
-      ? instructions.map(i => (typeof i === 'string' ? i : i.text || '').toLowerCase()).join(' ')
-      : '';
+      ? instructions
+          .map((i) => (typeof i === "string" ? i : i.text || "").toLowerCase())
+          .join(" ")
+      : "";
 
     for (const technique of techniquPatterns) {
       if (instructionText.includes(technique)) {
@@ -593,35 +660,39 @@ export class SeriousEatsCrawler extends HTMLRecipeCrawlerAdapter {
  * Food Network - TV-tied standardized recipes
  */
 export class FoodNetworkCrawler extends HTMLRecipeCrawlerAdapter {
-  name = 'Food Network';
-  domain = 'foodnetwork.com';
-  language = 'English';
-  region = 'Global (US)';
-  category = 'megaplatform';
-  baseUrl = 'https://www.foodnetwork.com';
+  name = "Food Network";
+  domain = "foodnetwork.com";
+  language = "English";
+  region = "Global (US)";
+  category = "megaplatform";
+  baseUrl = "https://www.foodnetwork.com";
   isActive = true;
 
   protected getMockRecipes(): CrawledRecipe[] {
     return [
       {
-        id: 'foodnetwork_fried_chicken',
-        title: 'Fried Chicken',
-        source: 'Food Network',
+        id: "foodnetwork_fried_chicken",
+        title: "Fried Chicken",
+        source: "Food Network",
         url: `${this.baseUrl}/recipes/fried-chicken`,
-        cuisine: 'American',
+        cuisine: "American",
         difficulty: 2,
         cookTime: 25,
         prepTime: 20,
         servings: 4,
         ingredients: [
-          { name: 'chicken pieces', amount: 2, unit: 'lbs' },
-          { name: 'flour', amount: 2, unit: 'cups' },
-          { name: 'salt', amount: 1, unit: 'tsp' },
-          { name: 'black pepper', amount: 1, unit: 'tsp' },
-          { name: 'vegetable oil', amount: 2, unit: 'quarts' },
+          { name: "chicken pieces", amount: 2, unit: "lbs" },
+          { name: "flour", amount: 2, unit: "cups" },
+          { name: "salt", amount: 1, unit: "tsp" },
+          { name: "black pepper", amount: 1, unit: "tsp" },
+          { name: "vegetable oil", amount: 2, unit: "quarts" },
         ],
-        instructions: ['Season flour', 'Coat chicken', 'Fry in 350F oil until golden'],
-        tags: ['american', 'chicken', 'fried'],
+        instructions: [
+          "Season flour",
+          "Coat chicken",
+          "Fry in 350F oil until golden",
+        ],
+        tags: ["american", "chicken", "fried"],
         flavor: { sweet: 1, salty: 6, sour: 1, bitter: 1, umami: 6 },
         crawledAt: Date.now(),
       },
@@ -639,12 +710,16 @@ export class FoodNetworkCrawler extends HTMLRecipeCrawlerAdapter {
       const recipeUrls = html.match(/href="(\/recipes?\/[^"]+)"/g) || [];
 
       // Limit concurrent requests
-      const urlsToFetch = [...new Set(recipeUrls.map(u => u.replace(/href="|"/g, '')))].slice(0, options.limit || 20);
+      const urlsToFetch = [
+        ...new Set(recipeUrls.map((u) => u.replace(/href="|"/g, ""))),
+      ].slice(0, options.limit || 20);
 
       for (const recipeUrl of urlsToFetch) {
-        if (!recipeUrl.startsWith('/')) continue;
+        if (!recipeUrl.startsWith("/")) continue;
         try {
-          const recipe = await this.fetchRecipeDetails(`${this.baseUrl}${recipeUrl}`);
+          const recipe = await this.fetchRecipeDetails(
+            `${this.baseUrl}${recipeUrl}`,
+          );
           if (recipe) recipes.push(recipe);
         } catch (e) {
           // Skip problematic URLs
@@ -657,40 +732,46 @@ export class FoodNetworkCrawler extends HTMLRecipeCrawlerAdapter {
         return recipes.slice(0, options.limit || 50);
       }
     } catch (error) {
-      console.error('Food Network crawl error:', error);
+      console.error("Food Network crawl error:", error);
     }
 
     // Fallback to mock data if no real recipes found
-    console.log('Food Network: Using fallback mock data');
+    console.log("Food Network: Using fallback mock data");
     return this.getMockRecipes().slice(0, options.limit || 50);
   }
 
   private async fetchRecipeDetails(url: string): Promise<CrawledRecipe | null> {
     try {
       const html = await (await this.fetchWithRetry(url)).text();
-      const jsonLdMatch = html.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/);
-      
+      const jsonLdMatch = html.match(
+        /<script type="application\/ld\+json">[\s\S]*?<\/script>/,
+      );
+
       if (!jsonLdMatch) return null;
 
-      const schema = JSON.parse(jsonLdMatch[0].replace(/<script[^>]*>|<\/script>/g, ''));
+      const schema = JSON.parse(
+        jsonLdMatch[0].replace(/<script[^>]*>|<\/script>/g, ""),
+      );
 
       return {
-        id: `foodnetwork_${schema.name?.replace(/\s+/g, '_').toLowerCase()}`,
-        title: schema.name || 'Unknown',
-        source: 'Food Network',
+        id: `foodnetwork_${schema.name?.replace(/\s+/g, "_").toLowerCase()}`,
+        title: schema.name || "Unknown",
+        source: "Food Network",
         url: url,
-        cuisine: schema.recipeCuisine?.[0] || 'American',
+        cuisine: schema.recipeCuisine?.[0] || "American",
         difficulty: 2,
         cookTime: this.parseDuration(schema.cookTime) || 45,
         prepTime: this.parseDuration(schema.prepTime) || 15,
-        servings: parseInt(schema.recipeYield?.[0] || '4') || 4,
+        servings: parseInt(schema.recipeYield?.[0] || "4") || 4,
         ingredients: (schema.recipeIngredient || []).map((ing: string) => ({
-          name: ing.replace(/^\d+\s*[\w]*/, '').trim(),
+          name: ing.replace(/^\d+\s*[\w]*/, "").trim(),
           amount: 1,
-          unit: 'unit',
+          unit: "unit",
         })),
-        instructions: (schema.recipeInstructions || []).map((inst: any) => inst.text || inst),
-        tags: ['food-network', 'tv-tested'],
+        instructions: (schema.recipeInstructions || []).map(
+          (inst: any) => inst.text || inst,
+        ),
+        tags: ["food-network", "tv-tested"],
         crawledAt: Date.now(),
       };
     } catch (error) {
@@ -710,35 +791,40 @@ export class FoodNetworkCrawler extends HTMLRecipeCrawlerAdapter {
  * Just One Cookbook - Japanese recipes in English
  */
 export class JustOneCookbookCrawler extends HTMLRecipeCrawlerAdapter {
-  name = 'Just One Cookbook';
-  domain = 'justonecookbook.com';
-  language = 'English';
-  region = 'East Asia (Japan)';
-  category = 'editorial';
-  baseUrl = 'https://www.justonecookbook.com';
+  name = "Just One Cookbook";
+  domain = "justonecookbook.com";
+  language = "English";
+  region = "East Asia (Japan)";
+  category = "editorial";
+  baseUrl = "https://www.justonecookbook.com";
   isActive = true;
 
   protected getMockRecipes(): CrawledRecipe[] {
     return [
       {
-        id: 'joc_miso_soup',
-        title: 'Traditional Miso Soup',
-        source: 'Just One Cookbook',
+        id: "joc_miso_soup",
+        title: "Traditional Miso Soup",
+        source: "Just One Cookbook",
         url: `${this.baseUrl}/miso-soup-recipe`,
-        cuisine: 'Japanese',
+        cuisine: "Japanese",
         difficulty: 1,
         cookTime: 10,
         prepTime: 5,
         servings: 4,
         ingredients: [
-          { name: 'dashi broth', amount: 4, unit: 'cups' },
-          { name: 'white miso paste', amount: 3, unit: 'tbsp' },
-          { name: 'tofu', amount: 200, unit: 'g' },
-          { name: 'seaweed (nori)', amount: 2, unit: 'sheets' },
-          { name: 'green onion', amount: 2, unit: 'stalks' },
+          { name: "dashi broth", amount: 4, unit: "cups" },
+          { name: "white miso paste", amount: 3, unit: "tbsp" },
+          { name: "tofu", amount: 200, unit: "g" },
+          { name: "seaweed (nori)", amount: 2, unit: "sheets" },
+          { name: "green onion", amount: 2, unit: "stalks" },
         ],
-        instructions: ['Heat dashi broth', 'Dissolve miso paste', 'Add tofu and seaweed', 'Serve hot'],
-        tags: ['japanese', 'soup', 'comfort-food'],
+        instructions: [
+          "Heat dashi broth",
+          "Dissolve miso paste",
+          "Add tofu and seaweed",
+          "Serve hot",
+        ],
+        tags: ["japanese", "soup", "comfort-food"],
         flavor: { sweet: 1, salty: 5, sour: 1, bitter: 1, umami: 8 },
         crawledAt: Date.now(),
       },
@@ -751,18 +837,23 @@ export class JustOneCookbookCrawler extends HTMLRecipeCrawlerAdapter {
     try {
       let url = `${this.baseUrl}/recipes`;
 
-      if (options.query && options.query !== '*') {
+      if (options.query && options.query !== "*") {
         url = `${this.baseUrl}/?s=${encodeURIComponent(options.query)}`;
       }
 
       const html = await (await this.fetchWithRetry(url)).text();
 
-      const jsonLdMatches = html.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g) || [];
+      const jsonLdMatches =
+        html.match(
+          /<script type="application\/ld\+json">[\s\S]*?<\/script>/g,
+        ) || [];
 
       for (const match of jsonLdMatches) {
         try {
-          const json = JSON.parse(match.replace(/<script[^>]*>|<\/script>/g, ''));
-          if (json['@type'] === 'Recipe') {
+          const json = JSON.parse(
+            match.replace(/<script[^>]*>|<\/script>/g, ""),
+          );
+          if (json["@type"] === "Recipe") {
             recipes.push(this.parseRecipeSchema(json));
           }
         } catch (e) {
@@ -774,31 +865,33 @@ export class JustOneCookbookCrawler extends HTMLRecipeCrawlerAdapter {
         return recipes.slice(0, options.limit || 50);
       }
     } catch (error) {
-      console.error('Just One Cookbook crawl error:', error);
+      console.error("Just One Cookbook crawl error:", error);
     }
 
-    console.log('Just One Cookbook: Using fallback mock data');
+    console.log("Just One Cookbook: Using fallback mock data");
     return this.getMockRecipes().slice(0, options.limit || 50);
   }
 
   private parseRecipeSchema(schema: any): CrawledRecipe {
     return {
-      id: `joc_${schema.name?.replace(/\s+/g, '_').toLowerCase()}`,
-      title: schema.name || 'Unknown',
-      source: 'Just One Cookbook',
+      id: `joc_${schema.name?.replace(/\s+/g, "_").toLowerCase()}`,
+      title: schema.name || "Unknown",
+      source: "Just One Cookbook",
       url: schema.url || this.baseUrl,
-      cuisine: 'Japanese',
+      cuisine: "Japanese",
       difficulty: this.parseDifficulty(schema.recipeDifficulty),
       cookTime: this.parseDuration(schema.cookTime) || 30,
       prepTime: this.parseDuration(schema.prepTime) || 20,
-      servings: parseInt(schema.recipeYield?.[0] || '4') || 4,
+      servings: parseInt(schema.recipeYield?.[0] || "4") || 4,
       ingredients: (schema.recipeIngredient || []).map((ing: string) => ({
         name: ing.trim(),
         amount: 1,
-        unit: 'unit',
+        unit: "unit",
       })),
-      instructions: (schema.recipeInstructions || []).map((inst: any) => inst.text || inst),
-      tags: ['japanese', 'authentic', 'step-by-step'],
+      instructions: (schema.recipeInstructions || []).map(
+        (inst: any) => inst.text || inst,
+      ),
+      tags: ["japanese", "authentic", "step-by-step"],
       crawledAt: Date.now(),
     };
   }
@@ -806,9 +899,9 @@ export class JustOneCookbookCrawler extends HTMLRecipeCrawlerAdapter {
   private parseDifficulty(difficulty: string | undefined): 1 | 2 | 3 | 4 | 5 {
     if (!difficulty) return 2;
     const lower = difficulty.toLowerCase();
-    if (lower.includes('easy')) return 1;
-    if (lower.includes('moderate')) return 2;
-    if (lower.includes('difficult')) return 4;
+    if (lower.includes("easy")) return 1;
+    if (lower.includes("moderate")) return 2;
+    if (lower.includes("difficult")) return 4;
     return 2;
   }
 
@@ -823,37 +916,42 @@ export class JustOneCookbookCrawler extends HTMLRecipeCrawlerAdapter {
  * Tarla Dalal - Indian recipes
  */
 export class TarlaDalalCrawler extends HTMLRecipeCrawlerAdapter {
-  name = 'Tarla Dalal';
-  domain = 'tarladalal.com';
-  language = 'English, Hindi';
-  region = 'South Asia (India)';
-  category = 'megaplatform';
-  baseUrl = 'https://www.tarladalal.com';
+  name = "Tarla Dalal";
+  domain = "tarladalal.com";
+  language = "English, Hindi";
+  region = "South Asia (India)";
+  category = "megaplatform";
+  baseUrl = "https://www.tarladalal.com";
   isActive = true;
 
   protected getMockRecipes(): CrawledRecipe[] {
     return [
       {
-        id: 'tarladalal_butter_chicken',
-        title: 'Butter Chicken (Murgh Makhani)',
-        source: 'Tarla Dalal',
+        id: "tarladalal_butter_chicken",
+        title: "Butter Chicken (Murgh Makhani)",
+        source: "Tarla Dalal",
         url: `${this.baseUrl}/recipe/butter-chicken`,
-        cuisine: 'Indian',
+        cuisine: "Indian",
         difficulty: 2,
         cookTime: 30,
         prepTime: 20,
         servings: 4,
         ingredients: [
-          { name: 'chicken', amount: 750, unit: 'g' },
-          { name: 'butter', amount: 100, unit: 'g' },
-          { name: 'cream', amount: 200, unit: 'ml' },
-          { name: 'tomato puree', amount: 200, unit: 'g' },
-          { name: 'ginger-garlic paste', amount: 30, unit: 'g' },
-          { name: 'garam masala', amount: 1, unit: 'tsp' },
-          { name: 'red chili powder', amount: 1, unit: 'tsp' },
+          { name: "chicken", amount: 750, unit: "g" },
+          { name: "butter", amount: 100, unit: "g" },
+          { name: "cream", amount: 200, unit: "ml" },
+          { name: "tomato puree", amount: 200, unit: "g" },
+          { name: "ginger-garlic paste", amount: 30, unit: "g" },
+          { name: "garam masala", amount: 1, unit: "tsp" },
+          { name: "red chili powder", amount: 1, unit: "tsp" },
         ],
-        instructions: ['Marinate chicken', 'Cook in tandoor or pan', 'Make tomato cream sauce', 'Combine and simmer'],
-        tags: ['indian', 'chicken', 'curry', 'restaurant-style'],
+        instructions: [
+          "Marinate chicken",
+          "Cook in tandoor or pan",
+          "Make tomato cream sauce",
+          "Combine and simmer",
+        ],
+        tags: ["indian", "chicken", "curry", "restaurant-style"],
         flavor: { sweet: 2, salty: 6, sour: 2, bitter: 1, umami: 8 },
         crawledAt: Date.now(),
       },
@@ -866,14 +964,16 @@ export class TarlaDalalCrawler extends HTMLRecipeCrawlerAdapter {
     try {
       let url = `${this.baseUrl}/recipes`;
 
-      if (options.query && options.query !== '*') {
+      if (options.query && options.query !== "*") {
         url = `${this.baseUrl}/search?q=${encodeURIComponent(options.query)}&rpp=${options.limit || 20}`;
       }
 
       const html = await (await this.fetchWithRetry(url)).text();
 
       const recipeIds = html.match(/\/recipe\/([^\s"']+)/g) || [];
-      const uniqueIds = [...new Set(recipeIds.map(id => id.replace('/recipe/', '')))];
+      const uniqueIds = [
+        ...new Set(recipeIds.map((id) => id.replace("/recipe/", ""))),
+      ];
 
       for (const recipeId of uniqueIds.slice(0, options.limit || 20)) {
         try {
@@ -888,40 +988,48 @@ export class TarlaDalalCrawler extends HTMLRecipeCrawlerAdapter {
         return recipes.slice(0, options.limit || 50);
       }
     } catch (error) {
-      console.error('Tarla Dalal crawl error:', error);
+      console.error("Tarla Dalal crawl error:", error);
     }
 
-    console.log('Tarla Dalal: Using fallback mock data');
+    console.log("Tarla Dalal: Using fallback mock data");
     return this.getMockRecipes().slice(0, options.limit || 50);
   }
 
-  private async fetchRecipeDetails(recipeId: string): Promise<CrawledRecipe | null> {
+  private async fetchRecipeDetails(
+    recipeId: string,
+  ): Promise<CrawledRecipe | null> {
     try {
       const url = `${this.baseUrl}/recipe/${recipeId}`;
       const html = await (await this.fetchWithRetry(url)).text();
-      
-      const jsonLdMatch = html.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/);
+
+      const jsonLdMatch = html.match(
+        /<script type="application\/ld\+json">[\s\S]*?<\/script>/,
+      );
       if (!jsonLdMatch) return null;
 
-      const schema = JSON.parse(jsonLdMatch[0].replace(/<script[^>]*>|<\/script>/g, ''));
+      const schema = JSON.parse(
+        jsonLdMatch[0].replace(/<script[^>]*>|<\/script>/g, ""),
+      );
 
       return {
         id: `tarladalal_${recipeId}`,
-        title: schema.name || 'Unknown',
-        source: 'Tarla Dalal',
+        title: schema.name || "Unknown",
+        source: "Tarla Dalal",
         url: url,
-        cuisine: 'Indian',
+        cuisine: "Indian",
         difficulty: this.extractDifficulty(schema.recipeCategory),
         cookTime: this.parseDuration(schema.cookTime) || 30,
         prepTime: this.parseDuration(schema.prepTime) || 20,
-        servings: parseInt(schema.recipeYield?.[0] || '4') || 4,
+        servings: parseInt(schema.recipeYield?.[0] || "4") || 4,
         ingredients: (schema.recipeIngredient || []).map((ing: string) => ({
           name: ing.trim(),
           amount: 1,
-          unit: 'unit',
+          unit: "unit",
         })),
-        instructions: (schema.recipeInstructions || []).map((inst: any) => inst.text || inst),
-        tags: ['indian', 'traditional', 'spice-focused'],
+        instructions: (schema.recipeInstructions || []).map(
+          (inst: any) => inst.text || inst,
+        ),
+        tags: ["indian", "traditional", "spice-focused"],
         allergens: this.extractAllergens(schema.recipeIngredient || []),
         crawledAt: Date.now(),
       };
@@ -931,18 +1039,28 @@ export class TarlaDalalCrawler extends HTMLRecipeCrawlerAdapter {
     }
   }
 
-  private extractDifficulty(categories: string[] | undefined): 1 | 2 | 3 | 4 | 5 {
+  private extractDifficulty(
+    categories: string[] | undefined,
+  ): 1 | 2 | 3 | 4 | 5 {
     if (!categories) return 2;
-    const allCats = categories.join(' ').toLowerCase();
-    if (allCats.includes('easy')) return 1;
-    if (allCats.includes('advanced')) return 4;
+    const allCats = categories.join(" ").toLowerCase();
+    if (allCats.includes("easy")) return 1;
+    if (allCats.includes("advanced")) return 4;
     return 2;
   }
 
   private extractAllergens(ingredients: string[]): string[] {
-    const allergenPatterns = ['nut', 'peanut', 'milk', 'dairy', 'gluten', 'sesame', 'soy'];
-    return ingredients.filter(ing => 
-      allergenPatterns.some(allergen => ing.toLowerCase().includes(allergen))
+    const allergenPatterns = [
+      "nut",
+      "peanut",
+      "milk",
+      "dairy",
+      "gluten",
+      "sesame",
+      "soy",
+    ];
+    return ingredients.filter((ing) =>
+      allergenPatterns.some((allergen) => ing.toLowerCase().includes(allergen)),
     );
   }
 
