@@ -11,6 +11,10 @@ if (!polyfillsLoaded) {
 import { installFetchInterceptor } from "@/lib/fetch-interceptor";
 installFetchInterceptor();
 
+// Install global object URL wrapper to use LRU cache for all blob operations
+import { installGlobalObjectURLWrapper } from "@/lib/global-object-url-wrapper";
+installGlobalObjectURLWrapper();
+
 // Install global error handlers for unhandled errors and rejections
 import { installGlobalErrorHandlers } from "@/lib/error-handlers";
 installGlobalErrorHandlers();
