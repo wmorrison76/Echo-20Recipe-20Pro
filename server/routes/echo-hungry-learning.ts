@@ -769,7 +769,7 @@ export async function searchAndLearn(req: Request, res: Response) {
     // First, try to find in Pinecone (PDF library, uploaded knowledge)
     console.log(`[Echo Learning] Searching Pinecone for "${normalizedTerm}"...`);
     try {
-      const pineconeResults = await queryKnowledgeVectors(normalizedTerm, 5);
+      const pineconeResults = await searchKnowledge(normalizedTerm, { topK: 5 });
 
       if (pineconeResults && pineconeResults.length > 0) {
         // Found in Pinecone/PDF library
