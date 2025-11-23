@@ -2,7 +2,7 @@ import RecipeSearchSection from "./sections/RecipeSearch";
 import GallerySection from "./sections/Gallery";
 import AddRecipeSection from "./sections/AddRecipe";
 import SaasRoadmapSection from "./sections/SaasRoadmap";
-import { EchoTrainingDashboard } from "@/components/panels/EchoTrainingDashboard";
+import { EchoTrainingCenter } from "@/components/panels/EchoTrainingCenter";
 import InventorySuppliesWorkspace from "./sections/saas/InventorySuppliesWorkspace";
 import NutritionAllergensWorkspace from "./sections/saas/NutritionAllergensWorkspace";
 import HaccpComplianceWorkspace from "./sections/saas/HaccpComplianceWorkspace";
@@ -289,7 +289,7 @@ function IndexContent() {
             <TabsContent value="echo-training" className="py-4">
               <ErrorBoundaryWrapper section="Echo Training">
                 <div className="container mx-auto px-3">
-                  <EchoTrainingDashboard />
+                  <EchoTrainingCenter />
                 </div>
               </ErrorBoundaryWrapper>
             </TabsContent>
