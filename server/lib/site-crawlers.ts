@@ -281,7 +281,11 @@ export class BBCGoodFoodCrawler extends HTMLRecipeCrawlerAdapter {
 
   async crawlRecipes(options: CrawlerOptions): Promise<CrawledRecipe[]> {
     const recipes: CrawledRecipe[] = [];
-    const searchUrl = `${this.baseUrl}/search/recipes`;
+    let searchUrl = `${this.baseUrl}/food/recipes`;
+
+    if (options.query && options.query !== '*') {
+      searchUrl = `${this.baseUrl}/search/recipes?q=${encodeURIComponent(options.query)}`;
+    }
 
     try {
       const html = await (await this.fetchWithRetry(searchUrl)).text();
@@ -297,13 +301,16 @@ export class BBCGoodFoodCrawler extends HTMLRecipeCrawlerAdapter {
           // Parse error
         }
       }
+
+      if (recipes.length > 0) {
+        return recipes.slice(0, options.limit || 50);
+      }
     } catch (error) {
       console.error('BBC Good Food crawl error:', error);
-      console.log('BBC Good Food: Using fallback mock data');
-      return this.getMockRecipes().slice(0, options.limit || 50);
     }
 
-    return recipes.slice(0, options.limit || 50) || this.getMockRecipes().slice(0, options.limit || 50);
+    console.log('BBC Good Food: Using fallback mock data');
+    return this.getMockRecipes().slice(0, options.limit || 50);
   }
 
   private parseRecipeSchema(schema: any): CrawledRecipe {
