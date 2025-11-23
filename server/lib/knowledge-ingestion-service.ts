@@ -116,20 +116,17 @@ class KnowledgeIngestionController {
               title: term.term,
               content: term.definition,
               description: term.definition,
-              source_type: "master-dictionary",
+              sourceType: "master-dictionary",
+              categories: term.categories || [],
               source: "Echo Master Culinary Dictionary",
               domain: "culinary",
               metadata: {
-                term: term.term,
-                categories: term.categories,
-                etymology: term.etymology,
-                applications: term.applications,
-                relatedTerms: term.relatedTerms,
                 confidence: term.confidence,
-                masteryLevel: term.masteryLevel,
-                sources: term.sources,
+                tags: [],
+                relatedTerms: term.relatedTerms || [],
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
               },
-              embedding,
             });
 
             result.totalIngested++;
