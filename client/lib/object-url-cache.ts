@@ -6,6 +6,9 @@
  *
  * For crawlers/bulk operations: use maxSize 50-75
  * For normal gallery use: use maxSize 100-150
+ *
+ * IMPORTANT: Must use original URL.createObjectURL, not the wrapped version
+ * to avoid infinite recursion
  */
 
 interface CacheEntry {
@@ -19,12 +22,23 @@ export class ObjectURLLRUCache {
   private readonly maxSize: number;
   private readonly debug: boolean;
   private readonly evictionThreshold: number; // Trigger eviction before full
+  private originalCreateObjectURL: typeof URL.createObjectURL;
 
   constructor(maxSize: number = 100, debug: boolean = false) {
     this.maxSize = maxSize;
     this.debug = debug;
     // Evict when 85% full to prevent hitting hard limit
     this.evictionThreshold = Math.floor(maxSize * 0.85);
+    // Save the original before any wrapping happens
+    this.originalCreateObjectURL = URL.createObjectURL;
+  }
+
+  /**
+   * Set the original createObjectURL to use (before wrapping)
+   * This MUST be called by the wrapper during initialization
+   */
+  setOriginalCreateObjectURL(fn: typeof URL.createObjectURL): void {
+    this.originalCreateObjectURL = fn;
   }
 
   /**
