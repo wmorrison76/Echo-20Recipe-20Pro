@@ -43,7 +43,8 @@ export interface IngestionResult {
 }
 
 class KnowledgeIngestionController {
-  private isIngesting = false;
+  private ingestingSource: TrainingSource | null = null;
+  private ingestionTimeout: NodeJS.Timeout | null = null;
   private currentProgress: IngestionProgress = {
     status: "pending",
     totalItems: 0,
@@ -67,11 +68,11 @@ class KnowledgeIngestionController {
    * Ingest Master Culinary Dictionary into internal storage
    */
   async ingestMasterDictionary(): Promise<IngestionResult> {
-    if (this.isIngesting) {
+    if (this.ingestingSource !== null) {
       throw new Error("Ingestion already in progress");
     }
 
-    this.isIngesting = true;
+    this.ingestingSource = "master-dictionary";
     const startTime = Date.now();
     const result: IngestionResult = {
       success: true,
