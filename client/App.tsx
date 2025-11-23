@@ -11,6 +11,10 @@ if (!polyfillsLoaded) {
 import { installFetchInterceptor } from "@/lib/fetch-interceptor";
 installFetchInterceptor();
 
+// Install global error handlers for unhandled errors and rejections
+import { installGlobalErrorHandlers } from "@/lib/error-handlers";
+installGlobalErrorHandlers();
+
 import React, { Suspense, lazy } from "react";
 import * as Sentry from "@sentry/react";
 import { Replay } from "@sentry/replay";
