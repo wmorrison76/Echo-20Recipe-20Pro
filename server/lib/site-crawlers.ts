@@ -244,34 +244,40 @@ export class AllRecipesCrawler extends HTMLRecipeCrawlerAdapter {
 
   async crawlRecipes(options: CrawlerOptions): Promise<CrawledRecipe[]> {
     const recipes: CrawledRecipe[] = [];
+    const searchQueries = getRandomQueries(3); // Search 3 random natural queries
 
     try {
-      // Try recipes endpoint first
-      let searchUrl = `${this.baseUrl}/recipes`;
+      for (const query of searchQueries) {
+        try {
+          // Use natural search query as a real user would
+          const searchUrl = `${this.baseUrl}/search?q=${encodeURIComponent(query)}`;
+          const html = await (await this.fetchWithRetry(searchUrl)).text();
 
-      if (options.query && options.query !== "*") {
-        // AllRecipes search endpoint
-        searchUrl = `${this.baseUrl}/search?q=${encodeURIComponent(options.query)}`;
-      }
-
-      const html = await (await this.fetchWithRetry(searchUrl)).text();
-
-      // Parse JSON-LD structured data from HTML
-      const jsonLdMatch = html.match(
-        /<script type="application\/ld\+json">[\s\S]*?<\/script>/g,
-      );
-      if (jsonLdMatch && jsonLdMatch.length > 0) {
-        for (const match of jsonLdMatch) {
-          try {
-            const json = JSON.parse(
-              match.replace(/<script[^>]*>|<\/script>/g, ""),
-            );
-            if (json["@type"] === "Recipe") {
-              recipes.push(this.parseRecipeSchema(json));
+          // Parse JSON-LD structured data from search results
+          const jsonLdMatch = html.match(
+            /<script type="application\/ld\+json">[\s\S]*?<\/script>/g,
+          );
+          if (jsonLdMatch && jsonLdMatch.length > 0) {
+            for (const match of jsonLdMatch) {
+              try {
+                const json = JSON.parse(
+                  match.replace(/<script[^>]*>|<\/script>/g, ""),
+                );
+                if (json["@type"] === "Recipe") {
+                  recipes.push(this.parseRecipeSchema(json));
+                }
+              } catch (e) {
+                // Parse error, skip
+              }
             }
-          } catch (e) {
-            // Parse error, skip
           }
+
+          // Stop early if we have enough recipes
+          if (recipes.length >= (options.limit || 10)) {
+            break;
+          }
+        } catch (e) {
+          console.warn(`AllRecipes query "${query}" failed, trying next query...`);
         }
       }
 
