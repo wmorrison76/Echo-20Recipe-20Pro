@@ -26,6 +26,7 @@ import { echoKnowledgeMigrationRouter } from "./routes/echo-knowledge-migration-
 import { echoCrawlerRouter } from "./routes/echo-crawler-router";
 import pdfLibraryImportRouter from "./routes/pdf-library-import";
 import echoKnowledgeIngestionRouter from "./routes/echo-knowledge-ingestion";
+import knowledgeDiagnosticsRouter from "./routes/knowledge-diagnostics";
 import {
   proxyRecipeImage as proxyImageOptimized,
   serveRecipeImage,
