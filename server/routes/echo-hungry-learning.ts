@@ -768,12 +768,17 @@ export async function searchAndLearn(req: Request, res: Response) {
     const normalizedTerm = term.toLowerCase().trim();
 
     // First, try to find in internal storage and Pinecone (PDF library, uploaded knowledge)
-    // searchKnowledge now prioritizes internal storage with fallback to Pinecone
-    console.log(`[Echo Learning] Searching for "${normalizedTerm}"...`);
-    let searchResults: Array<{ knowledge: any; similarity: number }> = [];
+    // searchKnowledge now prioritizes internal storage (if high quality) with fallback to Pinecone
+    console.log(`[Echo Learning] Starting search for term: "${normalizedTerm}"`);
+    let searchResults: Array<{ knowledge: any; similarity: number; source: string }> = [];
 
     try {
-      searchResults = await searchKnowledge(normalizedTerm, { topK: 5 });
+      const results = await searchKnowledge(normalizedTerm, { topK: 5 });
+      searchResults = results as any;
+      console.log(`[Echo Learning] Knowledge search returned ${searchResults.length} results`);
+      if (searchResults.length > 0) {
+        console.log(`[Echo Learning] Top result source: ${searchResults[0].source}, similarity: ${(searchResults[0].similarity * 100).toFixed(0)}%`);
+      }
     } catch (searchError) {
       console.warn(`[Echo Learning] Knowledge search error (continuing with fallbacks):`, searchError);
       // Don't rethrow - continue with fallbacks
