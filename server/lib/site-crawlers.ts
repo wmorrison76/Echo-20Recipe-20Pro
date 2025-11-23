@@ -598,23 +598,37 @@ export class FoodNetworkCrawler extends HTMLRecipeCrawlerAdapter {
     const recipes: CrawledRecipe[] = [];
 
     try {
-      const searchUrl = `${this.baseUrl}/search/${options.query || 'recipes'}`;
+      const searchUrl = `${this.baseUrl}/recipes`;
       const html = await (await this.fetchWithRetry(searchUrl)).text();
 
-      const recipeUrls = html.match(/href="(\/recipes\/[^"]+)"/g) || [];
+      // Look for recipe links in the page
+      const recipeUrls = html.match(/href="(\/recipes?\/[^"]+)"/g) || [];
 
-      for (const urlMatch of recipeUrls.slice(0, options.limit || 20)) {
-        const recipeUrl = urlMatch.replace(/href="|"/g, '');
-        const recipe = await this.fetchRecipeDetails(`${this.baseUrl}${recipeUrl}`);
-        if (recipe) recipes.push(recipe);
+      // Limit concurrent requests
+      const urlsToFetch = [...new Set(recipeUrls.map(u => u.replace(/href="|"/g, '')))].slice(0, options.limit || 20);
+
+      for (const recipeUrl of urlsToFetch) {
+        if (!recipeUrl.startsWith('/')) continue;
+        try {
+          const recipe = await this.fetchRecipeDetails(`${this.baseUrl}${recipeUrl}`);
+          if (recipe) recipes.push(recipe);
+        } catch (e) {
+          // Skip problematic URLs
+          continue;
+        }
+      }
+
+      // If we found real recipes, return them
+      if (recipes.length > 0) {
+        return recipes.slice(0, options.limit || 50);
       }
     } catch (error) {
       console.error('Food Network crawl error:', error);
-      console.log('Food Network: Using fallback mock data');
-      return this.getMockRecipes().slice(0, options.limit || 50);
     }
 
-    return recipes.slice(0, options.limit || 50) || this.getMockRecipes().slice(0, options.limit || 50);
+    // Fallback to mock data if no real recipes found
+    console.log('Food Network: Using fallback mock data');
+    return this.getMockRecipes().slice(0, options.limit || 50);
   }
 
   private async fetchRecipeDetails(url: string): Promise<CrawledRecipe | null> {
