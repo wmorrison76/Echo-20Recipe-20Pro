@@ -46,6 +46,8 @@ export interface IngestionResult {
 class KnowledgeIngestionController {
   private ingestingSource: TrainingSource | null = null;
   private ingestionTimeout: NodeJS.Timeout | null = null;
+  private lastIngestionTime: number = 0;
+  private static readonly INGESTION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
   private currentProgress: IngestionProgress = {
     status: "pending",
     totalItems: 0,
@@ -60,20 +62,53 @@ class KnowledgeIngestionController {
     return { ...this.currentProgress };
   }
 
+  /**
+   * Force reset ingestion state (for recovery from stuck ingestions)
+   */
+  resetIngestionState(): void {
+    console.log("[Ingestion] Forcing reset of ingestion state");
+    this.ingestingSource = null;
+    if (this.ingestionTimeout) {
+      clearTimeout(this.ingestionTimeout);
+      this.ingestionTimeout = null;
+    }
+  }
+
   private updateProgress(update: Partial<IngestionProgress>) {
     this.currentProgress = { ...this.currentProgress, ...update };
     console.log(`[Ingestion] ${this.currentProgress.message}`);
   }
 
   /**
+   * Check if ingestion is stuck and auto-recover
+   */
+  private checkAndRecoverStuckIngestion(): void {
+    if (this.ingestingSource !== null) {
+      const timeSinceLastStart = Date.now() - this.lastIngestionTime;
+      if (timeSinceLastStart > KnowledgeIngestionController.INGESTION_TIMEOUT) {
+        console.warn(
+          `[Ingestion] Auto-recovering stuck ingestion of ${this.ingestingSource} (${timeSinceLastStart}ms elapsed)`
+        );
+        this.resetIngestionState();
+      }
+    }
+  }
+
+  /**
    * Ingest Master Culinary Dictionary into internal storage
    */
   async ingestMasterDictionary(): Promise<IngestionResult> {
+    this.checkAndRecoverStuckIngestion();
+
     if (this.ingestingSource !== null) {
-      throw new Error("Ingestion already in progress");
+      console.warn(
+        `[Ingestion] Ingestion of ${this.ingestingSource} already in progress. Auto-recovering...`
+      );
+      this.resetIngestionState();
     }
 
     this.ingestingSource = "master-dictionary";
+    this.lastIngestionTime = Date.now();
     const startTime = Date.now();
     const result: IngestionResult = {
       success: true,
