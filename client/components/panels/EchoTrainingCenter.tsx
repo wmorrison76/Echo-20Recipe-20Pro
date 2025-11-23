@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useTrainingOrchestration, type TrainingMode } from "@/hooks/use-training-orchestration";
+import { hibernationPrevention } from "@/lib/hibernation-prevention";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -82,15 +83,27 @@ export function EchoTrainingCenter() {
   const [showStartOptions, setShowStartOptions] = useState(!session);
   const [elapsedTime, setElapsedTime] = useState(0);
 
-  // Track elapsed time
+  // Track elapsed time and prevent hibernation during training
   useEffect(() => {
-    if (!session || session.status === "completed") return;
+    if (!session) {
+      hibernationPrevention.stop();
+      return;
+    }
+
+    if (session.status === "running") {
+      hibernationPrevention.start();
+    } else {
+      hibernationPrevention.stop();
+    }
 
     const interval = setInterval(() => {
       setElapsedTime(Math.round((Date.now() - session.startTime) / 1000));
     }, 1000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      hibernationPrevention.stop();
+    };
   }, [session]);
 
   const handleStartTraining = useCallback(async () => {
