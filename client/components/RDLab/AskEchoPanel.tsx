@@ -19,6 +19,8 @@ import type { ProcedureSearchResult } from "@/lib/echo-procedures-service";
 import { fuzzySearchTerms, fuzzySearchMultiple } from "@/lib/fuzzy-search";
 import { filterContent, getFilterMessage } from "@/lib/content-safety-filter";
 
+// Get the search function from useMasterDictionary hook (defined below)
+
 interface Message {
   role: "user" | "echo";
   content: string;
