@@ -553,11 +553,202 @@ function generateDebugRecommendations(
   return recommendations;
 }
 
+/**
+ * GET /api/pdf-library/definition/:term
+ * Retrieve a specific culinary term definition from the master dictionary
+ * Used to access definitions imported from books like "The Food Lover's Companion"
+ */
+export async function getTermDefinition(req: Request, res: Response) {
+  try {
+    const { term } = req.params;
+
+    if (!term || term.trim().length === 0) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Term parameter is required',
+      });
+    }
+
+    const termDef = masterCulinaryDictionary.getTerm(term);
+
+    if (!termDef) {
+      return res.status(404).json({
+        status: 'not_found',
+        message: `Definition for "${term}" not found in master dictionary`,
+        suggestion: 'Try searching with searchTerms endpoint or check spelling',
+      });
+    }
+
+    res.json({
+      status: 'success',
+      definition: termDef,
+      relatedTerms: masterCulinaryDictionary.getRelatedTerms(term),
+    });
+  } catch (error) {
+    console.error('Error retrieving term definition:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to retrieve term definition',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * GET /api/pdf-library/search
+ * Search for culinary terms in the master dictionary
+ * Query parameters:
+ * - q: Search query (required)
+ * - limit: Max results to return (default 10)
+ */
+export async function searchDefinitions(req: Request, res: Response) {
+  try {
+    const { q, limit = '10' } = req.query;
+
+    if (!q || typeof q !== 'string' || q.trim().length === 0) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Search query (q) parameter is required',
+        example: '/api/pdf-library/search?q=blanch&limit=5',
+      });
+    }
+
+    const searchLimit = Math.min(parseInt(limit as string, 10) || 10, 100);
+    const results = masterCulinaryDictionary.searchTerms(q).slice(0, searchLimit);
+
+    res.json({
+      status: 'success',
+      query: q,
+      resultCount: results.length,
+      results: results.map((term) => ({
+        term: term.term,
+        definition: term.definition,
+        categories: term.categories,
+        confidence: term.confidence,
+        masteryLevel: term.masteryLevel,
+      })),
+    });
+  } catch (error) {
+    console.error('Error searching definitions:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to search definitions',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * GET /api/pdf-library/definitions/related/:term
+ * Get terms related to a specific culinary term
+ */
+export async function getRelatedDefinitions(req: Request, res: Response) {
+  try {
+    const { term } = req.params;
+
+    if (!term || term.trim().length === 0) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Term parameter is required',
+      });
+    }
+
+    const mainTerm = masterCulinaryDictionary.getTerm(term);
+    if (!mainTerm) {
+      return res.status(404).json({
+        status: 'not_found',
+        message: `Term "${term}" not found in master dictionary`,
+      });
+    }
+
+    const relatedTerms = masterCulinaryDictionary.getRelatedTerms(term);
+
+    res.json({
+      status: 'success',
+      term: mainTerm.term,
+      relatedTermCount: relatedTerms.length,
+      relatedTerms: relatedTerms.map((t) => ({
+        term: t.term,
+        definition: t.definition.substring(0, 150) + '...',
+        categories: t.categories,
+      })),
+    });
+  } catch (error) {
+    console.error('Error retrieving related definitions:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to retrieve related definitions',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
+ * GET /api/pdf-library/definitions/browse
+ * Browse all terms in a specific category
+ * Query parameters:
+ * - category: One of 'technique', 'ingredient', 'method', 'equipment', 'theory', 'cuisine', 'safety', 'service', 'tradition'
+ * - limit: Max results (default 20, max 100)
+ */
+export async function browseDefinitionsByCategory(req: Request, res: Response) {
+  try {
+    const { category, limit = '20' } = req.query;
+
+    if (!category || typeof category !== 'string') {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Category parameter is required',
+        validCategories: [
+          'technique',
+          'ingredient',
+          'method',
+          'equipment',
+          'theory',
+          'cuisine',
+          'safety',
+          'service',
+          'tradition',
+        ],
+        example: '/api/pdf-library/definitions/browse?category=ingredient&limit=20',
+      });
+    }
+
+    const browseLimit = Math.min(parseInt(limit as string, 10) || 20, 100);
+    const terms = masterCulinaryDictionary.getTermsByCategory(category);
+
+    res.json({
+      status: 'success',
+      category,
+      totalInCategory: terms.length,
+      showing: Math.min(browseLimit, terms.length),
+      terms: terms.slice(0, browseLimit).map((t) => ({
+        term: t.term,
+        definition: t.definition.substring(0, 120) + '...',
+        categories: t.categories,
+        confidence: t.confidence,
+      })),
+    });
+  } catch (error) {
+    console.error('Error browsing definitions:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to browse definitions',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
 // Register routes
 pdfLibraryImportRouter.post('/pdf-library/upload', uploadPDFFile);
 pdfLibraryImportRouter.post('/pdf-library/upload-batch', uploadPDFBatch);
 pdfLibraryImportRouter.get('/pdf-library/status', getPDFImportStatus);
 pdfLibraryImportRouter.post('/pdf-library/import-from-text', importFromText);
 pdfLibraryImportRouter.post('/pdf-library/debug', debugPDFExtraction);
+
+// Definition Access Routes
+pdfLibraryImportRouter.get('/pdf-library/definition/:term', getTermDefinition);
+pdfLibraryImportRouter.get('/pdf-library/search', searchDefinitions);
+pdfLibraryImportRouter.get('/pdf-library/definitions/related/:term', getRelatedDefinitions);
+pdfLibraryImportRouter.get('/pdf-library/definitions/browse', browseDefinitionsByCategory);
 
 export default pdfLibraryImportRouter;
