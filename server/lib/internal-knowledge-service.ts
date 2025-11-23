@@ -78,6 +78,16 @@ export async function storeInternalKnowledgeVector(
   try {
     const client = getSupabaseClient();
 
+    // If Supabase is not available, return error
+    if (!client) {
+      console.warn("[Internal Knowledge] Supabase client unavailable, cannot store vector");
+      return {
+        id: "",
+        success: false,
+        error: "Internal knowledge storage unavailable (Supabase credentials not configured)",
+      };
+    }
+
     // Generate embedding from content
     const textToEmbed = [knowledge.title, knowledge.description, knowledge.content]
       .filter(Boolean)
