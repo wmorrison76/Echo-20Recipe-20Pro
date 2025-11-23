@@ -110,7 +110,7 @@ router.post("/start", async (req: Request, res: Response) => {
       async "pinecone-migration"() {
         try {
           console.log("[Training] Starting Pinecone migration...");
-          const result = await ingestionController.ingestPineconeData();
+          const result = await ingestionController.ingestFromPinecone();
           trainingOrchestrator.completeSource(
             "pinecone-migration",
             result.totalIngested,
