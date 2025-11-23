@@ -2,7 +2,7 @@ import RecipeSearchSection from "./sections/RecipeSearch";
 import GallerySection from "./sections/Gallery";
 import AddRecipeSection from "./sections/AddRecipe";
 import SaasRoadmapSection from "./sections/SaasRoadmap";
-import { EchoTrainingCenter } from "@/components/panels/EchoTrainingCenter";
+import { EchoTrainingCenterAutoStart } from "@/components/panels/EchoTrainingCenterAutoStart";
 import InventorySuppliesWorkspace from "./sections/saas/InventorySuppliesWorkspace";
 import NutritionAllergensWorkspace from "./sections/saas/NutritionAllergensWorkspace";
 import HaccpComplianceWorkspace from "./sections/saas/HaccpComplianceWorkspace";
@@ -289,7 +289,10 @@ function IndexContent() {
             <TabsContent value="echo-training" className="py-4">
               <ErrorBoundaryWrapper section="Echo Training">
                 <div className="container mx-auto px-3">
-                  <EchoTrainingCenter />
+                  <EchoTrainingCenterAutoStart
+                    autoStart={true}
+                    mode="sequential"
+                  />
                 </div>
               </ErrorBoundaryWrapper>
             </TabsContent>
