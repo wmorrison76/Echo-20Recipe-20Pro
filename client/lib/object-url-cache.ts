@@ -76,16 +76,22 @@ export class ObjectURLLRUCache {
   }
 
   /**
-   * Evict the least recently used entry
+   * Evict the least recently used entry (with low access frequency)
+   * Prioritizes evicting entries that are both old AND infrequently accessed
    */
   private evictLRU(): void {
     let lruId: string | null = null;
-    let lruTime = Infinity;
+    let lruScore = Infinity; // Lower score = more likely to evict
 
-    // Find the least recently used entry
+    // Find entry with lowest "value" score
+    // Score = (time since last access in ms) / (access count + 1)
+    // Older, less-used entries score higher
     for (const [id, entry] of this.cache.entries()) {
-      if (entry.lastAccessed < lruTime) {
-        lruTime = entry.lastAccessed;
+      const timeSinceAccess = Date.now() - entry.lastAccessed;
+      const score = timeSinceAccess / (entry.accessCount + 1);
+
+      if (score < lruScore) {
+        lruScore = score;
         lruId = id;
       }
     }
@@ -96,7 +102,9 @@ export class ObjectURLLRUCache {
       this.cache.delete(lruId);
 
       if (this.debug) {
-        console.log(`[ObjectURLCache] Evicted LRU entry: ${lruId}`);
+        console.log(
+          `[ObjectURLCache] Evicted LRU entry: ${lruId} (score: ${lruScore.toFixed(0)}, size now: ${this.cache.size})`,
+        );
       }
     }
   }
