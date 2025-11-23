@@ -7,6 +7,7 @@
  * - External LLM learned terms
  */
 
+import type { TrainingSource } from "./training-orchestrator";
 import { masterCulinaryDictionary } from "./master-culinary-dictionary";
 import {
   storeInternalKnowledgeVector,
