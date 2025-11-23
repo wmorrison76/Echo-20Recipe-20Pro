@@ -84,6 +84,23 @@ export function EchoTrainingCenter() {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [knowledgeStats, setKnowledgeStats] = useState<any>(null);
 
+  // Fetch knowledge statistics on mount
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch("/api/knowledge/stats");
+        const data = await response.json();
+        if (data.success) {
+          setKnowledgeStats(data.stats);
+        }
+      } catch (error) {
+        console.error("[EchoTrainingCenter] Error fetching stats:", error);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
   // Track elapsed time and prevent hibernation during training
   useEffect(() => {
     if (!session) {
