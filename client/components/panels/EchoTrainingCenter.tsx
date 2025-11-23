@@ -192,6 +192,51 @@ export function EchoTrainingCenter() {
           </p>
         </div>
 
+        {/* Knowledge Base Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="p-4 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950 dark:to-cyan-950">
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Approved Items
+              </p>
+              <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                {knowledgeStats?.approvedItems?.toLocaleString() || "0"}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-500">
+                Available for training
+              </p>
+            </div>
+          </Card>
+
+          <Card className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950">
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Master Dictionary
+              </p>
+              <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">
+                {knowledgeStats?.masterDictionaryTerms?.toLocaleString() || "0"}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-500">
+                Culinary terms
+              </p>
+            </div>
+          </Card>
+
+          <Card className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950">
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Total Vectors
+              </p>
+              <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+                {knowledgeStats?.totalVectors?.toLocaleString() || "0"}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-500">
+                In knowledge base
+              </p>
+            </div>
+          </Card>
+        </div>
+
         {/* Mode Selection */}
         <Card className="p-6 space-y-4">
           <h2 className="text-xl font-semibold">Training Mode</h2>
