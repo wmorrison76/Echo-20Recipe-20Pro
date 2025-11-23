@@ -1,6 +1,13 @@
 import "./global.css";
-import React, { Suspense, lazy } from "react";
 import "./add-recipe.styles.css";
+
+// Load global polyfills first, before any other code runs
+import { polyfillsLoaded } from "@/lib/global-polyfills";
+if (!polyfillsLoaded) {
+  throw new Error("Failed to load global polyfills");
+}
+
+import React, { Suspense, lazy } from "react";
 import * as Sentry from "@sentry/react";
 import { Replay } from "@sentry/replay";
 
