@@ -494,8 +494,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     return () => {
-      imageObjectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
-      imageObjectUrlsRef.current.clear();
+      // Clean up all object URLs when component unmounts
+      objectURLCache.clear();
     };
   }, []);
 
@@ -2721,7 +2721,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             (label) => line === label || line.startsWith(`${label} `),
           );
         const qtyRegex =
-          /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[��½¾���⅔���⅜⅝⅞])(?:\s*(?:cups?|cup|tsp|teaspoons?|tbsp|tablespoons?|grams?|gram|kg|kilograms?|g|ml|milliliters?|l|liters?|oz|ounces?|lb|lbs|pounds?|pinch|dash|cloves?|cans?|sticks?|slices?|heads?|bunch(?:es)?|sprigs?))?\b/;
+          /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[��½¾���⅔⅛⅜⅝⅞])(?:\s*(?:cups?|cup|tsp|teaspoons?|tbsp|tablespoons?|grams?|gram|kg|kilograms?|g|ml|milliliters?|l|liters?|oz|ounces?|lb|lbs|pounds?|pinch|dash|cloves?|cans?|sticks?|slices?|heads?|bunch(?:es)?|sprigs?))?\b/;
         const metaSuppress =
           /^\s*(?:yield|serves|makes|prep(?:aration)?|cook|total)\b/i;
 
