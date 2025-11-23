@@ -66,6 +66,19 @@ type NavGroup = {
 
 const navGroups: NavGroup[] = [
   {
+    id: "training",
+    labelKey: "nav.group.training",
+    fallback: "ECHO TRAINING",
+    items: [
+      {
+        to: "/?tab=echo-training",
+        labelKey: "nav.echoTraining",
+        fallback: "ECHO TRAINING CENTER",
+        icon: Zap,
+      },
+    ],
+  },
+  {
     id: "recipes-design",
     labelKey: "nav.group.recipesDesign",
     fallback: "RECIPES & DESIGN",
@@ -117,12 +130,6 @@ const navGroups: NavGroup[] = [
         labelKey: "nav.rdlabs",
         fallback: "R&D LABS",
         icon: Atom,
-      },
-      {
-        to: "/?tab=echo-training",
-        labelKey: "nav.echoTraining",
-        fallback: "ECHO TRAINING",
-        icon: Zap,
       },
     ],
   },
