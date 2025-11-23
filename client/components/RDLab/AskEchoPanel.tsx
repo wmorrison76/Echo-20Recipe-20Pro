@@ -153,48 +153,72 @@ export default function AskEchoPanel() {
       // If we have a result from search-and-learn or traditional search
       let dictionaryResult = searchResponse;
 
-      if (dictionaryResult?.status === 'success' && dictionaryResult?.entry?.term) {
-        // Found in master dictionary or learned from external LLM
-        const term = dictionaryResult.entry.term;
+      if (dictionaryResult?.status === 'success' && dictionaryResult?.entry) {
         const source = dictionaryResult.source || 'master-dictionary';
+        const entry = dictionaryResult.entry;
+        let response = '';
 
-        let response = `📚 **${term.term}**\n\n`;
-        response += `**Definition:** ${term.definition}\n\n`;
+        if (source === 'pinecone-pdf-library') {
+          // Format Pinecone PDF result
+          response = `📖 **${extractedTerm}**\n\n`;
+          response += `**Found in your PDF library:**\n`;
+          response += `Source: ${entry.sourceFile}\n`;
+          response += `Match: ${(entry.similarity * 100).toFixed(0)}%\n\n`;
+          response += `**Definition:** ${entry.definition || entry.content || 'Information found in your PDF'}\n\n`;
 
-        response += `**Usage:** ${term.usage.primary}`;
-        if (term.usage.secondary && term.usage.secondary.length > 0) {
-          response += `\n- Also used for: ${term.usage.secondary.join(', ')}`;
-        }
-        response += `\n\n`;
-
-        if (term.etymology) {
-          response += `**Etymology:** From ${term.etymology.origin}`;
-          if (term.etymology.originalWord) {
-            response += ` - "${term.etymology.originalWord}"`;
+          if (entry.allResults && entry.allResults.length > 1) {
+            response += `**Related information from your PDFs:**\n`;
+            entry.allResults.slice(1).forEach((result: any, idx: number) => {
+              response += `${idx + 1}. (${(result.similarity * 100).toFixed(0)}% match) ${result.definition.substring(0, 100)}...\n`;
+            });
           }
-          if (term.etymology.meaning) {
-            response += ` meaning "${term.etymology.meaning}"`;
+        } else if (source === 'external-llm-learning') {
+          // Format externally learned result
+          const term = entry.term;
+          response = `🌐 **${term.term}**\n\n`;
+          response += `**Definition:** ${term.definition}\n\n`;
+          response += `**Source:** Learned from external knowledge (OpenAI)\n`;
+          response += `**Confidence:** ${(term.confidence * 100).toFixed(0)}%\n`;
+        } else {
+          // Format master dictionary result
+          const term = entry.term;
+          response = `📚 **${term.term}**\n\n`;
+          response += `**Definition:** ${term.definition}\n\n`;
+
+          response += `**Usage:** ${term.usage.primary}`;
+          if (term.usage.secondary && term.usage.secondary.length > 0) {
+            response += `\n- Also used for: ${term.usage.secondary.join(', ')}`;
           }
           response += `\n\n`;
-        }
 
-        if (term.applications) {
-          response += `**Applications:** ${term.applications.primary}\n`;
-          if (term.applications.examples && term.applications.examples.length > 0) {
-            response += `- Examples: ${term.applications.examples.join(', ')}\n`;
+          if (term.etymology) {
+            response += `**Etymology:** From ${term.etymology.origin}`;
+            if (term.etymology.originalWord) {
+              response += ` - "${term.etymology.originalWord}"`;
+            }
+            if (term.etymology.meaning) {
+              response += ` meaning "${term.etymology.meaning}"`;
+            }
+            response += `\n\n`;
           }
-          if (term.applications.dishes && term.applications.dishes.length > 0) {
-            response += `- Used in: ${term.applications.dishes.join(', ')}\n`;
+
+          if (term.applications) {
+            response += `**Applications:** ${term.applications.primary}\n`;
+            if (term.applications.examples && term.applications.examples.length > 0) {
+              response += `- Examples: ${term.applications.examples.join(', ')}\n`;
+            }
+            if (term.applications.dishes && term.applications.dishes.length > 0) {
+              response += `- Used in: ${term.applications.dishes.join(', ')}\n`;
+            }
+            response += '\n';
           }
-          response += '\n';
-        }
 
-        if (term.relatedTerms && term.relatedTerms.length > 0) {
-          response += `**Related terms:** ${term.relatedTerms.join(', ')}\n`;
-        }
+          if (term.relatedTerms && term.relatedTerms.length > 0) {
+            response += `**Related terms:** ${term.relatedTerms.join(', ')}\n`;
+          }
 
-        const sourceLabel = source === 'external-llm-learning' ? '🌐 (Learned from external sources)' : '✨';
-        response += `\n${sourceLabel} **Mastery Level:** ${term.masteryLevel} | **Confidence:** ${(term.confidence * 100).toFixed(0)}%`;
+          response += `\n✨ **Mastery Level:** ${term.masteryLevel} | **Confidence:** ${(term.confidence * 100).toFixed(0)}%`;
+        }
 
         setMessages((prev) => [
           ...prev,
