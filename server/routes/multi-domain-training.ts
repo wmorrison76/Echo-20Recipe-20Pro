@@ -25,6 +25,7 @@ import {
   verifyTrainingVectors,
   storeTrainingDataToPinecone,
 } from "../lib/pinecone-verification-service";
+import { validateTrainingData, deduplicateTrainingData, getExistingTrainingFingerprints, logTrainingEvent } from "../lib/training-deduplication-service";
 import type { AnyKnowledge } from "../../client/echo/types/knowledge";
 
 const router = Router();
