@@ -224,11 +224,17 @@ class KnowledgeIngestionController {
    * Ingest Pinecone knowledge into internal storage
    */
   async ingestFromPinecone(): Promise<IngestionResult> {
+    this.checkAndRecoverStuckIngestion();
+
     if (this.ingestingSource !== null) {
-      throw new Error("Ingestion already in progress");
+      console.warn(
+        `[Ingestion] Ingestion of ${this.ingestingSource} already in progress. Auto-recovering...`
+      );
+      this.resetIngestionState();
     }
 
     this.ingestingSource = "pinecone-migration";
+    this.lastIngestionTime = Date.now();
     const startTime = Date.now();
     const result: IngestionResult = {
       success: true,
