@@ -368,26 +368,67 @@ export async function searchAllKnowledge(req: Request, res: Response) {
 export async function getMasterDictionaryEntry(req: Request, res: Response) {
   try {
     const { term } = req.params;
-    const entry = masterCulinaryDictionary.getFullTermContext(term);
+
+    if (!term || term.trim().length === 0) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Term parameter is required',
+      });
+    }
+
+    // Try exact match first
+    const entry = masterCulinaryDictionary.getTerm(term);
 
     if (!entry) {
+      // If exact match fails, try fuzzy search for suggestions
       const suggestions = masterCulinaryDictionary.searchTerms(term).slice(0, 5);
+
+      if (suggestions.length === 0) {
+        return res.status(404).json({
+          status: 'not_found',
+          message: `Master dictionary entry for "${term}" not found. Try searching for similar terms.`,
+          suggestions: [],
+        });
+      }
+
+      // Return suggestions to help user find the term they're looking for
       return res.status(404).json({
         status: 'not_found',
-        message: `Master dictionary entry for "${term}" not found`,
+        message: `Exact match for "${term}" not found, but found similar terms:`,
         suggestions: suggestions.map(t => ({
           term: t.term,
           definition: t.definition.substring(0, 100) + '...',
+          masteryLevel: t.masteryLevel,
+          confidence: t.confidence,
         })),
       });
     }
 
+    // Return the full entry with all related information
+    const relatedTerms = masterCulinaryDictionary.getRelatedTerms(term);
+
     res.json({
       status: 'success',
-      entry,
-      message: `Echo knows "${term}" at master level!`,
+      entry: {
+        term: entry.term,
+        definition: entry.definition,
+        usage: entry.usage,
+        categories: entry.categories,
+        etymology: entry.etymology,
+        applications: entry.applications,
+        relatedTerms: relatedTerms.map(t => ({
+          term: t.term,
+          definition: t.definition.substring(0, 100) + '...',
+        })),
+        history: entry.history,
+        confidence: entry.confidence,
+        sources: entry.sources,
+        masteryLevel: entry.masteryLevel,
+      },
+      message: `✨ Echo knows "${entry.term}" at ${entry.masteryLevel} level!`,
     });
   } catch (error) {
+    console.error('Error getting master dictionary entry:', error);
     res.status(500).json({
       status: 'error',
       message: 'Failed to get master dictionary entry',
