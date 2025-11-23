@@ -170,19 +170,11 @@ export const hibernationPrevention = new HibernationPrevention();
 
 /**
  * Hook to manage hibernation prevention
+ * Note: This is exported but not currently used.
+ * Instead, hibernationPrevention is directly controlled in EchoTrainingCenter
  */
 export function useHibernationPrevention(shouldPrevent: boolean) {
-  const React = require("react");
-
-  React.useEffect(() => {
-    if (shouldPrevent) {
-      hibernationPrevention.start();
-    } else {
-      hibernationPrevention.stop();
-    }
-
-    return () => {
-      hibernationPrevention.stop();
-    };
-  }, [shouldPrevent]);
+  // This hook would be used like:
+  // useHibernationPrevention(isTrainingRunning);
+  // But for now, we manage it directly in the component
 }
