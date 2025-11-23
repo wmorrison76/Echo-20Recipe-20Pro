@@ -397,27 +397,42 @@ export class CookpadCrawler extends HTMLRecipeCrawlerAdapter {
 
   async crawlRecipes(options: CrawlerOptions): Promise<CrawledRecipe[]> {
     const recipes: CrawledRecipe[] = [];
-    const region = options.region || 'global';
-    const url = `${this.baseUrl}/${region}/search/${options.query || 'popular'}`;
 
     try {
-      const html = await (await this.fetchWithRetry(url)).text();
-      const recipeMatches = html.match(/recipe_id["\']?\s*[:=]\s*["\']?(\d+)/g) || [];
+      // Use Cookpad's recipe search or directory
+      let url = `${this.baseUrl}/search/recipes`;
 
-      for (const match of recipeMatches.slice(0, options.limit || 20)) {
-        const recipeId = match.match(/\d+/)?.[0];
-        if (recipeId) {
-          const recipe = await this.fetchRecipeDetails(recipeId);
+      if (options.query && options.query !== '*') {
+        url = `${this.baseUrl}/search/recipes?q=${encodeURIComponent(options.query)}`;
+      } else {
+        // Use trending/popular recipes if no specific query
+        url = `${this.baseUrl}/recipes/trending`;
+      }
+
+      const html = await (await this.fetchWithRetry(url)).text();
+
+      // Extract recipe links and IDs
+      const recipeMatches = html.match(/\/recipes\/(\d+)/g) || [];
+      const uniqueIds = [...new Set(recipeMatches.map(m => m.match(/\d+/)?.[0]))].filter(Boolean);
+
+      for (const recipeId of uniqueIds.slice(0, options.limit || 20)) {
+        try {
+          const recipe = await this.fetchRecipeDetails(recipeId as string);
           if (recipe) recipes.push(recipe);
+        } catch (e) {
+          continue;
         }
+      }
+
+      if (recipes.length > 0) {
+        return recipes.slice(0, options.limit || 50);
       }
     } catch (error) {
       console.error('Cookpad crawl error:', error);
-      console.log('Cookpad: Using fallback mock data');
-      return this.getMockRecipes().slice(0, options.limit || 50);
     }
 
-    return recipes.slice(0, options.limit || 50) || this.getMockRecipes().slice(0, options.limit || 50);
+    console.log('Cookpad: Using fallback mock data');
+    return this.getMockRecipes().slice(0, options.limit || 50);
   }
 
   private async fetchRecipeDetails(recipeId: string): Promise<CrawledRecipe | null> {
