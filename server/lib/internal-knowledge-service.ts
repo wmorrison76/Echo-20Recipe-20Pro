@@ -58,9 +58,15 @@ export interface KnowledgeSearchOptions {
 
 function getSupabaseClient() {
   if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error("Supabase credentials not configured");
+    console.warn("[Internal Knowledge] Supabase credentials not configured, internal search unavailable");
+    return null;
   }
-  return createClient(supabaseUrl, supabaseServiceKey);
+  try {
+    return createClient(supabaseUrl, supabaseServiceKey);
+  } catch (error) {
+    console.warn("[Internal Knowledge] Failed to create Supabase client:", error);
+    return null;
+  }
 }
 
 /**
