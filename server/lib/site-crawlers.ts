@@ -161,13 +161,17 @@ export class AllRecipesCrawler extends HTMLRecipeCrawlerAdapter {
 
   async crawlRecipes(options: CrawlerOptions): Promise<CrawledRecipe[]> {
     const recipes: CrawledRecipe[] = [];
-    const searchUrl = new URL(`${this.baseUrl}/search`);
-
-    if (options.query) searchUrl.searchParams.set('q', options.query);
-    if (options.cuisine) searchUrl.searchParams.set('cuisines', options.cuisine);
 
     try {
-      const html = await (await this.fetchWithRetry(searchUrl.toString())).text();
+      // Try recipes endpoint first
+      let searchUrl = `${this.baseUrl}/recipes`;
+
+      if (options.query && options.query !== '*') {
+        // AllRecipes search endpoint
+        searchUrl = `${this.baseUrl}/search?q=${encodeURIComponent(options.query)}`;
+      }
+
+      const html = await (await this.fetchWithRetry(searchUrl)).text();
 
       // Parse JSON-LD structured data from HTML
       const jsonLdMatch = html.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g);
