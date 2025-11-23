@@ -201,10 +201,17 @@ export default function AskEchoPanel() {
         } else if (source === 'external-llm-learning') {
           // Format externally learned result
           const term = entry.term;
-          response = `🌐 **${term.term}**\n\n`;
-          response += `**Definition:** ${term.definition}\n\n`;
-          response += `**Source:** Learned from external knowledge (OpenAI)\n`;
-          response += `**Confidence:** ${(term.confidence * 100).toFixed(0)}%\n`;
+          if (term && typeof term === 'object') {
+            response = `🌐 **${term.term || extractedTerm}**\n\n`;
+            response += `**Definition:** ${term.definition || 'Definition pending'}\n\n`;
+            response += `**Source:** Learned from external knowledge (OpenAI)\n`;
+            const confidence = term.confidence || 0.85;
+            response += `**Confidence:** ${(confidence * 100).toFixed(0)}%\n`;
+          } else {
+            response = `🌐 **${extractedTerm}**\n\n`;
+            response += `**Definition:** ${entry.definition || 'Information found'}\n\n`;
+            response += `**Source:** Learned from external knowledge\n`;
+          }
         } else {
           // Format master dictionary result
           const term = entry.term;
