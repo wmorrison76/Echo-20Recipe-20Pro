@@ -749,7 +749,12 @@ export class JustOneCookbookCrawler extends HTMLRecipeCrawlerAdapter {
     const recipes: CrawledRecipe[] = [];
 
     try {
-      const url = `${this.baseUrl}/?s=${options.query || 'japanese'}`;
+      let url = `${this.baseUrl}/recipes`;
+
+      if (options.query && options.query !== '*') {
+        url = `${this.baseUrl}/?s=${encodeURIComponent(options.query)}`;
+      }
+
       const html = await (await this.fetchWithRetry(url)).text();
 
       const jsonLdMatches = html.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g) || [];
@@ -764,13 +769,16 @@ export class JustOneCookbookCrawler extends HTMLRecipeCrawlerAdapter {
           // Parse error
         }
       }
+
+      if (recipes.length > 0) {
+        return recipes.slice(0, options.limit || 50);
+      }
     } catch (error) {
       console.error('Just One Cookbook crawl error:', error);
-      console.log('Just One Cookbook: Using fallback mock data');
-      return this.getMockRecipes().slice(0, options.limit || 50);
     }
 
-    return recipes.slice(0, options.limit || 50) || this.getMockRecipes().slice(0, options.limit || 50);
+    console.log('Just One Cookbook: Using fallback mock data');
+    return this.getMockRecipes().slice(0, options.limit || 50);
   }
 
   private parseRecipeSchema(schema: any): CrawledRecipe {
