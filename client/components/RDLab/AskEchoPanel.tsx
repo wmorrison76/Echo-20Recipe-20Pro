@@ -124,10 +124,40 @@ export default function AskEchoPanel() {
         });
 
         if (response.ok) {
-          searchResponse = await response.json();
+          try {
+            searchResponse = await response.json();
+          } catch (parseErr) {
+            console.error('[Echo] Error parsing search-and-learn response:', parseErr);
+            // Fall back to traditional search
+            const dictionaryResult = await searchTerm(extractedTerm);
+            if (dictionaryResult?.entry?.term) {
+              searchResponse = {
+                status: 'success',
+                entry: dictionaryResult.entry,
+                message: dictionaryResult.entry.term,
+              };
+            }
+          }
         } else {
-          // If search-and-learn fails, fall back to traditional search
-          console.log(`[Echo] Search-and-learn failed, falling back to traditional search`);
+          // If search-and-learn returns error status, fall back to traditional search
+          console.log(`[Echo] Search-and-learn returned error status ${response.status}, falling back to traditional search`);
+          try {
+            const dictionaryResult = await searchTerm(extractedTerm);
+            if (dictionaryResult?.entry?.term) {
+              searchResponse = {
+                status: 'success',
+                entry: dictionaryResult.entry,
+                message: dictionaryResult.entry.term,
+              };
+            }
+          } catch (fallbackErr) {
+            console.error('[Echo] Fallback search also failed:', fallbackErr);
+          }
+        }
+      } catch (err) {
+        console.error('[Echo] Error calling search-and-learn:', err);
+        // Fall back to traditional search
+        try {
           const dictionaryResult = await searchTerm(extractedTerm);
           if (dictionaryResult?.entry?.term) {
             searchResponse = {
@@ -136,17 +166,8 @@ export default function AskEchoPanel() {
               message: dictionaryResult.entry.term,
             };
           }
-        }
-      } catch (err) {
-        console.error('[Echo] Error calling search-and-learn:', err);
-        // Fall back to traditional search
-        const dictionaryResult = await searchTerm(extractedTerm);
-        if (dictionaryResult?.entry?.term) {
-          searchResponse = {
-            status: 'success',
-            entry: dictionaryResult.entry,
-            message: dictionaryResult.entry.term,
-          };
+        } catch (fallbackErr) {
+          console.error('[Echo] Fallback search also failed:', fallbackErr);
         }
       }
 
