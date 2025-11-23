@@ -111,25 +111,47 @@ export default function AskEchoPanel() {
       // Extract the actual culinary term from the question
       const extractedTerm = extractTermFromQuestion(userMessage);
 
-      // First, try searching the master dictionary with the extracted term
-      let dictionaryResult = await searchTerm(extractedTerm);
+      // Use the new search-and-learn endpoint
+      // This will check the knowledge base first, and if not found, query external LLMs
+      let searchResponse;
+      try {
+        const response = await fetch('/api/echo/hungry-learning/search-and-learn', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ term: extractedTerm }),
+        });
 
-      // If not found, try fuzzy search (handle typos and alternate spellings)
-      if (!dictionaryResult?.entry?.term) {
-        console.log(`[Echo] Exact match failed for "${extractedTerm}", trying fuzzy search...`);
-
-        // Get available terms for fuzzy matching
-        try {
-          const statsResponse = await fetch('/api/echo/hungry-learning/master-dictionary/statistics');
-          if (statsResponse.ok) {
-            const stats = await statsResponse.json();
-            // We'll use the categories to hint at available terms
-            // In a full implementation, we'd have an endpoint returning all terms
+        if (response.ok) {
+          searchResponse = await response.json();
+        } else {
+          // If search-and-learn fails, fall back to traditional search
+          console.log(`[Echo] Search-and-learn failed, falling back to traditional search`);
+          const dictionaryResult = await searchTerm(extractedTerm);
+          if (dictionaryResult?.entry?.term) {
+            searchResponse = {
+              status: 'success',
+              entry: dictionaryResult.entry,
+              message: dictionaryResult.entry.term,
+            };
           }
-        } catch (err) {
-          console.warn('[Echo] Could not get available terms for fuzzy search');
+        }
+      } catch (err) {
+        console.error('[Echo] Error calling search-and-learn:', err);
+        // Fall back to traditional search
+        const dictionaryResult = await searchTerm(extractedTerm);
+        if (dictionaryResult?.entry?.term) {
+          searchResponse = {
+            status: 'success',
+            entry: dictionaryResult.entry,
+            message: dictionaryResult.entry.term,
+          };
         }
       }
+
+      // If we have a result from search-and-learn or traditional search
+      let dictionaryResult = searchResponse;
 
       if (dictionaryResult?.entry?.term) {
         // Found in master dictionary
