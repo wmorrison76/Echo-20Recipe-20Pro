@@ -27,6 +27,7 @@ import { echoCrawlerRouter } from "./routes/echo-crawler-router";
 import pdfLibraryImportRouter from "./routes/pdf-library-import";
 import echoKnowledgeIngestionRouter from "./routes/echo-knowledge-ingestion";
 import knowledgeDiagnosticsRouter from "./routes/knowledge-diagnostics";
+import { knowledgeInitializer } from "./lib/knowledge-initialization";
 import {
   proxyRecipeImage as proxyImageOptimized,
   serveRecipeImage,
@@ -36,6 +37,19 @@ import {
 
 export function createServer() {
   const app = express();
+
+  // Initialize knowledge system on server startup
+  setImmediate(() => {
+    knowledgeInitializer.initialize({
+      autoInit: true,
+      sources: {
+        masterDictionary: true,
+        pinecone: true,
+      },
+    }).catch(error => {
+      console.error("[Server] Error during knowledge initialization:", error);
+    });
+  });
 
   // Middleware
   app.use(cors());
