@@ -209,6 +209,12 @@ export async function searchInternalKnowledge(
   try {
     const client = getSupabaseClient();
 
+    // If Supabase is not available, return empty results to trigger Pinecone fallback
+    if (!client) {
+      console.log("[Internal Knowledge] Supabase client unavailable, returning empty results for fallback");
+      return [];
+    }
+
     // Generate embedding for query
     const embedding = await generateEmbedding(queryText);
     const topK = options.topK || 10;
