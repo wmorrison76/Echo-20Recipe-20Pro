@@ -102,6 +102,11 @@ router.post("/start", async (req: Request, res: Response) => {
         try {
           console.log("[Training] Starting Master Dictionary ingestion...");
           trainingOrchestrator.startSource("master-dictionary");
+          trainingOrchestrator.updateSourceProgress("master-dictionary", {
+            message: "Loading Master Dictionary terms...",
+            progress: 10,
+          });
+
           const result = await ingestionController.ingestMasterDictionary();
           trainingOrchestrator.completeSource(
             "master-dictionary",
@@ -121,6 +126,11 @@ router.post("/start", async (req: Request, res: Response) => {
         try {
           console.log("[Training] Starting Pinecone migration...");
           trainingOrchestrator.startSource("pinecone-migration");
+          trainingOrchestrator.updateSourceProgress("pinecone-migration", {
+            message: "Connecting to Pinecone and extracting data...",
+            progress: 10,
+          });
+
           const result = await ingestionController.ingestFromPinecone();
           trainingOrchestrator.completeSource(
             "pinecone-migration",
