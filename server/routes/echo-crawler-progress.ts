@@ -6,6 +6,8 @@ import { knowledgeUpdater } from "../lib/knowledge-updater";
 import { globalCrawlerManager } from "../lib/crawler-framework";
 import { siteCrawlers } from "../lib/site-crawlers";
 import { flavorMatrixService } from "../lib/flavor-matrix-service";
+import { storeKnowledgeVector } from "../lib/knowledge-vector-service";
+import type { AnyKnowledge } from "../../client/echo/types/knowledge";
 
 interface CrawlerProgressEvent {
   type: "start" | "recipe" | "knowledge" | "learning" | "complete" | "error";
