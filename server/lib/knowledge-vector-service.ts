@@ -57,6 +57,12 @@ export interface KnowledgeSearchOptions {
   minConfidence?: number;
 }
 
+export interface KnowledgeSearchResultWithSource {
+  knowledge: AnyKnowledge;
+  similarity: number;
+  source: "internal" | "pinecone";
+}
+
 /**
  * Store knowledge in Pinecone with embeddings and retry logic
  */
