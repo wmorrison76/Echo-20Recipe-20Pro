@@ -864,23 +864,35 @@ export class TarlaDalalCrawler extends HTMLRecipeCrawlerAdapter {
     const recipes: CrawledRecipe[] = [];
 
     try {
-      const url = `${this.baseUrl}/search?q=${options.query || 'recipes'}&rpp=${options.limit || 20}`;
+      let url = `${this.baseUrl}/recipes`;
+
+      if (options.query && options.query !== '*') {
+        url = `${this.baseUrl}/search?q=${encodeURIComponent(options.query)}&rpp=${options.limit || 20}`;
+      }
+
       const html = await (await this.fetchWithRetry(url)).text();
 
-      const recipeIds = html.match(/\/recipe\/(\d+)/g) || [];
+      const recipeIds = html.match(/\/recipe\/([^\s"']+)/g) || [];
+      const uniqueIds = [...new Set(recipeIds.map(id => id.replace('/recipe/', '')))];
 
-      for (const idMatch of recipeIds.slice(0, options.limit || 20)) {
-        const recipeId = idMatch.replace('/recipe/', '');
-        const recipe = await this.fetchRecipeDetails(recipeId);
-        if (recipe) recipes.push(recipe);
+      for (const recipeId of uniqueIds.slice(0, options.limit || 20)) {
+        try {
+          const recipe = await this.fetchRecipeDetails(recipeId);
+          if (recipe) recipes.push(recipe);
+        } catch (e) {
+          continue;
+        }
+      }
+
+      if (recipes.length > 0) {
+        return recipes.slice(0, options.limit || 50);
       }
     } catch (error) {
       console.error('Tarla Dalal crawl error:', error);
-      console.log('Tarla Dalal: Using fallback mock data');
-      return this.getMockRecipes().slice(0, options.limit || 50);
     }
 
-    return recipes.slice(0, options.limit || 50) || this.getMockRecipes().slice(0, options.limit || 50);
+    console.log('Tarla Dalal: Using fallback mock data');
+    return this.getMockRecipes().slice(0, options.limit || 50);
   }
 
   private async fetchRecipeDetails(recipeId: string): Promise<CrawledRecipe | null> {
