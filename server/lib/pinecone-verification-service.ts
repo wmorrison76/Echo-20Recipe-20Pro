@@ -302,14 +302,20 @@ export async function storeTrainingDataToPinecone(
 
     const index = client.Index(KNOWLEDGE_INDEX);
     const vectors: any[] = [];
+    let successCount = 0;
 
-    // Prepare vectors
-    for (const item of trainingData) {
+    // Prepare vectors with truly unique IDs
+    for (let idx = 0; idx < trainingData.length; idx++) {
+      const item = trainingData[idx];
       try {
         const embedding = await generateEmbedding(item.content);
 
+        // Generate unique ID using UUID-like format to prevent collisions
+        // Format: training-{sessionId}-{timestamp}-{index}-{randomString}
+        const uniqueId = `training-${sessionId}-${Date.now()}-${idx}-${Math.random().toString(36).substring(2, 11)}-${Math.random().toString(36).substring(2, 11)}`;
+
         vectors.push({
-          id: `${sessionId}-${item.profileId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          id: uniqueId,
           values: embedding,
           metadata: {
             type: "training",
@@ -321,8 +327,15 @@ export async function storeTrainingDataToPinecone(
             confidence: item.confidence,
             sessionId,
             profileId: item.profileId,
+            index: idx,
           },
         });
+        successCount++;
+
+        // Small delay between embeddings to avoid rate limiting
+        if (idx % 10 === 0 && idx > 0) {
+          await new Promise((resolve) => setTimeout(resolve, 50));
+        }
       } catch (embedError) {
         console.warn(
           `[PineconeVerification] Failed to embed ${item.title}:`,
@@ -333,16 +346,28 @@ export async function storeTrainingDataToPinecone(
 
     // Store vectors in batches
     if (vectors.length > 0) {
-      const batchSize = 100;
+      const batchSize = 50; // Reduced batch size for better reliability
       for (let i = 0; i < vectors.length; i += batchSize) {
         const batch = vectors.slice(i, i + batchSize);
+        console.log(
+          `[PineconeVerification] Upserting batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(vectors.length / batchSize)} (${batch.length} vectors)`,
+        );
         await index.upsert(batch);
+
+        // Small delay between batches to avoid rate limiting
+        if (i + batchSize < vectors.length) {
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
       }
     }
 
+    console.log(
+      `[PineconeVerification] Successfully stored ${successCount}/${trainingData.length} training vectors`,
+    );
+
     return {
       success: true,
-      stored: vectors.length,
+      stored: successCount,
     };
   } catch (error: any) {
     console.error("[PineconeVerification] Error storing data:", error);
