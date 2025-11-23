@@ -593,7 +593,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [createObjectUrl, user]);
+  }, [createObjectUrl, monitorCacheUtilization, user]);
 
   useEffect(() => {
     if (!imagesHydrated) return;
