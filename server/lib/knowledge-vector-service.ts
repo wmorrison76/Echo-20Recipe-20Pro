@@ -3,6 +3,12 @@ import type {
   KnowledgeType,
 } from "../../client/echo/types/knowledge";
 import { generateEmbedding } from "./pinecone-service";
+import {
+  searchInternalKnowledge,
+  checkInternalKnowledgeHealth,
+  type KnowledgeSearchResult,
+  type KnowledgeSearchOptions as InternalSearchOptions,
+} from "./internal-knowledge-service";
 
 let PineconeClass: any = null;
 let pineconeClientInstance: any = null;
