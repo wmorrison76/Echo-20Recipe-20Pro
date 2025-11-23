@@ -454,6 +454,11 @@ export async function deleteInternalKnowledgeVector(id: string): Promise<{ succe
   try {
     const client = getSupabaseClient();
 
+    if (!client) {
+      console.warn("[Internal Knowledge] Supabase unavailable for delete");
+      return { success: false, error: "Internal knowledge storage unavailable" };
+    }
+
     const { error } = await client
       .from("internal_knowledge_vectors")
       .delete()
