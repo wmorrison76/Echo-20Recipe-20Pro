@@ -953,10 +953,18 @@ export async function searchAndLearn(req: Request, res: Response) {
   } catch (error) {
     console.error('[Echo Learning] Unhandled error in search and learn:', error);
     const errorMsg = error instanceof Error ? error.message : String(error);
-    res.status(500).json({
-      status: 'error',
-      message: 'Failed to search and learn',
-      error: errorMsg,
-    });
+
+    // Always return a well-formed response, even on error
+    try {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Failed to search and learn',
+        error: errorMsg,
+      });
+    } catch (responseError) {
+      console.error('[Echo Learning] Failed to send error response:', responseError);
+      // Last resort - send a basic error
+      res.status(500).send('Internal server error');
+    }
   }
 }
