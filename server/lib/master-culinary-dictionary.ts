@@ -669,6 +669,13 @@ class MasterCulinaryDictionary {
   }
 
   /**
+   * Get all terms in the dictionary
+   */
+  getAllTerms(): MasterCulinaryTerm[] {
+    return Array.from(this.dictionary.values());
+  }
+
+  /**
    * Get dictionary statistics
    */
   getStatistics() {
