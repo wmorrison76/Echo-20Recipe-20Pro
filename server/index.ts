@@ -128,5 +128,8 @@ export function createServer() {
   // Echo Knowledge Ingestion - Ingest Master Dictionary, Pinecone, and PDFs into internal storage
   app.use("/api/echo", echoKnowledgeIngestionRouter);
 
+  // Knowledge Diagnostics - Health checks and status for all knowledge sources
+  app.use("/api/knowledge", knowledgeDiagnosticsRouter);
+
   return app;
 }
