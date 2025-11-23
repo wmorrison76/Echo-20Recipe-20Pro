@@ -174,4 +174,6 @@ export class ObjectURLLRUCache {
 }
 
 // Export singleton instance for global use
-export const objectURLCache = new ObjectURLLRUCache(200, false);
+// Size: 100 (85% threshold = 85)
+// For heavy crawlers, consider reducing to 50
+export const objectURLCache = new ObjectURLLRUCache(100, false);
