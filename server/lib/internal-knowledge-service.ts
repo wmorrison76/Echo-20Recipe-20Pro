@@ -492,6 +492,17 @@ export async function getInternalKnowledgeStats(): Promise<{
   try {
     const client = getSupabaseClient();
 
+    if (!client) {
+      console.log("[Internal Knowledge] Supabase unavailable for stats");
+      return {
+        total: 0,
+        bySourceType: {},
+        byDomain: {},
+        byCategory: {},
+        averageConfidence: 0,
+      };
+    }
+
     const { data, error } = await client
       .from("internal_knowledge_vectors")
       .select("source_type, domain, categories, metadata");
