@@ -446,19 +446,15 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
   const [workflows, setWorkflows] = useState<DishWorkflowPlan[]>([]);
   const [inspections, setInspections] = useState<InspectionReport[]>([]);
   const mountedRef = useRef(true);
-  const imageObjectUrlsRef = useRef<Map<string, string>>(new Map());
   const [imagesHydrated, setImagesHydrated] = useState(false);
   const [recipesLoading, setRecipesLoading] = useState(true);
 
+  /**
+   * Create object URL using LRU cache to prevent WebKitBlobResource exhaustion
+   * Automatically evicts least-recently-used URLs when cache exceeds max size (200)
+   */
   const createObjectUrl = useCallback((id: string, blob: Blob) => {
-    const cache = imageObjectUrlsRef.current;
-    const existing = cache.get(id);
-    if (existing) {
-      URL.revokeObjectURL(existing);
-    }
-    const url = URL.createObjectURL(blob);
-    cache.set(id, url);
-    return url;
+    return objectURLCache.set(id, blob);
   }, []);
 
   const appendRecipes = useCallback(
@@ -2725,7 +2721,7 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
             (label) => line === label || line.startsWith(`${label} `),
           );
         const qtyRegex =
-          /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[��½¾���⅔⅛⅜⅝⅞])(?:\s*(?:cups?|cup|tsp|teaspoons?|tbsp|tablespoons?|grams?|gram|kg|kilograms?|g|ml|milliliters?|l|liters?|oz|ounces?|lb|lbs|pounds?|pinch|dash|cloves?|cans?|sticks?|slices?|heads?|bunch(?:es)?|sprigs?))?\b/;
+          /^(?:\d+(?:\s+\d\/\d)?|\d+\/\d|\d+(?:\.\d+)?|[��½¾���⅔���⅜⅝⅞])(?:\s*(?:cups?|cup|tsp|teaspoons?|tbsp|tablespoons?|grams?|gram|kg|kilograms?|g|ml|milliliters?|l|liters?|oz|ounces?|lb|lbs|pounds?|pinch|dash|cloves?|cans?|sticks?|slices?|heads?|bunch(?:es)?|sprigs?))?\b/;
         const metaSuppress =
           /^\s*(?:yield|serves|makes|prep(?:aration)?|cook|total)\b/i;
 
