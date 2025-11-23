@@ -209,11 +209,12 @@ export async function storeKnowledgeBatch(
  * Prioritizes internal pgvector storage over Pinecone for cost efficiency
  * Falls back to Pinecone if internal search returns no results or low-quality results
  * Requires minimum 0.5 (50%) similarity threshold to use internal results
+ * Returns results with source information (internal vs pinecone)
  */
 export async function searchKnowledge(
   queryText: string,
   options: KnowledgeSearchOptions = {},
-): Promise<Array<{ knowledge: AnyKnowledge; similarity: number }>> {
+): Promise<Array<{ knowledge: AnyKnowledge; similarity: number; source: "internal" | "pinecone" }>> {
   try {
     // Step 1: Try internal knowledge first (pgvector)
     console.log("[Knowledge Search] Attempting internal search first...");
@@ -253,6 +254,7 @@ export async function searchKnowledge(
           relatedKnowledge: result.metadata?.relatedTerms || [],
         } as unknown as AnyKnowledge,
         similarity: result.similarity,
+        source: "internal",
       }));
     }
 
@@ -307,6 +309,7 @@ export async function searchKnowledge(
       .map((match) => ({
         knowledge: match.metadata as unknown as AnyKnowledge,
         similarity: match.score || 0,
+        source: "pinecone",
       }));
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
