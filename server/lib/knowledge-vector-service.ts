@@ -201,7 +201,8 @@ export async function storeKnowledgeBatch(
 /**
  * Search knowledge by query text
  * Prioritizes internal pgvector storage over Pinecone for cost efficiency
- * Falls back to Pinecone if internal search returns no results or if internal DB is unavailable
+ * Falls back to Pinecone if internal search returns no results or low-quality results
+ * Requires minimum 0.5 (50%) similarity threshold to use internal results
  */
 export async function searchKnowledge(
   queryText: string,
@@ -218,10 +219,19 @@ export async function searchKnowledge(
       minConfidence: options.minConfidence,
     });
 
-    if (internalResults && internalResults.length > 0) {
-      console.log(`[Knowledge Search] Found ${internalResults.length} results in internal storage`);
+    // Minimum similarity threshold: 0.5 (50%)
+    // This ensures we don't return weak internal matches that block better Pinecone results
+    const MIN_SIMILARITY_THRESHOLD = 0.5;
+    const highQualityInternalResults = internalResults.filter(
+      (result) => result.similarity >= MIN_SIMILARITY_THRESHOLD
+    );
 
-      return internalResults.map((result: KnowledgeSearchResult) => ({
+    if (highQualityInternalResults && highQualityInternalResults.length > 0) {
+      console.log(
+        `[Knowledge Search] Found ${highQualityInternalResults.length} high-quality results in internal storage (similarity >= ${MIN_SIMILARITY_THRESHOLD})`
+      );
+
+      return highQualityInternalResults.map((result: KnowledgeSearchResult) => ({
         knowledge: {
           id: result.id,
           title: result.title,
@@ -240,11 +250,17 @@ export async function searchKnowledge(
       }));
     }
 
-    console.log("[Knowledge Search] No internal results found, falling back to Pinecone...");
+    if (internalResults && internalResults.length > 0) {
+      console.log(
+        `[Knowledge Search] Found ${internalResults.length} internal results, but all below quality threshold (${MIN_SIMILARITY_THRESHOLD}). Best match: ${(internalResults[0].similarity * 100).toFixed(0)}%. Falling back to Pinecone...`
+      );
+    } else {
+      console.log("[Knowledge Search] No internal results found, falling back to Pinecone...");
+    }
 
-    // Step 2: Fallback to Pinecone if available and internal search yielded no results
+    // Step 2: Fallback to Pinecone if available and internal search yielded no high-quality results
     if (!PINECONE_API_KEY) {
-      console.warn("[Knowledge Search] Pinecone API key not configured and no internal results found");
+      console.warn("[Knowledge Search] Pinecone API key not configured and no high-quality internal results found");
       return [];
     }
 
