@@ -4901,8 +4901,3 @@ export const masterCulinaryDictionary = new MasterCulinaryDictionary();
 
 // Load comprehensive culinary terms on initialization
 masterCulinaryDictionary.loadTermsFromArray(comprehensiveCulinaryTerms);
-
-export const masterCulinaryDictionary = new MasterCulinaryDictionary();
-
-// Load comprehensive culinary terms on initialization
-masterCulinaryDictionary.loadTermsFromArray(comprehensiveCulinaryTerms);
