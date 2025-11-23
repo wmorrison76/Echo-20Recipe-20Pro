@@ -286,9 +286,9 @@ function IndexContent() {
                 <RDLabsWorkspace />
               </ErrorBoundaryWrapper>
             </TabsContent>
-            <TabsContent value="echo-training" className="py-4">
+            <TabsContent value="echo-training" className="h-[calc(100vh-200px)] flex flex-col overflow-y-auto">
               <ErrorBoundaryWrapper section="Echo Training">
-                <div className="container mx-auto px-3">
+                <div className="w-full px-4 py-6">
                   <EchoTrainingCenter />
                 </div>
               </ErrorBoundaryWrapper>
