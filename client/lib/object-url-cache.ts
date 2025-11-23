@@ -3,21 +3,28 @@
  * ========================
  * Prevents WebKitBlobResource exhaustion by limiting the number of
  * simultaneously active object URLs and automatically revoking older ones
+ *
+ * For crawlers/bulk operations: use maxSize 50-75
+ * For normal gallery use: use maxSize 100-150
  */
 
 interface CacheEntry {
   url: string;
   lastAccessed: number;
+  accessCount: number;
 }
 
 export class ObjectURLLRUCache {
   private cache: Map<string, CacheEntry> = new Map();
   private readonly maxSize: number;
   private readonly debug: boolean;
+  private readonly evictionThreshold: number; // Trigger eviction before full
 
-  constructor(maxSize: number = 200, debug: boolean = false) {
+  constructor(maxSize: number = 100, debug: boolean = false) {
     this.maxSize = maxSize;
     this.debug = debug;
+    // Evict when 85% full to prevent hitting hard limit
+    this.evictionThreshold = Math.floor(maxSize * 0.85);
   }
 
   /**
