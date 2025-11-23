@@ -17,6 +17,7 @@ import {
   loadImageBlob,
   saveImageBlob,
 } from "@/lib/gallery-storage";
+import { objectURLCache } from "@/lib/object-url-cache";
 import type { Recipe } from "@shared/recipes";
 import type { RecipeCollection } from "@shared/server-notes";
 import { defaultLanguage, type LanguageCode } from "@/i18n/config";
