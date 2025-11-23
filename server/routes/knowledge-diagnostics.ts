@@ -331,4 +331,24 @@ router.get("/stats", async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * POST /api/knowledge/reset-ingestion
+ * Force reset stuck ingestion state
+ */
+router.post("/reset-ingestion", async (req: Request, res: Response) => {
+  try {
+    ingestionController.resetIngestionState();
+    res.json({
+      success: true,
+      message: "Ingestion state reset successfully",
+    });
+  } catch (error) {
+    console.error("[Knowledge Reset] Error:", error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
 export default router;
