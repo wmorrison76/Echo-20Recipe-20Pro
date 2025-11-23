@@ -357,6 +357,11 @@ export async function getKnowledgeBySourceType(
   try {
     const client = getSupabaseClient();
 
+    if (!client) {
+      console.log("[Internal Knowledge] Supabase unavailable for source type query");
+      return [];
+    }
+
     const { data, error } = await client
       .from("internal_knowledge_vectors")
       .select("id, title, content, description, source_type, source, metadata")
