@@ -750,8 +750,9 @@ export async function getRecipeStatistics(req: Request, res: Response) {
 
 /**
  * POST /api/echo/hungry-learning/search-and-learn
- * Search for a culinary term in the knowledge base, starting with Pinecone/PDFs,
+ * Search for a culinary term in the knowledge base, starting with internal storage/PDFs,
  * then master dictionary, and finally external LLMs
+ * Internal pgvector storage is now primary, with Pinecone as fallback
  */
 export async function searchAndLearn(req: Request, res: Response) {
   try {
@@ -766,38 +767,39 @@ export async function searchAndLearn(req: Request, res: Response) {
 
     const normalizedTerm = term.toLowerCase().trim();
 
-    // First, try to find in Pinecone (PDF library, uploaded knowledge)
-    console.log(`[Echo Learning] Searching Pinecone for "${normalizedTerm}"...`);
+    // First, try to find in internal storage and Pinecone (PDF library, uploaded knowledge)
+    // searchKnowledge now prioritizes internal storage with fallback to Pinecone
+    console.log(`[Echo Learning] Searching for "${normalizedTerm}"...`);
     try {
-      const pineconeResults = await searchKnowledge(normalizedTerm, { topK: 5 });
+      const searchResults = await searchKnowledge(normalizedTerm, { topK: 5 });
 
-      if (pineconeResults && pineconeResults.length > 0) {
-        // Found in Pinecone/PDF library
-        console.log(`[Echo Learning] Found ${pineconeResults.length} results from PDF library in Pinecone`);
+      if (searchResults && searchResults.length > 0) {
+        // Found in internal storage or Pinecone
+        console.log(`[Echo Learning] Found ${searchResults.length} results from knowledge storage`);
 
-        const topResult = pineconeResults[0];
+        const topResult = searchResults[0];
         const knowledgeEntry = topResult.knowledge;
 
         return res.json({
           status: 'success',
-          source: 'pinecone-pdf-library',
+          source: 'internal-pdf-library',
           entry: {
             term: normalizedTerm,
             definition: knowledgeEntry.description || knowledgeEntry.content || '',
             content: knowledgeEntry.content,
             sourceFile: knowledgeEntry.source,
             similarity: topResult.similarity,
-            allResults: pineconeResults.slice(0, 3).map(r => ({
+            allResults: searchResults.slice(0, 3).map(r => ({
               definition: r.knowledge.description || r.knowledge.content || '',
               source: r.knowledge.source,
               similarity: r.similarity,
             })),
           },
-          message: `📚 Found in your PDF library: "${knowledgeEntry.source}" (${(topResult.similarity * 100).toFixed(0)}% match)`,
+          message: `📚 Found in your knowledge library: "${knowledgeEntry.source}" (${(topResult.similarity * 100).toFixed(0)}% match)`,
         });
       }
-    } catch (pineconeError) {
-      console.warn(`[Echo Learning] Pinecone search failed (continuing with fallbacks):`, pineconeError);
+    } catch (searchError) {
+      console.warn(`[Echo Learning] Knowledge search failed (continuing with fallbacks):`, searchError);
     }
 
     // Second, try to find in master dictionary
