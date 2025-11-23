@@ -771,29 +771,41 @@ export class FoodNetworkCrawler extends HTMLRecipeCrawlerAdapter {
 
   async crawlRecipes(options: CrawlerOptions): Promise<CrawledRecipe[]> {
     const recipes: CrawledRecipe[] = [];
+    const searchQueries = getRandomQueries(3); // Search 3 random natural queries
 
     try {
-      const searchUrl = `${this.baseUrl}/recipes`;
-      const html = await (await this.fetchWithRetry(searchUrl)).text();
-
-      // Look for recipe links in the page
-      const recipeUrls = html.match(/href="(\/recipes?\/[^"]+)"/g) || [];
-
-      // Limit concurrent requests
-      const urlsToFetch = [
-        ...new Set(recipeUrls.map((u) => u.replace(/href="|"/g, ""))),
-      ].slice(0, options.limit || 20);
-
-      for (const recipeUrl of urlsToFetch) {
-        if (!recipeUrl.startsWith("/")) continue;
+      for (const query of searchQueries) {
         try {
-          const recipe = await this.fetchRecipeDetails(
-            `${this.baseUrl}${recipeUrl}`,
-          );
-          if (recipe) recipes.push(recipe);
+          // Use natural search query as a real user would
+          const searchUrl = `${this.baseUrl}/search/${encodeURIComponent(query)}`;
+          const html = await (await this.fetchWithRetry(searchUrl)).text();
+
+          // Look for recipe links in search results
+          const recipeUrls = html.match(/href="(\/recipes?\/[^"]+)"/g) || [];
+          const uniqueUrls = [
+            ...new Set(recipeUrls.map((u) => u.replace(/href="|"/g, ""))),
+          ];
+
+          for (const recipeUrl of uniqueUrls.slice(0, 5)) {
+            if (!recipeUrl.startsWith("/")) continue;
+            try {
+              const recipe = await this.fetchRecipeDetails(
+                `${this.baseUrl}${recipeUrl}`,
+              );
+              if (recipe) recipes.push(recipe);
+            } catch (e) {
+              continue;
+            }
+          }
+
+          // Stop early if we have enough recipes
+          if (recipes.length >= (options.limit || 10)) {
+            break;
+          }
         } catch (e) {
-          // Skip problematic URLs
-          continue;
+          console.warn(
+            `Food Network query "${query}" failed, trying next query...`,
+          );
         }
       }
 
