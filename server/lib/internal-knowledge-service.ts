@@ -9,7 +9,7 @@ import { createClient } from "@supabase/supabase-js";
 import { generateEmbedding } from "./pinecone-service";
 
 const supabaseUrl = process.env.SUPABASE_URL || "";
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsb3N6a2N1cXBwZmFobHNzamp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3MzUwNjYsImV4cCI6MjA3OTMxMTA2Nn0.dUSzcaDrb3UO_odph8XD1HnUrCTPC7EiquDh-llKIZw";
 
 export type KnowledgeSourceType = "pdf" | "master-dictionary" | "external-llm" | "recipe" | "user-imported";
 export type KnowledgeCategory = "technique" | "ingredient" | "method" | "equipment" | "theory" | "cuisine" | "safety" | "service" | "tradition";
@@ -56,13 +56,18 @@ export interface KnowledgeSearchOptions {
   minConfidence?: number;
 }
 
+/**
+ * Get Supabase client using anon key with RLS policies
+ * This is more secure than using service role key in server code
+ */
 function getSupabaseClient() {
-  if (!supabaseUrl || !supabaseServiceKey) {
-    console.warn("[Internal Knowledge] Supabase credentials not configured, internal search unavailable");
+  if (!supabaseUrl) {
+    console.warn("[Internal Knowledge] Supabase URL not configured, internal search unavailable");
     return null;
   }
   try {
-    return createClient(supabaseUrl, supabaseServiceKey);
+    // Use anon key with RLS policies for better security
+    return createClient(supabaseUrl, supabaseAnonKey);
   } catch (error) {
     console.warn("[Internal Knowledge] Failed to create Supabase client:", error);
     return null;
