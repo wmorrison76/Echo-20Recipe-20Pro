@@ -174,7 +174,7 @@ export default function AskEchoPanel() {
       // If we have a result from search-and-learn or traditional search
       let dictionaryResult = searchResponse;
 
-      if (dictionaryResult?.status === 'success' && dictionaryResult?.entry) {
+      if (dictionaryResult && dictionaryResult.status === 'success' && dictionaryResult.entry) {
         const source = dictionaryResult.source || 'master-dictionary';
         const entry = dictionaryResult.entry;
         let response = '';
