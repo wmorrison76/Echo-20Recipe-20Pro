@@ -750,8 +750,8 @@ export async function getRecipeStatistics(req: Request, res: Response) {
 
 /**
  * POST /api/echo/hungry-learning/search-and-learn
- * Search for a culinary term in the knowledge base, and if not found,
- * query external LLMs (OpenAI) to learn and store the knowledge
+ * Search for a culinary term in the knowledge base, starting with Pinecone/PDFs,
+ * then master dictionary, and finally external LLMs
  */
 export async function searchAndLearn(req: Request, res: Response) {
   try {
@@ -766,7 +766,41 @@ export async function searchAndLearn(req: Request, res: Response) {
 
     const normalizedTerm = term.toLowerCase().trim();
 
-    // First, try to find in master dictionary
+    // First, try to find in Pinecone (PDF library, uploaded knowledge)
+    console.log(`[Echo Learning] Searching Pinecone for "${normalizedTerm}"...`);
+    try {
+      const pineconeResults = await queryKnowledgeVectors(normalizedTerm, 5);
+
+      if (pineconeResults && pineconeResults.length > 0) {
+        // Found in Pinecone/PDF library
+        console.log(`[Echo Learning] Found ${pineconeResults.length} results from PDF library in Pinecone`);
+
+        const topResult = pineconeResults[0];
+        const knowledgeEntry = topResult.knowledge;
+
+        return res.json({
+          status: 'success',
+          source: 'pinecone-pdf-library',
+          entry: {
+            term: normalizedTerm,
+            definition: knowledgeEntry.description || knowledgeEntry.content || '',
+            content: knowledgeEntry.content,
+            sourceFile: knowledgeEntry.source,
+            similarity: topResult.similarity,
+            allResults: pineconeResults.slice(0, 3).map(r => ({
+              definition: r.knowledge.description || r.knowledge.content || '',
+              source: r.knowledge.source,
+              similarity: r.similarity,
+            })),
+          },
+          message: `📚 Found in your PDF library: "${knowledgeEntry.source}" (${(topResult.similarity * 100).toFixed(0)}% match)`,
+        });
+      }
+    } catch (pineconeError) {
+      console.warn(`[Echo Learning] Pinecone search failed (continuing with fallbacks):`, pineconeError);
+    }
+
+    // Second, try to find in master dictionary
     let entry = masterCulinaryDictionary.getTerm(normalizedTerm);
 
     if (entry) {
@@ -789,8 +823,8 @@ export async function searchAndLearn(req: Request, res: Response) {
       });
     }
 
-    // Not found in master dictionary, try external LLM
-    console.log(`[Echo Learning] Term "${normalizedTerm}" not in master dictionary. Querying OpenAI...`);
+    // Not found in Pinecone or master dictionary, try external LLM
+    console.log(`[Echo Learning] Term "${normalizedTerm}" not found. Querying OpenAI...`);
 
     const enrichedTerms = await llmKnowledgeEnricher.enrichTerms([normalizedTerm], 1);
 
