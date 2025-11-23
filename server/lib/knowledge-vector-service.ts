@@ -287,7 +287,9 @@ export async function searchKnowledge(
         similarity: match.score || 0,
       }));
   } catch (error) {
-    console.error("Error searching knowledge:", error);
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    console.error("[Knowledge Search] Error during search:", errorMsg);
+    // Return empty array on error - no knowledge found but system working
     return [];
   }
 }
