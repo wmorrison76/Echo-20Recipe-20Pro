@@ -379,29 +379,38 @@ export class BBCGoodFoodCrawler extends HTMLRecipeCrawlerAdapter {
 
   async crawlRecipes(options: CrawlerOptions): Promise<CrawledRecipe[]> {
     const recipes: CrawledRecipe[] = [];
-    let searchUrl = `${this.baseUrl}/food/recipes`;
-
-    if (options.query && options.query !== "*") {
-      searchUrl = `${this.baseUrl}/search/recipes?q=${encodeURIComponent(options.query)}`;
-    }
+    const searchQueries = getRandomQueries(3); // Search 3 random natural queries
 
     try {
-      const html = await (await this.fetchWithRetry(searchUrl)).text();
-      const jsonLdMatches =
-        html.match(
-          /<script type="application\/ld\+json">[\s\S]*?<\/script>/g,
-        ) || [];
-
-      for (const match of jsonLdMatches) {
+      for (const query of searchQueries) {
         try {
-          const json = JSON.parse(
-            match.replace(/<script[^>]*>|<\/script>/g, ""),
-          );
-          if (json["@type"] === "Recipe" || json.type === "recipe") {
-            recipes.push(this.parseRecipeSchema(json));
+          // Use natural search query as a real user would
+          const searchUrl = `${this.baseUrl}/search/recipes?q=${encodeURIComponent(query)}`;
+          const html = await (await this.fetchWithRetry(searchUrl)).text();
+          const jsonLdMatches =
+            html.match(
+              /<script type="application\/ld\+json">[\s\S]*?<\/script>/g,
+            ) || [];
+
+          for (const match of jsonLdMatches) {
+            try {
+              const json = JSON.parse(
+                match.replace(/<script[^>]*>|<\/script>/g, ""),
+              );
+              if (json["@type"] === "Recipe" || json.type === "recipe") {
+                recipes.push(this.parseRecipeSchema(json));
+              }
+            } catch (e) {
+              // Parse error
+            }
+          }
+
+          // Stop early if we have enough recipes
+          if (recipes.length >= (options.limit || 10)) {
+            break;
           }
         } catch (e) {
-          // Parse error
+          console.warn(`BBC Good Food query "${query}" failed, trying next...`);
         }
       }
 
