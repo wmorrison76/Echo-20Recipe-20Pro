@@ -332,11 +332,29 @@ export function transformPineconeToInternalFormat(
       ? metadata.tags.split(",").map((t: string) => t.trim())
       : [];
 
+  // Map Pinecone sourceType to valid internal types
+  const mapSourceType = (sourceType: string | undefined): string => {
+    if (!sourceType) return "user-imported";
+
+    const validTypes: Record<string, string> = {
+      pdf: "pdf",
+      "master-dictionary": "master-dictionary",
+      "external-llm": "external-llm",
+      openai: "external-llm", // Map openai to external-llm
+      recipe: "recipe",
+      "user-imported": "user-imported",
+      "user_imported": "user-imported",
+      pinecone: "user-imported",
+    };
+
+    return validTypes[sourceType.toLowerCase()] || "user-imported";
+  };
+
   return {
     title: metadata.title || "Untitled",
     content: metadata.content || metadata.description || "",
     description: metadata.description,
-    sourceType: metadata.sourceType || "user-imported",
+    sourceType: mapSourceType(metadata.sourceType),
     categories: tagsArray,
     source: metadata.source || "Pinecone Migration",
     domain: metadata.domain || "culinary",
