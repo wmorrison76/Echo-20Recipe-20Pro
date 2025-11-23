@@ -7,6 +7,70 @@ import type {
 import type { CrawledRecipe } from "./web-recipe-crawler";
 
 /**
+ * Natural, human-typed recipe search queries
+ * These simulate real user searches across different recipe sites
+ */
+const HUMAN_SEARCH_QUERIES = [
+  "easy weeknight chicken dinner ideas",
+  "how to make a really good lemon garlic butter shrimp",
+  "best crispy roasted potatoes recipe ever",
+  "authentic bolognese sauce recipe traditional",
+  "thai green curry simple version",
+  "what's a good recipe for tender pot roast",
+  "quick healthy breakfast bowls",
+  "how to bake salmon without drying it out",
+  "mac and cheese recipe with no flour",
+  "best vegan chocolate cake super moist",
+  "spicy ramen add-ins homemade broth",
+  "japanese karaage chicken how to make",
+  "simple bread recipe only 3 ingredients",
+  "slow cooker chili like competition style",
+  "garlic knots recipe pizza dough",
+  "how do i make fluffy pancakes",
+  "gluten free banana bread that's not dense",
+  "low carb meal prep chicken recipes",
+  "mediterranean bowls easy",
+  "best salsa verde authentic mexican",
+  "how to make homemade ricotta cheese",
+  "easy appetizers for parties no bake",
+  "what can i do with leftover steak",
+  "sunday gravy recipe italian grandma",
+  "quick stir fry sauce with pantry ingredients",
+  "best bourbon bbq sauce recipe",
+  "korean spicy pork bulgogi recipe",
+  "crispy tofu that actually tastes good",
+  "classic french onion soup recipe",
+  "how to make perfect soft boiled eggs",
+  "super cheesy lasagna no ricotta",
+  "healthy smoothie recipes for weight loss",
+  "best buffalo wings crispy baked",
+  "shrimp scampi but spicy",
+  "miso soup simple authentic",
+  "taco seasoning homemade blend",
+  "how to roast vegetables caramelized",
+  "fried rice recipe like hibachi",
+  "trader joes copycat recipes",
+  "best marinade for chicken thighs overnight",
+  "how to make brownies fudgy not cakey",
+  "caesar salad dressing no anchovies",
+  "easy fall soups pumpkin squash",
+  "italian meatballs moist tender",
+  "best sushi rice how to season",
+  "raspberry cheesecake swirl bars",
+  "tender ribs in oven low and slow",
+  "how to make gnocchi fluffy",
+  "homemade pizza dough new york style",
+  "detroit style pizza pan recipe",
+  "how to get crispy skin on chicken",
+];
+
+// Select 5 random queries per crawl session
+function getRandomQueries(count: number = 5): string[] {
+  const shuffled = [...HUMAN_SEARCH_QUERIES].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+}
+
+/**
  * Base class for HTML-based recipe crawlers
  */
 export abstract class HTMLRecipeCrawlerAdapter implements SiteCrawlerAdapter {
