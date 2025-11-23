@@ -300,4 +300,35 @@ function generateRecommendations(checks: any): string[] {
   return recommendations;
 }
 
+/**
+ * GET /api/knowledge/stats
+ * Get simple knowledge statistics for UI display
+ */
+router.get("/stats", async (req: Request, res: Response) => {
+  try {
+    const internalStats = await getInternalKnowledgeStats();
+    const masterDictStats = masterCulinaryDictionary.getStatistics();
+
+    res.json({
+      success: true,
+      stats: {
+        approvedItems: internalStats.total || 0,
+        masterDictionaryTerms: masterDictStats.totalTerms || 0,
+        totalVectors: internalStats.total || 0,
+        bySourceType: internalStats.bySourceType || {},
+        byDomain: internalStats.byDomain || {},
+        categories: masterDictStats.categories || {},
+        masteryLevels: masterDictStats.masteryLevels || {},
+        averageConfidence: masterDictStats.averageConfidence || 0,
+      },
+    });
+  } catch (error) {
+    console.error("[Knowledge Stats] Error:", error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
+
 export default router;
