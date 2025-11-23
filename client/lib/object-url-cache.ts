@@ -56,6 +56,7 @@ export class ObjectURLLRUCache {
 
   /**
    * Set a URL in cache, evicting LRU entries if needed
+   * IMPORTANT: Uses originalCreateObjectURL to avoid infinite recursion with the wrapper
    */
   set(id: string, blob: Blob): string {
     // Revoke old URL if exists
@@ -64,8 +65,14 @@ export class ObjectURLLRUCache {
       URL.revokeObjectURL(existing.url);
     }
 
-    // Create new object URL
-    const url = URL.createObjectURL(blob);
+    // Create new object URL using original (not wrapped) createObjectURL
+    let url: string;
+    try {
+      url = this.originalCreateObjectURL(blob);
+    } catch (error) {
+      console.error("[ObjectURLCache] Failed to create object URL:", error);
+      throw error;
+    }
 
     // Evict LRU entries if at or above threshold (85% full)
     // This prevents hitting the hard limit and gives buffer for burst operations
