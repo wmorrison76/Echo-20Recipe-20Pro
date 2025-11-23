@@ -68,17 +68,21 @@ export function memoize<T extends (...args: any[]) => any>(func: T): T {
 }
 
 /**
- * Request idle callback polyfill for older browsers
+ * Request idle callback wrapper
+ * Uses global polyfill if available, falls back to setTimeout
  * @param callback - Function to call when idle
  * @returns ID for cancellation
  */
 export function requestIdleCallback(callback: () => void): number {
-  const w = typeof window !== "undefined" ? (window as any) : null;
-  if (w && "requestIdleCallback" in w) {
-    return w.requestIdleCallback(callback) as unknown as number;
+  if (typeof globalThis !== "undefined" && "requestIdleCallback" in globalThis) {
+    return (globalThis as any).requestIdleCallback(callback) as unknown as number;
   }
-  if (w && "setTimeout" in w) {
-    return w.setTimeout(callback, 1) as unknown as number;
+  if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+    return (window as any).requestIdleCallback(callback) as unknown as number;
+  }
+  // Fallback to setTimeout
+  if (typeof setTimeout !== "undefined") {
+    return setTimeout(callback, 1) as unknown as number;
   }
   return 0;
 }
@@ -88,11 +92,12 @@ export function requestIdleCallback(callback: () => void): number {
  * @param id - ID from requestIdleCallback
  */
 export function cancelIdleCallback(id: number): void {
-  const w = typeof window !== "undefined" ? (window as any) : null;
-  if (w && "cancelIdleCallback" in w) {
-    w.cancelIdleCallback(id as unknown as number);
-  } else if (w && "clearTimeout" in w) {
-    w.clearTimeout(id as unknown as number);
+  if (typeof globalThis !== "undefined" && "cancelIdleCallback" in globalThis) {
+    (globalThis as any).cancelIdleCallback(id as unknown as number);
+  } else if (typeof window !== "undefined" && "cancelIdleCallback" in window) {
+    (window as any).cancelIdleCallback(id as unknown as number);
+  } else if (typeof clearTimeout !== "undefined") {
+    clearTimeout(id);
   }
 }
 
