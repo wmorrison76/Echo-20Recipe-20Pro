@@ -1039,12 +1039,14 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
       if (next.length) {
         console.debug("Adding images to state, count:", next.length);
         setImages((prev) => [...next, ...prev]);
+        // Check cache utilization after adding images
+        monitorCacheUtilization();
       } else {
         console.warn("No images were successfully processed");
       }
       return added;
     },
-    [images, createObjectUrl],
+    [images, createObjectUrl, monitorCacheUtilization],
   );
 
   const addRecipe = useCallback((recipe: Omit<Recipe, "id" | "createdAt">) => {
