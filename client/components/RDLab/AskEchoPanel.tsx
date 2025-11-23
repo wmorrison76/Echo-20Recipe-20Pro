@@ -203,42 +203,57 @@ export default function AskEchoPanel() {
         } else {
           // Format master dictionary result
           const term = entry.term;
-          response = `📚 **${term.term}**\n\n`;
-          response += `**Definition:** ${term.definition}\n\n`;
 
-          response += `**Usage:** ${term.usage.primary}`;
-          if (term.usage.secondary && term.usage.secondary.length > 0) {
-            response += `\n- Also used for: ${term.usage.secondary.join(', ')}`;
-          }
-          response += `\n\n`;
+          // Safety check - ensure term is an object
+          if (term && typeof term === 'object') {
+            response = `📚 **${term.term || extractedTerm}**\n\n`;
+            response += `**Definition:** ${term.definition || 'No definition available'}\n\n`;
 
-          if (term.etymology) {
-            response += `**Etymology:** From ${term.etymology.origin}`;
-            if (term.etymology.originalWord) {
-              response += ` - "${term.etymology.originalWord}"`;
+            if (term.usage && term.usage.primary) {
+              response += `**Usage:** ${term.usage.primary}`;
+              if (term.usage.secondary && term.usage.secondary.length > 0) {
+                response += `\n- Also used for: ${term.usage.secondary.join(', ')}`;
+              }
+              response += `\n\n`;
             }
-            if (term.etymology.meaning) {
-              response += ` meaning "${term.etymology.meaning}"`;
-            }
-            response += `\n\n`;
-          }
 
-          if (term.applications) {
-            response += `**Applications:** ${term.applications.primary}\n`;
-            if (term.applications.examples && term.applications.examples.length > 0) {
-              response += `- Examples: ${term.applications.examples.join(', ')}\n`;
+            if (term.etymology && term.etymology.origin) {
+              response += `**Etymology:** From ${term.etymology.origin}`;
+              if (term.etymology.originalWord) {
+                response += ` - "${term.etymology.originalWord}"`;
+              }
+              if (term.etymology.meaning) {
+                response += ` meaning "${term.etymology.meaning}"`;
+              }
+              response += `\n\n`;
             }
-            if (term.applications.dishes && term.applications.dishes.length > 0) {
-              response += `- Used in: ${term.applications.dishes.join(', ')}\n`;
+
+            if (term.applications && term.applications.primary) {
+              response += `**Applications:** ${term.applications.primary}\n`;
+              if (term.applications.examples && term.applications.examples.length > 0) {
+                response += `- Examples: ${term.applications.examples.join(', ')}\n`;
+              }
+              if (term.applications.dishes && term.applications.dishes.length > 0) {
+                response += `- Used in: ${term.applications.dishes.join(', ')}\n`;
+              }
+              response += '\n';
             }
-            response += '\n';
-          }
 
-          if (term.relatedTerms && term.relatedTerms.length > 0) {
-            response += `**Related terms:** ${term.relatedTerms.join(', ')}\n`;
-          }
+            if (term.relatedTerms && term.relatedTerms.length > 0) {
+              response += `**Related terms:** ${term.relatedTerms.join(', ')}\n`;
+            }
 
-          response += `\n✨ **Mastery Level:** ${term.masteryLevel} | **Confidence:** ${(term.confidence * 100).toFixed(0)}%`;
+            const masteryLevel = term.masteryLevel || 'intermediate';
+            const confidence = term.confidence || 0.85;
+            response += `\n✨ **Mastery Level:** ${masteryLevel} | **Confidence:** ${(confidence * 100).toFixed(0)}%`;
+          } else {
+            // Fallback if term structure is unexpected
+            response = `📚 **${extractedTerm}**\n\n`;
+            response += `**Definition:** ${entry.definition || 'Information found'}\n\n`;
+            if (entry.content) {
+              response += `**Content:** ${entry.content}\n`;
+            }
+          }
         }
 
         setMessages((prev) => [
