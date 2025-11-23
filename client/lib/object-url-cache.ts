@@ -52,8 +52,9 @@ export class ObjectURLLRUCache {
     // Create new object URL
     const url = URL.createObjectURL(blob);
 
-    // Check if we need to evict entries
-    if (this.cache.size >= this.maxSize) {
+    // Evict LRU entries if at or above threshold (85% full)
+    // This prevents hitting the hard limit and gives buffer for burst operations
+    while (this.cache.size >= this.evictionThreshold) {
       this.evictLRU();
     }
 
@@ -61,11 +62,12 @@ export class ObjectURLLRUCache {
     this.cache.set(id, {
       url,
       lastAccessed: Date.now(),
+      accessCount: 1,
     });
 
     if (this.debug) {
       console.log(
-        `[ObjectURLCache] Set ${id}, cache size: ${this.cache.size}/${this.maxSize}`,
+        `[ObjectURLCache] Set ${id}, cache size: ${this.cache.size}/${this.maxSize} (threshold: ${this.evictionThreshold})`,
       );
     }
 
