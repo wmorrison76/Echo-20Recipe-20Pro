@@ -39,7 +39,7 @@ export default function AskEchoPanel() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { searchTerm, searchAllKnowledge } = useMasterDictionary() || { searchTerm: async () => null, searchAllKnowledge: async () => null };
+  const { searchTerm, searchAllKnowledge } = useMasterDictionary();
 
   // Auto-scroll to bottom
   useEffect(() => {
