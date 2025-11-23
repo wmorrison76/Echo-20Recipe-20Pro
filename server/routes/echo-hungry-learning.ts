@@ -784,8 +784,9 @@ export async function searchAndLearn(req: Request, res: Response) {
       try {
         console.log(`[Echo Learning] Found ${searchResults.length} results from knowledge storage`);
 
-        const topResult = searchResults[0];
+        const topResult = searchResults[0] as any;
         const knowledgeEntry = topResult.knowledge;
+        const resultSource = topResult.source || 'internal';
 
         // Safety checks for required fields
         if (!knowledgeEntry) {
@@ -797,16 +798,19 @@ export async function searchAndLearn(req: Request, res: Response) {
           const content = knowledgeEntry.content || '';
           const similarity = topResult.similarity || 0;
 
+          // Map result source to response source
+          const responseSource = resultSource === 'pinecone' ? 'pinecone-pdf-library' : 'internal-pdf-library';
+
           return res.json({
             status: 'success',
-            source: 'internal-pdf-library',
+            source: responseSource,
             entry: {
               term: normalizedTerm,
               definition: definition,
               content: content,
               sourceFile: source,
               similarity: similarity,
-              allResults: searchResults.slice(0, 3).map(r => {
+              allResults: searchResults.slice(0, 3).map((r: any) => {
                 const k = r.knowledge || {};
                 return {
                   definition: k.description || k.content || '',
