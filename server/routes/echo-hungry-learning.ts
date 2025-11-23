@@ -410,20 +410,13 @@ export async function getMasterDictionaryEntry(req: Request, res: Response) {
     res.json({
       status: 'success',
       entry: {
-        term: entry.term,
-        definition: entry.definition,
-        usage: entry.usage,
-        categories: entry.categories,
-        etymology: entry.etymology,
-        applications: entry.applications,
-        relatedTerms: relatedTerms.map(t => ({
-          term: t.term,
-          definition: t.definition.substring(0, 100) + '...',
-        })),
-        history: entry.history,
-        confidence: entry.confidence,
-        sources: entry.sources,
-        masteryLevel: entry.masteryLevel,
+        term: entry, // Return the full MasterCulinaryTerm object
+        related: relatedTerms,
+        statistics: {
+          masteryLevel: entry.masteryLevel,
+          confidence: entry.confidence,
+          sources: entry.sources,
+        }
       },
       message: `✨ Echo knows "${entry.term}" at ${entry.masteryLevel} level!`,
     });
