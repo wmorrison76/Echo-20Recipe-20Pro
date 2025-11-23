@@ -82,6 +82,7 @@ export function EchoTrainingCenter() {
   ]);
   const [showStartOptions, setShowStartOptions] = useState(!session);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [knowledgeStats, setKnowledgeStats] = useState<any>(null);
 
   // Track elapsed time and prevent hibernation during training
   useEffect(() => {
