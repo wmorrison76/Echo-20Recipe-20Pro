@@ -179,18 +179,23 @@ export default function AskEchoPanel() {
         const entry = dictionaryResult.entry;
         let response = '';
 
-        if (source === 'pinecone-pdf-library') {
-          // Format Pinecone PDF result
+        if (source === 'pinecone-pdf-library' || source === 'internal-pdf-library') {
+          // Format Pinecone/Internal PDF result
           response = `📖 **${extractedTerm}**\n\n`;
-          response += `**Found in your PDF library:**\n`;
-          response += `Source: ${entry.sourceFile}\n`;
-          response += `Match: ${(entry.similarity * 100).toFixed(0)}%\n\n`;
-          response += `**Definition:** ${entry.definition || entry.content || 'Information found in your PDF'}\n\n`;
+          response += `**Found in your knowledge library:**\n`;
+          const sourceFile = entry.sourceFile || entry.source || 'Unknown Source';
+          response += `Source: ${sourceFile}\n`;
+          const similarity = entry.similarity !== undefined ? entry.similarity : 0;
+          response += `Match: ${(similarity * 100).toFixed(0)}%\n\n`;
+          response += `**Definition:** ${entry.definition || entry.content || 'Information found in your knowledge'}\n\n`;
 
-          if (entry.allResults && entry.allResults.length > 1) {
-            response += `**Related information from your PDFs:**\n`;
+          if (entry.allResults && Array.isArray(entry.allResults) && entry.allResults.length > 1) {
+            response += `**Related information:**\n`;
             entry.allResults.slice(1).forEach((result: any, idx: number) => {
-              response += `${idx + 1}. (${(result.similarity * 100).toFixed(0)}% match) ${result.definition.substring(0, 100)}...\n`;
+              if (result && result.definition) {
+                const relatedSim = result.similarity !== undefined ? result.similarity : 0;
+                response += `${idx + 1}. (${(relatedSim * 100).toFixed(0)}% match) ${(result.definition || '').substring(0, 100)}...\n`;
+              }
             });
           }
         } else if (source === 'external-llm-learning') {
