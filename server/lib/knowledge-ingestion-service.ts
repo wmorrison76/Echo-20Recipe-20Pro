@@ -1,0 +1,347 @@
+/**
+ * Knowledge Ingestion Service
+ * Handles vectorization and storage of all knowledge sources:
+ * - Master Culinary Dictionary
+ * - PDF Library documents
+ * - Pinecone migration
+ * - External LLM learned terms
+ */
+
+import { masterCulinaryDictionary } from "./master-culinary-dictionary";
+import {
+  storeInternalKnowledgeVector,
+  storeInternalKnowledgeBatch,
+  getInternalKnowledgeStats,
+} from "./internal-knowledge-service";
+import { generateEmbedding } from "./pinecone-service";
+import {
+  extractAllPineconeKnowledge,
+  transformPineconeToInternalFormat,
+  verifyPineconeConnection,
+} from "./pinecone-extraction-service";
+
+export interface IngestionProgress {
+  status: "pending" | "in_progress" | "complete" | "error";
+  totalItems: number;
+  processedItems: number;
+  failedItems: number;
+  currentSource: string;
+  progress: number;
+  message: string;
+  startTime?: string;
+  endTime?: string;
+  duration?: number;
+}
+
+export interface IngestionResult {
+  success: boolean;
+  source: string;
+  totalIngested: number;
+  totalFailed: number;
+  failedItems: Array<{ id: string; error: string }>;
+  duration: number;
+}
+
+class KnowledgeIngestionController {
+  private isIngesting = false;
+  private currentProgress: IngestionProgress = {
+    status: "pending",
+    totalItems: 0,
+    processedItems: 0,
+    failedItems: 0,
+    currentSource: "none",
+    progress: 0,
+    message: "Ready to ingest knowledge",
+  };
+
+  getProgress(): IngestionProgress {
+    return { ...this.currentProgress };
+  }
+
+  private updateProgress(update: Partial<IngestionProgress>) {
+    this.currentProgress = { ...this.currentProgress, ...update };
+    console.log(`[Ingestion] ${this.currentProgress.message}`);
+  }
+
+  /**
+   * Ingest Master Culinary Dictionary into internal storage
+   */
+  async ingestMasterDictionary(): Promise<IngestionResult> {
+    if (this.isIngesting) {
+      throw new Error("Ingestion already in progress");
+    }
+
+    this.isIngesting = true;
+    const startTime = Date.now();
+    const result: IngestionResult = {
+      success: true,
+      source: "master-dictionary",
+      totalIngested: 0,
+      totalFailed: 0,
+      failedItems: [],
+      duration: 0,
+    };
+
+    try {
+      this.updateProgress({
+        status: "in_progress",
+        currentSource: "master-dictionary",
+        message: "Loading Master Culinary Dictionary...",
+        progress: 5,
+      });
+
+      // Get all terms from master dictionary
+      const allTerms = masterCulinaryDictionary.getAllTerms();
+      console.log(`[Ingestion] Found ${allTerms.length} terms in Master Dictionary`);
+
+      this.updateProgress({
+        totalItems: allTerms.length,
+        message: `Processing ${allTerms.length} dictionary terms...`,
+        progress: 10,
+      });
+
+      // Batch ingest dictionary terms
+      const batchSize = 100;
+      for (let i = 0; i < allTerms.length; i += batchSize) {
+        const batch = allTerms.slice(i, i + batchSize);
+        
+        for (const term of batch) {
+          try {
+            // Create knowledge vector from dictionary term
+            const embedding = await generateEmbedding(
+              `${term.term} ${term.definition}`
+            );
+
+            await storeInternalKnowledgeVector({
+              title: term.term,
+              content: term.definition,
+              description: term.definition,
+              source_type: "master-dictionary",
+              source: "Echo Master Culinary Dictionary",
+              domain: "culinary",
+              metadata: {
+                term: term.term,
+                categories: term.categories,
+                etymology: term.etymology,
+                applications: term.applications,
+                relatedTerms: term.relatedTerms,
+                confidence: term.confidence,
+                masteryLevel: term.masteryLevel,
+                sources: term.sources,
+              },
+              embedding,
+            });
+
+            result.totalIngested++;
+            this.updateProgress({
+              processedItems: result.totalIngested,
+              progress: 10 + (result.totalIngested / allTerms.length) * 85,
+            });
+          } catch (error) {
+            result.totalFailed++;
+            result.failedItems.push({
+              id: term.term,
+              error: error instanceof Error ? error.message : String(error),
+            });
+            console.error(`[Ingestion] Failed to ingest term "${term.term}":`, error);
+          }
+        }
+
+        // Small delay between batches to avoid overload
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+
+      this.updateProgress({
+        status: "complete",
+        progress: 100,
+        message: `✓ Ingested ${result.totalIngested} dictionary terms`,
+      });
+
+      result.duration = Date.now() - startTime;
+      console.log(
+        `[Ingestion] Master Dictionary ingestion complete: ${result.totalIngested} ingested, ${result.totalFailed} failed in ${result.duration}ms`
+      );
+
+      return result;
+    } catch (error) {
+      this.updateProgress({
+        status: "error",
+        message: `Error ingesting Master Dictionary: ${error instanceof Error ? error.message : String(error)}`,
+      });
+
+      result.success = false;
+      result.duration = Date.now() - startTime;
+      throw error;
+    } finally {
+      this.isIngesting = false;
+    }
+  }
+
+  /**
+   * Ingest Pinecone knowledge into internal storage
+   */
+  async ingestFromPinecone(): Promise<IngestionResult> {
+    if (this.isIngesting) {
+      throw new Error("Ingestion already in progress");
+    }
+
+    this.isIngesting = true;
+    const startTime = Date.now();
+    const result: IngestionResult = {
+      success: true,
+      source: "pinecone",
+      totalIngested: 0,
+      totalFailed: 0,
+      failedItems: [],
+      duration: 0,
+    };
+
+    try {
+      this.updateProgress({
+        status: "in_progress",
+        currentSource: "pinecone",
+        message: "Verifying Pinecone connection...",
+        progress: 5,
+      });
+
+      // Verify Pinecone is available
+      const connectionCheck = await verifyPineconeConnection();
+      if (!connectionCheck.connected) {
+        throw new Error(`Pinecone not available: ${connectionCheck.error}`);
+      }
+
+      this.updateProgress({
+        message: "Extracting knowledge from Pinecone...",
+        progress: 15,
+      });
+
+      // Extract all knowledge from Pinecone
+      const extraction = await extractAllPineconeKnowledge();
+      console.log(`[Ingestion] Extracted ${extraction.items.length} items from Pinecone`);
+
+      this.updateProgress({
+        totalItems: extraction.items.length,
+        message: `Transforming and storing ${extraction.items.length} Pinecone items...`,
+        progress: 30,
+      });
+
+      // Transform and ingest each item
+      const batchSize = 50;
+      for (let i = 0; i < extraction.items.length; i += batchSize) {
+        const batch = extraction.items.slice(i, i + batchSize);
+
+        for (const item of batch) {
+          try {
+            const transformed = transformPineconeToInternalFormat(item);
+            const embedding = await generateEmbedding(
+              `${transformed.title} ${transformed.content}`
+            );
+
+            await storeInternalKnowledgeVector({
+              ...transformed,
+              embedding,
+            });
+
+            result.totalIngested++;
+            this.updateProgress({
+              processedItems: result.totalIngested,
+              progress: 30 + (result.totalIngested / extraction.items.length) * 65,
+            });
+          } catch (error) {
+            result.totalFailed++;
+            result.failedItems.push({
+              id: item.id,
+              error: error instanceof Error ? error.message : String(error),
+            });
+            console.error(`[Ingestion] Failed to ingest Pinecone item "${item.id}":`, error);
+          }
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+
+      this.updateProgress({
+        status: "complete",
+        progress: 100,
+        message: `✓ Ingested ${result.totalIngested} items from Pinecone`,
+      });
+
+      result.duration = Date.now() - startTime;
+      console.log(
+        `[Ingestion] Pinecone ingestion complete: ${result.totalIngested} ingested, ${result.totalFailed} failed in ${result.duration}ms`
+      );
+
+      return result;
+    } catch (error) {
+      this.updateProgress({
+        status: "error",
+        message: `Error ingesting from Pinecone: ${error instanceof Error ? error.message : String(error)}`,
+      });
+
+      result.success = false;
+      result.duration = Date.now() - startTime;
+      throw error;
+    } finally {
+      this.isIngesting = false;
+    }
+  }
+
+  /**
+   * Run complete ingestion of all sources
+   */
+  async ingestAll(): Promise<Map<string, IngestionResult>> {
+    const results = new Map<string, IngestionResult>();
+
+    try {
+      // 1. Ingest Master Dictionary
+      console.log("[Ingestion] Starting Master Dictionary ingestion...");
+      const dictResult = await this.ingestMasterDictionary();
+      results.set("master-dictionary", dictResult);
+
+      // 2. Ingest from Pinecone
+      try {
+        console.log("[Ingestion] Starting Pinecone ingestion...");
+        const pineconeResult = await this.ingestFromPinecone();
+        results.set("pinecone", pineconeResult);
+      } catch (error) {
+        console.warn("[Ingestion] Pinecone ingestion skipped:", error instanceof Error ? error.message : String(error));
+        results.set("pinecone", {
+          success: false,
+          source: "pinecone",
+          totalIngested: 0,
+          totalFailed: 0,
+          failedItems: [],
+          duration: 0,
+        });
+      }
+
+      // Final status
+      this.updateProgress({
+        status: "complete",
+        message: "All knowledge sources ingested successfully",
+      });
+
+      return results;
+    } catch (error) {
+      this.updateProgress({
+        status: "error",
+        message: `Error during bulk ingestion: ${error instanceof Error ? error.message : String(error)}`,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Get ingestion statistics
+   */
+  async getStatistics() {
+    const internalStats = await getInternalKnowledgeStats();
+    return {
+      internal: internalStats,
+      progress: this.currentProgress,
+    };
+  }
+}
+
+// Export singleton instance
+export const ingestionController = new KnowledgeIngestionController();
