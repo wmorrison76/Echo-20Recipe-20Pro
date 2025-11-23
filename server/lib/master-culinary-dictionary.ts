@@ -820,7 +820,232 @@ class MasterCulinaryDictionary {
       masteryLevel: "advanced",
     });
 
-    // Continue with 9,990+ more terms...
+    // Additional culinary terms for expanded knowledge base
+    this.addTerm("caramelize", {
+      term: "Caramelize",
+      definition:
+        "Process of heating sugars (natural or added) until they brown and develop rich, complex flavors. Temperature-dependent: light (320°F/160°C) to dark (380°F/193°C). Essential for sauce development.",
+      usage: {
+        primary: "Creating sweet and bitter flavor complexity",
+        secondary: ["sauce development", "garnish creation"],
+        context: "Pastry, sauces, vegetables, fine dining",
+      },
+      categories: ["technique", "method", "ingredient"],
+      etymology: {
+        origin: "French",
+        originalWord: "caramel",
+        meaning: "Burnt sugar",
+        period: "Medieval sugar cookery",
+      },
+      applications: {
+        primary: "Deepening flavors and creating color in dishes",
+        examples: [
+          "Caramelize onions for depth",
+          "Caramel sauce for desserts",
+          "Vegetable caramelization",
+        ],
+        dishes: ["French onion soup", "Caramel sauce", "Roasted vegetables"],
+      },
+      relatedTerms: ["maillard", "browning", "reduction", "sauce"],
+      history: {
+        period: "Medieval to modern",
+        culture: "French culinary tradition",
+        significance: "Critical technique for flavor development",
+      },
+      confidence: 1.0,
+      sources: ["Culinary Science", "Food Chemistry"],
+      masteryLevel: "intermediate",
+    });
+
+    this.addTerm("reduction", {
+      term: "Reduction",
+      definition:
+        "Concentrating liquid by simmering to evaporate water and intensify flavors. Achieved by heating liquid in uncovered pan. Can reduce by 50%, 75%, or 90% depending on desired intensity.",
+      usage: {
+        primary: "Creating concentrated sauces and glazes",
+        secondary: ["flavor intensification", "thickening"],
+        context: "Sauce-making, cooking techniques",
+      },
+      categories: ["technique", "method"],
+      etymology: {
+        origin: "French/Latin",
+        originalWord: "reducere - to lead back",
+        meaning: "Concentrating by cooking down",
+        period: "Classical French cuisine",
+      },
+      applications: {
+        primary: "Concentrating flavors in sauces and liquids",
+        examples: [
+          "Wine reduction for sauce",
+          "Stock reduction for glaze",
+          "Fruit reduction for garnish",
+        ],
+        dishes: ["Sauce demi-glace", "Beurre rouge", "Pan sauces"],
+      },
+      relatedTerms: ["sauce", "glaze", "concentration", "simmer"],
+      history: {
+        period: "Classical to modern cooking",
+        culture: "Professional culinary tradition",
+        significance: "Fundamental sauce-making technique",
+      },
+      confidence: 1.0,
+      sources: ["Escoffier", "Professional Cooking"],
+      masteryLevel: "intermediate",
+    });
+
+    this.addTerm("julienne", {
+      term: "Julienne",
+      definition:
+        "Fine matchstick cut producing 1/8-inch (3mm) thick x 1/8-inch (3mm) wide x 2-3 inches long pieces. Named after French 18th-century chef Jean Julien. Fundamental classical knife cut.",
+      usage: {
+        primary: "Fine vegetable garnish and professional presentation",
+        secondary: ["salad preparation", "decorative plating"],
+        context: "Professional kitchens, fine dining",
+      },
+      categories: ["technique", "method"],
+      etymology: {
+        origin: "French",
+        originalWord: "Julienne",
+        meaning: "Named after Chef Jean Julien",
+        period: "18th century France",
+      },
+      applications: {
+        primary: "Creating uniform fine vegetable cuts for presentation",
+        examples: [
+          "Julienne of vegetables for consommé",
+          "Julienne of cucumber for garnish",
+          "Julienne of carrot for salad",
+        ],
+        dishes: ["Vegetable consommé", "French salads", "Professional plates"],
+      },
+      relatedTerms: ["batonnet", "brunoise", "allumette", "knife-cuts"],
+      history: {
+        period: "18th century",
+        culture: "French classical cuisine",
+        significance: "Essential professional knife skill",
+      },
+      confidence: 1.0,
+      sources: ["Classical French Training", "Professional Cooking"],
+      masteryLevel: "fundamental",
+    });
+
+    this.addTerm("mirepoix", {
+      term: "Mirepoix",
+      definition:
+        "Basic aromatic vegetable mixture: 50% onion, 25% celery, 25% carrot (ratio by weight). Foundation of French cooking. White mirepoix uses celery root instead of carrot. Essential for stocks, braises, soups.",
+      usage: {
+        primary: "Building flavor foundation for stocks and sauces",
+        secondary: ["braise base", "soup foundation"],
+        context: "Professional cooking, sauce-making",
+      },
+      categories: ["technique", "ingredient", "method"],
+      etymology: {
+        origin: "French",
+        originalWord: "Mirepoix",
+        meaning: "Named after 18th-century French aristocrat",
+        period: "18th century France",
+      },
+      applications: {
+        primary: "Creating flavor foundation in stocks, sauces, and braises",
+        examples: [
+          "Mirepoix in beef stock",
+          "Mirepoix in French sauce",
+          "Mirepoix in braising liquid",
+        ],
+        dishes: [
+          "All classical French stocks",
+          "Beef bourguignon",
+          "Professional sauces",
+        ],
+      },
+      relatedTerms: ["aromatic", "stock", "braise", "sauce"],
+      history: {
+        period: "18th century France",
+        culture: "French classical cuisine",
+        significance: "Foundation of all classical French cooking",
+      },
+      confidence: 1.0,
+      sources: ["Escoffier", "Classical French Training"],
+      masteryLevel: "fundamental",
+    });
+
+    this.addTerm("deglaze", {
+      term: "Deglaze",
+      definition:
+        "Adding liquid (wine, stock, water) to hot pan after cooking proteins to dissolve caramelized drippings (fond). Creates flavorful pan sauce. Requires deglazing liquid to loosen fond with scraper.",
+      usage: {
+        primary: "Creating quick pan sauces from cooking residue",
+        secondary: ["flavor extraction", "sauce base"],
+        context: "Pan cooking, sauce-making",
+      },
+      categories: ["technique", "method"],
+      etymology: {
+        origin: "French",
+        originalWord: "déglacer - to remove glaze",
+        meaning: "Removing caramelized layer from pan",
+        period: "Classical French cooking",
+      },
+      applications: {
+        primary: "Creating sauces from cooking residue in pan",
+        examples: [
+          "Deglaze with wine after searing steak",
+          "Deglaze with stock after sautéing",
+          "Deglaze with cream for sauce",
+        ],
+        dishes: ["Pan sauces", "Quick gravies", "Jus preparations"],
+      },
+      relatedTerms: ["fond", "sauce", "pan-sauce", "reduction"],
+      history: {
+        period: "Classical to modern cooking",
+        culture: "French culinary tradition",
+        significance: "Essential technique for sauce-making",
+      },
+      confidence: 1.0,
+      sources: ["Professional Cooking", "Culinary Techniques"],
+      masteryLevel: "fundamental",
+    });
+
+    this.addTerm("au-jus", {
+      term: "Au Jus",
+      definition:
+        "Serving meat with natural cooking juices, lightly thickened or concentrated, rather than a separate gravy or sauce. Essential for roasted and braised meats in classical service.",
+      usage: {
+        primary: "Serving meat with its natural cooking juices",
+        secondary: ["light sauce", "beef preparation"],
+        context: "Professional cooking, meat service",
+      },
+      categories: ["technique", "method", "service"],
+      etymology: {
+        origin: "French",
+        originalWord: "au jus - with natural juices",
+        meaning: "With gravy or natural juices",
+        period: "Classical French cuisine",
+      },
+      applications: {
+        primary: "Enhancing roasted and braised meat presentations",
+        examples: [
+          "Prime rib au jus",
+          "Roasted beef au jus",
+          "French dip sandwich",
+        ],
+        dishes: [
+          "Prime rib preparations",
+          "Roasted beef",
+          "French dip sandwich",
+        ],
+      },
+      relatedTerms: ["jus", "reduction", "sauce", "beef-service"],
+      history: {
+        period: "Classical French cuisine",
+        culture: "French culinary tradition",
+        significance: "Essential for classical meat service",
+      },
+      confidence: 1.0,
+      sources: ["Escoffier", "Classical French Training"],
+      masteryLevel: "intermediate",
+    });
+
+    // Continue with additional terms...
     // This is the structure, fully implemented version would have all 10,000+
   }
 
