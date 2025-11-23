@@ -7,6 +7,10 @@ if (!polyfillsLoaded) {
   throw new Error("Failed to load global polyfills");
 }
 
+// Install fetch interceptor to handle CORS and API errors gracefully
+import { installFetchInterceptor } from "@/lib/fetch-interceptor";
+installFetchInterceptor();
+
 import React, { Suspense, lazy } from "react";
 import * as Sentry from "@sentry/react";
 import { Replay } from "@sentry/replay";
