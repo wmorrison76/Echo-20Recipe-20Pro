@@ -27,6 +27,7 @@ import { echoCrawlerRouter } from "./routes/echo-crawler-router";
 import pdfLibraryImportRouter from "./routes/pdf-library-import";
 import echoKnowledgeIngestionRouter from "./routes/echo-knowledge-ingestion";
 import knowledgeDiagnosticsRouter from "./routes/knowledge-diagnostics";
+import trainingOrchestrationRouter from "./routes/training-orchestration";
 import { knowledgeInitializer } from "./lib/knowledge-initialization";
 import {
   proxyRecipeImage as proxyImageOptimized,
@@ -146,6 +147,9 @@ export function createServer() {
 
   // Knowledge Diagnostics - Health checks and status for all knowledge sources
   app.use("/api/knowledge", knowledgeDiagnosticsRouter);
+
+  // Training Orchestration - Unified training management
+  app.use("/api/training", trainingOrchestrationRouter);
 
   return app;
 }
