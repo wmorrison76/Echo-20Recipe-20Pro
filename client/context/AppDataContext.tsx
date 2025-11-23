@@ -576,6 +576,8 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
         if (!cancelled) {
           setImages(hydratedImages);
           setImagesHydrated(true);
+          // Monitor cache after hydration
+          monitorCacheUtilization();
         }
       } catch (error) {
         console.error("Failed to restore gallery images", error);
