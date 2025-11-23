@@ -123,3 +123,10 @@ echoHungryLearningRouter.get('/hungry-learning/library-status', getLibraryImport
  * Get recipe collection statistics for Echo's flavor and ingredient analysis
  */
 echoHungryLearningRouter.get('/hungry-learning/recipe-statistics', getRecipeStatistics);
+
+/**
+ * POST /api/echo/hungry-learning/search-and-learn
+ * Search for a culinary term in the knowledge base, and if not found,
+ * query external LLMs to learn and store the knowledge
+ */
+echoHungryLearningRouter.post('/hungry-learning/search-and-learn', searchAndLearn);
