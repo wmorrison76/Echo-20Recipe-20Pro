@@ -230,7 +230,13 @@ export default function AskEchoPanel() {
         ]);
       } else {
         // Not found in master dictionary, try searching all knowledge first
-        const allKnowledgeResults = await searchAllKnowledge(extractedTerm);
+        let allKnowledgeResults;
+        try {
+          allKnowledgeResults = await searchAllKnowledge(extractedTerm);
+        } catch (err) {
+          console.error('[Echo] Error calling searchAllKnowledge:', err);
+          allKnowledgeResults = null;
+        }
 
         // If found in other knowledge sources, use that
         if (allKnowledgeResults && allKnowledgeResults.results &&
@@ -270,7 +276,13 @@ export default function AskEchoPanel() {
           ]);
         } else {
           // Not found in knowledge, try procedures with original message
-          const results = await searchProcedures(userMessage, 3);
+          let results;
+          try {
+            results = await searchProcedures(userMessage, 3);
+          } catch (err) {
+            console.error('[Echo] Error calling searchProcedures:', err);
+            results = [];
+          }
 
           if (results.length === 0) {
             const termHint = extractedTerm !== userMessage ? `\n\n💡 I searched for "${extractedTerm}" but didn't find it in my knowledge base yet.` : '';
