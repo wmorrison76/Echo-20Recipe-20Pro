@@ -315,6 +315,11 @@ export async function searchInternalKnowledgeByDomain(
   try {
     const client = getSupabaseClient();
 
+    if (!client) {
+      console.log("[Internal Knowledge] Supabase unavailable for domain search");
+      return [];
+    }
+
     const { data, error } = await client
       .from("internal_knowledge_vectors")
       .select("id, title, content, description, source_type, source, metadata, embedding")
