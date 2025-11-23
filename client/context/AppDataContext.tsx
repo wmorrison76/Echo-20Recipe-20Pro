@@ -499,6 +499,18 @@ export function AppDataProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  /**
+   * Monitor object URL cache utilization and warn if approaching limit
+   */
+  const monitorCacheUtilization = useCallback(() => {
+    const stats = objectURLCache.getStats();
+    if (stats.utilizationPercent > 80) {
+      console.warn(
+        `[AppData] Object URL cache utilization high: ${stats.utilizationPercent}% (${stats.currentSize}/${stats.maxSize})`,
+      );
+    }
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
 
