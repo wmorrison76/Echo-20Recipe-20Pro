@@ -51,7 +51,9 @@ export async function extractAllPineconeKnowledge(): Promise<ExtractionResult> {
   }
 
   try {
-    console.log("[Pinecone Extract] Starting extraction of all knowledge from Pinecone...");
+    console.log(
+      "[Pinecone Extract] Starting extraction of all knowledge from Pinecone...",
+    );
     const client = await getPineconeClient();
     const index = client.Index(KNOWLEDGE_INDEX);
 
@@ -80,7 +82,9 @@ export async function extractAllPineconeKnowledge(): Promise<ExtractionResult> {
         const fetchResponse = await index.fetch(vectorIds);
 
         if (fetchResponse && fetchResponse.records) {
-          for (const [id, vectorData] of Object.entries(fetchResponse.records)) {
+          for (const [id, vectorData] of Object.entries(
+            fetchResponse.records,
+          )) {
             const record = vectorData as any;
             allItems.push({
               id,
@@ -94,10 +98,14 @@ export async function extractAllPineconeKnowledge(): Promise<ExtractionResult> {
       cursor = listResponse.pagination?.next;
       batchCount++;
 
-      console.log(`[Pinecone Extract] Batch ${batchCount} extracted: ${allItems.length} total items`);
+      console.log(
+        `[Pinecone Extract] Batch ${batchCount} extracted: ${allItems.length} total items`,
+      );
     } while (cursor);
 
-    console.log(`[Pinecone Extract] Extraction complete: ${allItems.length} total items`);
+    console.log(
+      `[Pinecone Extract] Extraction complete: ${allItems.length} total items`,
+    );
 
     return {
       items: allItems,
@@ -124,7 +132,10 @@ export async function extractPineconeKnowledgeByFilter(
   }
 
   try {
-    console.log("[Pinecone Extract] Extracting Pinecone knowledge with filters...", filterCriteria);
+    console.log(
+      "[Pinecone Extract] Extracting Pinecone knowledge with filters...",
+      filterCriteria,
+    );
     const client = await getPineconeClient();
     const index = client.Index(KNOWLEDGE_INDEX);
 
@@ -160,10 +171,14 @@ export async function extractPineconeKnowledgeByFilter(
       cursor = queryResponse.pagination?.next;
       pageCount++;
 
-      console.log(`[Pinecone Extract] Page ${pageCount} extracted: ${allItems.length} total items`);
+      console.log(
+        `[Pinecone Extract] Page ${pageCount} extracted: ${allItems.length} total items`,
+      );
     } while (cursor);
 
-    console.log(`[Pinecone Extract] Filtered extraction complete: ${allItems.length} items`);
+    console.log(
+      `[Pinecone Extract] Filtered extraction complete: ${allItems.length} items`,
+    );
 
     return {
       items: allItems,
@@ -173,7 +188,10 @@ export async function extractPineconeKnowledgeByFilter(
     };
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
-    console.error("[Pinecone Extract] Error extracting with filters:", errorMsg);
+    console.error(
+      "[Pinecone Extract] Error extracting with filters:",
+      errorMsg,
+    );
     throw error;
   }
 }
@@ -328,7 +346,9 @@ export function transformPineconeToInternalFormat(
       cuisine: metadata.cuisine,
       confidence: metadata.confidence || 0.85,
       tags: tagsArray,
-      relatedTerms: Array.isArray(metadata.relatedTerms) ? metadata.relatedTerms : [],
+      relatedTerms: Array.isArray(metadata.relatedTerms)
+        ? metadata.relatedTerms
+        : [],
       createdAt: metadata.createdAt || new Date().toISOString(),
       updatedAt: metadata.updatedAt || new Date().toISOString(),
     },

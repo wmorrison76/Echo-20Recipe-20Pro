@@ -40,15 +40,17 @@ export function createServer() {
 
   // Initialize knowledge system on server startup
   setImmediate(() => {
-    knowledgeInitializer.initialize({
-      autoInit: true,
-      sources: {
-        masterDictionary: true,
-        pinecone: true,
-      },
-    }).catch(error => {
-      console.error("[Server] Error during knowledge initialization:", error);
-    });
+    knowledgeInitializer
+      .initialize({
+        autoInit: true,
+        sources: {
+          masterDictionary: true,
+          pinecone: true,
+        },
+      })
+      .catch((error) => {
+        console.error("[Server] Error during knowledge initialization:", error);
+      });
   });
 
   // Middleware

@@ -17,20 +17,23 @@ This guide covers the complete migration from Pinecone (external, costly) to an 
 ### New Services Created
 
 #### 1. **Internal Knowledge Vector Service** (`server/lib/internal-knowledge-service.ts`)
+
 - **Purpose**: Manages all knowledge storage and retrieval using PostgreSQL + pgvector
 - **Key Functions**:
   - `storeInternalKnowledgeVector()` - Store single knowledge vectors
   - `searchInternalKnowledge()` - Search with similarity scoring
   - `storeInternalKnowledgeBatch()` - Batch operations for efficiency
   - `getInternalKnowledgeStats()` - Monitor knowledge base
-  
+
 **Benefits**:
+
 - No monthly fees like Pinecone
 - Instant vector search with pgvector
 - Integrated with existing Supabase infrastructure
 - Supports 1M+ vectors without performance degradation
 
 #### 2. **Pinecone Extraction Service** (`server/lib/pinecone-extraction-service.ts`)
+
 - **Purpose**: Safely extracts all data from Pinecone without losing information
 - **Key Functions**:
   - `extractAllPineconeKnowledge()` - Get all vectors from Pinecone
@@ -39,18 +42,21 @@ This guide covers the complete migration from Pinecone (external, costly) to an 
   - `transformPineconeToInternalFormat()` - Convert to internal schema
 
 **Benefits**:
+
 - Zero data loss during migration
 - Batch processing for large datasets
 - Verification of Pinecone connectivity
 
 #### 3. **Migration Runner** (`server/lib/pinecone-to-internal-migration.ts`)
+
 - **Purpose**: Orchestrates the complete migration process
 - **Key Functions**:
   - `runFullMigration()` - Complete one-time migration
   - `runSelectiveMigration()` - Migrate specific types (PDFs, recipes, etc.)
   - `getProgress()` - Monitor migration status
-  
+
 **Process**:
+
 1. Verify Pinecone connection
 2. Extract all/selected vectors
 3. Transform to internal format
@@ -58,6 +64,7 @@ This guide covers the complete migration from Pinecone (external, costly) to an 
 5. Verify completion
 
 #### 4. **PDF Sync Service** (`server/lib/pdf-sync-service.ts`)
+
 - **Purpose**: Synchronizes PDF knowledge between systems
 - **Key Functions**:
   - `syncAllPDFsFromPinecone()` - Migrate all existing PDFs
@@ -65,6 +72,7 @@ This guide covers the complete migration from Pinecone (external, costly) to an 
   - `importBatchPDFs()` - Batch import for bulk uploads
 
 **Benefits**:
+
 - Automatic extraction of culinary terms from PDFs
 - Addition of terms to master dictionary
 - Real-time PDF processing without Pinecone dependency
@@ -72,12 +80,15 @@ This guide covers the complete migration from Pinecone (external, costly) to an 
 ### Updated Services
 
 #### Enhanced `searchKnowledge()` (in `knowledge-vector-service.ts`)
+
 **New Priority Order**:
+
 1. **Internal pgvector** (fast, cost-free) ← PRIMARY
 2. **Pinecone** (expensive, fallback only) ← FALLBACK
 3. Returns results from whichever has data
 
 This means:
+
 - Once migration is complete, Pinecone is never queried
 - No Pinecone API calls = no monthly charges
 - Identical search quality to Pinecone
@@ -114,12 +125,14 @@ CREATE INDEX idx_domain ON internal_knowledge_vectors (domain);
 ### Migration Management
 
 #### Start Full Migration
+
 ```bash
 POST /api/echo/knowledge/migrate/start
 Response: { status, message, progress }
 ```
 
 #### Start Selective Migration
+
 ```bash
 POST /api/echo/knowledge/migrate/selective
 Body: { sourceType: "pdf" | "recipe" | "external-llm" }
@@ -127,12 +140,14 @@ Response: { status, sourceType, progress }
 ```
 
 #### Get Migration Progress
+
 ```bash
 GET /api/echo/knowledge/migrate/progress
 Response: { status, progress: { status, progress %, message, ... } }
 ```
 
 #### Get Full Migration Status
+
 ```bash
 GET /api/echo/knowledge/migrate/status
 Response: {
@@ -150,6 +165,7 @@ Response: {
 ### Health & Statistics
 
 #### Check System Health
+
 ```bash
 GET /api/echo/knowledge/health
 Response: {
@@ -159,6 +175,7 @@ Response: {
 ```
 
 #### Get Internal Stats
+
 ```bash
 GET /api/echo/knowledge/internal/stats
 Response: {
@@ -171,6 +188,7 @@ Response: {
 ```
 
 #### Get Pinecone Stats
+
 ```bash
 GET /api/echo/knowledge/pinecone/stats
 Response: {
@@ -185,12 +203,14 @@ Response: {
 ### Phase 1: Initial Setup
 
 1. **Apply Database Migration**:
+
 ```bash
 # Applies the SQL migration for internal_knowledge_vectors table
 # Done automatically by Supabase
 ```
 
 2. **Verify Connectivity**:
+
 ```bash
 # Check that both systems are accessible
 GET /api/echo/knowledge/health
@@ -199,17 +219,20 @@ GET /api/echo/knowledge/health
 ### Phase 2: Full Migration (One-time)
 
 1. **Start Migration**:
+
 ```bash
 POST /api/echo/knowledge/migrate/start
 ```
 
 2. **Monitor Progress**:
+
 ```bash
 # Poll this endpoint until complete: true
 GET /api/echo/knowledge/migrate/status
 ```
 
 3. **Timeline**:
+
 - Extraction: ~5-15 minutes (depends on Pinecone size)
 - Transformation: Automatic
 - Storage: ~20-30 minutes (concurrent batch processing)
@@ -219,12 +242,14 @@ GET /api/echo/knowledge/migrate/status
 ### Phase 3: Selective Operations (As Needed)
 
 **Migrate just PDFs**:
+
 ```bash
 POST /api/echo/knowledge/migrate/selective
 Body: { sourceType: "pdf" }
 ```
 
 **New PDF uploads** (automatic):
+
 - When user uploads PDF → automatically processed
 - Terms extracted → added to master dictionary
 - Stored in internal pgvector (NOT in Pinecone)
@@ -233,6 +258,7 @@ Body: { sourceType: "pdf" }
 ## Search Behavior
 
 ### Before Migration
+
 ```
 searchKnowledge(term)
   → Query Pinecone
@@ -240,6 +266,7 @@ searchKnowledge(term)
 ```
 
 ### After Migration
+
 ```
 searchKnowledge(term)
   → Query internal pgvector (cost: FREE)
@@ -247,6 +274,7 @@ searchKnowledge(term)
 ```
 
 ### Search & Learn Feature
+
 ```
 searchAndLearn(term)
   → Try internal storage (Pinecone + PDFs)
@@ -259,23 +287,23 @@ searchAndLearn(term)
 
 ### Pinecone Costs (Before Migration)
 
-| Usage | Cost |
-|-------|------|
-| 10,000 vectors | $1/month |
-| 100,000 vectors | $10/month |
-| 1M+ vectors | $100+/month |
-| API calls | $0.0001/call |
+| Usage           | Cost         |
+| --------------- | ------------ |
+| 10,000 vectors  | $1/month     |
+| 100,000 vectors | $10/month    |
+| 1M+ vectors     | $100+/month  |
+| API calls       | $0.0001/call |
 
 For 1,000 users × 100 searches/user/day = 100M searches/month = **$10,000/month**
 
 ### Internal Costs (After Migration)
 
-| Item | Cost |
-|------|------|
-| Storage | Included in Supabase |
-| Compute | Included in Supabase |
+| Item      | Cost                     |
+| --------- | ------------------------ |
+| Storage   | Included in Supabase     |
+| Compute   | Included in Supabase     |
 | Bandwidth | Minimal (~1KB per query) |
-| **Total** | **~$5-10/month** |
+| **Total** | **~$5-10/month**         |
 
 **Savings: 99% reduction in vector search costs**
 
@@ -303,11 +331,11 @@ For 1,000 users × 100 searches/user/day = 100M searches/month = **$10,000/month
 
 ```javascript
 // Start migration
-const start = await fetch('/api/echo/knowledge/migrate/start');
+const start = await fetch("/api/echo/knowledge/migrate/start");
 
 // Poll progress
 const pollProgress = async () => {
-  const response = await fetch('/api/echo/knowledge/migrate/status');
+  const response = await fetch("/api/echo/knowledge/migrate/status");
   const { migration } = await response.json();
   console.log(`${migration.progress}% complete`);
   if (!migration.complete) {
@@ -321,14 +349,14 @@ pollProgress();
 
 ```javascript
 // Automatically uses internal first, Pinecone as fallback
-const results = await fetch('/api/echo/hungry-learning/search-and-learn', {
-  method: 'POST',
-  body: JSON.stringify({ term: 'beurre blanc' })
+const results = await fetch("/api/echo/hungry-learning/search-and-learn", {
+  method: "POST",
+  body: JSON.stringify({ term: "beurre blanc" }),
 });
 
 // Response includes source:
 // - "internal-pdf-library" (internal + Pinecone)
-// - "master-dictionary" 
+// - "master-dictionary"
 // - "external-llm-learning"
 ```
 
@@ -337,29 +365,31 @@ const results = await fetch('/api/echo/hungry-learning/search-and-learn', {
 ```javascript
 // New PDFs go directly to internal storage
 const pdfText = await pdf.text();
-const response = await fetch('/api/echo/hungry-learning/import-pdf', {
-  method: 'POST',
+const response = await fetch("/api/echo/hungry-learning/import-pdf", {
+  method: "POST",
   body: JSON.stringify({
     pdfText,
     metadata: {
-      title: 'Modern Cooking Techniques',
-      author: 'Chef Name',
-      cuisine: 'French',
-      language: 'English'
-    }
-  })
+      title: "Modern Cooking Techniques",
+      author: "Chef Name",
+      cuisine: "French",
+      language: "English",
+    },
+  }),
 });
 ```
 
 ## Performance Characteristics
 
 ### Internal pgvector
+
 - **Latency**: 50-100ms per query
 - **Throughput**: 10,000+ QPS
 - **Accuracy**: 99.2% (IVFFlat index)
 - **Scalability**: 1M+ vectors without performance degradation
 
 ### Pinecone (for comparison)
+
 - **Latency**: 100-200ms per query
 - **Cost**: $100+/month for production scale
 - **Fallback**: Available if internal index corrupted
@@ -367,22 +397,26 @@ const response = await fetch('/api/echo/hungry-learning/import-pdf', {
 ## Monitoring & Alerts
 
 ### Health Dashboard
+
 ```bash
 GET /api/echo/knowledge/health
 ```
 
 Monitor:
+
 - Internal system availability
 - Pinecone connectivity status
 - Total vectors in each system
 - Average confidence scores
 
 ### Migration Monitoring
+
 ```bash
 GET /api/echo/knowledge/migrate/status
 ```
 
 Track:
+
 - Migration progress percentage
 - Vectors migrated vs total
 - Failure count
@@ -391,16 +425,19 @@ Track:
 ## Troubleshooting
 
 ### "Internal knowledge system unavailable"
+
 - Check Supabase connection
 - Verify migration was applied: `SELECT COUNT(*) FROM internal_knowledge_vectors`
 - Check error logs in Supabase dashboard
 
 ### "Migration failing with timeout"
+
 - Increase batch size in migration runner
 - Reduce concurrent workers if hitting DB limits
 - Check Pinecone API limits
 
 ### "Search results are incomplete"
+
 - Verify migration completed: `GET /api/echo/knowledge/migrate/status`
 - Check confidence threshold if filtering is enabled
 - Inspect metadata for category filters
@@ -422,6 +459,7 @@ Track:
 ## Support
 
 For issues or questions:
+
 1. Check health endpoint: `GET /api/echo/knowledge/health`
 2. Review migration status: `GET /api/echo/knowledge/migrate/status`
 3. Check server logs for detailed error messages

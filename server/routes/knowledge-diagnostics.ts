@@ -25,7 +25,8 @@ router.get("/diagnostics", async (req: Request, res: Response) => {
     const diagnostics = {
       timestamp: new Date().toISOString(),
       supabaseStatus: {
-        configured: internalStats.total > 0 || internalStats.message === "Success",
+        configured:
+          internalStats.total > 0 || internalStats.message === "Success",
         totalVectors: internalStats.total,
         bySourceType: internalStats.bySourceType,
         byDomain: internalStats.byDomain,
@@ -106,7 +107,7 @@ router.post("/verify", async (req: Request, res: Response) => {
       pinecone: await verifyPinecone(),
     };
 
-    const allHealthy = Object.values(checks).every(check => check.healthy);
+    const allHealthy = Object.values(checks).every((check) => check.healthy);
 
     res.json({
       status: "success",
@@ -151,22 +152,36 @@ function getNextSteps(internalStats: any, masterDictStats: any): string[] {
 
   if (internalVectors === 0) {
     steps.push("✓ Master Dictionary is loaded in memory");
-    steps.push("⚠️ Connect Supabase via MCP to enable persistent internal vector storage");
-    steps.push("⚠️ Once Supabase connected, POST /api/echo/knowledge/ingest/master-dictionary to vectorize dictionary");
-    steps.push("⚠��� Once Supabase connected, POST /api/echo/knowledge/ingest/pinecone to migrate Pinecone data");
+    steps.push(
+      "⚠️ Connect Supabase via MCP to enable persistent internal vector storage",
+    );
+    steps.push(
+      "⚠️ Once Supabase connected, POST /api/echo/knowledge/ingest/master-dictionary to vectorize dictionary",
+    );
+    steps.push(
+      "⚠��� Once Supabase connected, POST /api/echo/knowledge/ingest/pinecone to migrate Pinecone data",
+    );
   } else if (internalVectors < 5000) {
     steps.push("✓ Internal storage configured");
     steps.push(`✓ ${internalVectors} vectors currently stored`);
-    steps.push("→ POST /api/echo/knowledge/ingest/all to load remaining sources");
+    steps.push(
+      "→ POST /api/echo/knowledge/ingest/all to load remaining sources",
+    );
   } else {
     steps.push("✓ All knowledge sources loaded successfully");
-    steps.push("→ Monitor ingestion progress at GET /api/echo/knowledge/ingest/progress");
+    steps.push(
+      "→ Monitor ingestion progress at GET /api/echo/knowledge/ingest/progress",
+    );
   }
 
   return steps;
 }
 
-async function verifyMasterDictionary(): Promise<{ healthy: boolean; terms: number; message: string }> {
+async function verifyMasterDictionary(): Promise<{
+  healthy: boolean;
+  terms: number;
+  message: string;
+}> {
   try {
     const stats = masterCulinaryDictionary.getStatistics();
     return {
@@ -183,10 +198,15 @@ async function verifyMasterDictionary(): Promise<{ healthy: boolean; terms: numb
   }
 }
 
-async function verifyInternalStorage(): Promise<{ healthy: boolean; vectors: number; message: string }> {
+async function verifyInternalStorage(): Promise<{
+  healthy: boolean;
+  vectors: number;
+  message: string;
+}> {
   try {
     const stats = await getInternalKnowledgeStats();
-    const healthy = stats.total > 0 || stats.message?.includes("not configured");
+    const healthy =
+      stats.total > 0 || stats.message?.includes("not configured");
 
     return {
       healthy,
@@ -206,7 +226,11 @@ async function verifyInternalStorage(): Promise<{ healthy: boolean; vectors: num
   }
 }
 
-async function verifyPinecone(): Promise<{ healthy: boolean; available: boolean; message: string }> {
+async function verifyPinecone(): Promise<{
+  healthy: boolean;
+  available: boolean;
+  message: string;
+}> {
   try {
     const pineconeKey = process.env.PINECONE_API_KEY;
 
@@ -251,14 +275,20 @@ function generateRecommendations(checks: any): string[] {
 
   if (!checks.internalStorage.healthy) {
     recommendations.push("⚠️ Internal storage (Supabase) is not configured");
-    recommendations.push("→ Connect to Supabase via MCP to enable persistent vector storage");
+    recommendations.push(
+      "→ Connect to Supabase via MCP to enable persistent vector storage",
+    );
   } else if (checks.internalStorage.vectors === 0) {
     recommendations.push("→ Supabase is configured but empty");
-    recommendations.push("→ POST /api/echo/knowledge/ingest/master-dictionary to populate");
+    recommendations.push(
+      "→ POST /api/echo/knowledge/ingest/master-dictionary to populate",
+    );
   }
 
   if (!checks.pinecone.available) {
-    recommendations.push("ℹ️ Pinecone is not configured (optional for cost optimization)");
+    recommendations.push(
+      "ℹ️ Pinecone is not configured (optional for cost optimization)",
+    );
   } else if (!checks.pinecone.healthy) {
     recommendations.push("⚠️ Pinecone is configured but may not be accessible");
   }

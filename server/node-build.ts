@@ -7,15 +7,17 @@ const app = createServer();
 const port = process.env.PORT || 3000;
 
 // Initialize knowledge system on startup
-knowledgeInitializer.initialize({
-  autoInit: true,
-  sources: {
-    masterDictionary: true,
-    pinecone: true,
-  },
-}).catch(error => {
-  console.error("[Server] Error during knowledge initialization:", error);
-});
+knowledgeInitializer
+  .initialize({
+    autoInit: true,
+    sources: {
+      masterDictionary: true,
+      pinecone: true,
+    },
+  })
+  .catch((error) => {
+    console.error("[Server] Error during knowledge initialization:", error);
+  });
 
 // In production, serve the built SPA files
 const __dirname = import.meta.dirname;

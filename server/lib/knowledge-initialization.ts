@@ -22,13 +22,15 @@ class KnowledgeInitializer {
   /**
    * Initialize knowledge system on server startup
    */
-  async initialize(config: InitializationConfig = {
-    autoInit: true,
-    sources: {
-      masterDictionary: true,
-      pinecone: true,
+  async initialize(
+    config: InitializationConfig = {
+      autoInit: true,
+      sources: {
+        masterDictionary: true,
+        pinecone: true,
+      },
     },
-  }): Promise<void> {
+  ): Promise<void> {
     // Prevent multiple concurrent initializations
     if (this.initialized) {
       console.log("[Knowledge Init] Already initialized, skipping...");
@@ -51,32 +53,40 @@ class KnowledgeInitializer {
 
       // Check current state
       const stats = await getInternalKnowledgeStats();
-      console.log(`[Knowledge Init] Current internal storage: ${stats.total} vectors`);
+      console.log(
+        `[Knowledge Init] Current internal storage: ${stats.total} vectors`,
+      );
 
       // If we already have significant data, skip re-ingestion
       if (stats.total > 100) {
-        console.log("[Knowledge Init] ✓ Knowledge base already populated, skipping ingestion");
+        console.log(
+          "[Knowledge Init] ✓ Knowledge base already populated, skipping ingestion",
+        );
         this.initialized = true;
         return;
       }
 
-      console.log("[Knowledge Init] Knowledge base empty or minimal, starting ingestion...");
+      console.log(
+        "[Knowledge Init] Knowledge base empty or minimal, starting ingestion...",
+      );
 
       const results = new Map<string, any>();
 
       // Ingest Master Dictionary
       if (config.sources.masterDictionary) {
         try {
-          console.log("[Knowledge Init] Ingesting Master Culinary Dictionary...");
+          console.log(
+            "[Knowledge Init] Ingesting Master Culinary Dictionary...",
+          );
           const dictResult = await ingestionController.ingestMasterDictionary();
           results.set("master-dictionary", dictResult);
           console.log(
-            `[Knowledge Init] ✓ Master Dictionary: ${dictResult.totalIngested} terms ingested, ${dictResult.totalFailed} failed`
+            `[Knowledge Init] ✓ Master Dictionary: ${dictResult.totalIngested} terms ingested, ${dictResult.totalFailed} failed`,
           );
         } catch (error) {
           console.error(
             "[Knowledge Init] Failed to ingest Master Dictionary:",
-            error instanceof Error ? error.message : String(error)
+            error instanceof Error ? error.message : String(error),
           );
           results.set("master-dictionary", {
             success: false,
@@ -92,12 +102,12 @@ class KnowledgeInitializer {
           const pineconeResult = await ingestionController.ingestFromPinecone();
           results.set("pinecone", pineconeResult);
           console.log(
-            `[Knowledge Init] ✓ Pinecone: ${pineconeResult.totalIngested} items ingested, ${pineconeResult.totalFailed} failed`
+            `[Knowledge Init] ✓ Pinecone: ${pineconeResult.totalIngested} items ingested, ${pineconeResult.totalFailed} failed`,
           );
         } catch (error) {
           console.warn(
             "[Knowledge Init] Pinecone ingestion skipped (Pinecone not available):",
-            error instanceof Error ? error.message : String(error)
+            error instanceof Error ? error.message : String(error),
           );
           results.set("pinecone", {
             success: false,
@@ -111,18 +121,22 @@ class KnowledgeInitializer {
       const duration = Date.now() - startTime;
 
       console.log(
-        `[Knowledge Init] ✓ Initialization complete: ${finalStats.total} total vectors in ${duration}ms`
+        `[Knowledge Init] ✓ Initialization complete: ${finalStats.total} total vectors in ${duration}ms`,
       );
       console.log("[Knowledge Init] Knowledge sources ready:");
-      console.log(`  - Master Dictionary: ${finalStats.bySourceType.masterDictionary || 0} vectors`);
+      console.log(
+        `  - Master Dictionary: ${finalStats.bySourceType.masterDictionary || 0} vectors`,
+      );
       console.log(`  - PDFs: ${finalStats.bySourceType.pdf || 0} vectors`);
-      console.log(`  - Pinecone: ${finalStats.bySourceType.pinecone || 0} vectors`);
+      console.log(
+        `  - Pinecone: ${finalStats.bySourceType.pinecone || 0} vectors`,
+      );
 
       this.initialized = true;
     } catch (error) {
       console.error(
         "[Knowledge Init] Fatal error during initialization:",
-        error instanceof Error ? error.message : String(error)
+        error instanceof Error ? error.message : String(error),
       );
       // Don't rethrow - allow server to start even if initialization fails
       // Users can manually trigger ingestion via API

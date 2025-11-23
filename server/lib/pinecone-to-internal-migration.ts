@@ -31,7 +31,14 @@ export interface MigrationStats {
 }
 
 export interface MigrationProgress {
-  status: "pending" | "extracting" | "transforming" | "storing" | "verifying" | "complete" | "error";
+  status:
+    | "pending"
+    | "extracting"
+    | "transforming"
+    | "storing"
+    | "verifying"
+    | "complete"
+    | "error";
   progress: number;
   message: string;
   extractedCount?: number;
@@ -120,7 +127,9 @@ class MigrationController {
       const extraction = await extractAllPineconeKnowledge();
       stats.totalExtracted = extraction.totalItems;
 
-      console.log(`[Migration] ✓ Extracted ${extraction.totalItems} items from Pinecone`);
+      console.log(
+        `[Migration] ✓ Extracted ${extraction.totalItems} items from Pinecone`,
+      );
 
       // Step 4: Transform data to internal format
       this.updateProgress({
@@ -129,21 +138,28 @@ class MigrationController {
         message: `Transforming ${extraction.totalItems} items to internal format...`,
       });
 
-      const transformedItems = extraction.items.map((item) => {
-        try {
-          return transformPineconeToInternalFormat(item);
-        } catch (error) {
-          const errorMsg = error instanceof Error ? error.message : String(error);
-          stats.failedItems.push({
-            id: item.id,
-            error: `Transformation failed: ${errorMsg}`,
-          });
-          return null;
-        }
-      }).filter(Boolean) as Array<Omit<InternalKnowledgeVector, "id" | "embedding">>;
+      const transformedItems = extraction.items
+        .map((item) => {
+          try {
+            return transformPineconeToInternalFormat(item);
+          } catch (error) {
+            const errorMsg =
+              error instanceof Error ? error.message : String(error);
+            stats.failedItems.push({
+              id: item.id,
+              error: `Transformation failed: ${errorMsg}`,
+            });
+            return null;
+          }
+        })
+        .filter(Boolean) as Array<
+        Omit<InternalKnowledgeVector, "id" | "embedding">
+      >;
 
       console.log(`[Migration] ✓ Transformed ${transformedItems.length} items`);
-      console.log(`[Migration] Transformation failed for ${extraction.totalItems - transformedItems.length} items`);
+      console.log(
+        `[Migration] Transformation failed for ${extraction.totalItems - transformedItems.length} items`,
+      );
 
       // Step 5: Store in internal database in batches
       this.updateProgress({
@@ -179,7 +195,9 @@ class MigrationController {
           });
         }
 
-        console.log(`[Migration] Batch ${batchNum}: ${batchResult.success} stored, ${batchResult.failed} failed`);
+        console.log(
+          `[Migration] Batch ${batchNum}: ${batchResult.success} stored, ${batchResult.failed} failed`,
+        );
       }
 
       // Step 6: Verify migration
@@ -207,7 +225,7 @@ class MigrationController {
 
       console.log("[Migration] ✓ MIGRATION COMPLETE");
       console.log(
-        `[Migration] Summary: ${stats.totalStored} stored, ${stats.totalFailed} failed, ${stats.durationSeconds}s total`
+        `[Migration] Summary: ${stats.totalStored} stored, ${stats.totalFailed} failed, ${stats.durationSeconds}s total`,
       );
 
       return stats;
@@ -258,7 +276,9 @@ class MigrationController {
       const extraction = await extractPineconeKnowledgeBySourceType(sourceType);
       stats.totalExtracted = extraction.totalItems;
 
-      console.log(`[Migration] Extracted ${extraction.totalItems} items of type: ${sourceType}`);
+      console.log(
+        `[Migration] Extracted ${extraction.totalItems} items of type: ${sourceType}`,
+      );
 
       // Transform
       this.updateProgress({
@@ -272,7 +292,8 @@ class MigrationController {
           try {
             return transformPineconeToInternalFormat(item);
           } catch (error) {
-            const errorMsg = error instanceof Error ? error.message : String(error);
+            const errorMsg =
+              error instanceof Error ? error.message : String(error);
             stats.failedItems.push({
               id: item.id,
               error: `Transformation failed: ${errorMsg}`,
@@ -280,7 +301,9 @@ class MigrationController {
             return null;
           }
         })
-        .filter(Boolean) as Array<Omit<InternalKnowledgeVector, "id" | "embedding">>;
+        .filter(Boolean) as Array<
+        Omit<InternalKnowledgeVector, "id" | "embedding">
+      >;
 
       // Store
       this.updateProgress({
@@ -289,7 +312,10 @@ class MigrationController {
         message: `Storing ${transformedItems.length} items...`,
       });
 
-      const batchResult = await storeInternalKnowledgeBatch(transformedItems, 5);
+      const batchResult = await storeInternalKnowledgeBatch(
+        transformedItems,
+        5,
+      );
       stats.totalStored = batchResult.success;
       stats.totalFailed = batchResult.failed;
       stats.failedItems = batchResult.errors.map((e) => ({

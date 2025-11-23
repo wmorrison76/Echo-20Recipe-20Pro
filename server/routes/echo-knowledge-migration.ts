@@ -9,7 +9,10 @@ import {
   migrationController,
   type MigrationStats,
 } from "../lib/pinecone-to-internal-migration";
-import { checkInternalKnowledgeHealth, getInternalKnowledgeStats } from "../lib/internal-knowledge-service";
+import {
+  checkInternalKnowledgeHealth,
+  getInternalKnowledgeStats,
+} from "../lib/internal-knowledge-service";
 import {
   verifyPineconeConnection,
   getPineconeIndexStats,
@@ -39,11 +42,14 @@ export async function startFullMigration(req: Request, res: Response) {
     });
 
     // Run migration in background
-    migrationController.runFullMigration().then((stats) => {
-      console.log("[Migration] Full migration completed", stats);
-    }).catch((error) => {
-      console.error("[Migration] Full migration failed:", error);
-    });
+    migrationController
+      .runFullMigration()
+      .then((stats) => {
+        console.log("[Migration] Full migration completed", stats);
+      })
+      .catch((error) => {
+        console.error("[Migration] Full migration failed:", error);
+      });
   } catch (error) {
     console.error("Error starting migration:", error);
     res.status(500).json({
@@ -88,11 +94,20 @@ export async function startSelectiveMigration(req: Request, res: Response) {
     });
 
     // Run migration in background
-    migrationController.runSelectiveMigration(sourceType).then((stats) => {
-      console.log(`[Migration] Selective migration completed for ${sourceType}`, stats);
-    }).catch((error) => {
-      console.error(`[Migration] Selective migration failed for ${sourceType}:`, error);
-    });
+    migrationController
+      .runSelectiveMigration(sourceType)
+      .then((stats) => {
+        console.log(
+          `[Migration] Selective migration completed for ${sourceType}`,
+          stats,
+        );
+      })
+      .catch((error) => {
+        console.error(
+          `[Migration] Selective migration failed for ${sourceType}:`,
+          error,
+        );
+      });
   } catch (error) {
     console.error("Error starting selective migration:", error);
     res.status(500).json({
@@ -132,11 +147,12 @@ export async function getMigrationProgress(req: Request, res: Response) {
  */
 export async function checkKnowledgeHealth(req: Request, res: Response) {
   try {
-    const [internalHealth, pineconeConnection, internalStats] = await Promise.all([
-      checkInternalKnowledgeHealth(),
-      verifyPineconeConnection(),
-      getInternalKnowledgeStats(),
-    ]);
+    const [internalHealth, pineconeConnection, internalStats] =
+      await Promise.all([
+        checkInternalKnowledgeHealth(),
+        verifyPineconeConnection(),
+        getInternalKnowledgeStats(),
+      ]);
 
     res.json({
       status: "success",
@@ -236,12 +252,13 @@ export async function getInternalStats(req: Request, res: Response) {
  */
 export async function getMigrationStatus(req: Request, res: Response) {
   try {
-    const [progress, internalStats, pineconeStats, vectorCount] = await Promise.all([
-      Promise.resolve(migrationController.getProgress()),
-      getInternalKnowledgeStats(),
-      getPineconeIndexStats(),
-      countPineconeVectors(),
-    ]);
+    const [progress, internalStats, pineconeStats, vectorCount] =
+      await Promise.all([
+        Promise.resolve(migrationController.getProgress()),
+        getInternalKnowledgeStats(),
+        getPineconeIndexStats(),
+        countPineconeVectors(),
+      ]);
 
     const migrationComplete = internalStats.total >= vectorCount;
 
@@ -255,7 +272,10 @@ export async function getMigrationStatus(req: Request, res: Response) {
         stats: {
           pineconeTotal: vectorCount,
           internalTotal: internalStats.total,
-          migrationPercentage: vectorCount > 0 ? Math.round((internalStats.total / vectorCount) * 100) : 0,
+          migrationPercentage:
+            vectorCount > 0
+              ? Math.round((internalStats.total / vectorCount) * 100)
+              : 0,
         },
       },
       internal: {

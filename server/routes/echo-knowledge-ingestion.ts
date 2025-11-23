@@ -16,75 +16,81 @@ const router = Router();
  * POST /api/echo/knowledge/ingest/master-dictionary
  * Ingest Master Culinary Dictionary into internal storage
  */
-router.post("/knowledge/ingest/master-dictionary", async (req: Request, res: Response) => {
-  try {
-    const progress = ingestionController.getProgress();
-    if (progress.status === "in_progress") {
-      return res.status(409).json({
+router.post(
+  "/knowledge/ingest/master-dictionary",
+  async (req: Request, res: Response) => {
+    try {
+      const progress = ingestionController.getProgress();
+      if (progress.status === "in_progress") {
+        return res.status(409).json({
+          status: "error",
+          message: "Ingestion already in progress",
+          progress: progress,
+        });
+      }
+
+      console.log("[API] Starting Master Dictionary ingestion...");
+
+      res.json({
+        status: "started",
+        message: "Master Dictionary ingestion started",
+        progress: ingestionController.getProgress(),
+      });
+
+      // Run ingestion in background
+      ingestionController.ingestMasterDictionary().catch((error) => {
+        console.error("[API] Master Dictionary ingestion failed:", error);
+      });
+    } catch (error) {
+      console.error("[API] Error starting Master Dictionary ingestion:", error);
+      res.status(500).json({
         status: "error",
-        message: "Ingestion already in progress",
-        progress: progress,
+        message: "Failed to start Master Dictionary ingestion",
+        error: error instanceof Error ? error.message : "Unknown error",
       });
     }
-
-    console.log("[API] Starting Master Dictionary ingestion...");
-
-    res.json({
-      status: "started",
-      message: "Master Dictionary ingestion started",
-      progress: ingestionController.getProgress(),
-    });
-
-    // Run ingestion in background
-    ingestionController.ingestMasterDictionary().catch((error) => {
-      console.error("[API] Master Dictionary ingestion failed:", error);
-    });
-  } catch (error) {
-    console.error("[API] Error starting Master Dictionary ingestion:", error);
-    res.status(500).json({
-      status: "error",
-      message: "Failed to start Master Dictionary ingestion",
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  },
+);
 
 /**
  * POST /api/echo/knowledge/ingest/pinecone
  * Ingest knowledge from Pinecone into internal storage
  */
-router.post("/knowledge/ingest/pinecone", async (req: Request, res: Response) => {
-  try {
-    const progress = ingestionController.getProgress();
-    if (progress.status === "in_progress") {
-      return res.status(409).json({
+router.post(
+  "/knowledge/ingest/pinecone",
+  async (req: Request, res: Response) => {
+    try {
+      const progress = ingestionController.getProgress();
+      if (progress.status === "in_progress") {
+        return res.status(409).json({
+          status: "error",
+          message: "Ingestion already in progress",
+          progress: progress,
+        });
+      }
+
+      console.log("[API] Starting Pinecone ingestion...");
+
+      res.json({
+        status: "started",
+        message: "Pinecone ingestion started",
+        progress: ingestionController.getProgress(),
+      });
+
+      // Run ingestion in background
+      ingestionController.ingestFromPinecone().catch((error) => {
+        console.error("[API] Pinecone ingestion failed:", error);
+      });
+    } catch (error) {
+      console.error("[API] Error starting Pinecone ingestion:", error);
+      res.status(500).json({
         status: "error",
-        message: "Ingestion already in progress",
-        progress: progress,
+        message: "Failed to start Pinecone ingestion",
+        error: error instanceof Error ? error.message : "Unknown error",
       });
     }
-
-    console.log("[API] Starting Pinecone ingestion...");
-
-    res.json({
-      status: "started",
-      message: "Pinecone ingestion started",
-      progress: ingestionController.getProgress(),
-    });
-
-    // Run ingestion in background
-    ingestionController.ingestFromPinecone().catch((error) => {
-      console.error("[API] Pinecone ingestion failed:", error);
-    });
-  } catch (error) {
-    console.error("[API] Error starting Pinecone ingestion:", error);
-    res.status(500).json({
-      status: "error",
-      message: "Failed to start Pinecone ingestion",
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+  },
+);
 
 /**
  * POST /api/echo/knowledge/ingest/all
@@ -127,25 +133,28 @@ router.post("/knowledge/ingest/all", async (req: Request, res: Response) => {
  * GET /api/echo/knowledge/ingest/progress
  * Get current ingestion progress
  */
-router.get("/knowledge/ingest/progress", async (req: Request, res: Response) => {
-  try {
-    const progress = ingestionController.getProgress();
-    const stats = await ingestionController.getStatistics();
+router.get(
+  "/knowledge/ingest/progress",
+  async (req: Request, res: Response) => {
+    try {
+      const progress = ingestionController.getProgress();
+      const stats = await ingestionController.getStatistics();
 
-    res.json({
-      status: "success",
-      progress: progress,
-      statistics: stats,
-    });
-  } catch (error) {
-    console.error("[API] Error getting ingestion progress:", error);
-    res.status(500).json({
-      status: "error",
-      message: "Failed to get ingestion progress",
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+      res.json({
+        status: "success",
+        progress: progress,
+        statistics: stats,
+      });
+    } catch (error) {
+      console.error("[API] Error getting ingestion progress:", error);
+      res.status(500).json({
+        status: "error",
+        message: "Failed to get ingestion progress",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  },
+);
 
 /**
  * GET /api/echo/knowledge/ingest/status

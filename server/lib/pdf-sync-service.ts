@@ -5,10 +5,19 @@
  * Handles both bulk migration and real-time sync of new uploads
  */
 
-import { storeInternalKnowledgeVector, storeInternalKnowledgeBatch } from "./internal-knowledge-service";
+import {
+  storeInternalKnowledgeVector,
+  storeInternalKnowledgeBatch,
+} from "./internal-knowledge-service";
 import { extractPineconeKnowledgeBySourceType } from "./pinecone-extraction-service";
-import { convertPDFToMasterTerms, type PDFMetadata } from "./pdf-knowledge-extractor";
-import { masterCulinaryDictionary, type MasterCulinaryTerm } from "./master-culinary-dictionary";
+import {
+  convertPDFToMasterTerms,
+  type PDFMetadata,
+} from "./pdf-knowledge-extractor";
+import {
+  masterCulinaryDictionary,
+  type MasterCulinaryTerm,
+} from "./master-culinary-dictionary";
 
 export interface PDFSyncResult {
   totalProcessed: number;
@@ -47,10 +56,13 @@ class PDFSyncService {
       console.log("[PDF Sync] Starting sync of all PDFs from Pinecone...");
 
       // Extract all PDF-sourced knowledge from Pinecone
-      const extraction = await extractPineconeKnowledgeBySourceType("user_imported");
+      const extraction =
+        await extractPineconeKnowledgeBySourceType("user_imported");
       result.totalProcessed = extraction.totalItems;
 
-      console.log(`[PDF Sync] Found ${extraction.totalItems} PDF documents in Pinecone`);
+      console.log(
+        `[PDF Sync] Found ${extraction.totalItems} PDF documents in Pinecone`,
+      );
 
       if (extraction.totalItems === 0) {
         console.log("[PDF Sync] No PDFs found in Pinecone");
@@ -72,7 +84,8 @@ class PDFSyncService {
             });
           }
         } catch (error) {
-          const errorMsg = error instanceof Error ? error.message : String(error);
+          const errorMsg =
+            error instanceof Error ? error.message : String(error);
           result.failedItems.push({
             source: item.metadata?.source || item.id,
             error: errorMsg,
@@ -103,9 +116,7 @@ class PDFSyncService {
   /**
    * Process a single Pinecone PDF item and store in internal storage
    */
-  private async processPineconeItem(
-    pineconeItem: any,
-  ): Promise<{
+  private async processPineconeItem(pineconeItem: any): Promise<{
     stored: boolean;
     termsExtracted: number;
     termsAdded: number;
@@ -127,7 +138,10 @@ class PDFSyncService {
             masterCulinaryDictionary.addTerm(term.term.toLowerCase(), term);
             termsAdded++;
           } catch (error) {
-            console.warn(`[PDF Sync] Failed to add term "${term.term}":`, error);
+            console.warn(
+              `[PDF Sync] Failed to add term "${term.term}":`,
+              error,
+            );
           }
         }
 
@@ -182,7 +196,10 @@ class PDFSyncService {
             masterCulinaryDictionary.addTerm(term.term.toLowerCase(), term);
             termsAdded++;
           } catch (error) {
-            console.warn(`[PDF Sync] Failed to add term "${term.term}":`, error);
+            console.warn(
+              `[PDF Sync] Failed to add term "${term.term}":`,
+              error,
+            );
           }
         }
 
@@ -258,7 +275,10 @@ class PDFSyncService {
         specialization: "culinary-book",
       };
 
-      const extraction = convertPDFToMasterTerms(pdfDocument.pdfText, pdfMetadata);
+      const extraction = convertPDFToMasterTerms(
+        pdfDocument.pdfText,
+        pdfMetadata,
+      );
       let termsAdded = 0;
 
       // Add extracted terms to master dictionary
@@ -275,7 +295,7 @@ class PDFSyncService {
       const storeResult = await storeInternalKnowledgeVector({
         title: pdfDocument.title,
         content: pdfDocument.pdfText.substring(0, 5000),
-        description: `Culinary knowledge from ${pdfDocument.title}${pdfDocument.author ? ` by ${pdfDocument.author}` : ''}. Extracted ${extraction.terms.length} terms.`,
+        description: `Culinary knowledge from ${pdfDocument.title}${pdfDocument.author ? ` by ${pdfDocument.author}` : ""}. Extracted ${extraction.terms.length} terms.`,
         sourceType: "pdf",
         categories: ["technique", "method", "ingredient"],
         source: pdfDocument.title,

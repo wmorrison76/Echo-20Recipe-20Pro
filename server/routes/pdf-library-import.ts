@@ -3,18 +3,18 @@
  * Handles PDF file uploads, text extraction, and integration with Echo's master culinary dictionary
  */
 
-import type { Request, Response } from 'express';
-import { Router } from 'express';
-import { masterCulinaryDictionary } from '../lib/master-culinary-dictionary';
+import type { Request, Response } from "express";
+import { Router } from "express";
+import { masterCulinaryDictionary } from "../lib/master-culinary-dictionary";
 import {
   processPDFUpload,
   processPDFBatch,
   calculateImportStats,
   extractTextFromPDFBuffer,
   extractPDFMetadata,
-} from '../lib/pdf-upload-handler';
-import { convertPDFToMasterTerms } from '../lib/pdf-knowledge-extractor';
-import type { PDFMetadata } from '../lib/pdf-knowledge-extractor';
+} from "../lib/pdf-upload-handler";
+import { convertPDFToMasterTerms } from "../lib/pdf-knowledge-extractor";
+import type { PDFMetadata } from "../lib/pdf-knowledge-extractor";
 
 export const pdfLibraryImportRouter = Router();
 
@@ -31,16 +31,24 @@ export const pdfLibraryImportRouter = Router();
  */
 export async function uploadPDFFile(req: Request, res: Response) {
   try {
-    const { pdfBase64, pdfName, title, author, cuisine, publicationYear, language } = req.body;
+    const {
+      pdfBase64,
+      pdfName,
+      title,
+      author,
+      cuisine,
+      publicationYear,
+      language,
+    } = req.body;
 
     if (!pdfBase64 || !pdfName) {
       return res.status(400).json({
-        status: 'error',
-        message: 'PDF base64 content and filename are required',
+        status: "error",
+        message: "PDF base64 content and filename are required",
         example: {
-          pdfBase64: 'JVBERi0xLjQK...',
-          pdfName: 'food-lovers-companion.pdf',
-          title: 'The Food Lovers Companion',
+          pdfBase64: "JVBERi0xLjQK...",
+          pdfName: "food-lovers-companion.pdf",
+          title: "The Food Lovers Companion",
         },
       });
     }
@@ -48,11 +56,11 @@ export async function uploadPDFFile(req: Request, res: Response) {
     // Convert base64 to buffer
     let pdfBuffer: Buffer;
     try {
-      pdfBuffer = Buffer.from(pdfBase64, 'base64');
+      pdfBuffer = Buffer.from(pdfBase64, "base64");
     } catch (error) {
       return res.status(400).json({
-        status: 'error',
-        message: 'Invalid base64 encoding for PDF',
+        status: "error",
+        message: "Invalid base64 encoding for PDF",
       });
     }
 
@@ -62,9 +70,10 @@ export async function uploadPDFFile(req: Request, res: Response) {
       pdfText = await extractTextFromPDFBuffer(pdfBuffer, pdfName);
     } catch (error) {
       return res.status(400).json({
-        status: 'error',
-        message: `Failed to extract text from PDF: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        suggestion: 'The PDF might be image-based or encrypted. Ensure it contains selectable text.',
+        status: "error",
+        message: `Failed to extract text from PDF: ${error instanceof Error ? error.message : "Unknown error"}`,
+        suggestion:
+          "The PDF might be image-based or encrypted. Ensure it contains selectable text.",
         pdfName,
       });
     }
@@ -73,10 +82,12 @@ export async function uploadPDFFile(req: Request, res: Response) {
     const metadata: PDFMetadata = {
       title: title || extractPDFMetadata(pdfName, pdfText).title,
       author,
-      publicationYear: publicationYear ? parseInt(publicationYear, 10) : undefined,
-      language: language || 'English',
+      publicationYear: publicationYear
+        ? parseInt(publicationYear, 10)
+        : undefined,
+      language: language || "English",
       cuisine,
-      specialization: 'culinary-book',
+      specialization: "culinary-book",
     };
 
     // Convert PDF to master culinary terms
@@ -99,7 +110,7 @@ export async function uploadPDFFile(req: Request, res: Response) {
     const stats = masterCulinaryDictionary.getStatistics();
 
     res.json({
-      status: 'success',
+      status: "success",
       import: {
         file: pdfName,
         source: metadata.title,
@@ -126,11 +137,11 @@ export async function uploadPDFFile(req: Request, res: Response) {
       },
     });
   } catch (error) {
-    console.error('Error uploading PDF file:', error);
+    console.error("Error uploading PDF file:", error);
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to upload and process PDF',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to upload and process PDF",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -143,18 +154,26 @@ export async function uploadPDFFile(req: Request, res: Response) {
  */
 export async function uploadPDFBatch(req: Request, res: Response) {
   try {
-    const { pdfs } = req.body as { pdfs: Array<{ pdfBase64: string; pdfName: string; title?: string; author?: string; cuisine?: string }> };
+    const { pdfs } = req.body as {
+      pdfs: Array<{
+        pdfBase64: string;
+        pdfName: string;
+        title?: string;
+        author?: string;
+        cuisine?: string;
+      }>;
+    };
 
     if (!Array.isArray(pdfs) || pdfs.length === 0) {
       return res.status(400).json({
-        status: 'error',
-        message: 'Array of PDFs required',
+        status: "error",
+        message: "Array of PDFs required",
         example: {
           pdfs: [
             {
-              pdfBase64: 'JVBERi0xLjQK...',
-              pdfName: 'book1.pdf',
-              title: 'Book Title',
+              pdfBase64: "JVBERi0xLjQK...",
+              pdfName: "book1.pdf",
+              title: "Book Title",
             },
           ],
         },
@@ -171,25 +190,29 @@ export async function uploadPDFBatch(req: Request, res: Response) {
       try {
         if (!pdfData.pdfBase64 || !pdfData.pdfName) {
           failedFiles.push({
-            file: pdfData.pdfName || 'unknown',
-            error: 'Missing pdfBase64 or pdfName',
+            file: pdfData.pdfName || "unknown",
+            error: "Missing pdfBase64 or pdfName",
           });
           continue;
         }
 
         // Convert base64 to buffer
-        const pdfBuffer = Buffer.from(pdfData.pdfBase64, 'base64');
+        const pdfBuffer = Buffer.from(pdfData.pdfBase64, "base64");
 
         // Extract text from PDF
-        const pdfText = await extractTextFromPDFBuffer(pdfBuffer, pdfData.pdfName);
+        const pdfText = await extractTextFromPDFBuffer(
+          pdfBuffer,
+          pdfData.pdfName,
+        );
 
         // Create metadata
         const metadata: PDFMetadata = {
-          title: pdfData.title || extractPDFMetadata(pdfData.pdfName, pdfText).title,
+          title:
+            pdfData.title || extractPDFMetadata(pdfData.pdfName, pdfText).title,
           author: pdfData.author,
           cuisine: pdfData.cuisine,
-          language: 'English',
-          specialization: 'culinary-book',
+          language: "English",
+          specialization: "culinary-book",
         };
 
         // Convert to master culinary terms
@@ -218,7 +241,7 @@ export async function uploadPDFBatch(req: Request, res: Response) {
       } catch (error) {
         failedFiles.push({
           file: pdfData.pdfName,
-          error: error instanceof Error ? error.message : 'Unknown error',
+          error: error instanceof Error ? error.message : "Unknown error",
         });
       }
     }
@@ -226,7 +249,7 @@ export async function uploadPDFBatch(req: Request, res: Response) {
     const stats = masterCulinaryDictionary.getStatistics();
 
     res.json({
-      status: 'success',
+      status: "success",
       import: {
         totalFiles: pdfs.length,
         successfulFiles: importResults.length,
@@ -251,11 +274,11 @@ export async function uploadPDFBatch(req: Request, res: Response) {
       },
     });
   } catch (error) {
-    console.error('Error uploading PDF batch:', error);
+    console.error("Error uploading PDF batch:", error);
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to process PDF batch',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to process PDF batch",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -269,53 +292,68 @@ export async function getPDFImportStatus(req: Request, res: Response) {
     const stats = masterCulinaryDictionary.getStatistics();
 
     const masteryPercentages = {
-      fundamental: Math.round((stats.masteryLevels.fundamental || 0) / stats.totalTerms * 100),
-      intermediate: Math.round((stats.masteryLevels.intermediate || 0) / stats.totalTerms * 100),
-      advanced: Math.round((stats.masteryLevels.advanced || 0) / stats.totalTerms * 100),
-      expert: Math.round((stats.masteryLevels.expert || 0) / stats.totalTerms * 100),
-      master: Math.round((stats.masteryLevels.master || 0) / stats.totalTerms * 100),
+      fundamental: Math.round(
+        ((stats.masteryLevels.fundamental || 0) / stats.totalTerms) * 100,
+      ),
+      intermediate: Math.round(
+        ((stats.masteryLevels.intermediate || 0) / stats.totalTerms) * 100,
+      ),
+      advanced: Math.round(
+        ((stats.masteryLevels.advanced || 0) / stats.totalTerms) * 100,
+      ),
+      expert: Math.round(
+        ((stats.masteryLevels.expert || 0) / stats.totalTerms) * 100,
+      ),
+      master: Math.round(
+        ((stats.masteryLevels.master || 0) / stats.totalTerms) * 100,
+      ),
     };
 
-    const categoryBreakdown = Object.entries(stats.categories).map(([category, count]) => ({
-      category,
-      count,
-      percentage: Math.round(count / stats.totalTerms * 100),
-    }));
+    const categoryBreakdown = Object.entries(stats.categories).map(
+      ([category, count]) => ({
+        category,
+        count,
+        percentage: Math.round((count / stats.totalTerms) * 100),
+      }),
+    );
 
     res.json({
-      status: 'success',
+      status: "success",
       library: {
         totalTermsImported: stats.totalTerms,
         goalTerms: 10000,
-        progressPercentage: Math.round(stats.totalTerms / 10000 * 100),
-        completionStatus: stats.totalTerms >= 10000 ? '✓ Complete' : `${stats.totalTerms} / 10,000 terms`,
+        progressPercentage: Math.round((stats.totalTerms / 10000) * 100),
+        completionStatus:
+          stats.totalTerms >= 10000
+            ? "✓ Complete"
+            : `${stats.totalTerms} / 10,000 terms`,
       },
       masteryLevels: {
         breakdown: masteryPercentages,
         levels: {
           fundamental: {
             count: stats.masteryLevels.fundamental || 0,
-            description: 'Essential cooking basics and foundational techniques',
+            description: "Essential cooking basics and foundational techniques",
             percentage: masteryPercentages.fundamental,
           },
           intermediate: {
             count: stats.masteryLevels.intermediate || 0,
-            description: 'Professional cooking knowledge and standard methods',
+            description: "Professional cooking knowledge and standard methods",
             percentage: masteryPercentages.intermediate,
           },
           advanced: {
             count: stats.masteryLevels.advanced || 0,
-            description: 'Specialized techniques and culinary theory',
+            description: "Specialized techniques and culinary theory",
             percentage: masteryPercentages.advanced,
           },
           expert: {
             count: stats.masteryLevels.expert || 0,
-            description: 'Master-level knowledge and rare specializations',
+            description: "Master-level knowledge and rare specializations",
             percentage: masteryPercentages.expert,
           },
           master: {
             count: stats.masteryLevels.master || 0,
-            description: 'Authority-level understanding and culinary mastery',
+            description: "Authority-level understanding and culinary mastery",
             percentage: masteryPercentages.master,
           },
         },
@@ -323,19 +361,19 @@ export async function getPDFImportStatus(req: Request, res: Response) {
       categoryBreakdown: categoryBreakdown.sort((a, b) => b.count - a.count),
       averageConfidence: stats.averageConfidence.toFixed(2),
       capabilities: {
-        search: '✓ Search all terms and definitions',
-        relatedTerms: '✓ Find related terms and concepts',
-        applications: '✓ Learn applications and usage context',
-        etymology: '✓ Understand term origins and history',
-        masterPaths: '✓ Follow mastery learning paths',
+        search: "✓ Search all terms and definitions",
+        relatedTerms: "✓ Find related terms and concepts",
+        applications: "✓ Learn applications and usage context",
+        etymology: "✓ Understand term origins and history",
+        masterPaths: "✓ Follow mastery learning paths",
       },
       message: `🍽️ Echo's master culinary dictionary: ${stats.totalTerms} authoritative terms ready for culinary excellence!`,
     });
   } catch (error) {
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to get PDF import status',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to get PDF import status",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -352,8 +390,8 @@ export async function importFromText(req: Request, res: Response) {
 
     if (!pdfText || !metadata || !metadata.title) {
       return res.status(400).json({
-        status: 'error',
-        message: 'PDF text and metadata with title are required',
+        status: "error",
+        message: "PDF text and metadata with title are required",
       });
     }
 
@@ -361,9 +399,9 @@ export async function importFromText(req: Request, res: Response) {
       title: metadata.title,
       author: metadata.author,
       publicationYear: metadata.publicationYear,
-      language: metadata.language || 'English',
+      language: metadata.language || "English",
       cuisine: metadata.cuisine,
-      specialization: metadata.specialization || 'culinary-book',
+      specialization: metadata.specialization || "culinary-book",
     };
 
     // Convert to master culinary terms
@@ -383,7 +421,7 @@ export async function importFromText(req: Request, res: Response) {
     const stats = masterCulinaryDictionary.getStatistics();
 
     res.json({
-      status: 'success',
+      status: "success",
       import: {
         source: metadata.title,
         author: metadata.author,
@@ -399,11 +437,11 @@ export async function importFromText(req: Request, res: Response) {
       },
     });
   } catch (error) {
-    console.error('Error importing from text:', error);
+    console.error("Error importing from text:", error);
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to import knowledge from text',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to import knowledge from text",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -422,37 +460,38 @@ export async function debugPDFExtraction(req: Request, res: Response) {
 
     if (!pdfBase64 || !pdfName) {
       return res.status(400).json({
-        status: 'error',
-        message: 'PDF base64 content and filename are required',
+        status: "error",
+        message: "PDF base64 content and filename are required",
       });
     }
 
     // Convert base64 to buffer
     let pdfBuffer: Buffer;
     try {
-      pdfBuffer = Buffer.from(pdfBase64, 'base64');
+      pdfBuffer = Buffer.from(pdfBase64, "base64");
     } catch (error) {
       return res.status(400).json({
-        status: 'error',
-        message: 'Invalid base64 encoding for PDF',
+        status: "error",
+        message: "Invalid base64 encoding for PDF",
       });
     }
 
     // Step 1: Extract text
-    let pdfText: string = '';
+    let pdfText: string = "";
     let textExtractionError: string | null = null;
 
     try {
       pdfText = await extractTextFromPDFBuffer(pdfBuffer, pdfName);
     } catch (error) {
-      textExtractionError = error instanceof Error ? error.message : 'Unknown error';
+      textExtractionError =
+        error instanceof Error ? error.message : "Unknown error";
     }
 
     // Step 2: Extract definitions
     const metadata: PDFMetadata = {
       title: title || pdfName,
-      language: 'English',
-      specialization: 'culinary-book',
+      language: "English",
+      specialization: "culinary-book",
     };
 
     let extraction = null;
@@ -463,12 +502,13 @@ export async function debugPDFExtraction(req: Request, res: Response) {
         extraction = convertPDFToMasterTerms(pdfText, metadata);
       }
     } catch (error) {
-      extractionError = error instanceof Error ? error.message : 'Unknown error';
+      extractionError =
+        error instanceof Error ? error.message : "Unknown error";
     }
 
     // Return detailed debug info
     res.json({
-      status: 'debug',
+      status: "debug",
       file: {
         filename: pdfName,
         sizeBytes: pdfBuffer.length,
@@ -477,10 +517,10 @@ export async function debugPDFExtraction(req: Request, res: Response) {
         success: textExtractionError === null,
         error: textExtractionError,
         textLength: pdfText.length,
-        lineCount: pdfText.split('\n').length,
+        lineCount: pdfText.split("\n").length,
         preview: pdfText.substring(0, 500),
         sampleLines: pdfText
-          .split('\n')
+          .split("\n")
           .slice(0, 10)
           .map((line, i) => ({
             lineNum: i + 1,
@@ -493,26 +533,27 @@ export async function debugPDFExtraction(req: Request, res: Response) {
         error: extractionError,
         termsExtracted: extraction?.terms.length || 0,
         averageConfidence: extraction?.metadata.confidence || 0,
-        sampleTerms: extraction?.terms.slice(0, 5).map(t => ({
-          term: t.term,
-          definition: t.definition.substring(0, 80),
-          categories: t.categories,
-          confidence: t.confidence,
-        })) || [],
+        sampleTerms:
+          extraction?.terms.slice(0, 5).map((t) => ({
+            term: t.term,
+            definition: t.definition.substring(0, 80),
+            categories: t.categories,
+            confidence: t.confidence,
+          })) || [],
       },
       recommendations: generateDebugRecommendations(
         textExtractionError,
         extractionError,
         pdfText.length,
-        extraction?.terms.length || 0
+        extraction?.terms.length || 0,
       ),
     });
   } catch (error) {
-    console.error('Error debugging PDF file:', error);
+    console.error("Error debugging PDF file:", error);
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to debug PDF',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to debug PDF",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -524,30 +565,42 @@ function generateDebugRecommendations(
   textError: string | null,
   extractionError: string | null,
   textLength: number,
-  termCount: number
+  termCount: number,
 ): string[] {
   const recommendations: string[] = [];
 
   if (textError) {
     recommendations.push(`Text extraction failed: ${textError}`);
-    recommendations.push('The PDF might be image-based or encrypted. Try converting it with OCR first.');
+    recommendations.push(
+      "The PDF might be image-based or encrypted. Try converting it with OCR first.",
+    );
   } else if (textLength < 500) {
-    recommendations.push('Very little text was extracted (less than 500 chars). The PDF might be mostly images or have encoding issues.');
+    recommendations.push(
+      "Very little text was extracted (less than 500 chars). The PDF might be mostly images or have encoding issues.",
+    );
   }
 
   if (extractionError) {
     recommendations.push(`Definition extraction failed: ${extractionError}`);
   } else if (termCount === 0) {
-    recommendations.push('No definitions were extracted. This might be because:');
-    recommendations.push('  - The PDF format doesn\'t match expected glossary patterns');
-    recommendations.push('  - Terms may be formatted differently than expected');
-    recommendations.push('  - Try checking the PDF format and structure');
+    recommendations.push(
+      "No definitions were extracted. This might be because:",
+    );
+    recommendations.push(
+      "  - The PDF format doesn't match expected glossary patterns",
+    );
+    recommendations.push(
+      "  - Terms may be formatted differently than expected",
+    );
+    recommendations.push("  - Try checking the PDF format and structure");
   } else if (termCount < 10) {
-    recommendations.push(`Only ${termCount} terms extracted. The glossary patterns might not match this PDF format well.`);
+    recommendations.push(
+      `Only ${termCount} terms extracted. The glossary patterns might not match this PDF format well.`,
+    );
   }
 
   if (recommendations.length === 0) {
-    recommendations.push('PDF extraction appears to be working correctly.');
+    recommendations.push("PDF extraction appears to be working correctly.");
   }
 
   return recommendations;
@@ -564,8 +617,8 @@ export async function getTermDefinition(req: Request, res: Response) {
 
     if (!term || term.trim().length === 0) {
       return res.status(400).json({
-        status: 'error',
-        message: 'Term parameter is required',
+        status: "error",
+        message: "Term parameter is required",
       });
     }
 
@@ -573,23 +626,23 @@ export async function getTermDefinition(req: Request, res: Response) {
 
     if (!termDef) {
       return res.status(404).json({
-        status: 'not_found',
+        status: "not_found",
         message: `Definition for "${term}" not found in master dictionary`,
-        suggestion: 'Try searching with searchTerms endpoint or check spelling',
+        suggestion: "Try searching with searchTerms endpoint or check spelling",
       });
     }
 
     res.json({
-      status: 'success',
+      status: "success",
       definition: termDef,
       relatedTerms: masterCulinaryDictionary.getRelatedTerms(term),
     });
   } catch (error) {
-    console.error('Error retrieving term definition:', error);
+    console.error("Error retrieving term definition:", error);
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to retrieve term definition',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to retrieve term definition",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -603,21 +656,23 @@ export async function getTermDefinition(req: Request, res: Response) {
  */
 export async function searchDefinitions(req: Request, res: Response) {
   try {
-    const { q, limit = '10' } = req.query;
+    const { q, limit = "10" } = req.query;
 
-    if (!q || typeof q !== 'string' || q.trim().length === 0) {
+    if (!q || typeof q !== "string" || q.trim().length === 0) {
       return res.status(400).json({
-        status: 'error',
-        message: 'Search query (q) parameter is required',
-        example: '/api/pdf-library/search?q=blanch&limit=5',
+        status: "error",
+        message: "Search query (q) parameter is required",
+        example: "/api/pdf-library/search?q=blanch&limit=5",
       });
     }
 
     const searchLimit = Math.min(parseInt(limit as string, 10) || 10, 100);
-    const results = masterCulinaryDictionary.searchTerms(q).slice(0, searchLimit);
+    const results = masterCulinaryDictionary
+      .searchTerms(q)
+      .slice(0, searchLimit);
 
     res.json({
-      status: 'success',
+      status: "success",
       query: q,
       resultCount: results.length,
       results: results.map((term) => ({
@@ -629,11 +684,11 @@ export async function searchDefinitions(req: Request, res: Response) {
       })),
     });
   } catch (error) {
-    console.error('Error searching definitions:', error);
+    console.error("Error searching definitions:", error);
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to search definitions',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to search definitions",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -648,15 +703,15 @@ export async function getRelatedDefinitions(req: Request, res: Response) {
 
     if (!term || term.trim().length === 0) {
       return res.status(400).json({
-        status: 'error',
-        message: 'Term parameter is required',
+        status: "error",
+        message: "Term parameter is required",
       });
     }
 
     const mainTerm = masterCulinaryDictionary.getTerm(term);
     if (!mainTerm) {
       return res.status(404).json({
-        status: 'not_found',
+        status: "not_found",
         message: `Term "${term}" not found in master dictionary`,
       });
     }
@@ -664,21 +719,21 @@ export async function getRelatedDefinitions(req: Request, res: Response) {
     const relatedTerms = masterCulinaryDictionary.getRelatedTerms(term);
 
     res.json({
-      status: 'success',
+      status: "success",
       term: mainTerm.term,
       relatedTermCount: relatedTerms.length,
       relatedTerms: relatedTerms.map((t) => ({
         term: t.term,
-        definition: t.definition.substring(0, 150) + '...',
+        definition: t.definition.substring(0, 150) + "...",
         categories: t.categories,
       })),
     });
   } catch (error) {
-    console.error('Error retrieving related definitions:', error);
+    console.error("Error retrieving related definitions:", error);
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to retrieve related definitions',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to retrieve related definitions",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -692,24 +747,25 @@ export async function getRelatedDefinitions(req: Request, res: Response) {
  */
 export async function browseDefinitionsByCategory(req: Request, res: Response) {
   try {
-    const { category, limit = '20' } = req.query;
+    const { category, limit = "20" } = req.query;
 
-    if (!category || typeof category !== 'string') {
+    if (!category || typeof category !== "string") {
       return res.status(400).json({
-        status: 'error',
-        message: 'Category parameter is required',
+        status: "error",
+        message: "Category parameter is required",
         validCategories: [
-          'technique',
-          'ingredient',
-          'method',
-          'equipment',
-          'theory',
-          'cuisine',
-          'safety',
-          'service',
-          'tradition',
+          "technique",
+          "ingredient",
+          "method",
+          "equipment",
+          "theory",
+          "cuisine",
+          "safety",
+          "service",
+          "tradition",
         ],
-        example: '/api/pdf-library/definitions/browse?category=ingredient&limit=20',
+        example:
+          "/api/pdf-library/definitions/browse?category=ingredient&limit=20",
       });
     }
 
@@ -717,38 +773,44 @@ export async function browseDefinitionsByCategory(req: Request, res: Response) {
     const terms = masterCulinaryDictionary.getTermsByCategory(category);
 
     res.json({
-      status: 'success',
+      status: "success",
       category,
       totalInCategory: terms.length,
       showing: Math.min(browseLimit, terms.length),
       terms: terms.slice(0, browseLimit).map((t) => ({
         term: t.term,
-        definition: t.definition.substring(0, 120) + '...',
+        definition: t.definition.substring(0, 120) + "...",
         categories: t.categories,
         confidence: t.confidence,
       })),
     });
   } catch (error) {
-    console.error('Error browsing definitions:', error);
+    console.error("Error browsing definitions:", error);
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to browse definitions',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to browse definitions",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
 
 // Register routes
-pdfLibraryImportRouter.post('/pdf-library/upload', uploadPDFFile);
-pdfLibraryImportRouter.post('/pdf-library/upload-batch', uploadPDFBatch);
-pdfLibraryImportRouter.get('/pdf-library/status', getPDFImportStatus);
-pdfLibraryImportRouter.post('/pdf-library/import-from-text', importFromText);
-pdfLibraryImportRouter.post('/pdf-library/debug', debugPDFExtraction);
+pdfLibraryImportRouter.post("/pdf-library/upload", uploadPDFFile);
+pdfLibraryImportRouter.post("/pdf-library/upload-batch", uploadPDFBatch);
+pdfLibraryImportRouter.get("/pdf-library/status", getPDFImportStatus);
+pdfLibraryImportRouter.post("/pdf-library/import-from-text", importFromText);
+pdfLibraryImportRouter.post("/pdf-library/debug", debugPDFExtraction);
 
 // Definition Access Routes
-pdfLibraryImportRouter.get('/pdf-library/definition/:term', getTermDefinition);
-pdfLibraryImportRouter.get('/pdf-library/search', searchDefinitions);
-pdfLibraryImportRouter.get('/pdf-library/definitions/related/:term', getRelatedDefinitions);
-pdfLibraryImportRouter.get('/pdf-library/definitions/browse', browseDefinitionsByCategory);
+pdfLibraryImportRouter.get("/pdf-library/definition/:term", getTermDefinition);
+pdfLibraryImportRouter.get("/pdf-library/search", searchDefinitions);
+pdfLibraryImportRouter.get(
+  "/pdf-library/definitions/related/:term",
+  getRelatedDefinitions,
+);
+pdfLibraryImportRouter.get(
+  "/pdf-library/definitions/browse",
+  browseDefinitionsByCategory,
+);
 
 export default pdfLibraryImportRouter;

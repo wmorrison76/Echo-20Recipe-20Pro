@@ -4,17 +4,20 @@
  * Makes Echo hungry for all information
  */
 
-import type { Request, Response } from 'express';
-import { webRecipeCrawler } from '../lib/web-recipe-crawler';
-import { ingredientRegionalCrawler } from '../lib/ingredient-regional-crawler';
-import { culinaryTerminologyDictionary } from '../lib/culinary-terminology-dictionary';
-import { hospitalityKnowledgeCrawler } from '../lib/hospitality-knowledge-crawler';
-import { masterCulinaryDictionary } from '../lib/master-culinary-dictionary';
-import { convertPDFToMasterTerms, mergePDFExtractions } from '../lib/pdf-knowledge-extractor';
-import { recipePersistenceService } from '../lib/recipe-persistence-service';
-import { llmKnowledgeEnricher } from '../lib/llm-knowledge-enricher';
-import { searchKnowledge } from '../lib/knowledge-vector-service';
-import type { PDFMetadata } from '../lib/pdf-knowledge-extractor';
+import type { Request, Response } from "express";
+import { webRecipeCrawler } from "../lib/web-recipe-crawler";
+import { ingredientRegionalCrawler } from "../lib/ingredient-regional-crawler";
+import { culinaryTerminologyDictionary } from "../lib/culinary-terminology-dictionary";
+import { hospitalityKnowledgeCrawler } from "../lib/hospitality-knowledge-crawler";
+import { masterCulinaryDictionary } from "../lib/master-culinary-dictionary";
+import {
+  convertPDFToMasterTerms,
+  mergePDFExtractions,
+} from "../lib/pdf-knowledge-extractor";
+import { recipePersistenceService } from "../lib/recipe-persistence-service";
+import { llmKnowledgeEnricher } from "../lib/llm-knowledge-enricher";
+import { searchKnowledge } from "../lib/knowledge-vector-service";
+import type { PDFMetadata } from "../lib/pdf-knowledge-extractor";
 
 /**
  * POST /api/echo/hungry-learning/crawl-and-store-recipes
@@ -23,16 +26,18 @@ import type { PDFMetadata } from '../lib/pdf-knowledge-extractor';
  */
 export async function crawlAndStoreRecipes(req: Request, res: Response) {
   try {
-    console.log('🚀 Starting recipe crawler with automatic storage...');
+    console.log("🚀 Starting recipe crawler with automatic storage...");
     const startTime = Date.now();
 
     // Crawl recipes from web
     const recipes = await webRecipeCrawler.crawlRecipes({
-      query: '*',
+      query: "*",
       limit: 500, // Start with 500 recipes
     });
 
-    console.log(`📥 Crawled ${recipes.length} recipes, now storing them for Echo...`);
+    console.log(
+      `📥 Crawled ${recipes.length} recipes, now storing them for Echo...`,
+    );
 
     // Store all recipes immediately
     const stored = await recipePersistenceService.storeRecipeBatch(recipes);
@@ -41,7 +46,7 @@ export async function crawlAndStoreRecipes(req: Request, res: Response) {
     const stats = recipePersistenceService.getStatistics();
 
     res.json({
-      status: 'success',
+      status: "success",
       crawling: {
         crawledRecipes: recipes.length,
         storedRecipes: stored.length,
@@ -57,17 +62,18 @@ export async function crawlAndStoreRecipes(req: Request, res: Response) {
       },
       echoLearning: {
         ready: stats.totalRecipes > 0,
-        message: stats.totalRecipes > 0
-          ? `✅ Echo can now analyze ${stats.totalRecipes} recipes for flavor profiles and ingredient ratios!`
-          : 'No recipes stored yet',
+        message:
+          stats.totalRecipes > 0
+            ? `✅ Echo can now analyze ${stats.totalRecipes} recipes for flavor profiles and ingredient ratios!`
+            : "No recipes stored yet",
       },
     });
   } catch (error) {
-    console.error('Error crawling and storing recipes:', error);
+    console.error("Error crawling and storing recipes:", error);
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to crawl and store recipes',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to crawl and store recipes",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -78,49 +84,52 @@ export async function crawlAndStoreRecipes(req: Request, res: Response) {
  */
 export async function startHungryLearning(req: Request, res: Response) {
   try {
-    console.log('🍽️ ACTIVATING ECHO HUNGRY LEARNING MODE...');
+    console.log("🍽️ ACTIVATING ECHO HUNGRY LEARNING MODE...");
 
     // Start all crawlers in parallel
     const startTime = Date.now();
 
     const learningPromises = [
       (async () => {
-        console.log('📖 Starting recipe crawler and storing recipes...');
+        console.log("📖 Starting recipe crawler and storing recipes...");
         const recipes = await webRecipeCrawler.crawlRecipes({
-          query: '*',
+          query: "*",
           limit: 1000,
         });
 
         // IMPORTANT: Actually save the recipes so Echo can analyze them
         console.log(`📥 Storing ${recipes.length} discovered recipes...`);
         const stored = await recipePersistenceService.storeRecipeBatch(recipes);
-        console.log(`✅ Successfully stored ${stored.length} recipes for Echo analysis`);
+        console.log(
+          `✅ Successfully stored ${stored.length} recipes for Echo analysis`,
+        );
 
-        return { type: 'recipes', count: stored.length, stored: true };
+        return { type: "recipes", count: stored.length, stored: true };
       })(),
 
       (async () => {
-        console.log('🌍 Starting regional ingredient crawler...');
-        const ingredients = await ingredientRegionalCrawler.crawlAllRegionalIngredients();
+        console.log("🌍 Starting regional ingredient crawler...");
+        const ingredients =
+          await ingredientRegionalCrawler.crawlAllRegionalIngredients();
         const totalIngredients = Object.values(ingredients).reduce(
           (sum, cuisine) => sum + cuisine.ingredients.length,
-          0
+          0,
         );
-        return { type: 'ingredients', count: totalIngredients };
+        return { type: "ingredients", count: totalIngredients };
       })(),
 
       (async () => {
-        console.log('📚 Starting terminology dictionary crawl...');
+        console.log("📚 Starting terminology dictionary crawl...");
         await culinaryTerminologyDictionary.crawlDefinitions();
         const summary = culinaryTerminologyDictionary.getSummary();
-        return { type: 'terminology', count: summary.totalTerms };
+        return { type: "terminology", count: summary.totalTerms };
       })(),
 
       (async () => {
-        console.log('🏨 Starting hospitality knowledge crawler...');
+        console.log("🏨 Starting hospitality knowledge crawler...");
         await hospitalityKnowledgeCrawler.startHungryLearning();
         const summary = hospitalityKnowledgeCrawler.getSummary();
-        return { type: 'hospitality', count: summary.totalKnowledge };
+        return { type: "hospitality", count: summary.totalKnowledge };
       })(),
     ];
 
@@ -129,14 +138,14 @@ export async function startHungryLearning(req: Request, res: Response) {
 
     // Process results
     const learningResults = results
-      .filter(r => r.status === 'fulfilled')
-      .map(r => (r as PromiseFulfilledResult<any>).value);
+      .filter((r) => r.status === "fulfilled")
+      .map((r) => (r as PromiseFulfilledResult<any>).value);
 
     const totalLearned = learningResults.reduce((sum, r) => sum + r.count, 0);
 
     res.json({
-      status: 'success',
-      message: '🍽️ Echo has begun aggressive learning!',
+      status: "success",
+      message: "🍽️ Echo has begun aggressive learning!",
       learning: {
         activated: true,
         domains: learningResults,
@@ -145,18 +154,18 @@ export async function startHungryLearning(req: Request, res: Response) {
         timestamp: Date.now(),
       },
       nextSteps: [
-        'Echo will now continuously crawl food & hospitality sources',
-        'Regional ingredient database is building across 16 cuisines',
-        'Terminology dictionary is expanding with auto-definitions',
-        'Hospitality knowledge covers operations, service, management, safety, and trends',
+        "Echo will now continuously crawl food & hospitality sources",
+        "Regional ingredient database is building across 16 cuisines",
+        "Terminology dictionary is expanding with auto-definitions",
+        "Hospitality knowledge covers operations, service, management, safety, and trends",
       ],
     });
   } catch (error) {
-    console.error('Error starting hungry learning:', error);
+    console.error("Error starting hungry learning:", error);
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to start hungry learning',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to start hungry learning",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -171,19 +180,19 @@ export async function getHungryLearningStatus(req: Request, res: Response) {
     const hospitalitySummary = hospitalityKnowledgeCrawler.getSummary();
 
     res.json({
-      status: 'success',
+      status: "success",
       learning: {
         terminology: cuisineTermSummary,
         hospitality: hospitalitySummary,
         timestamp: Date.now(),
       },
-      message: 'Echo is hungry and continuously learning!',
+      message: "Echo is hungry and continuously learning!",
     });
   } catch (error) {
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to get learning status',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to get learning status",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -194,7 +203,7 @@ export async function getHungryLearningStatus(req: Request, res: Response) {
  */
 export async function searchRecipes(req: Request, res: Response) {
   try {
-    const { query = 'pasta', cuisine, limit = 20 } = req.query;
+    const { query = "pasta", cuisine, limit = 20 } = req.query;
 
     const recipes = await webRecipeCrawler.crawlRecipes({
       query: String(query),
@@ -203,16 +212,16 @@ export async function searchRecipes(req: Request, res: Response) {
     });
 
     res.json({
-      status: 'success',
+      status: "success",
       recipes,
       count: recipes.length,
       message: `Found ${recipes.length} recipes. Echo is learning!`,
     });
   } catch (error) {
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to search recipes',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to search recipes",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -225,10 +234,11 @@ export async function getCuisineIngredients(req: Request, res: Response) {
   try {
     const { cuisine } = req.params;
 
-    const ingredients = await ingredientRegionalCrawler.crawlCuisineIngredients(cuisine);
+    const ingredients =
+      await ingredientRegionalCrawler.crawlCuisineIngredients(cuisine);
 
     res.json({
-      status: 'success',
+      status: "success",
       ingredients,
       staples: ingredients.staples,
       seasonal: ingredients.seasonal,
@@ -237,9 +247,9 @@ export async function getCuisineIngredients(req: Request, res: Response) {
     });
   } catch (error) {
     res.status(500).json({
-      status: 'error',
+      status: "error",
       message: `Failed to get ingredients for ${req.params.cuisine}`,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -255,25 +265,27 @@ export async function getTermDefinition(req: Request, res: Response) {
 
     if (!definition) {
       return res.status(404).json({
-        status: 'not_found',
+        status: "not_found",
         message: `Definition for "${term}" not found`,
-        suggestions: culinaryTerminologyDictionary.searchTerms(term).slice(0, 5),
+        suggestions: culinaryTerminologyDictionary
+          .searchTerms(term)
+          .slice(0, 5),
       });
     }
 
     const related = culinaryTerminologyDictionary.getRelatedDefinitions(term);
 
     res.json({
-      status: 'success',
+      status: "success",
       definition,
       related,
       message: `Echo knows about ${term}!`,
     });
   } catch (error) {
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to get definition',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to get definition",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -287,15 +299,15 @@ export async function getTerminologySummary(req: Request, res: Response) {
     const summary = culinaryTerminologyDictionary.getSummary();
 
     res.json({
-      status: 'success',
+      status: "success",
       terminology: summary,
       message: `Echo knows ${summary.totalTerms} culinary terms!`,
     });
   } catch (error) {
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to get terminology summary',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to get terminology summary",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -307,10 +319,11 @@ export async function getTerminologySummary(req: Request, res: Response) {
 export async function getHospitalityKnowledge(req: Request, res: Response) {
   try {
     const { category } = req.params;
-    const knowledge = hospitalityKnowledgeCrawler.getKnowledgeByCategory(category);
+    const knowledge =
+      hospitalityKnowledgeCrawler.getKnowledgeByCategory(category);
 
     res.json({
-      status: 'success',
+      status: "success",
       category,
       knowledge,
       count: knowledge.length,
@@ -318,9 +331,9 @@ export async function getHospitalityKnowledge(req: Request, res: Response) {
     });
   } catch (error) {
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to get hospitality knowledge',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to get hospitality knowledge",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -335,8 +348,8 @@ export async function searchAllKnowledge(req: Request, res: Response) {
 
     if (!query) {
       return res.status(400).json({
-        status: 'error',
-        message: 'Query is required',
+        status: "error",
+        message: "Query is required",
       });
     }
 
@@ -345,7 +358,7 @@ export async function searchAllKnowledge(req: Request, res: Response) {
     const masterDict = masterCulinaryDictionary.searchTerms(query);
 
     res.json({
-      status: 'success',
+      status: "success",
       results: {
         masterDictionary: masterDict.slice(0, 5),
         terminology: terminology.slice(0, 5),
@@ -356,9 +369,9 @@ export async function searchAllKnowledge(req: Request, res: Response) {
     });
   } catch (error) {
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to search knowledge',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to search knowledge",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -373,8 +386,8 @@ export async function getMasterDictionaryEntry(req: Request, res: Response) {
 
     if (!term || term.trim().length === 0) {
       return res.status(400).json({
-        status: 'error',
-        message: 'Term parameter is required',
+        status: "error",
+        message: "Term parameter is required",
       });
     }
 
@@ -383,11 +396,13 @@ export async function getMasterDictionaryEntry(req: Request, res: Response) {
 
     if (!entry) {
       // If exact match fails, try fuzzy search for suggestions
-      const suggestions = masterCulinaryDictionary.searchTerms(term).slice(0, 5);
+      const suggestions = masterCulinaryDictionary
+        .searchTerms(term)
+        .slice(0, 5);
 
       if (suggestions.length === 0) {
         return res.status(404).json({
-          status: 'not_found',
+          status: "not_found",
           message: `Master dictionary entry for "${term}" not found. Try searching for similar terms.`,
           suggestions: [],
         });
@@ -395,11 +410,11 @@ export async function getMasterDictionaryEntry(req: Request, res: Response) {
 
       // Return suggestions to help user find the term they're looking for
       return res.status(404).json({
-        status: 'not_found',
+        status: "not_found",
         message: `Exact match for "${term}" not found, but found similar terms:`,
-        suggestions: suggestions.map(t => ({
+        suggestions: suggestions.map((t) => ({
           term: t.term,
-          definition: t.definition.substring(0, 100) + '...',
+          definition: t.definition.substring(0, 100) + "...",
           masteryLevel: t.masteryLevel,
           confidence: t.confidence,
         })),
@@ -410,7 +425,7 @@ export async function getMasterDictionaryEntry(req: Request, res: Response) {
     const relatedTerms = masterCulinaryDictionary.getRelatedTerms(term);
 
     res.json({
-      status: 'success',
+      status: "success",
       entry: {
         term: entry, // Return the full MasterCulinaryTerm object
         related: relatedTerms,
@@ -418,16 +433,16 @@ export async function getMasterDictionaryEntry(req: Request, res: Response) {
           masteryLevel: entry.masteryLevel,
           confidence: entry.confidence,
           sources: entry.sources,
-        }
+        },
       },
       message: `✨ Echo knows "${entry.term}" at ${entry.masteryLevel} level!`,
     });
   } catch (error) {
-    console.error('Error getting master dictionary entry:', error);
+    console.error("Error getting master dictionary entry:", error);
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to get master dictionary entry',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to get master dictionary entry",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -436,13 +451,16 @@ export async function getMasterDictionaryEntry(req: Request, res: Response) {
  * GET /api/echo/hungry-learning/master-dictionary/category/:category
  * Get all master dictionary entries by category
  */
-export async function getMasterDictionaryByCategory(req: Request, res: Response) {
+export async function getMasterDictionaryByCategory(
+  req: Request,
+  res: Response,
+) {
   try {
     const { category } = req.params;
     const entries = masterCulinaryDictionary.getTermsByCategory(category);
 
     res.json({
-      status: 'success',
+      status: "success",
       category,
       entries: entries.slice(0, 50),
       total: entries.length,
@@ -450,9 +468,9 @@ export async function getMasterDictionaryByCategory(req: Request, res: Response)
     });
   } catch (error) {
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to get dictionary entries by category',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to get dictionary entries by category",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -461,13 +479,16 @@ export async function getMasterDictionaryByCategory(req: Request, res: Response)
  * GET /api/echo/hungry-learning/master-dictionary/mastery/:level
  * Get master dictionary entries by mastery level
  */
-export async function getMasterDictionaryByMasteryLevel(req: Request, res: Response) {
+export async function getMasterDictionaryByMasteryLevel(
+  req: Request,
+  res: Response,
+) {
   try {
     const { level } = req.params;
     const entries = masterCulinaryDictionary.getTermsByMasteryLevel(level);
 
     res.json({
-      status: 'success',
+      status: "success",
       masteryLevel: level,
       entries: entries.slice(0, 50),
       total: entries.length,
@@ -475,9 +496,9 @@ export async function getMasterDictionaryByMasteryLevel(req: Request, res: Respo
     });
   } catch (error) {
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to get dictionary entries by mastery level',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to get dictionary entries by mastery level",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -486,27 +507,30 @@ export async function getMasterDictionaryByMasteryLevel(req: Request, res: Respo
  * GET /api/echo/hungry-learning/master-dictionary/statistics
  * Get master dictionary statistics
  */
-export async function getMasterDictionaryStatistics(req: Request, res: Response) {
+export async function getMasterDictionaryStatistics(
+  req: Request,
+  res: Response,
+) {
   try {
     const stats = masterCulinaryDictionary.getStatistics();
 
     res.json({
-      status: 'success',
+      status: "success",
       statistics: stats,
       message: `Echo's Master Culinary Dictionary: ${stats.totalTerms} authoritative terms!`,
       masteryBreakdown: {
-        fundamental: 'Essential cooking basics and techniques',
-        intermediate: 'Professional cooking knowledge and methods',
-        advanced: 'Specialized techniques and deep culinary theory',
-        expert: 'Master-level knowledge and rare specializations',
-        master: 'Authority-level understanding, culinary mastery',
+        fundamental: "Essential cooking basics and techniques",
+        intermediate: "Professional cooking knowledge and methods",
+        advanced: "Specialized techniques and deep culinary theory",
+        expert: "Master-level knowledge and rare specializations",
+        master: "Authority-level understanding, culinary mastery",
       },
     });
   } catch (error) {
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to get master dictionary statistics',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to get master dictionary statistics",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -522,25 +546,25 @@ export async function importPDFKnowledge(req: Request, res: Response) {
 
     if (!pdfText) {
       return res.status(400).json({
-        status: 'error',
-        message: 'PDF text content is required',
+        status: "error",
+        message: "PDF text content is required",
       });
     }
 
     if (!metadata || !metadata.title) {
       return res.status(400).json({
-        status: 'error',
-        message: 'PDF metadata with title is required',
+        status: "error",
+        message: "PDF metadata with title is required",
       });
     }
 
     const defaultMetadata: PDFMetadata = {
-      title: metadata.title || 'Imported PDF',
+      title: metadata.title || "Imported PDF",
       author: metadata.author,
       publicationYear: metadata.publicationYear,
-      language: metadata.language || 'English',
+      language: metadata.language || "English",
       cuisine: metadata.cuisine,
-      specialization: metadata.specialization || 'culinary-book',
+      specialization: metadata.specialization || "culinary-book",
     };
 
     // Convert PDF text to master culinary terms
@@ -558,7 +582,7 @@ export async function importPDFKnowledge(req: Request, res: Response) {
     }
 
     res.json({
-      status: 'success',
+      status: "success",
       import: {
         source: extraction.metadata.source,
         termsExtracted: extraction.terms.length,
@@ -570,11 +594,11 @@ export async function importPDFKnowledge(req: Request, res: Response) {
       dictionaryStats: masterCulinaryDictionary.getStatistics(),
     });
   } catch (error) {
-    console.error('Error importing PDF knowledge:', error);
+    console.error("Error importing PDF knowledge:", error);
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to import PDF knowledge',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to import PDF knowledge",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -590,8 +614,8 @@ export async function importPDFBatch(req: Request, res: Response) {
 
     if (!Array.isArray(pdfs) || pdfs.length === 0) {
       return res.status(400).json({
-        status: 'error',
-        message: 'Array of PDFs is required',
+        status: "error",
+        message: "Array of PDFs is required",
       });
     }
 
@@ -602,17 +626,17 @@ export async function importPDFBatch(req: Request, res: Response) {
     // Process each PDF
     for (const pdf of pdfs) {
       if (!pdf.pdfText || !pdf.metadata || !pdf.metadata.title) {
-        console.warn('Skipping invalid PDF entry');
+        console.warn("Skipping invalid PDF entry");
         continue;
       }
 
       const defaultMetadata: PDFMetadata = {
-        title: pdf.metadata.title || 'Imported PDF',
+        title: pdf.metadata.title || "Imported PDF",
         author: pdf.metadata.author,
         publicationYear: pdf.metadata.publicationYear,
-        language: pdf.metadata.language || 'English',
+        language: pdf.metadata.language || "English",
         cuisine: pdf.metadata.cuisine,
-        specialization: pdf.metadata.specialization || 'culinary-book',
+        specialization: pdf.metadata.specialization || "culinary-book",
       };
 
       const extraction = convertPDFToMasterTerms(pdf.pdfText, defaultMetadata);
@@ -634,7 +658,7 @@ export async function importPDFBatch(req: Request, res: Response) {
     const merged = mergePDFExtractions(extractions);
 
     res.json({
-      status: 'success',
+      status: "success",
       import: {
         pdfCount: pdfs.length,
         successfulPDFs: extractions.length,
@@ -647,11 +671,11 @@ export async function importPDFBatch(req: Request, res: Response) {
       dictionaryStats: masterCulinaryDictionary.getStatistics(),
     });
   } catch (error) {
-    console.error('Error importing PDF batch:', error);
+    console.error("Error importing PDF batch:", error);
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to import PDF batch',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to import PDF batch",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -668,7 +692,7 @@ export async function getLibraryImportStatus(req: Request, res: Response) {
     const recipeStats = recipePersistenceService.getStatistics();
 
     res.json({
-      status: 'success',
+      status: "success",
       knowledge: {
         masterDictionary: {
           totalTerms: stats.totalTerms,
@@ -692,21 +716,31 @@ export async function getLibraryImportStatus(req: Request, res: Response) {
           totalKnowledge: hospitalityStats.totalKnowledge,
           categories: hospitalityStats.categories,
         },
-        combinedKnowledgeBase: stats.totalTerms + cuisineStats.totalTerms + hospitalityStats.totalKnowledge + recipeStats.totalRecipes,
+        combinedKnowledgeBase:
+          stats.totalTerms +
+          cuisineStats.totalTerms +
+          hospitalityStats.totalKnowledge +
+          recipeStats.totalRecipes,
       },
       readiness: {
-        masterLevel: stats.totalTerms >= 10000 ? '✓ Master dictionary complete' : `${stats.totalTerms} / 10,000 terms`,
-        recipesReady: recipeStats.totalRecipes > 0 ? `✓ ${recipeStats.totalRecipes} recipes ready for flavor analysis` : 'No recipes yet - run crawler',
-        culinaryAuthority: 'Echo is a culinary authority',
-        knowledgeRetention: 'All knowledge retained for search and learning',
+        masterLevel:
+          stats.totalTerms >= 10000
+            ? "✓ Master dictionary complete"
+            : `${stats.totalTerms} / 10,000 terms`,
+        recipesReady:
+          recipeStats.totalRecipes > 0
+            ? `✓ ${recipeStats.totalRecipes} recipes ready for flavor analysis`
+            : "No recipes yet - run crawler",
+        culinaryAuthority: "Echo is a culinary authority",
+        knowledgeRetention: "All knowledge retained for search and learning",
       },
-      message: '🍽️ Echo\'s knowledge acquisition system is active!',
+      message: "🍽️ Echo's knowledge acquisition system is active!",
     });
   } catch (error) {
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to get library import status',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to get library import status",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -720,7 +754,7 @@ export async function getRecipeStatistics(req: Request, res: Response) {
     const stats = recipePersistenceService.getStatistics();
 
     res.json({
-      status: 'success',
+      status: "success",
       recipes: {
         total: stats.totalRecipes,
         cuisines: stats.cuisineBreakdown,
@@ -733,17 +767,18 @@ export async function getRecipeStatistics(req: Request, res: Response) {
       echoLearning: {
         canAnalyzeFlavors: stats.totalRecipes > 0,
         canLearnIngredientRatios: stats.totalRecipes > 0,
-        message: stats.totalRecipes > 0
-          ? `Echo is analyzing ${stats.totalRecipes} recipes for flavor profiles and ingredient ratios`
-          : 'No recipes available - run the crawler to populate the database',
+        message:
+          stats.totalRecipes > 0
+            ? `Echo is analyzing ${stats.totalRecipes} recipes for flavor profiles and ingredient ratios`
+            : "No recipes available - run the crawler to populate the database",
       },
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to get recipe statistics',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      status: "error",
+      message: "Failed to get recipe statistics",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -760,8 +795,8 @@ export async function searchAndLearn(req: Request, res: Response) {
 
     if (!term || term.trim().length === 0) {
       return res.status(400).json({
-        status: 'error',
-        message: 'Term is required',
+        status: "error",
+        message: "Term is required",
       });
     }
 
@@ -769,45 +804,68 @@ export async function searchAndLearn(req: Request, res: Response) {
 
     // First, try to find in internal storage and Pinecone (PDF library, uploaded knowledge)
     // searchKnowledge now prioritizes internal storage (if high quality) with fallback to Pinecone
-    console.log(`[Echo Learning] Starting search for term: "${normalizedTerm}"`);
-    let searchResults: Array<{ knowledge: any; similarity: number; source: string }> = [];
+    console.log(
+      `[Echo Learning] Starting search for term: "${normalizedTerm}"`,
+    );
+    let searchResults: Array<{
+      knowledge: any;
+      similarity: number;
+      source: string;
+    }> = [];
 
     try {
       const results = await searchKnowledge(normalizedTerm, { topK: 5 });
       searchResults = results as any;
-      console.log(`[Echo Learning] Knowledge search returned ${searchResults.length} results`);
+      console.log(
+        `[Echo Learning] Knowledge search returned ${searchResults.length} results`,
+      );
       if (searchResults.length > 0) {
-        console.log(`[Echo Learning] Top result source: ${searchResults[0].source}, similarity: ${(searchResults[0].similarity * 100).toFixed(0)}%`);
+        console.log(
+          `[Echo Learning] Top result source: ${searchResults[0].source}, similarity: ${(searchResults[0].similarity * 100).toFixed(0)}%`,
+        );
       }
     } catch (searchError) {
-      console.warn(`[Echo Learning] Knowledge search error (continuing with fallbacks):`, searchError);
+      console.warn(
+        `[Echo Learning] Knowledge search error (continuing with fallbacks):`,
+        searchError,
+      );
       // Don't rethrow - continue with fallbacks
     }
 
     if (searchResults && searchResults.length > 0) {
       // Found in internal storage or Pinecone
       try {
-        console.log(`[Echo Learning] Found ${searchResults.length} results from knowledge storage`);
+        console.log(
+          `[Echo Learning] Found ${searchResults.length} results from knowledge storage`,
+        );
 
         const topResult = searchResults[0] as any;
         const knowledgeEntry = topResult.knowledge;
-        const resultSource = topResult.source || 'internal';
+        const resultSource = topResult.source || "internal";
 
         // Safety checks for required fields
         if (!knowledgeEntry) {
-          console.warn(`[Echo Learning] Search result missing knowledge object`);
+          console.warn(
+            `[Echo Learning] Search result missing knowledge object`,
+          );
         } else {
           // Safely extract fields with fallbacks
-          const source = knowledgeEntry.source || 'Unknown Source';
-          const definition = knowledgeEntry.description || knowledgeEntry.content || 'No definition available';
-          const content = knowledgeEntry.content || '';
+          const source = knowledgeEntry.source || "Unknown Source";
+          const definition =
+            knowledgeEntry.description ||
+            knowledgeEntry.content ||
+            "No definition available";
+          const content = knowledgeEntry.content || "";
           const similarity = topResult.similarity || 0;
 
           // Map result source to response source
-          const responseSource = resultSource === 'pinecone' ? 'pinecone-pdf-library' : 'internal-pdf-library';
+          const responseSource =
+            resultSource === "pinecone"
+              ? "pinecone-pdf-library"
+              : "internal-pdf-library";
 
           return res.json({
-            status: 'success',
+            status: "success",
             source: responseSource,
             entry: {
               term: normalizedTerm,
@@ -818,8 +876,8 @@ export async function searchAndLearn(req: Request, res: Response) {
               allResults: searchResults.slice(0, 3).map((r: any) => {
                 const k = r.knowledge || {};
                 return {
-                  definition: k.description || k.content || '',
-                  source: k.source || 'Unknown',
+                  definition: k.description || k.content || "",
+                  source: k.source || "Unknown",
                   similarity: r.similarity || 0,
                 };
               }),
@@ -828,7 +886,10 @@ export async function searchAndLearn(req: Request, res: Response) {
           });
         }
       } catch (formatError) {
-        console.error(`[Echo Learning] Error formatting search results:`, formatError);
+        console.error(
+          `[Echo Learning] Error formatting search results:`,
+          formatError,
+        );
         // Continue to fallbacks if formatting fails
       }
     }
@@ -839,11 +900,12 @@ export async function searchAndLearn(req: Request, res: Response) {
 
       if (entry) {
         // Found in master dictionary
-        const relatedTerms = masterCulinaryDictionary.getRelatedTerms(normalizedTerm);
+        const relatedTerms =
+          masterCulinaryDictionary.getRelatedTerms(normalizedTerm);
 
         return res.json({
-          status: 'success',
-          source: 'master-dictionary',
+          status: "success",
+          source: "master-dictionary",
           entry: {
             term: entry,
             related: relatedTerms,
@@ -851,32 +913,42 @@ export async function searchAndLearn(req: Request, res: Response) {
               masteryLevel: entry.masteryLevel,
               confidence: entry.confidence,
               sources: entry.sources,
-            }
+            },
           },
           message: `✨ Echo knows "${entry.term}" at ${entry.masteryLevel} level!`,
         });
       }
     } catch (dictError) {
-      console.warn(`[Echo Learning] Error searching master dictionary:`, dictError);
+      console.warn(
+        `[Echo Learning] Error searching master dictionary:`,
+        dictError,
+      );
       // Continue to external LLM
     }
 
     // Not found in Pinecone or master dictionary, try external LLM
     try {
-      console.log(`[Echo Learning] Term "${normalizedTerm}" not found. Querying OpenAI...`);
+      console.log(
+        `[Echo Learning] Term "${normalizedTerm}" not found. Querying OpenAI...`,
+      );
 
-      const enrichedTerms = await llmKnowledgeEnricher.enrichTerms([normalizedTerm], 1);
+      const enrichedTerms = await llmKnowledgeEnricher.enrichTerms(
+        [normalizedTerm],
+        1,
+      );
 
       if (!enrichedTerms || enrichedTerms.length === 0) {
         // LLM enrichment failed, return suggestions
-        const suggestions = masterCulinaryDictionary.searchTerms(normalizedTerm).slice(0, 5);
+        const suggestions = masterCulinaryDictionary
+          .searchTerms(normalizedTerm)
+          .slice(0, 5);
 
         return res.status(404).json({
-          status: 'not_found',
+          status: "not_found",
           message: `Could not find or learn about "${normalizedTerm}". Try these similar terms:`,
-          suggestions: suggestions.map(t => ({
+          suggestions: suggestions.map((t) => ({
             term: t.term,
-            definition: t.definition.substring(0, 100) + '...',
+            definition: t.definition.substring(0, 100) + "...",
             masteryLevel: t.masteryLevel,
             confidence: t.confidence,
           })),
@@ -889,50 +961,68 @@ export async function searchAndLearn(req: Request, res: Response) {
       // Convert the enriched knowledge to a master culinary term
       const masterTerm = {
         term: normalizedTerm.charAt(0).toUpperCase() + normalizedTerm.slice(1),
-        definition: enrichedTerm.knowledge.description || enrichedTerm.knowledge.title || '',
+        definition:
+          enrichedTerm.knowledge.description ||
+          enrichedTerm.knowledge.title ||
+          "",
         usage: {
-          primary: enrichedTerm.knowledge.description || 'A culinary term or ingredient',
+          primary:
+            enrichedTerm.knowledge.description ||
+            "A culinary term or ingredient",
           secondary: [],
-          context: enrichedTerm.knowledge.content ? `From external LLM research` : 'Learned from OpenAI',
+          context: enrichedTerm.knowledge.content
+            ? `From external LLM research`
+            : "Learned from OpenAI",
         },
-        categories: enrichedTerm.type === 'ingredient' ? ['ingredient'] : enrichedTerm.type === 'technique' ? ['technique'] : ['terminology'],
+        categories:
+          enrichedTerm.type === "ingredient"
+            ? ["ingredient"]
+            : enrichedTerm.type === "technique"
+              ? ["technique"]
+              : ["terminology"],
         etymology: {
-          origin: 'Modern',
+          origin: "Modern",
           originalWord: normalizedTerm,
           meaning: enrichedTerm.knowledge.description?.substring(0, 50),
-          period: 'Contemporary',
+          period: "Contemporary",
         },
         applications: {
-          primary: enrichedTerm.knowledge.description || '',
+          primary: enrichedTerm.knowledge.description || "",
           examples: [],
           dishes: [],
         },
         relatedTerms: [],
         history: {
-          period: 'Contemporary culinary knowledge',
-          culture: 'Global',
-          significance: 'Recently learned by Echo from external sources',
+          period: "Contemporary culinary knowledge",
+          culture: "Global",
+          significance: "Recently learned by Echo from external sources",
         },
         confidence: enrichedTerm.confidence || 0.85,
-        sources: ['openai', 'llm-knowledge-enricher'],
-        masteryLevel: 'intermediate' as const,
+        sources: ["openai", "llm-knowledge-enricher"],
+        masteryLevel: "intermediate" as const,
       };
 
       // Add the newly learned term to the master dictionary
       try {
         masterCulinaryDictionary.addTerm(normalizedTerm, masterTerm);
-        console.log(`[Echo Learning] Successfully added "${normalizedTerm}" to master dictionary`);
+        console.log(
+          `[Echo Learning] Successfully added "${normalizedTerm}" to master dictionary`,
+        );
       } catch (error) {
-        console.error(`[Echo Learning] Failed to add term to master dictionary:`, error);
+        console.error(
+          `[Echo Learning] Failed to add term to master dictionary:`,
+          error,
+        );
         // Even if adding fails, we can still return the result
       }
 
       // Return the newly learned term
-      const relatedTerms = masterCulinaryDictionary.getRelatedTerms(normalizedTerm);
+      const relatedTerms =
+        masterCulinaryDictionary.getRelatedTerms(normalizedTerm);
 
       return res.json({
-        status: 'success',
-        source: 'external-llm-learning',
+        status: "success",
+        source: "external-llm-learning",
         entry: {
           term: masterTerm,
           related: relatedTerms,
@@ -940,40 +1030,48 @@ export async function searchAndLearn(req: Request, res: Response) {
             masteryLevel: masterTerm.masteryLevel,
             confidence: masterTerm.confidence,
             sources: masterTerm.sources,
-          }
+          },
         },
         message: `✨ Echo learned about "${masterTerm.term}" from external sources and added it to knowledge!`,
       });
     } catch (llmError) {
       console.error(`[Echo Learning] Error with LLM enrichment:`, llmError);
       // Return not found response
-      const suggestions = masterCulinaryDictionary.searchTerms(normalizedTerm).slice(0, 5);
+      const suggestions = masterCulinaryDictionary
+        .searchTerms(normalizedTerm)
+        .slice(0, 5);
       return res.status(404).json({
-        status: 'not_found',
+        status: "not_found",
         message: `Could not find or learn about "${normalizedTerm}". Try these similar terms:`,
-        suggestions: suggestions.map(t => ({
+        suggestions: suggestions.map((t) => ({
           term: t.term,
-          definition: t.definition.substring(0, 100) + '...',
+          definition: t.definition.substring(0, 100) + "...",
           masteryLevel: t.masteryLevel,
           confidence: t.confidence,
         })),
       });
     }
   } catch (error) {
-    console.error('[Echo Learning] Unhandled error in search and learn:', error);
+    console.error(
+      "[Echo Learning] Unhandled error in search and learn:",
+      error,
+    );
     const errorMsg = error instanceof Error ? error.message : String(error);
 
     // Always return a well-formed response, even on error
     try {
       return res.status(500).json({
-        status: 'error',
-        message: 'Failed to search and learn',
+        status: "error",
+        message: "Failed to search and learn",
         error: errorMsg,
       });
     } catch (responseError) {
-      console.error('[Echo Learning] Failed to send error response:', responseError);
+      console.error(
+        "[Echo Learning] Failed to send error response:",
+        responseError,
+      );
       // Last resort - send a basic error
-      res.status(500).send('Internal server error');
+      res.status(500).send("Internal server error");
     }
   }
 }

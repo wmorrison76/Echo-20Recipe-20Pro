@@ -2,7 +2,7 @@
  * Echo's Master Culinary Dictionary
  * 10,000+ culinary terms with master-level understanding
  * Establishes Echo as the ultimate culinary authority
- * 
+ *
  * Each entry includes:
  * - Comprehensive definition
  * - Usage context (how it's used)
@@ -24,7 +24,18 @@ export interface MasterCulinaryTerm {
     context: string; // Context where commonly used
   };
   // The nature of this term
-  categories: Array<'technique' | 'ingredient' | 'method' | 'equipment' | 'theory' | 'cuisine' | 'equipment' | 'safety' | 'service' | 'tradition'>;
+  categories: Array<
+    | "technique"
+    | "ingredient"
+    | "method"
+    | "equipment"
+    | "theory"
+    | "cuisine"
+    | "equipment"
+    | "safety"
+    | "service"
+    | "tradition"
+  >;
   // Etymology - where the word comes from
   etymology: {
     origin: string; // Language origin (French, Italian, Japanese, etc.)
@@ -51,7 +62,12 @@ export interface MasterCulinaryTerm {
   // Source of the definition
   sources: string[];
   // When this was added to Echo's knowledge
-  masteryLevel: 'fundamental' | 'intermediate' | 'advanced' | 'expert' | 'master';
+  masteryLevel:
+    | "fundamental"
+    | "intermediate"
+    | "advanced"
+    | "expert"
+    | "master";
 }
 
 class MasterCulinaryDictionary {
@@ -66,284 +82,373 @@ class MasterCulinaryDictionary {
    */
   private initializeMasterDictionary(): void {
     // FRENCH CLASSICAL TERMS (500+)
-    this.addTerm('mise-en-place', {
-      term: 'Mise-en-Place',
-      definition: 'French culinary practice of preparing and organizing all ingredients, tools, and workspace before cooking begins. Essential to professional kitchen efficiency.',
+    this.addTerm("mise-en-place", {
+      term: "Mise-en-Place",
+      definition:
+        "French culinary practice of preparing and organizing all ingredients, tools, and workspace before cooking begins. Essential to professional kitchen efficiency.",
       usage: {
-        primary: 'Professional kitchen organization',
-        secondary: ['prep work', 'station setup', 'cooking preparation'],
-        context: 'Used in all professional kitchens and serious cooking environments',
+        primary: "Professional kitchen organization",
+        secondary: ["prep work", "station setup", "cooking preparation"],
+        context:
+          "Used in all professional kitchens and serious cooking environments",
       },
-      categories: ['technique', 'method'],
+      categories: ["technique", "method"],
       etymology: {
-        origin: 'French',
-        originalWord: 'mettre en place',
-        meaning: 'to put in place',
-        period: '19th century culinary training',
+        origin: "French",
+        originalWord: "mettre en place",
+        meaning: "to put in place",
+        period: "19th century culinary training",
       },
       applications: {
-        primary: 'Organizing workspace and ingredients before cooking',
-        examples: ['Setting up knife and cutting board before prep', 'Arranging ingredients in order of use'],
-        dishes: ['All classical French dishes', 'All professional kitchen operations'],
+        primary: "Organizing workspace and ingredients before cooking",
+        examples: [
+          "Setting up knife and cutting board before prep",
+          "Arranging ingredients in order of use",
+        ],
+        dishes: [
+          "All classical French dishes",
+          "All professional kitchen operations",
+        ],
       },
-      relatedTerms: ['prep-work', 'kitchen-brigade', 'station-setup', 'organization'],
+      relatedTerms: [
+        "prep-work",
+        "kitchen-brigade",
+        "station-setup",
+        "organization",
+      ],
       history: {
-        period: 'Established in 19th century French kitchens',
-        culture: 'French culinary tradition',
-        significance: 'Foundation of professional cooking efficiency',
+        period: "Established in 19th century French kitchens",
+        culture: "French culinary tradition",
+        significance: "Foundation of professional cooking efficiency",
       },
       confidence: 1.0,
-      sources: ['Escoffier Guide Culinaire', 'Classical French Culinary Standards'],
-      masteryLevel: 'fundamental',
+      sources: [
+        "Escoffier Guide Culinaire",
+        "Classical French Culinary Standards",
+      ],
+      masteryLevel: "fundamental",
     });
 
-    this.addTerm('beurre-blanc', {
-      term: 'Beurre Blanc',
-      definition: 'Classic French emulsified butter sauce made from white wine reduction, shallots, and cold butter. One of the five mother sauces derivatives.',
+    this.addTerm("beurre-blanc", {
+      term: "Beurre Blanc",
+      definition:
+        "Classic French emulsified butter sauce made from white wine reduction, shallots, and cold butter. One of the five mother sauces derivatives.",
       usage: {
-        primary: 'Sauce for fish and vegetables',
-        secondary: ['base for sauce variations'],
-        context: 'Fine dining, French restaurant service',
+        primary: "Sauce for fish and vegetables",
+        secondary: ["base for sauce variations"],
+        context: "Fine dining, French restaurant service",
       },
-      categories: ['technique', 'method', 'theory'],
+      categories: ["technique", "method", "theory"],
       etymology: {
-        origin: 'French',
-        originalWord: 'beurre blanc',
-        meaning: 'white butter',
-        period: 'Classical French cuisine development',
+        origin: "French",
+        originalWord: "beurre blanc",
+        meaning: "white butter",
+        period: "Classical French cuisine development",
       },
       applications: {
-        primary: 'Finishing sauce for delicate proteins',
-        examples: ['Poached sole with beurre blanc', 'Steamed asparagus with beurre blanc'],
-        dishes: ['Sole Meunière', 'Lobster thermidor variations'],
+        primary: "Finishing sauce for delicate proteins",
+        examples: [
+          "Poached sole with beurre blanc",
+          "Steamed asparagus with beurre blanc",
+        ],
+        dishes: ["Sole Meunière", "Lobster thermidor variations"],
       },
-      relatedTerms: ['emulsification', 'mother-sauces', 'beurre-rouge', 'hollandaise', 'béarnaise'],
+      relatedTerms: [
+        "emulsification",
+        "mother-sauces",
+        "beurre-rouge",
+        "hollandaise",
+        "béarnaise",
+      ],
       history: {
-        period: '19th-20th century',
-        culture: 'French haute cuisine',
-        significance: 'Fundamental sauce in classical cooking',
+        period: "19th-20th century",
+        culture: "French haute cuisine",
+        significance: "Fundamental sauce in classical cooking",
       },
       confidence: 1.0,
-      sources: ['Escoffier', 'Larousse Gastronomique', 'Le Cordon Bleu'],
-      masteryLevel: 'intermediate',
+      sources: ["Escoffier", "Larousse Gastronomique", "Le Cordon Bleu"],
+      masteryLevel: "intermediate",
     });
 
-    this.addTerm('brunoise', {
-      term: 'Brunoise',
-      definition: 'The finest dice cut in classical knife skills, producing uniform 1/8-inch (3mm) cubes. Named after Jean Brunois, 18th century French chef.',
+    this.addTerm("brunoise", {
+      term: "Brunoise",
+      definition:
+        "The finest dice cut in classical knife skills, producing uniform 1/8-inch (3mm) cubes. Named after Jean Brunois, 18th century French chef.",
       usage: {
-        primary: 'Fine vegetable dice for garnish and mirepoix',
-        secondary: ['decorative garnish', 'refined mirepoix'],
-        context: 'Classical French cuisine, fine dining',
+        primary: "Fine vegetable dice for garnish and mirepoix",
+        secondary: ["decorative garnish", "refined mirepoix"],
+        context: "Classical French cuisine, fine dining",
       },
-      categories: ['technique', 'method'],
+      categories: ["technique", "method"],
       etymology: {
-        origin: 'French',
-        originalWord: 'brunoise',
-        meaning: 'Named after Chef Jean Brunois',
-        period: '18th century French culinary development',
+        origin: "French",
+        originalWord: "brunoise",
+        meaning: "Named after Chef Jean Brunois",
+        period: "18th century French culinary development",
       },
       applications: {
-        primary: 'Small, uniform dice for professional presentation',
-        examples: ['Brunoise of vegetables for consommé', 'Fine dice of carrots, celery, onion for mirepoix'],
-        dishes: ['Consommé garnishes', 'Fine mirepoix for classical sauces'],
+        primary: "Small, uniform dice for professional presentation",
+        examples: [
+          "Brunoise of vegetables for consommé",
+          "Fine dice of carrots, celery, onion for mirepoix",
+        ],
+        dishes: ["Consommé garnishes", "Fine mirepoix for classical sauces"],
       },
-      relatedTerms: ['julienne', 'batonnet', 'mirepoix', 'dice', 'knife-cuts'],
+      relatedTerms: ["julienne", "batonnet", "mirepoix", "dice", "knife-cuts"],
       history: {
-        period: '18th century',
-        culture: 'French culinary tradition',
-        significance: 'Fundamental knife skill in classical training',
+        period: "18th century",
+        culture: "French culinary tradition",
+        significance: "Fundamental knife skill in classical training",
       },
       confidence: 1.0,
-      sources: ['Escoffier', 'Classical French Training'],
-      masteryLevel: 'fundamental',
+      sources: ["Escoffier", "Classical French Training"],
+      masteryLevel: "fundamental",
     });
 
-    this.addTerm('julienne', {
-      term: 'Julienne',
-      definition: 'Knife cut producing thin, uniform sticks approximately 1/8 inch × 1/8 inch × 2 inches (3mm × 3mm × 5cm). Named after 18th century chef Jean Julienne.',
+    this.addTerm("julienne", {
+      term: "Julienne",
+      definition:
+        "Knife cut producing thin, uniform sticks approximately 1/8 inch × 1/8 inch × 2 inches (3mm × 3mm × 5cm). Named after 18th century chef Jean Julienne.",
       usage: {
-        primary: 'Vegetable cutting for stir-fries and garnishes',
-        secondary: ['stir-fry preparation', 'decorative cuts'],
-        context: 'Professional kitchens, French cuisine, Asian cooking',
+        primary: "Vegetable cutting for stir-fries and garnishes",
+        secondary: ["stir-fry preparation", "decorative cuts"],
+        context: "Professional kitchens, French cuisine, Asian cooking",
       },
-      categories: ['technique', 'method'],
+      categories: ["technique", "method"],
       etymology: {
-        origin: 'French',
-        originalWord: 'julienne',
-        meaning: 'Named after Chef Jean Julienne',
-        period: '18th century French culinary development',
+        origin: "French",
+        originalWord: "julienne",
+        meaning: "Named after Chef Jean Julienne",
+        period: "18th century French culinary development",
       },
       applications: {
-        primary: 'Creating uniform vegetable strips for consistent cooking',
-        examples: ['Julienne of carrots for stir-fries', 'Julienne of zucchini for garnish'],
-        dishes: ['Asian stir-fries', 'French vegetable preparations'],
+        primary: "Creating uniform vegetable strips for consistent cooking",
+        examples: [
+          "Julienne of carrots for stir-fries",
+          "Julienne of zucchini for garnish",
+        ],
+        dishes: ["Asian stir-fries", "French vegetable preparations"],
       },
-      relatedTerms: ['brunoise', 'batonnet', 'chiffonade', 'knife-cuts'],
+      relatedTerms: ["brunoise", "batonnet", "chiffonade", "knife-cuts"],
       history: {
-        period: '18th century',
-        culture: 'French culinary tradition',
-        significance: 'Essential knife skill in professional cooking',
+        period: "18th century",
+        culture: "French culinary tradition",
+        significance: "Essential knife skill in professional cooking",
       },
       confidence: 1.0,
-      sources: ['Escoffier Guide Culinaire'],
-      masteryLevel: 'fundamental',
+      sources: ["Escoffier Guide Culinaire"],
+      masteryLevel: "fundamental",
     });
 
-    this.addTerm('mirepoix', {
-      term: 'Mirepoix',
-      definition: 'Classical vegetable base of 2 parts onion, 1 part carrot, 1 part celery (2:1:1 ratio). Foundation flavor for stocks, sauces, and braises. Named after Duke of Mirepoix.',
+    this.addTerm("mirepoix", {
+      term: "Mirepoix",
+      definition:
+        "Classical vegetable base of 2 parts onion, 1 part carrot, 1 part celery (2:1:1 ratio). Foundation flavor for stocks, sauces, and braises. Named after Duke of Mirepoix.",
       usage: {
-        primary: 'Flavor foundation for stocks and sauces',
-        secondary: ['braising vegetable base', 'flavoring ingredient'],
-        context: 'Professional kitchens, classical French cooking',
+        primary: "Flavor foundation for stocks and sauces",
+        secondary: ["braising vegetable base", "flavoring ingredient"],
+        context: "Professional kitchens, classical French cooking",
       },
-      categories: ['technique', 'ingredient', 'method'],
+      categories: ["technique", "ingredient", "method"],
       etymology: {
-        origin: 'French',
-        originalWord: 'mirepoix',
-        meaning: 'Named after Gaston de Lévis, Duke of Mirepoix (18th century)',
-        period: '18th century French cooking',
+        origin: "French",
+        originalWord: "mirepoix",
+        meaning: "Named after Gaston de Lévis, Duke of Mirepoix (18th century)",
+        period: "18th century French cooking",
       },
       applications: {
-        primary: 'Creating flavor foundation in stocks and sauces',
-        examples: ['Mirepoix for brown stock', 'Mirepoix for demiglace'],
-        dishes: ['All classical French stocks', 'Traditional braises'],
+        primary: "Creating flavor foundation in stocks and sauces",
+        examples: ["Mirepoix for brown stock", "Mirepoix for demiglace"],
+        dishes: ["All classical French stocks", "Traditional braises"],
       },
-      relatedTerms: ['brunoise-mirepoix', 'stock', 'sauce-base', 'aromatic-vegetables'],
+      relatedTerms: [
+        "brunoise-mirepoix",
+        "stock",
+        "sauce-base",
+        "aromatic-vegetables",
+      ],
       history: {
-        period: '18th century',
-        culture: 'French haute cuisine',
-        significance: 'Foundation of French sauce-making',
+        period: "18th century",
+        culture: "French haute cuisine",
+        significance: "Foundation of French sauce-making",
       },
       confidence: 1.0,
-      sources: ['Escoffier', 'Larousse Gastronomique'],
-      masteryLevel: 'fundamental',
+      sources: ["Escoffier", "Larousse Gastronomique"],
+      masteryLevel: "fundamental",
     });
 
-    this.addTerm('demiglace', {
-      term: 'Demiglace',
-      definition: 'Rich, glossy sauce made by reducing equal parts brown sauce and brown stock to concentrated consistency. Fundamental mother sauce derivative. French for "half-glaze".',
+    this.addTerm("demiglace", {
+      term: "Demiglace",
+      definition:
+        'Rich, glossy sauce made by reducing equal parts brown sauce and brown stock to concentrated consistency. Fundamental mother sauce derivative. French for "half-glaze".',
       usage: {
-        primary: 'Base for derived sauces in classical cooking',
-        secondary: ['finishing sauce', 'sauce enrichment'],
-        context: 'High-end French cuisine, classical restaurant cooking',
+        primary: "Base for derived sauces in classical cooking",
+        secondary: ["finishing sauce", "sauce enrichment"],
+        context: "High-end French cuisine, classical restaurant cooking",
       },
-      categories: ['technique', 'method', 'theory'],
+      categories: ["technique", "method", "theory"],
       etymology: {
-        origin: 'French',
-        originalWord: 'demiglace',
-        meaning: 'half-glaze (demi=half, glace=glaze)',
-        period: '19th century classical French cooking',
+        origin: "French",
+        originalWord: "demiglace",
+        meaning: "half-glaze (demi=half, glace=glaze)",
+        period: "19th century classical French cooking",
       },
       applications: {
-        primary: 'Base for numerous classical sauces',
-        examples: ['Demiglace enriched with mushrooms', 'Demiglace reduced with wine'],
-        dishes: ['Sauce Poivrade', 'Sauce Chasseur', 'Sauce Lyonnaise'],
+        primary: "Base for numerous classical sauces",
+        examples: [
+          "Demiglace enriched with mushrooms",
+          "Demiglace reduced with wine",
+        ],
+        dishes: ["Sauce Poivrade", "Sauce Chasseur", "Sauce Lyonnaise"],
       },
-      relatedTerms: ['mother-sauces', 'espagnole', 'reduction', 'glace-de-viande'],
+      relatedTerms: [
+        "mother-sauces",
+        "espagnole",
+        "reduction",
+        "glace-de-viande",
+      ],
       history: {
-        period: '19th-20th century',
-        culture: 'French haute cuisine',
-        significance: 'Essential sauce in classical French cooking',
+        period: "19th-20th century",
+        culture: "French haute cuisine",
+        significance: "Essential sauce in classical French cooking",
       },
       confidence: 1.0,
-      sources: ['Escoffier Guide Culinaire', 'Larousse Gastronomique'],
-      masteryLevel: 'advanced',
+      sources: ["Escoffier Guide Culinaire", "Larousse Gastronomique"],
+      masteryLevel: "advanced",
     });
 
     // COOKING TECHNIQUES (300+)
-    this.addTerm('emulsification', {
-      term: 'Emulsification',
-      definition: 'Food science process of combining two immiscible liquids (oil and water) by breaking one into tiny droplets suspended in the other. Requires emulsifying agent.',
+    this.addTerm("emulsification", {
+      term: "Emulsification",
+      definition:
+        "Food science process of combining two immiscible liquids (oil and water) by breaking one into tiny droplets suspended in the other. Requires emulsifying agent.",
       usage: {
-        primary: 'Creating stable sauces and dressings',
-        secondary: ['creating creamy textures', 'stabilizing mixtures'],
-        context: 'Sauce-making, baking, pastry, food science',
+        primary: "Creating stable sauces and dressings",
+        secondary: ["creating creamy textures", "stabilizing mixtures"],
+        context: "Sauce-making, baking, pastry, food science",
       },
-      categories: ['theory', 'method', 'technique'],
+      categories: ["theory", "method", "technique"],
       etymology: {
-        origin: 'Latin/French',
-        originalWord: 'emulgere (Latin) - to milk out',
-        meaning: 'Breaking into small particles',
-        period: 'Modern culinary science',
+        origin: "Latin/French",
+        originalWord: "emulgere (Latin) - to milk out",
+        meaning: "Breaking into small particles",
+        period: "Modern culinary science",
       },
       applications: {
-        primary: 'Creating stable sauces without separation',
-        examples: ['Mayonnaise (egg as emulsifier)', 'Hollandaise (egg yolk as emulsifier)', 'Vinaigrette with mustard'],
-        dishes: ['All emulsified sauces', 'Creamy dressings'],
+        primary: "Creating stable sauces without separation",
+        examples: [
+          "Mayonnaise (egg as emulsifier)",
+          "Hollandaise (egg yolk as emulsifier)",
+          "Vinaigrette with mustard",
+        ],
+        dishes: ["All emulsified sauces", "Creamy dressings"],
       },
-      relatedTerms: ['emulsifier', 'mayonnaise', 'hollandaise', 'lecithin', 'colloid'],
+      relatedTerms: [
+        "emulsifier",
+        "mayonnaise",
+        "hollandaise",
+        "lecithin",
+        "colloid",
+      ],
       history: {
-        period: 'Modern food science',
-        culture: 'Culinary science',
-        significance: 'Understanding emulsification prevents broken sauces',
+        period: "Modern food science",
+        culture: "Culinary science",
+        significance: "Understanding emulsification prevents broken sauces",
       },
       confidence: 1.0,
-      sources: ['McGee on Food and Cooking', 'Modernist Cuisine', 'Food Science'],
-      masteryLevel: 'advanced',
+      sources: [
+        "McGee on Food and Cooking",
+        "Modernist Cuisine",
+        "Food Science",
+      ],
+      masteryLevel: "advanced",
     });
 
-    this.addTerm('tempering', {
-      term: 'Tempering',
-      definition: 'Process of gently heating and cooling substance to achieve desired structure and texture. Used for chocolate (crystal formation), eggs (protein setting), and Indian spices (tadka).',
+    this.addTerm("tempering", {
+      term: "Tempering",
+      definition:
+        "Process of gently heating and cooling substance to achieve desired structure and texture. Used for chocolate (crystal formation), eggs (protein setting), and Indian spices (tadka).",
       usage: {
-        primary: 'Creating proper chocolate texture and shine',
-        secondary: ['Indian spice infusion (tadka)', 'egg tempering for custards'],
-        context: 'Pastry, desserts, Indian cooking, sauce-making',
+        primary: "Creating proper chocolate texture and shine",
+        secondary: [
+          "Indian spice infusion (tadka)",
+          "egg tempering for custards",
+        ],
+        context: "Pastry, desserts, Indian cooking, sauce-making",
       },
-      categories: ['technique', 'method'],
+      categories: ["technique", "method"],
       etymology: {
-        origin: 'French/Latin',
-        originalWord: 'temperer (French) - to moderate',
-        meaning: 'Bringing to proper temperature and state',
-        period: 'Ancient chocolate and sauce-making traditions',
+        origin: "French/Latin",
+        originalWord: "temperer (French) - to moderate",
+        meaning: "Bringing to proper temperature and state",
+        period: "Ancient chocolate and sauce-making traditions",
       },
       applications: {
-        primary: 'Creating shiny, snappy chocolate for coating',
-        examples: ['Tempering chocolate for dipping', 'Temper eggs for pastry cream', 'Tadka: tempering spices in hot oil'],
-        dishes: ['Chocolate coatings', 'Pastry creams', 'Indian curries'],
+        primary: "Creating shiny, snappy chocolate for coating",
+        examples: [
+          "Tempering chocolate for dipping",
+          "Temper eggs for pastry cream",
+          "Tadka: tempering spices in hot oil",
+        ],
+        dishes: ["Chocolate coatings", "Pastry creams", "Indian curries"],
       },
-      relatedTerms: ['chocolate-working', 'pastry-cream', 'tadka', 'spice-blooming'],
+      relatedTerms: [
+        "chocolate-working",
+        "pastry-cream",
+        "tadka",
+        "spice-blooming",
+      ],
       history: {
-        period: 'Chocolate: 16th century Spanish introduction; Spice: ancient Indian tradition',
-        culture: 'European pastry, Indian cooking',
-        significance: 'Essential for chocolate gloss and Indian curry depth',
+        period:
+          "Chocolate: 16th century Spanish introduction; Spice: ancient Indian tradition",
+        culture: "European pastry, Indian cooking",
+        significance: "Essential for chocolate gloss and Indian curry depth",
       },
       confidence: 0.95,
-      sources: ['Culinary Textbooks', 'Food Science', 'Traditional Cooking'],
-      masteryLevel: 'intermediate',
+      sources: ["Culinary Textbooks", "Food Science", "Traditional Cooking"],
+      masteryLevel: "intermediate",
     });
 
-    this.addTerm('reduction', {
-      term: 'Reduction',
-      definition: 'Cooking technique where liquid is simmered to evaporate water, concentrating flavors and often thickening sauce. Essential for sauce-making and flavor concentration.',
+    this.addTerm("reduction", {
+      term: "Reduction",
+      definition:
+        "Cooking technique where liquid is simmered to evaporate water, concentrating flavors and often thickening sauce. Essential for sauce-making and flavor concentration.",
       usage: {
-        primary: 'Concentrating and thickening sauces',
-        secondary: ['flavor concentration', 'sauce body development'],
-        context: 'All savory cooking, sauce-making, braising',
+        primary: "Concentrating and thickening sauces",
+        secondary: ["flavor concentration", "sauce body development"],
+        context: "All savory cooking, sauce-making, braising",
       },
-      categories: ['technique', 'method'],
+      categories: ["technique", "method"],
       etymology: {
-        origin: 'Latin/French',
-        originalWord: 'reducere (Latin) - to lead back',
-        meaning: 'Reducing volume by evaporation',
-        period: 'Classical cooking tradition',
+        origin: "Latin/French",
+        originalWord: "reducere (Latin) - to lead back",
+        meaning: "Reducing volume by evaporation",
+        period: "Classical cooking tradition",
       },
       applications: {
-        primary: 'Creating concentrated, flavorful sauce from cooking liquid',
-        examples: ['Wine reduction for pan sauce', 'Stock reduction for glace', 'Balsamic reduction'],
-        dishes: ['Pan sauces', 'Demiglace', 'Beurre rouge'],
+        primary: "Creating concentrated, flavorful sauce from cooking liquid",
+        examples: [
+          "Wine reduction for pan sauce",
+          "Stock reduction for glace",
+          "Balsamic reduction",
+        ],
+        dishes: ["Pan sauces", "Demiglace", "Beurre rouge"],
       },
-      relatedTerms: ['concentration', 'evaporation', 'glace', 'fond', 'gastrique'],
+      relatedTerms: [
+        "concentration",
+        "evaporation",
+        "glace",
+        "fond",
+        "gastrique",
+      ],
       history: {
-        period: 'Classical cooking tradition',
-        culture: 'All culinary traditions',
-        significance: 'Fundamental technique for flavor development',
+        period: "Classical cooking tradition",
+        culture: "All culinary traditions",
+        significance: "Fundamental technique for flavor development",
       },
       confidence: 1.0,
-      sources: ['Culinary Training', 'Food Science'],
-      masteryLevel: 'fundamental',
+      sources: ["Culinary Training", "Food Science"],
+      masteryLevel: "fundamental",
     });
 
     // Adding starter terms - would continue to 10,000+
@@ -351,250 +456,368 @@ class MasterCulinaryDictionary {
     // In production, this would contain 10,000 complete entries
 
     // BASIC COOKING TECHNIQUES (Fundamental)
-    this.addTerm('sauce', {
-      term: 'Sauce',
-      definition: 'A liquid or semi-liquid preparation served with food to enhance flavor, add moisture, or provide visual appeal. Can be hot or cold, thin or thick, and derived from broths, emulsions, or reductions.',
+    this.addTerm("sauce", {
+      term: "Sauce",
+      definition:
+        "A liquid or semi-liquid preparation served with food to enhance flavor, add moisture, or provide visual appeal. Can be hot or cold, thin or thick, and derived from broths, emulsions, or reductions.",
       usage: {
-        primary: 'Accompanying dishes to enhance flavor and presentation',
-        secondary: ['binding ingredient', 'flavor foundation', 'visual garnish'],
-        context: 'All cuisines and cooking styles, from basic to haute cuisine',
+        primary: "Accompanying dishes to enhance flavor and presentation",
+        secondary: [
+          "binding ingredient",
+          "flavor foundation",
+          "visual garnish",
+        ],
+        context: "All cuisines and cooking styles, from basic to haute cuisine",
       },
-      categories: ['technique', 'ingredient', 'method'],
+      categories: ["technique", "ingredient", "method"],
       etymology: {
-        origin: 'French',
-        originalWord: 'sauce',
+        origin: "French",
+        originalWord: "sauce",
         meaning: 'Derived from Latin "salsa" (salted)',
-        period: 'Medieval and classical European cooking',
+        period: "Medieval and classical European cooking",
       },
       applications: {
-        primary: 'Enhancing main dishes, vegetables, and proteins with flavor and moisture',
-        examples: ['Tomato sauce for pasta', 'Béarnaise for steak', 'Hollandaise for eggs'],
-        dishes: ['Pasta dishes', 'Meat preparations', 'Poached eggs', 'Steamed vegetables'],
+        primary:
+          "Enhancing main dishes, vegetables, and proteins with flavor and moisture",
+        examples: [
+          "Tomato sauce for pasta",
+          "Béarnaise for steak",
+          "Hollandaise for eggs",
+        ],
+        dishes: [
+          "Pasta dishes",
+          "Meat preparations",
+          "Poached eggs",
+          "Steamed vegetables",
+        ],
       },
-      relatedTerms: ['gravy', 'coulis', 'jus', 'reduction', 'emulsion', 'beurre-blanc', 'hollandaise', 'béarnaise'],
+      relatedTerms: [
+        "gravy",
+        "coulis",
+        "jus",
+        "reduction",
+        "emulsion",
+        "beurre-blanc",
+        "hollandaise",
+        "béarnaise",
+      ],
       history: {
-        period: 'Medieval period to modern',
-        culture: 'French culinary tradition (codified by Escoffier)',
-        significance: 'Fundamental element of professional cooking, one of five mother sauces in classical French cuisine',
+        period: "Medieval period to modern",
+        culture: "French culinary tradition (codified by Escoffier)",
+        significance:
+          "Fundamental element of professional cooking, one of five mother sauces in classical French cuisine",
       },
       confidence: 1.0,
-      sources: ['Escoffier Guide Culinaire', 'Classic Culinary Training'],
-      masteryLevel: 'fundamental',
+      sources: ["Escoffier Guide Culinaire", "Classic Culinary Training"],
+      masteryLevel: "fundamental",
     });
 
-    this.addTerm('saute', {
-      term: 'Sauté',
-      definition: 'Cooking technique using high heat with minimal fat in a shallow pan, tossing or stirring food frequently to ensure even cooking and browning. From French "sauté" meaning "jumped."',
+    this.addTerm("saute", {
+      term: "Sauté",
+      definition:
+        'Cooking technique using high heat with minimal fat in a shallow pan, tossing or stirring food frequently to ensure even cooking and browning. From French "sauté" meaning "jumped."',
       usage: {
-        primary: 'Quick-cooking vegetables, proteins, and aromatics with browning',
-        secondary: ['building flavor foundation', 'developing fond for sauces', 'caramelizing vegetables'],
-        context: 'Professional and home kitchens, French cooking foundation',
+        primary:
+          "Quick-cooking vegetables, proteins, and aromatics with browning",
+        secondary: [
+          "building flavor foundation",
+          "developing fond for sauces",
+          "caramelizing vegetables",
+        ],
+        context: "Professional and home kitchens, French cooking foundation",
       },
-      categories: ['technique', 'method'],
+      categories: ["technique", "method"],
       etymology: {
-        origin: 'French',
-        originalWord: 'sauté',
-        meaning: 'jumped (past participle of sauter)',
-        period: 'Classical French culinary technique',
+        origin: "French",
+        originalWord: "sauté",
+        meaning: "jumped (past participle of sauter)",
+        period: "Classical French culinary technique",
       },
       applications: {
-        primary: 'Cooking vegetables, proteins, and aromatic ingredients quickly with color development',
-        examples: ['Sauté onions until golden', 'Sauté mushrooms until liquid evaporates', 'Sauté proteins until browned on exterior'],
-        dishes: ['All stir-fries', 'French sauces and preparations', 'Asian cuisine', 'Mediterranean cooking'],
+        primary:
+          "Cooking vegetables, proteins, and aromatic ingredients quickly with color development",
+        examples: [
+          "Sauté onions until golden",
+          "Sauté mushrooms until liquid evaporates",
+          "Sauté proteins until browned on exterior",
+        ],
+        dishes: [
+          "All stir-fries",
+          "French sauces and preparations",
+          "Asian cuisine",
+          "Mediterranean cooking",
+        ],
       },
-      relatedTerms: ['pan-fry', 'stir-fry', 'fond', 'sauce', 'caramelize', 'browning'],
+      relatedTerms: [
+        "pan-fry",
+        "stir-fry",
+        "fond",
+        "sauce",
+        "caramelize",
+        "browning",
+      ],
       history: {
-        period: '18th-19th century French cuisine development',
-        culture: 'French classical cooking',
-        significance: 'Essential technique for developing flavor in professional cooking',
+        period: "18th-19th century French cuisine development",
+        culture: "French classical cooking",
+        significance:
+          "Essential technique for developing flavor in professional cooking",
       },
       confidence: 1.0,
-      sources: ['Classical French Training', 'Le Cordon Bleu'],
-      masteryLevel: 'fundamental',
+      sources: ["Classical French Training", "Le Cordon Bleu"],
+      masteryLevel: "fundamental",
     });
 
-    this.addTerm('simmer', {
-      term: 'Simmer',
-      definition: 'Cooking method using gentle heat with small, occasional bubbles breaking the surface (around 180-205°F / 82-96°C). Slower than boiling, maintains texture better for delicate foods.',
+    this.addTerm("simmer", {
+      term: "Simmer",
+      definition:
+        "Cooking method using gentle heat with small, occasional bubbles breaking the surface (around 180-205°F / 82-96°C). Slower than boiling, maintains texture better for delicate foods.",
       usage: {
-        primary: 'Gentle cooking of stocks, soups, stews, and sauces',
-        secondary: ['cooking delicate foods', 'reducing sauces', 'poaching'],
-        context: 'All professional and home cooking',
+        primary: "Gentle cooking of stocks, soups, stews, and sauces",
+        secondary: ["cooking delicate foods", "reducing sauces", "poaching"],
+        context: "All professional and home cooking",
       },
-      categories: ['technique', 'method'],
+      categories: ["technique", "method"],
       etymology: {
-        origin: 'English',
-        meaning: 'Cooking at a gentle bubbling state',
-        period: 'Medieval cooking technique',
+        origin: "English",
+        meaning: "Cooking at a gentle bubbling state",
+        period: "Medieval cooking technique",
       },
       applications: {
-        primary: 'Cooking foods gently without breaking apart or becoming tough',
-        examples: ['Simmer stock for flavor extraction', 'Simmer sauce for thickness reduction', 'Simmer soup for flavor development'],
-        dishes: ['Stocks', 'Consommés', 'Soups', 'Braises', 'Stews'],
+        primary:
+          "Cooking foods gently without breaking apart or becoming tough",
+        examples: [
+          "Simmer stock for flavor extraction",
+          "Simmer sauce for thickness reduction",
+          "Simmer soup for flavor development",
+        ],
+        dishes: ["Stocks", "Consommés", "Soups", "Braises", "Stews"],
       },
-      relatedTerms: ['boil', 'poach', 'braise', 'reduce', 'stock'],
+      relatedTerms: ["boil", "poach", "braise", "reduce", "stock"],
       history: {
-        period: 'Medieval to modern cooking',
-        culture: 'Universal cooking technique',
-        significance: 'Essential for proper stock and sauce preparation',
+        period: "Medieval to modern cooking",
+        culture: "Universal cooking technique",
+        significance: "Essential for proper stock and sauce preparation",
       },
       confidence: 1.0,
-      sources: ['Culinary Training', 'Le Cordon Bleu'],
-      masteryLevel: 'fundamental',
+      sources: ["Culinary Training", "Le Cordon Bleu"],
+      masteryLevel: "fundamental",
     });
 
-    this.addTerm('boil', {
-      term: 'Boil',
-      definition: 'Cooking method using rapid heating where water bubbles vigorously at 212°F (100°C) at sea level. Used for pasta, potatoes, eggs, and making stocks.',
+    this.addTerm("boil", {
+      term: "Boil",
+      definition:
+        "Cooking method using rapid heating where water bubbles vigorously at 212°F (100°C) at sea level. Used for pasta, potatoes, eggs, and making stocks.",
       usage: {
-        primary: 'Cooking pasta, vegetables, and making stocks quickly',
-        secondary: ['pasta cooking', 'vegetable blanching', 'stock-making'],
-        context: 'All cooking environments',
+        primary: "Cooking pasta, vegetables, and making stocks quickly",
+        secondary: ["pasta cooking", "vegetable blanching", "stock-making"],
+        context: "All cooking environments",
       },
-      categories: ['technique', 'method'],
+      categories: ["technique", "method"],
       etymology: {
-        origin: 'English',
-        meaning: 'Rapid bubbling of liquid',
-        period: 'Ancient cooking method',
+        origin: "English",
+        meaning: "Rapid bubbling of liquid",
+        period: "Ancient cooking method",
       },
       applications: {
-        primary: 'Cooking foods quickly or extracting flavor from bones',
-        examples: ['Boil pasta until al dente', 'Boil potatoes for cooking', 'Boil bones for stock'],
-        dishes: ['All pasta dishes', 'Vegetable dishes', 'Stocks', 'Soups'],
+        primary: "Cooking foods quickly or extracting flavor from bones",
+        examples: [
+          "Boil pasta until al dente",
+          "Boil potatoes for cooking",
+          "Boil bones for stock",
+        ],
+        dishes: ["All pasta dishes", "Vegetable dishes", "Stocks", "Soups"],
       },
-      relatedTerms: ['simmer', 'poach', 'blanch', 'stock'],
+      relatedTerms: ["simmer", "poach", "blanch", "stock"],
       history: {
-        period: 'Ancient cooking technique',
-        culture: 'Universal across all cuisines',
-        significance: 'Fundamental cooking method for many dishes',
+        period: "Ancient cooking technique",
+        culture: "Universal across all cuisines",
+        significance: "Fundamental cooking method for many dishes",
       },
       confidence: 1.0,
-      sources: ['Basic Culinary Training'],
-      masteryLevel: 'fundamental',
+      sources: ["Basic Culinary Training"],
+      masteryLevel: "fundamental",
     });
 
-    this.addTerm('roast', {
-      term: 'Roast',
-      definition: 'Cooking method using dry heat in an oven at high temperatures (typically 350-450°F / 175-230°C) to cook foods surrounded by hot air, creating browning and caramelization.',
+    this.addTerm("roast", {
+      term: "Roast",
+      definition:
+        "Cooking method using dry heat in an oven at high temperatures (typically 350-450°F / 175-230°C) to cook foods surrounded by hot air, creating browning and caramelization.",
       usage: {
-        primary: 'Cooking large cuts of meat, poultry, and vegetables with browning',
-        secondary: ['flavor development through caramelization', 'creating crispy exteriors'],
-        context: 'Professional and home kitchens, all cuisines',
+        primary:
+          "Cooking large cuts of meat, poultry, and vegetables with browning",
+        secondary: [
+          "flavor development through caramelization",
+          "creating crispy exteriors",
+        ],
+        context: "Professional and home kitchens, all cuisines",
       },
-      categories: ['technique', 'method'],
+      categories: ["technique", "method"],
       etymology: {
-        origin: 'English/Germanic',
-        meaning: 'To cook with dry heat',
-        period: 'Ancient cooking method',
+        origin: "English/Germanic",
+        meaning: "To cook with dry heat",
+        period: "Ancient cooking method",
       },
       applications: {
-        primary: 'Cooking proteins and vegetables until golden with caramelized exterior',
-        examples: ['Roast chicken', 'Roast vegetables', 'Roast root vegetables'],
-        dishes: ['Whole roasted chickens', 'Prime rib', 'Root vegetable medleys', 'Roasted meats'],
+        primary:
+          "Cooking proteins and vegetables until golden with caramelized exterior",
+        examples: [
+          "Roast chicken",
+          "Roast vegetables",
+          "Roast root vegetables",
+        ],
+        dishes: [
+          "Whole roasted chickens",
+          "Prime rib",
+          "Root vegetable medleys",
+          "Roasted meats",
+        ],
       },
-      relatedTerms: ['bake', 'grill', 'broil', 'caramelize', 'browning'],
+      relatedTerms: ["bake", "grill", "broil", "caramelize", "browning"],
       history: {
-        period: 'Ancient to modern cooking',
-        culture: 'Universal across all cuisines',
-        significance: 'Essential cooking method for meats and vegetables',
+        period: "Ancient to modern cooking",
+        culture: "Universal across all cuisines",
+        significance: "Essential cooking method for meats and vegetables",
       },
       confidence: 1.0,
-      sources: ['Basic Culinary Training', 'Professional Cooking'],
-      masteryLevel: 'fundamental',
+      sources: ["Basic Culinary Training", "Professional Cooking"],
+      masteryLevel: "fundamental",
     });
 
-    this.addTerm('braise', {
-      term: 'Braise',
-      definition: 'Cooking method combining dry heat (browning) followed by moist heat (simmering in liquid) in a covered pot. Creates tender meat and deep flavors.',
+    this.addTerm("braise", {
+      term: "Braise",
+      definition:
+        "Cooking method combining dry heat (browning) followed by moist heat (simmering in liquid) in a covered pot. Creates tender meat and deep flavors.",
       usage: {
-        primary: 'Cooking tough cuts of meat and vegetables until tender',
-        secondary: ['developing rich flavors', 'making stews and braises'],
-        context: 'Professional and home cooking',
+        primary: "Cooking tough cuts of meat and vegetables until tender",
+        secondary: ["developing rich flavors", "making stews and braises"],
+        context: "Professional and home cooking",
       },
-      categories: ['technique', 'method'],
+      categories: ["technique", "method"],
       etymology: {
-        origin: 'French',
-        originalWord: 'braiser',
-        meaning: 'To stew or braise',
-        period: 'Classical French cooking technique',
+        origin: "French",
+        originalWord: "braiser",
+        meaning: "To stew or braise",
+        period: "Classical French cooking technique",
       },
       applications: {
-        primary: 'Rendering tough meat tender while developing rich, complex flavors',
-        examples: ['Braise beef short ribs', 'Braise braising greens', 'Braise chicken thighs'],
-        dishes: ['Beef bourguignon', 'Coq au vin', 'Pot roast', 'Braised greens'],
+        primary:
+          "Rendering tough meat tender while developing rich, complex flavors",
+        examples: [
+          "Braise beef short ribs",
+          "Braise braising greens",
+          "Braise chicken thighs",
+        ],
+        dishes: [
+          "Beef bourguignon",
+          "Coq au vin",
+          "Pot roast",
+          "Braised greens",
+        ],
       },
-      relatedTerms: ['stew', 'broth', 'simmer', 'reduction', 'mirepoix'],
+      relatedTerms: ["stew", "broth", "simmer", "reduction", "mirepoix"],
       history: {
-        period: '17th-18th century French cuisine',
-        culture: 'French culinary tradition',
-        significance: 'Essential technique for transforming tough cuts into delicate dishes',
+        period: "17th-18th century French cuisine",
+        culture: "French culinary tradition",
+        significance:
+          "Essential technique for transforming tough cuts into delicate dishes",
       },
       confidence: 1.0,
-      sources: ['Escoffier', 'Classic French Cooking', 'Le Cordon Bleu'],
-      masteryLevel: 'intermediate',
+      sources: ["Escoffier", "Classic French Cooking", "Le Cordon Bleu"],
+      masteryLevel: "intermediate",
     });
 
-    this.addTerm('poach', {
-      term: 'Poach',
-      definition: 'Cooking method using gentle heat with food partially or fully submerged in simmering (not boiling) liquid, typically 160-180°F (71-82°C). Maintains delicate texture.',
+    this.addTerm("poach", {
+      term: "Poach",
+      definition:
+        "Cooking method using gentle heat with food partially or fully submerged in simmering (not boiling) liquid, typically 160-180°F (71-82°C). Maintains delicate texture.",
       usage: {
-        primary: 'Cooking delicate foods like eggs, fish, and chicken while maintaining tenderness',
-        secondary: ['infusing with flavor', 'cooking gently'],
-        context: 'Professional and home cooking',
+        primary:
+          "Cooking delicate foods like eggs, fish, and chicken while maintaining tenderness",
+        secondary: ["infusing with flavor", "cooking gently"],
+        context: "Professional and home cooking",
       },
-      categories: ['technique', 'method'],
+      categories: ["technique", "method"],
       etymology: {
-        origin: 'French',
-        originalWord: 'pocher',
-        meaning: 'To thrust or push',
-        period: 'Medieval French cooking',
+        origin: "French",
+        originalWord: "pocher",
+        meaning: "To thrust or push",
+        period: "Medieval French cooking",
       },
       applications: {
-        primary: 'Cooking delicate foods in flavored liquid without breaking apart',
-        examples: ['Poach eggs in water', 'Poach salmon in court bouillon', 'Poach chicken breasts'],
-        dishes: ['Eggs Benedict', 'Poached salmon', 'Poached pears', 'Poached chicken'],
+        primary:
+          "Cooking delicate foods in flavored liquid without breaking apart",
+        examples: [
+          "Poach eggs in water",
+          "Poach salmon in court bouillon",
+          "Poach chicken breasts",
+        ],
+        dishes: [
+          "Eggs Benedict",
+          "Poached salmon",
+          "Poached pears",
+          "Poached chicken",
+        ],
       },
-      relatedTerms: ['simmer', 'court-bouillon', 'broth', 'delicate-cooking'],
+      relatedTerms: ["simmer", "court-bouillon", "broth", "delicate-cooking"],
       history: {
-        period: 'Medieval to modern cooking',
-        culture: 'French culinary tradition',
-        significance: 'Essential for cooking delicate proteins without compromising texture',
+        period: "Medieval to modern cooking",
+        culture: "French culinary tradition",
+        significance:
+          "Essential for cooking delicate proteins without compromising texture",
       },
       confidence: 1.0,
-      sources: ['Classical French Training', 'Professional Cooking'],
-      masteryLevel: 'intermediate',
+      sources: ["Classical French Training", "Professional Cooking"],
+      masteryLevel: "intermediate",
     });
 
     // INGREDIENTS & FLAVOR (50 sample entries shown, 2000+ in full version)
-    this.addTerm('umami', {
-      term: 'Umami',
-      definition: 'Fifth basic taste sensation (sweet, salty, sour, bitter, umami). Characterized by savory depth from glutamates and nucleotides. Found in aged cheese, tomatoes, mushrooms, fermented foods.',
+    this.addTerm("umami", {
+      term: "Umami",
+      definition:
+        "Fifth basic taste sensation (sweet, salty, sour, bitter, umami). Characterized by savory depth from glutamates and nucleotides. Found in aged cheese, tomatoes, mushrooms, fermented foods.",
       usage: {
-        primary: 'Deepening savory flavor in dishes',
-        secondary: ['flavor enhancement', 'depth creation'],
-        context: 'All cuisines, sauce-making, ingredient selection',
+        primary: "Deepening savory flavor in dishes",
+        secondary: ["flavor enhancement", "depth creation"],
+        context: "All cuisines, sauce-making, ingredient selection",
       },
-      categories: ['theory', 'ingredient', 'technique'],
+      categories: ["theory", "ingredient", "technique"],
       etymology: {
-        origin: 'Japanese',
-        originalWord: 'umami - pleasant taste',
-        meaning: 'Delicious or savory taste',
-        period: 'Named by Japanese scientist Kikunae Ikeda in 1908',
+        origin: "Japanese",
+        originalWord: "umami - pleasant taste",
+        meaning: "Delicious or savory taste",
+        period: "Named by Japanese scientist Kikunae Ikeda in 1908",
       },
       applications: {
-        primary: 'Creating depth and satisfaction in dishes',
-        examples: ['Parmesan cheese for umami boost', 'Tomato paste for umami', 'Mushroom umami depth'],
-        dishes: ['Asian broths', 'French sauces', 'Italian tomato-based dishes'],
+        primary: "Creating depth and satisfaction in dishes",
+        examples: [
+          "Parmesan cheese for umami boost",
+          "Tomato paste for umami",
+          "Mushroom umami depth",
+        ],
+        dishes: [
+          "Asian broths",
+          "French sauces",
+          "Italian tomato-based dishes",
+        ],
       },
-      relatedTerms: ['glutamate', 'msg', 'nucleotides', 'inosinate', 'guanylate', 'taste', 'flavor-depth'],
+      relatedTerms: [
+        "glutamate",
+        "msg",
+        "nucleotides",
+        "inosinate",
+        "guanylate",
+        "taste",
+        "flavor-depth",
+      ],
       history: {
-        period: '1908 - Modern food science recognition',
-        culture: 'Japanese culinary science, Modern gastronomy',
-        significance: 'Fifth taste scientifically recognized and essential to flavor',
+        period: "1908 - Modern food science recognition",
+        culture: "Japanese culinary science, Modern gastronomy",
+        significance:
+          "Fifth taste scientifically recognized and essential to flavor",
       },
       confidence: 1.0,
-      sources: ['Food Science Research', 'Culinary Science'],
-      masteryLevel: 'advanced',
+      sources: ["Food Science Research", "Culinary Science"],
+      masteryLevel: "advanced",
     });
 
     // Continue with 9,990+ more terms...
@@ -626,7 +849,7 @@ class MasterCulinaryDictionary {
       if (
         term.term.toLowerCase().includes(lowerQuery) ||
         term.definition.toLowerCase().includes(lowerQuery) ||
-        term.relatedTerms.some(t => t.toLowerCase().includes(lowerQuery))
+        term.relatedTerms.some((t) => t.toLowerCase().includes(lowerQuery))
       ) {
         results.push(term);
       }
@@ -639,8 +862,8 @@ class MasterCulinaryDictionary {
    * Get terms by category
    */
   getTermsByCategory(category: string): MasterCulinaryTerm[] {
-    return Array.from(this.dictionary.values()).filter(t =>
-      t.categories.includes(category as any)
+    return Array.from(this.dictionary.values()).filter((t) =>
+      t.categories.includes(category as any),
     );
   }
 
@@ -648,8 +871,8 @@ class MasterCulinaryDictionary {
    * Get terms by mastery level
    */
   getTermsByMasteryLevel(level: string): MasterCulinaryTerm[] {
-    return Array.from(this.dictionary.values()).filter(t =>
-      t.masteryLevel === level
+    return Array.from(this.dictionary.values()).filter(
+      (t) => t.masteryLevel === level,
     );
   }
 
@@ -686,14 +909,19 @@ class MasterCulinaryDictionary {
       for (const cat of term.categories) {
         categories[cat] = (categories[cat] || 0) + 1;
       }
-      masteryLevels[term.masteryLevel] = (masteryLevels[term.masteryLevel] || 0) + 1;
+      masteryLevels[term.masteryLevel] =
+        (masteryLevels[term.masteryLevel] || 0) + 1;
     }
 
     return {
       totalTerms: this.dictionary.size,
       categories,
       masteryLevels,
-      averageConfidence: Array.from(this.dictionary.values()).reduce((sum, t) => sum + t.confidence, 0) / this.dictionary.size,
+      averageConfidence:
+        Array.from(this.dictionary.values()).reduce(
+          (sum, t) => sum + t.confidence,
+          0,
+        ) / this.dictionary.size,
     };
   }
 

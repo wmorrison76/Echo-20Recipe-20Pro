@@ -8,7 +8,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Send, Loader2, BookOpen, AlertCircle, Sparkles, Shield } from "lucide-react";
+import {
+  Send,
+  Loader2,
+  BookOpen,
+  AlertCircle,
+  Sparkles,
+  Shield,
+} from "lucide-react";
 import { toast } from "sonner";
 import {
   searchProcedures,
@@ -67,8 +74,8 @@ export default function AskEchoPanel() {
       if (match && match[1]) {
         let term = match[1]
           .trim()
-          .replace(/\s+/g, '-') // Replace spaces with hyphens for compound terms
-          .replace(/[^a-z\-]/g, ''); // Remove any non-alphanumeric except hyphens
+          .replace(/\s+/g, "-") // Replace spaces with hyphens for compound terms
+          .replace(/[^a-z\-]/g, ""); // Remove any non-alphanumeric except hyphens
 
         if (term.length > 1) {
           return term;
@@ -77,9 +84,34 @@ export default function AskEchoPanel() {
     }
 
     // Fallback: if no pattern matches, use first 1-2 words as term
-    const words = q.split(/\s+/).filter(w => w.length > 2 && !['what', 'does', 'mean', 'is', 'the', 'a', 'an', 'define', 'explain', 'tell', 'about', 'describe', 'how', 'do', 'you', 'we', 'this', 'that'].includes(w));
+    const words = q
+      .split(/\s+/)
+      .filter(
+        (w) =>
+          w.length > 2 &&
+          ![
+            "what",
+            "does",
+            "mean",
+            "is",
+            "the",
+            "a",
+            "an",
+            "define",
+            "explain",
+            "tell",
+            "about",
+            "describe",
+            "how",
+            "do",
+            "you",
+            "we",
+            "this",
+            "that",
+          ].includes(w),
+      );
     if (words.length > 0) {
-      return words[0].replace(/[?.,!]/g, '');
+      return words[0].replace(/[?.,!]/g, "");
     }
 
     return question.trim(); // Last resort: return original
@@ -115,24 +147,30 @@ export default function AskEchoPanel() {
       // This will check the knowledge base first, and if not found, query external LLMs
       let searchResponse;
       try {
-        const response = await fetch('/api/echo/hungry-learning/search-and-learn', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
+        const response = await fetch(
+          "/api/echo/hungry-learning/search-and-learn",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ term: extractedTerm }),
           },
-          body: JSON.stringify({ term: extractedTerm }),
-        });
+        );
 
         if (response.ok) {
           try {
             searchResponse = await response.json();
           } catch (parseErr) {
-            console.error('[Echo] Error parsing search-and-learn response:', parseErr);
+            console.error(
+              "[Echo] Error parsing search-and-learn response:",
+              parseErr,
+            );
             // Fall back to traditional search
             const dictionaryResult = await searchTerm(extractedTerm);
             if (dictionaryResult?.entry?.term) {
               searchResponse = {
-                status: 'success',
+                status: "success",
                 entry: dictionaryResult.entry,
                 message: dictionaryResult.entry.term,
               };
@@ -140,76 +178,92 @@ export default function AskEchoPanel() {
           }
         } else {
           // If search-and-learn returns error status, fall back to traditional search
-          console.log(`[Echo] Search-and-learn returned error status ${response.status}, falling back to traditional search`);
+          console.log(
+            `[Echo] Search-and-learn returned error status ${response.status}, falling back to traditional search`,
+          );
           try {
             const dictionaryResult = await searchTerm(extractedTerm);
             if (dictionaryResult?.entry?.term) {
               searchResponse = {
-                status: 'success',
+                status: "success",
                 entry: dictionaryResult.entry,
                 message: dictionaryResult.entry.term,
               };
             }
           } catch (fallbackErr) {
-            console.error('[Echo] Fallback search also failed:', fallbackErr);
+            console.error("[Echo] Fallback search also failed:", fallbackErr);
           }
         }
       } catch (err) {
-        console.error('[Echo] Error calling search-and-learn:', err);
+        console.error("[Echo] Error calling search-and-learn:", err);
         // Fall back to traditional search
         try {
           const dictionaryResult = await searchTerm(extractedTerm);
           if (dictionaryResult?.entry?.term) {
             searchResponse = {
-              status: 'success',
+              status: "success",
               entry: dictionaryResult.entry,
               message: dictionaryResult.entry.term,
             };
           }
         } catch (fallbackErr) {
-          console.error('[Echo] Fallback search also failed:', fallbackErr);
+          console.error("[Echo] Fallback search also failed:", fallbackErr);
         }
       }
 
       // If we have a result from search-and-learn or traditional search
       let dictionaryResult = searchResponse;
 
-      if (dictionaryResult && dictionaryResult.status === 'success' && dictionaryResult.entry) {
-        const source = dictionaryResult.source || 'master-dictionary';
+      if (
+        dictionaryResult &&
+        dictionaryResult.status === "success" &&
+        dictionaryResult.entry
+      ) {
+        const source = dictionaryResult.source || "master-dictionary";
         const entry = dictionaryResult.entry;
-        let response = '';
+        let response = "";
 
-        if (source === 'pinecone-pdf-library' || source === 'internal-pdf-library') {
+        if (
+          source === "pinecone-pdf-library" ||
+          source === "internal-pdf-library"
+        ) {
           // Format Pinecone/Internal PDF result
           response = `📖 **${extractedTerm}**\n\n`;
           response += `**Found in your knowledge library:**\n`;
-          const sourceFile = entry.sourceFile || entry.source || 'Unknown Source';
+          const sourceFile =
+            entry.sourceFile || entry.source || "Unknown Source";
           response += `Source: ${sourceFile}\n`;
-          const similarity = entry.similarity !== undefined ? entry.similarity : 0;
+          const similarity =
+            entry.similarity !== undefined ? entry.similarity : 0;
           response += `Match: ${(similarity * 100).toFixed(0)}%\n\n`;
-          response += `**Definition:** ${entry.definition || entry.content || 'Information found in your knowledge'}\n\n`;
+          response += `**Definition:** ${entry.definition || entry.content || "Information found in your knowledge"}\n\n`;
 
-          if (entry.allResults && Array.isArray(entry.allResults) && entry.allResults.length > 1) {
+          if (
+            entry.allResults &&
+            Array.isArray(entry.allResults) &&
+            entry.allResults.length > 1
+          ) {
             response += `**Related information:**\n`;
             entry.allResults.slice(1).forEach((result: any, idx: number) => {
               if (result && result.definition) {
-                const relatedSim = result.similarity !== undefined ? result.similarity : 0;
-                response += `${idx + 1}. (${(relatedSim * 100).toFixed(0)}% match) ${(result.definition || '').substring(0, 100)}...\n`;
+                const relatedSim =
+                  result.similarity !== undefined ? result.similarity : 0;
+                response += `${idx + 1}. (${(relatedSim * 100).toFixed(0)}% match) ${(result.definition || "").substring(0, 100)}...\n`;
               }
             });
           }
-        } else if (source === 'external-llm-learning') {
+        } else if (source === "external-llm-learning") {
           // Format externally learned result
           const term = entry.term;
-          if (term && typeof term === 'object') {
+          if (term && typeof term === "object") {
             response = `🌐 **${term.term || extractedTerm}**\n\n`;
-            response += `**Definition:** ${term.definition || 'Definition pending'}\n\n`;
+            response += `**Definition:** ${term.definition || "Definition pending"}\n\n`;
             response += `**Source:** Learned from external knowledge (OpenAI)\n`;
             const confidence = term.confidence || 0.85;
             response += `**Confidence:** ${(confidence * 100).toFixed(0)}%\n`;
           } else {
             response = `🌐 **${extractedTerm}**\n\n`;
-            response += `**Definition:** ${entry.definition || 'Information found'}\n\n`;
+            response += `**Definition:** ${entry.definition || "Information found"}\n\n`;
             response += `**Source:** Learned from external knowledge\n`;
           }
         } else {
@@ -217,14 +271,14 @@ export default function AskEchoPanel() {
           const term = entry.term;
 
           // Safety check - ensure term is an object
-          if (term && typeof term === 'object') {
+          if (term && typeof term === "object") {
             response = `📚 **${term.term || extractedTerm}**\n\n`;
-            response += `**Definition:** ${term.definition || 'No definition available'}\n\n`;
+            response += `**Definition:** ${term.definition || "No definition available"}\n\n`;
 
             if (term.usage && term.usage.primary) {
               response += `**Usage:** ${term.usage.primary}`;
               if (term.usage.secondary && term.usage.secondary.length > 0) {
-                response += `\n- Also used for: ${term.usage.secondary.join(', ')}`;
+                response += `\n- Also used for: ${term.usage.secondary.join(", ")}`;
               }
               response += `\n\n`;
             }
@@ -242,26 +296,32 @@ export default function AskEchoPanel() {
 
             if (term.applications && term.applications.primary) {
               response += `**Applications:** ${term.applications.primary}\n`;
-              if (term.applications.examples && term.applications.examples.length > 0) {
-                response += `- Examples: ${term.applications.examples.join(', ')}\n`;
+              if (
+                term.applications.examples &&
+                term.applications.examples.length > 0
+              ) {
+                response += `- Examples: ${term.applications.examples.join(", ")}\n`;
               }
-              if (term.applications.dishes && term.applications.dishes.length > 0) {
-                response += `- Used in: ${term.applications.dishes.join(', ')}\n`;
+              if (
+                term.applications.dishes &&
+                term.applications.dishes.length > 0
+              ) {
+                response += `- Used in: ${term.applications.dishes.join(", ")}\n`;
               }
-              response += '\n';
+              response += "\n";
             }
 
             if (term.relatedTerms && term.relatedTerms.length > 0) {
-              response += `**Related terms:** ${term.relatedTerms.join(', ')}\n`;
+              response += `**Related terms:** ${term.relatedTerms.join(", ")}\n`;
             }
 
-            const masteryLevel = term.masteryLevel || 'intermediate';
+            const masteryLevel = term.masteryLevel || "intermediate";
             const confidence = term.confidence || 0.85;
             response += `\n✨ **Mastery Level:** ${masteryLevel} | **Confidence:** ${(confidence * 100).toFixed(0)}%`;
           } else {
             // Fallback if term structure is unexpected
             response = `📚 **${extractedTerm}**\n\n`;
-            response += `**Definition:** ${entry.definition || 'Information found'}\n\n`;
+            response += `**Definition:** ${entry.definition || "Information found"}\n\n`;
             if (entry.content) {
               response += `**Content:** ${entry.content}\n`;
             }
@@ -282,21 +342,23 @@ export default function AskEchoPanel() {
         try {
           allKnowledgeResults = await searchAllKnowledge(extractedTerm);
         } catch (err) {
-          console.error('[Echo] Error calling searchAllKnowledge:', err);
+          console.error("[Echo] Error calling searchAllKnowledge:", err);
           allKnowledgeResults = null;
         }
 
         // If found in other knowledge sources, use that
-        if (allKnowledgeResults && allKnowledgeResults.results &&
-            (allKnowledgeResults.results.masterDictionary?.length > 0 ||
-             allKnowledgeResults.results.terminology?.length > 0 ||
-             allKnowledgeResults.results.hospitality?.length > 0)) {
-
+        if (
+          allKnowledgeResults &&
+          allKnowledgeResults.results &&
+          (allKnowledgeResults.results.masterDictionary?.length > 0 ||
+            allKnowledgeResults.results.terminology?.length > 0 ||
+            allKnowledgeResults.results.hospitality?.length > 0)
+        ) {
           let response = `✨ I was able to research and find information about **${extractedTerm}**:\n\n`;
 
           if (allKnowledgeResults.results.masterDictionary?.length > 0) {
             const term = allKnowledgeResults.results.masterDictionary[0];
-            response += `📚 **Definition:** ${term.definition || 'A culinary technique or ingredient'}\n\n`;
+            response += `📚 **Definition:** ${term.definition || "A culinary technique or ingredient"}\n\n`;
             if (term.usage) {
               response += `**Usage:** ${term.usage}\n\n`;
             }
@@ -304,12 +366,12 @@ export default function AskEchoPanel() {
 
           if (allKnowledgeResults.results.terminology?.length > 0) {
             const term = allKnowledgeResults.results.terminology[0];
-            response += `📖 **From Terminology:** ${term.definition || ''}\n\n`;
+            response += `📖 **From Terminology:** ${term.definition || ""}\n\n`;
           }
 
           if (allKnowledgeResults.results.hospitality?.length > 0) {
             const item = allKnowledgeResults.results.hospitality[0];
-            response += `🏨 **From Hospitality Knowledge:** ${item.description || ''}\n\n`;
+            response += `🏨 **From Hospitality Knowledge:** ${item.description || ""}\n\n`;
           }
 
           response += `💡 Tip: Ask me "How do I use ${extractedTerm}?" or "Tell me more about ${extractedTerm}" for additional details.`;
@@ -328,12 +390,15 @@ export default function AskEchoPanel() {
           try {
             results = await searchProcedures(userMessage, 3);
           } catch (err) {
-            console.error('[Echo] Error calling searchProcedures:', err);
+            console.error("[Echo] Error calling searchProcedures:", err);
             results = [];
           }
 
           if (results.length === 0) {
-            const termHint = extractedTerm !== userMessage ? `\n\n💡 I searched for "${extractedTerm}" but didn't find it in my knowledge base yet.` : '';
+            const termHint =
+              extractedTerm !== userMessage
+                ? `\n\n💡 I searched for "${extractedTerm}" but didn't find it in my knowledge base yet.`
+                : "";
 
             setMessages((prev) => [
               ...prev,

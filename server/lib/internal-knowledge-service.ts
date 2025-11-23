@@ -9,10 +9,26 @@ import { createClient } from "@supabase/supabase-js";
 import { generateEmbedding } from "./pinecone-service";
 
 const supabaseUrl = process.env.SUPABASE_URL || "";
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsb3N6a2N1cXBwZmFobHNzamp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3MzUwNjYsImV4cCI6MjA3OTMxMTA2Nn0.dUSzcaDrb3UO_odph8XD1HnUrCTPC7EiquDh-llKIZw";
+const supabaseAnonKey =
+  process.env.SUPABASE_ANON_KEY ||
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVsb3N6a2N1cXBwZmFobHNzamp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3MzUwNjYsImV4cCI6MjA3OTMxMTA2Nn0.dUSzcaDrb3UO_odph8XD1HnUrCTPC7EiquDh-llKIZw";
 
-export type KnowledgeSourceType = "pdf" | "master-dictionary" | "external-llm" | "recipe" | "user-imported";
-export type KnowledgeCategory = "technique" | "ingredient" | "method" | "equipment" | "theory" | "cuisine" | "safety" | "service" | "tradition";
+export type KnowledgeSourceType =
+  | "pdf"
+  | "master-dictionary"
+  | "external-llm"
+  | "recipe"
+  | "user-imported";
+export type KnowledgeCategory =
+  | "technique"
+  | "ingredient"
+  | "method"
+  | "equipment"
+  | "theory"
+  | "cuisine"
+  | "safety"
+  | "service"
+  | "tradition";
 
 export interface InternalKnowledgeVector {
   id: string;
@@ -33,7 +49,12 @@ export interface InternalKnowledgeVector {
     relatedTerms: string[];
     createdAt: string;
     updatedAt: string;
-    masteryCertificateLevel?: "fundamental" | "intermediate" | "advanced" | "expert" | "master";
+    masteryCertificateLevel?:
+      | "fundamental"
+      | "intermediate"
+      | "advanced"
+      | "expert"
+      | "master";
   };
 }
 
@@ -62,14 +83,19 @@ export interface KnowledgeSearchOptions {
  */
 function getSupabaseClient() {
   if (!supabaseUrl) {
-    console.warn("[Internal Knowledge] Supabase URL not configured, internal search unavailable");
+    console.warn(
+      "[Internal Knowledge] Supabase URL not configured, internal search unavailable",
+    );
     return null;
   }
   try {
     // Use anon key with RLS policies for better security
     return createClient(supabaseUrl, supabaseAnonKey);
   } catch (error) {
-    console.warn("[Internal Knowledge] Failed to create Supabase client:", error);
+    console.warn(
+      "[Internal Knowledge] Failed to create Supabase client:",
+      error,
+    );
     return null;
   }
 }
@@ -85,16 +111,23 @@ export async function storeInternalKnowledgeVector(
 
     // If Supabase is not available, return error
     if (!client) {
-      console.warn("[Internal Knowledge] Supabase client unavailable, cannot store vector");
+      console.warn(
+        "[Internal Knowledge] Supabase client unavailable, cannot store vector",
+      );
       return {
         id: "",
         success: false,
-        error: "Internal knowledge storage unavailable (Supabase credentials not configured)",
+        error:
+          "Internal knowledge storage unavailable (Supabase credentials not configured)",
       };
     }
 
     // Generate embedding from content
-    const textToEmbed = [knowledge.title, knowledge.description, knowledge.content]
+    const textToEmbed = [
+      knowledge.title,
+      knowledge.description,
+      knowledge.content,
+    ]
       .filter(Boolean)
       .join(" ");
 
@@ -134,7 +167,9 @@ export async function storeInternalKnowledgeVector(
       };
     }
 
-    console.log(`[Internal Knowledge] Stored vector: ${data.id} (${knowledge.title})`);
+    console.log(
+      `[Internal Knowledge] Stored vector: ${data.id} (${knowledge.title})`,
+    );
 
     return {
       id: data.id,
@@ -163,13 +198,20 @@ export async function storeInternalKnowledgeBatch(
   errors: Array<{ title: string; error: string }>;
   ids: string[];
 }> {
-  const results = { success: 0, failed: 0, errors: [] as Array<{ title: string; error: string }>, ids: [] as string[] };
+  const results = {
+    success: 0,
+    failed: 0,
+    errors: [] as Array<{ title: string; error: string }>,
+    ids: [] as string[],
+  };
 
   if (knowledgeItems.length === 0) {
     return results;
   }
 
-  console.log(`[Internal Knowledge] Starting batch storage of ${knowledgeItems.length} items`);
+  console.log(
+    `[Internal Knowledge] Starting batch storage of ${knowledgeItems.length} items`,
+  );
 
   const queue = [...knowledgeItems];
   const workers: Promise<void>[] = [];
@@ -226,7 +268,9 @@ export async function searchInternalKnowledge(
 
     // If Supabase is not available, return empty results to trigger Pinecone fallback
     if (!client) {
-      console.log("[Internal Knowledge] Supabase client unavailable, returning empty results for fallback");
+      console.log(
+        "[Internal Knowledge] Supabase client unavailable, returning empty results for fallback",
+      );
       return [];
     }
 
@@ -253,7 +297,7 @@ export async function searchInternalKnowledge(
     let query = client
       .from("internal_knowledge_vectors")
       .select(
-        "id, title, content, description, source_type, source, metadata, embedding"
+        "id, title, content, description, source_type, source, metadata, embedding",
       )
       .limit(topK);
 
@@ -321,13 +365,17 @@ export async function searchInternalKnowledgeByDomain(
     const client = getSupabaseClient();
 
     if (!client) {
-      console.log("[Internal Knowledge] Supabase unavailable for domain search");
+      console.log(
+        "[Internal Knowledge] Supabase unavailable for domain search",
+      );
       return [];
     }
 
     const { data, error } = await client
       .from("internal_knowledge_vectors")
-      .select("id, title, content, description, source_type, source, metadata, embedding")
+      .select(
+        "id, title, content, description, source_type, source, metadata, embedding",
+      )
       .eq("domain", domain)
       .limit(limit);
 
@@ -363,7 +411,9 @@ export async function getKnowledgeBySourceType(
     const client = getSupabaseClient();
 
     if (!client) {
-      console.log("[Internal Knowledge] Supabase unavailable for source type query");
+      console.log(
+        "[Internal Knowledge] Supabase unavailable for source type query",
+      );
       return [];
     }
 
@@ -406,7 +456,10 @@ export async function updateInternalKnowledgeVector(
 
     if (!client) {
       console.warn("[Internal Knowledge] Supabase unavailable for update");
-      return { success: false, error: "Internal knowledge storage unavailable" };
+      return {
+        success: false,
+        error: "Internal knowledge storage unavailable",
+      };
     }
 
     const updateData: any = {};
@@ -455,13 +508,18 @@ export async function updateInternalKnowledgeVector(
 /**
  * Delete knowledge vector
  */
-export async function deleteInternalKnowledgeVector(id: string): Promise<{ success: boolean; error?: string }> {
+export async function deleteInternalKnowledgeVector(
+  id: string,
+): Promise<{ success: boolean; error?: string }> {
   try {
     const client = getSupabaseClient();
 
     if (!client) {
       console.warn("[Internal Knowledge] Supabase unavailable for delete");
-      return { success: false, error: "Internal knowledge storage unavailable" };
+      return {
+        success: false,
+        error: "Internal knowledge storage unavailable",
+      };
     }
 
     const { error } = await client
@@ -536,7 +594,8 @@ export async function getInternalKnowledgeStats(): Promise<{
 
     for (const item of data) {
       if (item.source_type) {
-        stats.bySourceType[item.source_type] = (stats.bySourceType[item.source_type] || 0) + 1;
+        stats.bySourceType[item.source_type] =
+          (stats.bySourceType[item.source_type] || 0) + 1;
       }
 
       if (item.domain) {
@@ -555,7 +614,8 @@ export async function getInternalKnowledgeStats(): Promise<{
       }
     }
 
-    stats.averageConfidence = confidenceCount > 0 ? totalConfidence / confidenceCount : 0;
+    stats.averageConfidence =
+      confidenceCount > 0 ? totalConfidence / confidenceCount : 0;
 
     return stats;
   } catch (error) {

@@ -92,7 +92,9 @@ class KnowledgeIngestionController {
 
       // Get all terms from master dictionary
       const allTerms = masterCulinaryDictionary.getAllTerms();
-      console.log(`[Ingestion] Found ${allTerms.length} terms in Master Dictionary`);
+      console.log(
+        `[Ingestion] Found ${allTerms.length} terms in Master Dictionary`,
+      );
 
       this.updateProgress({
         totalItems: allTerms.length,
@@ -104,12 +106,12 @@ class KnowledgeIngestionController {
       const batchSize = 100;
       for (let i = 0; i < allTerms.length; i += batchSize) {
         const batch = allTerms.slice(i, i + batchSize);
-        
+
         for (const term of batch) {
           try {
             // Create knowledge vector from dictionary term
             const embedding = await generateEmbedding(
-              `${term.term} ${term.definition}`
+              `${term.term} ${term.definition}`,
             );
 
             await storeInternalKnowledgeVector({
@@ -140,7 +142,10 @@ class KnowledgeIngestionController {
               id: term.term,
               error: error instanceof Error ? error.message : String(error),
             });
-            console.error(`[Ingestion] Failed to ingest term "${term.term}":`, error);
+            console.error(
+              `[Ingestion] Failed to ingest term "${term.term}":`,
+              error,
+            );
           }
         }
 
@@ -156,7 +161,7 @@ class KnowledgeIngestionController {
 
       result.duration = Date.now() - startTime;
       console.log(
-        `[Ingestion] Master Dictionary ingestion complete: ${result.totalIngested} ingested, ${result.totalFailed} failed in ${result.duration}ms`
+        `[Ingestion] Master Dictionary ingestion complete: ${result.totalIngested} ingested, ${result.totalFailed} failed in ${result.duration}ms`,
       );
 
       return result;
@@ -214,7 +219,9 @@ class KnowledgeIngestionController {
 
       // Extract all knowledge from Pinecone
       const extraction = await extractAllPineconeKnowledge();
-      console.log(`[Ingestion] Extracted ${extraction.items.length} items from Pinecone`);
+      console.log(
+        `[Ingestion] Extracted ${extraction.items.length} items from Pinecone`,
+      );
 
       this.updateProgress({
         totalItems: extraction.items.length,
@@ -231,7 +238,7 @@ class KnowledgeIngestionController {
           try {
             const transformed = transformPineconeToInternalFormat(item);
             const embedding = await generateEmbedding(
-              `${transformed.title} ${transformed.content}`
+              `${transformed.title} ${transformed.content}`,
             );
 
             await storeInternalKnowledgeVector({
@@ -242,7 +249,8 @@ class KnowledgeIngestionController {
             result.totalIngested++;
             this.updateProgress({
               processedItems: result.totalIngested,
-              progress: 30 + (result.totalIngested / extraction.items.length) * 65,
+              progress:
+                30 + (result.totalIngested / extraction.items.length) * 65,
             });
           } catch (error) {
             result.totalFailed++;
@@ -250,7 +258,10 @@ class KnowledgeIngestionController {
               id: item.id,
               error: error instanceof Error ? error.message : String(error),
             });
-            console.error(`[Ingestion] Failed to ingest Pinecone item "${item.id}":`, error);
+            console.error(
+              `[Ingestion] Failed to ingest Pinecone item "${item.id}":`,
+              error,
+            );
           }
         }
 
@@ -265,7 +276,7 @@ class KnowledgeIngestionController {
 
       result.duration = Date.now() - startTime;
       console.log(
-        `[Ingestion] Pinecone ingestion complete: ${result.totalIngested} ingested, ${result.totalFailed} failed in ${result.duration}ms`
+        `[Ingestion] Pinecone ingestion complete: ${result.totalIngested} ingested, ${result.totalFailed} failed in ${result.duration}ms`,
       );
 
       return result;
@@ -301,7 +312,10 @@ class KnowledgeIngestionController {
         const pineconeResult = await this.ingestFromPinecone();
         results.set("pinecone", pineconeResult);
       } catch (error) {
-        console.warn("[Ingestion] Pinecone ingestion skipped:", error instanceof Error ? error.message : String(error));
+        console.warn(
+          "[Ingestion] Pinecone ingestion skipped:",
+          error instanceof Error ? error.message : String(error),
+        );
         results.set("pinecone", {
           success: false,
           source: "pinecone",
