@@ -510,7 +510,12 @@ export class SeriousEatsCrawler extends HTMLRecipeCrawlerAdapter {
     const recipes: CrawledRecipe[] = [];
 
     try {
-      const url = `${this.baseUrl}/search?query=${options.query || 'recipes'}`;
+      let url = `${this.baseUrl}/recipes`;
+
+      if (options.query && options.query !== '*') {
+        url = `${this.baseUrl}/search?query=${encodeURIComponent(options.query)}`;
+      }
+
       const html = await (await this.fetchWithRetry(url)).text();
 
       const jsonLdMatches = html.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g) || [];
@@ -525,13 +530,16 @@ export class SeriousEatsCrawler extends HTMLRecipeCrawlerAdapter {
           // Parse error
         }
       }
+
+      if (recipes.length > 0) {
+        return recipes.slice(0, options.limit || 50);
+      }
     } catch (error) {
       console.error('Serious Eats crawl error:', error);
-      console.log('Serious Eats: Using fallback mock data');
-      return this.getMockRecipes().slice(0, options.limit || 50);
     }
 
-    return recipes.slice(0, options.limit || 50) || this.getMockRecipes().slice(0, options.limit || 50);
+    console.log('Serious Eats: Using fallback mock data');
+    return this.getMockRecipes().slice(0, options.limit || 50);
   }
 
   private parseRecipeSchema(schema: any): CrawledRecipe {
