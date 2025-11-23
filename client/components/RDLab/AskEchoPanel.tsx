@@ -153,9 +153,11 @@ export default function AskEchoPanel() {
       // If we have a result from search-and-learn or traditional search
       let dictionaryResult = searchResponse;
 
-      if (dictionaryResult?.entry?.term) {
-        // Found in master dictionary
+      if (dictionaryResult?.status === 'success' && dictionaryResult?.entry?.term) {
+        // Found in master dictionary or learned from external LLM
         const term = dictionaryResult.entry.term;
+        const source = dictionaryResult.source || 'master-dictionary';
+
         let response = `📚 **${term.term}**\n\n`;
         response += `**Definition:** ${term.definition}\n\n`;
 
@@ -191,7 +193,8 @@ export default function AskEchoPanel() {
           response += `**Related terms:** ${term.relatedTerms.join(', ')}\n`;
         }
 
-        response += `\n✨ **Mastery Level:** ${term.masteryLevel} | **Confidence:** ${(term.confidence * 100).toFixed(0)}%`;
+        const sourceLabel = source === 'external-llm-learning' ? '🌐 (Learned from external sources)' : '✨';
+        response += `\n${sourceLabel} **Mastery Level:** ${term.masteryLevel} | **Confidence:** ${(term.confidence * 100).toFixed(0)}%`;
 
         setMessages((prev) => [
           ...prev,
