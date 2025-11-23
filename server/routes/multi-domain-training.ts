@@ -881,6 +881,157 @@ router.post(
 );
 
 /**
+ * POST /api/multi-domain-training/submit-training
+ * Safe endpoint to submit training data with validation and deduplication
+ */
+router.post("/submit-training", async (req: Request, res: Response) => {
+  try {
+    const { trainingData, sessionId, skipDuplicateCheck } = req.body as {
+      trainingData?: Array<{
+        profileId: string;
+        domain: string;
+        title: string;
+        content: string;
+        confidence: number;
+        sourceId?: string;
+      }>;
+      sessionId?: string;
+      skipDuplicateCheck?: boolean;
+    };
+
+    if (!trainingData || trainingData.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: "No training data provided",
+      });
+    }
+
+    const finalSessionId = sessionId || `session-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+
+    // Step 1: Validate training data
+    const { valid, invalid } = validateTrainingData(trainingData);
+
+    if (invalid.length > 0) {
+      console.warn(`[Training] Validation failed for ${invalid.length} items`);
+      return res.status(400).json({
+        success: false,
+        error: "Training data validation failed",
+        invalidItems: invalid.map((i) => ({
+          title: i.item.title,
+          reason: i.reason,
+        })),
+        validCount: valid.length,
+      });
+    }
+
+    // Step 2: Deduplicate training data (if not skipped)
+    let uniqueData = valid;
+    let duplicateCount = 0;
+
+    if (!skipDuplicateCheck) {
+      const existingFingerprints = await getExistingTrainingFingerprints();
+      const { unique, duplicates } = deduplicateTrainingData(valid, existingFingerprints);
+      uniqueData = unique;
+      duplicateCount = duplicates.length;
+
+      if (duplicates.length > 0) {
+        console.log(
+          `[Training] Found ${duplicates.length} duplicate training items, skipping`,
+        );
+      }
+    }
+
+    if (uniqueData.length === 0) {
+      return res.json({
+        success: true,
+        stored: 0,
+        sessionId: finalSessionId,
+        message: "All training data items were duplicates. No new vectors stored.",
+        duplicatesFound: duplicateCount,
+        validation: {
+          submitted: trainingData.length,
+          valid: valid.length,
+          duplicates: duplicateCount,
+        },
+      });
+    }
+
+    // Step 3: Store to Pinecone
+    logTrainingEvent("SUBMISSION_START", {
+      sessionId: finalSessionId,
+      itemsSubmitted: trainingData.length,
+    });
+
+    const result = await storeTrainingDataToPinecone(finalSessionId, uniqueData);
+
+    logTrainingEvent("SUBMISSION_COMPLETE", {
+      sessionId: finalSessionId,
+      itemsSubmitted: trainingData.length,
+      itemsStored: result.stored,
+      duplicatesFound: duplicateCount,
+      error: result.error,
+    });
+
+    return res.json({
+      success: result.success,
+      stored: result.stored,
+      sessionId: finalSessionId,
+      message: result.success
+        ? `Successfully stored ${result.stored}/${uniqueData.length} training vectors`
+        : `Failed to store training vectors: ${result.error}`,
+      validation: {
+        submitted: trainingData.length,
+        valid: valid.length,
+        duplicates: duplicateCount,
+        unique: uniqueData.length,
+      },
+      error: result.error,
+    });
+  } catch (error: any) {
+    console.error("[Training] Submit training failed:", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Failed to submit training data",
+    });
+  }
+});
+
+/**
+ * POST /api/multi-domain-training/clear-duplicates
+ * Admin endpoint to check and report duplicate training data
+ */
+router.post("/clear-duplicates", async (_req: Request, res: Response) => {
+  try {
+    const status = await getPineconeStatus();
+
+    if (!status.connected) {
+      return res.status(500).json({
+        success: false,
+        error: "Pinecone not connected",
+      });
+    }
+
+    const totalVectors = status.trainingDataVectors?.total || 0;
+
+    return res.json({
+      success: true,
+      message: "Duplicate check completed",
+      stats: {
+        totalTrainingVectors: totalVectors,
+        byDomain: status.trainingDataVectors?.byDomain || {},
+      },
+      note: "To avoid duplicates in future, use /submit-training endpoint with validation enabled",
+    });
+  } catch (error: any) {
+    console.error("[Training] Clear duplicates failed:", error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || "Failed to check duplicates",
+    });
+  }
+});
+
+/**
  * Calculate overall session progress
  */
 function calculateSessionProgress(session: MultiDomainTrainingSession): number {
