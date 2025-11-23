@@ -746,3 +746,136 @@ export async function getRecipeStatistics(req: Request, res: Response) {
     });
   }
 }
+
+/**
+ * POST /api/echo/hungry-learning/search-and-learn
+ * Search for a culinary term in the knowledge base, and if not found,
+ * query external LLMs (OpenAI) to learn and store the knowledge
+ */
+export async function searchAndLearn(req: Request, res: Response) {
+  try {
+    const { term } = req.body;
+
+    if (!term || term.trim().length === 0) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Term is required',
+      });
+    }
+
+    const normalizedTerm = term.toLowerCase().trim();
+
+    // First, try to find in master dictionary
+    let entry = masterCulinaryDictionary.getTerm(normalizedTerm);
+
+    if (entry) {
+      // Found in master dictionary
+      const relatedTerms = masterCulinaryDictionary.getRelatedTerms(normalizedTerm);
+
+      return res.json({
+        status: 'success',
+        source: 'master-dictionary',
+        entry: {
+          term: entry,
+          related: relatedTerms,
+          statistics: {
+            masteryLevel: entry.masteryLevel,
+            confidence: entry.confidence,
+            sources: entry.sources,
+          }
+        },
+        message: `✨ Echo knows "${entry.term}" at ${entry.masteryLevel} level!`,
+      });
+    }
+
+    // Not found in master dictionary, try external LLM
+    console.log(`[Echo Learning] Term "${normalizedTerm}" not in master dictionary. Querying OpenAI...`);
+
+    const enrichedTerms = await llmKnowledgeEnricher.enrichTerms([normalizedTerm], 1);
+
+    if (!enrichedTerms || enrichedTerms.length === 0) {
+      // LLM enrichment failed, return suggestions
+      const suggestions = masterCulinaryDictionary.searchTerms(normalizedTerm).slice(0, 5);
+
+      return res.status(404).json({
+        status: 'not_found',
+        message: `Could not find or learn about "${normalizedTerm}". Try these similar terms:`,
+        suggestions: suggestions.map(t => ({
+          term: t.term,
+          definition: t.definition.substring(0, 100) + '...',
+          masteryLevel: t.masteryLevel,
+          confidence: t.confidence,
+        })),
+      });
+    }
+
+    // Successfully enriched with LLM
+    const enrichedTerm = enrichedTerms[0];
+
+    // Convert the enriched knowledge to a master culinary term
+    const masterTerm = {
+      term: normalizedTerm.charAt(0).toUpperCase() + normalizedTerm.slice(1),
+      definition: enrichedTerm.knowledge.description || enrichedTerm.knowledge.title || '',
+      usage: {
+        primary: enrichedTerm.knowledge.description || 'A culinary term or ingredient',
+        secondary: [],
+        context: enrichedTerm.knowledge.content ? `From external LLM research` : 'Learned from OpenAI',
+      },
+      categories: enrichedTerm.type === 'ingredient' ? ['ingredient'] : enrichedTerm.type === 'technique' ? ['technique'] : ['terminology'],
+      etymology: {
+        origin: 'Modern',
+        originalWord: normalizedTerm,
+        meaning: enrichedTerm.knowledge.description?.substring(0, 50),
+        period: 'Contemporary',
+      },
+      applications: {
+        primary: enrichedTerm.knowledge.description || '',
+        examples: [],
+        dishes: [],
+      },
+      relatedTerms: [],
+      history: {
+        period: 'Contemporary culinary knowledge',
+        culture: 'Global',
+        significance: 'Recently learned by Echo from external sources',
+      },
+      confidence: enrichedTerm.confidence || 0.85,
+      sources: ['openai', 'llm-knowledge-enricher'],
+      masteryLevel: 'intermediate' as const,
+    };
+
+    // Add the newly learned term to the master dictionary
+    try {
+      masterCulinaryDictionary.addTerm(normalizedTerm, masterTerm);
+      console.log(`[Echo Learning] Successfully added "${normalizedTerm}" to master dictionary`);
+    } catch (error) {
+      console.error(`[Echo Learning] Failed to add term to master dictionary:`, error);
+      // Even if adding fails, we can still return the result
+    }
+
+    // Return the newly learned term
+    const relatedTerms = masterCulinaryDictionary.getRelatedTerms(normalizedTerm);
+
+    res.json({
+      status: 'success',
+      source: 'external-llm-learning',
+      entry: {
+        term: masterTerm,
+        related: relatedTerms,
+        statistics: {
+          masteryLevel: masterTerm.masteryLevel,
+          confidence: masterTerm.confidence,
+          sources: masterTerm.sources,
+        }
+      },
+      message: `✨ Echo learned about "${masterTerm.term}" from external sources and added it to knowledge!`,
+    });
+  } catch (error) {
+    console.error('Error in search and learn:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to search and learn',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
