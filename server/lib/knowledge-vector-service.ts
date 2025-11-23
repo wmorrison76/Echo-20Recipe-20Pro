@@ -200,17 +200,54 @@ export async function storeKnowledgeBatch(
 
 /**
  * Search knowledge by query text
+ * Prioritizes internal pgvector storage over Pinecone for cost efficiency
+ * Falls back to Pinecone if internal search returns no results or if internal DB is unavailable
  */
 export async function searchKnowledge(
   queryText: string,
   options: KnowledgeSearchOptions = {},
 ): Promise<Array<{ knowledge: AnyKnowledge; similarity: number }>> {
-  if (!PINECONE_API_KEY) {
-    console.warn("Pinecone API key not configured");
-    return [];
-  }
-
   try {
+    // Step 1: Try internal knowledge first (pgvector)
+    console.log("[Knowledge Search] Attempting internal search first...");
+
+    const internalResults = await searchInternalKnowledge(queryText, {
+      topK: options.topK || 10,
+      sourceType: options.sourceType as any,
+      domain: options.domain,
+      minConfidence: options.minConfidence,
+    });
+
+    if (internalResults && internalResults.length > 0) {
+      console.log(`[Knowledge Search] Found ${internalResults.length} results in internal storage`);
+
+      return internalResults.map((result: KnowledgeSearchResult) => ({
+        knowledge: {
+          id: result.id,
+          title: result.title,
+          description: result.description || result.content,
+          content: result.content,
+          source: result.source,
+          type: result.sourceType === "pdf" ? "ingredient" : "technique",
+          domain: "culinary",
+          sourceType: result.sourceType,
+          tags: result.metadata?.tags || [],
+          createdAt: result.metadata?.createdAt || new Date().toISOString(),
+          confidence: result.metadata?.confidence || 0.85,
+          relatedKnowledge: result.metadata?.relatedTerms || [],
+        } as unknown as AnyKnowledge,
+        similarity: result.similarity,
+      }));
+    }
+
+    console.log("[Knowledge Search] No internal results found, falling back to Pinecone...");
+
+    // Step 2: Fallback to Pinecone if available and internal search yielded no results
+    if (!PINECONE_API_KEY) {
+      console.warn("[Knowledge Search] Pinecone API key not configured and no internal results found");
+      return [];
+    }
+
     const client = await getPineconeClient();
     const index = client.Index(KNOWLEDGE_INDEX);
 
@@ -234,6 +271,8 @@ export async function searchKnowledge(
       includeMetadata: true,
       filter: Object.keys(filters).length > 0 ? filters : undefined,
     });
+
+    console.log(`[Knowledge Search] Found ${results.matches.length} results in Pinecone`);
 
     return results.matches
       .filter((match) => {
