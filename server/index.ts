@@ -124,5 +124,8 @@ export function createServer() {
   // PDF Library Import - Learn from culinary books and references
   app.use("/api", pdfLibraryImportRouter);
 
+  // Echo Knowledge Ingestion - Ingest Master Dictionary, Pinecone, and PDFs into internal storage
+  app.use("/api/echo", echoKnowledgeIngestionRouter);
+
   return app;
 }
