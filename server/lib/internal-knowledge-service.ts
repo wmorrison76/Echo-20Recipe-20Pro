@@ -606,6 +606,15 @@ export async function checkInternalKnowledgeHealth(): Promise<{
   error?: string;
 }> {
   try {
+    const client = getSupabaseClient();
+
+    if (!client) {
+      return {
+        available: false,
+        error: "Supabase credentials not configured",
+      };
+    }
+
     const stats = await getInternalKnowledgeStats();
     return {
       available: true,
