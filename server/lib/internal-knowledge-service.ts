@@ -399,6 +399,11 @@ export async function updateInternalKnowledgeVector(
   try {
     const client = getSupabaseClient();
 
+    if (!client) {
+      console.warn("[Internal Knowledge] Supabase unavailable for update");
+      return { success: false, error: "Internal knowledge storage unavailable" };
+    }
+
     const updateData: any = {};
 
     if (updates.title) updateData.title = updates.title;
