@@ -296,7 +296,11 @@ class KnowledgeIngestionController {
       result.duration = Date.now() - startTime;
       throw error;
     } finally {
-      this.isIngesting = false;
+      this.ingestingSource = null;
+      if (this.ingestionTimeout) {
+        clearTimeout(this.ingestionTimeout);
+        this.ingestionTimeout = null;
+      }
     }
   }
 
