@@ -89,12 +89,21 @@ export function EchoTrainingCenter() {
     const fetchStats = async () => {
       try {
         const response = await fetch("/api/knowledge/stats");
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
         const data = await response.json();
         if (data.success) {
           setKnowledgeStats(data.stats);
         }
       } catch (error) {
         console.error("[EchoTrainingCenter] Error fetching stats:", error);
+        // Set default stats if fetch fails
+        setKnowledgeStats({
+          approvedItems: 0,
+          masterDictionaryTerms: 0,
+          totalVectors: 0,
+        });
       }
     };
 
