@@ -13,7 +13,7 @@ import { masterCulinaryDictionary } from '../lib/master-culinary-dictionary';
 import { convertPDFToMasterTerms, mergePDFExtractions } from '../lib/pdf-knowledge-extractor';
 import { recipePersistenceService } from '../lib/recipe-persistence-service';
 import { llmKnowledgeEnricher } from '../lib/llm-knowledge-enricher';
-import { queryKnowledgeVectors } from '../lib/knowledge-vector-service';
+import { searchKnowledge } from '../lib/knowledge-vector-service';
 import type { PDFMetadata } from '../lib/pdf-knowledge-extractor';
 
 /**
