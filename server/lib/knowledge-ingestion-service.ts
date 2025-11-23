@@ -176,7 +176,11 @@ class KnowledgeIngestionController {
       result.duration = Date.now() - startTime;
       throw error;
     } finally {
-      this.isIngesting = false;
+      this.ingestingSource = null;
+      if (this.ingestionTimeout) {
+        clearTimeout(this.ingestionTimeout);
+        this.ingestionTimeout = null;
+      }
     }
   }
 
@@ -184,11 +188,11 @@ class KnowledgeIngestionController {
    * Ingest Pinecone knowledge into internal storage
    */
   async ingestFromPinecone(): Promise<IngestionResult> {
-    if (this.isIngesting) {
+    if (this.ingestingSource !== null) {
       throw new Error("Ingestion already in progress");
     }
 
-    this.isIngesting = true;
+    this.ingestingSource = "pinecone-migration";
     const startTime = Date.now();
     const result: IngestionResult = {
       success: true,
