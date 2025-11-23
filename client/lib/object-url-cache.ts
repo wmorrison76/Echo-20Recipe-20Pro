@@ -34,8 +34,9 @@ export class ObjectURLLRUCache {
     const entry = this.cache.get(id);
     if (!entry) return null;
 
-    // Update access time to mark as recently used
+    // Update access time and count to mark as recently/frequently used
     entry.lastAccessed = Date.now();
+    entry.accessCount++;
     return entry.url;
   }
 
