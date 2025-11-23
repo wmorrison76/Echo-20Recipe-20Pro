@@ -7,8 +7,7 @@
  * For crawlers/bulk operations: use maxSize 50-75
  * For normal gallery use: use maxSize 100-150
  *
- * IMPORTANT: Must use original URL.createObjectURL, not the wrapped version
- * to avoid infinite recursion
+ * CRITICAL: This uses the NATIVE URL API directly, never wrapped versions
  */
 
 interface CacheEntry {
@@ -17,28 +16,21 @@ interface CacheEntry {
   accessCount: number;
 }
 
+// Save native functions at module load time before any wrapping can happen
+const nativeCreateObjectURL = URL.createObjectURL;
+const nativeRevokeObjectURL = URL.revokeObjectURL;
+
 export class ObjectURLLRUCache {
   private cache: Map<string, CacheEntry> = new Map();
   private readonly maxSize: number;
   private readonly debug: boolean;
   private readonly evictionThreshold: number; // Trigger eviction before full
-  private originalCreateObjectURL: typeof URL.createObjectURL;
 
   constructor(maxSize: number = 100, debug: boolean = false) {
     this.maxSize = maxSize;
     this.debug = debug;
     // Evict when 85% full to prevent hitting hard limit
     this.evictionThreshold = Math.floor(maxSize * 0.85);
-    // Save the original before any wrapping happens
-    this.originalCreateObjectURL = URL.createObjectURL;
-  }
-
-  /**
-   * Set the original createObjectURL to use (before wrapping)
-   * This MUST be called by the wrapper during initialization
-   */
-  setOriginalCreateObjectURL(fn: typeof URL.createObjectURL): void {
-    this.originalCreateObjectURL = fn;
   }
 
   /**
@@ -56,19 +48,23 @@ export class ObjectURLLRUCache {
 
   /**
    * Set a URL in cache, evicting LRU entries if needed
-   * IMPORTANT: Uses originalCreateObjectURL to avoid infinite recursion with the wrapper
+   * Uses native API directly to avoid any recursion issues
    */
   set(id: string, blob: Blob): string {
     // Revoke old URL if exists
     const existing = this.cache.get(id);
     if (existing) {
-      URL.revokeObjectURL(existing.url);
+      try {
+        nativeRevokeObjectURL(existing.url);
+      } catch (e) {
+        // Ignore revoke errors
+      }
     }
 
-    // Create new object URL using original (not wrapped) createObjectURL
+    // Create new object URL using NATIVE (not wrapped) createObjectURL
     let url: string;
     try {
-      url = this.originalCreateObjectURL(blob);
+      url = nativeCreateObjectURL(blob);
     } catch (error) {
       console.error("[ObjectURLCache] Failed to create object URL:", error);
       throw error;
@@ -119,7 +115,11 @@ export class ObjectURLLRUCache {
 
     if (lruId) {
       const entry = this.cache.get(lruId)!;
-      URL.revokeObjectURL(entry.url);
+      try {
+        nativeRevokeObjectURL(entry.url);
+      } catch (e) {
+        // Ignore revoke errors
+      }
       this.cache.delete(lruId);
 
       if (this.debug) {
@@ -136,7 +136,11 @@ export class ObjectURLLRUCache {
   remove(id: string): void {
     const entry = this.cache.get(id);
     if (entry) {
-      URL.revokeObjectURL(entry.url);
+      try {
+        nativeRevokeObjectURL(entry.url);
+      } catch (e) {
+        // Ignore revoke errors
+      }
       this.cache.delete(id);
 
       if (this.debug) {
@@ -150,7 +154,11 @@ export class ObjectURLLRUCache {
    */
   clear(): void {
     for (const [, entry] of this.cache.entries()) {
-      URL.revokeObjectURL(entry.url);
+      try {
+        nativeRevokeObjectURL(entry.url);
+      } catch (e) {
+        // Ignore revoke errors
+      }
     }
     this.cache.clear();
 
