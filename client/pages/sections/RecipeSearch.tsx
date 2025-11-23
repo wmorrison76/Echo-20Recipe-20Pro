@@ -3892,11 +3892,6 @@ export default function RecipeSearchSection() {
         </div>
       </details>
 
-      {/* Knowledge Progress Dashboard */}
-      <div className="mt-8 border-t pt-8">
-        <KnowledgeProgressDashboard />
-      </div>
-
       <Dialog open={!!preview} onOpenChange={(o) => !o && setPreview(null)}>
         <DialogContent className="max-w-2xl drop-shadow-2xl shadow-2xl">
           <DialogHeader>
