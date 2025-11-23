@@ -72,6 +72,14 @@ router.get("/session/status", (req: Request, res: Response) => {
  */
 router.post("/start", async (req: Request, res: Response) => {
   try {
+    // Check if training is already running
+    if (trainingOrchestrator.isSessionActive()) {
+      return res.status(409).json({
+        success: false,
+        error: "Training is already in progress. Please wait for it to complete.",
+      });
+    }
+
     const {
       mode = "sequential",
       sources = [
