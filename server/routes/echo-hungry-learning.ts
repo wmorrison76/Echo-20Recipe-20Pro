@@ -770,11 +770,18 @@ export async function searchAndLearn(req: Request, res: Response) {
     // First, try to find in internal storage and Pinecone (PDF library, uploaded knowledge)
     // searchKnowledge now prioritizes internal storage with fallback to Pinecone
     console.log(`[Echo Learning] Searching for "${normalizedTerm}"...`);
-    try {
-      const searchResults = await searchKnowledge(normalizedTerm, { topK: 5 });
+    let searchResults: Array<{ knowledge: any; similarity: number }> = [];
 
-      if (searchResults && searchResults.length > 0) {
-        // Found in internal storage or Pinecone
+    try {
+      searchResults = await searchKnowledge(normalizedTerm, { topK: 5 });
+    } catch (searchError) {
+      console.warn(`[Echo Learning] Knowledge search error (continuing with fallbacks):`, searchError);
+      // Don't rethrow - continue with fallbacks
+    }
+
+    if (searchResults && searchResults.length > 0) {
+      // Found in internal storage or Pinecone
+      try {
         console.log(`[Echo Learning] Found ${searchResults.length} results from knowledge storage`);
 
         const topResult = searchResults[0];
@@ -797,9 +804,10 @@ export async function searchAndLearn(req: Request, res: Response) {
           },
           message: `📚 Found in your knowledge library: "${knowledgeEntry.source}" (${(topResult.similarity * 100).toFixed(0)}% match)`,
         });
+      } catch (formatError) {
+        console.error(`[Echo Learning] Error formatting search results:`, formatError);
+        // Continue to fallbacks if formatting fails
       }
-    } catch (searchError) {
-      console.warn(`[Echo Learning] Knowledge search failed (continuing with fallbacks):`, searchError);
     }
 
     // Second, try to find in master dictionary
