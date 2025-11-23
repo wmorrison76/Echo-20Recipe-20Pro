@@ -787,23 +787,37 @@ export async function searchAndLearn(req: Request, res: Response) {
         const topResult = searchResults[0];
         const knowledgeEntry = topResult.knowledge;
 
-        return res.json({
-          status: 'success',
-          source: 'internal-pdf-library',
-          entry: {
-            term: normalizedTerm,
-            definition: knowledgeEntry.description || knowledgeEntry.content || '',
-            content: knowledgeEntry.content,
-            sourceFile: knowledgeEntry.source,
-            similarity: topResult.similarity,
-            allResults: searchResults.slice(0, 3).map(r => ({
-              definition: r.knowledge.description || r.knowledge.content || '',
-              source: r.knowledge.source,
-              similarity: r.similarity,
-            })),
-          },
-          message: `📚 Found in your knowledge library: "${knowledgeEntry.source}" (${(topResult.similarity * 100).toFixed(0)}% match)`,
-        });
+        // Safety checks for required fields
+        if (!knowledgeEntry) {
+          console.warn(`[Echo Learning] Search result missing knowledge object`);
+        } else {
+          // Safely extract fields with fallbacks
+          const source = knowledgeEntry.source || 'Unknown Source';
+          const definition = knowledgeEntry.description || knowledgeEntry.content || 'No definition available';
+          const content = knowledgeEntry.content || '';
+          const similarity = topResult.similarity || 0;
+
+          return res.json({
+            status: 'success',
+            source: 'internal-pdf-library',
+            entry: {
+              term: normalizedTerm,
+              definition: definition,
+              content: content,
+              sourceFile: source,
+              similarity: similarity,
+              allResults: searchResults.slice(0, 3).map(r => {
+                const k = r.knowledge || {};
+                return {
+                  definition: k.description || k.content || '',
+                  source: k.source || 'Unknown',
+                  similarity: r.similarity || 0,
+                };
+              }),
+            },
+            message: `📚 Found in your knowledge library: "${source}" (${(similarity * 100).toFixed(0)}% match)`,
+          });
+        }
       } catch (formatError) {
         console.error(`[Echo Learning] Error formatting search results:`, formatError);
         // Continue to fallbacks if formatting fails
