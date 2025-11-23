@@ -13,12 +13,18 @@ let isWrapped = false;
 /**
  * Install global wrapper for URL.createObjectURL
  * This must be called early in app initialization
+ *
+ * CRITICAL: Must save original BEFORE wrapping to avoid infinite recursion
  */
 export function installGlobalObjectURLWrapper(): void {
   if (isWrapped) return;
 
   try {
+    // IMPORTANT: Save the original BEFORE any wrapping
     originalCreateObjectURL = URL.createObjectURL;
+
+    // Tell the cache to use the original (not the wrapped version)
+    objectURLCache.setOriginalCreateObjectURL(originalCreateObjectURL);
 
     // Replace URL.createObjectURL with our cached version
     URL.createObjectURL = function (blob: Blob): string {
@@ -29,10 +35,11 @@ export function installGlobalObjectURLWrapper(): void {
 
       try {
         // Use the LRU cache instead of creating unlimited URLs
+        // The cache uses the ORIGINAL createObjectURL internally, not this wrapper
         return objectURLCache.set(id, blob);
       } catch (error) {
         console.error("[ObjectURLWrapper] Failed to cache blob URL:", error);
-        // Fallback to original if cache fails (shouldn't happen)
+        // Fallback to original if cache fails
         return originalCreateObjectURL(blob);
       }
     };
