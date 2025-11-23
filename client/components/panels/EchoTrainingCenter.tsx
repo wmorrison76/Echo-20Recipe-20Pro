@@ -506,6 +506,11 @@ export function EchoTrainingCenter() {
             </div>
           </Card>
         )}
+
+        {/* Knowledge Base Progress Dashboard */}
+        <div className="mt-8 border-t pt-8">
+          <KnowledgeProgressDashboard />
+        </div>
       </div>
     );
   }
