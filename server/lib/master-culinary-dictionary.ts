@@ -604,7 +604,7 @@ class MasterCulinaryDictionary {
   /**
    * Add a term to the master dictionary
    */
-  private addTerm(key: string, term: MasterCulinaryTerm): void {
+  addTerm(key: string, term: MasterCulinaryTerm): void {
     this.dictionary.set(key.toLowerCase(), term);
   }
 
