@@ -93,6 +93,7 @@ router.post("/start", async (req: Request, res: Response) => {
       async "master-dictionary"() {
         try {
           console.log("[Training] Starting Master Dictionary ingestion...");
+          trainingOrchestrator.startSource("master-dictionary");
           const result = await ingestionController.ingestMasterDictionary();
           trainingOrchestrator.completeSource(
             "master-dictionary",
@@ -100,6 +101,7 @@ router.post("/start", async (req: Request, res: Response) => {
             result.totalFailed
           );
         } catch (error) {
+          console.error("[Training] Master Dictionary error:", error);
           trainingOrchestrator.failSource(
             "master-dictionary",
             error instanceof Error ? error.message : String(error)
@@ -110,6 +112,7 @@ router.post("/start", async (req: Request, res: Response) => {
       async "pinecone-migration"() {
         try {
           console.log("[Training] Starting Pinecone migration...");
+          trainingOrchestrator.startSource("pinecone-migration");
           const result = await ingestionController.ingestFromPinecone();
           trainingOrchestrator.completeSource(
             "pinecone-migration",
@@ -117,6 +120,7 @@ router.post("/start", async (req: Request, res: Response) => {
             result.totalFailed
           );
         } catch (error) {
+          console.error("[Training] Pinecone migration error:", error);
           trainingOrchestrator.failSource(
             "pinecone-migration",
             error instanceof Error ? error.message : String(error)
