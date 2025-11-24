@@ -43,7 +43,7 @@ let currentProgress: IngestionProgress | null = null;
  * Check ingestion progress
  */
 router.get(
-  "/progress",
+  "/ingestion/progress",
   asyncHandler(async (req: Request, res: Response) => {
     try {
       if (!currentProgress) {
