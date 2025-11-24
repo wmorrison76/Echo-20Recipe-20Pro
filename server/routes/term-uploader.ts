@@ -157,12 +157,17 @@ router.post("/upload-terms", async (req: Request, res: Response) => {
 
     // Log summary
     console.log(
-      `[Term Uploader] Uploaded ${uploadedCount} terms to ${region} region`
+      `[Term Uploader] Completed processing: ${uploadedCount}/${terms.length} terms uploaded to ${region} region`
     );
     if (errors.length > 0) {
       console.log(
         `[Term Uploader] Encountered ${errors.length} errors during upload`
       );
+      if (errors.length <= 10) {
+        console.log(`[Term Uploader] Errors:`, errors);
+      } else {
+        console.log(`[Term Uploader] First 5 errors:`, errors.slice(0, 5));
+      }
     }
 
     const responseData = {
