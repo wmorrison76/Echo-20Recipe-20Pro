@@ -82,10 +82,16 @@ router.get("/status", async (req: Request, res: Response) => {
     const internalStats = await getInternalKnowledgeStats();
     const masterDictStats = masterCulinaryDictionary.getStatistics();
 
+    // Load uploaded terms count
+    await uploadedTermsStore.ensureLoaded();
+    const uploadedTermsCount = uploadedTermsStore.getCount();
+
     const status = {
       internal_vectors: internalStats.total,
       master_dictionary_terms: masterDictStats.totalTerms,
-      ready: internalStats.total > 0 && masterDictStats.totalTerms > 0,
+      uploaded_terms: uploadedTermsCount,
+      total_terms: (masterDictStats.totalTerms || 0) + (uploadedTermsCount || 0),
+      ready: internalStats.total > 0 && (masterDictStats.totalTerms > 0 || uploadedTermsCount > 0),
     };
 
     res.json({
