@@ -291,7 +291,7 @@ function IndexContent() {
               className="h-[calc(100vh-160px)] overflow-y-auto"
             >
               <ErrorBoundaryWrapper section="Echo Training">
-                <div className="w-full px-4 py-3">
+                <div className="w-full px-4 py-0">
                   <EchoTrainingCenter />
                 </div>
               </ErrorBoundaryWrapper>
