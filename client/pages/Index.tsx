@@ -180,7 +180,7 @@ function IndexContent() {
             </Button>
           </div>
         </header>
-        <main className="w-full flex flex-col">
+        <main className="w-full flex-1 flex flex-col overflow-hidden">
           <Tabs
             value={active}
             onValueChange={handleTabChange}
