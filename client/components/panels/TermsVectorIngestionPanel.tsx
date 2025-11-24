@@ -48,6 +48,18 @@ export function TermsVectorIngestionPanel() {
     const fetchTermsCount = async () => {
       try {
         const response = await fetch("/api/terms/count");
+
+        if (!response.ok) {
+          console.error("[TermsIngestion] Terms count fetch failed:", response.status, response.statusText);
+          return;
+        }
+
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          console.error("[TermsIngestion] Terms count response is not JSON:", contentType);
+          return;
+        }
+
         const data = await response.json();
         if (data.success) {
           setTermsCount(data.totalTerms);
@@ -67,6 +79,20 @@ export function TermsVectorIngestionPanel() {
     const poll = async () => {
       try {
         const response = await fetch("/api/terms/ingestion/progress");
+
+        if (!response.ok) {
+          console.error("[TermsIngestion] Progress polling failed:", response.status, response.statusText);
+          setIsPolling(false);
+          return;
+        }
+
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          console.error("[TermsIngestion] Progress response is not JSON:", contentType);
+          setIsPolling(false);
+          return;
+        }
+
         const data = await response.json();
 
         setStatus(data);
@@ -107,6 +133,19 @@ export function TermsVectorIngestionPanel() {
         method: "POST",
       });
 
+      if (!response.ok) {
+        toast.error(`HTTP ${response.status}: Failed to start ingestion`);
+        setIsPolling(false);
+        return;
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        toast.error("Server returned invalid response format");
+        setIsPolling(false);
+        return;
+      }
+
       const data = await response.json();
 
       if (!data.success) {
@@ -118,6 +157,7 @@ export function TermsVectorIngestionPanel() {
       toast.success("Ingestion started! Monitoring progress...");
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
+      console.error("[TermsIngestion] Error starting ingestion:", error);
       toast.error(`Failed to start ingestion: ${errorMsg}`);
       setIsPolling(false);
     }
