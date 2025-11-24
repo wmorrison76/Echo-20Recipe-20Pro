@@ -51,6 +51,8 @@ const REGION_CATEGORIES: Record<string, string> = {
  */
 router.post("/upload-terms", async (req: Request, res: Response) => {
   console.log("[Term Uploader] POST /api/knowledge/upload-terms hit", {
+    method: req.method,
+    headers: Object.keys(req.headers),
     bodyKeys: Object.keys(req.body),
     region: (req.body as any)?.region,
     termsLength: Array.isArray((req.body as any)?.terms) ? (req.body as any).terms.length : "not array"
