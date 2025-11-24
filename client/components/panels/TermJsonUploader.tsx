@@ -115,18 +115,31 @@ export function TermJsonUploader() {
   const isManifestFile = (fileName: string, content: any): boolean => {
     const lowerName = fileName.toLowerCase();
 
+    // Echo knowledge capsule manifest
     if (lowerName === "echo_knowledge_capsule.json" || lowerName === "echo-knowledge-capsule.json") {
       return content.capsule_name && content.content_files && Array.isArray(content.content_files);
     }
 
+    // Index manifest (maps categories to files)
     if (lowerName === "index.json") {
+      // Check if it looks like a manifest (has file references) vs a term array
+      if (Array.isArray(content)) {
+        return false; // It's an array, treat as terms
+      }
       const keys = Object.keys(content);
+      if (keys.length === 0) return false;
       const firstValue = Object.values(content)[0];
-      return keys.length > 0 && typeof firstValue === "object" &&
-             (("file" in firstValue) || ("count" in firstValue && "file" in firstValue));
+      // If it has "lookup" or category entries with "file" references, it's a manifest
+      return content.lookup !== undefined ||
+             (typeof firstValue === "object" && ("file" in firstValue || "count" in firstValue));
     }
 
+    // Graph links - could be manifest with graph structure
     if (lowerName === "graph_links.json") {
+      if (Array.isArray(content)) {
+        return false; // If it's an array, it's data to upload
+      }
+      // If it has nodes/links/graph structure, it's a manifest
       return content.nodes !== undefined || content.links !== undefined;
     }
 
