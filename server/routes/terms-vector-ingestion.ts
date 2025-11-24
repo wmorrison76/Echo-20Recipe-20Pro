@@ -95,7 +95,7 @@ async function startIngestion(): Promise<void> {
   };
 
   console.log(
-    `[TermIngestion] Starting ingestion of ${allTerms.length} terms to Supabase and Pinecone`
+    `[TermIngestion] Starting ingestion of ${allTerms.length} terms to Supabase and Pinecone`,
   );
 
   try {
@@ -107,10 +107,7 @@ async function startIngestion(): Promise<void> {
     const batchSize = 50;
 
     for (let i = 0; i < allTerms.length; i += batchSize) {
-      const batch = allTerms.slice(
-        i,
-        Math.min(i + batchSize, allTerms.length)
-      );
+      const batch = allTerms.slice(i, Math.min(i + batchSize, allTerms.length));
 
       for (const term of batch) {
         try {
@@ -125,16 +122,17 @@ async function startIngestion(): Promise<void> {
 
           currentProgress.processedTerms = termsWithEmbeddings.length;
           currentProgress.overallProgress = Math.round(
-            (termsWithEmbeddings.length / allTerms.length) * 100
+            (termsWithEmbeddings.length / allTerms.length) * 100,
           );
         } catch (error) {
-          const errorMsg = error instanceof Error ? error.message : String(error);
+          const errorMsg =
+            error instanceof Error ? error.message : String(error);
           currentProgress.errors.push(
-            `Failed to embed term "${term.term}": ${errorMsg}`
+            `Failed to embed term "${term.term}": ${errorMsg}`,
           );
           console.error(
             `[TermIngestion] Embedding failed for "${term.term}":`,
-            error
+            error,
           );
         }
 
@@ -151,7 +149,7 @@ async function startIngestion(): Promise<void> {
     }
 
     console.log(
-      `[TermIngestion] Generated embeddings for ${termsWithEmbeddings.length} terms`
+      `[TermIngestion] Generated embeddings for ${termsWithEmbeddings.length} terms`,
     );
 
     // Phase 2: Ingest to Supabase pgvector
@@ -176,14 +174,17 @@ async function startIngestion(): Promise<void> {
     }));
 
     try {
-      const supabaseResult = await storeInternalKnowledgeBatch(supabaseItems, 10);
+      const supabaseResult = await storeInternalKnowledgeBatch(
+        supabaseItems,
+        10,
+      );
 
       currentProgress.supabaseSuccess = supabaseResult.success;
       currentProgress.supabaseErrors = supabaseResult.failed;
       currentProgress.message = `Ingested ${supabaseResult.success} terms to Supabase`;
 
       console.log(
-        `[TermIngestion] Supabase ingestion complete: ${supabaseResult.success} success, ${supabaseResult.failed} errors`
+        `[TermIngestion] Supabase ingestion complete: ${supabaseResult.success} success, ${supabaseResult.failed} errors`,
       );
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
@@ -201,32 +202,34 @@ async function startIngestion(): Promise<void> {
 
       if (!pineconeStatus.connected) {
         throw new Error(
-          `Pinecone not connected: ${pineconeStatus.error || "Unknown error"}`
+          `Pinecone not connected: ${pineconeStatus.error || "Unknown error"}`,
         );
       }
 
       // Convert to Pinecone format (as TerminologyKnowledge)
-      const pineconeItems = termsWithEmbeddings.map(({ term, embedding }, idx) => {
-        const knowledgeItem = {
-          id: `terminology-${idx}-${Date.now()}`,
-          type: "terminology" as const,
-          title: term.term,
-          description: `${term.usage?.primary || term.definition}`,
-          content: term.definition,
-          source: "culinary-dictionary",
-          sourceType: "user_imported" as const,
-          tags: term.categories,
-          domain: "culinary" as const,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          confidence: term.confidence,
-          definition: term.definition,
-          etymology: term.etymology?.originalWord || term.term,
-          context: term.usage?.context || "culinary",
-          synonyms: term.relatedTerms,
-        };
-        return knowledgeItem;
-      });
+      const pineconeItems = termsWithEmbeddings.map(
+        ({ term, embedding }, idx) => {
+          const knowledgeItem = {
+            id: `terminology-${idx}-${Date.now()}`,
+            type: "terminology" as const,
+            title: term.term,
+            description: `${term.usage?.primary || term.definition}`,
+            content: term.definition,
+            source: "culinary-dictionary",
+            sourceType: "user_imported" as const,
+            tags: term.categories,
+            domain: "culinary" as const,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            confidence: term.confidence,
+            definition: term.definition,
+            etymology: term.etymology?.originalWord || term.term,
+            context: term.usage?.context || "culinary",
+            synonyms: term.relatedTerms,
+          };
+          return knowledgeItem;
+        },
+      );
 
       const pineconeResult = await storeKnowledgeBatch(pineconeItems);
 
@@ -235,7 +238,7 @@ async function startIngestion(): Promise<void> {
       currentProgress.message = `Ingested ${pineconeResult.success} terms to Pinecone`;
 
       console.log(
-        `[TermIngestion] Pinecone ingestion complete: ${pineconeResult.success} success, ${pineconeResult.failed} errors`
+        `[TermIngestion] Pinecone ingestion complete: ${pineconeResult.success} success, ${pineconeResult.failed} errors`,
       );
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
@@ -252,13 +255,16 @@ async function startIngestion(): Promise<void> {
     currentProgress.message = `✓ Ingestion complete! Processed ${currentProgress.supabaseSuccess + currentProgress.pineconeSuccess} terms in ${duration.toFixed(1)}s`;
 
     console.log(
-      `[TermIngestion] Ingestion complete: Supabase=${currentProgress.supabaseSuccess}, Pinecone=${currentProgress.pineconeSuccess}, Duration=${duration.toFixed(1)}s`
+      `[TermIngestion] Ingestion complete: Supabase=${currentProgress.supabaseSuccess}, Pinecone=${currentProgress.pineconeSuccess}, Duration=${duration.toFixed(1)}s`,
     );
 
     // Keep progress available for 5 minutes then clear
-    setTimeout(() => {
-      currentProgress = null;
-    }, 5 * 60 * 1000);
+    setTimeout(
+      () => {
+        currentProgress = null;
+      },
+      5 * 60 * 1000,
+    );
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
     currentProgress.currentPhase = "complete";
@@ -268,9 +274,12 @@ async function startIngestion(): Promise<void> {
     console.error("[TermIngestion] Fatal ingestion error:", error);
 
     // Keep error state for 5 minutes
-    setTimeout(() => {
-      currentProgress = null;
-    }, 5 * 60 * 1000);
+    setTimeout(
+      () => {
+        currentProgress = null;
+      },
+      5 * 60 * 1000,
+    );
   }
 }
 
@@ -290,7 +299,7 @@ router.post("/ingest/all", async (req: Request, res: Response) => {
     }
 
     console.log(
-      `[TermIngestion] Direct ingestion of ${allTerms.length} terms started`
+      `[TermIngestion] Direct ingestion of ${allTerms.length} terms started`,
     );
 
     const supabaseItems = allTerms.map((term) => ({

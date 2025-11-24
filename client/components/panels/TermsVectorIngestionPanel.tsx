@@ -39,7 +39,9 @@ export function TermsVectorIngestionPanel() {
   const [status, setStatus] = useState<IngestionStatus>({ status: "idle" });
   const [termsCount, setTermsCount] = useState<number | null>(null);
   const [isPolling, setIsPolling] = useState(false);
-  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
+  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(
+    null,
+  );
 
   // Fetch terms count on mount
   useEffect(() => {
@@ -74,11 +76,11 @@ export function TermsVectorIngestionPanel() {
             setIsPolling(false);
             if (data.progress?.errors?.length === 0) {
               toast.success(
-                `✓ Ingestion complete! ${data.progress?.supabaseSuccess + data.progress?.pineconeSuccess} terms processed`
+                `✓ Ingestion complete! ${data.progress?.supabaseSuccess + data.progress?.pineconeSuccess} terms processed`,
               );
             } else {
               toast.warning(
-                `Ingestion complete with ${data.progress?.errors?.length || 0} errors`
+                `Ingestion complete with ${data.progress?.errors?.length || 0} errors`,
               );
             }
           }
@@ -148,14 +150,17 @@ export function TermsVectorIngestionPanel() {
           )}
         </div>
         <p className="text-sm text-slate-600 dark:text-slate-400">
-          Push {termsCount?.toLocaleString() || "all"} uploaded terms to Supabase pgvector and Pinecone
+          Push {termsCount?.toLocaleString() || "all"} uploaded terms to
+          Supabase pgvector and Pinecone
         </p>
       </div>
 
       {/* Info Cards */}
       <div className="grid grid-cols-2 gap-3">
         <div className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-          <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">Total Terms</div>
+          <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">
+            Total Terms
+          </div>
           <div className="text-lg font-bold text-slate-900 dark:text-white">
             {termsCount?.toLocaleString() || "—"}
           </div>
@@ -164,21 +169,27 @@ export function TermsVectorIngestionPanel() {
         {progress && (
           <>
             <div className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-              <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">Processed</div>
+              <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">
+                Processed
+              </div>
               <div className="text-lg font-bold text-slate-900 dark:text-white">
                 {progress.processedTerms.toLocaleString()}
               </div>
             </div>
 
             <div className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950/30">
-              <div className="text-xs text-blue-700 dark:text-blue-300 font-medium">Supabase</div>
+              <div className="text-xs text-blue-700 dark:text-blue-300 font-medium">
+                Supabase
+              </div>
               <div className="text-lg font-bold text-blue-900 dark:text-blue-100">
                 {progress.supabaseSuccess.toLocaleString()} ✓
               </div>
             </div>
 
             <div className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-900 bg-purple-50 dark:bg-purple-950/30">
-              <div className="text-xs text-purple-700 dark:text-purple-300 font-medium">Pinecone</div>
+              <div className="text-xs text-purple-700 dark:text-purple-300 font-medium">
+                Pinecone
+              </div>
               <div className="text-lg font-bold text-purple-900 dark:text-purple-100">
                 {progress.pineconeSuccess.toLocaleString()} ✓
               </div>
@@ -205,16 +216,32 @@ export function TermsVectorIngestionPanel() {
       {/* Phase Indicator */}
       {progress && (
         <div className="flex gap-1 text-xs">
-          {(["fetching", "embedding", "supabase", "pinecone", "complete"] as const).map((phase) => (
+          {(
+            [
+              "fetching",
+              "embedding",
+              "supabase",
+              "pinecone",
+              "complete",
+            ] as const
+          ).map((phase) => (
             <div
               key={phase}
               className={`flex-1 py-1 px-2 rounded text-center font-medium capitalize transition-all ${
                 phase === progress.currentPhase
                   ? "bg-amber-500 text-white shadow-lg"
-                  : ["fetching", "embedding", "supabase", "pinecone"].indexOf(phase) <
-                    ["fetching", "embedding", "supabase", "pinecone", "complete"].indexOf(progress.currentPhase)
-                  ? "bg-green-500 text-white"
-                  : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400"
+                  : ["fetching", "embedding", "supabase", "pinecone"].indexOf(
+                        phase,
+                      ) <
+                      [
+                        "fetching",
+                        "embedding",
+                        "supabase",
+                        "pinecone",
+                        "complete",
+                      ].indexOf(progress.currentPhase)
+                    ? "bg-green-500 text-white"
+                    : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400"
               }`}
             >
               {phase === "fetching" && "1️⃣"}
@@ -234,7 +261,8 @@ export function TermsVectorIngestionPanel() {
             <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
             <div className="min-w-0">
               <div className="text-sm font-medium text-red-900 dark:text-red-100 mb-1">
-                {progress.errors.length} error{progress.errors.length !== 1 ? "s" : ""}
+                {progress.errors.length} error
+                {progress.errors.length !== 1 ? "s" : ""}
               </div>
               <div className="text-xs text-red-800 dark:text-red-200 space-y-1">
                 {progress.errors.slice(0, 3).map((error, idx) => (
@@ -271,7 +299,7 @@ export function TermsVectorIngestionPanel() {
             className="flex-1"
             onClick={() => {
               toast.info(
-                "Terms are ready for ingestion. Click 'Start Ingestion Now' to begin pushing to Supabase + Pinecone."
+                "Terms are ready for ingestion. Click 'Start Ingestion Now' to begin pushing to Supabase + Pinecone.",
               );
             }}
           >
@@ -298,8 +326,13 @@ export function TermsVectorIngestionPanel() {
             Ingestion Complete
           </div>
           <div className="text-sm text-green-800 dark:text-green-200">
-            <div>✓ Supabase pgvector: {progress.supabaseSuccess.toLocaleString()} terms</div>
-            <div>✓ Pinecone: {progress.pineconeSuccess.toLocaleString()} terms</div>
+            <div>
+              ✓ Supabase pgvector: {progress.supabaseSuccess.toLocaleString()}{" "}
+              terms
+            </div>
+            <div>
+              ✓ Pinecone: {progress.pineconeSuccess.toLocaleString()} terms
+            </div>
             {progress.errors.length > 0 && (
               <div className="text-yellow-700 dark:text-yellow-300 mt-1">
                 ⚠ {progress.errors.length} error(s) during ingestion

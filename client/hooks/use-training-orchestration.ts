@@ -61,7 +61,7 @@ export function useTrainingOrchestration() {
         console.warn(
           "[TrainingOrchestration] Status fetch returned error:",
           response.status,
-          data?.error || data?.details
+          data?.error || data?.details,
         );
         return;
       }
@@ -93,7 +93,9 @@ export function useTrainingOrchestration() {
         const data = await response.json();
 
         if (!response.ok) {
-          const errorMsg = data?.error || `HTTP ${response.status}: Failed to initialize session`;
+          const errorMsg =
+            data?.error ||
+            `HTTP ${response.status}: Failed to initialize session`;
           setState((prev) => ({ ...prev, error: errorMsg }));
           return;
         }
@@ -117,7 +119,7 @@ export function useTrainingOrchestration() {
         setState((prev) => ({ ...prev, error: errorMsg }));
       }
     },
-    []
+    [],
   );
 
   // Start training
@@ -135,7 +137,8 @@ export function useTrainingOrchestration() {
         const data = await response.json();
 
         if (!response.ok) {
-          const errorMsg = data?.error || `HTTP ${response.status}: Failed to start training`;
+          const errorMsg =
+            data?.error || `HTTP ${response.status}: Failed to start training`;
           setState((prev) => ({
             ...prev,
             error: errorMsg,
@@ -164,11 +167,12 @@ export function useTrainingOrchestration() {
           }));
         }
       } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : "Failed to start";
+        const errorMsg =
+          error instanceof Error ? error.message : "Failed to start";
         setState((prev) => ({ ...prev, error: errorMsg, isRunning: false }));
       }
     },
-    []
+    [],
   );
 
   // Ingest recipes
@@ -183,7 +187,11 @@ export function useTrainingOrchestration() {
       const data = await response.json();
 
       if (!response.ok) {
-        console.warn("[TrainingOrchestration] Ingest recipes failed:", response.status, data?.error);
+        console.warn(
+          "[TrainingOrchestration] Ingest recipes failed:",
+          response.status,
+          data?.error,
+        );
         return false;
       }
 
@@ -207,7 +215,11 @@ export function useTrainingOrchestration() {
         const data = await response.json();
 
         if (!response.ok) {
-          console.warn("[TrainingOrchestration] Ingest PDFs failed:", response.status, data?.error);
+          console.warn(
+            "[TrainingOrchestration] Ingest PDFs failed:",
+            response.status,
+            data?.error,
+          );
           return false;
         }
 
@@ -217,7 +229,7 @@ export function useTrainingOrchestration() {
         return false;
       }
     },
-    []
+    [],
   );
 
   // Fetch summary
@@ -227,7 +239,11 @@ export function useTrainingOrchestration() {
       const data = await response.json();
 
       if (!response.ok) {
-        console.warn("[TrainingOrchestration] Summary fetch failed:", response.status, data?.error);
+        console.warn(
+          "[TrainingOrchestration] Summary fetch failed:",
+          response.status,
+          data?.error,
+        );
         return;
       }
 

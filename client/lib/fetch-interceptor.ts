@@ -53,7 +53,10 @@ export const fetchWithCORSHandling = async (
     } catch (error) {
       // Handle local API fetch failures gracefully
       const errorMsg = error instanceof Error ? error.message : String(error);
-      console.error(`[Fetch Interceptor] Local API fetch failed for ${urlStr}:`, error);
+      console.error(
+        `[Fetch Interceptor] Local API fetch failed for ${urlStr}:`,
+        error,
+      );
 
       return new Response(
         JSON.stringify({
@@ -129,8 +132,10 @@ export const fetchWithCORSHandling = async (
       const errorMsg = error.message;
 
       // Determine if it's a CORS error or general network error
-      const isCORSError = errorMsg.includes("Access-Control") || errorMsg.includes("CORS");
-      const isNetworkError = errorMsg.includes("Failed to fetch") || errorMsg.includes("fetch");
+      const isCORSError =
+        errorMsg.includes("Access-Control") || errorMsg.includes("CORS");
+      const isNetworkError =
+        errorMsg.includes("Failed to fetch") || errorMsg.includes("fetch");
 
       const status = isCORSError ? 403 : 500;
       const errorType = isCORSError ? "CORS Error" : "Network Error";

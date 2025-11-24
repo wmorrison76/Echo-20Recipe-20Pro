@@ -164,7 +164,9 @@ router.post("/upload-terms", async (req: Request, res: Response) => {
           definition: definition.trim(),
           pronunciation: termData.pronunciation?.trim() || "",
           etymology: {
-            origin: categoryDisplay.charAt(0).toUpperCase() + categoryDisplay.slice(1),
+            origin:
+              categoryDisplay.charAt(0).toUpperCase() +
+              categoryDisplay.slice(1),
             originalWord: termData.etymology?.trim() || termData.term,
             meaning: definition.substring(0, 50),
             period: `${categoryDisplay} knowledge`,
@@ -188,7 +190,10 @@ router.post("/upload-terms", async (req: Request, res: Response) => {
           },
           confidence: termData.importance_weight || 0.85,
           sources: [`User upload - ${new Date().toISOString().split("T")[0]}`],
-          masteryLevel: (termData.importance_weight || 0.85) > 0.9 ? "advanced" : "intermediate" as const,
+          masteryLevel:
+            (termData.importance_weight || 0.85) > 0.9
+              ? "advanced"
+              : ("intermediate" as const),
         };
 
         // Add to master culinary dictionary

@@ -116,8 +116,15 @@ export function TermJsonUploader() {
     const lowerName = fileName.toLowerCase();
 
     // Echo knowledge capsule manifest
-    if (lowerName === "echo_knowledge_capsule.json" || lowerName === "echo-knowledge-capsule.json") {
-      return content.capsule_name && content.content_files && Array.isArray(content.content_files);
+    if (
+      lowerName === "echo_knowledge_capsule.json" ||
+      lowerName === "echo-knowledge-capsule.json"
+    ) {
+      return (
+        content.capsule_name &&
+        content.content_files &&
+        Array.isArray(content.content_files)
+      );
     }
 
     // Index manifest (maps categories to files)
@@ -130,8 +137,11 @@ export function TermJsonUploader() {
       if (keys.length === 0) return false;
       const firstValue = Object.values(content)[0];
       // If it has "lookup" or category entries with "file" references, it's a manifest
-      return content.lookup !== undefined ||
-             (typeof firstValue === "object" && ("file" in firstValue || "count" in firstValue));
+      return (
+        content.lookup !== undefined ||
+        (typeof firstValue === "object" &&
+          ("file" in firstValue || "count" in firstValue))
+      );
     }
 
     // Graph links - could be manifest with graph structure
@@ -167,7 +177,9 @@ export function TermJsonUploader() {
       console.log(`[TermUploader] ${fileName}: Parsed JSON content`);
 
       if (isManifestFile(fileName, content)) {
-        console.log(`[TermUploader] ${fileName}: Detected as manifest file, skipping upload`);
+        console.log(
+          `[TermUploader] ${fileName}: Detected as manifest file, skipping upload`,
+        );
 
         setUploadProgress((prev) =>
           prev.map((p) =>
@@ -175,14 +187,17 @@ export function TermJsonUploader() {
               ? {
                   ...p,
                   status: "success",
-                  message: "Manifest file - content files will be processed separately",
+                  message:
+                    "Manifest file - content files will be processed separately",
                   termCount: 0,
                 }
               : p,
           ),
         );
 
-        toast.info(`${fileName}: Manifest file detected. Upload the referenced content files.`);
+        toast.info(
+          `${fileName}: Manifest file detected. Upload the referenced content files.`,
+        );
         return;
       }
 
@@ -283,7 +298,8 @@ export function TermJsonUploader() {
       );
 
       setTotalTermsUploaded((prev) => prev + result.uploadedCount);
-      const destination = selectedRegion || (terms[0] as any)?.category || "knowledge base";
+      const destination =
+        selectedRegion || (terms[0] as any)?.category || "knowledge base";
       toast.success(
         `${fileName}: ${result.uploadedCount} terms added to ${destination}`,
       );
@@ -454,18 +470,37 @@ export function TermJsonUploader() {
       {/* Format Help */}
       <div className="space-y-2">
         <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 text-sm">
-          <p className="font-medium mb-2 text-blue-900 dark:text-blue-100">Term File Format:</p>
+          <p className="font-medium mb-2 text-blue-900 dark:text-blue-100">
+            Term File Format:
+          </p>
           <code className="block bg-blue-100 dark:bg-blue-900/50 p-2 rounded text-xs overflow-auto text-blue-900 dark:text-blue-100">
             {`[{"term": "Term Name", "pronunciation": "optional", "etymology": "optional", "definition": "Definition here", "category": "optional"}, ...]`}
           </code>
         </div>
 
         <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-sm">
-          <p className="font-medium mb-2 text-amber-900 dark:text-amber-100">📋 Manifest Files (auto-detected - will be skipped):</p>
+          <p className="font-medium mb-2 text-amber-900 dark:text-amber-100">
+            📋 Manifest Files (auto-detected - will be skipped):
+          </p>
           <ul className="text-xs text-amber-800 dark:text-amber-200 space-y-1">
-            <li><code className="bg-amber-100 dark:bg-amber-900/50 px-1 rounded">echo_knowledge_capsule.json</code> - Lists content_files to load</li>
-            <li><code className="bg-amber-100 dark:bg-amber-900/50 px-1 rounded">index.json</code> - Maps categories to their files</li>
-            <li><code className="bg-amber-100 dark:bg-amber-900/50 px-1 rounded">graph_links.json</code> - Graph structure data</li>
+            <li>
+              <code className="bg-amber-100 dark:bg-amber-900/50 px-1 rounded">
+                echo_knowledge_capsule.json
+              </code>{" "}
+              - Lists content_files to load
+            </li>
+            <li>
+              <code className="bg-amber-100 dark:bg-amber-900/50 px-1 rounded">
+                index.json
+              </code>{" "}
+              - Maps categories to their files
+            </li>
+            <li>
+              <code className="bg-amber-100 dark:bg-amber-900/50 px-1 rounded">
+                graph_links.json
+              </code>{" "}
+              - Graph structure data
+            </li>
           </ul>
         </div>
       </div>
