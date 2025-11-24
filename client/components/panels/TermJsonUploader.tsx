@@ -23,7 +23,7 @@ const REGIONS = [
   { id: "chinese", label: "Chinese", emoji: "🇨🇳" },
   { id: "japanese", label: "Japanese", emoji: "🇯🇵" },
   { id: "thai", label: "Thai", emoji: "🇹🇭" },
-  { id: "korean", label: "Korean", emoji: "���🇷" },
+  { id: "korean", label: "Korean", emoji: "🇰🇷" },
   { id: "indian", label: "Indian", emoji: "🇮🇳" },
   { id: "vietnamese", label: "Vietnamese", emoji: "🇻🇳" },
   { id: "french", label: "French", emoji: "🇫🇷" },
@@ -150,12 +150,33 @@ export function TermJsonUploader() {
         }),
       });
 
-      const result = await response.json();
+      let result: any = null;
+      const contentType = response.headers.get("content-type");
+
+      if (contentType?.includes("application/json")) {
+        try {
+          result = await response.json();
+        } catch {
+          throw new Error("Server returned invalid JSON response");
+        }
+      } else {
+        const text = await response.text();
+        result = {
+          error: text || response.statusText || "Unknown server error",
+        };
+      }
 
       if (!response.ok) {
         const errorMsg =
-          result.error || result.message || response.statusText || "Unknown error";
+          result?.error ||
+          result?.message ||
+          response.statusText ||
+          "Unknown error occurred";
         throw new Error(errorMsg);
+      }
+
+      if (!result?.uploadedCount) {
+        throw new Error("Invalid server response: missing uploadedCount");
       }
 
       setUploadProgress((prev) =>
