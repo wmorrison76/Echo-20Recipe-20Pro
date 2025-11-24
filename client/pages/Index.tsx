@@ -180,11 +180,11 @@ function IndexContent() {
             </Button>
           </div>
         </header>
-        <main className="w-full py-2">
+        <main className="w-full h-[calc(100vh-160px)] flex flex-col py-2">
           <Tabs
             value={active}
             onValueChange={handleTabChange}
-            className="w-full"
+            className="w-full flex-1 flex flex-col"
           >
             <TabsContent value="search">
               <ErrorBoundaryWrapper section="Recipe Search">
