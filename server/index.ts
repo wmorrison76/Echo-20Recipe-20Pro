@@ -28,6 +28,7 @@ import pdfLibraryImportRouter from "./routes/pdf-library-import";
 import echoKnowledgeIngestionRouter from "./routes/echo-knowledge-ingestion";
 import knowledgeDiagnosticsRouter from "./routes/knowledge-diagnostics";
 import trainingOrchestrationRouter from "./routes/training-orchestration";
+import { termUploaderRouter } from "./routes/term-uploader";
 import { knowledgeInitializer } from "./lib/knowledge-initialization";
 import {
   proxyRecipeImage as proxyImageOptimized,
