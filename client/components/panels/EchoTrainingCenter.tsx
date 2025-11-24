@@ -220,7 +220,7 @@ export function EchoTrainingCenter() {
   // Show startup screen if no session
   if (!session && showStartOptions) {
     return (
-      <div className="space-y-6 pb-4">
+      <div className="space-y-6 pb-4 px-4 pt-4">
         {/* Header */}
         <div className="space-y-2">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
