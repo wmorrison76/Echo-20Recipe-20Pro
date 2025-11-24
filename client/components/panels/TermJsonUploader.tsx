@@ -123,10 +123,17 @@ export function TermJsonUploader() {
       );
 
       const text = await file.text();
+      console.log(`[TermUploader] ${fileName}: Raw file size: ${text.length} bytes`);
+
       const terms: TermData[] = JSON.parse(text);
+      console.log(`[TermUploader] ${fileName}: Parsed ${terms.length} terms from JSON`);
 
       if (!Array.isArray(terms)) {
         throw new Error("JSON must be an array of terms");
+      }
+
+      if (terms.length === 0) {
+        throw new Error("JSON file is empty");
       }
 
       setUploadProgress((prev) =>
