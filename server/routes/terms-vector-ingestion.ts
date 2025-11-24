@@ -346,4 +346,5 @@ router.get("/count", (req: Request, res: Response) => {
   });
 });
 
+export { router as termsVectorIngestionRouter };
 export default router;
