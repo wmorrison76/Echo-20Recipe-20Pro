@@ -159,10 +159,7 @@ export function TermJsonUploader() {
       const response = await fetch("/api/knowledge/upload-terms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          terms,
-          region: selectedRegion,
-        }),
+        body: payload,
       });
 
       let result: any = null;
