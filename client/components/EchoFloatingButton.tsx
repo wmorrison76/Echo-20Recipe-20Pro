@@ -32,27 +32,35 @@ export default function EchoFloatingButton() {
         </div>
       </button>
 
-      {/* Dialog Popup */}
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="w-[420px] max-w-[95vw] h-[500px] max-h-[85vh] p-0 gap-0 flex flex-col">
-          <DialogHeader className="border-b px-6 py-4">
-            <div className="flex items-center justify-between">
-              <DialogTitle>Ask Echo</DialogTitle>
+      {/* Dialog Popup - without overlay */}
+      {isOpen && (
+        <>
+          {/* Backdrop - optional, minimal */}
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setIsOpen(false)}
+          />
+
+          {/* Popup Dialog - positioned bottom right */}
+          <div className="fixed bottom-24 right-6 z-50 w-[420px] max-w-[95vw] h-[500px] max-h-[85vh] rounded-lg border border-slate-700 bg-slate-950 shadow-xl flex flex-col overflow-hidden">
+            {/* Header */}
+            <div className="border-b border-slate-700 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-white">Ask Echo</h2>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="text-slate-400 hover:text-white transition-colors p-1"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
-          </DialogHeader>
 
-          {/* Ask Echo Panel */}
-          <div className="flex-1 overflow-hidden">
-            <AskEchoPanel />
+            {/* Ask Echo Panel */}
+            <div className="flex-1 overflow-hidden">
+              <AskEchoPanel />
+            </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        </>
+      )}
     </>
   );
 }
