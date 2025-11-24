@@ -109,6 +109,7 @@ function IndexContent() {
               <span className="text-sm font-semibold uppercase tracking-[0.65em] text-slate-700 dark:text-cyan-200">
                 Echo Recipe Pro
               </span>
+              <div className="text-xl">🟢</div>
               <span className="text-xs uppercase tracking-[0.35em] text-slate-400 dark:text-cyan-300/70">
                 Research & Development Suite
               </span>
