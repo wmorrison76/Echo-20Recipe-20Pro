@@ -693,6 +693,10 @@ export default function TopTabs() {
               ))}
             </nav>
 
+            <div className="flex items-center justify-center py-2">
+              <span className="text-2xl">🟢</span>
+            </div>
+
             <div
               className={cn(
                 "space-y-3 border-t border-white/50 pt-3 text-sm transition-all duration-700 dark:border-slate-800/60 mt-auto",
