@@ -298,12 +298,16 @@ export function TermJsonUploader() {
             </button>
           ))}
         </div>
-        {selectedRegion && (
+        {selectedRegion ? (
           <p className="text-sm text-blue-600 dark:text-blue-400">
             Terms will be added to:{" "}
             <strong>
               {REGIONS.find((r) => r.id === selectedRegion)?.label}
             </strong>
+          </p>
+        ) : (
+          <p className="text-sm text-amber-600 dark:text-amber-400">
+            Category will be auto-detected from file (or use selection above)
           </p>
         )}
       </div>
