@@ -54,6 +54,12 @@ export function useTrainingOrchestration() {
   const fetchStatus = useCallback(async () => {
     try {
       const response = await fetch("/api/training/session/status");
+
+      if (!response.ok) {
+        console.error("[TrainingOrchestration] Status fetch returned", response.status);
+        return;
+      }
+
       const data = await response.json();
 
       if (data.success) {
