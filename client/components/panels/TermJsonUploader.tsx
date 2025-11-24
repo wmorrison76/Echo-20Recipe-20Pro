@@ -44,14 +44,24 @@ export function TermJsonUploader() {
   const [uploadProgress, setUploadProgress] = useState<UploadProgress[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [totalTermsUploaded, setTotalTermsUploaded] = useState(0);
+  const [isDragActive, setIsDragActive] = useState(false);
 
   const handleFileSelect = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const files = event.target.files;
     if (!files) return;
+    await processFiles(files);
+  };
 
-    const fileArray = Array.from(files);
+  const processFiles = async (files: FileList) => {
+    const fileArray = Array.from(files).filter((f) => f.type === "application/json");
+
+    if (fileArray.length === 0) {
+      toast.error("Please select valid JSON files");
+      return;
+    }
+
     setUploadProgress(
       fileArray.map((f) => ({
         fileName: f.name,
@@ -69,6 +79,34 @@ export function TermJsonUploader() {
     setIsUploading(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
+    }
+  };
+
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(false);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(false);
+
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      processFiles(files);
     }
   };
 
