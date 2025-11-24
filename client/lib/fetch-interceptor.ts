@@ -14,7 +14,12 @@ const CORS_PROBLEMATIC_URLS = new Set([
 ]);
 
 // Local API routes that should not be intercepted
-const LOCAL_API_ROUTES = ["/api/knowledge", "/api/echo", "/api/pdf-library"];
+const LOCAL_API_ROUTES = [
+  "/api/knowledge",
+  "/api/echo",
+  "/api/pdf-library",
+  "/api/training",
+];
 
 /**
  * Check if a URL is known to have CORS issues
