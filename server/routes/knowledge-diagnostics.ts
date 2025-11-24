@@ -310,11 +310,17 @@ router.get("/stats", async (req: Request, res: Response) => {
     const internalStats = await getInternalKnowledgeStats();
     const masterDictStats = masterCulinaryDictionary.getStatistics();
 
+    // Load uploaded terms count
+    await uploadedTermsStore.ensureLoaded();
+    const uploadedTermsCount = uploadedTermsStore.getCount();
+
     res.json({
       success: true,
       stats: {
         approvedItems: internalStats.total || 0,
         masterDictionaryTerms: masterDictStats.totalTerms || 0,
+        uploadedTerms: uploadedTermsCount || 0,
+        totalTerms: (masterDictStats.totalTerms || 0) + (uploadedTermsCount || 0),
         totalVectors: internalStats.total || 0,
         bySourceType: internalStats.bySourceType || {},
         byDomain: internalStats.byDomain || {},
