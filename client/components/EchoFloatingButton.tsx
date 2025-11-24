@@ -34,7 +34,7 @@ export default function EchoFloatingButton() {
 
       {/* Dialog Popup */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-2xl h-[600px] p-0 gap-0">
+        <DialogContent className="w-[500px] max-w-[90vw] h-[600px] max-h-[85vh] p-0 gap-0 flex flex-col">
           <DialogHeader className="border-b px-6 py-4">
             <div className="flex items-center justify-between">
               <DialogTitle>Ask Echo</DialogTitle>
