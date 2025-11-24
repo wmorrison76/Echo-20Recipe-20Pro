@@ -94,7 +94,7 @@ function IndexContent() {
       <CommandPalette />
       <EchoFloatingButton />
       <div
-        className="relative min-h-screen text-foreground"
+        className="relative min-h-screen text-foreground flex flex-col"
         style={{
           paddingLeft: "calc(var(--sidebar-offset, 88px) - 0.35rem)",
         }}
