@@ -15,6 +15,28 @@ router.get("/upload-test", (req: Request, res: Response) => {
     .json({ success: true, message: "Upload endpoint is working" });
 });
 
+/**
+ * GET /api/knowledge/dictionary-stats
+ * Get statistics about what's in the master dictionary
+ */
+router.get("/dictionary-stats", (req: Request, res: Response) => {
+  const terms = masterCulinaryDictionary.getAllTerms();
+  const count = terms.length;
+  const sampleTerms = terms.slice(0, 10).map((t) => ({
+    term: t.term,
+    definition: t.definition.substring(0, 100),
+  }));
+
+  console.log(`[Term Uploader] Dictionary has ${count} terms`);
+
+  return res.json({
+    success: true,
+    totalTerms: count,
+    sample: sampleTerms,
+    message: `Master dictionary contains ${count} terms`,
+  });
+});
+
 interface UploadTermData {
   term: string;
   pronunciation?: string;
