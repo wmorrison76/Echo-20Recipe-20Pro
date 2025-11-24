@@ -60,25 +60,28 @@ router.get("/progress", (req: Request, res: Response) => {
  * POST /api/terms/ingest/start
  * Start ingesting all terms to both Supabase and Pinecone
  */
-router.post("/ingest/start", async (req: Request, res: Response) => {
-  // Prevent multiple concurrent ingestions
-  if (currentProgress) {
-    return res.status(409).json({
-      success: false,
-      error: "Ingestion already in progress",
-      progress: currentProgress,
+router.post(
+  "/ingest/start",
+  asyncHandler(async (req: Request, res: Response) => {
+    // Prevent multiple concurrent ingestions
+    if (currentProgress) {
+      return res.status(409).json({
+        success: false,
+        error: "Ingestion already in progress",
+        progress: currentProgress,
+      });
+    }
+
+    // Start ingestion in background
+    startIngestion();
+
+    return res.json({
+      success: true,
+      message: "Ingestion started",
+      message2: "Check /api/terms/ingestion/progress for updates",
     });
-  }
-
-  // Start ingestion in background
-  startIngestion();
-
-  return res.json({
-    success: true,
-    message: "Ingestion started",
-    message2: "Check /api/terms/ingestion/progress for updates",
-  });
-});
+  }),
+);
 
 /**
  * Main ingestion function - runs in background
@@ -316,7 +319,9 @@ async function startIngestion(): Promise<void> {
  * POST /api/terms/ingest/all
  * Immediate synchronous ingestion (for smaller datasets)
  */
-router.post("/ingest/all", async (req: Request, res: Response) => {
+router.post(
+  "/ingest/all",
+  asyncHandler(async (req: Request, res: Response) => {
   try {
     // Ensure uploaded terms store is loaded
     await uploadedTermsStore.ensureLoaded();
@@ -378,18 +383,21 @@ router.post("/ingest/all", async (req: Request, res: Response) => {
     const errorMsg = error instanceof Error ? error.message : String(error);
     console.error("[TermIngestion] Direct ingestion error:", error);
 
-    return res.status(500).json({
-      success: false,
-      error: errorMsg,
-    });
-  }
-});
+      return res.status(500).json({
+        success: false,
+        error: errorMsg,
+      });
+    }
+  }),
+);
 
 /**
  * GET /api/terms/count
  * Get total number of terms available for ingestion
  */
-router.get("/count", async (req: Request, res: Response) => {
+router.get(
+  "/count",
+  asyncHandler(async (req: Request, res: Response) => {
   try {
     // Ensure uploaded terms store is loaded
     await uploadedTermsStore.ensureLoaded();
@@ -422,12 +430,13 @@ router.get("/count", async (req: Request, res: Response) => {
     const errorMsg = error instanceof Error ? error.message : String(error);
     console.error("[TermIngestion] Error getting terms count:", error);
 
-    return res.status(500).json({
-      success: false,
-      error: errorMsg,
-    });
-  }
-});
+      return res.status(500).json({
+        success: false,
+        error: errorMsg,
+      });
+    }
+  }),
+);
 
 export { router as termsVectorIngestionRouter };
 export default router;
