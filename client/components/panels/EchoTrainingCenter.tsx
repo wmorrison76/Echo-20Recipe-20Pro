@@ -221,7 +221,6 @@ export function EchoTrainingCenter() {
   if (!session && showStartOptions) {
     return (
       <div className="space-y-6">
-        <div className="text-4xl">⭐</div>
         {/* Header */}
         <div className="space-y-2">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
