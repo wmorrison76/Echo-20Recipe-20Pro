@@ -171,5 +171,26 @@ export function createServer() {
   // Training Orchestration - Unified training management
   app.use("/api/training", trainingOrchestrationRouter);
 
+  // Global error handler - ensure all errors return JSON
+  app.use(
+    (
+      err: any,
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction,
+    ) => {
+      const statusCode = err.status || err.statusCode || 500;
+      const errorMessage = err.message || "Internal server error";
+
+      console.error(`[Server Error] ${statusCode}: ${errorMessage}`, err);
+
+      res.status(statusCode).json({
+        success: false,
+        error: errorMessage,
+        details: process.env.NODE_ENV === "development" ? err.stack : undefined,
+      });
+    },
+  );
+
   return app;
 }
