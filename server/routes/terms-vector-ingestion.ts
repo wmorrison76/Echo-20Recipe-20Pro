@@ -311,12 +311,28 @@ async function startIngestion(): Promise<void> {
  */
 router.post("/ingest/all", async (req: Request, res: Response) => {
   try {
-    const allTerms = masterCulinaryDictionary.getAllTerms();
+    // Ensure uploaded terms store is loaded
+    await uploadedTermsStore.ensureLoaded();
+
+    // Combine master dictionary terms with uploaded terms
+    const masterTerms = masterCulinaryDictionary.getAllTerms();
+    const uploadedTerms = uploadedTermsStore.getAllTerms();
+
+    // Remove duplicates
+    const allTermsMap = new Map<string, typeof masterTerms[0]>();
+    for (const term of masterTerms) {
+      allTermsMap.set(term.term.toLowerCase(), term);
+    }
+    for (const term of uploadedTerms) {
+      allTermsMap.set(term.term.toLowerCase(), term);
+    }
+
+    const allTerms = Array.from(allTermsMap.values());
 
     if (allTerms.length === 0) {
       return res.status(400).json({
         success: false,
-        error: "No terms available in master dictionary",
+        error: "No terms available in master dictionary or uploaded terms",
       });
     }
 
