@@ -90,11 +90,13 @@ export function useTrainingOrchestration() {
           body: JSON.stringify({ mode }),
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: Failed to initialize session`);
-        }
-
         const data = await response.json();
+
+        if (!response.ok) {
+          const errorMsg = data?.error || `HTTP ${response.status}: Failed to initialize session`;
+          setState((prev) => ({ ...prev, error: errorMsg }));
+          return;
+        }
 
         if (data.success) {
           setState((prev) => ({
