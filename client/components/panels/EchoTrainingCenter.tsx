@@ -408,7 +408,6 @@ export function EchoTrainingCenter() {
   if (session) {
     return (
       <div className="space-y-6">
-        <div className="text-4xl">⭐</div>
         {/* Header with Status */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
