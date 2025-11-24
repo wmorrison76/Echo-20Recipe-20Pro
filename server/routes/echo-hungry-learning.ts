@@ -992,23 +992,20 @@ export async function searchAndLearn(req: Request, res: Response) {
         });
       }
 
-      // Fuzzy search in master dictionary
+      // Fuzzy search in master dictionary - limit results for performance
       const fuzzyMatches = masterCulinaryDictionary
         .searchTerms(normalizedTerm)
-        .filter(t => {
-          const similarity = calculateSimilarity(normalizedTerm, t.term.toLowerCase());
-          return similarity > 0.7;
-        });
+        .slice(0, 10); // Limit to first 10 matches to avoid memory exhaustion
 
       if (fuzzyMatches.length > 0) {
         const fuzzyTerm = fuzzyMatches[0];
         console.log(
-          `[Echo Learning] Found fuzzy match "${fuzzyTerm.term}" for "${normalizedTerm}"`
+          `[Echo Learning] Found match "${fuzzyTerm.term}" for "${normalizedTerm}"`
         );
 
         return res.json({
           status: "success",
-          source: "master-dictionary-fuzzy",
+          source: "master-dictionary",
           entry: {
             term: fuzzyTerm,
             related: [],
