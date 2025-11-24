@@ -180,14 +180,16 @@ export function useTrainingOrchestration() {
         body: JSON.stringify({ recipeCount }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: Failed to ingest recipes`);
+        console.warn("[TrainingOrchestration] Ingest recipes failed:", response.status, data?.error);
+        return false;
       }
 
-      const data = await response.json();
-      return data.success;
+      return data.success ?? false;
     } catch (error) {
-      console.error("[TrainingOrchestration] Error ingesting recipes:", error);
+      console.warn("[TrainingOrchestration] Error ingesting recipes:", error);
       return false;
     }
   }, []);
