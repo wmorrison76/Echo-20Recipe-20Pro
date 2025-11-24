@@ -149,6 +149,9 @@ export function createServer() {
   // Knowledge Diagnostics - Health checks and status for all knowledge sources
   app.use("/api/knowledge", knowledgeDiagnosticsRouter);
 
+  // Term Uploader - Upload culinary and financial terms from JSON files
+  app.use("/api/knowledge", termUploaderRouter);
+
   // Training Orchestration - Unified training management
   app.use("/api/training", trainingOrchestrationRouter);
 
