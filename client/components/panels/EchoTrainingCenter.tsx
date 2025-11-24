@@ -184,6 +184,39 @@ export function EchoTrainingCenter() {
     }
   };
 
+  // Show error if there's a fetch error
+  if (error && !session && showStartOptions) {
+    return (
+      <div className="space-y-6 pb-4">
+        <div className="space-y-2">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+            Echo AI Training Center
+          </h1>
+          <p className="text-lg text-gray-600 dark:text-gray-400">
+            Consolidate and train Echo with knowledge from multiple sources
+          </p>
+        </div>
+
+        <div className="rounded-lg border border-red-500/30 bg-red-50 dark:bg-red-950/20 p-4">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 mt-0.5 text-red-600 dark:text-red-400 flex-shrink-0" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-red-900 dark:text-red-200 mb-1">
+                Connection Error
+              </h3>
+              <p className="text-sm text-red-800 dark:text-red-300">
+                {error}
+              </p>
+              <p className="text-xs text-red-700 dark:text-red-400 mt-2">
+                The training service is currently unavailable. Please try again later or check your connection.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Show startup screen if no session
   if (!session && showStartOptions) {
     return (
