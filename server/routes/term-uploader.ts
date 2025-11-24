@@ -39,14 +39,18 @@ router.get("/dictionary-stats", (req: Request, res: Response) => {
 
 interface UploadTermData {
   term: string;
+  definition?: string;
   pronunciation?: string;
   etymology?: string;
-  definition: string;
+  related_terms?: string[];
+  category?: string;
+  importance_weight?: number;
 }
 
 interface UploadRequest {
   terms: UploadTermData[];
-  region: string;
+  region?: string;
+  category?: string;
 }
 
 // Map regions to category tags
