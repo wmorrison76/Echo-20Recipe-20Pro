@@ -67,33 +67,10 @@ class KnowledgeInitializer {
       }
 
       console.log(
-        "[Knowledge Init] Knowledge base empty or minimal, starting ingestion...",
+        "[Knowledge Init] ✓ Initialization skipped - use API endpoints to ingest knowledge",
       );
-
-      const results = new Map<string, any>();
-
-      // Ingest Master Dictionary
-      if (config.sources.masterDictionary) {
-        try {
-          console.log(
-            "[Knowledge Init] Ingesting Master Culinary Dictionary...",
-          );
-          const dictResult = await ingestionController.ingestMasterDictionary();
-          results.set("master-dictionary", dictResult);
-          console.log(
-            `[Knowledge Init] ✓ Master Dictionary: ${dictResult.totalIngested} terms ingested, ${dictResult.totalFailed} failed`,
-          );
-        } catch (error) {
-          console.error(
-            "[Knowledge Init] Failed to ingest Master Dictionary:",
-            error instanceof Error ? error.message : String(error),
-          );
-          results.set("master-dictionary", {
-            success: false,
-            error: error instanceof Error ? error.message : String(error),
-          });
-        }
-      }
+      this.initialized = true;
+      return;
 
       // Ingest Pinecone
       if (config.sources.pinecone) {
