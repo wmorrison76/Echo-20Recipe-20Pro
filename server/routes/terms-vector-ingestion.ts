@@ -14,6 +14,13 @@ import { storeKnowledgeBatch } from "../lib/knowledge-vector-service";
 
 const router = Router();
 
+// Helper to wrap async route handlers and catch errors
+const asyncHandler = (
+  fn: (req: any, res: any) => Promise<any>,
+) => (req: any, res: any, next: any) => {
+  Promise.resolve(fn(req, res)).catch(next);
+};
+
 interface IngestionProgress {
   totalTerms: number;
   processedTerms: number;
