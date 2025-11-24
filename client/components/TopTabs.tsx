@@ -335,7 +335,6 @@ function TabLink({
         )}
         aria-hidden
       />
-      {label === "DISH ASSEMBLY" && <span className="text-sm">🟢</span>}
       <DissolvingText
         collapsed={collapsed}
         ariaHidden={collapsed}
