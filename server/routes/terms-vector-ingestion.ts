@@ -366,15 +366,44 @@ router.post("/ingest/all", async (req: Request, res: Response) => {
  * GET /api/terms/count
  * Get total number of terms available for ingestion
  */
-router.get("/count", (req: Request, res: Response) => {
-  const allTerms = masterCulinaryDictionary.getAllTerms();
+router.get("/count", async (req: Request, res: Response) => {
+  try {
+    // Ensure uploaded terms store is loaded
+    await uploadedTermsStore.ensureLoaded();
 
-  return res.json({
-    success: true,
-    totalTerms: allTerms.length,
-    termsReady: true,
-    message: `${allTerms.length} terms available for ingestion`,
-  });
+    // Combine master dictionary terms with uploaded terms
+    const masterTerms = masterCulinaryDictionary.getAllTerms();
+    const uploadedTerms = uploadedTermsStore.getAllTerms();
+
+    // Remove duplicates
+    const allTermsMap = new Map<string, typeof masterTerms[0]>();
+    for (const term of masterTerms) {
+      allTermsMap.set(term.term.toLowerCase(), term);
+    }
+    for (const term of uploadedTerms) {
+      allTermsMap.set(term.term.toLowerCase(), term);
+    }
+
+    const totalTerms = allTermsMap.size;
+    const uploadedCount = uploadedTermsStore.getCount();
+
+    return res.json({
+      success: true,
+      totalTerms,
+      uploadedTerms: uploadedCount,
+      masterTerms: masterTerms.length,
+      termsReady: true,
+      message: `${totalTerms} terms available for ingestion (${uploadedCount} uploaded, ${masterTerms.length} built-in)`,
+    });
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    console.error("[TermIngestion] Error getting terms count:", error);
+
+    return res.status(500).json({
+      success: false,
+      error: errorMsg,
+    });
+  }
 });
 
 export { router as termsVectorIngestionRouter };
