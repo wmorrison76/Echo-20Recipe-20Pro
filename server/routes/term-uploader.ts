@@ -89,10 +89,11 @@ router.post("/upload-terms", async (req: Request, res: Response) => {
   });
 
   try {
-    const { terms, region } = req.body as UploadRequest;
+    const { terms, region, category } = req.body as UploadRequest;
 
     console.log("[Term Uploader] Processing:", {
       region,
+      category,
       termsLength: terms?.length,
       bodySize: JSON.stringify(req.body).length,
     });
@@ -106,13 +107,17 @@ router.post("/upload-terms", async (req: Request, res: Response) => {
       });
     }
 
-    if (!region || !REGION_CATEGORIES[region]) {
+    // If region is provided, validate it
+    if (region && !REGION_CATEGORIES[region]) {
       console.log("[Term Uploader] Invalid region:", region);
       return res.status(400).json({
         success: false,
         error: `Invalid region. Must be one of: ${Object.keys(REGION_CATEGORIES).join(", ")}`,
       });
     }
+
+    // Determine category/region to use
+    const targetCategory = category || region || "general";
 
     let uploadedCount = 0;
     const errors: Array<{ index: number; term: string; error: string }> = [];
