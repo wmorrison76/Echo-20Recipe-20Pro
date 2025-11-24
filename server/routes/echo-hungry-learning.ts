@@ -926,26 +926,27 @@ export async function searchAndLearn(req: Request, res: Response) {
         });
       }
 
-      // Fuzzy search in uploaded terms if exact match not found
-      const fuzzyMatches = allUploadedTerms.filter(t => {
-        const termLower = t.term.toLowerCase();
-        const similarity = calculateSimilarity(normalizedTerm, termLower);
-        return similarity > 0.7; // 70% similarity threshold
-      }).sort((a, b) => {
-        const simA = calculateSimilarity(normalizedTerm, a.term.toLowerCase());
-        const simB = calculateSimilarity(normalizedTerm, b.term.toLowerCase());
-        return simB - simA;
-      });
+      // Fuzzy search in uploaded terms - limit to first 100 matches by substring for performance
+      const fuzzyMatches = allUploadedTerms
+        .filter(t => {
+          const termLower = t.term.toLowerCase();
+          // Quick pre-filter: check if term contains parts of the query
+          return (
+            termLower.includes(normalizedTerm) ||
+            normalizedTerm.includes(termLower.substring(0, 3))
+          );
+        })
+        .slice(0, 100); // Limit results to avoid memory exhaustion
 
       if (fuzzyMatches.length > 0) {
         const fuzzyTerm = fuzzyMatches[0];
         console.log(
-          `[Echo Learning] Found fuzzy match "${fuzzyTerm.term}" for "${normalizedTerm}"`
+          `[Echo Learning] Found match "${fuzzyTerm.term}" for "${normalizedTerm}"`
         );
 
         return res.json({
           status: "success",
-          source: "uploaded-terms-fuzzy",
+          source: "uploaded-terms",
           entry: {
             term: fuzzyTerm,
             related: [],
@@ -955,7 +956,7 @@ export async function searchAndLearn(req: Request, res: Response) {
               sources: fuzzyTerm.sources,
             },
           },
-          message: `✨ Did you mean "${fuzzyTerm.term}"? Found in your uploaded terms!`,
+          message: `✨ Found "${fuzzyTerm.term}" in your uploaded terms!`,
         });
       }
     } catch (uploadedError) {
