@@ -50,11 +50,20 @@ const REGION_CATEGORIES: Record<string, string> = {
  * Upload culinary terms from JSON file
  */
 router.post("/upload-terms", async (req: Request, res: Response) => {
+  console.log("[Term Uploader] POST /api/knowledge/upload-terms hit", {
+    bodyKeys: Object.keys(req.body),
+    region: (req.body as any)?.region,
+    termsLength: Array.isArray((req.body as any)?.terms) ? (req.body as any).terms.length : "not array"
+  });
+
   try {
     const { terms, region } = req.body as UploadRequest;
 
+    console.log("[Term Uploader] Processing:", { region, termsLength: terms?.length });
+
     // Validate input
     if (!Array.isArray(terms) || terms.length === 0) {
+      console.log("[Term Uploader] Invalid terms array");
       return res.status(400).json({
         success: false,
         error: "Terms must be a non-empty array",
@@ -62,6 +71,7 @@ router.post("/upload-terms", async (req: Request, res: Response) => {
     }
 
     if (!region || !REGION_CATEGORIES[region]) {
+      console.log("[Term Uploader] Invalid region:", region);
       return res.status(400).json({
         success: false,
         error: `Invalid region. Must be one of: ${Object.keys(REGION_CATEGORIES).join(", ")}`,
