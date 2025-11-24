@@ -4,6 +4,15 @@ import { masterFinancialDictionary } from "../lib/master-financial-dictionary";
 
 const router = Router();
 
+/**
+ * GET /api/knowledge/upload-test
+ * Test endpoint to verify route is registered
+ */
+router.get("/upload-test", (req: Request, res: Response) => {
+  console.log("[Term Uploader] Test endpoint hit");
+  return res.status(200).json({ success: true, message: "Upload endpoint is working" });
+});
+
 interface UploadTermData {
   term: string;
   pronunciation?: string;
