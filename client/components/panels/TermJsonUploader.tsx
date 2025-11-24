@@ -261,21 +261,33 @@ export function TermJsonUploader() {
           disabled={isUploading}
         />
 
-        <button
-          onClick={() => fileInputRef.current?.click()}
-          disabled={isUploading}
-          className="w-full flex items-center justify-center gap-2 p-4 rounded-lg border-2 border-dashed border-blue-300 dark:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        <div
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          className={`w-full flex items-center justify-center gap-2 p-4 rounded-lg border-2 border-dashed transition-all ${
+            isDragActive
+              ? "border-blue-500 bg-blue-100 dark:bg-blue-900/40"
+              : "border-blue-300 dark:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950/30"
+          } ${isUploading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
         >
-          <Upload className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-          <div className="text-center">
-            <p className="font-medium text-gray-900 dark:text-white">
-              Click to upload or drag JSON files
-            </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Format: {`{"term": "", "definition": ""}`}
-            </p>
-          </div>
-        </button>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading}
+            className="w-full flex items-center justify-center gap-2 disabled:cursor-not-allowed"
+          >
+            <Upload className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <div className="text-center">
+              <p className="font-medium text-gray-900 dark:text-white">
+                {isDragActive ? "Drop files here" : "Click to upload or drag JSON files"}
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Format: {`{"term": "", "definition": ""}`}
+              </p>
+            </div>
+          </button>
+        </div>
       </div>
 
       {/* Upload Progress */}
