@@ -6,6 +6,7 @@ import {
 import { hibernationPrevention } from "@/lib/hibernation-prevention";
 import { KnowledgeProgressDashboard } from "@/components/KnowledgeProgressDashboard";
 import { TermJsonUploader } from "@/components/panels/TermJsonUploader";
+import { TermsVectorIngestionPanel } from "@/components/panels/TermsVectorIngestionPanel";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
