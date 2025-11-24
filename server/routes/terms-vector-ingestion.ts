@@ -205,26 +205,30 @@ async function startIngestion(): Promise<void> {
         );
       }
 
-      // Convert to Pinecone format
-      const pineconeItems = termsWithEmbeddings.map(({ term, embedding }) => ({
-        knowledge: {
-          type: "term" as const,
-          term: term.term,
-          definition: term.definition,
-          categories: term.categories,
-          masteryLevel: term.masteryLevel,
-        },
-        embedding,
-        metadata: {
-          term: term.term,
-          categories: term.categories.join(","),
-          masteryLevel: term.masteryLevel,
-          confidence: term.confidence.toString(),
+      // Convert to Pinecone format (as TerminologyKnowledge)
+      const pineconeItems = termsWithEmbeddings.map(({ term, embedding }, idx) => {
+        const knowledgeItem = {
+          id: `terminology-${idx}-${Date.now()}`,
+          type: "terminology" as const,
+          title: term.term,
+          description: `${term.usage?.primary || term.definition}`,
+          content: term.definition,
           source: "culinary-dictionary",
-        },
-      }));
+          sourceType: "user_imported" as const,
+          tags: term.categories,
+          domain: "culinary" as const,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          confidence: term.confidence,
+          definition: term.definition,
+          etymology: term.etymology?.originalWord || term.term,
+          context: term.usage?.context || "culinary",
+          synonyms: term.relatedTerms,
+        };
+        return knowledgeItem;
+      });
 
-      const pineconeResult = await storeKnowledgeVectorBatch(pineconeItems);
+      const pineconeResult = await storeKnowledgeBatch(pineconeItems);
 
       currentProgress.pineconeSuccess = pineconeResult.success;
       currentProgress.pineconeErrors = pineconeResult.failed;
