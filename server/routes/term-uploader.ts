@@ -1,6 +1,6 @@
 import { Router, type Request, type Response } from "express";
-import { masterCulinaryDictionary } from "@/server/lib/master-culinary-dictionary";
-import { masterFinancialDictionary } from "@/server/lib/master-financial-dictionary";
+import { masterCulinaryDictionary } from "../lib/master-culinary-dictionary";
+import { masterFinancialDictionary } from "../lib/master-financial-dictionary";
 
 const router = Router();
 
