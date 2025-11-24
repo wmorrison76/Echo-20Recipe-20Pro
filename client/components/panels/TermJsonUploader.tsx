@@ -112,6 +112,27 @@ export function TermJsonUploader() {
     }
   };
 
+  const isManifestFile = (fileName: string, content: any): boolean => {
+    const lowerName = fileName.toLowerCase();
+
+    if (lowerName === "echo_knowledge_capsule.json" || lowerName === "echo-knowledge-capsule.json") {
+      return content.capsule_name && content.content_files && Array.isArray(content.content_files);
+    }
+
+    if (lowerName === "index.json") {
+      const keys = Object.keys(content);
+      const firstValue = Object.values(content)[0];
+      return keys.length > 0 && typeof firstValue === "object" &&
+             (("file" in firstValue) || ("count" in firstValue && "file" in firstValue));
+    }
+
+    if (lowerName === "graph_links.json") {
+      return content.nodes !== undefined || content.links !== undefined;
+    }
+
+    return false;
+  };
+
   const uploadFile = async (file: File) => {
     const fileName = file.name;
 
@@ -129,7 +150,34 @@ export function TermJsonUploader() {
         `[TermUploader] ${fileName}: Raw file size: ${text.length} bytes`,
       );
 
-      const terms: TermData[] = JSON.parse(text);
+      const content: any = JSON.parse(text);
+      console.log(`[TermUploader] ${fileName}: Parsed JSON content`);
+
+      if (isManifestFile(fileName, content)) {
+        console.log(`[TermUploader] ${fileName}: Detected as manifest file, skipping upload`);
+
+        setUploadProgress((prev) =>
+          prev.map((p) =>
+            p.fileName === fileName
+              ? {
+                  ...p,
+                  status: "success",
+                  message: "Manifest file - content files will be processed separately",
+                  termCount: 0,
+                }
+              : p,
+          ),
+        );
+
+        toast.info(`${fileName}: Manifest file detected. Upload the referenced content files.`);
+        return;
+      }
+
+      if (!Array.isArray(content)) {
+        throw new Error("JSON must be an array of terms");
+      }
+
+      const terms: TermData[] = content;
       console.log(
         `[TermUploader] ${fileName}: Parsed ${terms.length} terms from JSON`,
       );
@@ -138,10 +186,6 @@ export function TermJsonUploader() {
         terms.slice(0, 3),
       );
       console.log(`[TermUploader] ${fileName}: Last 3 terms:`, terms.slice(-3));
-
-      if (!Array.isArray(terms)) {
-        throw new Error("JSON must be an array of terms");
-      }
 
       if (terms.length === 0) {
         throw new Error("JSON file is empty");
@@ -169,12 +213,10 @@ export function TermJsonUploader() {
 
       const body: Record<string, any> = { terms };
 
-      // Send region if provided (old format), or auto-detect from file
       if (selectedRegion) {
         body.region = selectedRegion;
       }
 
-      // Check if terms have 'category' field (new format)
       if (terms.length > 0 && (terms[0] as any).category) {
         body.category = (terms[0] as any).category;
       }
