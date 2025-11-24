@@ -10,6 +10,7 @@ import { ingredientRegionalCrawler } from "../lib/ingredient-regional-crawler";
 import { culinaryTerminologyDictionary } from "../lib/culinary-terminology-dictionary";
 import { hospitalityKnowledgeCrawler } from "../lib/hospitality-knowledge-crawler";
 import { masterCulinaryDictionary } from "../lib/master-culinary-dictionary";
+import { uploadedTermsStore } from "../lib/uploaded-terms-store";
 import {
   convertPDFToMasterTerms,
   mergePDFExtractions,
