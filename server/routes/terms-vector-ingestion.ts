@@ -42,19 +42,32 @@ let currentProgress: IngestionProgress | null = null;
  * GET /api/terms/ingestion/progress
  * Check ingestion progress
  */
-router.get("/progress", (req: Request, res: Response) => {
-  if (!currentProgress) {
-    return res.json({
-      status: "idle",
-      message: "No ingestion in progress",
-    });
-  }
+router.get(
+  "/progress",
+  asyncHandler(async (req: Request, res: Response) => {
+    try {
+      if (!currentProgress) {
+        return res.json({
+          status: "idle",
+          message: "No ingestion in progress",
+        });
+      }
 
-  return res.json({
-    status: "in_progress",
-    progress: currentProgress,
-  });
-});
+      return res.json({
+        status: "in_progress",
+        progress: currentProgress,
+      });
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.error("[TermIngestion] Error getting progress:", error);
+
+      return res.status(500).json({
+        success: false,
+        error: errorMsg,
+      });
+    }
+  }),
+);
 
 /**
  * POST /api/terms/ingest/start
