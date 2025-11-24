@@ -197,12 +197,15 @@ router.post("/upload-terms", async (req: Request, res: Response) => {
               : ("intermediate" as const),
         };
 
-        // Add to master culinary dictionary
+        // Add to master culinary dictionary AND persistent store
         const keyName = termData.term
           .toLowerCase()
           .replace(/\s+/g, "-")
           .replace(/[^\w-]/g, "");
         masterCulinaryDictionary.addTerm(keyName, standardizedTerm);
+
+        // Save to persistent store so it survives server restarts
+        await uploadedTermsStore.addTerm(keyName, standardizedTerm);
 
         uploadedCount++;
       } catch (error) {
