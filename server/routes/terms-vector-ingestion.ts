@@ -8,7 +8,8 @@ import { Router, Request, Response } from "express";
 import { masterCulinaryDictionary } from "../lib/master-culinary-dictionary";
 import { storeInternalKnowledgeBatch } from "../lib/internal-knowledge-service";
 import { generateEmbedding } from "../lib/pinecone-service";
-import { getPineconeStatus, storeKnowledgeVectorBatch } from "../lib/knowledge-vector-service";
+import { getPineconeStatus } from "../lib/pinecone-verification-service";
+import { storeKnowledgeBatch } from "../lib/knowledge-vector-service";
 
 const router = Router();
 
