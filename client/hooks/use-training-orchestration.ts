@@ -132,11 +132,17 @@ export function useTrainingOrchestration() {
           body: JSON.stringify({ mode, sources }),
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: Failed to start training`);
-        }
-
         const data = await response.json();
+
+        if (!response.ok) {
+          const errorMsg = data?.error || `HTTP ${response.status}: Failed to start training`;
+          setState((prev) => ({
+            ...prev,
+            error: errorMsg,
+            isRunning: false,
+          }));
+          return;
+        }
 
         if (data.success) {
           setState((prev) => ({
