@@ -23,7 +23,7 @@ const REGIONS = [
   { id: "chinese", label: "Chinese", emoji: "🇨🇳" },
   { id: "japanese", label: "Japanese", emoji: "🇯🇵" },
   { id: "thai", label: "Thai", emoji: "🇹🇭" },
-  { id: "korean", label: "Korean", emoji: "🇰🇷" },
+  { id: "korean", label: "Korean", emoji: "���🇷" },
   { id: "indian", label: "Indian", emoji: "🇮🇳" },
   { id: "vietnamese", label: "Vietnamese", emoji: "🇻🇳" },
   { id: "french", label: "French", emoji: "🇫🇷" },
@@ -150,11 +150,13 @@ export function TermJsonUploader() {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.statusText}`);
-      }
-
       const result = await response.json();
+
+      if (!response.ok) {
+        const errorMsg =
+          result.error || result.message || response.statusText || "Unknown error";
+        throw new Error(errorMsg);
+      }
 
       setUploadProgress((prev) =>
         prev.map((p) =>
