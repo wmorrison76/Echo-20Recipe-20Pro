@@ -224,12 +224,12 @@ export function useTrainingOrchestration() {
   const getSummary = useCallback(async () => {
     try {
       const response = await fetch("/api/training/summary");
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: Failed to fetch summary`);
+        console.warn("[TrainingOrchestration] Summary fetch failed:", response.status, data?.error);
+        return;
       }
-
-      const data = await response.json();
 
       if (data.success) {
         setState((prev) => ({
@@ -239,7 +239,7 @@ export function useTrainingOrchestration() {
         return data.summary;
       }
     } catch (error) {
-      console.error("[TrainingOrchestration] Error fetching summary:", error);
+      console.warn("[TrainingOrchestration] Error fetching summary:", error);
     }
   }, []);
 
