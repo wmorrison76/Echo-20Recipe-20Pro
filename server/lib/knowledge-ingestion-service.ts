@@ -87,7 +87,7 @@ class KnowledgeIngestionController {
       const timeSinceLastStart = Date.now() - this.lastIngestionTime;
       if (timeSinceLastStart > KnowledgeIngestionController.INGESTION_TIMEOUT) {
         console.warn(
-          `[Ingestion] Auto-recovering stuck ingestion of ${this.ingestingSource} (${timeSinceLastStart}ms elapsed)`
+          `[Ingestion] Auto-recovering stuck ingestion of ${this.ingestingSource} (${timeSinceLastStart}ms elapsed)`,
         );
         this.resetIngestionState();
       }
@@ -102,7 +102,7 @@ class KnowledgeIngestionController {
 
     if (this.ingestingSource !== null) {
       console.warn(
-        `[Ingestion] Ingestion of ${this.ingestingSource} already in progress. Auto-recovering...`
+        `[Ingestion] Ingestion of ${this.ingestingSource} already in progress. Auto-recovering...`,
       );
       this.resetIngestionState();
     }
@@ -228,7 +228,7 @@ class KnowledgeIngestionController {
 
     if (this.ingestingSource !== null) {
       console.warn(
-        `[Ingestion] Ingestion of ${this.ingestingSource} already in progress. Auto-recovering...`
+        `[Ingestion] Ingestion of ${this.ingestingSource} already in progress. Auto-recovering...`,
       );
       this.resetIngestionState();
     }

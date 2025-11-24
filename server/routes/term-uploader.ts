@@ -10,7 +10,9 @@ const router = Router();
  */
 router.get("/upload-test", (req: Request, res: Response) => {
   console.log("[Term Uploader] Test endpoint hit");
-  return res.status(200).json({ success: true, message: "Upload endpoint is working" });
+  return res
+    .status(200)
+    .json({ success: true, message: "Upload endpoint is working" });
 });
 
 interface UploadTermData {
@@ -55,7 +57,9 @@ router.post("/upload-terms", async (req: Request, res: Response) => {
     headers: Object.keys(req.headers),
     bodyKeys: Object.keys(req.body),
     region: (req.body as any)?.region,
-    termsLength: Array.isArray((req.body as any)?.terms) ? (req.body as any).terms.length : "not array"
+    termsLength: Array.isArray((req.body as any)?.terms)
+      ? (req.body as any).terms.length
+      : "not array",
   });
 
   try {
@@ -148,20 +152,18 @@ router.post("/upload-terms", async (req: Request, res: Response) => {
           index: i,
           term: termData.term || "Unknown",
           error:
-            error instanceof Error
-              ? error.message
-              : "Unknown error occurred",
+            error instanceof Error ? error.message : "Unknown error occurred",
         });
       }
     }
 
     // Log summary
     console.log(
-      `[Term Uploader] Completed processing: ${uploadedCount}/${terms.length} terms uploaded to ${region} region`
+      `[Term Uploader] Completed processing: ${uploadedCount}/${terms.length} terms uploaded to ${region} region`,
     );
     if (errors.length > 0) {
       console.log(
-        `[Term Uploader] Encountered ${errors.length} errors during upload`
+        `[Term Uploader] Encountered ${errors.length} errors during upload`,
       );
       if (errors.length <= 10) {
         console.log(`[Term Uploader] Errors:`, errors);
@@ -277,16 +279,14 @@ router.post("/upload-financial-terms", async (req: Request, res: Response) => {
           index: i,
           term: termData.term || "Unknown",
           error:
-            error instanceof Error
-              ? error.message
-              : "Unknown error occurred",
+            error instanceof Error ? error.message : "Unknown error occurred",
         });
       }
     }
 
     // Log summary
     console.log(
-      `[Financial Term Uploader] Uploaded ${uploadedCount} financial terms`
+      `[Financial Term Uploader] Uploaded ${uploadedCount} financial terms`,
     );
 
     return res.status(200).json({

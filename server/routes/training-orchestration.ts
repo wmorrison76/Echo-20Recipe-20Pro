@@ -76,7 +76,8 @@ router.post("/start", async (req: Request, res: Response) => {
     if (trainingOrchestrator.isSessionActive()) {
       return res.status(409).json({
         success: false,
-        error: "Training is already in progress. Please wait for it to complete.",
+        error:
+          "Training is already in progress. Please wait for it to complete.",
       });
     }
 
@@ -111,13 +112,13 @@ router.post("/start", async (req: Request, res: Response) => {
           trainingOrchestrator.completeSource(
             "master-dictionary",
             result.totalIngested,
-            result.totalFailed
+            result.totalFailed,
           );
         } catch (error) {
           console.error("[Training] Master Dictionary error:", error);
           trainingOrchestrator.failSource(
             "master-dictionary",
-            error instanceof Error ? error.message : String(error)
+            error instanceof Error ? error.message : String(error),
           );
         }
       },
@@ -135,13 +136,13 @@ router.post("/start", async (req: Request, res: Response) => {
           trainingOrchestrator.completeSource(
             "pinecone-migration",
             result.totalIngested,
-            result.totalFailed
+            result.totalFailed,
           );
         } catch (error) {
           console.error("[Training] Pinecone migration error:", error);
           trainingOrchestrator.failSource(
             "pinecone-migration",
-            error instanceof Error ? error.message : String(error)
+            error instanceof Error ? error.message : String(error),
           );
         }
       },
@@ -159,7 +160,7 @@ router.post("/start", async (req: Request, res: Response) => {
         } catch (error) {
           trainingOrchestrator.failSource(
             "pdf-library",
-            error instanceof Error ? error.message : String(error)
+            error instanceof Error ? error.message : String(error),
           );
         }
       },
@@ -177,7 +178,7 @@ router.post("/start", async (req: Request, res: Response) => {
         } catch (error) {
           trainingOrchestrator.failSource(
             "web-crawler",
-            error instanceof Error ? error.message : String(error)
+            error instanceof Error ? error.message : String(error),
           );
         }
       },
@@ -194,7 +195,7 @@ router.post("/start", async (req: Request, res: Response) => {
         } catch (error) {
           trainingOrchestrator.failSource(
             "recipe-imports",
-            error instanceof Error ? error.message : String(error)
+            error instanceof Error ? error.message : String(error),
           );
         }
       },
@@ -261,11 +262,7 @@ router.post("/ingest-recipe", async (req: Request, res: Response) => {
     // Simulate ingestion (would be actual storage)
     setTimeout(() => {
       if (session) {
-        trainingOrchestrator.completeSource(
-          "recipe-imports",
-          recipeCount,
-          0
-        );
+        trainingOrchestrator.completeSource("recipe-imports", recipeCount, 0);
       }
     }, 1000);
 
@@ -306,11 +303,7 @@ router.post("/ingest-pdf", async (req: Request, res: Response) => {
     // Simulate ingestion
     setTimeout(() => {
       if (session) {
-        trainingOrchestrator.completeSource(
-          "pdf-library",
-          documentCount,
-          0
-        );
+        trainingOrchestrator.completeSource("pdf-library", documentCount, 0);
       }
     }, 2000);
 

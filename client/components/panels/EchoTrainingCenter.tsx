@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useTrainingOrchestration, type TrainingMode } from "@/hooks/use-training-orchestration";
+import {
+  useTrainingOrchestration,
+  type TrainingMode,
+} from "@/hooks/use-training-orchestration";
 import { hibernationPrevention } from "@/lib/hibernation-prevention";
 import { KnowledgeProgressDashboard } from "@/components/KnowledgeProgressDashboard";
 import { TermJsonUploader } from "@/components/panels/TermJsonUploader";
@@ -148,7 +151,7 @@ export function EchoTrainingCenter() {
     setSelectedSources((prev) =>
       prev.includes(sourceId)
         ? prev.filter((s) => s !== sourceId)
-        : [...prev, sourceId]
+        : [...prev, sourceId],
     );
   };
 
@@ -285,18 +288,10 @@ export function EchoTrainingCenter() {
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold">Select Training Sources</h2>
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={selectAll}
-              >
+              <Button variant="outline" size="sm" onClick={selectAll}>
                 Select All
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={deselectAll}
-              >
+              <Button variant="outline" size="sm" onClick={deselectAll}>
                 Clear
               </Button>
             </div>
@@ -314,7 +309,9 @@ export function EchoTrainingCenter() {
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg bg-gradient-to-br ${source.color} text-white`}>
+                  <div
+                    className={`p-2 rounded-lg bg-gradient-to-br ${source.color} text-white`}
+                  >
                     {source.icon}
                   </div>
                   <div className="flex-1">
@@ -344,8 +341,12 @@ export function EchoTrainingCenter() {
             <div className="flex gap-3">
               <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
               <div>
-                <div className="font-semibold text-red-900 dark:text-red-100">Error</div>
-                <div className="text-sm text-red-800 dark:text-red-200">{error}</div>
+                <div className="font-semibold text-red-900 dark:text-red-100">
+                  Error
+                </div>
+                <div className="text-sm text-red-800 dark:text-red-200">
+                  {error}
+                </div>
               </div>
             </div>
           </Card>
@@ -376,8 +377,9 @@ export function EchoTrainingCenter() {
             <div>
               <h1 className="text-3xl font-bold">Training in Progress</h1>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
-                Mode: {session.mode === "sequential" ? "Sequential" : "Parallel"} • Time:{" "}
-                {formatTime(elapsedTime)}
+                Mode:{" "}
+                {session.mode === "sequential" ? "Sequential" : "Parallel"} •
+                Time: {formatTime(elapsedTime)}
               </p>
             </div>
             <Badge
@@ -390,7 +392,11 @@ export function EchoTrainingCenter() {
               }
               className="text-base py-1.5 px-3"
             >
-              {session.status === "running" ? "🟢 Running" : session.status === "completed" ? "✅ Complete" : "❌ Error"}
+              {session.status === "running"
+                ? "🟢 Running"
+                : session.status === "completed"
+                  ? "✅ Complete"
+                  : "❌ Error"}
             </Badge>
           </div>
         </div>
@@ -429,9 +435,7 @@ export function EchoTrainingCenter() {
                   }`}
                 >
                   <div className="flex items-start gap-4">
-                    <div className="mt-1">
-                      {getStatusIcon(source.status)}
-                    </div>
+                    <div className="mt-1">{getStatusIcon(source.status)}</div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
                         <div>
@@ -446,10 +450,7 @@ export function EchoTrainingCenter() {
                       </div>
                       {source.totalItems > 0 && (
                         <div className="mt-3">
-                          <Progress
-                            value={source.progress}
-                            className="h-2"
-                          />
+                          <Progress value={source.progress} className="h-2" />
                         </div>
                       )}
                       {source.error && (

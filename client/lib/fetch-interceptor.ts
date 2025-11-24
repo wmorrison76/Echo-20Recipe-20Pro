@@ -40,9 +40,7 @@ export const fetchWithCORSHandling = async (
   const urlStr = typeof input === "string" ? input : input.toString();
 
   // Check if this is a local API route (should not be intercepted)
-  const isLocalAPI = LOCAL_API_ROUTES.some((route) =>
-    urlStr.includes(route),
-  );
+  const isLocalAPI = LOCAL_API_ROUTES.some((route) => urlStr.includes(route));
   if (isLocalAPI) {
     return originalFetch(input, init);
   }
@@ -76,7 +74,8 @@ export const fetchWithCORSHandling = async (
     // Check if we got a CORS error
     if (
       !response.ok &&
-      (response.status === 0 || response.headers.get("access-control-allow-headers") === null)
+      (response.status === 0 ||
+        response.headers.get("access-control-allow-headers") === null)
     ) {
       console.warn(`[CORS Error] Failed to fetch: ${urlStr}`, response);
       // Return a more user-friendly error response
@@ -99,7 +98,10 @@ export const fetchWithCORSHandling = async (
     return response;
   } catch (error) {
     // If we get a TypeError (common for CORS errors), return a mock response
-    if (error instanceof TypeError && error.message.includes("Access-Control")) {
+    if (
+      error instanceof TypeError &&
+      error.message.includes("Access-Control")
+    ) {
       console.warn(`[CORS Error] CORS policy violation for: ${urlStr}`, error);
       return new Response(
         JSON.stringify({

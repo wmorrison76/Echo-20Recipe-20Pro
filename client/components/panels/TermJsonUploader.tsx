@@ -47,7 +47,7 @@ export function TermJsonUploader() {
   const [isDragActive, setIsDragActive] = useState(false);
 
   const handleFileSelect = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const files = event.target.files;
     if (!files) return;
@@ -55,7 +55,9 @@ export function TermJsonUploader() {
   };
 
   const processFiles = async (files: FileList) => {
-    const fileArray = Array.from(files).filter((f) => f.type === "application/json");
+    const fileArray = Array.from(files).filter(
+      (f) => f.type === "application/json",
+    );
 
     if (fileArray.length === 0) {
       toast.error("Please select valid JSON files");
@@ -67,7 +69,7 @@ export function TermJsonUploader() {
         fileName: f.name,
         status: "pending" as const,
         message: "Queued for upload",
-      }))
+      })),
     );
 
     setIsUploading(true);
@@ -118,16 +120,23 @@ export function TermJsonUploader() {
         prev.map((p) =>
           p.fileName === fileName
             ? { ...p, status: "uploading", message: "Reading file..." }
-            : p
-        )
+            : p,
+        ),
       );
 
       const text = await file.text();
-      console.log(`[TermUploader] ${fileName}: Raw file size: ${text.length} bytes`);
+      console.log(
+        `[TermUploader] ${fileName}: Raw file size: ${text.length} bytes`,
+      );
 
       const terms: TermData[] = JSON.parse(text);
-      console.log(`[TermUploader] ${fileName}: Parsed ${terms.length} terms from JSON`);
-      console.log(`[TermUploader] ${fileName}: First 3 terms:`, terms.slice(0, 3));
+      console.log(
+        `[TermUploader] ${fileName}: Parsed ${terms.length} terms from JSON`,
+      );
+      console.log(
+        `[TermUploader] ${fileName}: First 3 terms:`,
+        terms.slice(0, 3),
+      );
       console.log(`[TermUploader] ${fileName}: Last 3 terms:`, terms.slice(-3));
 
       if (!Array.isArray(terms)) {
@@ -142,7 +151,9 @@ export function TermJsonUploader() {
         terms,
         region: selectedRegion,
       });
-      console.log(`[TermUploader] ${fileName}: Payload size: ${payload.length} bytes, contains ${terms.length} items`);
+      console.log(
+        `[TermUploader] ${fileName}: Payload size: ${payload.length} bytes, contains ${terms.length} items`,
+      );
 
       setUploadProgress((prev) =>
         prev.map((p) =>
@@ -152,8 +163,8 @@ export function TermJsonUploader() {
                 status: "uploading",
                 message: `Uploading ${terms.length} terms...`,
               }
-            : p
-        )
+            : p,
+        ),
       );
 
       const response = await fetch("/api/knowledge/upload-terms", {
@@ -200,13 +211,13 @@ export function TermJsonUploader() {
                 message: `Successfully uploaded ${result.uploadedCount} terms`,
                 termCount: result.uploadedCount,
               }
-            : p
-        )
+            : p,
+        ),
       );
 
       setTotalTermsUploaded((prev) => prev + result.uploadedCount);
       toast.success(
-        `${fileName}: ${result.uploadedCount} terms added to ${selectedRegion}`
+        `${fileName}: ${result.uploadedCount} terms added to ${selectedRegion}`,
       );
     } catch (error) {
       const message =
@@ -220,8 +231,8 @@ export function TermJsonUploader() {
                 status: "error",
                 message: `Error: ${message}`,
               }
-            : p
-        )
+            : p,
+        ),
       );
 
       toast.error(`${fileName}: ${message}`);
@@ -315,7 +326,9 @@ export function TermJsonUploader() {
             <Upload className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             <div className="text-center">
               <p className="font-medium text-gray-900 dark:text-white">
-                {isDragActive ? "Drop files here" : "Click to upload or drag JSON files"}
+                {isDragActive
+                  ? "Drop files here"
+                  : "Click to upload or drag JSON files"}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Format: {`{"term": "", "definition": ""}`}
@@ -347,10 +360,7 @@ export function TermJsonUploader() {
                   </p>
                 </div>
                 {progress.termCount && (
-                  <Badge
-                    variant="secondary"
-                    className="flex-shrink-0"
-                  >
+                  <Badge variant="secondary" className="flex-shrink-0">
                     {progress.termCount} terms
                   </Badge>
                 )}
