@@ -39,6 +39,14 @@ export const fetchWithCORSHandling = async (
 ): Promise<Response> => {
   const urlStr = typeof input === "string" ? input : input.toString();
 
+  // Check if this is a local API route (should not be intercepted)
+  const isLocalAPI = LOCAL_API_ROUTES.some((route) =>
+    urlStr.includes(route),
+  );
+  if (isLocalAPI) {
+    return originalFetch(input, init);
+  }
+
   // If this is a known CORS problematic URL, return a mock error response
   // instead of making the request
   if (isKnownCORSProblem(urlStr)) {
