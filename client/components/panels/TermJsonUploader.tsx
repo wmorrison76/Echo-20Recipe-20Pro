@@ -40,7 +40,7 @@ const REGIONS = [
 
 export function TermJsonUploader() {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedRegion, setSelectedRegion] = useState<string>("chinese");
+  const [selectedRegion, setSelectedRegion] = useState<string>("");
   const [uploadProgress, setUploadProgress] = useState<UploadProgress[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [totalTermsUploaded, setTotalTermsUploaded] = useState(0);
