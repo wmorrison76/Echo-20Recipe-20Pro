@@ -322,66 +322,66 @@ async function startIngestion(): Promise<void> {
 router.post(
   "/ingest/all",
   asyncHandler(async (req: Request, res: Response) => {
-  try {
-    // Ensure uploaded terms store is loaded
-    await uploadedTermsStore.ensureLoaded();
+    try {
+      // Ensure uploaded terms store is loaded
+      await uploadedTermsStore.ensureLoaded();
 
-    // Combine master dictionary terms with uploaded terms
-    const masterTerms = masterCulinaryDictionary.getAllTerms();
-    const uploadedTerms = uploadedTermsStore.getAllTerms();
+      // Combine master dictionary terms with uploaded terms
+      const masterTerms = masterCulinaryDictionary.getAllTerms();
+      const uploadedTerms = uploadedTermsStore.getAllTerms();
 
-    // Remove duplicates
-    const allTermsMap = new Map<string, typeof masterTerms[0]>();
-    for (const term of masterTerms) {
-      allTermsMap.set(term.term.toLowerCase(), term);
-    }
-    for (const term of uploadedTerms) {
-      allTermsMap.set(term.term.toLowerCase(), term);
-    }
+      // Remove duplicates
+      const allTermsMap = new Map<string, typeof masterTerms[0]>();
+      for (const term of masterTerms) {
+        allTermsMap.set(term.term.toLowerCase(), term);
+      }
+      for (const term of uploadedTerms) {
+        allTermsMap.set(term.term.toLowerCase(), term);
+      }
 
-    const allTerms = Array.from(allTermsMap.values());
+      const allTerms = Array.from(allTermsMap.values());
 
-    if (allTerms.length === 0) {
-      return res.status(400).json({
-        success: false,
-        error: "No terms available in master dictionary or uploaded terms",
+      if (allTerms.length === 0) {
+        return res.status(400).json({
+          success: false,
+          error: "No terms available in master dictionary or uploaded terms",
+        });
+      }
+
+      console.log(
+        `[TermIngestion] Direct ingestion of ${allTerms.length} terms started`,
+      );
+
+      const supabaseItems = allTerms.map((term) => ({
+        title: term.term,
+        content: term.definition,
+        description: `${term.usage?.primary || term.definition}`,
+        embedding: new Array(1536).fill(0), // Placeholder, will be generated
+        sourceType: "culinary-dictionary" as const,
+        source: "master-culinary-dictionary",
+        metadata: {
+          categories: term.categories,
+          masteryLevel: term.masteryLevel,
+          confidence: term.confidence,
+          etymology: term.etymology,
+          relatedTerms: term.relatedTerms,
+        },
+      }));
+
+      const supabaseResult = await storeInternalKnowledgeBatch(supabaseItems, 5);
+
+      return res.json({
+        success: true,
+        message: `Ingested ${supabaseResult.success} terms to Supabase`,
+        result: {
+          success: supabaseResult.success,
+          failed: supabaseResult.failed,
+          totalTerms: allTerms.length,
+        },
       });
-    }
-
-    console.log(
-      `[TermIngestion] Direct ingestion of ${allTerms.length} terms started`,
-    );
-
-    const supabaseItems = allTerms.map((term) => ({
-      title: term.term,
-      content: term.definition,
-      description: `${term.usage?.primary || term.definition}`,
-      embedding: new Array(1536).fill(0), // Placeholder, will be generated
-      sourceType: "culinary-dictionary" as const,
-      source: "master-culinary-dictionary",
-      metadata: {
-        categories: term.categories,
-        masteryLevel: term.masteryLevel,
-        confidence: term.confidence,
-        etymology: term.etymology,
-        relatedTerms: term.relatedTerms,
-      },
-    }));
-
-    const supabaseResult = await storeInternalKnowledgeBatch(supabaseItems, 5);
-
-    return res.json({
-      success: true,
-      message: `Ingested ${supabaseResult.success} terms to Supabase`,
-      result: {
-        success: supabaseResult.success,
-        failed: supabaseResult.failed,
-        totalTerms: allTerms.length,
-      },
-    });
-  } catch (error) {
-    const errorMsg = error instanceof Error ? error.message : String(error);
-    console.error("[TermIngestion] Direct ingestion error:", error);
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.error("[TermIngestion] Direct ingestion error:", error);
 
       return res.status(500).json({
         success: false,
