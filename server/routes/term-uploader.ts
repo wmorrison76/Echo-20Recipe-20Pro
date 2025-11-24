@@ -127,26 +127,36 @@ router.post("/upload-terms", async (req: Request, res: Response) => {
       const termData = terms[i];
 
       try {
-        // Validate required fields
-        if (!termData.term || !termData.definition) {
+        // Validate required field: term must exist
+        if (!termData.term) {
           errors.push({
             index: i,
-            term: termData.term || "Unknown",
-            error: "Missing required fields: term, definition",
+            term: "Unknown",
+            error: "Missing required field: term",
           });
           continue;
         }
 
+        // Construct definition from available fields
+        let definition = termData.definition || "";
+        if (!definition && termData.related_terms?.length) {
+          definition = `Related to: ${termData.related_terms.join(", ")}`;
+        }
+        if (!definition) {
+          definition = `A ${termData.category || "culinary"} term`;
+        }
+
         // Create standardized term object
+        const categoryDisplay = termData.category || targetCategory;
         const standardizedTerm = {
           term: termData.term.trim(),
-          definition: termData.definition.trim(),
+          definition: definition.trim(),
           pronunciation: termData.pronunciation?.trim() || "",
           etymology: {
-            origin: region.charAt(0).toUpperCase() + region.slice(1),
+            origin: categoryDisplay.charAt(0).toUpperCase() + categoryDisplay.slice(1),
             originalWord: termData.etymology?.trim() || termData.term,
-            meaning: termData.definition.substring(0, 50),
-            period: `${region} culinary tradition`,
+            meaning: definition.substring(0, 50),
+            period: `${categoryDisplay} knowledge`,
           },
           usage: {
             primary: termData.definition.substring(0, 80),
