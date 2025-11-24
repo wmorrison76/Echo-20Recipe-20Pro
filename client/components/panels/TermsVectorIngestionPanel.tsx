@@ -55,7 +55,7 @@ export function TermsVectorIngestionPanel() {
           console.warn(
             "[TermsIngestion] Terms count unavailable (status: " +
               response.status +
-              ")"
+              ")",
           );
           setTermsCount(0);
           return;
@@ -236,16 +236,17 @@ export function TermsVectorIngestionPanel() {
                   </div>
                 </div>
 
-                {progress.embeddingsFailed !== undefined && progress.embeddingsFailed > 0 && (
-                  <div className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30">
-                    <div className="text-xs text-red-700 dark:text-red-300 font-medium">
-                      Embedding Errors
+                {progress.embeddingsFailed !== undefined &&
+                  progress.embeddingsFailed > 0 && (
+                    <div className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30">
+                      <div className="text-xs text-red-700 dark:text-red-300 font-medium">
+                        Embedding Errors
+                      </div>
+                      <div className="text-lg font-bold text-red-900 dark:text-red-100">
+                        {progress.embeddingsFailed.toLocaleString()}
+                      </div>
                     </div>
-                    <div className="text-lg font-bold text-red-900 dark:text-red-100">
-                      {progress.embeddingsFailed.toLocaleString()}
-                    </div>
-                  </div>
-                )}
+                  )}
               </>
             )}
 
@@ -438,7 +439,8 @@ export function TermsVectorIngestionPanel() {
             </div>
             {progress?.currentPhase === "embedding" && (
               <div className="text-xs text-amber-800 dark:text-amber-200 mt-2">
-                💡 Generating embeddings is the longest phase. This involves calling OpenAI API for each term to create semantic vectors.
+                💡 Generating embeddings is the longest phase. This involves
+                calling OpenAI API for each term to create semantic vectors.
               </div>
             )}
           </div>
@@ -448,11 +450,19 @@ export function TermsVectorIngestionPanel() {
               <span>
                 Elapsed: {Math.round((Date.now() - progress.startTime) / 1000)}s
               </span>
-              {progress.overallProgress > 0 && progress.overallProgress < 100 && (
-                <span>
-                  ~{Math.round((Date.now() - progress.startTime) / (progress.overallProgress / 100) / 1000 - (Date.now() - progress.startTime) / 1000)}s remaining
-                </span>
-              )}
+              {progress.overallProgress > 0 &&
+                progress.overallProgress < 100 && (
+                  <span>
+                    ~
+                    {Math.round(
+                      (Date.now() - progress.startTime) /
+                        (progress.overallProgress / 100) /
+                        1000 -
+                        (Date.now() - progress.startTime) / 1000,
+                    )}
+                    s remaining
+                  </span>
+                )}
             </div>
           )}
         </div>

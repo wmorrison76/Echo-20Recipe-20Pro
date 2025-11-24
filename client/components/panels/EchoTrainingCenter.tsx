@@ -204,11 +204,10 @@ export function EchoTrainingCenter() {
               <h3 className="font-semibold text-red-900 dark:text-red-200 mb-1">
                 Connection Error
               </h3>
-              <p className="text-sm text-red-800 dark:text-red-300">
-                {error}
-              </p>
+              <p className="text-sm text-red-800 dark:text-red-300">{error}</p>
               <p className="text-xs text-red-700 dark:text-red-400 mt-2">
-                The training service is currently unavailable. Please try again later or check your connection.
+                The training service is currently unavailable. Please try again
+                later or check your connection.
               </p>
             </div>
           </div>

@@ -277,7 +277,10 @@ function IndexContent() {
             <TabsContent value="purch-rec">
               <PurchasingReceivingSection />
             </TabsContent>
-            <TabsContent value="echo-training" className="mt-0 p-0 data-[state=active]:flex data-[state=active]:flex-col">
+            <TabsContent
+              value="echo-training"
+              className="mt-0 p-0 data-[state=active]:flex data-[state=active]:flex-col"
+            >
               <div className="mx-auto w-full max-w-[1400px] space-y-3 px-4 py-3 sm:px-6 lg:px-8">
                 <ErrorBoundaryWrapper section="Echo Training">
                   <EchoTrainingCenter />
