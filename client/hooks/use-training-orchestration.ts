@@ -115,6 +115,8 @@ export function useTrainingOrchestration() {
             session: data.session,
             error: null,
           }));
+          // Start polling after successful session initialization
+          setPollInterval(1000);
           return data.session;
         } else {
           setState((prev) => ({
