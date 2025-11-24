@@ -19,6 +19,7 @@ const LOCAL_API_ROUTES = [
   "/api/echo",
   "/api/pdf-library",
   "/api/training",
+  "/api/terms",
 ];
 
 /**
