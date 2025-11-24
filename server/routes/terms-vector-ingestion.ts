@@ -78,7 +78,28 @@ router.post("/ingest/start", async (req: Request, res: Response) => {
  */
 async function startIngestion(): Promise<void> {
   const startTime = Date.now();
-  const allTerms = masterCulinaryDictionary.getAllTerms();
+
+  // Ensure uploaded terms store is loaded
+  await uploadedTermsStore.ensureLoaded();
+
+  // Combine master dictionary terms with uploaded terms
+  const masterTerms = masterCulinaryDictionary.getAllTerms();
+  const uploadedTerms = uploadedTermsStore.getAllTerms();
+
+  // Remove duplicates by using a Map with term names as keys
+  const allTermsMap = new Map<string, typeof masterTerms[0]>();
+
+  // Add master terms first
+  for (const term of masterTerms) {
+    allTermsMap.set(term.term.toLowerCase(), term);
+  }
+
+  // Add uploaded terms (will overwrite any duplicates)
+  for (const term of uploadedTerms) {
+    allTermsMap.set(term.term.toLowerCase(), term);
+  }
+
+  const allTerms = Array.from(allTermsMap.values());
 
   currentProgress = {
     totalTerms: allTerms.length,
