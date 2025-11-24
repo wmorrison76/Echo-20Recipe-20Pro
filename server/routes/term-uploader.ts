@@ -98,12 +98,23 @@ router.post("/upload-terms", async (req: Request, res: Response) => {
       bodySize: JSON.stringify(req.body).length,
     });
 
-    // Validate input
-    if (!Array.isArray(terms) || terms.length === 0) {
-      console.log("[Term Uploader] Invalid terms array");
+    // Validate input - check if terms is an array
+    if (!Array.isArray(terms)) {
+      console.log("[Term Uploader] Invalid terms - not an array", {
+        receivedType: typeof terms,
+        receivedValue: terms,
+      });
       return res.status(400).json({
         success: false,
-        error: "Terms must be a non-empty array",
+        error: `Terms must be an array. Received: ${typeof terms}. Make sure you're uploading actual term data files, not manifest files like echo_knowledge_capsule.json or index.json.`,
+      });
+    }
+
+    if (terms.length === 0) {
+      console.log("[Term Uploader] Invalid terms array - empty");
+      return res.status(400).json({
+        success: false,
+        error: "Terms array cannot be empty",
       });
     }
 
