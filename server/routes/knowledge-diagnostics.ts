@@ -6,6 +6,7 @@
 import { Router, Request, Response } from "express";
 import { getInternalKnowledgeStats } from "../lib/internal-knowledge-service";
 import { masterCulinaryDictionary } from "../lib/master-culinary-dictionary";
+import { uploadedTermsStore } from "../lib/uploaded-terms-store";
 import { knowledgeInitializer } from "../lib/knowledge-initialization";
 import { ingestionController } from "../lib/knowledge-ingestion-service";
 
