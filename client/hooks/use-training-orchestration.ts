@@ -48,7 +48,7 @@ export function useTrainingOrchestration() {
     summary: null,
   });
 
-  const [pollInterval, setPollInterval] = useState<number | null>(1000);
+  const [pollInterval, setPollInterval] = useState<number | null>(null);
 
   // Fetch current session status
   const fetchStatus = useCallback(async () => {
