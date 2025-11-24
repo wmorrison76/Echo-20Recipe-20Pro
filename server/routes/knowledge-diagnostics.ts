@@ -90,8 +90,11 @@ router.get("/status", async (req: Request, res: Response) => {
       internal_vectors: internalStats.total,
       master_dictionary_terms: masterDictStats.totalTerms,
       uploaded_terms: uploadedTermsCount,
-      total_terms: (masterDictStats.totalTerms || 0) + (uploadedTermsCount || 0),
-      ready: internalStats.total > 0 && (masterDictStats.totalTerms > 0 || uploadedTermsCount > 0),
+      total_terms:
+        (masterDictStats.totalTerms || 0) + (uploadedTermsCount || 0),
+      ready:
+        internalStats.total > 0 &&
+        (masterDictStats.totalTerms > 0 || uploadedTermsCount > 0),
     };
 
     res.json({
@@ -334,7 +337,8 @@ router.get("/stats", async (req: Request, res: Response) => {
         approvedItems: internalStats.total || 0,
         masterDictionaryTerms: masterDictStats.totalTerms || 0,
         uploadedTerms: uploadedTermsCount || 0,
-        totalTerms: (masterDictStats.totalTerms || 0) + (uploadedTermsCount || 0),
+        totalTerms:
+          (masterDictStats.totalTerms || 0) + (uploadedTermsCount || 0),
         totalVectors: internalStats.total || 0,
         bySourceType: internalStats.bySourceType || {},
         byDomain: internalStats.byDomain || {},

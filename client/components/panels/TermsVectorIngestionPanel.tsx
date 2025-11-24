@@ -27,6 +27,8 @@ interface IngestionProgress {
   errors: string[];
   startTime: number;
   estimatedTimeRemaining: number;
+  embeddingsGenerated?: number;
+  embeddingsFailed?: number;
 }
 
 interface IngestionStatus {
@@ -50,13 +52,20 @@ export function TermsVectorIngestionPanel() {
         const response = await fetch("/api/terms/count");
 
         if (!response.ok) {
-          console.error("[TermsIngestion] Terms count fetch failed:", response.status, response.statusText);
+          console.error(
+            "[TermsIngestion] Terms count fetch failed:",
+            response.status,
+            response.statusText,
+          );
           return;
         }
 
         const contentType = response.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
-          console.error("[TermsIngestion] Terms count response is not JSON:", contentType);
+          console.error(
+            "[TermsIngestion] Terms count response is not JSON:",
+            contentType,
+          );
           return;
         }
 
@@ -81,14 +90,21 @@ export function TermsVectorIngestionPanel() {
         const response = await fetch("/api/terms/ingestion/progress");
 
         if (!response.ok) {
-          console.error("[TermsIngestion] Progress polling failed:", response.status, response.statusText);
+          console.error(
+            "[TermsIngestion] Progress polling failed:",
+            response.status,
+            response.statusText,
+          );
           setIsPolling(false);
           return;
         }
 
         const contentType = response.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
-          console.error("[TermsIngestion] Progress response is not JSON:", contentType);
+          console.error(
+            "[TermsIngestion] Progress response is not JSON:",
+            contentType,
+          );
           setIsPolling(false);
           return;
         }
@@ -208,32 +224,95 @@ export function TermsVectorIngestionPanel() {
 
         {progress && (
           <>
-            <div className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-              <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">
-                Processed
-              </div>
-              <div className="text-lg font-bold text-slate-900 dark:text-white">
-                {progress.processedTerms.toLocaleString()}
-              </div>
-            </div>
+            {progress.currentPhase === "embedding" && (
+              <>
+                <div className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/30">
+                  <div className="text-xs text-amber-700 dark:text-amber-300 font-medium">
+                    Embeddings Generated
+                  </div>
+                  <div className="text-lg font-bold text-amber-900 dark:text-amber-100">
+                    {progress.embeddingsGenerated?.toLocaleString() || "0"} ✓
+                  </div>
+                </div>
 
-            <div className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950/30">
-              <div className="text-xs text-blue-700 dark:text-blue-300 font-medium">
-                Supabase
-              </div>
-              <div className="text-lg font-bold text-blue-900 dark:text-blue-100">
-                {progress.supabaseSuccess.toLocaleString()} ✓
-              </div>
-            </div>
+                {progress.embeddingsFailed !== undefined && progress.embeddingsFailed > 0 && (
+                  <div className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/30">
+                    <div className="text-xs text-red-700 dark:text-red-300 font-medium">
+                      Embedding Errors
+                    </div>
+                    <div className="text-lg font-bold text-red-900 dark:text-red-100">
+                      {progress.embeddingsFailed.toLocaleString()}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
 
-            <div className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-900 bg-purple-50 dark:bg-purple-950/30">
-              <div className="text-xs text-purple-700 dark:text-purple-300 font-medium">
-                Pinecone
-              </div>
-              <div className="text-lg font-bold text-purple-900 dark:text-purple-100">
-                {progress.pineconeSuccess.toLocaleString()} ✓
-              </div>
-            </div>
+            {progress.currentPhase === "supabase" && (
+              <>
+                <div className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                  <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">
+                    Processed
+                  </div>
+                  <div className="text-lg font-bold text-slate-900 dark:text-white">
+                    {progress.processedTerms.toLocaleString()}
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950/30">
+                  <div className="text-xs text-blue-700 dark:text-blue-300 font-medium">
+                    Supabase Ingesting
+                  </div>
+                  <div className="text-lg font-bold text-blue-900 dark:text-blue-100">
+                    {progress.supabaseSuccess.toLocaleString()}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {progress.currentPhase === "pinecone" && (
+              <>
+                <div className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950/30">
+                  <div className="text-xs text-blue-700 dark:text-blue-300 font-medium">
+                    Supabase
+                  </div>
+                  <div className="text-lg font-bold text-blue-900 dark:text-blue-100">
+                    {progress.supabaseSuccess.toLocaleString()} ✓
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-900 bg-purple-50 dark:bg-purple-950/30">
+                  <div className="text-xs text-purple-700 dark:text-purple-300 font-medium">
+                    Pinecone Ingesting
+                  </div>
+                  <div className="text-lg font-bold text-purple-900 dark:text-purple-100">
+                    {progress.pineconeSuccess.toLocaleString()}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {progress.currentPhase === "complete" && (
+              <>
+                <div className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950/30">
+                  <div className="text-xs text-blue-700 dark:text-blue-300 font-medium">
+                    Supabase
+                  </div>
+                  <div className="text-lg font-bold text-blue-900 dark:text-blue-100">
+                    {progress.supabaseSuccess.toLocaleString()} ✓
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-lg bg-white dark:bg-slate-800 border border-purple-200 dark:border-purple-900 bg-purple-50 dark:bg-purple-950/30">
+                  <div className="text-xs text-purple-700 dark:text-purple-300 font-medium">
+                    Pinecone
+                  </div>
+                  <div className="text-lg font-bold text-purple-900 dark:text-purple-100">
+                    {progress.pineconeSuccess.toLocaleString()} ✓
+                  </div>
+                </div>
+              </>
+            )}
           </>
         )}
       </div>
@@ -350,11 +429,31 @@ export function TermsVectorIngestionPanel() {
       )}
 
       {isRunning && (
-        <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900">
-          <div className="flex items-center gap-2 text-sm text-amber-900 dark:text-amber-100">
-            <Clock className="w-4 h-4" />
-            Ingestion in progress. Do not close this window.
+        <div className="space-y-2">
+          <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900">
+            <div className="flex items-center gap-2 text-sm text-amber-900 dark:text-amber-100">
+              <Clock className="w-4 h-4" />
+              Ingestion in progress. Do not close this window.
+            </div>
+            {progress?.currentPhase === "embedding" && (
+              <div className="text-xs text-amber-800 dark:text-amber-200 mt-2">
+                💡 Generating embeddings is the longest phase. This involves calling OpenAI API for each term to create semantic vectors.
+              </div>
+            )}
           </div>
+
+          {progress && (
+            <div className="text-xs text-slate-600 dark:text-slate-400 flex justify-between">
+              <span>
+                Elapsed: {Math.round((Date.now() - progress.startTime) / 1000)}s
+              </span>
+              {progress.overallProgress > 0 && progress.overallProgress < 100 && (
+                <span>
+                  ~{Math.round((Date.now() - progress.startTime) / (progress.overallProgress / 100) / 1000 - (Date.now() - progress.startTime) / 1000)}s remaining
+                </span>
+              )}
+            </div>
+          )}
         </div>
       )}
 

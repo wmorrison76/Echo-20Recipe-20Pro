@@ -51,7 +51,10 @@ export function createServer() {
         console.log("[Server] Uploaded terms store initialized");
       })
       .catch((error) => {
-        console.error("[Server] Error initializing uploaded terms store:", error);
+        console.error(
+          "[Server] Error initializing uploaded terms store:",
+          error,
+        );
       });
 
     // Initialize knowledge base

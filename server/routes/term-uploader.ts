@@ -204,9 +204,6 @@ router.post("/upload-terms", async (req: Request, res: Response) => {
           .replace(/[^\w-]/g, "");
         masterCulinaryDictionary.addTerm(keyName, standardizedTerm);
 
-        // Save to persistent store so it survives server restarts
-        await uploadedTermsStore.addTerm(keyName, standardizedTerm);
-
         uploadedCount++;
       } catch (error) {
         errors.push({
@@ -215,6 +212,28 @@ router.post("/upload-terms", async (req: Request, res: Response) => {
           error:
             error instanceof Error ? error.message : "Unknown error occurred",
         });
+      }
+    }
+
+    // Batch save all terms to persistent store at once (much more efficient)
+    const termsToSave: Array<[string, any]> = [];
+    for (let i = 0; i < terms.length; i++) {
+      const termData = terms[i];
+      const keyName = termData.term
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^\w-]/g, "");
+      const term = masterCulinaryDictionary.getTerm(keyName);
+      if (term) {
+        termsToSave.push([keyName, term]);
+      }
+    }
+
+    if (termsToSave.length > 0) {
+      try {
+        await uploadedTermsStore.addTermsBatch(termsToSave);
+      } catch (batchError) {
+        console.warn("[Term Uploader] Error batch saving terms:", batchError);
       }
     }
 

@@ -902,12 +902,12 @@ export async function searchAndLearn(req: Request, res: Response) {
 
       // Search for exact match first
       const uploadedTerm = allUploadedTerms.find(
-        t => t.term.toLowerCase() === normalizedTerm
+        (t) => t.term.toLowerCase() === normalizedTerm,
       );
 
       if (uploadedTerm) {
         console.log(
-          `[Echo Learning] Found "${normalizedTerm}" in uploaded terms`
+          `[Echo Learning] Found "${normalizedTerm}" in uploaded terms`,
         );
 
         return res.json({
@@ -928,7 +928,7 @@ export async function searchAndLearn(req: Request, res: Response) {
 
       // Fuzzy search in uploaded terms - limit to first 100 matches by substring for performance
       const fuzzyMatches = allUploadedTerms
-        .filter(t => {
+        .filter((t) => {
           const termLower = t.term.toLowerCase();
           // Quick pre-filter: check if term contains parts of the query
           return (
@@ -941,7 +941,7 @@ export async function searchAndLearn(req: Request, res: Response) {
       if (fuzzyMatches.length > 0) {
         const fuzzyTerm = fuzzyMatches[0];
         console.log(
-          `[Echo Learning] Found match "${fuzzyTerm.term}" for "${normalizedTerm}"`
+          `[Echo Learning] Found match "${fuzzyTerm.term}" for "${normalizedTerm}"`,
         );
 
         return res.json({
@@ -1000,7 +1000,7 @@ export async function searchAndLearn(req: Request, res: Response) {
       if (fuzzyMatches.length > 0) {
         const fuzzyTerm = fuzzyMatches[0];
         console.log(
-          `[Echo Learning] Found match "${fuzzyTerm.term}" for "${normalizedTerm}"`
+          `[Echo Learning] Found match "${fuzzyTerm.term}" for "${normalizedTerm}"`,
         );
 
         return res.json({

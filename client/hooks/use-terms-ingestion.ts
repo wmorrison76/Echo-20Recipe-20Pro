@@ -31,13 +31,20 @@ export function useTermsIngestion() {
       const response = await fetch("/api/terms/count");
 
       if (!response.ok) {
-        console.error("[TermsIngestion] Terms count fetch failed:", response.status, response.statusText);
+        console.error(
+          "[TermsIngestion] Terms count fetch failed:",
+          response.status,
+          response.statusText,
+        );
         return 0;
       }
 
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
-        console.error("[TermsIngestion] Terms count response is not JSON:", contentType);
+        console.error(
+          "[TermsIngestion] Terms count response is not JSON:",
+          contentType,
+        );
         return 0;
       }
 
@@ -57,7 +64,11 @@ export function useTermsIngestion() {
       });
 
       if (!response.ok) {
-        console.error("[TermsIngestion] Start ingestion failed:", response.status, response.statusText);
+        console.error(
+          "[TermsIngestion] Start ingestion failed:",
+          response.status,
+          response.statusText,
+        );
         setStatus({
           status: "idle",
           error: `HTTP ${response.status}: Failed to start ingestion`,
@@ -67,7 +78,10 @@ export function useTermsIngestion() {
 
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
-        console.error("[TermsIngestion] Start ingestion response is not JSON:", contentType);
+        console.error(
+          "[TermsIngestion] Start ingestion response is not JSON:",
+          contentType,
+        );
         setStatus({
           status: "idle",
           error: "Server returned invalid response format",
@@ -108,14 +122,21 @@ export function useTermsIngestion() {
         const response = await fetch("/api/terms/ingestion/progress");
 
         if (!response.ok) {
-          console.error("[TermsIngestion] Progress polling failed:", response.status, response.statusText);
+          console.error(
+            "[TermsIngestion] Progress polling failed:",
+            response.status,
+            response.statusText,
+          );
           setIsPolling(false);
           return;
         }
 
         const contentType = response.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
-          console.error("[TermsIngestion] Progress response is not JSON:", contentType);
+          console.error(
+            "[TermsIngestion] Progress response is not JSON:",
+            contentType,
+          );
           setIsPolling(false);
           return;
         }

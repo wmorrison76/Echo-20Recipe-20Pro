@@ -15,11 +15,11 @@ import { countPineconeVectors } from "../lib/pinecone-extraction-service";
 const router = Router();
 
 // Helper to wrap async route handlers and catch errors
-const asyncHandler = (
-  fn: (req: any, res: any) => Promise<any>,
-) => (req: any, res: any, next: any) => {
-  Promise.resolve(fn(req, res)).catch(next);
-};
+const asyncHandler =
+  (fn: (req: any, res: any) => Promise<any>) =>
+  (req: any, res: any, next: any) => {
+    Promise.resolve(fn(req, res)).catch(next);
+  };
 
 /**
  * POST /api/training/session/initialize
@@ -114,130 +114,130 @@ router.post(
 
       // Define handlers for each source
       const handlers: Record<TrainingSource, () => Promise<void>> = {
-      async "master-dictionary"() {
-        try {
-          console.log("[Training] Starting Master Dictionary ingestion...");
-          trainingOrchestrator.startSource("master-dictionary");
-          trainingOrchestrator.updateSourceProgress("master-dictionary", {
-            message: "Loading Master Dictionary terms...",
-            progress: 10,
+        async "master-dictionary"() {
+          try {
+            console.log("[Training] Starting Master Dictionary ingestion...");
+            trainingOrchestrator.startSource("master-dictionary");
+            trainingOrchestrator.updateSourceProgress("master-dictionary", {
+              message: "Loading Master Dictionary terms...",
+              progress: 10,
+            });
+
+            const result = await ingestionController.ingestMasterDictionary();
+            trainingOrchestrator.completeSource(
+              "master-dictionary",
+              result.totalIngested,
+              result.totalFailed,
+            );
+          } catch (error) {
+            console.error("[Training] Master Dictionary error:", error);
+            trainingOrchestrator.failSource(
+              "master-dictionary",
+              error instanceof Error ? error.message : String(error),
+            );
+          }
+        },
+
+        async "pinecone-migration"() {
+          try {
+            console.log("[Training] Starting Pinecone migration...");
+            trainingOrchestrator.startSource("pinecone-migration");
+            trainingOrchestrator.updateSourceProgress("pinecone-migration", {
+              message: "Connecting to Pinecone and extracting data...",
+              progress: 10,
+            });
+
+            const result = await ingestionController.ingestFromPinecone();
+            trainingOrchestrator.completeSource(
+              "pinecone-migration",
+              result.totalIngested,
+              result.totalFailed,
+            );
+          } catch (error) {
+            console.error("[Training] Pinecone migration error:", error);
+            trainingOrchestrator.failSource(
+              "pinecone-migration",
+              error instanceof Error ? error.message : String(error),
+            );
+          }
+        },
+
+        async "pdf-library"() {
+          try {
+            console.log("[Training] Starting PDF library ingestion...");
+            // This would be triggered when users upload PDFs
+            // For now, just mark as pending
+            trainingOrchestrator.updateSourceProgress("pdf-library", {
+              status: "pending",
+              message: "Waiting for PDF uploads",
+              progress: 0,
+            });
+          } catch (error) {
+            trainingOrchestrator.failSource(
+              "pdf-library",
+              error instanceof Error ? error.message : String(error),
+            );
+          }
+        },
+
+        async "web-crawler"() {
+          try {
+            console.log("[Training] Starting web crawler...");
+            // This would trigger the crawler service
+            // For now, just mark as pending
+            trainingOrchestrator.updateSourceProgress("web-crawler", {
+              status: "pending",
+              message: "Crawler module pending implementation",
+              progress: 0,
+            });
+          } catch (error) {
+            trainingOrchestrator.failSource(
+              "web-crawler",
+              error instanceof Error ? error.message : String(error),
+            );
+          }
+        },
+
+        async "recipe-imports"() {
+          try {
+            console.log("[Training] Waiting for recipe imports...");
+            // This is user-driven, so just acknowledge
+            trainingOrchestrator.updateSourceProgress("recipe-imports", {
+              status: "pending",
+              message: "Ready to accept recipe imports",
+              progress: 0,
+            });
+          } catch (error) {
+            trainingOrchestrator.failSource(
+              "recipe-imports",
+              error instanceof Error ? error.message : String(error),
+            );
+          }
+        },
+      };
+
+      // Start training in background
+      const trainingSources = sources.filter((s) => s in handlers);
+
+      if (mode === "sequential") {
+        trainingOrchestrator
+          .runSequential(trainingSources, handlers)
+          .then(() => {
+            console.log("[Training] Sequential training completed");
+          })
+          .catch((error) => {
+            console.error("[Training] Sequential training failed:", error);
           });
-
-          const result = await ingestionController.ingestMasterDictionary();
-          trainingOrchestrator.completeSource(
-            "master-dictionary",
-            result.totalIngested,
-            result.totalFailed,
-          );
-        } catch (error) {
-          console.error("[Training] Master Dictionary error:", error);
-          trainingOrchestrator.failSource(
-            "master-dictionary",
-            error instanceof Error ? error.message : String(error),
-          );
-        }
-      },
-
-      async "pinecone-migration"() {
-        try {
-          console.log("[Training] Starting Pinecone migration...");
-          trainingOrchestrator.startSource("pinecone-migration");
-          trainingOrchestrator.updateSourceProgress("pinecone-migration", {
-            message: "Connecting to Pinecone and extracting data...",
-            progress: 10,
+      } else {
+        trainingOrchestrator
+          .runParallel(trainingSources, handlers)
+          .then(() => {
+            console.log("[Training] Parallel training completed");
+          })
+          .catch((error) => {
+            console.error("[Training] Parallel training failed:", error);
           });
-
-          const result = await ingestionController.ingestFromPinecone();
-          trainingOrchestrator.completeSource(
-            "pinecone-migration",
-            result.totalIngested,
-            result.totalFailed,
-          );
-        } catch (error) {
-          console.error("[Training] Pinecone migration error:", error);
-          trainingOrchestrator.failSource(
-            "pinecone-migration",
-            error instanceof Error ? error.message : String(error),
-          );
-        }
-      },
-
-      async "pdf-library"() {
-        try {
-          console.log("[Training] Starting PDF library ingestion...");
-          // This would be triggered when users upload PDFs
-          // For now, just mark as pending
-          trainingOrchestrator.updateSourceProgress("pdf-library", {
-            status: "pending",
-            message: "Waiting for PDF uploads",
-            progress: 0,
-          });
-        } catch (error) {
-          trainingOrchestrator.failSource(
-            "pdf-library",
-            error instanceof Error ? error.message : String(error),
-          );
-        }
-      },
-
-      async "web-crawler"() {
-        try {
-          console.log("[Training] Starting web crawler...");
-          // This would trigger the crawler service
-          // For now, just mark as pending
-          trainingOrchestrator.updateSourceProgress("web-crawler", {
-            status: "pending",
-            message: "Crawler module pending implementation",
-            progress: 0,
-          });
-        } catch (error) {
-          trainingOrchestrator.failSource(
-            "web-crawler",
-            error instanceof Error ? error.message : String(error),
-          );
-        }
-      },
-
-      async "recipe-imports"() {
-        try {
-          console.log("[Training] Waiting for recipe imports...");
-          // This is user-driven, so just acknowledge
-          trainingOrchestrator.updateSourceProgress("recipe-imports", {
-            status: "pending",
-            message: "Ready to accept recipe imports",
-            progress: 0,
-          });
-        } catch (error) {
-          trainingOrchestrator.failSource(
-            "recipe-imports",
-            error instanceof Error ? error.message : String(error),
-          );
-        }
-      },
-    };
-
-    // Start training in background
-    const trainingSources = sources.filter((s) => s in handlers);
-
-    if (mode === "sequential") {
-      trainingOrchestrator
-        .runSequential(trainingSources, handlers)
-        .then(() => {
-          console.log("[Training] Sequential training completed");
-        })
-        .catch((error) => {
-          console.error("[Training] Sequential training failed:", error);
-        });
-    } else {
-      trainingOrchestrator
-        .runParallel(trainingSources, handlers)
-        .then(() => {
-          console.log("[Training] Parallel training completed");
-        })
-        .catch((error) => {
-          console.error("[Training] Parallel training failed:", error);
-        });
-    }
+      }
 
       return res.json({
         success: true,

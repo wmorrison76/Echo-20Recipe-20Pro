@@ -8,7 +8,10 @@ import { promises as fs } from "fs";
 import { join } from "path";
 import type { MasterCulinaryTerm } from "./master-culinary-dictionary";
 
-const UPLOADED_TERMS_FILE = join(process.cwd(), "server/data/uploaded-terms.json");
+const UPLOADED_TERMS_FILE = join(
+  process.cwd(),
+  "server/data/uploaded-terms.json",
+);
 
 interface UploadedTermsData {
   terms: Map<string, MasterCulinaryTerm>;
@@ -30,14 +33,18 @@ class UploadedTermsStore {
 
       if (parsed.terms && Array.isArray(parsed.terms)) {
         this.terms = new Map(parsed.terms);
-        console.log(`[UploadedTermsStore] Loaded ${this.terms.size} persisted terms`);
+        console.log(
+          `[UploadedTermsStore] Loaded ${this.terms.size} persisted terms`,
+        );
       }
 
       this.loaded = true;
     } catch (error) {
       // File doesn't exist or can't be read - this is fine on first run
       this.loaded = true;
-      console.log("[UploadedTermsStore] No persisted terms file found, starting fresh");
+      console.log(
+        "[UploadedTermsStore] No persisted terms file found, starting fresh",
+      );
     }
   }
 
@@ -52,7 +59,9 @@ class UploadedTermsStore {
   /**
    * Add multiple terms at once
    */
-  async addTermsBatch(termEntries: Array<[string, MasterCulinaryTerm]>): Promise<void> {
+  async addTermsBatch(
+    termEntries: Array<[string, MasterCulinaryTerm]>,
+  ): Promise<void> {
     for (const [key, term] of termEntries) {
       this.terms.set(key.toLowerCase(), term);
     }

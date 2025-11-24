@@ -15,11 +15,11 @@ import { storeKnowledgeBatch } from "../lib/knowledge-vector-service";
 const router = Router();
 
 // Helper to wrap async route handlers and catch errors
-const asyncHandler = (
-  fn: (req: any, res: any) => Promise<any>,
-) => (req: any, res: any, next: any) => {
-  Promise.resolve(fn(req, res)).catch(next);
-};
+const asyncHandler =
+  (fn: (req: any, res: any) => Promise<any>) =>
+  (req: any, res: any, next: any) => {
+    Promise.resolve(fn(req, res)).catch(next);
+  };
 
 interface IngestionProgress {
   totalTerms: number;
@@ -34,9 +34,12 @@ interface IngestionProgress {
   errors: string[];
   startTime: number;
   estimatedTimeRemaining: number;
+  embeddingsGenerated: number;
+  embeddingsFailed: number;
 }
 
 let currentProgress: IngestionProgress | null = null;
+let ingestionInProgress = false;
 
 /**
  * GET /api/terms/ingestion/progress
@@ -77,7 +80,7 @@ router.post(
   "/ingest/start",
   asyncHandler(async (req: Request, res: Response) => {
     // Prevent multiple concurrent ingestions
-    if (currentProgress) {
+    if (ingestionInProgress) {
       return res.status(409).json({
         success: false,
         error: "Ingestion already in progress",
@@ -86,7 +89,10 @@ router.post(
     }
 
     // Start ingestion in background
-    startIngestion();
+    ingestionInProgress = true;
+    startIngestion().finally(() => {
+      ingestionInProgress = false;
+    });
 
     return res.json({
       success: true,
@@ -110,7 +116,7 @@ async function startIngestion(): Promise<void> {
   const uploadedTerms = uploadedTermsStore.getAllTerms();
 
   // Remove duplicates by using a Map with term names as keys
-  const allTermsMap = new Map<string, typeof masterTerms[0]>();
+  const allTermsMap = new Map<string, (typeof masterTerms)[0]>();
 
   // Add master terms first
   for (const term of masterTerms) {
@@ -137,6 +143,8 @@ async function startIngestion(): Promise<void> {
     errors: [],
     startTime,
     estimatedTimeRemaining: 0,
+    embeddingsGenerated: 0,
+    embeddingsFailed: 0,
   };
 
   console.log(
@@ -144,63 +152,64 @@ async function startIngestion(): Promise<void> {
   );
 
   try {
-    // Phase 1: Fetch and prepare terms
+
+    // Phase 1: Fetch and prepare terms - using controlled sequential embedding generation
     currentProgress.currentPhase = "embedding";
     currentProgress.message = "Generating embeddings...";
 
-    const termsWithEmbeddings = [];
-    const batchSize = 50;
+    const termsWithEmbeddings: Array<{ term: any; embedding: number[] }> = [];
+    const batchSize = 5; // Process in small batches for stability
 
-    for (let i = 0; i < allTerms.length; i += batchSize) {
-      const batch = allTerms.slice(i, Math.min(i + batchSize, allTerms.length));
+    for (let i = 0; i < allTerms.length; i++) {
+      const term = allTerms[i];
+      try {
+        const textToEmbed = `${term.term} ${term.definition}`;
+        const embedding = await generateEmbedding(textToEmbed);
 
-      for (const term of batch) {
-        try {
-          // Generate embedding from title + content
-          const textToEmbed = `${term.term} ${term.definition}`;
-          const embedding = await generateEmbedding(textToEmbed);
+        termsWithEmbeddings.push({
+          term,
+          embedding,
+        });
 
-          termsWithEmbeddings.push({
-            term,
-            embedding,
-          });
+        currentProgress.embeddingsGenerated++;
+        currentProgress.processedTerms = currentProgress.embeddingsGenerated + currentProgress.embeddingsFailed;
+        currentProgress.overallProgress = Math.round(
+          (currentProgress.processedTerms / allTerms.length) * 25, // Embedding is ~25% of total work
+        );
 
-          currentProgress.processedTerms = termsWithEmbeddings.length;
-          currentProgress.overallProgress = Math.round(
-            (termsWithEmbeddings.length / allTerms.length) * 100,
-          );
-        } catch (error) {
-          const errorMsg =
-            error instanceof Error ? error.message : String(error);
-          currentProgress.errors.push(
-            `Failed to embed term "${term.term}": ${errorMsg}`,
-          );
-          console.error(
-            `[TermIngestion] Embedding failed for "${term.term}":`,
-            error,
+        // Update message periodically
+        if (currentProgress.embeddingsGenerated % 50 === 0) {
+          currentProgress.message = `Generated embeddings for ${currentProgress.embeddingsGenerated}/${allTerms.length} terms`;
+          console.log(
+            `[TermIngestion] Progress: ${currentProgress.embeddingsGenerated}/${allTerms.length} embeddings generated`,
           );
         }
+      } catch (error) {
+        const errorMsg =
+          error instanceof Error ? error.message : String(error);
+        currentProgress.embeddingsFailed++;
+        currentProgress.processedTerms = currentProgress.embeddingsGenerated + currentProgress.embeddingsFailed;
 
-        // Update progress message periodically
-        if (termsWithEmbeddings.length % 100 === 0) {
-          currentProgress.message = `Generated embeddings for ${termsWithEmbeddings.length}/${allTerms.length} terms`;
+        const errorStr = `Failed to embed term "${term.term}": ${errorMsg}`;
+        if (currentProgress.errors.length < 10) {
+          currentProgress.errors.push(errorStr);
         }
+        console.error(`[TermIngestion] ${errorStr}`);
       }
 
-      // Rate limiting delay
-      if (i + batchSize < allTerms.length) {
-        await new Promise((resolve) => setTimeout(resolve, 100));
+      // Small delay between requests to avoid rate limiting
+      if ((i + 1) % batchSize === 0) {
+        await new Promise((resolve) => setTimeout(resolve, 50));
       }
     }
 
     console.log(
-      `[TermIngestion] Generated embeddings for ${termsWithEmbeddings.length} terms`,
+      `[TermIngestion] Generated embeddings: ${currentProgress.embeddingsGenerated} success, ${currentProgress.embeddingsFailed} failed`,
     );
 
     // Phase 2: Ingest to Supabase pgvector
     currentProgress.currentPhase = "supabase";
     currentProgress.message = "Ingesting to Supabase pgvector...";
-    currentProgress.processedTerms = 0;
 
     const supabaseItems = termsWithEmbeddings.map(({ term, embedding }) => ({
       title: term.term,
@@ -219,6 +228,7 @@ async function startIngestion(): Promise<void> {
     }));
 
     try {
+      const supabaseStartTime = Date.now();
       const supabaseResult = await storeInternalKnowledgeBatch(
         supabaseItems,
         10,
@@ -226,10 +236,13 @@ async function startIngestion(): Promise<void> {
 
       currentProgress.supabaseSuccess = supabaseResult.success;
       currentProgress.supabaseErrors = supabaseResult.failed;
+      currentProgress.overallProgress = Math.round(
+        25 + (50 * supabaseResult.success) / supabaseItems.length,
+      );
       currentProgress.message = `Ingested ${supabaseResult.success} terms to Supabase`;
 
       console.log(
-        `[TermIngestion] Supabase ingestion complete: ${supabaseResult.success} success, ${supabaseResult.failed} errors`,
+        `[TermIngestion] Supabase ingestion complete: ${supabaseResult.success} success, ${supabaseResult.failed} errors in ${Date.now() - supabaseStartTime}ms`,
       );
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
@@ -240,9 +253,9 @@ async function startIngestion(): Promise<void> {
     // Phase 3: Ingest to Pinecone
     currentProgress.currentPhase = "pinecone";
     currentProgress.message = "Ingesting to Pinecone...";
-    currentProgress.processedTerms = 0;
 
     try {
+      const pineconeStartTime = Date.now();
       const pineconeStatus = await getPineconeStatus();
 
       if (!pineconeStatus.connected) {
@@ -280,10 +293,13 @@ async function startIngestion(): Promise<void> {
 
       currentProgress.pineconeSuccess = pineconeResult.success;
       currentProgress.pineconeErrors = pineconeResult.failed;
+      currentProgress.overallProgress = Math.round(
+        75 + (25 * pineconeResult.success) / pineconeItems.length,
+      );
       currentProgress.message = `Ingested ${pineconeResult.success} terms to Pinecone`;
 
       console.log(
-        `[TermIngestion] Pinecone ingestion complete: ${pineconeResult.success} success, ${pineconeResult.failed} errors`,
+        `[TermIngestion] Pinecone ingestion complete: ${pineconeResult.success} success, ${pineconeResult.failed} errors in ${Date.now() - pineconeStartTime}ms`,
       );
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : String(error);
@@ -300,7 +316,7 @@ async function startIngestion(): Promise<void> {
     currentProgress.message = `✓ Ingestion complete! Processed ${currentProgress.supabaseSuccess + currentProgress.pineconeSuccess} terms in ${duration.toFixed(1)}s`;
 
     console.log(
-      `[TermIngestion] Ingestion complete: Supabase=${currentProgress.supabaseSuccess}, Pinecone=${currentProgress.pineconeSuccess}, Duration=${duration.toFixed(1)}s`,
+      `[TermIngestion] Ingestion complete: Embeddings=${currentProgress.embeddingsGenerated}, Supabase=${currentProgress.supabaseSuccess}, Pinecone=${currentProgress.pineconeSuccess}, Duration=${duration.toFixed(1)}s`,
     );
 
     // Keep progress available for 5 minutes then clear
@@ -312,9 +328,11 @@ async function startIngestion(): Promise<void> {
     );
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
-    currentProgress.currentPhase = "complete";
-    currentProgress.message = `✗ Ingestion failed: ${errorMsg}`;
-    currentProgress.errors.push(errorMsg);
+    if (currentProgress) {
+      currentProgress.currentPhase = "complete";
+      currentProgress.message = `✗ Ingestion failed: ${errorMsg}`;
+      currentProgress.errors.push(errorMsg);
+    }
 
     console.error("[TermIngestion] Fatal ingestion error:", error);
 
@@ -344,7 +362,7 @@ router.post(
       const uploadedTerms = uploadedTermsStore.getAllTerms();
 
       // Remove duplicates
-      const allTermsMap = new Map<string, typeof masterTerms[0]>();
+      const allTermsMap = new Map<string, (typeof masterTerms)[0]>();
       for (const term of masterTerms) {
         allTermsMap.set(term.term.toLowerCase(), term);
       }
@@ -381,7 +399,10 @@ router.post(
         },
       }));
 
-      const supabaseResult = await storeInternalKnowledgeBatch(supabaseItems, 5);
+      const supabaseResult = await storeInternalKnowledgeBatch(
+        supabaseItems,
+        5,
+      );
 
       return res.json({
         success: true,
@@ -420,7 +441,7 @@ router.get(
       const uploadedTerms = uploadedTermsStore.getAllTerms();
 
       // Remove duplicates
-      const allTermsMap = new Map<string, typeof masterTerms[0]>();
+      const allTermsMap = new Map<string, (typeof masterTerms)[0]>();
       for (const term of masterTerms) {
         allTermsMap.set(term.term.toLowerCase(), term);
       }
