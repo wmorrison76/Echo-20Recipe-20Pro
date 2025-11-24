@@ -175,9 +175,9 @@ router.post("/upload-terms", async (req: Request, res: Response) => {
             culture: categoryDisplay,
             significance: `${categoryDisplay} expertise`,
           },
-          confidence: 0.85,
+          confidence: termData.importance_weight || 0.85,
           sources: [`User upload - ${new Date().toISOString().split("T")[0]}`],
-          masteryLevel: "intermediate" as const,
+          masteryLevel: (termData.importance_weight || 0.85) > 0.9 ? "advanced" : "intermediate" as const,
         };
 
         // Add to master culinary dictionary
