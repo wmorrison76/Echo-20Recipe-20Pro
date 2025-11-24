@@ -895,7 +895,78 @@ export async function searchAndLearn(req: Request, res: Response) {
       }
     }
 
-    // Second, try to find in master dictionary
+    // Second, try to find in uploaded terms
+    try {
+      await uploadedTermsStore.ensureLoaded();
+      const allUploadedTerms = uploadedTermsStore.getAllTerms();
+
+      // Search for exact match first
+      const uploadedTerm = allUploadedTerms.find(
+        t => t.term.toLowerCase() === normalizedTerm
+      );
+
+      if (uploadedTerm) {
+        console.log(
+          `[Echo Learning] Found "${normalizedTerm}" in uploaded terms`
+        );
+
+        return res.json({
+          status: "success",
+          source: "uploaded-terms",
+          entry: {
+            term: uploadedTerm,
+            related: [],
+            statistics: {
+              masteryLevel: uploadedTerm.masteryLevel,
+              confidence: uploadedTerm.confidence,
+              sources: uploadedTerm.sources,
+            },
+          },
+          message: `✨ Found your uploaded term "${uploadedTerm.term}"!`,
+        });
+      }
+
+      // Fuzzy search in uploaded terms if exact match not found
+      const fuzzyMatches = allUploadedTerms.filter(t => {
+        const termLower = t.term.toLowerCase();
+        const similarity = calculateSimilarity(normalizedTerm, termLower);
+        return similarity > 0.7; // 70% similarity threshold
+      }).sort((a, b) => {
+        const simA = calculateSimilarity(normalizedTerm, a.term.toLowerCase());
+        const simB = calculateSimilarity(normalizedTerm, b.term.toLowerCase());
+        return simB - simA;
+      });
+
+      if (fuzzyMatches.length > 0) {
+        const fuzzyTerm = fuzzyMatches[0];
+        console.log(
+          `[Echo Learning] Found fuzzy match "${fuzzyTerm.term}" for "${normalizedTerm}"`
+        );
+
+        return res.json({
+          status: "success",
+          source: "uploaded-terms-fuzzy",
+          entry: {
+            term: fuzzyTerm,
+            related: [],
+            statistics: {
+              masteryLevel: fuzzyTerm.masteryLevel,
+              confidence: fuzzyTerm.confidence,
+              sources: fuzzyTerm.sources,
+            },
+          },
+          message: `✨ Did you mean "${fuzzyTerm.term}"? Found in your uploaded terms!`,
+        });
+      }
+    } catch (uploadedError) {
+      console.warn(
+        `[Echo Learning] Error searching uploaded terms:`,
+        uploadedError,
+      );
+      // Continue to master dictionary
+    }
+
+    // Third, try to find in master dictionary
     try {
       let entry = masterCulinaryDictionary.getTerm(normalizedTerm);
 
@@ -917,6 +988,36 @@ export async function searchAndLearn(req: Request, res: Response) {
             },
           },
           message: `✨ Echo knows "${entry.term}" at ${entry.masteryLevel} level!`,
+        });
+      }
+
+      // Fuzzy search in master dictionary
+      const fuzzyMatches = masterCulinaryDictionary
+        .searchTerms(normalizedTerm)
+        .filter(t => {
+          const similarity = calculateSimilarity(normalizedTerm, t.term.toLowerCase());
+          return similarity > 0.7;
+        });
+
+      if (fuzzyMatches.length > 0) {
+        const fuzzyTerm = fuzzyMatches[0];
+        console.log(
+          `[Echo Learning] Found fuzzy match "${fuzzyTerm.term}" for "${normalizedTerm}"`
+        );
+
+        return res.json({
+          status: "success",
+          source: "master-dictionary-fuzzy",
+          entry: {
+            term: fuzzyTerm,
+            related: [],
+            statistics: {
+              masteryLevel: fuzzyTerm.masteryLevel,
+              confidence: fuzzyTerm.confidence,
+              sources: fuzzyTerm.sources,
+            },
+          },
+          message: `✨ Did you mean "${fuzzyTerm.term}"? Echo knows this at ${fuzzyTerm.masteryLevel} level!`,
         });
       }
     } catch (dictError) {
