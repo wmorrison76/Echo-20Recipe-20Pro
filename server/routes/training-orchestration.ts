@@ -83,35 +83,37 @@ router.get(
  * POST /api/training/start
  * Start training with specified sources and mode
  */
-router.post("/start", async (req: Request, res: Response) => {
-  try {
-    // Check if training is already running
-    if (trainingOrchestrator.isSessionActive()) {
-      return res.status(409).json({
-        success: false,
-        error:
-          "Training is already in progress. Please wait for it to complete.",
-      });
-    }
+router.post(
+  "/start",
+  asyncHandler(async (req: Request, res: Response) => {
+    try {
+      // Check if training is already running
+      if (trainingOrchestrator.isSessionActive()) {
+        return res.status(409).json({
+          success: false,
+          error:
+            "Training is already in progress. Please wait for it to complete.",
+        });
+      }
 
-    const {
-      mode = "sequential",
-      sources = [
-        "master-dictionary",
-        "pinecone-migration",
-        "pdf-library",
-        "web-crawler",
-      ],
-    } = req.body as {
-      mode?: TrainingMode;
-      sources?: TrainingSource[];
-    };
+      const {
+        mode = "sequential",
+        sources = [
+          "master-dictionary",
+          "pinecone-migration",
+          "pdf-library",
+          "web-crawler",
+        ],
+      } = req.body as {
+        mode?: TrainingMode;
+        sources?: TrainingSource[];
+      };
 
-    // Initialize session
-    const session = trainingOrchestrator.initializeSession(mode);
+      // Initialize session
+      const session = trainingOrchestrator.initializeSession(mode);
 
-    // Define handlers for each source
-    const handlers: Record<TrainingSource, () => Promise<void>> = {
+      // Define handlers for each source
+      const handlers: Record<TrainingSource, () => Promise<void>> = {
       async "master-dictionary"() {
         try {
           console.log("[Training] Starting Master Dictionary ingestion...");
@@ -237,19 +239,20 @@ router.post("/start", async (req: Request, res: Response) => {
         });
     }
 
-    return res.json({
-      success: true,
-      session,
-      message: `Training started in ${mode} mode with ${trainingSources.length} sources`,
-      trainingSources: trainingSources,
-    });
-  } catch (error: any) {
-    return res.status(500).json({
-      success: false,
-      error: error.message || "Failed to start training",
-    });
-  }
-});
+      return res.json({
+        success: true,
+        session,
+        message: `Training started in ${mode} mode with ${trainingSources.length} sources`,
+        trainingSources: trainingSources,
+      });
+    } catch (error: any) {
+      return res.status(500).json({
+        success: false,
+        error: error.message || "Failed to start training",
+      });
+    }
+  }),
+);
 
 /**
  * POST /api/training/ingest-recipe
