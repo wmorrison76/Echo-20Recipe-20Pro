@@ -180,7 +180,7 @@ function IndexContent() {
             </Button>
           </div>
         </header>
-        <main className="w-full h-[calc(100vh-160px)] flex flex-col py-2">
+        <main className="w-full flex-1 flex flex-col">
           <Tabs
             value={active}
             onValueChange={handleTabChange}
