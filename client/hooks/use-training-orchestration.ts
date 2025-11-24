@@ -55,12 +55,16 @@ export function useTrainingOrchestration() {
     try {
       const response = await fetch("/api/training/session/status");
 
+      const data = await response.json();
+
       if (!response.ok) {
-        console.error("[TrainingOrchestration] Status fetch returned", response.status);
+        console.warn(
+          "[TrainingOrchestration] Status fetch returned error:",
+          response.status,
+          data?.error || data?.details
+        );
         return;
       }
-
-      const data = await response.json();
 
       if (data.success) {
         setState((prev) => ({
@@ -70,7 +74,7 @@ export function useTrainingOrchestration() {
         }));
       }
     } catch (error) {
-      console.error("[TrainingOrchestration] Error fetching status:", error);
+      console.warn("[TrainingOrchestration] Error fetching status:", error);
     }
   }, []);
 
