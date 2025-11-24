@@ -86,6 +86,10 @@ export function useTrainingOrchestration() {
           body: JSON.stringify({ mode }),
         });
 
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: Failed to initialize session`);
+        }
+
         const data = await response.json();
 
         if (data.success) {
@@ -121,6 +125,10 @@ export function useTrainingOrchestration() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ mode, sources }),
         });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: Failed to start training`);
+        }
 
         const data = await response.json();
 
@@ -160,6 +168,10 @@ export function useTrainingOrchestration() {
         body: JSON.stringify({ recipeCount }),
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: Failed to ingest recipes`);
+      }
+
       const data = await response.json();
       return data.success;
     } catch (error) {
@@ -178,6 +190,10 @@ export function useTrainingOrchestration() {
           body: JSON.stringify({ pdfCount, documentCount }),
         });
 
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: Failed to ingest PDFs`);
+        }
+
         const data = await response.json();
         return data.success;
       } catch (error) {
@@ -192,6 +208,11 @@ export function useTrainingOrchestration() {
   const getSummary = useCallback(async () => {
     try {
       const response = await fetch("/api/training/summary");
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: Failed to fetch summary`);
+      }
+
       const data = await response.json();
 
       if (data.success) {
