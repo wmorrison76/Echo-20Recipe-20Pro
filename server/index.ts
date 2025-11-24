@@ -153,6 +153,9 @@ export function createServer() {
   // Term Uploader - Upload culinary and financial terms from JSON files
   app.use("/api/knowledge", termUploaderRouter);
 
+  // Terms Vector Ingestion - Ingest uploaded terms to Supabase pgvector and Pinecone
+  app.use("/api/terms", termsVectorIngestionRouter);
+
   // Training Orchestration - Unified training management
   app.use("/api/training", trainingOrchestrationRouter);
 
