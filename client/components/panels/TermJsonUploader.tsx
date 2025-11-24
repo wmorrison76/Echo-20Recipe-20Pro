@@ -167,10 +167,22 @@ export function TermJsonUploader() {
         ),
       );
 
+      const body: Record<string, any> = { terms };
+
+      // Send region if provided (old format), or auto-detect from file
+      if (selectedRegion) {
+        body.region = selectedRegion;
+      }
+
+      // Check if terms have 'category' field (new format)
+      if (terms.length > 0 && (terms[0] as any).category) {
+        body.category = (terms[0] as any).category;
+      }
+
       const response = await fetch("/api/knowledge/upload-terms", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: payload,
+        body: JSON.stringify(body),
       });
 
       let result: any = null;
