@@ -102,21 +102,31 @@ export const fetchWithCORSHandling = async (
 
     return response;
   } catch (error) {
-    // If we get a TypeError (common for CORS errors), return a mock response
-    if (
-      error instanceof TypeError &&
-      error.message.includes("Access-Control")
-    ) {
-      console.warn(`[CORS Error] CORS policy violation for: ${urlStr}`, error);
+    // Handle all TypeErrors gracefully (CORS, network, etc.)
+    if (error instanceof TypeError) {
+      const errorMsg = error.message;
+
+      // Determine if it's a CORS error or general network error
+      const isCORSError = errorMsg.includes("Access-Control") || errorMsg.includes("CORS");
+      const isNetworkError = errorMsg.includes("Failed to fetch") || errorMsg.includes("fetch");
+
+      const status = isCORSError ? 403 : 500;
+      const errorType = isCORSError ? "CORS Error" : "Network Error";
+
+      console.warn(`[${errorType}] ${errorType} for: ${urlStr}`, error);
+
       return new Response(
         JSON.stringify({
-          error: "CORS Error: Unable to access this resource",
+          error: isCORSError
+            ? "CORS Error: Unable to access this resource"
+            : "Network Error: Unable to reach this endpoint",
           url: urlStr,
-          details: error.message,
+          details: errorMsg,
+          type: errorType,
         }),
         {
-          status: 403,
-          statusText: "CORS Error",
+          status,
+          statusText: errorType,
           headers: {
             "Content-Type": "application/json",
           },
@@ -124,8 +134,24 @@ export const fetchWithCORSHandling = async (
       );
     }
 
-    // Re-throw other errors
-    throw error;
+    // For non-TypeError errors, return a generic error response instead of throwing
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    console.error(`[Fetch Interceptor] Unexpected error for ${urlStr}:`, error);
+
+    return new Response(
+      JSON.stringify({
+        error: "Request failed",
+        url: urlStr,
+        details: errorMsg,
+      }),
+      {
+        status: 500,
+        statusText: "Internal Server Error",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
   }
 };
 
