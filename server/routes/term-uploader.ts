@@ -159,24 +159,30 @@ router.post("/upload-terms", async (req: Request, res: Response) => {
       );
     }
 
-    // Return response
-    return res.status(200).json({
+    const responseData = {
       success: true,
       uploadedCount,
       totalCount: terms.length,
       region,
       errors: errors.length > 0 ? errors : undefined,
       message: `Successfully uploaded ${uploadedCount} of ${terms.length} terms to ${region}`,
-    });
+    };
+
+    console.log("[Term Uploader] Sending response:", responseData);
+
+    // Return response
+    return res.status(200).json(responseData);
   } catch (error) {
     console.error("[Term Uploader] Error:", error);
-    return res.status(500).json({
+    const errorResponse = {
       success: false,
       error:
         error instanceof Error
           ? error.message
           : "An error occurred during upload",
-    });
+    };
+    console.error("[Term Uploader] Sending error response:", errorResponse);
+    return res.status(500).json(errorResponse);
   }
 });
 
