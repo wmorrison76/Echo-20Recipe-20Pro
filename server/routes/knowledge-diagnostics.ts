@@ -23,6 +23,10 @@ router.get("/diagnostics", async (req: Request, res: Response) => {
     const initStatus = knowledgeInitializer.getStatus();
     const ingestionProgress = ingestionController.getProgress();
 
+    // Load uploaded terms count
+    await uploadedTermsStore.ensureLoaded();
+    const uploadedTermsCount = uploadedTermsStore.getCount();
+
     const diagnostics = {
       timestamp: new Date().toISOString(),
       supabaseStatus: {
@@ -37,6 +41,10 @@ router.get("/diagnostics", async (req: Request, res: Response) => {
         categories: masterDictStats.categories,
         masteryLevels: masterDictStats.masteryLevels,
         averageConfidence: masterDictStats.averageConfidence,
+      },
+      uploadedTerms: {
+        totalTerms: uploadedTermsCount,
+        source: "user-uploaded",
       },
       initialization: {
         initialized: initStatus.initialized,
