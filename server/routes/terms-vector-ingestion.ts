@@ -6,6 +6,7 @@
 
 import { Router, Request, Response } from "express";
 import { masterCulinaryDictionary } from "../lib/master-culinary-dictionary";
+import { uploadedTermsStore } from "../lib/uploaded-terms-store";
 import { storeInternalKnowledgeBatch } from "../lib/internal-knowledge-service";
 import { generateEmbedding } from "../lib/pinecone-service";
 import { getPineconeStatus } from "../lib/pinecone-verification-service";
