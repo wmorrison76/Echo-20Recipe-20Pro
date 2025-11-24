@@ -52,29 +52,30 @@ export function TermsVectorIngestionPanel() {
         const response = await fetch("/api/terms/count");
 
         if (!response.ok) {
-          console.error(
-            "[TermsIngestion] Terms count fetch failed:",
-            response.status,
-            response.statusText,
+          console.warn(
+            "[TermsIngestion] Terms count unavailable (status: " +
+              response.status +
+              ")"
           );
+          setTermsCount(0);
           return;
         }
 
         const contentType = response.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
-          console.error(
-            "[TermsIngestion] Terms count response is not JSON:",
-            contentType,
-          );
+          setTermsCount(0);
           return;
         }
 
         const data = await response.json();
         if (data.success) {
           setTermsCount(data.totalTerms);
+        } else {
+          setTermsCount(0);
         }
       } catch (error) {
-        console.error("[TermsIngestion] Error fetching terms count:", error);
+        // API unavailable - set default value and continue
+        setTermsCount(0);
       }
     };
 
