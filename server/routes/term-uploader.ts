@@ -61,7 +61,11 @@ router.post("/upload-terms", async (req: Request, res: Response) => {
   try {
     const { terms, region } = req.body as UploadRequest;
 
-    console.log("[Term Uploader] Processing:", { region, termsLength: terms?.length });
+    console.log("[Term Uploader] Processing:", {
+      region,
+      termsLength: terms?.length,
+      bodySize: JSON.stringify(req.body).length,
+    });
 
     // Validate input
     if (!Array.isArray(terms) || terms.length === 0) {
