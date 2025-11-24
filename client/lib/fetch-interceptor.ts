@@ -48,7 +48,28 @@ export const fetchWithCORSHandling = async (
   // Check if this is a local API route (should not be intercepted)
   const isLocalAPI = LOCAL_API_ROUTES.some((route) => urlStr.includes(route));
   if (isLocalAPI) {
-    return originalFetch(input, init);
+    try {
+      return await originalFetch(input, init);
+    } catch (error) {
+      // Handle local API fetch failures gracefully
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.error(`[Fetch Interceptor] Local API fetch failed for ${urlStr}:`, error);
+
+      return new Response(
+        JSON.stringify({
+          error: "Local API unavailable",
+          url: urlStr,
+          details: errorMsg,
+        }),
+        {
+          status: 503,
+          statusText: "Service Unavailable",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+    }
   }
 
   // If this is a known CORS problematic URL, return a mock error response
