@@ -184,7 +184,7 @@ function IndexContent() {
           <Tabs
             value={active}
             onValueChange={handleTabChange}
-            className="w-full flex-1 flex flex-col"
+            className="w-full flex flex-col"
           >
             <TabsContent value="search">
               <ErrorBoundaryWrapper section="Recipe Search">
