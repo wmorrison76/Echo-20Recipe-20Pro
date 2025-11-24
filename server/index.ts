@@ -44,6 +44,17 @@ export function createServer() {
 
   // Initialize knowledge system on server startup
   setImmediate(() => {
+    // Load persisted uploaded terms
+    uploadedTermsStore
+      .initialize()
+      .then(() => {
+        console.log("[Server] Uploaded terms store initialized");
+      })
+      .catch((error) => {
+        console.error("[Server] Error initializing uploaded terms store:", error);
+      });
+
+    // Initialize knowledge base
     knowledgeInitializer
       .initialize({
         autoInit: true,
