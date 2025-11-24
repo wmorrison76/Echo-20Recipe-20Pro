@@ -14,57 +14,70 @@ import { countPineconeVectors } from "../lib/pinecone-extraction-service";
 
 const router = Router();
 
+// Helper to wrap async route handlers and catch errors
+const asyncHandler = (
+  fn: (req: any, res: any) => Promise<any>,
+) => (req: any, res: any, next: any) => {
+  Promise.resolve(fn(req, res)).catch(next);
+};
+
 /**
  * POST /api/training/session/initialize
  * Create a new training session
  */
-router.post("/session/initialize", (req: Request, res: Response) => {
-  try {
-    const { mode = "sequential" } = req.body as { mode?: TrainingMode };
+router.post(
+  "/session/initialize",
+  asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const { mode = "sequential" } = req.body as { mode?: TrainingMode };
 
-    const session = trainingOrchestrator.initializeSession(mode);
+      const session = trainingOrchestrator.initializeSession(mode);
 
-    return res.json({
-      success: true,
-      session,
-      message: `Training session initialized in ${mode} mode`,
-    });
-  } catch (error: any) {
-    return res.status(500).json({
-      success: false,
-      error: error.message || "Failed to initialize training session",
-    });
-  }
-});
+      return res.json({
+        success: true,
+        session,
+        message: `Training session initialized in ${mode} mode`,
+      });
+    } catch (error: any) {
+      return res.status(500).json({
+        success: false,
+        error: error.message || "Failed to initialize training session",
+      });
+    }
+  }),
+);
 
 /**
  * GET /api/training/session/status
  * Get current training session status
  */
-router.get("/session/status", (req: Request, res: Response) => {
-  try {
-    const session = trainingOrchestrator.getSession();
+router.get(
+  "/session/status",
+  asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const session = trainingOrchestrator.getSession();
 
-    if (!session) {
+      if (!session) {
+        return res.json({
+          success: true,
+          session: null,
+          message: "No active training session",
+        });
+      }
+
       return res.json({
         success: true,
-        session: null,
-        message: "No active training session",
+        session,
+        summary: trainingOrchestrator.getSummary(),
+      });
+    } catch (error: any) {
+      return res.status(500).json({
+        success: false,
+        error: error.message || "Failed to get training session status",
       });
     }
-
-    return res.json({
-      success: true,
-      session,
-      summary: trainingOrchestrator.getSummary(),
-    });
-  } catch (error: any) {
-    return res.status(500).json({
-      success: false,
-      error: error.message || "Failed to get training session status",
-    });
-  }
-});
+  }),
+);
 
 /**
  * POST /api/training/start
