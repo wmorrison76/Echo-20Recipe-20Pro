@@ -63,6 +63,10 @@ export function useTrainingOrchestration() {
           response.status,
           data?.error || data?.details,
         );
+        setState((prev) => ({
+          ...prev,
+          error: data?.error || `HTTP ${response.status}`,
+        }));
         return;
       }
 
@@ -74,7 +78,12 @@ export function useTrainingOrchestration() {
         }));
       }
     } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
       console.warn("[TrainingOrchestration] Error fetching status:", error);
+      setState((prev) => ({
+        ...prev,
+        error: `Failed to connect: ${errorMsg}`,
+      }));
     }
   }, []);
 
