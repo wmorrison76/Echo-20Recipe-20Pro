@@ -228,8 +228,9 @@ export function TermJsonUploader() {
       );
 
       setTotalTermsUploaded((prev) => prev + result.uploadedCount);
+      const destination = selectedRegion || (terms[0] as any)?.category || "knowledge base";
       toast.success(
-        `${fileName}: ${result.uploadedCount} terms added to ${selectedRegion}`,
+        `${fileName}: ${result.uploadedCount} terms added to ${destination}`,
       );
     } catch (error) {
       const message =
