@@ -398,37 +398,37 @@ router.post(
 router.get(
   "/count",
   asyncHandler(async (req: Request, res: Response) => {
-  try {
-    // Ensure uploaded terms store is loaded
-    await uploadedTermsStore.ensureLoaded();
+    try {
+      // Ensure uploaded terms store is loaded
+      await uploadedTermsStore.ensureLoaded();
 
-    // Combine master dictionary terms with uploaded terms
-    const masterTerms = masterCulinaryDictionary.getAllTerms();
-    const uploadedTerms = uploadedTermsStore.getAllTerms();
+      // Combine master dictionary terms with uploaded terms
+      const masterTerms = masterCulinaryDictionary.getAllTerms();
+      const uploadedTerms = uploadedTermsStore.getAllTerms();
 
-    // Remove duplicates
-    const allTermsMap = new Map<string, typeof masterTerms[0]>();
-    for (const term of masterTerms) {
-      allTermsMap.set(term.term.toLowerCase(), term);
-    }
-    for (const term of uploadedTerms) {
-      allTermsMap.set(term.term.toLowerCase(), term);
-    }
+      // Remove duplicates
+      const allTermsMap = new Map<string, typeof masterTerms[0]>();
+      for (const term of masterTerms) {
+        allTermsMap.set(term.term.toLowerCase(), term);
+      }
+      for (const term of uploadedTerms) {
+        allTermsMap.set(term.term.toLowerCase(), term);
+      }
 
-    const totalTerms = allTermsMap.size;
-    const uploadedCount = uploadedTermsStore.getCount();
+      const totalTerms = allTermsMap.size;
+      const uploadedCount = uploadedTermsStore.getCount();
 
-    return res.json({
-      success: true,
-      totalTerms,
-      uploadedTerms: uploadedCount,
-      masterTerms: masterTerms.length,
-      termsReady: true,
-      message: `${totalTerms} terms available for ingestion (${uploadedCount} uploaded, ${masterTerms.length} built-in)`,
-    });
-  } catch (error) {
-    const errorMsg = error instanceof Error ? error.message : String(error);
-    console.error("[TermIngestion] Error getting terms count:", error);
+      return res.json({
+        success: true,
+        totalTerms,
+        uploadedTerms: uploadedCount,
+        masterTerms: masterTerms.length,
+        termsReady: true,
+        message: `${totalTerms} terms available for ingestion (${uploadedCount} uploaded, ${masterTerms.length} built-in)`,
+      });
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.error("[TermIngestion] Error getting terms count:", error);
 
       return res.status(500).json({
         success: false,
