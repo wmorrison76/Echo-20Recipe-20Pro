@@ -43,16 +43,13 @@ export default function EchoFloatingButton() {
 
           {/* Popup Dialog - positioned bottom right */}
           <div className="fixed bottom-24 right-6 z-50 w-[420px] max-w-[95vw] h-[500px] max-h-[85vh] rounded-lg border border-slate-700 bg-slate-950 shadow-xl flex flex-col overflow-hidden">
-            {/* Header */}
-            <div className="border-b border-slate-700 px-6 py-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-white">Ask Echo</h2>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="text-slate-400 hover:text-white transition-colors p-1"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
+            {/* Close button in top right */}
+            <button
+              onClick={() => setIsOpen(false)}
+              className="absolute top-4 right-4 z-10 text-slate-400 hover:text-white transition-colors p-1"
+            >
+              <X className="h-4 w-4" />
+            </button>
 
             {/* Ask Echo Panel */}
             <div className="flex-1 overflow-hidden">
