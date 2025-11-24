@@ -25,7 +25,6 @@ import MenuDesignStudioWrapper from "@/components/MenuDesignStudio/MenuDesignStu
 const MenuDesignStudioSection = MenuDesignStudioWrapper;
 import ProductionSection from "./sections/Production";
 import PurchasingReceivingSection from "./sections/purchasing-receiving";
-import RDLabsWorkspace from "./sections/RDLabsWorkspace";
 import TopTabs from "@/components/TopTabs";
 import SubtleBottomGlow from "@/components/SubtleBottomGlow";
 import TronBackdrop from "@/components/TronBackdrop";
