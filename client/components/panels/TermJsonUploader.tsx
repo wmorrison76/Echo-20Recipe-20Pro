@@ -439,11 +439,22 @@ export function TermJsonUploader() {
       )}
 
       {/* Format Help */}
-      <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-800 text-sm text-gray-600 dark:text-gray-400">
-        <p className="font-medium mb-1">JSON Format:</p>
-        <code className="block bg-gray-100 dark:bg-gray-900 p-2 rounded text-xs overflow-auto">
-          {`[{"term": "Term Name", "pronunciation": "optional", "etymology": "optional", "definition": "Definition here"}, ...]`}
-        </code>
+      <div className="space-y-2">
+        <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 text-sm">
+          <p className="font-medium mb-2 text-blue-900 dark:text-blue-100">Term File Format:</p>
+          <code className="block bg-blue-100 dark:bg-blue-900/50 p-2 rounded text-xs overflow-auto text-blue-900 dark:text-blue-100">
+            {`[{"term": "Term Name", "pronunciation": "optional", "etymology": "optional", "definition": "Definition here", "category": "optional"}, ...]`}
+          </code>
+        </div>
+
+        <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-sm">
+          <p className="font-medium mb-2 text-amber-900 dark:text-amber-100">📋 Manifest Files (auto-detected - will be skipped):</p>
+          <ul className="text-xs text-amber-800 dark:text-amber-200 space-y-1">
+            <li><code className="bg-amber-100 dark:bg-amber-900/50 px-1 rounded">echo_knowledge_capsule.json</code> - Lists content_files to load</li>
+            <li><code className="bg-amber-100 dark:bg-amber-900/50 px-1 rounded">index.json</code> - Maps categories to their files</li>
+            <li><code className="bg-amber-100 dark:bg-amber-900/50 px-1 rounded">graph_links.json</code> - Graph structure data</li>
+          </ul>
+        </div>
       </div>
     </Card>
   );
