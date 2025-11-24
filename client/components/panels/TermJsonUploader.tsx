@@ -276,10 +276,10 @@ export function TermJsonUploader() {
         </p>
       </div>
 
-      {/* Region Selection */}
+      {/* Region Selection (Optional - for legacy format) */}
       <div className="space-y-3">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-          Select Regional Cuisine
+          Select Regional Cuisine (Optional - Auto-detected from file category)
         </label>
         <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-2">
           {REGIONS.map((region) => (
