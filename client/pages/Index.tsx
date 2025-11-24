@@ -288,10 +288,10 @@ function IndexContent() {
             </TabsContent>
             <TabsContent
               value="echo-training"
-              className="h-[calc(100vh-160px)] overflow-y-auto"
+              className="overflow-y-auto"
             >
               <ErrorBoundaryWrapper section="Echo Training">
-                <div className="w-full px-4 py-0">
+                <div className="w-full px-4">
                   <EchoTrainingCenter />
                 </div>
               </ErrorBoundaryWrapper>
