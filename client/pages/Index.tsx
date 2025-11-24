@@ -286,7 +286,7 @@ function IndexContent() {
                 <RDLabsWorkspace />
               </ErrorBoundaryWrapper>
             </TabsContent>
-            <TabsContent value="echo-training">
+            <TabsContent value="echo-training" className="mt-0 p-0">
               <ErrorBoundaryWrapper section="Echo Training">
                 <EchoTrainingCenter />
               </ErrorBoundaryWrapper>
