@@ -13,6 +13,9 @@ const CORS_PROBLEMATIC_URLS = new Set([
   "api.builder.io/projects", // Builder.io integration endpoints
 ]);
 
+// Local API routes that should not be intercepted
+const LOCAL_API_ROUTES = ["/api/knowledge", "/api/echo", "/api/pdf-library"];
+
 /**
  * Check if a URL is known to have CORS issues
  */
