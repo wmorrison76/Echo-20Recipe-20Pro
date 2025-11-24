@@ -127,6 +127,8 @@ export function TermJsonUploader() {
 
       const terms: TermData[] = JSON.parse(text);
       console.log(`[TermUploader] ${fileName}: Parsed ${terms.length} terms from JSON`);
+      console.log(`[TermUploader] ${fileName}: First 3 terms:`, terms.slice(0, 3));
+      console.log(`[TermUploader] ${fileName}: Last 3 terms:`, terms.slice(-3));
 
       if (!Array.isArray(terms)) {
         throw new Error("JSON must be an array of terms");
@@ -135,6 +137,12 @@ export function TermJsonUploader() {
       if (terms.length === 0) {
         throw new Error("JSON file is empty");
       }
+
+      const payload = JSON.stringify({
+        terms,
+        region: selectedRegion,
+      });
+      console.log(`[TermUploader] ${fileName}: Payload size: ${payload.length} bytes, contains ${terms.length} items`);
 
       setUploadProgress((prev) =>
         prev.map((p) =>
