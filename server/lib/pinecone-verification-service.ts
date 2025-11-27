@@ -331,7 +331,6 @@ export async function storeTrainingDataToPinecone(
           },
         });
         successCount++;
-
       } catch (embedError) {
         console.warn(
           `[PineconeVerification] Failed to embed ${item.title}:`,
@@ -349,7 +348,6 @@ export async function storeTrainingDataToPinecone(
           `[PineconeVerification] Upserting batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(vectors.length / batchSize)} (${batch.length} vectors)`,
         );
         await index.upsert(batch);
-
       }
     }
 

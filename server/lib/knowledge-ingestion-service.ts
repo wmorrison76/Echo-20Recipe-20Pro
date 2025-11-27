@@ -185,7 +185,6 @@ class KnowledgeIngestionController {
             );
           }
         }
-
       }
 
       this.updateProgress({
