@@ -66,6 +66,19 @@ type NavGroup = {
 
 const navGroups: NavGroup[] = [
   {
+    id: "training",
+    labelKey: "nav.group.training",
+    fallback: "ECHO TRAINING",
+    items: [
+      {
+        to: "/?tab=echo-training",
+        labelKey: "nav.echoTraining",
+        fallback: "ECHO TRAINING CENTER",
+        icon: Zap,
+      },
+    ],
+  },
+  {
     id: "recipes-design",
     labelKey: "nav.group.recipesDesign",
     fallback: "RECIPES & DESIGN",
@@ -117,12 +130,6 @@ const navGroups: NavGroup[] = [
         labelKey: "nav.rdlabs",
         fallback: "R&D LABS",
         icon: Atom,
-      },
-      {
-        to: "/?tab=echo-training",
-        labelKey: "nav.echoTraining",
-        fallback: "ECHO TRAINING",
-        icon: Zap,
       },
     ],
   },
@@ -698,13 +705,6 @@ export default function TopTabs() {
                   collapsed && "flex-col gap-1.5 px-2 py-1.5",
                 )}
               >
-                <DissolvingText
-                  collapsed={collapsed}
-                  ariaHidden={collapsed}
-                  className="text-sm font-medium"
-                >
-                  {t("recipe.actions.theme", "Theme")}
-                </DissolvingText>
                 <ThemeToggle />
               </div>
             </div>

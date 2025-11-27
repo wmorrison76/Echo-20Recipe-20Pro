@@ -13,6 +13,15 @@ const CORS_PROBLEMATIC_URLS = new Set([
   "api.builder.io/projects", // Builder.io integration endpoints
 ]);
 
+// Local API routes that should not be intercepted
+const LOCAL_API_ROUTES = [
+  "/api/knowledge",
+  "/api/echo",
+  "/api/pdf-library",
+  "/api/training",
+  "/api/terms",
+];
+
 /**
  * Check if a URL is known to have CORS issues
  */
@@ -35,6 +44,36 @@ export const fetchWithCORSHandling = async (
   init?: RequestInit,
 ): Promise<Response> => {
   const urlStr = typeof input === "string" ? input : input.toString();
+
+  // Check if this is a local API route (should not be intercepted)
+  const isLocalAPI = LOCAL_API_ROUTES.some((route) => urlStr.includes(route));
+  if (isLocalAPI) {
+    try {
+      return await originalFetch(input, init);
+    } catch (error) {
+      // Handle local API fetch failures gracefully
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.error(
+        `[Fetch Interceptor] Local API fetch failed for ${urlStr}:`,
+        error,
+      );
+
+      return new Response(
+        JSON.stringify({
+          error: "Local API unavailable",
+          url: urlStr,
+          details: errorMsg,
+        }),
+        {
+          status: 503,
+          statusText: "Service Unavailable",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+    }
+  }
 
   // If this is a known CORS problematic URL, return a mock error response
   // instead of making the request
@@ -65,7 +104,8 @@ export const fetchWithCORSHandling = async (
     // Check if we got a CORS error
     if (
       !response.ok &&
-      (response.status === 0 || response.headers.get("access-control-allow-headers") === null)
+      (response.status === 0 ||
+        response.headers.get("access-control-allow-headers") === null)
     ) {
       console.warn(`[CORS Error] Failed to fetch: ${urlStr}`, response);
       // Return a more user-friendly error response
@@ -87,18 +127,33 @@ export const fetchWithCORSHandling = async (
 
     return response;
   } catch (error) {
-    // If we get a TypeError (common for CORS errors), return a mock response
-    if (error instanceof TypeError && error.message.includes("Access-Control")) {
-      console.warn(`[CORS Error] CORS policy violation for: ${urlStr}`, error);
+    // Handle all TypeErrors gracefully (CORS, network, etc.)
+    if (error instanceof TypeError) {
+      const errorMsg = error.message;
+
+      // Determine if it's a CORS error or general network error
+      const isCORSError =
+        errorMsg.includes("Access-Control") || errorMsg.includes("CORS");
+      const isNetworkError =
+        errorMsg.includes("Failed to fetch") || errorMsg.includes("fetch");
+
+      const status = isCORSError ? 403 : 500;
+      const errorType = isCORSError ? "CORS Error" : "Network Error";
+
+      console.warn(`[${errorType}] ${errorType} for: ${urlStr}`, error);
+
       return new Response(
         JSON.stringify({
-          error: "CORS Error: Unable to access this resource",
+          error: isCORSError
+            ? "CORS Error: Unable to access this resource"
+            : "Network Error: Unable to reach this endpoint",
           url: urlStr,
-          details: error.message,
+          details: errorMsg,
+          type: errorType,
         }),
         {
-          status: 403,
-          statusText: "CORS Error",
+          status,
+          statusText: errorType,
           headers: {
             "Content-Type": "application/json",
           },
@@ -106,8 +161,24 @@ export const fetchWithCORSHandling = async (
       );
     }
 
-    // Re-throw other errors
-    throw error;
+    // For non-TypeError errors, return a generic error response instead of throwing
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    console.error(`[Fetch Interceptor] Unexpected error for ${urlStr}:`, error);
+
+    return new Response(
+      JSON.stringify({
+        error: "Request failed",
+        url: urlStr,
+        details: errorMsg,
+      }),
+      {
+        status: 500,
+        statusText: "Internal Server Error",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
   }
 };
 

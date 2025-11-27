@@ -3,6 +3,12 @@ import type {
   KnowledgeType,
 } from "../../client/echo/types/knowledge";
 import { generateEmbedding } from "./pinecone-service";
+import {
+  searchInternalKnowledge,
+  checkInternalKnowledgeHealth,
+  type KnowledgeSearchResult,
+  type KnowledgeSearchOptions as InternalSearchOptions,
+} from "./internal-knowledge-service";
 
 let PineconeClass: any = null;
 let pineconeClientInstance: any = null;
@@ -51,6 +57,12 @@ export interface KnowledgeSearchOptions {
   minConfidence?: number;
 }
 
+export interface KnowledgeSearchResultWithSource {
+  knowledge: AnyKnowledge;
+  similarity: number;
+  source: "internal" | "pinecone";
+}
+
 /**
  * Store knowledge in Pinecone with embeddings and retry logic
  */
@@ -71,7 +83,9 @@ export async function storeKnowledgeVector(
     const knowledgeText = buildKnowledgeText(knowledge);
 
     if (!knowledgeText || knowledgeText.trim().length === 0) {
-      console.warn(`[Knowledge] Skipping vector with empty text: ${knowledge.id}`);
+      console.warn(
+        `[Knowledge] Skipping vector with empty text: ${knowledge.id}`,
+      );
       return;
     }
 
@@ -124,13 +138,20 @@ export async function storeKnowledgeVector(
 export async function storeKnowledgeBatch(
   knowledgeItems: AnyKnowledge[],
   maxConcurrent = 5,
-): Promise<{ success: number; failed: number; errors: Array<{ id: string; error: string }> }> {
+): Promise<{
+  success: number;
+  failed: number;
+  errors: Array<{ id: string; error: string }>;
+}> {
   if (!PINECONE_API_KEY) {
     console.warn("[Knowledge] Pinecone API key not configured");
     return {
       success: 0,
       failed: knowledgeItems.length,
-      errors: knowledgeItems.map(item => ({ id: item.id, error: 'API key not configured' }))
+      errors: knowledgeItems.map((item) => ({
+        id: item.id,
+        error: "API key not configured",
+      })),
     };
   }
 
@@ -138,11 +159,17 @@ export async function storeKnowledgeBatch(
     return { success: 0, failed: 0, errors: [] };
   }
 
-  const results = { success: 0, failed: 0, errors: [] as Array<{ id: string; error: string }> };
+  const results = {
+    success: 0,
+    failed: 0,
+    errors: [] as Array<{ id: string; error: string }>,
+  };
   let running = 0;
   let completed = 0;
 
-  console.log(`[Knowledge] Starting batch storage of ${knowledgeItems.length} items with ${maxConcurrent} concurrent workers`);
+  console.log(
+    `[Knowledge] Starting batch storage of ${knowledgeItems.length} items with ${maxConcurrent} concurrent workers`,
+  );
 
   // Create a queue-based system for proper concurrency control
   const queue = [...knowledgeItems];
@@ -163,13 +190,18 @@ export async function storeKnowledgeBatch(
             completed++;
 
             if (completed % 10 === 0) {
-              console.log(`[Knowledge] Progress: ${completed}/${knowledgeItems.length} stored`);
+              console.log(
+                `[Knowledge] Progress: ${completed}/${knowledgeItems.length} stored`,
+              );
             }
           } catch (error) {
-            const errorMsg = error instanceof Error ? error.message : String(error);
+            const errorMsg =
+              error instanceof Error ? error.message : String(error);
             results.failed++;
             results.errors.push({ id: knowledge.id, error: errorMsg });
-            console.error(`[Knowledge] Failed to store ${knowledge.id}: ${errorMsg}`);
+            console.error(
+              `[Knowledge] Failed to store ${knowledge.id}: ${errorMsg}`,
+            );
           } finally {
             running--;
           }
@@ -186,7 +218,9 @@ export async function storeKnowledgeBatch(
   );
 
   if (results.failed > 0) {
-    console.warn(`[Knowledge] ${results.failed} items failed to store. Errors: ${JSON.stringify(results.errors.slice(0, 5))}`);
+    console.warn(
+      `[Knowledge] ${results.failed} items failed to store. Errors: ${JSON.stringify(results.errors.slice(0, 5))}`,
+    );
   }
 
   return results;
@@ -194,17 +228,84 @@ export async function storeKnowledgeBatch(
 
 /**
  * Search knowledge by query text
+ * Prioritizes internal pgvector storage over Pinecone for cost efficiency
+ * Falls back to Pinecone if internal search returns no results or low-quality results
+ * Requires minimum 0.5 (50%) similarity threshold to use internal results
+ * Returns results with source information (internal vs pinecone)
  */
 export async function searchKnowledge(
   queryText: string,
   options: KnowledgeSearchOptions = {},
-): Promise<Array<{ knowledge: AnyKnowledge; similarity: number }>> {
-  if (!PINECONE_API_KEY) {
-    console.warn("Pinecone API key not configured");
-    return [];
-  }
-
+): Promise<
+  Array<{
+    knowledge: AnyKnowledge;
+    similarity: number;
+    source: "internal" | "pinecone";
+  }>
+> {
   try {
+    // Step 1: Try internal knowledge first (pgvector)
+    console.log("[Knowledge Search] Attempting internal search first...");
+
+    const internalResults = await searchInternalKnowledge(queryText, {
+      topK: options.topK || 10,
+      sourceType: options.sourceType as any,
+      domain: options.domain,
+      minConfidence: options.minConfidence,
+    });
+
+    // Minimum similarity threshold: 0.5 (50%)
+    // This ensures we don't return weak internal matches that block better Pinecone results
+    const MIN_SIMILARITY_THRESHOLD = 0.5;
+    const highQualityInternalResults = internalResults.filter(
+      (result) => result.similarity >= MIN_SIMILARITY_THRESHOLD,
+    );
+
+    if (highQualityInternalResults && highQualityInternalResults.length > 0) {
+      console.log(
+        `[Knowledge Search] Found ${highQualityInternalResults.length} high-quality results in internal storage (similarity >= ${MIN_SIMILARITY_THRESHOLD})`,
+      );
+
+      return highQualityInternalResults.map(
+        (result: KnowledgeSearchResult) => ({
+          knowledge: {
+            id: result.id,
+            title: result.title,
+            description: result.description || result.content,
+            content: result.content,
+            source: result.source,
+            type: result.sourceType === "pdf" ? "ingredient" : "technique",
+            domain: "culinary",
+            sourceType: result.sourceType,
+            tags: result.metadata?.tags || [],
+            createdAt: result.metadata?.createdAt || new Date().toISOString(),
+            confidence: result.metadata?.confidence || 0.85,
+            relatedKnowledge: result.metadata?.relatedTerms || [],
+          } as unknown as AnyKnowledge,
+          similarity: result.similarity,
+          source: "internal",
+        }),
+      );
+    }
+
+    if (internalResults && internalResults.length > 0) {
+      console.log(
+        `[Knowledge Search] Found ${internalResults.length} internal results, but all below quality threshold (${MIN_SIMILARITY_THRESHOLD}). Best match: ${(internalResults[0].similarity * 100).toFixed(0)}%. Falling back to Pinecone...`,
+      );
+    } else {
+      console.log(
+        "[Knowledge Search] No internal results found, falling back to Pinecone...",
+      );
+    }
+
+    // Step 2: Fallback to Pinecone if available and internal search yielded no high-quality results
+    if (!PINECONE_API_KEY) {
+      console.warn(
+        "[Knowledge Search] Pinecone API key not configured and no high-quality internal results found",
+      );
+      return [];
+    }
+
     const client = await getPineconeClient();
     const index = client.Index(KNOWLEDGE_INDEX);
 
@@ -229,6 +330,10 @@ export async function searchKnowledge(
       filter: Object.keys(filters).length > 0 ? filters : undefined,
     });
 
+    console.log(
+      `[Knowledge Search] Found ${results.matches.length} results in Pinecone`,
+    );
+
     return results.matches
       .filter((match) => {
         if (options.minConfidence) {
@@ -240,9 +345,12 @@ export async function searchKnowledge(
       .map((match) => ({
         knowledge: match.metadata as unknown as AnyKnowledge,
         similarity: match.score || 0,
+        source: "pinecone",
       }));
   } catch (error) {
-    console.error("Error searching knowledge:", error);
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    console.error("[Knowledge Search] Error during search:", errorMsg);
+    // Return empty array on error - no knowledge found but system working
     return [];
   }
 }

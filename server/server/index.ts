@@ -29,9 +29,7 @@ import echoKnowledgeIngestionRouter from "./routes/echo-knowledge-ingestion";
 import knowledgeDiagnosticsRouter from "./routes/knowledge-diagnostics";
 import trainingOrchestrationRouter from "./routes/training-orchestration";
 import { termUploaderRouter } from "./routes/term-uploader";
-import { termsVectorIngestionRouter } from "./routes/terms-vector-ingestion";
 import { knowledgeInitializer } from "./lib/knowledge-initialization";
-import { uploadedTermsStore } from "./lib/uploaded-terms-store";
 import {
   proxyRecipeImage as proxyImageOptimized,
   serveRecipeImage,
@@ -44,20 +42,6 @@ export function createServer() {
 
   // Initialize knowledge system on server startup
   setImmediate(() => {
-    // Load persisted uploaded terms
-    uploadedTermsStore
-      .initialize()
-      .then(() => {
-        console.log("[Server] Uploaded terms store initialized");
-      })
-      .catch((error) => {
-        console.error(
-          "[Server] Error initializing uploaded terms store:",
-          error,
-        );
-      });
-
-    // Initialize knowledge base
     knowledgeInitializer
       .initialize({
         autoInit: true,
@@ -73,8 +57,8 @@ export function createServer() {
 
   // Middleware
   app.use(cors());
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
 
   // Example API routes
   app.get("/api/ping", (_req, res) => {
@@ -168,32 +152,8 @@ export function createServer() {
   // Term Uploader - Upload culinary and financial terms from JSON files
   app.use("/api/knowledge", termUploaderRouter);
 
-  // Terms Vector Ingestion - Ingest uploaded terms to Supabase pgvector and Pinecone
-  app.use("/api/terms", termsVectorIngestionRouter);
-
   // Training Orchestration - Unified training management
   app.use("/api/training", trainingOrchestrationRouter);
-
-  // Global error handler - ensure all errors return JSON
-  app.use(
-    (
-      err: any,
-      req: express.Request,
-      res: express.Response,
-      next: express.NextFunction,
-    ) => {
-      const statusCode = err.status || err.statusCode || 500;
-      const errorMessage = err.message || "Internal server error";
-
-      console.error(`[Server Error] ${statusCode}: ${errorMessage}`, err);
-
-      res.status(statusCode).json({
-        success: false,
-        error: errorMessage,
-        details: process.env.NODE_ENV === "development" ? err.stack : undefined,
-      });
-    },
-  );
 
   return app;
 }

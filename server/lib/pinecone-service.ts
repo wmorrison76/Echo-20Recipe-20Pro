@@ -72,7 +72,7 @@ async function getPineconeClient() {
 }
 
 /**
- * Generate embeddings using OpenAI API (simulated for Pinecone compatibility)
+ * Generate embeddings using OpenAI API with simple retry logic
  */
 export async function generateEmbedding(text: string): Promise<number[]> {
   const openaiKey =
@@ -83,29 +83,48 @@ export async function generateEmbedding(text: string): Promise<number[]> {
     return generateMockEmbedding(text);
   }
 
-  try {
-    const response = await fetch("https://api.openai.com/v1/embeddings", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${openaiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        input: text,
-        model: "text-embedding-3-small",
-      }),
-    });
+  const maxRetries = 2;
+  let lastError: Error | null = null;
 
-    if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.statusText}`);
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await fetch("https://api.openai.com/v1/embeddings", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${openaiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          input: text,
+          model: "text-embedding-3-small",
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`OpenAI API error: ${response.status} ${errorText}`);
+      }
+
+      const data = (await response.json()) as EmbeddingResponse;
+      return data.data[0]?.embedding || generateMockEmbedding(text);
+    } catch (error) {
+      lastError = error as Error;
+
+      // Only log retries, don't flood logs with every failure
+      if (attempt < maxRetries) {
+        console.warn(
+          `[GenerateEmbedding] Attempt ${attempt}/${maxRetries} failed, retrying...`,
+        );
+        // Simple delay before retry
+        await new Promise((resolve) => setTimeout(resolve, 200));
+      }
     }
-
-    const data = (await response.json()) as EmbeddingResponse;
-    return data.data[0]?.embedding || generateMockEmbedding(text);
-  } catch (error) {
-    console.error("Error generating embedding:", error);
-    return generateMockEmbedding(text);
   }
+
+  console.warn(
+    `[GenerateEmbedding] All retries failed for text "${text.substring(0, 50)}...", using mock embedding`,
+  );
+  return generateMockEmbedding(text);
 }
 
 /**

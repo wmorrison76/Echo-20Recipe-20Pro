@@ -8,7 +8,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Send, Loader2, BookOpen, AlertCircle, Sparkles, Shield } from "lucide-react";
+import {
+  Send,
+  Loader2,
+  BookOpen,
+  AlertCircle,
+  Sparkles,
+  Shield,
+} from "lucide-react";
 import { toast } from "sonner";
 import {
   searchProcedures,
@@ -67,8 +74,8 @@ export default function AskEchoPanel() {
       if (match && match[1]) {
         let term = match[1]
           .trim()
-          .replace(/\s+/g, '-') // Replace spaces with hyphens for compound terms
-          .replace(/[^a-z\-]/g, ''); // Remove any non-alphanumeric except hyphens
+          .replace(/\s+/g, "-") // Replace spaces with hyphens for compound terms
+          .replace(/[^a-z\-]/g, ""); // Remove any non-alphanumeric except hyphens
 
         if (term.length > 1) {
           return term;
@@ -77,9 +84,34 @@ export default function AskEchoPanel() {
     }
 
     // Fallback: if no pattern matches, use first 1-2 words as term
-    const words = q.split(/\s+/).filter(w => w.length > 2 && !['what', 'does', 'mean', 'is', 'the', 'a', 'an', 'define', 'explain', 'tell', 'about', 'describe', 'how', 'do', 'you', 'we', 'this', 'that'].includes(w));
+    const words = q
+      .split(/\s+/)
+      .filter(
+        (w) =>
+          w.length > 2 &&
+          ![
+            "what",
+            "does",
+            "mean",
+            "is",
+            "the",
+            "a",
+            "an",
+            "define",
+            "explain",
+            "tell",
+            "about",
+            "describe",
+            "how",
+            "do",
+            "you",
+            "we",
+            "this",
+            "that",
+          ].includes(w),
+      );
     if (words.length > 0) {
-      return words[0].replace(/[?.,!]/g, '');
+      return words[0].replace(/[?.,!]/g, "");
     }
 
     return question.trim(); // Last resort: return original
@@ -111,65 +143,190 @@ export default function AskEchoPanel() {
       // Extract the actual culinary term from the question
       const extractedTerm = extractTermFromQuestion(userMessage);
 
-      // First, try searching the master dictionary with the extracted term
-      let dictionaryResult = await searchTerm(extractedTerm);
+      // Use the new search-and-learn endpoint
+      // This will check the knowledge base first, and if not found, query external LLMs
+      let searchResponse;
+      try {
+        const response = await fetch(
+          "/api/echo/hungry-learning/search-and-learn",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ term: extractedTerm }),
+          },
+        );
 
-      // If not found, try fuzzy search (handle typos and alternate spellings)
-      if (!dictionaryResult?.entry?.term) {
-        console.log(`[Echo] Exact match failed for "${extractedTerm}", trying fuzzy search...`);
-
-        // Get available terms for fuzzy matching
-        try {
-          const statsResponse = await fetch('/api/echo/hungry-learning/master-dictionary/statistics');
-          if (statsResponse.ok) {
-            const stats = await statsResponse.json();
-            // We'll use the categories to hint at available terms
-            // In a full implementation, we'd have an endpoint returning all terms
+        if (response.ok) {
+          try {
+            searchResponse = await response.json();
+          } catch (parseErr) {
+            console.error(
+              "[Echo] Error parsing search-and-learn response:",
+              parseErr,
+            );
+            // Fall back to traditional search
+            const dictionaryResult = await searchTerm(extractedTerm);
+            if (dictionaryResult?.entry?.term) {
+              searchResponse = {
+                status: "success",
+                entry: dictionaryResult.entry,
+                message: dictionaryResult.entry.term,
+              };
+            }
           }
-        } catch (err) {
-          console.warn('[Echo] Could not get available terms for fuzzy search');
+        } else {
+          // If search-and-learn returns error status, fall back to traditional search
+          console.log(
+            `[Echo] Search-and-learn returned error status ${response.status}, falling back to traditional search`,
+          );
+          try {
+            const dictionaryResult = await searchTerm(extractedTerm);
+            if (dictionaryResult?.entry?.term) {
+              searchResponse = {
+                status: "success",
+                entry: dictionaryResult.entry,
+                message: dictionaryResult.entry.term,
+              };
+            }
+          } catch (fallbackErr) {
+            console.error("[Echo] Fallback search also failed:", fallbackErr);
+          }
+        }
+      } catch (err) {
+        console.error("[Echo] Error calling search-and-learn:", err);
+        // Fall back to traditional search
+        try {
+          const dictionaryResult = await searchTerm(extractedTerm);
+          if (dictionaryResult?.entry?.term) {
+            searchResponse = {
+              status: "success",
+              entry: dictionaryResult.entry,
+              message: dictionaryResult.entry.term,
+            };
+          }
+        } catch (fallbackErr) {
+          console.error("[Echo] Fallback search also failed:", fallbackErr);
         }
       }
 
-      if (dictionaryResult?.entry?.term) {
-        // Found in master dictionary
-        const term = dictionaryResult.entry.term;
-        let response = `📚 **${term.term}**\n\n`;
-        response += `**Definition:** ${term.definition}\n\n`;
+      // If we have a result from search-and-learn or traditional search
+      let dictionaryResult = searchResponse;
 
-        response += `**Usage:** ${term.usage.primary}`;
-        if (term.usage.secondary && term.usage.secondary.length > 0) {
-          response += `\n- Also used for: ${term.usage.secondary.join(', ')}`;
-        }
-        response += `\n\n`;
+      if (
+        dictionaryResult &&
+        dictionaryResult.status === "success" &&
+        dictionaryResult.entry
+      ) {
+        const source = dictionaryResult.source || "master-dictionary";
+        const entry = dictionaryResult.entry;
+        let response = "";
 
-        if (term.etymology) {
-          response += `**Etymology:** From ${term.etymology.origin}`;
-          if (term.etymology.originalWord) {
-            response += ` - "${term.etymology.originalWord}"`;
+        if (
+          source === "pinecone-pdf-library" ||
+          source === "internal-pdf-library"
+        ) {
+          // Format Pinecone/Internal PDF result
+          response = `📖 **${extractedTerm}**\n\n`;
+          response += `**Found in your knowledge library:**\n`;
+          const sourceFile =
+            entry.sourceFile || entry.source || "Unknown Source";
+          response += `Source: ${sourceFile}\n`;
+          const similarity =
+            entry.similarity !== undefined ? entry.similarity : 0;
+          response += `Match: ${(similarity * 100).toFixed(0)}%\n\n`;
+          response += `**Definition:** ${entry.definition || entry.content || "Information found in your knowledge"}\n\n`;
+
+          if (
+            entry.allResults &&
+            Array.isArray(entry.allResults) &&
+            entry.allResults.length > 1
+          ) {
+            response += `**Related information:**\n`;
+            entry.allResults.slice(1).forEach((result: any, idx: number) => {
+              if (result && result.definition) {
+                const relatedSim =
+                  result.similarity !== undefined ? result.similarity : 0;
+                response += `${idx + 1}. (${(relatedSim * 100).toFixed(0)}% match) ${(result.definition || "").substring(0, 100)}...\n`;
+              }
+            });
           }
-          if (term.etymology.meaning) {
-            response += ` meaning "${term.etymology.meaning}"`;
+        } else if (source === "external-llm-learning") {
+          // Format externally learned result
+          const term = entry.term;
+          if (term && typeof term === "object") {
+            response = `🌐 **${term.term || extractedTerm}**\n\n`;
+            response += `**Definition:** ${term.definition || "Definition pending"}\n\n`;
+            response += `**Source:** Learned from external knowledge (OpenAI)\n`;
+            const confidence = term.confidence || 0.85;
+            response += `**Confidence:** ${(confidence * 100).toFixed(0)}%\n`;
+          } else {
+            response = `🌐 **${extractedTerm}**\n\n`;
+            response += `**Definition:** ${entry.definition || "Information found"}\n\n`;
+            response += `**Source:** Learned from external knowledge\n`;
           }
-          response += `\n\n`;
-        }
+        } else {
+          // Format master dictionary result
+          const term = entry.term;
 
-        if (term.applications) {
-          response += `**Applications:** ${term.applications.primary}\n`;
-          if (term.applications.examples && term.applications.examples.length > 0) {
-            response += `- Examples: ${term.applications.examples.join(', ')}\n`;
+          // Safety check - ensure term is an object
+          if (term && typeof term === "object") {
+            response = `📚 **${term.term || extractedTerm}**\n\n`;
+            response += `**Definition:** ${term.definition || "No definition available"}\n\n`;
+
+            if (term.usage && term.usage.primary) {
+              response += `**Usage:** ${term.usage.primary}`;
+              if (term.usage.secondary && term.usage.secondary.length > 0) {
+                response += `\n- Also used for: ${term.usage.secondary.join(", ")}`;
+              }
+              response += `\n\n`;
+            }
+
+            if (term.etymology && term.etymology.origin) {
+              response += `**Etymology:** From ${term.etymology.origin}`;
+              if (term.etymology.originalWord) {
+                response += ` - "${term.etymology.originalWord}"`;
+              }
+              if (term.etymology.meaning) {
+                response += ` meaning "${term.etymology.meaning}"`;
+              }
+              response += `\n\n`;
+            }
+
+            if (term.applications && term.applications.primary) {
+              response += `**Applications:** ${term.applications.primary}\n`;
+              if (
+                term.applications.examples &&
+                term.applications.examples.length > 0
+              ) {
+                response += `- Examples: ${term.applications.examples.join(", ")}\n`;
+              }
+              if (
+                term.applications.dishes &&
+                term.applications.dishes.length > 0
+              ) {
+                response += `- Used in: ${term.applications.dishes.join(", ")}\n`;
+              }
+              response += "\n";
+            }
+
+            if (term.relatedTerms && term.relatedTerms.length > 0) {
+              response += `**Related terms:** ${term.relatedTerms.join(", ")}\n`;
+            }
+
+            const masteryLevel = term.masteryLevel || "intermediate";
+            const confidence = term.confidence || 0.85;
+            response += `\n✨ **Mastery Level:** ${masteryLevel} | **Confidence:** ${(confidence * 100).toFixed(0)}%`;
+          } else {
+            // Fallback if term structure is unexpected
+            response = `📚 **${extractedTerm}**\n\n`;
+            response += `**Definition:** ${entry.definition || "Information found"}\n\n`;
+            if (entry.content) {
+              response += `**Content:** ${entry.content}\n`;
+            }
           }
-          if (term.applications.dishes && term.applications.dishes.length > 0) {
-            response += `- Used in: ${term.applications.dishes.join(', ')}\n`;
-          }
-          response += '\n';
         }
-
-        if (term.relatedTerms && term.relatedTerms.length > 0) {
-          response += `**Related terms:** ${term.relatedTerms.join(', ')}\n`;
-        }
-
-        response += `\n✨ **Mastery Level:** ${term.masteryLevel} | **Confidence:** ${(term.confidence * 100).toFixed(0)}%`;
 
         setMessages((prev) => [
           ...prev,
@@ -181,19 +338,27 @@ export default function AskEchoPanel() {
         ]);
       } else {
         // Not found in master dictionary, try searching all knowledge first
-        const allKnowledgeResults = await searchAllKnowledge(extractedTerm);
+        let allKnowledgeResults;
+        try {
+          allKnowledgeResults = await searchAllKnowledge(extractedTerm);
+        } catch (err) {
+          console.error("[Echo] Error calling searchAllKnowledge:", err);
+          allKnowledgeResults = null;
+        }
 
         // If found in other knowledge sources, use that
-        if (allKnowledgeResults && allKnowledgeResults.results &&
-            (allKnowledgeResults.results.masterDictionary?.length > 0 ||
-             allKnowledgeResults.results.terminology?.length > 0 ||
-             allKnowledgeResults.results.hospitality?.length > 0)) {
-
+        if (
+          allKnowledgeResults &&
+          allKnowledgeResults.results &&
+          (allKnowledgeResults.results.masterDictionary?.length > 0 ||
+            allKnowledgeResults.results.terminology?.length > 0 ||
+            allKnowledgeResults.results.hospitality?.length > 0)
+        ) {
           let response = `✨ I was able to research and find information about **${extractedTerm}**:\n\n`;
 
           if (allKnowledgeResults.results.masterDictionary?.length > 0) {
             const term = allKnowledgeResults.results.masterDictionary[0];
-            response += `📚 **Definition:** ${term.definition || 'A culinary technique or ingredient'}\n\n`;
+            response += `📚 **Definition:** ${term.definition || "A culinary technique or ingredient"}\n\n`;
             if (term.usage) {
               response += `**Usage:** ${term.usage}\n\n`;
             }
@@ -201,12 +366,12 @@ export default function AskEchoPanel() {
 
           if (allKnowledgeResults.results.terminology?.length > 0) {
             const term = allKnowledgeResults.results.terminology[0];
-            response += `📖 **From Terminology:** ${term.definition || ''}\n\n`;
+            response += `📖 **From Terminology:** ${term.definition || ""}\n\n`;
           }
 
           if (allKnowledgeResults.results.hospitality?.length > 0) {
             const item = allKnowledgeResults.results.hospitality[0];
-            response += `🏨 **From Hospitality Knowledge:** ${item.description || ''}\n\n`;
+            response += `🏨 **From Hospitality Knowledge:** ${item.description || ""}\n\n`;
           }
 
           response += `💡 Tip: Ask me "How do I use ${extractedTerm}?" or "Tell me more about ${extractedTerm}" for additional details.`;
@@ -221,10 +386,19 @@ export default function AskEchoPanel() {
           ]);
         } else {
           // Not found in knowledge, try procedures with original message
-          const results = await searchProcedures(userMessage, 3);
+          let results;
+          try {
+            results = await searchProcedures(userMessage, 3);
+          } catch (err) {
+            console.error("[Echo] Error calling searchProcedures:", err);
+            results = [];
+          }
 
           if (results.length === 0) {
-            const termHint = extractedTerm !== userMessage ? `\n\n💡 I searched for "${extractedTerm}" but didn't find it in my knowledge base yet.` : '';
+            const termHint =
+              extractedTerm !== userMessage
+                ? `\n\n💡 I searched for "${extractedTerm}" but didn't find it in my knowledge base yet.`
+                : "";
 
             setMessages((prev) => [
               ...prev,

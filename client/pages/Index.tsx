@@ -2,7 +2,7 @@ import RecipeSearchSection from "./sections/RecipeSearch";
 import GallerySection from "./sections/Gallery";
 import AddRecipeSection from "./sections/AddRecipe";
 import SaasRoadmapSection from "./sections/SaasRoadmap";
-import { EchoTrainingDashboard } from "@/components/panels/EchoTrainingDashboard";
+import { EchoTrainingCenter } from "@/components/panels/EchoTrainingCenter";
 import InventorySuppliesWorkspace from "./sections/saas/InventorySuppliesWorkspace";
 import NutritionAllergensWorkspace from "./sections/saas/NutritionAllergensWorkspace";
 import HaccpComplianceWorkspace from "./sections/saas/HaccpComplianceWorkspace";
@@ -25,7 +25,6 @@ import MenuDesignStudioWrapper from "@/components/MenuDesignStudio/MenuDesignStu
 const MenuDesignStudioSection = MenuDesignStudioWrapper;
 import ProductionSection from "./sections/Production";
 import PurchasingReceivingSection from "./sections/purchasing-receiving";
-import RDLabsWorkspace from "./sections/RDLabsWorkspace";
 import TopTabs from "@/components/TopTabs";
 import SubtleBottomGlow from "@/components/SubtleBottomGlow";
 import TronBackdrop from "@/components/TronBackdrop";
@@ -94,7 +93,7 @@ function IndexContent() {
       <CommandPalette />
       <EchoFloatingButton />
       <div
-        className="relative min-h-screen text-foreground"
+        className="relative min-h-screen text-foreground flex flex-col"
         style={{
           paddingLeft: "calc(var(--sidebar-offset, 88px) - 0.35rem)",
         }}
@@ -180,11 +179,11 @@ function IndexContent() {
             </Button>
           </div>
         </header>
-        <main className="w-full py-2">
+        <main className="w-full flex-1 flex flex-col overflow-hidden">
           <Tabs
             value={active}
             onValueChange={handleTabChange}
-            className="w-full"
+            className="w-full flex flex-col"
           >
             <TabsContent value="search">
               <ErrorBoundaryWrapper section="Recipe Search">
@@ -279,19 +278,14 @@ function IndexContent() {
               <PurchasingReceivingSection />
             </TabsContent>
             <TabsContent
-              value="rdlabs"
-              className="h-[calc(100vh-200px)] flex flex-col"
+              value="echo-training"
+              className="mt-0 p-0 data-[state=active]:flex data-[state=active]:flex-col"
             >
-              <ErrorBoundaryWrapper section="R&D Labs">
-                <RDLabsWorkspace />
-              </ErrorBoundaryWrapper>
-            </TabsContent>
-            <TabsContent value="echo-training" className="py-4">
-              <ErrorBoundaryWrapper section="Echo Training">
-                <div className="container mx-auto px-3">
-                  <EchoTrainingDashboard />
-                </div>
-              </ErrorBoundaryWrapper>
+              <div className="mx-auto w-full max-w-[1400px] space-y-3 px-4 py-3 sm:px-6 lg:px-8">
+                <ErrorBoundaryWrapper section="Echo Training">
+                  <EchoTrainingCenter />
+                </ErrorBoundaryWrapper>
+              </div>
             </TabsContent>
           </Tabs>
         </main>
