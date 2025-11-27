@@ -186,8 +186,6 @@ class KnowledgeIngestionController {
           }
         }
 
-        // Small delay between batches to avoid overload
-        await new Promise((resolve) => setTimeout(resolve, 100));
       }
 
       this.updateProgress({

@@ -332,10 +332,6 @@ export async function storeTrainingDataToPinecone(
         });
         successCount++;
 
-        // Small delay between embeddings to avoid rate limiting
-        if (idx % 10 === 0 && idx > 0) {
-          await new Promise((resolve) => setTimeout(resolve, 50));
-        }
       } catch (embedError) {
         console.warn(
           `[PineconeVerification] Failed to embed ${item.title}:`,
@@ -354,10 +350,6 @@ export async function storeTrainingDataToPinecone(
         );
         await index.upsert(batch);
 
-        // Small delay between batches to avoid rate limiting
-        if (i + batchSize < vectors.length) {
-          await new Promise((resolve) => setTimeout(resolve, 100));
-        }
       }
     }
 
