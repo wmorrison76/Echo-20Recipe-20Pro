@@ -1,0 +1,383 @@
+import { Router, Request, Response } from "express";
+import { createClient } from "@supabase/supabase-js";
+import crypto from "crypto";
+
+const router = Router();
+
+const supabaseUrl = process.env.SUPABASE_URL || "";
+const supabaseKey = process.env.SUPABASE_ANON_KEY || "";
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Generate QR code data for label
+function generateQRData(
+  recipeName: string,
+  allergens: string[],
+  chefName?: string,
+  timestamp?: number
+): string {
+  const printedAt = timestamp ? new Date(timestamp).toISOString().split("T")[0] : new Date().toISOString().split("T")[0];
+  const allergenStr = allergens.join(",");
+  const chef = chefName ? `|${chefName}` : "";
+  return `RECIPE:${recipeName}|ALLERGEN:${allergenStr}|DATE:${printedAt}${chef}`;
+}
+
+// Generate device token
+function generateDeviceToken(): string {
+  return crypto.randomBytes(32).toString("hex");
+}
+
+// Generate session token
+function generateSessionToken(): string {
+  return crypto.randomBytes(32).toString("hex");
+}
+
+// POST /api/tablet/setup - Initial device setup (admin only)
+router.post("/setup", async (req: Request, res: Response) => {
+  try {
+    const { adminToken, deviceName, credentialMode, includeChefName, outlet } = req.body;
+
+    if (!adminToken || !deviceName || !credentialMode) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const deviceId = crypto.randomBytes(16).toString("hex");
+    const deviceToken = generateDeviceToken();
+
+    const { data, error } = await supabase.from("tablet_configs").insert({
+      device_id: deviceId,
+      device_name: deviceName,
+      credential_mode: credentialMode,
+      include_chef_name: includeChefName || false,
+      enabled: true,
+    });
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({
+      success: true,
+      deviceId,
+      deviceToken,
+      setupUrl: `https://app.example.com/tablet/labels?device=${deviceId}&token=${deviceToken}`,
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST /api/tablet/validate-token - Validate device token
+router.post("/validate-token", async (req: Request, res: Response) => {
+  try {
+    const { deviceToken } = req.body;
+
+    if (!deviceToken) {
+      return res.status(400).json({ error: "Missing device token" });
+    }
+
+    const { data: sessions, error } = await supabase
+      .from("tablet_sessions")
+      .select("*, tablet_configs(*)")
+      .eq("device_token", deviceToken)
+      .single();
+
+    if (error || !sessions) {
+      return res.status(401).json({ error: "Invalid device token" });
+    }
+
+    if (new Date(sessions.expires_at) < new Date()) {
+      return res.status(401).json({ error: "Session expired" });
+    }
+
+    const config = sessions.tablet_configs;
+    if (!config.enabled) {
+      return res.status(403).json({ error: "Device disabled" });
+    }
+
+    // Update last activity
+    await supabase
+      .from("tablet_sessions")
+      .update({ last_activity: new Date().toISOString() })
+      .eq("id", sessions.id);
+
+    res.json({
+      valid: true,
+      sessionToken: sessions.session_token,
+      credentialMode: config.credential_mode,
+      includeChefName: config.include_chef_name,
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST /api/tablet/login - Employee ID login
+router.post("/login", async (req: Request, res: Response) => {
+  try {
+    const { deviceToken, employeeId } = req.body;
+
+    if (!deviceToken || !employeeId) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const { data: config, error } = await supabase
+      .from("tablet_configs")
+      .select("*")
+      .eq("device_id", deviceToken)
+      .single();
+
+    if (error || !config) {
+      return res.status(401).json({ error: "Invalid device" });
+    }
+
+    const sessionToken = generateSessionToken();
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+
+    const { error: insertError } = await supabase.from("tablet_sessions").insert({
+      device_token: deviceToken,
+      session_token: sessionToken,
+      tablet_config_id: config.id,
+      employee_id: employeeId,
+      expires_at: expiresAt,
+    });
+
+    if (insertError) {
+      return res.status(500).json({ error: insertError.message });
+    }
+
+    res.json({
+      success: true,
+      sessionToken,
+      expiresAt,
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET /api/tablet/recipes - Get recipes for tablet (read-only)
+router.get("/recipes", async (req: Request, res: Response) => {
+  try {
+    const { search, limit = "50" } = req.query;
+
+    let query = supabase.from("user_recipes").select("id, title, description, imageNames, extra");
+
+    if (search && typeof search === "string") {
+      query = query.ilike("title", `%${search}%`);
+    }
+
+    const { data: recipes, error } = await query
+      .eq("published", true)
+      .limit(Number(limit))
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    const formattedRecipes = recipes.map((r: any) => ({
+      id: r.id,
+      name: r.title,
+      description: r.description,
+      image: r.imageNames?.[0],
+      extra: r.extra,
+      portionSize: r.extra?.portionSize,
+    }));
+
+    res.json(formattedRecipes);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET /api/tablet/recipes/:id - Get single recipe details
+router.get("/recipes/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const { data: recipe, error } = await supabase
+      .from("user_recipes")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !recipe) {
+      return res.status(404).json({ error: "Recipe not found" });
+    }
+
+    res.json({
+      id: recipe.id,
+      name: recipe.title,
+      description: recipe.description,
+      image: recipe.imageNames?.[0],
+      allergens: recipe.extra?.serverNotes?.allergens || [],
+      ingredients: recipe.ingredients || [],
+      instructions: recipe.instructions?.[0] || "",
+      cookTime: recipe.extra?.serverNotes?.cookTime,
+      prepTime: recipe.extra?.serverNotes?.prepTime,
+      portionSize: recipe.extra?.portionSize,
+      createdBy: recipe.extra?.serverNotes?.createdBy,
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST /api/tablet/print-label - Log print action
+router.post("/print-label", async (req: Request, res: Response) => {
+  try {
+    const {
+      deviceToken,
+      recipeId,
+      recipeName,
+      allergens,
+      portionSize,
+      portionMultiplier,
+      employeeId,
+      chefName,
+    } = req.body;
+
+    if (!deviceToken || !recipeId || !recipeName) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const { data: config } = await supabase
+      .from("tablet_configs")
+      .select("*")
+      .eq("device_id", deviceToken)
+      .single();
+
+    if (!config) {
+      return res.status(401).json({ error: "Invalid device" });
+    }
+
+    const bornOn = new Date().toISOString().split("T")[0];
+    const expiresOn = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+    const qrData = generateQRData(recipeName, allergens || [], chefName);
+    const totalPortions = portionSize && portionMultiplier ? `${portionMultiplier} x ${portionSize}` : undefined;
+
+    const { error } = await supabase.from("tablet_print_history").insert({
+      device_id: deviceToken,
+      device_name: config.device_name,
+      recipe_id: recipeId,
+      recipe_name: recipeName,
+      born_on: bornOn,
+      expires_on: expiresOn,
+      portion_size: portionSize,
+      portion_multiplier: portionMultiplier || 1,
+      total_portions: totalPortions,
+      allergens: allergens || [],
+      employee_id: employeeId,
+      chef_name: chefName,
+      qr_code_data: qrData,
+      printed_at: new Date().toISOString(),
+    });
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({
+      success: true,
+      qrData,
+      bornOn,
+      expiresOn,
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET /api/tablet/compliance-report - Get print history for audit
+router.get("/compliance-report", async (req: Request, res: Response) => {
+  try {
+    const { deviceId, startDate, endDate, limit = "100" } = req.query;
+
+    let query = supabase.from("tablet_compliance_report").select("*");
+
+    if (deviceId) {
+      query = query.eq("device_id", deviceId);
+    }
+
+    if (startDate) {
+      query = query.gte("print_date", startDate);
+    }
+
+    if (endDate) {
+      query = query.lte("print_date", endDate);
+    }
+
+    const { data: report, error } = await query
+      .order("printed_at", { ascending: false })
+      .limit(Number(limit));
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json(report);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET /api/tablet/settings - Get current tablet settings
+router.get("/settings", async (req: Request, res: Response) => {
+  try {
+    const { deviceToken } = req.query;
+
+    if (!deviceToken) {
+      return res.status(400).json({ error: "Missing device token" });
+    }
+
+    const { data: config } = await supabase
+      .from("tablet_configs")
+      .select("*")
+      .eq("device_id", String(deviceToken))
+      .single();
+
+    if (!config) {
+      return res.status(404).json({ error: "Device not found" });
+    }
+
+    res.json({
+      credentialMode: config.credential_mode,
+      includeChefName: config.include_chef_name,
+      enabled: config.enabled,
+      deviceName: config.device_name,
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// PUT /api/tablet/settings - Update tablet settings (admin only)
+router.put("/settings", async (req: Request, res: Response) => {
+  try {
+    const { deviceToken, credentialMode, includeChefName, enabled } = req.body;
+
+    if (!deviceToken) {
+      return res.status(400).json({ error: "Missing device token" });
+    }
+
+    const { error } = await supabase
+      .from("tablet_configs")
+      .update({
+        credential_mode: credentialMode,
+        include_chef_name: includeChefName,
+        enabled,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("device_id", deviceToken);
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({ success: true });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+export default router;
