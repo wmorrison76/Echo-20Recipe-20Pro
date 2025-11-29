@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { generateQRCodeString, getQRCodeImageUrl, formatLabelHTML } from "@/lib/qr-code-generator";
 import { useTabletServiceWorker } from "@/hooks/use-tablet-sw";
+import { TabletNav } from "@/components/TabletNav";
 
 interface Recipe {
   id: string;
