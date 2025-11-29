@@ -246,7 +246,7 @@ export default function TabletInventoryTransfer() {
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Inventory Transfer</h1>
             <p className="text-sm text-slate-600 mt-1">
-              Inter-department transfers • {isOnline ? "🟢 Online" : "🔴 Offline Mode"}
+              Inter-department transfers • {isOnline ? "🟢 Online" : "�� Offline Mode"}
             </p>
           </div>
           <div className="text-right">
@@ -463,33 +463,38 @@ export default function TabletInventoryTransfer() {
         {/* Pending Transfers */}
         {pendingTransfers.length > 0 && (
           <div>
-            <h2 className="text-lg font-semibold text-slate-900 mb-3">Pending Requests</h2>
+            <h2 className="text-lg font-semibold text-slate-900 mb-3 flex items-center gap-2">
+              <div className="w-1 h-6 bg-amber-500 rounded-full"></div>
+              Pending Requests ({pendingTransfers.length})
+            </h2>
             <div className="space-y-3">
               {pendingTransfers.map((transfer) => (
-                <Card key={transfer.id} className="bg-white border-l-4 border-l-amber-500">
+                <Card key={transfer.id} className="bg-white shadow-sm hover:shadow-md border border-amber-200/50 transition-all">
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <h3 className="font-semibold text-slate-900">{transfer.itemName}</h3>
-                        <div className="text-sm text-slate-600 mt-2">
-                          <p className="font-medium">
+                        <div className="text-sm text-slate-600 mt-3 space-y-1">
+                          <p className="font-medium text-amber-700">
                             {transfer.quantity} {transfer.unit}
                           </p>
-                          <p className="text-slate-500 mt-1">
+                          <p className="text-slate-500 text-xs flex items-center gap-2">
+                            <span className="inline-block w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                             {transfer.fromDepartment} → {transfer.toDepartment}
                           </p>
-                          <p className="text-slate-500 text-xs mt-1">
-                            Requested by {transfer.requestedBy}
+                          <p className="text-slate-500 text-xs">
+                            Requested by <span className="font-medium">{transfer.requestedBy}</span>
                             {transfer.notes && ` • ${transfer.notes}`}
                           </p>
-                          <p className="text-slate-400 text-xs mt-1">
+                          <p className="text-slate-400 text-xs pt-1">
                             {new Date(transfer.timestamp).toLocaleTimeString()}
                           </p>
                         </div>
                       </div>
                       <button
                         onClick={() => handleRemoveTransfer(transfer.id)}
-                        className="ml-4 text-red-500 hover:text-red-700"
+                        className="ml-4 text-slate-400 hover:text-red-600 transition-colors"
+                        title="Remove transfer"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
