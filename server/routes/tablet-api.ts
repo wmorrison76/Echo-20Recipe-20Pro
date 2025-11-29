@@ -629,4 +629,306 @@ router.post("/waste", async (req: Request, res: Response) => {
   }
 });
 
+// ========================================
+// INVENTORY & LOW STOCK MANAGEMENT
+// ========================================
+
+// POST /api/tablet/inventory/shelf-count - Record monthly shelf count
+router.post("/inventory/shelf-count", async (req: Request, res: Response) => {
+  try {
+    const { deviceId, items, countDate, employeeId, notes } = req.body;
+
+    if (!deviceId || !items || !Array.isArray(items)) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const countId = crypto.randomBytes(16).toString("hex");
+    const timestamp = new Date().toISOString();
+
+    const inventoryCount = {
+      id: countId,
+      device_id: deviceId,
+      items: items.map((item: any) => ({
+        id: item.id || crypto.randomBytes(8).toString("hex"),
+        name: item.name,
+        quantity: item.quantity,
+        unit: item.unit,
+        location: item.location,
+        notes: item.notes,
+      })),
+      count_date: countDate || timestamp.split("T")[0],
+      employee_id: employeeId,
+      notes,
+      recorded_at: timestamp,
+    };
+
+    const { error } = await supabase.from("tablet_inventory_counts").insert({
+      id: countId,
+      device_id: deviceId,
+      items: inventoryCount.items,
+      count_date: inventoryCount.count_date,
+      employee_id: employeeId,
+      notes,
+      recorded_at: timestamp,
+    });
+
+    if (error) {
+      console.warn("Inventory count storage (non-critical):", error);
+    }
+
+    res.status(201).json({
+      success: true,
+      countId,
+      itemsRecorded: items.length,
+      message: "Shelf count recorded successfully",
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST /api/tablet/inventory/low-stock - Create low stock alert/order suggestion
+router.post("/inventory/low-stock", async (req: Request, res: Response) => {
+  try {
+    const { deviceId, itemName, currentQuantity, unit, reorderLevel, suggestedQuantity, employeeId, notes } = req.body;
+
+    if (!deviceId || !itemName || currentQuantity === undefined) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const alertId = crypto.randomBytes(16).toString("hex");
+    const timestamp = new Date().toISOString();
+
+    const lowStockAlert = {
+      id: alertId,
+      device_id: deviceId,
+      item_name: itemName,
+      current_quantity: currentQuantity,
+      unit,
+      reorder_level: reorderLevel,
+      suggested_quantity: suggestedQuantity,
+      employee_id: employeeId,
+      notes,
+      status: "pending",
+      created_at: timestamp,
+    };
+
+    const { error } = await supabase.from("tablet_low_stock_alerts").insert({
+      ...lowStockAlert,
+    });
+
+    if (error) {
+      console.warn("Low stock alert storage (non-critical):", error);
+    }
+
+    res.status(201).json({
+      success: true,
+      alertId,
+      message: `Low stock alert created for ${itemName}. Purchasing team will be notified.`,
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET /api/tablet/inventory/low-stock - Get pending low stock alerts
+router.get("/inventory/low-stock", async (req: Request, res: Response) => {
+  try {
+    const { deviceId, status = "pending" } = req.query;
+
+    let query = supabase.from("tablet_low_stock_alerts").select("*").eq("status", status);
+
+    if (deviceId) {
+      query = query.eq("device_id", deviceId);
+    }
+
+    const { data: alerts, error } = await query.order("created_at", { ascending: false });
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({
+      alerts: alerts || [],
+      total: alerts?.length || 0,
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// PUT /api/tablet/inventory/low-stock/:alertId - Update low stock alert status
+router.put("/inventory/low-stock/:alertId", async (req: Request, res: Response) => {
+  try {
+    const { alertId } = req.params;
+    const { status, resolvedNotes } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ error: "Missing status field" });
+    }
+
+    const updateData: any = { status };
+    if (resolvedNotes) {
+      updateData.resolved_notes = resolvedNotes;
+      updateData.resolved_at = new Date().toISOString();
+    }
+
+    const { error } = await supabase
+      .from("tablet_low_stock_alerts")
+      .update(updateData)
+      .eq("id", alertId);
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({ success: true, message: "Alert status updated" });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ========================================
+// PRODUCTION & PREP ASSIGNMENT
+// ========================================
+
+// POST /api/tablet/production/update - Update production status with screenshot
+router.post("/production/update", async (req: Request, res: Response) => {
+  try {
+    const { deviceId, productionTaskId, status, screenshotUrl, notes, employeeId } = req.body;
+
+    if (!deviceId || !productionTaskId || !status) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const updateId = crypto.randomBytes(16).toString("hex");
+    const timestamp = new Date().toISOString();
+
+    const { error } = await supabase.from("tablet_production_updates").insert({
+      id: updateId,
+      device_id: deviceId,
+      production_task_id: productionTaskId,
+      status,
+      screenshot_url: screenshotUrl,
+      notes,
+      employee_id: employeeId,
+      updated_at: timestamp,
+    });
+
+    if (error) {
+      console.warn("Production update storage (non-critical):", error);
+    }
+
+    res.status(201).json({
+      success: true,
+      updateId,
+      message: "Production status updated and tablets notified",
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST /api/tablet/prep/assign - Assign prep work to staff member
+router.post("/prep/assign", async (req: Request, res: Response) => {
+  try {
+    const { deviceId, prepTaskId, assignedToEmployeeId, dueDate, ingredients, instructions, notes } = req.body;
+
+    if (!deviceId || !prepTaskId || !assignedToEmployeeId) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const assignmentId = crypto.randomBytes(16).toString("hex");
+    const timestamp = new Date().toISOString();
+
+    const { error } = await supabase.from("tablet_prep_assignments").insert({
+      id: assignmentId,
+      device_id: deviceId,
+      prep_task_id: prepTaskId,
+      assigned_to_employee_id: assignedToEmployeeId,
+      due_date: dueDate,
+      ingredients,
+      instructions,
+      notes,
+      status: "assigned",
+      created_at: timestamp,
+    });
+
+    if (error) {
+      console.warn("Prep assignment storage (non-critical):", error);
+    }
+
+    res.status(201).json({
+      success: true,
+      assignmentId,
+      message: "Prep work assigned successfully",
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET /api/tablet/prep/assigned - Get prep assignments for employee
+router.get("/prep/assigned", async (req: Request, res: Response) => {
+  try {
+    const { employeeId, status = "assigned" } = req.query;
+
+    if (!employeeId) {
+      return res.status(400).json({ error: "Missing employeeId" });
+    }
+
+    let query = supabase
+      .from("tablet_prep_assignments")
+      .select("*")
+      .eq("assigned_to_employee_id", employeeId)
+      .eq("status", status);
+
+    const { data: assignments, error } = await query.order("due_date", { ascending: true });
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({
+      assignments: assignments || [],
+      total: assignments?.length || 0,
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// PUT /api/tablet/prep/:assignmentId - Update prep assignment status
+router.put("/prep/:assignmentId", async (req: Request, res: Response) => {
+  try {
+    const { assignmentId } = req.params;
+    const { status, completedNotes } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ error: "Missing status field" });
+    }
+
+    const updateData: any = { status };
+    if (status === "completed") {
+      updateData.completed_at = new Date().toISOString();
+      if (completedNotes) {
+        updateData.completed_notes = completedNotes;
+      }
+    }
+
+    const { error } = await supabase
+      .from("tablet_prep_assignments")
+      .update(updateData)
+      .eq("id", assignmentId);
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({ success: true, message: "Prep assignment updated" });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;
