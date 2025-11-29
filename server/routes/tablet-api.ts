@@ -380,4 +380,41 @@ router.put("/settings", async (req: Request, res: Response) => {
   }
 });
 
+// POST /api/tablet/waste - Record waste entry from tablet
+router.post("/waste", async (req: Request, res: Response) => {
+  try {
+    const { category, itemName, quantity, unit, costPerUnit, reason, employeeId } = req.body;
+
+    if (!itemName || !quantity || !unit) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    // Store waste entry (you can save to a database table if needed)
+    // For now, this logs the waste entry
+    const wasteEntry = {
+      id: crypto.randomBytes(16).toString("hex"),
+      category,
+      itemName,
+      quantity,
+      unit,
+      costPerUnit: costPerUnit || 0,
+      totalCost: quantity * (costPerUnit || 0),
+      reason,
+      employeeId,
+      timestamp: new Date().toISOString(),
+    };
+
+    // In a full implementation, you would save this to a database
+    console.log("[Tablet Waste Entry]", wasteEntry);
+
+    res.status(201).json({
+      success: true,
+      entryId: wasteEntry.id,
+      message: "Waste entry recorded",
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;
