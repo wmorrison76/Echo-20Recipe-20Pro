@@ -15,6 +15,211 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const APP_BASE_URL = process.env.APP_BASE_URL || "http://localhost:5173";
 
+// ========================================
+// DEVICE PAIRING & SETUP ROUTES
+// ========================================
+
+// POST /api/tablet/device/create - Admin creates new device pairing (generates QR)
+router.post("/device/create", async (req: Request, res: Response) => {
+  try {
+    const { deviceName, credentialMode, includeChefName } = req.body;
+
+    if (!deviceName || !credentialMode) {
+      return res.status(400).json({ error: "Missing required fields: deviceName, credentialMode" });
+    }
+
+    // Generate device credentials
+    const { deviceId, deviceToken } = generateDeviceCredentials();
+
+    // Generate pairing QR data
+    const qrData = generatePairingQRData(deviceId, deviceToken, APP_BASE_URL);
+
+    // Store device configuration in Supabase
+    const { data: device, error: dbError } = await supabase
+      .from("tablet_configs")
+      .insert({
+        device_id: deviceId,
+        device_name: deviceName,
+        device_token: deviceToken,
+        credential_mode: credentialMode,
+        include_chef_name: includeChefName || false,
+        enabled: true,
+      })
+      .select()
+      .single();
+
+    if (dbError) {
+      console.error("Database error:", dbError);
+      return res.status(500).json({ error: "Failed to create device: " + dbError.message });
+    }
+
+    // Generate QR code image URL
+    const qrCodeUrl = getQRCodeImageUrl(qrData.pairing_url, 400);
+
+    res.json({
+      success: true,
+      device: {
+        id: device.id,
+        device_id: deviceId,
+        device_name: deviceName,
+        created_at: device.created_at,
+      },
+      pairing: {
+        device_token: deviceToken,
+        pairing_url: qrData.pairing_url,
+        qr_code_url: qrCodeUrl,
+        setup_instructions: `Scan this QR code on the new tablet to automatically configure it for ${deviceName}.`,
+      },
+    });
+  } catch (error: any) {
+    console.error("Error creating device:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET /api/tablet/device/list - Get all registered devices (admin only)
+router.get("/device/list", async (req: Request, res: Response) => {
+  try {
+    const { data: devices, error } = await supabase
+      .from("tablet_configs")
+      .select("id, device_id, device_name, credential_mode, include_chef_name, enabled, created_at, updated_at")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({
+      devices: devices || [],
+      total: devices?.length || 0,
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST /api/tablet/device/register - Tablet scans QR code and registers (automatic setup)
+router.post("/device/register", async (req: Request, res: Response) => {
+  try {
+    const { deviceId, deviceToken, tabletInfo } = req.body;
+
+    if (!deviceId || !deviceToken) {
+      return res.status(400).json({ error: "Missing device credentials" });
+    }
+
+    // Verify device exists and token matches
+    const { data: device, error: lookupError } = await supabase
+      .from("tablet_configs")
+      .select("*")
+      .eq("device_id", deviceId)
+      .eq("device_token", deviceToken)
+      .single();
+
+    if (lookupError || !device) {
+      return res.status(401).json({ error: "Invalid device credentials" });
+    }
+
+    if (!device.enabled) {
+      return res.status(403).json({ error: "Device is disabled" });
+    }
+
+    // Create session token for this tablet
+    const sessionToken = crypto.randomBytes(32).toString("hex");
+    const expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(); // 1 year
+
+    // Update device with registration info and session
+    const { error: updateError } = await supabase
+      .from("tablet_configs")
+      .update({
+        session_token: sessionToken,
+        last_registered_at: new Date().toISOString(),
+        tablet_info: tabletInfo || {},
+      })
+      .eq("device_id", deviceId);
+
+    if (updateError) {
+      return res.status(500).json({ error: "Failed to register device: " + updateError.message });
+    }
+
+    // Store session
+    const { error: sessionError } = await supabase.from("tablet_sessions").insert({
+      device_id: deviceId,
+      session_token: sessionToken,
+      expires_at: expiresAt,
+      status: "active",
+    });
+
+    if (sessionError) {
+      console.warn("Session storage error (non-critical):", sessionError);
+    }
+
+    res.json({
+      success: true,
+      sessionToken,
+      deviceName: device.device_name,
+      credentialMode: device.credential_mode,
+      includeChefName: device.include_chef_name,
+      message: `Tablet registered successfully as "${device.device_name}"`,
+    });
+  } catch (error: any) {
+    console.error("Error registering device:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// PUT /api/tablet/device/:deviceId - Update device configuration
+router.put("/device/:deviceId", async (req: Request, res: Response) => {
+  try {
+    const { deviceId } = req.params;
+    const { deviceName, credentialMode, includeChefName, enabled } = req.body;
+
+    const updateData: any = {};
+    if (deviceName !== undefined) updateData.device_name = deviceName;
+    if (credentialMode !== undefined) updateData.credential_mode = credentialMode;
+    if (includeChefName !== undefined) updateData.include_chef_name = includeChefName;
+    if (enabled !== undefined) updateData.enabled = enabled;
+
+    updateData.updated_at = new Date().toISOString();
+
+    const { error } = await supabase
+      .from("tablet_configs")
+      .update(updateData)
+      .eq("device_id", deviceId);
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({ success: true, message: "Device updated successfully" });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// DELETE /api/tablet/device/:deviceId - Remove device
+router.delete("/device/:deviceId", async (req: Request, res: Response) => {
+  try {
+    const { deviceId } = req.params;
+
+    const { error } = await supabase
+      .from("tablet_configs")
+      .update({ enabled: false })
+      .eq("device_id", deviceId);
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({ success: true, message: "Device disabled successfully" });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ========================================
+// HELPER FUNCTIONS
+// ========================================
+
 // Generate QR code data for label
 function generateQRData(
   recipeName: string,
