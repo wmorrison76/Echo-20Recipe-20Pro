@@ -32,6 +32,8 @@ import {
   Clock,
   Trash2,
   CheckCircle2,
+  ChefHat,
+  Zap,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -95,7 +97,6 @@ export function TabletPrepAssignments({
     notes: "",
   });
 
-  // Load assignments
   useEffect(() => {
     loadAssignments();
   }, []);
@@ -104,7 +105,6 @@ export function TabletPrepAssignments({
     try {
       setIsLoading(true);
 
-      // Load all assignments (for admin view)
       const allResponse = await fetch(
         `/api/tablet/prep/assigned?status=assigned`,
       );
@@ -113,7 +113,6 @@ export function TabletPrepAssignments({
         setAssignments(data.assignments || []);
       }
 
-      // Load my assignments
       if (currentEmployeeId) {
         const myResponse = await fetch(
           `/api/tablet/prep/assigned?employeeId=${currentEmployeeId}&status=assigned`,
@@ -169,7 +168,6 @@ export function TabletPrepAssignments({
         }`,
       });
 
-      // Clear form
       setNewAssignment({
         taskName: "",
         assignedToEmployeeId: "",
@@ -180,8 +178,6 @@ export function TabletPrepAssignments({
       });
 
       setShowCreateAssignment(false);
-
-      // Reload assignments
       await loadAssignments();
     } catch (error) {
       toast({
@@ -215,7 +211,6 @@ export function TabletPrepAssignments({
         description: `Assignment marked as ${newStatus}`,
       });
 
-      // Reload assignments
       await loadAssignments();
     } catch (error) {
       toast({
@@ -229,67 +224,85 @@ export function TabletPrepAssignments({
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusBadgeColor = (status: string) => {
     switch (status) {
       case "assigned":
-        return "bg-blue-50 border-blue-200";
+        return "bg-blue-100 dark:bg-blue-500/20 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-500/30";
       case "in-progress":
-        return "bg-orange-50 border-orange-200";
+        return "bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30";
       case "completed":
-        return "bg-emerald-50 border-emerald-200";
+        return "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30";
       case "cancelled":
-        return "bg-gray-50 border-gray-200";
+        return "bg-slate-100 dark:bg-slate-500/20 text-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-500/30";
       default:
-        return "bg-gray-50 border-gray-200";
+        return "bg-slate-100 dark:bg-slate-500/20 text-slate-800 dark:text-slate-300";
     }
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBorder = (status: string) => {
     switch (status) {
       case "assigned":
-        return "bg-blue-100 text-blue-800";
+        return "border-l-4 border-l-blue-500";
       case "in-progress":
-        return "bg-orange-100 text-orange-800";
+        return "border-l-4 border-l-amber-500";
       case "completed":
-        return "bg-emerald-100 text-emerald-800";
+        return "border-l-4 border-l-emerald-500";
       case "cancelled":
-        return "bg-gray-100 text-gray-800";
+        return "border-l-4 border-l-slate-500";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "border-l-4 border-l-slate-500";
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "assigned":
+        return <Clock className="w-4 h-4" />;
+      case "in-progress":
+        return <Zap className="w-4 h-4" />;
+      case "completed":
+        return <CheckCircle2 className="w-4 h-4" />;
+      case "cancelled":
+        return <AlertCircle className="w-4 h-4" />;
+      default:
+        return <Clock className="w-4 h-4" />;
     }
   };
 
   const AssignmentCard = ({ assignment }: { assignment: PrepAssignment }) => (
-    <Card className={`border ${getStatusColor(assignment.status)}`}>
-      <CardContent className="pt-4">
-        <div className="space-y-3">
-          <div className="flex items-start justify-between">
-            <div>
-              <h3 className="font-semibold text-gray-900">
+    <Card
+      className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-lg dark:hover:shadow-slate-900/50 transition-all ${getStatusBorder(assignment.status)}`}
+    >
+      <CardContent className="pt-6">
+        <div className="space-y-4">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <h3 className="font-bold text-lg text-slate-900 dark:text-slate-50">
                 {assignment.taskName}
               </h3>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
                 {assignment.assignedToEmployeeName}
               </p>
             </div>
             <span
-              className={`px-2 py-1 rounded text-xs font-medium ${getStatusBadge(assignment.status)}`}
+              className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 flex-shrink-0 ${getStatusBadgeColor(assignment.status)}`}
             >
-              {assignment.status}
+              {getStatusIcon(assignment.status)}
+              <span className="capitalize">{assignment.status}</span>
             </span>
           </div>
 
-          <div className="text-sm">
-            <p className="text-gray-600">
-              <Clock className="w-3 h-3 inline mr-1" />
-              Due: {format(new Date(assignment.dueDate), "MMM d, yyyy")}
-            </p>
+          <div className="text-sm text-slate-600 dark:text-slate-400 flex items-center gap-2">
+            <Clock className="w-4 h-4" />
+            Due: {format(new Date(assignment.dueDate), "MMM d, yyyy")}
           </div>
 
           {assignment.ingredients && assignment.ingredients.length > 0 && (
             <div className="text-sm">
-              <p className="font-medium text-gray-700 mb-1">Ingredients:</p>
-              <ul className="list-disc list-inside text-gray-600">
+              <p className="font-semibold text-slate-900 dark:text-slate-50 mb-2">
+                Ingredients:
+              </p>
+              <ul className="list-disc list-inside space-y-1 text-slate-600 dark:text-slate-400">
                 {assignment.ingredients.map((ing, idx) => (
                   <li key={idx}>{ing}</li>
                 ))}
@@ -299,21 +312,27 @@ export function TabletPrepAssignments({
 
           {assignment.instructions && (
             <div className="text-sm">
-              <p className="font-medium text-gray-700 mb-1">Instructions:</p>
-              <p className="text-gray-600">{assignment.instructions}</p>
+              <p className="font-semibold text-slate-900 dark:text-slate-50 mb-2">
+                Instructions:
+              </p>
+              <p className="text-slate-600 dark:text-slate-400 whitespace-pre-wrap">
+                {assignment.instructions}
+              </p>
             </div>
           )}
 
           {assignment.notes && (
-            <div className="text-xs text-gray-600 bg-white/30 p-2 rounded">
-              <p className="font-medium">Notes:</p>
+            <div className="text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 p-3 rounded border border-slate-200 dark:border-slate-700">
+              <p className="font-semibold mb-1 text-slate-900 dark:text-slate-50">
+                Notes:
+              </p>
               <p>{assignment.notes}</p>
             </div>
           )}
 
           {assignment.status !== "completed" &&
             assignment.status !== "cancelled" && (
-              <div className="flex gap-2 pt-2">
+              <div className="flex gap-2 pt-4 border-t border-slate-200 dark:border-slate-800">
                 {assignment.status === "assigned" && (
                   <Button
                     variant="outline"
@@ -321,8 +340,9 @@ export function TabletPrepAssignments({
                     onClick={() =>
                       handleUpdateAssignmentStatus(assignment.id, "in-progress")
                     }
-                    className="flex-1 text-xs"
+                    className="flex-1 text-xs dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
                   >
+                    <Zap className="w-3 h-3 mr-1" />
                     Start Prep
                   </Button>
                 )}
@@ -332,7 +352,7 @@ export function TabletPrepAssignments({
                   onClick={() =>
                     handleUpdateAssignmentStatus(assignment.id, "completed")
                   }
-                  className="flex-1 text-xs"
+                  className="flex-1 text-xs dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
                   <CheckCircle2 className="w-3 h-3 mr-1" />
                   Mark Done
@@ -345,19 +365,24 @@ export function TabletPrepAssignments({
   );
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
-      <Card className="bg-white">
+    <div className="w-full max-w-5xl mx-auto space-y-6">
+      <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Prep Work Assignments</CardTitle>
-              <CardDescription>
+          <div className="flex items-start justify-between gap-6">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <ChefHat className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                <CardTitle className="dark:text-slate-50">
+                  Prep Work Assignments
+                </CardTitle>
+              </div>
+              <CardDescription className="dark:text-slate-400">
                 Manage prep work and assign tasks to kitchen staff
               </CardDescription>
             </div>
             <Button
               onClick={() => setShowCreateAssignment(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl transition-all"
             >
               <Plus className="w-4 h-4 mr-2" />
               Assign Prep Work
@@ -365,62 +390,61 @@ export function TabletPrepAssignments({
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Tabs */}
-          <div className="flex gap-2 border-b border-gray-200">
-            <button
-              onClick={() => setActiveTab("admin")}
-              className={`px-4 py-2 font-medium text-sm border-b-2 transition ${
-                activeTab === "admin"
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              All Assignments ({assignments.length})
-            </button>
-            {currentEmployeeId && (
+          <div className="border-b border-slate-200 dark:border-slate-800">
+            <div className="flex gap-1 -mb-px">
               <button
-                onClick={() => setActiveTab("my-tasks")}
-                className={`px-4 py-2 font-medium text-sm border-b-2 transition ${
-                  activeTab === "my-tasks"
-                    ? "border-blue-600 text-blue-600"
-                    : "border-transparent text-gray-600 hover:text-gray-900"
+                onClick={() => setActiveTab("admin")}
+                className={`px-4 py-3 font-semibold text-sm border-b-2 transition ${
+                  activeTab === "admin"
+                    ? "border-emerald-600 text-emerald-600 dark:text-emerald-400"
+                    : "border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-300"
                 }`}
               >
-                My Tasks ({myAssignments.length})
+                All Assignments ({assignments.length})
               </button>
-            )}
+              {currentEmployeeId && (
+                <button
+                  onClick={() => setActiveTab("my-tasks")}
+                  className={`px-4 py-3 font-semibold text-sm border-b-2 transition ${
+                    activeTab === "my-tasks"
+                      ? "border-emerald-600 text-emerald-600 dark:text-emerald-400"
+                      : "border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-300"
+                  }`}
+                >
+                  My Tasks ({myAssignments.length})
+                </button>
+              )}
+            </div>
           </div>
 
-          {/* Content */}
           {isLoading ? (
-            <div className="flex justify-center items-center h-32">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            <div className="flex justify-center items-center h-48">
+              <Loader2 className="w-8 h-8 animate-spin text-emerald-600 dark:text-emerald-400" />
             </div>
           ) : activeTab === "admin" ? (
             assignments.length === 0 ? (
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  No active prep assignments. Create new assignments to
-                  distribute prep work.
+              <Alert className="border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800">
+                <AlertCircle className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                <AlertDescription className="text-slate-700 dark:text-slate-300">
+                  No active prep assignments. Create new assignments to distribute prep work.
                 </AlertDescription>
               </Alert>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {assignments.map((assignment) => (
                   <AssignmentCard key={assignment.id} assignment={assignment} />
                 ))}
               </div>
             )
           ) : myAssignments.length === 0 ? (
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
+            <Alert className="border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800">
+              <AlertCircle className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+              <AlertDescription className="text-slate-700 dark:text-slate-300">
                 You have no active prep assignments. Check back for new tasks.
               </AlertDescription>
             </Alert>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {myAssignments.map((assignment) => (
                 <AssignmentCard key={assignment.id} assignment={assignment} />
               ))}
@@ -429,22 +453,23 @@ export function TabletPrepAssignments({
         </CardContent>
       </Card>
 
-      {/* Create Assignment Dialog */}
       <Dialog
         open={showCreateAssignment}
         onOpenChange={setShowCreateAssignment}
       >
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent className="sm:max-w-2xl dark:bg-slate-900 dark:border-slate-800">
           <DialogHeader>
-            <DialogTitle>Assign Prep Work</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="dark:text-slate-50">
+              Assign Prep Work
+            </DialogTitle>
+            <DialogDescription className="dark:text-slate-400">
               Create a new prep work assignment for kitchen staff
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                 Task Name *
               </label>
               <Input
@@ -456,11 +481,12 @@ export function TabletPrepAssignments({
                     taskName: e.target.value,
                   })
                 }
+                className="dark:bg-slate-800 dark:border-slate-700 dark:text-slate-50"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                 Assign To *
               </label>
               <Select
@@ -472,10 +498,10 @@ export function TabletPrepAssignments({
                   })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="dark:bg-slate-800 dark:border-slate-700 dark:text-slate-50">
                   <SelectValue placeholder="Select an employee" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="dark:bg-slate-800 dark:border-slate-700">
                   {employees.map((emp) => (
                     <SelectItem key={emp.id} value={emp.id}>
                       {emp.name} ({emp.role})
@@ -486,7 +512,7 @@ export function TabletPrepAssignments({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                 Due Date *
               </label>
               <Input
@@ -498,11 +524,12 @@ export function TabletPrepAssignments({
                     dueDate: e.target.value,
                   })
                 }
+                className="dark:bg-slate-800 dark:border-slate-700 dark:text-slate-50"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                 Ingredients (Optional)
               </label>
               <textarea
@@ -514,13 +541,13 @@ export function TabletPrepAssignments({
                     ingredients: e.target.value,
                   })
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-50 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                 rows={3}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                 Instructions (Optional)
               </label>
               <textarea
@@ -532,13 +559,13 @@ export function TabletPrepAssignments({
                     instructions: e.target.value,
                   })
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-50 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                 rows={3}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                 Notes (Optional)
               </label>
               <textarea
@@ -547,7 +574,7 @@ export function TabletPrepAssignments({
                 onChange={(e) =>
                   setNewAssignment({ ...newAssignment, notes: e.target.value })
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-50 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                 rows={2}
               />
             </div>
@@ -556,13 +583,14 @@ export function TabletPrepAssignments({
               <Button
                 variant="outline"
                 onClick={() => setShowCreateAssignment(false)}
+                className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleCreateAssignment}
                 disabled={isSubmitting}
-                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white"
               >
                 {isSubmitting ? (
                   <>
