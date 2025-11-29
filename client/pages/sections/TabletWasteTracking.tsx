@@ -49,6 +49,7 @@ export default function TabletWasteTracking() {
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [deviceId] = useState(() => localStorage.getItem("tablet:deviceToken") || "unknown-device");
   
   // Form state
   const [category, setCategory] = useState("spoilage");
