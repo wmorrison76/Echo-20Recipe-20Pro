@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { PrinterIcon, Trash2, TrendingUp, Settings } from "lucide-react";
+import { Printer, Trash2, TrendingUp, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
@@ -10,11 +10,11 @@ interface NavItem {
   description: string;
 }
 
-const TAB LET_NAV_ITEMS: NavItem[] = [
+const TABLET_NAV_ITEMS: NavItem[] = [
   {
     path: "/tablet/labels",
     label: "Recipe Labels",
-    icon: <PrinterIcon className="h-5 w-5" />,
+    icon: <Printer className="h-5 w-5" />,
     description: "Print recipe labels",
   },
   {
