@@ -238,20 +238,24 @@ export default function TabletInventoryTransfer() {
   const completedTransfers = useMemo(() => transfers.filter(t => t.status === "completed"), [transfers]);
 
   return (
-    <div className="w-full h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col overflow-hidden">
+    <div className="w-full h-screen bg-gradient-to-br from-slate-50 via-slate-50 to-slate-100 flex flex-col overflow-hidden">
       <FoodRecallNotificationOverlay deviceId={deviceId} />
       {/* Header */}
-      <div className="bg-white border-b shadow-sm p-4">
+      <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200/50 shadow-sm p-4">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Inventory Transfer</h1>
             <p className="text-sm text-slate-600 mt-1">
-              Inter-department transfers • {isOnline ? "🟢 Online" : "🔴 Offline Mode"}
+              Inter-department transfers • {isOnline ? (
+                <span className="inline-flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-green-500"></span>Online</span>
+              ) : (
+                <span className="inline-flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-red-500"></span>Offline Mode</span>
+              )}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-sm text-slate-600">Pending Transfers</p>
-            <p className="text-2xl font-bold text-amber-600">{pendingTransfers.length}</p>
+            <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Pending</p>
+            <p className="text-3xl font-bold text-emerald-600">{pendingTransfers.length}</p>
           </div>
         </div>
       </div>
@@ -262,7 +266,7 @@ export default function TabletInventoryTransfer() {
         {!showForm && (
           <Button
             onClick={() => setShowForm(true)}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-6 text-lg font-semibold rounded-lg shadow-md"
+            className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white py-5 text-base font-semibold rounded-lg shadow-md hover:shadow-lg transition-all"
           >
             <Plus className="mr-2 h-5 w-5" />
             New Transfer Request
