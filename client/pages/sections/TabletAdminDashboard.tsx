@@ -57,6 +57,18 @@ interface PrintRecord {
   print_date: string;
 }
 
+interface RecipeAccess {
+  id: string;
+  recipe_id: string;
+  recipe_name: string;
+  confirmed_by?: string;
+  confirmed_at?: string;
+  is_active: boolean;
+  access_level: "all" | "chef" | "department";
+  allowed_departments?: string[];
+  updated_at: string;
+}
+
 export default function TabletAdminDashboard() {
   const { toast } = useToast();
 
