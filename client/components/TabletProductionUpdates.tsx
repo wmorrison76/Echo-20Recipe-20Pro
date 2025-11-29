@@ -213,13 +213,19 @@ export function TabletProductionUpdates({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
-      <Card className="bg-white">
+    <div className="w-full max-w-5xl mx-auto space-y-6">
+      <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
         <CardHeader>
-          <CardTitle>Production Updates</CardTitle>
-          <CardDescription>
-            Update production status with screenshots for all kitchen stations
-          </CardDescription>
+          <div className="flex items-start justify-between gap-6">
+            <div className="flex-1">
+              <CardTitle className="dark:text-slate-50">
+                Production Updates
+              </CardTitle>
+              <CardDescription className="dark:text-slate-400">
+                Update production status with screenshots for all kitchen stations
+              </CardDescription>
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           {tasks.length === 0 ? (
