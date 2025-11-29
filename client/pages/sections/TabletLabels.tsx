@@ -183,49 +183,86 @@ export default function TabletLabels() {
 
       const data = await response.json();
 
-      // Open print dialog
+      // Generate QR code data
+      const qrData = generateQRCodeString({
+        recipeName: selectedRecipe.name,
+        allergens: selectedRecipe.allergens || [],
+        chefName: selectedRecipe.createdBy,
+        printDate: data.bornOn,
+      });
+
+      // Create and open print dialog
       const printWindow = window.open("", "_blank");
       if (printWindow) {
+        const labels = Array(prepCount)
+          .fill(0)
+          .map((_, i) => {
+            const qrImageUrl = getQRCodeImageUrl(qrData, 150);
+            return `
+              <div style="
+                width: 4in;
+                height: 6in;
+                border: 1px solid #000;
+                padding: 0.25in;
+                box-sizing: border-box;
+                page-break-after: always;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                margin: 0;
+                font-family: Arial, sans-serif;
+              ">
+                <h2 style="margin: 0 0 0.1in 0; font-size: 24px; text-align: center;">
+                  ${selectedRecipe.name}
+                </h2>
+
+                <div style="font-size: 12px; line-height: 1.8;">
+                  <div><strong>Born on:</strong> ${data.bornOn}</div>
+                  <div><strong>Expires:</strong> ${data.expiresOn}</div>
+                </div>
+
+                ${
+                  selectedRecipe.allergens?.length
+                    ? `
+                  <div style="
+                    background-color: #ffe6e6;
+                    color: #800000;
+                    padding: 0.1in;
+                    border-radius: 3px;
+                    font-weight: bold;
+                    font-size: 11px;
+                    text-align: center;
+                  ">
+                    ⚠️ ${selectedRecipe.allergens.join(", ")}
+                  </div>
+                `
+                    : ""
+                }
+
+                <div style="text-align: center;">
+                  <img src="${qrImageUrl}" width="120" height="120" style="border: 1px solid #000;" />
+                </div>
+
+                ${
+                  selectedRecipe.createdBy
+                    ? `<div style="font-size: 9px; text-align: center; margin-top: 0.05in;">Chef: ${selectedRecipe.createdBy}</div>`
+                    : ""
+                }
+              </div>
+            `;
+          })
+          .join("");
+
         printWindow.document.write(`
           <html>
             <head>
-              <title>Print Label - ${selectedRecipe.name}</title>
+              <title>Print Labels - ${selectedRecipe.name}</title>
               <style>
-                body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-                .label { 
-                  width: 4in; height: 6in; 
-                  border: 1px solid #000; 
-                  padding: 0.25in; 
-                  box-sizing: border-box;
-                  page-break-after: always;
-                  margin: 0;
-                }
-                .label-header { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
-                .label-info { font-size: 12px; margin: 5px 0; }
-                .qr-code { text-align: center; margin: 10px 0; }
-                .allergens { 
-                  background-color: #ffe6e6; 
-                  color: #800000;
-                  padding: 5px;
-                  border-radius: 3px;
-                  font-weight: bold;
-                  font-size: 10px;
-                  margin: 5px 0;
-                }
+                body { margin: 0; padding: 0; background: white; }
               </style>
             </head>
             <body>
-              ${Array(prepCount).fill(0).map((_, i) => `
-                <div class="label">
-                  <div class="label-header">${selectedRecipe.name}</div>
-                  <div class="label-info">Born on: ${data.bornOn}</div>
-                  <div class="label-info">Expires: ${data.expiresOn}</div>
-                  ${selectedRecipe.allergens?.length ? `
-                    <div class="allergens">⚠️ ${selectedRecipe.allergens.join(", ")}</div>
-                  ` : ""}
-                  <div class="qr-code">[QR: ${data.qrData}]</div>
-                </div>
-              `).join("")}
+              ${labels}
             </body>
           </html>
         `);
