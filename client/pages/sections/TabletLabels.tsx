@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,10 +17,14 @@ import {
   Wifi,
   WifiOff,
   Loader2,
+  Moon,
+  Sun,
+  ArrowLeft,
 } from "lucide-react";
 import { generateQRCodeString, getQRCodeImageUrl, formatLabelHTML } from "@/lib/qr-code-generator";
 import { useTabletServiceWorker } from "@/hooks/use-tablet-sw";
 import { TabletNav } from "@/components/TabletNav";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface Recipe {
   id: string;
@@ -495,7 +499,7 @@ export default function TabletLabels() {
               {/* Allergens */}
               {selectedRecipe.allergens && selectedRecipe.allergens.length > 0 && (
                 <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <div className="font-bold text-red-800 mb-2">⚠️ Allergens</div>
+                  <div className="font-bold text-red-800 mb-2">���️ Allergens</div>
                   <div className="text-red-700">{selectedRecipe.allergens.join(", ")}</div>
                 </div>
               )}
