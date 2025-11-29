@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash2, Search, Loader2, Check } from "lucide-react";
 import FoodRecallNotificationOverlay from "@/components/FoodRecallNotificationOverlay";
+import { TabletNav } from "@/components/TabletNav";
 
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat("en-US", {
