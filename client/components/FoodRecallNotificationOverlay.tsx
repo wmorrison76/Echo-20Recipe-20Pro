@@ -103,10 +103,13 @@ export default function FoodRecallNotificationOverlay({
 
   // Fetch recalls on mount and periodically
   useEffect(() => {
-    fetchRecalls();
-    const interval = setInterval(fetchRecalls, 60000); // Check every minute
-    return () => clearInterval(interval);
-  }, [fetchRecalls]);
+    // Only fetch if we have a valid device ID
+    if (deviceId && deviceId !== "unknown-device") {
+      fetchRecalls();
+      const interval = setInterval(fetchRecalls, 60000); // Check every minute
+      return () => clearInterval(interval);
+    }
+  }, [fetchRecalls, deviceId]);
 
   const handleAcknowledge = async (recall: FoodRecall) => {
     setSelectedRecall(recall);
