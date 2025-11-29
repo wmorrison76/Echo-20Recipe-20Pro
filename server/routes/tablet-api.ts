@@ -548,7 +548,7 @@ router.get("/compliance-report", async (req: Request, res: Response) => {
   try {
     const { deviceId, startDate, endDate, limit = "100" } = req.query;
 
-    let query = supabase.from("tablet_compliance_report").select("*");
+    let query = getSupabaseClient().from("tablet_compliance_report").select("*");
 
     if (deviceId) {
       query = query.eq("device_id", deviceId);
