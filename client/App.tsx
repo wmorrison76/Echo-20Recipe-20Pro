@@ -150,6 +150,12 @@ const TabletLabels = lazyWithErrorBoundary(
 const TabletAdminDashboard = lazyWithErrorBoundary(
   () => import("./pages/sections/TabletAdminDashboard"),
 );
+const TabletWasteTracking = lazyWithErrorBoundary(
+  () => import("./pages/sections/TabletWasteTracking"),
+);
+const TabletInventoryTransfer = lazyWithErrorBoundary(
+  () => import("./pages/sections/TabletInventoryTransfer"),
+);
 const Login = lazyWithErrorBoundary(() => import("./pages/Login"));
 const PasswordReset = lazyWithErrorBoundary(
   () => import("./pages/PasswordReset"),
