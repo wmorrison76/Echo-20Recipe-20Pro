@@ -273,6 +273,7 @@ const App = () => (
                               </ProtectedRoute>
                             }
                           />
+                          <Route path="/tablet/setup" element={<TabletSetup />} />
                           <Route path="/tablet/labels" element={<TabletLabels />} />
                           <Route path="/tablet/waste" element={<TabletWasteTracking />} />
                           <Route path="/tablet/transfers" element={<TabletInventoryTransfer />} />
