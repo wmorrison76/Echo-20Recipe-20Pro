@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import crypto from "crypto";
 import {
   generateDeviceCredentials,
@@ -9,11 +9,26 @@ import {
 
 const router = Router();
 
-const supabaseUrl = process.env.SUPABASE_URL || "";
-const supabaseKey = process.env.SUPABASE_ANON_KEY || "";
-const supabase = createClient(supabaseUrl, supabaseKey);
-
 const APP_BASE_URL = process.env.APP_BASE_URL || "http://localhost:5173";
+
+// Lazy initialization of Supabase client
+let supabaseClient: SupabaseClient | null = null;
+
+function getSupabaseClient(): SupabaseClient {
+  if (!supabaseClient) {
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+      console.warn("[Tablet API] Supabase credentials not configured - tablet features will be limited");
+      // Return a mock client that doesn't crash
+      return {} as SupabaseClient;
+    }
+
+    supabaseClient = createClient(supabaseUrl, supabaseKey);
+  }
+  return supabaseClient;
+}
 
 // ========================================
 // DEVICE PAIRING & SETUP ROUTES
