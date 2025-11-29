@@ -298,11 +298,18 @@ export default function TabletLabels() {
   }
 
   return (
-    <div className="w-full h-screen bg-gray-100 flex flex-col">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 p-4 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold text-gray-900">Kitchen Labels</h1>
+    <div className="w-full h-screen bg-gray-100 flex flex-row">
+      {/* Sidebar Navigation */}
+      <div className="w-64 flex-shrink-0 border-r border-gray-300">
+        <TabletNav />
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="bg-white border-b border-gray-200 p-4 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-gray-900">Recipe Labels</h1>
           <div className="flex items-center gap-1 text-sm">
             {isOnline ? (
               <>
@@ -525,6 +532,7 @@ export default function TabletLabels() {
             </div>
           </div>
         )}
+      </div>
       </div>
     </div>
   );
