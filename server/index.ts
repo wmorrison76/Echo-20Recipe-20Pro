@@ -33,6 +33,7 @@ import { termsVectorIngestionRouter } from "./routes/terms-vector-ingestion";
 import { knowledgeInitializer } from "./lib/knowledge-initialization";
 import { uploadedTermsStore } from "./lib/uploaded-terms-store";
 import tabletApiRouter from "./routes/tablet-api";
+import inventoryOperationsRouter from "./routes/inventory-operations";
 import {
   proxyRecipeImage as proxyImageOptimized,
   serveRecipeImage,
