@@ -19,6 +19,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { generateQRCodeString, getQRCodeImageUrl, formatLabelHTML } from "@/lib/qr-code-generator";
+import { useTabletServiceWorker } from "@/hooks/use-tablet-sw";
 
 interface Recipe {
   id: string;
