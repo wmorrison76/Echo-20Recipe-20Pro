@@ -137,7 +137,7 @@ export default function TabletInventoryTransfer() {
     setItemSearch("");
     setQuantity("");
     setUnit("lb");
-    setFromDept("Kitchen");
+    setFromDept(DEFAULT_OUTLET);
     setToDept("Prep");
     setRequestedBy("");
     setNotes("");
