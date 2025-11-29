@@ -534,8 +534,10 @@ export default function TabletInventoryTransfer() {
         )}
 
         {transfers.length === 0 && !showForm && (
-          <div className="text-center py-8 text-slate-500">
-            <p>No transfer requests yet</p>
+          <div className="text-center py-12 text-slate-500">
+            <div className="text-4xl mb-3 opacity-30">📦</div>
+            <p className="font-medium">No transfer requests yet</p>
+            <p className="text-sm text-slate-400 mt-1">Create a new transfer request to get started</p>
           </div>
         )}
       </div>
