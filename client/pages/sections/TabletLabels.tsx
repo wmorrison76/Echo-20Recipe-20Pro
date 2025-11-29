@@ -302,42 +302,61 @@ export default function TabletLabels() {
     );
   }
 
+  // Check if this is a tablet setup (has device query param) or admin access
+  const isTabletMode = !!searchParams.get("device");
+
   return (
-    <div className="w-full h-screen bg-gray-100 flex flex-row">
+    <div className="w-full h-screen bg-gray-100 dark:bg-slate-900 flex flex-row">
       {/* Sidebar Navigation */}
-      <div className="w-64 flex-shrink-0 border-r border-gray-300">
+      <div className="w-64 flex-shrink-0 border-r border-gray-300 dark:border-slate-700">
         <TabletNav />
       </div>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 p-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-gray-900">Recipe Labels</h1>
-          <div className="flex items-center gap-1 text-sm">
-            {isOnline ? (
-              <>
-                <Wifi className="w-4 h-4 text-green-600" />
-                <span className="text-green-600">Online</span>
-              </>
-            ) : (
-              <>
-                <WifiOff className="w-4 h-4 text-yellow-600" />
-                <span className="text-yellow-600">Offline</span>
-              </>
+        <div className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 p-4 flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            {/* Back Button - Show only when not in tablet mode */}
+            {!isTabletMode && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("/?tab=recipes")}
+                title="Back to Echo Recipe Pro"
+                className="text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
             )}
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Recipe Labels</h1>
+            <div className="flex items-center gap-1 text-sm">
+              {isOnline ? (
+                <>
+                  <Wifi className="w-4 h-4 text-green-600 dark:text-green-500" />
+                  <span className="text-green-600 dark:text-green-400">Online</span>
+                </>
+              ) : (
+                <>
+                  <WifiOff className="w-4 h-4 text-yellow-600 dark:text-yellow-500" />
+                  <span className="text-yellow-600 dark:text-yellow-400">Offline</span>
+                </>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowSettings(!showSettings)}
+              className="dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
+            >
+              <Settings className="w-4 h-4 mr-2" />
+              Settings
+            </Button>
           </div>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowSettings(!showSettings)}
-        >
-          <Settings className="w-4 h-4 mr-2" />
-          Settings
-        </Button>
-      </div>
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
