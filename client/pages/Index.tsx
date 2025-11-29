@@ -4,6 +4,7 @@ import AddRecipeSection from "./sections/AddRecipe";
 import SaasRoadmapSection from "./sections/SaasRoadmap";
 import { EchoTrainingCenter } from "@/components/panels/EchoTrainingCenter";
 import InventorySuppliesWorkspace from "./sections/saas/InventorySuppliesWorkspace";
+import InventoryTransfersWorkspace from "./sections/saas/InventoryTransfersWorkspace";
 import NutritionAllergensWorkspace from "./sections/saas/NutritionAllergensWorkspace";
 import HaccpComplianceWorkspace from "./sections/saas/HaccpComplianceWorkspace";
 import WasteTrackingWorkspace from "./sections/saas/WasteTrackingWorkspace";
