@@ -144,6 +144,9 @@ const RecipeEditor = lazyWithErrorBoundary(
 const RecipeTemplate = lazyWithErrorBoundary(
   () => import("./pages/RecipeTemplate"),
 );
+const TabletLabels = lazyWithErrorBoundary(
+  () => import("./pages/sections/TabletLabels"),
+);
 const Login = lazyWithErrorBoundary(() => import("./pages/Login"));
 const PasswordReset = lazyWithErrorBoundary(
   () => import("./pages/PasswordReset"),
