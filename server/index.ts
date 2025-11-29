@@ -134,7 +134,7 @@ export function createServer() {
   // EchoAi³ Training API (stores recipes for Chef Brain suggestions)
   app.use("/api/echo-training", echoTrainingRouter);
 
-  // EchoAi³ - OpenAI Collaborative Training (dialogue, knowledge capture, learning)
+  // EchoAi�� - OpenAI Collaborative Training (dialogue, knowledge capture, learning)
   app.use("/api/echo-training", echoOpenAITrainingRouter);
 
   // EchoAi³ Unified Brain - Multi-domain engine orchestration
@@ -178,6 +178,9 @@ export function createServer() {
 
   // Tablet Label Printing System - Kitchen prep label management
   app.use("/api/tablet", tabletApiRouter);
+
+  // Inventory Operations - Transfers, transfers, and food recall notifications
+  app.use("/api/inventory", inventoryOperationsRouter);
 
   // Global error handler - ensure all errors return JSON
   app.use(
