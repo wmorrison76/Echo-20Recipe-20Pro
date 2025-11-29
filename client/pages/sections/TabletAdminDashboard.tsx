@@ -206,6 +206,70 @@ export default function TabletAdminDashboard() {
     URL.revokeObjectURL(url);
   };
 
+  const confirmRecipeAccuracy = async (recipeId: string) => {
+    try {
+      const response = await fetch(`/api/tablet/recipes/${recipeId}/confirm`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          confirmed_at: new Date().toISOString(),
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to confirm recipe");
+
+      toast({
+        title: "Success",
+        description: "Recipe confirmed as accurate",
+      });
+
+      setRecipes((prev) =>
+        prev.map((r) =>
+          r.recipe_id === recipeId
+            ? { ...r, confirmed_at: new Date().toISOString() }
+            : r
+        )
+      );
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to confirm recipe",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const toggleRecipeAccess = async (recipeId: string, isActive: boolean) => {
+    try {
+      const response = await fetch(`/api/tablet/recipes/${recipeId}/access`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          is_active: !isActive,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update recipe access");
+
+      toast({
+        title: "Success",
+        description: `Recipe access ${!isActive ? "enabled" : "disabled"}`,
+      });
+
+      setRecipes((prev) =>
+        prev.map((r) =>
+          r.recipe_id === recipeId ? { ...r, is_active: !isActive } : r
+        )
+      );
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update recipe access",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="w-full h-screen bg-gray-100 flex flex-row">
       {/* Sidebar Navigation */}
