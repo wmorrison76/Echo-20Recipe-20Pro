@@ -2870,6 +2870,46 @@ const RecipeInputPage = () => {
                   data-echo-key="field:add:description"
                 />
 
+                <div className="mt-4 p-3 border rounded-lg" style={{backgroundColor: isDarkMode ? "rgba(0,0,0,0.3)" : "rgba(100,150,200,0.05)"}}>
+                  <label className={`text-xs font-semibold uppercase ${isDarkMode ? "text-cyan-300" : "text-slate-600"} block mb-2`}>
+                    {t("recipe.labels.portionSize", "PORTION SIZE")}
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={portionSize}
+                      onChange={(e) => setPortionSize(e.target.value)}
+                      placeholder="e.g. 1"
+                      className={`flex-1 border rounded px-2 py-1.5 text-sm ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
+                      data-echo-key="field:add:portion-size"
+                    />
+                    <Select value={portionSizeUnit} onValueChange={setPortionSizeUnit}>
+                      <SelectTrigger className="w-24 text-sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="OZ">OZ</SelectItem>
+                        <SelectItem value="LB">LB</SelectItem>
+                        <SelectItem value="G">G</SelectItem>
+                        <SelectItem value="KG">KG</SelectItem>
+                        <SelectItem value="ML">ML</SelectItem>
+                        <SelectItem value="L">L</SelectItem>
+                        <SelectItem value="CUP">CUP</SelectItem>
+                        <SelectItem value="TSP">TSP</SelectItem>
+                        <SelectItem value="TBSP">TBSP</SelectItem>
+                        <SelectItem value="GAL">GAL</SelectItem>
+                        <SelectItem value="QT">QT</SelectItem>
+                        <SelectItem value="PT">PT</SelectItem>
+                        <SelectItem value="EACH">EACH</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <p className={`text-xs mt-1 ${isDarkMode ? "text-cyan-400/60" : "text-slate-500"}`}>
+                    {t("recipe.hints.portionSize", "The standard portion size used for labeling (e.g., 1 gallon, 6 oz). Multiplied by prep count for total yield.")}
+                  </p>
+                </div>
+
                 <div className="mt-4">
                   <div
                     className={`grid grid-cols-4 md:grid-cols-12 gap-1.5 text-[10px] sm:text-[11px] leading-tight ${
