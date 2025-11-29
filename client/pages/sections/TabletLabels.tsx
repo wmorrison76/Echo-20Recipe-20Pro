@@ -18,6 +18,7 @@ import {
   WifiOff,
   Loader2,
 } from "lucide-react";
+import { generateQRCodeString, getQRCodeImageUrl, formatLabelHTML } from "@/lib/qr-code-generator";
 
 interface Recipe {
   id: string;
