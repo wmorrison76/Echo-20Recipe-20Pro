@@ -796,7 +796,7 @@ router.get("/inventory/low-stock", async (req: Request, res: Response) => {
   try {
     const { deviceId, status = "pending" } = req.query;
 
-    let query = supabase
+    let query = getSupabaseClient()
       .from("tablet_low_stock_alerts")
       .select("*")
       .eq("status", status);
