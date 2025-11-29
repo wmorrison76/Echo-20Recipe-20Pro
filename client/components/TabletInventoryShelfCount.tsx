@@ -31,6 +31,7 @@ import {
   AlertCircle,
   Loader2,
   Calendar,
+  Package,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -177,7 +178,6 @@ export function TabletInventoryShelfCount({
         description: `Inventory count recorded: ${countSession.items.length} items`,
       });
 
-      // Clear form
       setCountSession({
         id: `count-${Date.now()}`,
         countDate: format(new Date(), "yyyy-MM-dd"),
@@ -198,29 +198,38 @@ export function TabletInventoryShelfCount({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
-      <Card className="bg-white">
+    <div className="w-full max-w-5xl mx-auto space-y-6">
+      <Card className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Monthly Inventory Shelf Count</CardTitle>
-              <CardDescription>
-                Record current inventory quantities
+          <div className="flex items-start justify-between gap-6">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <Package className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                <CardTitle className="dark:text-slate-50">
+                  Monthly Inventory Shelf Count
+                </CardTitle>
+              </div>
+              <CardDescription className="dark:text-slate-400">
+                Record current inventory quantities for all storage locations
               </CardDescription>
             </div>
-            <div className="text-right">
-              <p className="text-sm text-gray-600">Count Date</p>
-              <p className="text-lg font-semibold text-gray-900">
-                {countSession.countDate}
-              </p>
+            <div className="flex items-center gap-3 px-4 py-2 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-lg">
+              <Calendar className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              <div>
+                <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                  Count Date
+                </p>
+                <p className="text-lg font-semibold text-emerald-900 dark:text-emerald-50">
+                  {format(new Date(countSession.countDate), "MMM d")}
+                </p>
+              </div>
             </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Count Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                 Employee ID (Optional)
               </label>
               <Input
@@ -232,10 +241,11 @@ export function TabletInventoryShelfCount({
                     employeeId: e.target.value,
                   }))
                 }
+                className="dark:bg-slate-800 dark:border-slate-700 dark:text-slate-50"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                 Count Date
               </label>
               <Input
@@ -247,13 +257,14 @@ export function TabletInventoryShelfCount({
                     countDate: e.target.value,
                   }))
                 }
+                className="dark:bg-slate-800 dark:border-slate-700 dark:text-slate-50"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Notes (Optional)
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+              Count Notes (Optional)
             </label>
             <textarea
               value={countSession.notes}
@@ -264,20 +275,24 @@ export function TabletInventoryShelfCount({
                 }))
               }
               placeholder="Any notes about the count or inventory issues..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-50 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               rows={3}
             />
           </div>
 
-          {/* Items Table */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">
-                Items Counted
-              </h3>
+          <div className="border-t border-slate-200 dark:border-slate-800 pt-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-slate-50">
+                  Items Counted
+                </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                  Total items: <span className="font-semibold">{countSession.items.length}</span>
+                </p>
+              </div>
               <Button
                 onClick={() => setShowAddItem(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl transition-all"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Item
@@ -285,91 +300,92 @@ export function TabletInventoryShelfCount({
             </div>
 
             {countSession.items.length === 0 ? (
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
+              <Alert className="border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800">
+                <AlertCircle className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                <AlertDescription className="text-slate-700 dark:text-slate-300">
                   No items added yet. Click "Add Item" to start counting.
                 </AlertDescription>
               </Alert>
             ) : (
-              <div className="overflow-x-auto border border-gray-200 rounded-lg">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">
-                        Item Name
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">
-                        Quantity
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">
-                        Unit
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">
-                        Location
-                      </th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">
-                        Notes
-                      </th>
-                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">
-                        Action
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {countSession.items.map((item) => (
-                      <tr key={item.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-sm text-gray-900 font-medium">
-                          {item.name}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-900">
-                          {item.quantity}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {item.unit}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600">
-                          {item.location}
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate">
-                          {item.notes || "-"}
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemoveItem(item.id)}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </td>
+              <div className="overflow-hidden border border-slate-200 dark:border-slate-800 rounded-lg">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300">
+                          Item Name
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300">
+                          Quantity
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300">
+                          Unit
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300">
+                          Location
+                        </th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300">
+                          Notes
+                        </th>
+                        <th className="px-4 py-3 text-center text-xs font-semibold text-slate-700 dark:text-slate-300">
+                          Action
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+                      {countSession.items.map((item) => (
+                        <tr
+                          key={item.id}
+                          className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition"
+                        >
+                          <td className="px-4 py-3 text-sm font-semibold text-slate-900 dark:text-slate-50">
+                            {item.name}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-slate-700 dark:text-slate-300 font-mono">
+                            {item.quantity}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
+                            {item.unit}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
+                            {item.location}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400 max-w-xs truncate">
+                            {item.notes || "-"}
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleRemoveItem(item.id)}
+                              className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-500/10"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
-
-            <p className="text-sm text-gray-600 mt-2">
-              Total items counted:{" "}
-              <span className="font-semibold text-gray-900">
-                {countSession.items.length}
-              </span>
-            </p>
           </div>
 
-          {/* Actions */}
-          <div className="flex gap-3 pt-4 border-t border-gray-200">
+          <div className="flex gap-3 pt-6 border-t border-slate-200 dark:border-slate-800">
             {onClose && (
-              <Button variant="outline" onClick={onClose}>
+              <Button
+                variant="outline"
+                onClick={onClose}
+                className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
                 Cancel
               </Button>
             )}
             <Button
               onClick={handleSubmit}
               disabled={isSubmitting || countSession.items.length === 0}
-              className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="flex-1 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>
@@ -387,19 +403,20 @@ export function TabletInventoryShelfCount({
         </CardContent>
       </Card>
 
-      {/* Add Item Dialog */}
       <Dialog open={showAddItem} onOpenChange={setShowAddItem}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-lg dark:bg-slate-900 dark:border-slate-800">
           <DialogHeader>
-            <DialogTitle>Add Inventory Item</DialogTitle>
-            <DialogDescription>
-              Add a new item to your inventory count
+            <DialogTitle className="dark:text-slate-50">
+              Add Inventory Item
+            </DialogTitle>
+            <DialogDescription className="dark:text-slate-400">
+              Enter details for the inventory item you're counting
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                 Item Name *
               </label>
               <Input
@@ -408,12 +425,13 @@ export function TabletInventoryShelfCount({
                 onChange={(e) =>
                   setNewItem({ ...newItem, name: e.target.value })
                 }
+                className="dark:bg-slate-800 dark:border-slate-700 dark:text-slate-50"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                   Quantity *
                 </label>
                 <Input
@@ -426,10 +444,11 @@ export function TabletInventoryShelfCount({
                       quantity: parseFloat(e.target.value) || 0,
                     })
                   }
+                  className="dark:bg-slate-800 dark:border-slate-700 dark:text-slate-50"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                   Unit *
                 </label>
                 <Select
@@ -438,10 +457,10 @@ export function TabletInventoryShelfCount({
                     setNewItem({ ...newItem, unit: value })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="dark:bg-slate-800 dark:border-slate-700 dark:text-slate-50">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="dark:bg-slate-800 dark:border-slate-700">
                     {STORAGE_UNITS.map((unit) => (
                       <SelectItem key={unit} value={unit}>
                         {unit}
@@ -453,7 +472,7 @@ export function TabletInventoryShelfCount({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                 Storage Location *
               </label>
               <Select
@@ -462,10 +481,10 @@ export function TabletInventoryShelfCount({
                   setNewItem({ ...newItem, location: value })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="dark:bg-slate-800 dark:border-slate-700 dark:text-slate-50">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="dark:bg-slate-800 dark:border-slate-700">
                   {STORAGE_LOCATIONS.map((location) => (
                     <SelectItem key={location} value={location}>
                       {location}
@@ -476,7 +495,7 @@ export function TabletInventoryShelfCount({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                 Notes (Optional)
               </label>
               <textarea
@@ -485,18 +504,22 @@ export function TabletInventoryShelfCount({
                 onChange={(e) =>
                   setNewItem({ ...newItem, notes: e.target.value })
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-50 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                 rows={2}
               />
             </div>
 
             <div className="flex gap-3 pt-4">
-              <Button variant="outline" onClick={() => setShowAddItem(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowAddItem(false)}
+                className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
                 Cancel
               </Button>
               <Button
                 onClick={handleAddItem}
-                className="flex-1 bg-blue-600 hover:bg-blue-700"
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Item
