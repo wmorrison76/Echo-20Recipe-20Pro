@@ -2408,6 +2408,7 @@ const RecipeInputPage = () => {
       source: "manual",
       taxonomy,
       chefNotes,
+      portionSize: portionSize ? { value: portionSize, unit: portionSizeUnit } : undefined,
       serverNotes: recipeExport,
     };
 
