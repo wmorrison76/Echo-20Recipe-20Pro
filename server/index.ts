@@ -175,6 +175,9 @@ export function createServer() {
   // Training Orchestration - Unified training management
   app.use("/api/training", trainingOrchestrationRouter);
 
+  // Tablet Label Printing System - Kitchen prep label management
+  app.use("/api/tablet", tabletApiRouter);
+
   // Global error handler - ensure all errors return JSON
   app.use(
     (
