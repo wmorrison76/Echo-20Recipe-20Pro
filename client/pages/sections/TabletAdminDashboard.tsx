@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { TabletNav } from "@/components/TabletNav";
+import { RecipeAccessManagement, type RecipeAccess } from "@/components/RecipeAccessManagement";
 
 interface TabletDevice {
   id: string;
