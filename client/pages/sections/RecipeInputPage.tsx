@@ -534,6 +534,8 @@ const RecipeInputPage = () => {
   const [cookTime, setCookTime] = useState<string>("");
   const [cookTemp, setCookTemp] = useState<string>("");
   const [prepTime, setPrepTime] = useState<string>("");
+  const [portionSize, setPortionSize] = useState<string>("");
+  const [portionSizeUnit, setPortionSizeUnit] = useState<string>("OZ");
 
   const isFormPristine = useMemo(() => {
     const hasName = recipeName.trim().length > 0;
@@ -2514,7 +2516,7 @@ const RecipeInputPage = () => {
       "¾": "3/4",
       "⅓": "1/3",
       "⅔": "2/3",
-      "⅛": "1/8",
+      "��": "1/8",
       "⅜": "3/8",
       "⅝": "5/8",
       "⅞": "7/8",
