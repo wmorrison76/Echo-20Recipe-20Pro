@@ -11,8 +11,15 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash2, Search, Loader2, Check } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
 import FoodRecallNotificationOverlay from "@/components/FoodRecallNotificationOverlay";
+
+function formatCurrency(amount: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
 
 interface WasteEntry {
   id: string;
