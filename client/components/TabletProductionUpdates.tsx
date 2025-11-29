@@ -278,15 +278,14 @@ export function TabletProductionUpdates({
                 </div>
               )}
 
-              {/* Screenshot Section */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-slate-50">
                   Production Screenshot
                 </h3>
 
                 {previewUrl ? (
                   <div className="space-y-3">
-                    <div className="relative bg-gray-100 rounded-lg overflow-hidden max-w-md mx-auto">
+                    <div className="relative bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden max-w-md mx-auto">
                       <img
                         src={previewUrl}
                         alt="Production screenshot"
@@ -299,7 +298,7 @@ export function TabletProductionUpdates({
                           setSelectedFile(null);
                           setPreviewUrl(null);
                         }}
-                        className="absolute top-2 right-2 bg-white/80 hover:bg-white"
+                        className="absolute top-2 right-2 bg-white/90 dark:bg-slate-900/90 hover:bg-white dark:hover:bg-slate-800"
                       >
                         Clear
                       </Button>
@@ -307,20 +306,20 @@ export function TabletProductionUpdates({
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                      <Camera className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                      <p className="text-sm text-gray-600 mb-4">
+                    <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg p-8 text-center bg-slate-50 dark:bg-slate-800">
+                      <Camera className="w-12 h-12 text-slate-400 dark:text-slate-500 mx-auto mb-3" />
+                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
                         Take a photo of the current production status
                       </p>
                       <div className="flex gap-2 flex-col sm:flex-row justify-center">
                         <Button
                           onClick={handleCapturePhoto}
-                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                          className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white"
                         >
                           <Camera className="w-4 h-4 mr-2" />
                           Take Photo
                         </Button>
-                        <Button variant="outline">
+                        <Button variant="outline" className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700">
                           <label className="flex items-center cursor-pointer">
                             <Upload className="w-4 h-4 mr-2" />
                             Upload Image
@@ -338,16 +337,15 @@ export function TabletProductionUpdates({
                 )}
               </div>
 
-              {/* Status Update */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                   Production Status *
                 </label>
                 <Select value={newStatus} onValueChange={setNewStatus}>
-                  <SelectTrigger>
+                  <SelectTrigger className="dark:bg-slate-800 dark:border-slate-700 dark:text-slate-50">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="dark:bg-slate-800 dark:border-slate-700">
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="in-progress">In Progress</SelectItem>
                     <SelectItem value="completed">Completed</SelectItem>
@@ -356,31 +354,33 @@ export function TabletProductionUpdates({
                 </Select>
               </div>
 
-              {/* Notes */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                   Notes (Optional)
                 </label>
                 <textarea
                   placeholder="Any updates or notes about production status..."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-50 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   rows={3}
                 />
               </div>
 
-              {/* Actions */}
-              <div className="flex gap-3 pt-4 border-t border-gray-200">
+              <div className="flex gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
                 {onClose && (
-                  <Button variant="outline" onClick={onClose}>
+                  <Button
+                    variant="outline"
+                    onClick={onClose}
+                    className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                  >
                     Cancel
                   </Button>
                 )}
                 <Button
                   onClick={handleSubmitUpdate}
                   disabled={isUploading || !selectedTask}
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white"
                 >
                   {isUploading ? (
                     <>
