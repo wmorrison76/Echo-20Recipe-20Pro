@@ -353,36 +353,48 @@ export default function TabletInventoryTransfer() {
               </div>
 
               {/* Departments */}
-              <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                <label className="block text-sm font-medium text-slate-700 mb-3">
+              <div className="bg-gradient-to-br from-emerald-50 to-emerald-50/50 p-4 rounded-lg border border-emerald-200">
+                <label className="block text-sm font-medium text-slate-700 mb-4">
                   Transfer Route *
                 </label>
-                <div className="flex items-center gap-3">
-                  <Select value={fromDept} onValueChange={setFromDept}>
-                    <SelectTrigger className="bg-white flex-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {DEPARTMENTS.map((dept) => (
-                        <SelectItem key={dept} value={dept}>
-                          {dept}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <ArrowRight className="h-5 w-5 text-slate-400 flex-shrink-0" />
-                  <Select value={toDept} onValueChange={setToDept}>
-                    <SelectTrigger className="bg-white flex-1">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {DEPARTMENTS.filter(d => d !== fromDept).map((dept) => (
-                        <SelectItem key={dept} value={dept}>
-                          {dept}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-emerald-700 mb-2 uppercase tracking-wide">
+                      From (Source Outlet)
+                    </label>
+                    <Select value={fromDept} onValueChange={setFromDept}>
+                      <SelectTrigger className="bg-white border-emerald-200 hover:border-emerald-300">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DEPARTMENTS.map((dept) => (
+                          <SelectItem key={dept} value={dept}>
+                            {dept}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex justify-center py-1">
+                    <ArrowRight className="h-5 w-5 text-emerald-400" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-emerald-700 mb-2 uppercase tracking-wide">
+                      To (Destination Department)
+                    </label>
+                    <Select value={toDept} onValueChange={setToDept}>
+                      <SelectTrigger className="bg-white border-emerald-200 hover:border-emerald-300">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {DEPARTMENTS.filter(d => d !== fromDept).map((dept) => (
+                          <SelectItem key={dept} value={dept}>
+                            {dept}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
               </div>
 
