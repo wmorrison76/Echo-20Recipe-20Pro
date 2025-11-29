@@ -482,70 +482,147 @@ export default function TabletAdminDashboard() {
 
       {/* New Device Dialog */}
       <Dialog open={showNewDevice} onOpenChange={setShowNewDevice}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Create New Tablet Device</DialogTitle>
+            <DialogTitle>{qrCodeData ? "Device Created - Setup QR Code" : "Create New Tablet Device"}</DialogTitle>
             <DialogDescription>
-              Set up a new kitchen tablet for recipe access and label printing
+              {qrCodeData
+                ? "Scan this QR code on the new tablet to automatically configure it"
+                : "Set up a new kitchen tablet for recipe access and label printing"}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 py-4">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Device Name
+          {qrCodeData ? (
+            <div className="space-y-6 py-4">
+              <div className="flex flex-col items-center space-y-4">
+                <img
+                  src={qrCodeData.qr_code_url}
+                  alt="Device Setup QR Code"
+                  className="w-64 h-64 border-4 border-gray-200 rounded-lg"
+                />
+                <p className="text-center text-sm text-gray-600 max-w-sm">
+                  {qrCodeData.setup_instructions}
+                </p>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                <div className="text-sm">
+                  <label className="block font-semibold text-gray-700 mb-2">Device Name</label>
+                  <p className="text-gray-900 font-mono text-sm p-2 bg-white rounded border border-gray-200">
+                    {qrCodeData.device_name}
+                  </p>
+                </div>
+
+                <div className="text-sm">
+                  <label className="block font-semibold text-gray-700 mb-2">Pairing URL</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={qrCodeData.pairing_url}
+                      readOnly
+                      className="flex-1 px-3 py-2 border border-gray-200 rounded text-xs font-mono text-gray-600"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => copyToClipboard(qrCodeData.pairing_url, "URL")}
+                    >
+                      Copy
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => downloadQRCode(qrCodeData.qr_code_url, qrCodeData.device_name)}
+                  className="flex-1"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Download QR Code
+                </Button>
+                <Button
+                  onClick={() => {
+                    setShowNewDevice(false);
+                    setQrCodeData(null);
+                    setNewDevice({ deviceName: "", credentialMode: "none", includeChefName: false });
+                  }}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                >
+                  Done
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4 py-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Device Name
+                </label>
+                <Input
+                  placeholder="e.g., Kitchen-Station-1"
+                  value={newDevice.deviceName}
+                  onChange={(e) =>
+                    setNewDevice({ ...newDevice, deviceName: e.target.value })
+                  }
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Credential Mode
+                </label>
+                <Select
+                  value={newDevice.credentialMode}
+                  onValueChange={(value: any) =>
+                    setNewDevice({ ...newDevice, credentialMode: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No Credentials</SelectItem>
+                    <SelectItem value="camera">Camera/Photo</SelectItem>
+                    <SelectItem value="employee_id">Employee ID</SelectItem>
+                    <SelectItem value="disabled">Disabled</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={newDevice.includeChefName}
+                  onChange={(e) =>
+                    setNewDevice({ ...newDevice, includeChefName: e.target.checked })
+                  }
+                />
+                <span className="text-sm text-gray-700">Include chef name in QR code</span>
               </label>
-              <Input
-                placeholder="e.g., Kitchen-Station-1"
-                value={newDevice.deviceName}
-                onChange={(e) =>
-                  setNewDevice({ ...newDevice, deviceName: e.target.value })
-                }
-              />
-            </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Credential Mode
-              </label>
-              <Select
-                value={newDevice.credentialMode}
-                onValueChange={(value: any) =>
-                  setNewDevice({ ...newDevice, credentialMode: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">No Credentials</SelectItem>
-                  <SelectItem value="camera">Camera/Photo</SelectItem>
-                  <SelectItem value="employee_id">Employee ID</SelectItem>
-                  <SelectItem value="disabled">Disabled</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex gap-2 pt-4">
+                <Button variant="outline" onClick={() => setShowNewDevice(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleCreateDevice}
+                  disabled={isCreatingDevice}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  {isCreatingDevice ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Creating...
+                    </>
+                  ) : (
+                    "Create Device"
+                  )}
+                </Button>
+              </div>
             </div>
-
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={newDevice.includeChefName}
-                onChange={(e) =>
-                  setNewDevice({ ...newDevice, includeChefName: e.target.checked })
-                }
-              />
-              <span className="text-sm text-gray-700">Include chef name in QR code</span>
-            </label>
-
-            <div className="flex gap-2 pt-4">
-              <Button variant="outline" onClick={() => setShowNewDevice(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleCreateDevice} className="bg-blue-600 hover:bg-blue-700">
-                Create Device
-              </Button>
-            </div>
-          </div>
+          )}
         </DialogContent>
       </Dialog>
       </div>
