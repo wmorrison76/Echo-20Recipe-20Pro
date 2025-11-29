@@ -149,11 +149,11 @@ export default function TabletAdminDashboard() {
     }
 
     try {
-      const response = await fetch("/api/tablet/setup", {
+      setIsCreatingDevice(true);
+      const response = await fetch("/api/tablet/device/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          adminToken: "admin-token-placeholder", // In production, use actual auth token
           deviceName: newDevice.deviceName,
           credentialMode: newDevice.credentialMode,
           includeChefName: newDevice.includeChefName,
@@ -163,28 +163,41 @@ export default function TabletAdminDashboard() {
       if (!response.ok) throw new Error("Failed to create device");
 
       const data = await response.json();
+      setQrCodeData(data.pairing);
 
       toast({
         title: "Success",
-        description: `Device created: ${data.deviceId}`,
+        description: `Device created: ${data.device.device_name}`,
       });
 
-      setShowNewDevice(false);
-      setNewDevice({ deviceName: "", credentialMode: "none", includeChefName: false });
-
-      // Copy setup URL to clipboard
-      navigator.clipboard.writeText(data.setupUrl);
-      toast({
-        title: "Setup URL copied",
-        description: "Paste to tablet browser",
-      });
+      // Reload devices list
+      await loadDevices();
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to create device",
+        description: error instanceof Error ? error.message : "Failed to create device",
         variant: "destructive",
       });
+    } finally {
+      setIsCreatingDevice(false);
     }
+  };
+
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      title: "Copied",
+      description: `${label} copied to clipboard`,
+    });
+  };
+
+  const downloadQRCode = (qrUrl: string, deviceName: string) => {
+    const a = document.createElement("a");
+    a.href = qrUrl;
+    a.download = `tablet-setup-${deviceName}-${Date.now()}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   const downloadReport = () => {
