@@ -19,22 +19,36 @@ export function useTabletServiceWorker() {
     (async () => {
       try {
         const swPath = "/tablet-sw.js";
+
+        // First, verify the service worker file exists
+        const swCheck = await fetch(swPath, { method: "HEAD" });
+        if (!swCheck.ok) {
+          throw new Error(
+            `Service Worker file not found at ${swPath} (HTTP ${swCheck.status})`
+          );
+        }
+
         const registration = await navigator.serviceWorker.register(swPath, {
           scope: "/tablet/",
         });
 
-        console.log("[Tablet SW] Registered:", registration);
+        console.log("[Tablet SW] Successfully registered:", registration);
         setSwRegistered(true);
 
         // Check for updates periodically
-        setInterval(() => {
+        const updateInterval = setInterval(() => {
           registration.update().catch((error) => {
-            console.error("[Tablet SW] Update check failed:", error);
+            console.warn("[Tablet SW] Update check failed:", error);
           });
         }, 60 * 60 * 1000); // Check every hour
+
+        // Cleanup interval on unmount
+        return () => clearInterval(updateInterval);
       } catch (error) {
-        console.error("[Tablet SW] Registration failed:", error);
-        setSwError(error instanceof Error ? error : new Error(String(error)));
+        const errorMsg =
+          error instanceof Error ? error.message : String(error);
+        console.error("[Tablet SW] Registration failed:", errorMsg);
+        setSwError(error instanceof Error ? error : new Error(errorMsg));
       }
     })();
 
