@@ -99,7 +99,7 @@ router.post("/device/create", async (req: Request, res: Response) => {
 // GET /api/tablet/device/list - Get all registered devices (admin only)
 router.get("/device/list", async (req: Request, res: Response) => {
   try {
-    const { data: devices, error } = await supabase
+    const { data: devices, error } = await getSupabaseClient()
       .from("tablet_configs")
       .select(
         "id, device_id, device_name, credential_mode, include_chef_name, enabled, created_at, updated_at",
@@ -129,7 +129,7 @@ router.post("/device/register", async (req: Request, res: Response) => {
     }
 
     // Verify device exists and token matches
-    const { data: device, error: lookupError } = await supabase
+    const { data: device, error: lookupError } = await getSupabaseClient()
       .from("tablet_configs")
       .select("*")
       .eq("device_id", deviceId)
@@ -151,7 +151,7 @@ router.post("/device/register", async (req: Request, res: Response) => {
     ).toISOString(); // 1 year
 
     // Update device with registration info and session
-    const { error: updateError } = await supabase
+    const { error: updateError } = await getSupabaseClient()
       .from("tablet_configs")
       .update({
         session_token: sessionToken,
@@ -167,7 +167,7 @@ router.post("/device/register", async (req: Request, res: Response) => {
     }
 
     // Store session
-    const { error: sessionError } = await supabase
+    const { error: sessionError } = await getSupabaseClient()
       .from("tablet_sessions")
       .insert({
         device_id: deviceId,
@@ -210,7 +210,7 @@ router.put("/device/:deviceId", async (req: Request, res: Response) => {
 
     updateData.updated_at = new Date().toISOString();
 
-    const { error } = await supabase
+    const { error } = await getSupabaseClient()
       .from("tablet_configs")
       .update(updateData)
       .eq("device_id", deviceId);
@@ -230,7 +230,7 @@ router.delete("/device/:deviceId", async (req: Request, res: Response) => {
   try {
     const { deviceId } = req.params;
 
-    const { error } = await supabase
+    const { error } = await getSupabaseClient()
       .from("tablet_configs")
       .update({ enabled: false })
       .eq("device_id", deviceId);
@@ -287,7 +287,7 @@ router.post("/setup", async (req: Request, res: Response) => {
     const deviceId = crypto.randomBytes(16).toString("hex");
     const deviceToken = generateDeviceToken();
 
-    const { data, error } = await supabase.from("tablet_configs").insert({
+    const { data, error } = await getSupabaseClient().from("tablet_configs").insert({
       device_id: deviceId,
       device_name: deviceName,
       credential_mode: credentialMode,
@@ -319,7 +319,7 @@ router.post("/validate-token", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Missing device token" });
     }
 
-    const { data: sessions, error } = await supabase
+    const { data: sessions, error } = await getSupabaseClient()
       .from("tablet_sessions")
       .select("*, tablet_configs(*)")
       .eq("device_token", deviceToken)
@@ -339,7 +339,7 @@ router.post("/validate-token", async (req: Request, res: Response) => {
     }
 
     // Update last activity
-    await supabase
+    await getSupabaseClient()
       .from("tablet_sessions")
       .update({ last_activity: new Date().toISOString() })
       .eq("id", sessions.id);
@@ -364,7 +364,7 @@ router.post("/login", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const { data: config, error } = await supabase
+    const { data: config, error } = await getSupabaseClient()
       .from("tablet_configs")
       .select("*")
       .eq("device_id", deviceToken)
@@ -379,7 +379,7 @@ router.post("/login", async (req: Request, res: Response) => {
       Date.now() + 30 * 24 * 60 * 60 * 1000,
     ).toISOString();
 
-    const { error: insertError } = await supabase
+    const { error: insertError } = await getSupabaseClient()
       .from("tablet_sessions")
       .insert({
         device_token: deviceToken,
@@ -445,7 +445,7 @@ router.get("/recipes/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const { data: recipe, error } = await supabase
+    const { data: recipe, error } = await getSupabaseClient()
       .from("user_recipes")
       .select("*")
       .eq("id", id)
@@ -491,7 +491,7 @@ router.post("/print-label", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const { data: config } = await supabase
+    const { data: config } = await getSupabaseClient()
       .from("tablet_configs")
       .select("*")
       .eq("device_id", deviceToken)
@@ -511,7 +511,7 @@ router.post("/print-label", async (req: Request, res: Response) => {
         ? `${portionMultiplier} x ${portionSize}`
         : undefined;
 
-    const { error } = await supabase.from("tablet_print_history").insert({
+    const { error } = await getSupabaseClient().from("tablet_print_history").insert({
       device_id: deviceToken,
       device_name: config.device_name,
       recipe_id: recipeId,
@@ -585,7 +585,7 @@ router.get("/settings", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Missing device token" });
     }
 
-    const { data: config } = await supabase
+    const { data: config } = await getSupabaseClient()
       .from("tablet_configs")
       .select("*")
       .eq("device_id", String(deviceToken))
@@ -615,7 +615,7 @@ router.put("/settings", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Missing device token" });
     }
 
-    const { error } = await supabase
+    const { error } = await getSupabaseClient()
       .from("tablet_configs")
       .update({
         credential_mode: credentialMode,
@@ -713,7 +713,7 @@ router.post("/inventory/shelf-count", async (req: Request, res: Response) => {
       recorded_at: timestamp,
     };
 
-    const { error } = await supabase.from("tablet_inventory_counts").insert({
+    const { error } = await getSupabaseClient().from("tablet_inventory_counts").insert({
       id: countId,
       device_id: deviceId,
       items: inventoryCount.items,
@@ -773,7 +773,7 @@ router.post("/inventory/low-stock", async (req: Request, res: Response) => {
       created_at: timestamp,
     };
 
-    const { error } = await supabase.from("tablet_low_stock_alerts").insert({
+    const { error } = await getSupabaseClient().from("tablet_low_stock_alerts").insert({
       ...lowStockAlert,
     });
 
@@ -840,7 +840,7 @@ router.put(
         updateData.resolved_at = new Date().toISOString();
       }
 
-      const { error } = await supabase
+      const { error } = await getSupabaseClient()
         .from("tablet_low_stock_alerts")
         .update(updateData)
         .eq("id", alertId);
@@ -879,7 +879,7 @@ router.post("/production/update", async (req: Request, res: Response) => {
     const updateId = crypto.randomBytes(16).toString("hex");
     const timestamp = new Date().toISOString();
 
-    const { error } = await supabase.from("tablet_production_updates").insert({
+    const { error } = await getSupabaseClient().from("tablet_production_updates").insert({
       id: updateId,
       device_id: deviceId,
       production_task_id: productionTaskId,
@@ -924,7 +924,7 @@ router.post("/prep/assign", async (req: Request, res: Response) => {
     const assignmentId = crypto.randomBytes(16).toString("hex");
     const timestamp = new Date().toISOString();
 
-    const { error } = await supabase.from("tablet_prep_assignments").insert({
+    const { error } = await getSupabaseClient().from("tablet_prep_assignments").insert({
       id: assignmentId,
       device_id: deviceId,
       prep_task_id: prepTaskId,
@@ -1001,7 +1001,7 @@ router.put("/prep/:assignmentId", async (req: Request, res: Response) => {
       }
     }
 
-    const { error } = await supabase
+    const { error } = await getSupabaseClient()
       .from("tablet_prep_assignments")
       .update(updateData)
       .eq("id", assignmentId);
