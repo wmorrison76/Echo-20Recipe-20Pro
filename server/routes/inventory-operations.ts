@@ -45,7 +45,7 @@ router.get("/items", async (req: Request, res: Response) => {
   try {
     const { q } = req.query;
 
-    const { data: items, error } = await supabase
+    const { data: items, error } = await getSupabaseClient()
       .from("inventory_items")
       .select("id, name, category, item_type, unit")
       .limit(50);
@@ -79,7 +79,7 @@ router.get("/items/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const { data: item, error } = await supabase
+    const { data: item, error } = await getSupabaseClient()
       .from("inventory_items")
       .select("*")
       .eq("id", id)
@@ -113,7 +113,7 @@ router.post("/transfers", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const { data: transfer, error } = await supabase
+    const { data: transfer, error } = await getSupabaseClient()
       .from("inventory_transfers")
       .insert({
         item_id,
@@ -192,7 +192,7 @@ router.get("/transfers/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const { data: transfer, error } = await supabase
+    const { data: transfer, error } = await getSupabaseClient()
       .from("inventory_transfers")
       .select("*")
       .eq("id", id)
@@ -228,7 +228,7 @@ router.put("/transfers/:id", async (req: Request, res: Response) => {
       updateData.received_date = received_date;
     }
 
-    const { data: transfer, error } = await supabase
+    const { data: transfer, error } = await getSupabaseClient()
       .from("inventory_transfers")
       .update(updateData)
       .eq("id", id)
@@ -255,7 +255,7 @@ router.post("/recalls", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const { data: recall, error } = await supabase
+    const { data: recall, error } = await getSupabaseClient()
       .from("food_recall_notifications")
       .insert({
         recall_id,
@@ -311,7 +311,7 @@ router.get("/recalls/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const { data: recall, error } = await supabase
+    const { data: recall, error } = await getSupabaseClient()
       .from("food_recall_notifications")
       .select("*")
       .eq("id", id)
@@ -340,7 +340,7 @@ router.post(
       }
 
       // Check if device already notified
-      const { data: existing } = await supabase
+      const { data: existing } = await getSupabaseClient()
         .from("food_recall_device_notifications")
         .select("id")
         .eq("recall_id", id)
@@ -351,7 +351,7 @@ router.post(
         return res.json(existing);
       }
 
-      const { data: notification, error } = await supabase
+      const { data: notification, error } = await getSupabaseClient()
         .from("food_recall_device_notifications")
         .insert({
           recall_id: id,
@@ -384,7 +384,7 @@ router.put("/recalls/:id/acknowledge", async (req: Request, res: Response) => {
         .json({ error: "device_id and acknowledged_by are required" });
     }
 
-    const { data: notification, error } = await supabase
+    const { data: notification, error } = await getSupabaseClient()
       .from("food_recall_device_notifications")
       .update({
         acknowledged_at: new Date().toISOString(),
