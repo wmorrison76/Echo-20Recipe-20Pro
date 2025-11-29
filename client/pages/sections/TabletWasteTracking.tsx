@@ -271,18 +271,18 @@ export default function TabletWasteTracking() {
             <CardContent className="space-y-4">
               {/* Category Selection */}
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Category
+                <label className="block text-sm font-medium text-slate-700 mb-3">
+                  Category *
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {WASTE_CATEGORIES.map((cat) => (
                     <button
                       key={cat.value}
                       onClick={() => setCategory(cat.value)}
-                      className={`py-3 px-2 rounded-lg text-sm font-medium transition-all ${
+                      className={`py-3 px-2 rounded-lg text-sm font-medium transition-all border-2 ${
                         category === cat.value
-                          ? `${cat.color} ring-2 ring-blue-500 border-blue-500`
-                          : `${cat.color} border border-gray-200 hover:border-gray-300`
+                          ? `${cat.color} ring-2 ring-red-500 border-red-500 shadow-sm`
+                          : `${cat.color} border-gray-200 hover:border-gray-300`
                       }`}
                     >
                       {cat.label}
