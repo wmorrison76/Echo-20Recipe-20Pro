@@ -225,20 +225,24 @@ export default function TabletWasteTracking() {
   const categoryColor = WASTE_CATEGORIES.find(c => c.value === category)?.color || "bg-gray-100";
 
   return (
-    <div className="w-full h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col overflow-hidden">
+    <div className="w-full h-screen bg-gradient-to-br from-slate-50 via-slate-50 to-slate-100 flex flex-col overflow-hidden">
       <FoodRecallNotificationOverlay deviceId={deviceId} />
       {/* Header */}
-      <div className="bg-white border-b shadow-sm p-4">
+      <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200/50 shadow-sm p-4">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Waste Tracking</h1>
             <p className="text-sm text-slate-600 mt-1">
-              Quick line-level entry • {isOnline ? "🟢 Online" : "🔴 Offline Mode"}
+              Quick line-level entry • {isOnline ? (
+                <span className="inline-flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-green-500"></span>Online</span>
+              ) : (
+                <span className="inline-flex items-center gap-1"><span className="inline-block w-2 h-2 rounded-full bg-red-500"></span>Offline Mode</span>
+              )}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-sm text-slate-600">Today's Waste</p>
-            <p className="text-2xl font-bold text-red-600">
+            <p className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Today's Waste</p>
+            <p className="text-3xl font-bold text-red-600">
               {formatCurrency(totalWasteCost)}
             </p>
           </div>
@@ -251,7 +255,7 @@ export default function TabletWasteTracking() {
         {!showForm && (
           <Button
             onClick={() => setShowForm(true)}
-            className="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-lg font-semibold rounded-lg shadow-md"
+            className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white py-5 text-base font-semibold rounded-lg shadow-md hover:shadow-lg transition-all"
           >
             <Plus className="mr-2 h-5 w-5" />
             Add Waste Entry
@@ -260,9 +264,9 @@ export default function TabletWasteTracking() {
 
         {/* Entry Form */}
         {showForm && (
-          <Card className="bg-white border-2 border-blue-200">
-            <CardHeader>
-              <CardTitle>New Waste Entry</CardTitle>
+          <Card className="bg-white shadow-lg border border-red-200">
+            <CardHeader className="bg-gradient-to-r from-red-50 to-red-50/50 border-b border-red-200">
+              <CardTitle className="text-red-900">New Waste Entry</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Category Selection */}
