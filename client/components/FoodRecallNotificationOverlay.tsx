@@ -60,25 +60,40 @@ export default function FoodRecallNotificationOverlay({
       const response = await fetch(
         `/api/inventory/recalls/device/${deviceId}?acknowledged=false`
       );
-      if (response.ok) {
-        const data = await response.json();
-        if (data && data.length > 0) {
-          const recalls = data.map((notification: any) => ({
-            id: notification.id,
-            recall_id: notification.recall_id,
-            item_name: notification.food_recall_notifications?.item_name,
-            severity: notification.food_recall_notifications?.severity,
-            description: notification.food_recall_notifications?.description,
-            action_required:
-              notification.food_recall_notifications?.action_required,
-            issued_at: notification.food_recall_notifications?.issued_at,
-            resolved_at:
-              notification.food_recall_notifications?.resolved_at,
-          }));
+
+      if (!response.ok) {
+        console.error("Recalls API error:", response.status, response.statusText);
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data && Array.isArray(data) && data.length > 0) {
+        const recalls = data
+          .map((notification: any) => {
+            try {
+              return {
+                id: notification.id,
+                recall_id: notification.recall_id,
+                item_name: notification.food_recall_notifications?.item_name,
+                severity: notification.food_recall_notifications?.severity,
+                description: notification.food_recall_notifications?.description,
+                action_required:
+                  notification.food_recall_notifications?.action_required,
+                issued_at: notification.food_recall_notifications?.issued_at,
+                resolved_at:
+                  notification.food_recall_notifications?.resolved_at,
+              };
+            } catch (err) {
+              console.error("Error mapping recall:", err, notification);
+              return null;
+            }
+          })
+          .filter((r: any) => r !== null);
+
+        if (recalls.length > 0) {
           setActiveRecalls(recalls);
-          if (recalls.length > 0) {
-            setShowRecalls(true);
-          }
+          setShowRecalls(true);
         }
       }
     } catch (error) {
