@@ -11,6 +11,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash2, Search, Loader2, Check, ArrowRight } from "lucide-react";
+import FoodRecallNotificationOverlay from "@/components/FoodRecallNotificationOverlay";
 
 interface TransferEntry {
   id: string;
