@@ -1,12 +1,19 @@
 import { Router, Request, Response } from "express";
 import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
+import {
+  generateDeviceCredentials,
+  generatePairingQRData,
+  getQRCodeImageUrl,
+} from "../lib/tablet-device-pairing";
 
 const router = Router();
 
 const supabaseUrl = process.env.SUPABASE_URL || "";
 const supabaseKey = process.env.SUPABASE_ANON_KEY || "";
 const supabase = createClient(supabaseUrl, supabaseKey);
+
+const APP_BASE_URL = process.env.APP_BASE_URL || "http://localhost:5173";
 
 // Generate QR code data for label
 function generateQRData(
