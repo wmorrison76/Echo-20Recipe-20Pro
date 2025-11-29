@@ -960,7 +960,7 @@ router.get("/prep/assigned", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Missing employeeId" });
     }
 
-    let query = supabase
+    let query = getSupabaseClient()
       .from("tablet_prep_assignments")
       .select("*")
       .eq("assigned_to_employee_id", employeeId)
