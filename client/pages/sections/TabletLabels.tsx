@@ -49,6 +49,7 @@ interface TabletConfig {
 
 export default function TabletLabels() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { swRegistered, isOnline: swOnline } = useTabletServiceWorker();
 
@@ -499,7 +500,7 @@ export default function TabletLabels() {
               {/* Allergens */}
               {selectedRecipe.allergens && selectedRecipe.allergens.length > 0 && (
                 <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <div className="font-bold text-red-800 mb-2">���️ Allergens</div>
+                  <div className="font-bold text-red-800 mb-2">⚠️ Allergens</div>
                   <div className="text-red-700">{selectedRecipe.allergens.join(", ")}</div>
                 </div>
               )}
