@@ -50,6 +50,9 @@ const DEPARTMENTS = [
   "Banquet",
 ];
 
+// Default outlet - this would be set during Onboarding Setup of the LUCCCA Ecosystem
+const DEFAULT_OUTLET = "Kitchen";
+
 export default function TabletInventoryTransfer() {
   const { toast } = useToast();
   const [transfers, setTransfers] = useState<TransferEntry[]>([]);
