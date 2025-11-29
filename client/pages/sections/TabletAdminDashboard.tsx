@@ -28,6 +28,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { format } from "date-fns";
+import { TabletNav } from "@/components/TabletNav";
 
 interface TabletDevice {
   id: string;
