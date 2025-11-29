@@ -427,11 +427,11 @@ export default function TabletInventoryTransfer() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-3 pt-4">
+              <div className="flex gap-3 pt-6 border-t border-slate-200">
                 <Button
                   onClick={handleAddTransfer}
                   disabled={submitting}
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3"
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg shadow-sm hover:shadow-md transition-all"
                 >
                   {submitting ? (
                     <>
@@ -451,7 +451,7 @@ export default function TabletInventoryTransfer() {
                     resetForm();
                   }}
                   variant="outline"
-                  className="flex-1 py-3"
+                  className="flex-1 py-2.5 rounded-lg border-slate-300 hover:bg-slate-50 transition-all"
                 >
                   Cancel
                 </Button>
