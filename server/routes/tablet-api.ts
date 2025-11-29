@@ -52,7 +52,7 @@ router.post("/device/create", async (req: Request, res: Response) => {
     const qrData = generatePairingQRData(deviceId, deviceToken, APP_BASE_URL);
 
     // Store device configuration in Supabase
-    const { data: device, error: dbError } = await supabase
+    const { data: device, error: dbError } = await getSupabaseClient()
       .from("tablet_configs")
       .insert({
         device_id: deviceId,
