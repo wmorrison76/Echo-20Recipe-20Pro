@@ -193,6 +193,18 @@ const navGroups: NavGroup[] = [
         icon: FileText,
         shortcut: { key: "KeyO", display: "O" },
       },
+      {
+        to: "/tablet/waste",
+        labelKey: "nav.tabletWaste",
+        fallback: "TABLET WASTE",
+        icon: Smartphone,
+      },
+      {
+        to: "/tablet/transfers",
+        labelKey: "nav.tabletTransfers",
+        fallback: "TABLET TRANSFERS",
+        icon: Smartphone,
+      },
     ],
   },
   {
@@ -206,6 +218,12 @@ const navGroups: NavGroup[] = [
         fallback: "PURCH/REC",
         icon: ShoppingCart,
         shortcut: { key: "Digit0", display: "0" },
+      },
+      {
+        to: "/?tab=inventory-transfers",
+        labelKey: "nav.inventoryTransfers",
+        fallback: "INVENTORY TRANSFERS",
+        icon: ArrowRightLeft,
       },
     ],
   },
