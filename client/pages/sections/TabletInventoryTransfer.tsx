@@ -246,7 +246,7 @@ export default function TabletInventoryTransfer() {
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Inventory Transfer</h1>
             <p className="text-sm text-slate-600 mt-1">
-              Inter-department transfers • {isOnline ? "🟢 Online" : "�� Offline Mode"}
+              Inter-department transfers • {isOnline ? "🟢 Online" : "🔴 Offline Mode"}
             </p>
           </div>
           <div className="text-right">
@@ -509,15 +509,18 @@ export default function TabletInventoryTransfer() {
         {/* Completed Transfers */}
         {completedTransfers.length > 0 && (
           <div>
-            <h2 className="text-lg font-semibold text-slate-900 mb-3">Completed</h2>
+            <h2 className="text-lg font-semibold text-slate-900 mb-3 flex items-center gap-2">
+              <div className="w-1 h-6 bg-green-500 rounded-full"></div>
+              Completed ({completedTransfers.slice(0, 5).length}/{completedTransfers.length})
+            </h2>
             <div className="space-y-2">
               {completedTransfers.slice(0, 5).map((transfer) => (
-                <Card key={transfer.id} className="bg-green-50 border-l-4 border-l-green-500">
+                <Card key={transfer.id} className="bg-green-50/40 border border-green-200/50 hover:shadow-sm transition-all">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between">
                       <div className="text-sm">
                         <p className="font-medium text-slate-900">{transfer.itemName}</p>
-                        <p className="text-slate-600">
+                        <p className="text-slate-600 text-xs">
                           {transfer.quantity} {transfer.unit}
                         </p>
                       </div>
