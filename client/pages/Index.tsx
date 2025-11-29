@@ -209,6 +209,11 @@ function IndexContent() {
                 <InventorySuppliesWorkspace />
               </div>
             </TabsContent>
+            <TabsContent value="inventory-transfers">
+              <div className="container mx-auto space-y-3 px-3 py-3">
+                <InventoryTransfersWorkspace />
+              </div>
+            </TabsContent>
             <TabsContent value="nutrition">
               <div className="container mx-auto space-y-3 px-3 py-3">
                 <NutritionAllergensWorkspace />
