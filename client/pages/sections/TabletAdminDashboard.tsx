@@ -42,6 +42,15 @@ interface TabletDevice {
   updated_at: string;
 }
 
+interface QRCodeData {
+  device_id: string;
+  device_name: string;
+  device_token: string;
+  pairing_url: string;
+  qr_code_url: string;
+  setup_instructions: string;
+}
+
 interface PrintRecord {
   id: string;
   device_id: string;
