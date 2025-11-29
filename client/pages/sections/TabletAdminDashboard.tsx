@@ -98,12 +98,11 @@ export default function TabletAdminDashboard() {
   const loadDevices = useCallback(async () => {
     try {
       setIsLoading(true);
-      // Note: This endpoint would need to be created to fetch all tablet configs
-      // For now, we'll show a placeholder
-      toast({
-        title: "Info",
-        description: "Tablet device list endpoint needed",
-      });
+      const response = await fetch("/api/tablet/device/list");
+      if (!response.ok) throw new Error("Failed to load devices");
+
+      const data = await response.json();
+      setDevices(data.devices || []);
     } catch (error) {
       toast({
         title: "Error",
