@@ -193,13 +193,20 @@ export default function TabletAdminDashboard() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Tablet Admin</h1>
-          <p className="text-gray-600 mt-1">Manage kitchen tablet devices and compliance</p>
-        </div>
+    <div className="w-full h-screen bg-gray-100 flex flex-row">
+      {/* Sidebar Navigation */}
+      <div className="w-64 flex-shrink-0 border-r border-gray-300">
+        <TabletNav />
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col overflow-auto p-8">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Tablet Admin</h1>
+            <p className="text-gray-600 mt-1">Manage kitchen tablet devices and compliance</p>
+          </div>
         <Button
           onClick={() => setShowNewDevice(true)}
           className="bg-blue-600 hover:bg-blue-700"
@@ -438,6 +445,7 @@ export default function TabletAdminDashboard() {
           </div>
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 }
