@@ -65,7 +65,7 @@ export default function TabletInventoryTransfer() {
   const [itemSearch, setItemSearch] = useState("");
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState("lb");
-  const [fromDept, setFromDept] = useState("Kitchen");
+  const [fromDept, setFromDept] = useState(DEFAULT_OUTLET);
   const [toDept, setToDept] = useState("Prep");
   const [requestedBy, setRequestedBy] = useState("");
   const [notes, setNotes] = useState("");
