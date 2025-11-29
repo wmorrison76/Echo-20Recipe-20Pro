@@ -283,7 +283,7 @@ export default function TabletAdminDashboard() {
       </div>
 
       {/* Devices Section */}
-      <div className="mb-8">
+      <div className="mb-12">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Devices</h2>
         {isLoading ? (
           <div className="flex justify-center items-center h-32">
