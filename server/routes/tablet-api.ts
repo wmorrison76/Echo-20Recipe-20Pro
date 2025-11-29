@@ -408,7 +408,7 @@ router.get("/recipes", async (req: Request, res: Response) => {
   try {
     const { search, limit = "50" } = req.query;
 
-    let query = supabase
+    let query = getSupabaseClient()
       .from("user_recipes")
       .select("id, title, description, imageNames, extra");
 
