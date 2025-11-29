@@ -347,6 +347,20 @@ export default function TabletAdminDashboard() {
         )}
       </div>
 
+      {/* Recipe Management Section */}
+      <div className="mb-12">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Recipe Access Management</h2>
+        <RecipeAccessManagement
+          recipes={recipes}
+          onConfirm={async (recipeId) => {
+            await confirmRecipeAccuracy(recipeId);
+          }}
+          onToggleAccess={async (recipeId, isActive) => {
+            await toggleRecipeAccess(recipeId, isActive);
+          }}
+        />
+      </div>
+
       {/* Compliance Report Section */}
       <div>
         <div className="flex justify-between items-center mb-4">
