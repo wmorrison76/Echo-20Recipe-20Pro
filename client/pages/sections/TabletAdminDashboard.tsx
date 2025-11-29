@@ -93,7 +93,6 @@ export default function TabletAdminDashboard() {
     includeChefName: false,
   });
 
-  // Load devices and history on mount
   useEffect(() => {
     loadDevices();
     loadPrintHistory();
@@ -174,7 +173,6 @@ export default function TabletAdminDashboard() {
         description: `Device created: ${data.device.device_name}`,
       });
 
-      // Reload devices list
       await loadDevices();
     } catch (error) {
       toast({
@@ -288,256 +286,315 @@ export default function TabletAdminDashboard() {
   };
 
   return (
-    <div className="w-full h-screen bg-gray-100 flex flex-row">
-      {/* Sidebar Navigation */}
-      <div className="w-64 flex-shrink-0 border-r border-gray-300">
+    <div className="w-full h-screen bg-slate-50 dark:bg-slate-950 flex flex-row">
+      <div className="w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-800">
         <TabletNav />
       </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-auto p-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Tablet Admin</h1>
-            <p className="text-gray-600 mt-1">
-              Manage kitchen tablet devices and compliance
-            </p>
-          </div>
-          <Button
-            onClick={() => setShowNewDevice(true)}
-            className="bg-blue-600 hover:bg-blue-700"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            New Device
-          </Button>
-        </div>
-
-        {/* Devices Section */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Devices</h2>
-          {isLoading ? (
-            <div className="flex justify-center items-center h-32">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-            </div>
-          ) : devices.length === 0 ? (
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-              <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">No devices configured</p>
-              <p className="text-sm text-gray-500 mt-1">
-                Create your first tablet device to get started
+      <div className="flex-1 flex flex-col overflow-auto">
+        <div className="border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-10">
+          <div className="px-8 py-6 flex justify-between items-start gap-8">
+            <div className="flex-1">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 dark:from-slate-50 dark:via-slate-100 dark:to-slate-50 bg-clip-text text-transparent">
+                Tablet Admin
+              </h1>
+              <p className="text-slate-600 dark:text-slate-400 mt-2">
+                Manage kitchen tablet devices and compliance settings
               </p>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {devices.map((device) => (
-                <div
-                  key={device.id}
-                  className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <h3 className="font-bold text-gray-900">
-                        {device.device_name}
-                      </h3>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {device.device_id}
-                      </p>
-                    </div>
-                    {device.enabled ? (
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                    ) : (
-                      <AlertCircle className="w-5 h-5 text-red-600" />
-                    )}
-                  </div>
-
-                  <div className="space-y-2 text-sm mb-4">
-                    <div>
-                      <span className="text-gray-600">Credential Mode: </span>
-                      <span className="font-semibold text-gray-900">
-                        {device.credential_mode}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Chef Name: </span>
-                      <span className="font-semibold text-gray-900">
-                        {device.include_chef_name ? "Yes" : "No"}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Created: </span>
-                      <span className="font-semibold text-gray-900">
-                        {format(new Date(device.created_at), "MMM d, yyyy")}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="flex-1">
-                      <Edit2 className="w-4 h-4 mr-1" />
-                      Edit
-                    </Button>
-                    <Button variant="outline" size="sm" className="flex-1">
-                      <Trash2 className="w-4 h-4 mr-1" />
-                      Delete
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Recipe Management Section */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            Recipe Access Management
-          </h2>
-          <RecipeAccessManagement
-            recipes={recipes}
-            onConfirm={async (recipeId) => {
-              await confirmRecipeAccuracy(recipeId);
-            }}
-            onToggleAccess={async (recipeId, isActive) => {
-              await toggleRecipeAccess(recipeId, isActive);
-            }}
-          />
-        </div>
-
-        {/* Compliance Report Section */}
-        <div>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold text-gray-900">
-              Compliance Report
-            </h2>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowFilters(!showFilters)}
-              >
-                <Filter className="w-4 h-4 mr-2" />
-                Filters
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={downloadReport}
-                disabled={printHistory.length === 0}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Export CSV
-              </Button>
-            </div>
+            <Button
+              onClick={() => setShowNewDevice(true)}
+              className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white shadow-lg hover:shadow-xl transition-all"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              New Device
+            </Button>
           </div>
-
-          {/* Filters */}
-          {showFilters && (
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Input
-                placeholder="Device ID"
-                value={filters.deviceId}
-                onChange={(e) =>
-                  setFilters({ ...filters, deviceId: e.target.value })
-                }
-              />
-              <Input
-                type="date"
-                value={filters.startDate}
-                onChange={(e) =>
-                  setFilters({ ...filters, startDate: e.target.value })
-                }
-              />
-              <Input
-                type="date"
-                value={filters.endDate}
-                onChange={(e) =>
-                  setFilters({ ...filters, endDate: e.target.value })
-                }
-              />
-            </div>
-          )}
-
-          {/* Print History Table */}
-          {isLoading ? (
-            <div className="flex justify-center items-center h-32">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-            </div>
-          ) : printHistory.length === 0 ? (
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-              <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">No print history available</p>
-            </div>
-          ) : (
-            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">
-                      Device
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">
-                      Recipe
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">
-                      Portions
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">
-                      Employee
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">
-                      Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">
-                      Allergens
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {printHistory.map((record) => (
-                    <tr key={record.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-3 text-sm text-gray-900">
-                        {record.device_name}
-                      </td>
-                      <td className="px-6 py-3 text-sm text-gray-900">
-                        {record.recipe_name}
-                      </td>
-                      <td className="px-6 py-3 text-sm text-gray-900">
-                        {record.total_portions}
-                      </td>
-                      <td className="px-6 py-3 text-sm text-gray-900">
-                        {record.employee_id || "-"}
-                      </td>
-                      <td className="px-6 py-3 text-sm text-gray-900">
-                        {format(new Date(record.printed_at), "MMM d, HH:mm")}
-                      </td>
-                      <td className="px-6 py-3 text-sm text-gray-900">
-                        {record.allergens && record.allergens.length > 0 ? (
-                          <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">
-                            {record.allergens.join(", ")}
-                          </span>
-                        ) : (
-                          "-"
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
         </div>
 
-        {/* New Device Dialog */}
+        <div className="flex-1 overflow-auto px-8 py-8 space-y-8">
+          <section>
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-50">
+                Connected Devices
+              </h2>
+              <p className="text-slate-600 dark:text-slate-400 text-sm mt-2">
+                {devices.length > 0
+                  ? `${devices.length} tablet device${devices.length !== 1 ? "s" : ""} configured`
+                  : "No devices yet. Create one to get started."}
+              </p>
+            </div>
+
+            {isLoading ? (
+              <div className="flex justify-center items-center h-48">
+                <Loader2 className="w-8 h-8 animate-spin text-emerald-600 dark:text-emerald-400" />
+              </div>
+            ) : devices.length === 0 ? (
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-12 text-center">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full mb-6">
+                  <AlertCircle className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+                </div>
+                <p className="text-lg font-semibold text-slate-900 dark:text-slate-50">
+                  No devices configured yet
+                </p>
+                <p className="text-slate-600 dark:text-slate-400 mt-2 mb-6">
+                  Create your first tablet device to enable kitchen tablet access
+                </p>
+                <Button
+                  onClick={() => setShowNewDevice(true)}
+                  className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create First Device
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {devices.map((device) => (
+                  <div
+                    key={device.id}
+                    className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 hover:shadow-lg dark:hover:shadow-slate-900/50 transition-all duration-200 hover:border-slate-300 dark:hover:border-slate-700"
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1">
+                        <h3 className="font-bold text-lg text-slate-900 dark:text-slate-50">
+                          {device.device_name}
+                        </h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-mono">
+                          {device.device_id}
+                        </p>
+                      </div>
+                      <div className="flex-shrink-0">
+                        {device.enabled ? (
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                            <CheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                          </div>
+                        ) : (
+                          <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 mb-6 pb-6 border-b border-slate-200 dark:border-slate-800">
+                      <div className="text-sm">
+                        <span className="text-slate-600 dark:text-slate-400">
+                          Credential Mode:{" "}
+                        </span>
+                        <span className="font-semibold text-slate-900 dark:text-slate-50 capitalize">
+                          {device.credential_mode === "none"
+                            ? "Open Access"
+                            : device.credential_mode.replace("_", " ")}
+                        </span>
+                      </div>
+                      <div className="text-sm">
+                        <span className="text-slate-600 dark:text-slate-400">
+                          Chef Name:{" "}
+                        </span>
+                        <span className="font-semibold text-slate-900 dark:text-slate-50">
+                          {device.include_chef_name ? "Included" : "Not Included"}
+                        </span>
+                      </div>
+                      <div className="text-sm">
+                        <span className="text-slate-600 dark:text-slate-400">
+                          Created:{" "}
+                        </span>
+                        <span className="font-semibold text-slate-900 dark:text-slate-50">
+                          {format(new Date(device.created_at), "MMM d, yyyy")}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                      >
+                        <Edit2 className="w-4 h-4 mr-1" />
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 hover:text-red-600 dark:hover:text-red-400"
+                      >
+                        <Trash2 className="w-4 h-4 mr-1" />
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section>
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-50">
+                Recipe Access Management
+              </h2>
+              <p className="text-slate-600 dark:text-slate-400 text-sm mt-2">
+                Control which recipes are available on tablets
+              </p>
+            </div>
+            <RecipeAccessManagement
+              recipes={recipes}
+              onConfirm={async (recipeId) => {
+                await confirmRecipeAccuracy(recipeId);
+              }}
+              onToggleAccess={async (recipeId, isActive) => {
+                await toggleRecipeAccess(recipeId, isActive);
+              }}
+            />
+          </section>
+
+          <section>
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-50">
+                  Compliance Report
+                </h2>
+                <p className="text-slate-600 dark:text-slate-400 text-sm mt-2">
+                  Track all label prints and kitchen tablet activity
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                >
+                  <Filter className="w-4 h-4 mr-2" />
+                  Filters
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={downloadReport}
+                  disabled={printHistory.length === 0}
+                  className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Export
+                </Button>
+              </div>
+            </div>
+
+            {showFilters && (
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Input
+                  placeholder="Device ID"
+                  value={filters.deviceId}
+                  onChange={(e) =>
+                    setFilters({ ...filters, deviceId: e.target.value })
+                  }
+                  className="dark:bg-slate-800 dark:border-slate-700 dark:text-slate-50"
+                />
+                <Input
+                  type="date"
+                  value={filters.startDate}
+                  onChange={(e) =>
+                    setFilters({ ...filters, startDate: e.target.value })
+                  }
+                  className="dark:bg-slate-800 dark:border-slate-700 dark:text-slate-50"
+                />
+                <Input
+                  type="date"
+                  value={filters.endDate}
+                  onChange={(e) =>
+                    setFilters({ ...filters, endDate: e.target.value })
+                  }
+                  className="dark:bg-slate-800 dark:border-slate-700 dark:text-slate-50"
+                />
+              </div>
+            )}
+
+            {isLoading ? (
+              <div className="flex justify-center items-center h-48">
+                <Loader2 className="w-8 h-8 animate-spin text-emerald-600 dark:text-emerald-400" />
+              </div>
+            ) : printHistory.length === 0 ? (
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-12 text-center">
+                <BarChart3 className="w-12 h-12 text-slate-400 dark:text-slate-500 mx-auto mb-4" />
+                <p className="text-slate-600 dark:text-slate-400">
+                  No print history available
+                </p>
+              </div>
+            ) : (
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 dark:text-slate-300">
+                        Device
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 dark:text-slate-300">
+                        Recipe
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 dark:text-slate-300">
+                        Portions
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 dark:text-slate-300">
+                        Employee
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 dark:text-slate-300">
+                        Date
+                      </th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 dark:text-slate-300">
+                        Allergens
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+                    {printHistory.map((record) => (
+                      <tr
+                        key={record.id}
+                        className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition"
+                      >
+                        <td className="px-6 py-4 text-sm font-medium text-slate-900 dark:text-slate-50">
+                          {record.device_name}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-900 dark:text-slate-50">
+                          {record.recipe_name}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
+                          {record.total_portions}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
+                          {record.employee_id || "-"}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
+                          {format(new Date(record.printed_at), "MMM d, HH:mm")}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {record.allergens && record.allergens.length > 0 ? (
+                            <span className="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 px-2 py-1 rounded text-xs font-medium">
+                              {record.allergens.join(", ")}
+                            </span>
+                          ) : (
+                            <span className="text-slate-400">-</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
+        </div>
+
         <Dialog open={showNewDevice} onOpenChange={setShowNewDevice}>
-          <DialogContent className="sm:max-w-2xl">
+          <DialogContent className="sm:max-w-2xl dark:bg-slate-900 dark:border-slate-800">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="dark:text-slate-50">
                 {qrCodeData
                   ? "Device Created - Setup QR Code"
                   : "Create New Tablet Device"}
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="dark:text-slate-400">
                 {qrCodeData
                   ? "Scan this QR code on the new tablet to automatically configure it"
                   : "Set up a new kitchen tablet for recipe access and label printing"}
@@ -550,25 +607,25 @@ export default function TabletAdminDashboard() {
                   <img
                     src={qrCodeData.qr_code_url}
                     alt="Device Setup QR Code"
-                    className="w-64 h-64 border-4 border-gray-200 rounded-lg"
+                    className="w-64 h-64 border-4 border-slate-200 dark:border-slate-700 rounded-lg"
                   />
-                  <p className="text-center text-sm text-gray-600 max-w-sm">
+                  <p className="text-center text-sm text-slate-600 dark:text-slate-400 max-w-sm">
                     {qrCodeData.setup_instructions}
                   </p>
                 </div>
 
-                <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 space-y-3">
                   <div className="text-sm">
-                    <label className="block font-semibold text-gray-700 mb-2">
+                    <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-2">
                       Device Name
                     </label>
-                    <p className="text-gray-900 font-mono text-sm p-2 bg-white rounded border border-gray-200">
+                    <p className="text-slate-900 dark:text-slate-50 font-mono text-sm p-2 bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-700">
                       {qrCodeData.device_name}
                     </p>
                   </div>
 
                   <div className="text-sm">
-                    <label className="block font-semibold text-gray-700 mb-2">
+                    <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-2">
                       Pairing URL
                     </label>
                     <div className="flex gap-2">
@@ -576,7 +633,7 @@ export default function TabletAdminDashboard() {
                         type="text"
                         value={qrCodeData.pairing_url}
                         readOnly
-                        className="flex-1 px-3 py-2 border border-gray-200 rounded text-xs font-mono text-gray-600"
+                        className="flex-1 px-3 py-2 border border-slate-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-50 rounded text-xs font-mono text-slate-600 dark:text-slate-400"
                       />
                       <Button
                         variant="outline"
@@ -584,6 +641,7 @@ export default function TabletAdminDashboard() {
                         onClick={() =>
                           copyToClipboard(qrCodeData.pairing_url, "URL")
                         }
+                        className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
                       >
                         Copy
                       </Button>
@@ -600,7 +658,7 @@ export default function TabletAdminDashboard() {
                         qrCodeData.device_name,
                       )
                     }
-                    className="flex-1"
+                    className="flex-1 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Download QR Code
@@ -615,7 +673,7 @@ export default function TabletAdminDashboard() {
                         includeChefName: false,
                       });
                     }}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white"
                   >
                     Done
                   </Button>
@@ -624,7 +682,7 @@ export default function TabletAdminDashboard() {
             ) : (
               <div className="space-y-4 py-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                     Device Name
                   </label>
                   <Input
@@ -633,11 +691,12 @@ export default function TabletAdminDashboard() {
                     onChange={(e) =>
                       setNewDevice({ ...newDevice, deviceName: e.target.value })
                     }
+                    className="dark:bg-slate-800 dark:border-slate-700 dark:text-slate-50"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                     Credential Mode
                   </label>
                   <Select
@@ -646,10 +705,10 @@ export default function TabletAdminDashboard() {
                       setNewDevice({ ...newDevice, credentialMode: value })
                     }
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="dark:bg-slate-800 dark:border-slate-700 dark:text-slate-50">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="dark:bg-slate-800 dark:border-slate-700">
                       <SelectItem value="none">No Credentials</SelectItem>
                       <SelectItem value="camera">Camera/Photo</SelectItem>
                       <SelectItem value="employee_id">Employee ID</SelectItem>
@@ -669,7 +728,7 @@ export default function TabletAdminDashboard() {
                       })
                     }
                   />
-                  <span className="text-sm text-gray-700">
+                  <span className="text-sm text-slate-700 dark:text-slate-300">
                     Include chef name in QR code
                   </span>
                 </label>
@@ -678,13 +737,14 @@ export default function TabletAdminDashboard() {
                   <Button
                     variant="outline"
                     onClick={() => setShowNewDevice(false)}
+                    className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
                   >
                     Cancel
                   </Button>
                   <Button
                     onClick={handleCreateDevice}
                     disabled={isCreatingDevice}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white"
                   >
                     {isCreatingDevice ? (
                       <>
