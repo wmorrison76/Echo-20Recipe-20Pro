@@ -74,9 +74,11 @@ export default function TabletAdminDashboard() {
 
   const [devices, setDevices] = useState<TabletDevice[]>([]);
   const [printHistory, setPrintHistory] = useState<PrintRecord[]>([]);
+  const [recipes, setRecipes] = useState<RecipeAccess[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showNewDevice, setShowNewDevice] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [activeTab, setActiveTab] = useState<"devices" | "recipes" | "compliance">("devices");
   const [filters, setFilters] = useState({
     deviceId: "",
     startDate: "",
