@@ -271,9 +271,9 @@ export default function TabletInventoryTransfer() {
 
         {/* Transfer Form */}
         {showForm && (
-          <Card className="bg-white border-2 border-emerald-200">
-            <CardHeader>
-              <CardTitle>Transfer Request</CardTitle>
+          <Card className="bg-white shadow-lg border border-emerald-200">
+            <CardHeader className="bg-gradient-to-r from-emerald-50 to-emerald-50/50 border-b border-emerald-200">
+              <CardTitle className="text-emerald-900">New Transfer Request</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Item Search with Autocomplete */}
