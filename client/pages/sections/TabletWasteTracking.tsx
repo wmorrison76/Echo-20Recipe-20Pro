@@ -445,40 +445,43 @@ export default function TabletWasteTracking() {
         )}
 
         {/* Entries List */}
-        <div className="space-y-3">
-          {entries.length === 0 && !showForm && (
-            <div className="text-center py-8 text-slate-500">
-              <p>No waste entries yet</p>
-            </div>
-          )}
+        {entries.length === 0 && !showForm && (
+          <div className="text-center py-12 text-slate-500">
+            <div className="text-4xl mb-3 opacity-30">🗑️</div>
+            <p className="font-medium">No waste entries yet</p>
+            <p className="text-sm text-slate-400 mt-1">Record waste to track costs and patterns</p>
+          </div>
+        )}
 
+        <div className="space-y-3">
           {entries.map((entry) => (
-            <Card key={entry.id} className="bg-white border-l-4 border-l-red-500">
+            <Card key={entry.id} className="bg-white shadow-sm hover:shadow-md border border-red-200/50 transition-all">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <span className={`px-2 py-1 rounded text-xs font-semibold text-slate-700 ${categoryColor}`}>
+                      <span className={`px-2.5 py-1 rounded-md text-xs font-semibold text-slate-700 ${categoryColor}`}>
                         {WASTE_CATEGORIES.find(c => c.value === entry.category)?.label}
                       </span>
-                      <span className="text-sm text-slate-600">
+                      <span className="text-xs text-slate-500 ml-auto">
                         {new Date(entry.timestamp).toLocaleTimeString()}
                       </span>
                     </div>
                     <h3 className="font-semibold text-slate-900">{entry.itemName}</h3>
-                    <div className="text-sm text-slate-600 mt-1">
-                      <p>{entry.quantity} {entry.unit}</p>
-                      {entry.reason && <p className="text-slate-500">Reason: {entry.reason}</p>}
-                      {entry.employeeId && <p className="text-slate-500">By: {entry.employeeId}</p>}
+                    <div className="text-sm text-slate-600 mt-2 space-y-0.5">
+                      <p className="font-medium text-slate-700">{entry.quantity} {entry.unit}</p>
+                      {entry.reason && <p className="text-slate-500 text-xs">Reason: {entry.reason}</p>}
+                      {entry.employeeId && <p className="text-slate-500 text-xs">By: {entry.employeeId}</p>}
                     </div>
                   </div>
-                  <div className="text-right ml-4">
-                    <p className="text-lg font-bold text-red-600">
+                  <div className="text-right ml-4 flex flex-col items-end justify-start">
+                    <p className="text-base font-bold text-red-600">
                       {formatCurrency(entry.quantity * entry.costPerUnit)}
                     </p>
                     <button
                       onClick={() => handleRemoveEntry(entry.id)}
-                      className="mt-2 text-red-500 hover:text-red-700"
+                      className="mt-2 text-slate-400 hover:text-red-600 transition-colors"
+                      title="Remove entry"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
