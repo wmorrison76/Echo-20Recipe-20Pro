@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Trash2, Search, Loader2, Check } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import FoodRecallNotificationOverlay from "@/components/FoodRecallNotificationOverlay";
 
 interface WasteEntry {
   id: string;
@@ -223,7 +224,7 @@ export default function TabletWasteTracking() {
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Waste Tracking</h1>
             <p className="text-sm text-slate-600 mt-1">
-              Quick line-level entry • {isOnline ? "🟢 Online" : "��� Offline Mode"}
+              Quick line-level entry • {isOnline ? "🟢 Online" : "🔴 Offline Mode"}
             </p>
           </div>
           <div className="text-right">
