@@ -271,6 +271,8 @@ const App = () => (
                             }
                           />
                           <Route path="/tablet/labels" element={<TabletLabels />} />
+                          <Route path="/tablet/waste" element={<TabletWasteTracking />} />
+                          <Route path="/tablet/transfers" element={<TabletInventoryTransfer />} />
                           <Route
                             path="/tablet/admin"
                             element={
