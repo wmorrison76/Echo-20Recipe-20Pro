@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Alert,
-  AlertDescription,
-} from "@/components/ui/alert";
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -72,7 +75,10 @@ export default function TabletSetup() {
       localStorage.setItem("tablet:deviceId", deviceId!);
       localStorage.setItem("tablet:deviceName", result.deviceName);
       localStorage.setItem("tablet:credentialMode", result.credentialMode);
-      localStorage.setItem("tablet:includeChefName", String(result.includeChefName));
+      localStorage.setItem(
+        "tablet:includeChefName",
+        String(result.includeChefName),
+      );
 
       setDeviceName(result.deviceName);
       setIsSuccess(true);
@@ -87,7 +93,8 @@ export default function TabletSetup() {
         navigate("/tablet/labels");
       }, 2000);
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : "Unknown error occurred";
+      const errorMsg =
+        err instanceof Error ? err.message : "Unknown error occurred";
       setError(errorMsg);
       console.error("Registration error:", err);
       toast({
@@ -132,7 +139,9 @@ export default function TabletSetup() {
               </div>
               <Alert className="border-red-500/50 bg-red-500/10">
                 <AlertCircle className="h-4 w-4 text-red-500" />
-                <AlertDescription className="text-red-200">{error}</AlertDescription>
+                <AlertDescription className="text-red-200">
+                  {error}
+                </AlertDescription>
               </Alert>
               <div className="space-y-2">
                 <p className="text-sm text-slate-400 text-center">
@@ -158,7 +167,8 @@ export default function TabletSetup() {
                 </AlertDescription>
               </Alert>
               <p className="text-sm text-slate-400 text-center">
-                Device ID: <span className="font-mono text-slate-300">{deviceId}</span>
+                Device ID:{" "}
+                <span className="font-mono text-slate-300">{deviceId}</span>
               </p>
             </div>
           )}

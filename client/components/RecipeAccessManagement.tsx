@@ -47,7 +47,7 @@ export function RecipeAccessManagement({
         setConfirming(null);
       }
     },
-    [onConfirm]
+    [onConfirm],
   );
 
   const handleToggle = useCallback(
@@ -59,7 +59,7 @@ export function RecipeAccessManagement({
         setToggling(null);
       }
     },
-    [onToggleAccess]
+    [onToggleAccess],
   );
 
   if (recipes.length === 0) {
@@ -86,7 +86,9 @@ export function RecipeAccessManagement({
               <h3 className="font-bold text-gray-900 text-lg">
                 {recipe.recipe_name}
               </h3>
-              <p className="text-xs text-gray-500 mt-1">ID: {recipe.recipe_id}</p>
+              <p className="text-xs text-gray-500 mt-1">
+                ID: {recipe.recipe_id}
+              </p>
             </div>
             <div className="flex gap-2">
               <button
@@ -120,14 +122,15 @@ export function RecipeAccessManagement({
                 {recipe.access_level}
               </span>
             </div>
-            {recipe.allowed_departments && recipe.allowed_departments.length > 0 && (
-              <div>
-                <span className="text-gray-600">Departments: </span>
-                <span className="font-semibold text-gray-900">
-                  {recipe.allowed_departments.join(", ")}
-                </span>
-              </div>
-            )}
+            {recipe.allowed_departments &&
+              recipe.allowed_departments.length > 0 && (
+                <div>
+                  <span className="text-gray-600">Departments: </span>
+                  <span className="font-semibold text-gray-900">
+                    {recipe.allowed_departments.join(", ")}
+                  </span>
+                </div>
+              )}
           </div>
 
           <div className="bg-gray-50 rounded p-3 mb-4">
@@ -149,7 +152,9 @@ export function RecipeAccessManagement({
             ) : (
               <div className="flex items-center gap-2 text-yellow-700">
                 <AlertCircle className="w-5 h-5" />
-                <span className="font-semibold">Awaiting confirmation from Chef</span>
+                <span className="font-semibold">
+                  Awaiting confirmation from Chef
+                </span>
               </div>
             )}
           </div>

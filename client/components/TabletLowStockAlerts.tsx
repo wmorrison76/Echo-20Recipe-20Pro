@@ -1,7 +1,13 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Select,
@@ -46,7 +52,10 @@ export interface TabletLowStockAlertsProps {
   onClose?: () => void;
 }
 
-export function TabletLowStockAlerts({ deviceId, onClose }: TabletLowStockAlertsProps) {
+export function TabletLowStockAlerts({
+  deviceId,
+  onClose,
+}: TabletLowStockAlertsProps) {
   const { toast } = useToast();
 
   const [alerts, setAlerts] = useState<LowStockAlert[]>([]);
@@ -71,7 +80,9 @@ export function TabletLowStockAlerts({ deviceId, onClose }: TabletLowStockAlerts
   const loadAlerts = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/tablet/inventory/low-stock?deviceId=${deviceId}`);
+      const response = await fetch(
+        `/api/tablet/inventory/low-stock?deviceId=${deviceId}`,
+      );
       if (!response.ok) throw new Error("Failed to load alerts");
 
       const data = await response.json();
@@ -105,7 +116,10 @@ export function TabletLowStockAlerts({ deviceId, onClose }: TabletLowStockAlerts
           currentQuantity: newAlert.currentQuantity,
           unit: newAlert.unit,
           reorderLevel: newAlert.reorderLevel,
-          suggestedQuantity: newAlert.suggestedQuantity || newAlert.reorderLevel || newAlert.currentQuantity,
+          suggestedQuantity:
+            newAlert.suggestedQuantity ||
+            newAlert.reorderLevel ||
+            newAlert.currentQuantity,
           employeeId: localStorage.getItem("tablet:employeeId") || "Unknown",
           notes: newAlert.notes,
         }),
@@ -135,7 +149,8 @@ export function TabletLowStockAlerts({ deviceId, onClose }: TabletLowStockAlerts
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to create alert",
+        description:
+          error instanceof Error ? error.message : "Failed to create alert",
         variant: "destructive",
       });
     } finally {
@@ -143,13 +158,19 @@ export function TabletLowStockAlerts({ deviceId, onClose }: TabletLowStockAlerts
     }
   };
 
-  const handleUpdateAlertStatus = async (alertId: string, newStatus: string) => {
+  const handleUpdateAlertStatus = async (
+    alertId: string,
+    newStatus: string,
+  ) => {
     try {
-      const response = await fetch(`/api/tablet/inventory/low-stock/${alertId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
-      });
+      const response = await fetch(
+        `/api/tablet/inventory/low-stock/${alertId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: newStatus }),
+        },
+      );
 
       if (!response.ok) throw new Error("Failed to update alert status");
 
@@ -163,7 +184,8 @@ export function TabletLowStockAlerts({ deviceId, onClose }: TabletLowStockAlerts
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to update alert",
+        description:
+          error instanceof Error ? error.message : "Failed to update alert",
         variant: "destructive",
       });
     }
@@ -209,7 +231,9 @@ export function TabletLowStockAlerts({ deviceId, onClose }: TabletLowStockAlerts
                 <AlertTriangle className="w-5 h-5 text-orange-600" />
                 Low Stock Alerts
               </CardTitle>
-              <CardDescription>Manage inventory requests and order suggestions</CardDescription>
+              <CardDescription>
+                Manage inventory requests and order suggestions
+              </CardDescription>
             </div>
             <Button
               onClick={() => setShowCreateAlert(true)}
@@ -229,18 +253,26 @@ export function TabletLowStockAlerts({ deviceId, onClose }: TabletLowStockAlerts
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                No low stock alerts. Items are in good supply or reorder thresholds are well-maintained.
+                No low stock alerts. Items are in good supply or reorder
+                thresholds are well-maintained.
               </AlertDescription>
             </Alert>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {alerts.map((alert) => (
-                <Card key={alert.id} className={`border ${getAlertColor(alert.status)}`}>
+                <Card
+                  key={alert.id}
+                  className={`border ${getAlertColor(alert.status)}`}
+                >
                   <CardContent className="pt-4">
                     <div className="space-y-3">
                       <div className="flex items-start justify-between">
-                        <h3 className="font-semibold text-gray-900">{alert.itemName}</h3>
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusBadgeColor(alert.status)}`}>
+                        <h3 className="font-semibold text-gray-900">
+                          {alert.itemName}
+                        </h3>
+                        <span
+                          className={`px-2 py-1 rounded text-xs font-medium ${getStatusBadgeColor(alert.status)}`}
+                        >
                           {alert.status}
                         </span>
                       </div>
@@ -255,14 +287,18 @@ export function TabletLowStockAlerts({ deviceId, onClose }: TabletLowStockAlerts
                         {alert.reorderLevel && (
                           <div>
                             <p className="text-gray-600">Reorder Level</p>
-                            <p className="font-semibold text-gray-900">{alert.reorderLevel} {alert.unit}</p>
+                            <p className="font-semibold text-gray-900">
+                              {alert.reorderLevel} {alert.unit}
+                            </p>
                           </div>
                         )}
                       </div>
 
                       {alert.suggestedQuantity && (
                         <div className="bg-white/50 rounded p-2">
-                          <p className="text-xs text-gray-600">Suggested Order Qty</p>
+                          <p className="text-xs text-gray-600">
+                            Suggested Order Qty
+                          </p>
                           <p className="font-semibold text-gray-900">
                             {alert.suggestedQuantity} {alert.unit}
                           </p>
@@ -277,7 +313,8 @@ export function TabletLowStockAlerts({ deviceId, onClose }: TabletLowStockAlerts
                       )}
 
                       <p className="text-xs text-gray-500">
-                        Created: {format(new Date(alert.createdAt), "MMM d, HH:mm")}
+                        Created:{" "}
+                        {format(new Date(alert.createdAt), "MMM d, HH:mm")}
                       </p>
 
                       {alert.status !== "resolved" && (
@@ -286,7 +323,12 @@ export function TabletLowStockAlerts({ deviceId, onClose }: TabletLowStockAlerts
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handleUpdateAlertStatus(alert.id, "acknowledged")}
+                              onClick={() =>
+                                handleUpdateAlertStatus(
+                                  alert.id,
+                                  "acknowledged",
+                                )
+                              }
                               className="flex-1 text-xs"
                             >
                               Acknowledge
@@ -296,7 +338,9 @@ export function TabletLowStockAlerts({ deviceId, onClose }: TabletLowStockAlerts
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handleUpdateAlertStatus(alert.id, "ordered")}
+                              onClick={() =>
+                                handleUpdateAlertStatus(alert.id, "ordered")
+                              }
                               className="flex-1 text-xs"
                             >
                               Order
@@ -305,7 +349,9 @@ export function TabletLowStockAlerts({ deviceId, onClose }: TabletLowStockAlerts
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleUpdateAlertStatus(alert.id, "resolved")}
+                            onClick={() =>
+                              handleUpdateAlertStatus(alert.id, "resolved")
+                            }
                             className="flex-1 text-xs"
                           >
                             <Check className="w-3 h-3 mr-1" />
@@ -334,29 +380,45 @@ export function TabletLowStockAlerts({ deviceId, onClose }: TabletLowStockAlerts
 
           <div className="space-y-4 py-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Item Name *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Item Name *
+              </label>
               <Input
                 placeholder="e.g., Tomatoes, Chicken Breast"
                 value={newAlert.itemName}
-                onChange={(e) => setNewAlert({ ...newAlert, itemName: e.target.value })}
+                onChange={(e) =>
+                  setNewAlert({ ...newAlert, itemName: e.target.value })
+                }
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Current Qty *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Current Qty *
+                </label>
                 <Input
                   type="number"
                   placeholder="0"
                   value={newAlert.currentQuantity}
                   onChange={(e) =>
-                    setNewAlert({ ...newAlert, currentQuantity: parseFloat(e.target.value) || 0 })
+                    setNewAlert({
+                      ...newAlert,
+                      currentQuantity: parseFloat(e.target.value) || 0,
+                    })
                   }
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Unit *</label>
-                <Select value={newAlert.unit} onValueChange={(value) => setNewAlert({ ...newAlert, unit: value })}>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Unit *
+                </label>
+                <Select
+                  value={newAlert.unit}
+                  onValueChange={(value) =>
+                    setNewAlert({ ...newAlert, unit: value })
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -373,13 +435,20 @@ export function TabletLowStockAlerts({ deviceId, onClose }: TabletLowStockAlerts
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Reorder Level (Optional)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Reorder Level (Optional)
+              </label>
               <Input
                 type="number"
                 placeholder="Minimum quantity threshold"
                 value={newAlert.reorderLevel || ""}
                 onChange={(e) =>
-                  setNewAlert({ ...newAlert, reorderLevel: e.target.value ? parseFloat(e.target.value) : undefined })
+                  setNewAlert({
+                    ...newAlert,
+                    reorderLevel: e.target.value
+                      ? parseFloat(e.target.value)
+                      : undefined,
+                  })
                 }
               />
             </div>
@@ -395,25 +464,34 @@ export function TabletLowStockAlerts({ deviceId, onClose }: TabletLowStockAlerts
                 onChange={(e) =>
                   setNewAlert({
                     ...newAlert,
-                    suggestedQuantity: e.target.value ? parseFloat(e.target.value) : undefined,
+                    suggestedQuantity: e.target.value
+                      ? parseFloat(e.target.value)
+                      : undefined,
                   })
                 }
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Notes (Optional)
+              </label>
               <textarea
                 placeholder="Any details about why this item is low..."
                 value={newAlert.notes}
-                onChange={(e) => setNewAlert({ ...newAlert, notes: e.target.value })}
+                onChange={(e) =>
+                  setNewAlert({ ...newAlert, notes: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 rows={2}
               />
             </div>
 
             <div className="flex gap-3 pt-4">
-              <Button variant="outline" onClick={() => setShowCreateAlert(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowCreateAlert(false)}
+              >
                 Cancel
               </Button>
               <Button

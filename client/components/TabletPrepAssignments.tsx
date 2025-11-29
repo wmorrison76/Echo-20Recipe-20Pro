@@ -1,7 +1,13 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Select,
@@ -99,7 +105,9 @@ export function TabletPrepAssignments({
       setIsLoading(true);
 
       // Load all assignments (for admin view)
-      const allResponse = await fetch(`/api/tablet/prep/assigned?status=assigned`);
+      const allResponse = await fetch(
+        `/api/tablet/prep/assigned?status=assigned`,
+      );
       if (allResponse.ok) {
         const data = await allResponse.json();
         setAssignments(data.assignments || []);
@@ -108,7 +116,7 @@ export function TabletPrepAssignments({
       // Load my assignments
       if (currentEmployeeId) {
         const myResponse = await fetch(
-          `/api/tablet/prep/assigned?employeeId=${currentEmployeeId}&status=assigned`
+          `/api/tablet/prep/assigned?employeeId=${currentEmployeeId}&status=assigned`,
         );
         if (myResponse.ok) {
           const data = await myResponse.json();
@@ -143,7 +151,9 @@ export function TabletPrepAssignments({
           prepTaskId: `prep-${Date.now()}`,
           assignedToEmployeeId: newAssignment.assignedToEmployeeId,
           dueDate: newAssignment.dueDate,
-          ingredients: newAssignment.ingredients.split("\n").filter((i) => i.trim()),
+          ingredients: newAssignment.ingredients
+            .split("\n")
+            .filter((i) => i.trim()),
           instructions: newAssignment.instructions,
           notes: newAssignment.notes,
         }),
@@ -154,7 +164,8 @@ export function TabletPrepAssignments({
       toast({
         title: "Assignment Created",
         description: `Prep work assigned to ${
-          employees.find((e) => e.id === newAssignment.assignedToEmployeeId)?.name || "staff member"
+          employees.find((e) => e.id === newAssignment.assignedToEmployeeId)
+            ?.name || "staff member"
         }`,
       });
 
@@ -175,7 +186,10 @@ export function TabletPrepAssignments({
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to create assignment",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to create assignment",
         variant: "destructive",
       });
     } finally {
@@ -183,7 +197,10 @@ export function TabletPrepAssignments({
     }
   };
 
-  const handleUpdateAssignmentStatus = async (assignmentId: string, newStatus: string) => {
+  const handleUpdateAssignmentStatus = async (
+    assignmentId: string,
+    newStatus: string,
+  ) => {
     try {
       const response = await fetch(`/api/tablet/prep/${assignmentId}`, {
         method: "PUT",
@@ -203,7 +220,10 @@ export function TabletPrepAssignments({
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to update assignment",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to update assignment",
         variant: "destructive",
       });
     }
@@ -245,10 +265,16 @@ export function TabletPrepAssignments({
         <div className="space-y-3">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="font-semibold text-gray-900">{assignment.taskName}</h3>
-              <p className="text-sm text-gray-600">{assignment.assignedToEmployeeName}</p>
+              <h3 className="font-semibold text-gray-900">
+                {assignment.taskName}
+              </h3>
+              <p className="text-sm text-gray-600">
+                {assignment.assignedToEmployeeName}
+              </p>
             </div>
-            <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusBadge(assignment.status)}`}>
+            <span
+              className={`px-2 py-1 rounded text-xs font-medium ${getStatusBadge(assignment.status)}`}
+            >
               {assignment.status}
             </span>
           </div>
@@ -285,29 +311,34 @@ export function TabletPrepAssignments({
             </div>
           )}
 
-          {assignment.status !== "completed" && assignment.status !== "cancelled" && (
-            <div className="flex gap-2 pt-2">
-              {assignment.status === "assigned" && (
+          {assignment.status !== "completed" &&
+            assignment.status !== "cancelled" && (
+              <div className="flex gap-2 pt-2">
+                {assignment.status === "assigned" && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      handleUpdateAssignmentStatus(assignment.id, "in-progress")
+                    }
+                    className="flex-1 text-xs"
+                  >
+                    Start Prep
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handleUpdateAssignmentStatus(assignment.id, "in-progress")}
+                  onClick={() =>
+                    handleUpdateAssignmentStatus(assignment.id, "completed")
+                  }
                   className="flex-1 text-xs"
                 >
-                  Start Prep
+                  <CheckCircle2 className="w-3 h-3 mr-1" />
+                  Mark Done
                 </Button>
-              )}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handleUpdateAssignmentStatus(assignment.id, "completed")}
-                className="flex-1 text-xs"
-              >
-                <CheckCircle2 className="w-3 h-3 mr-1" />
-                Mark Done
-              </Button>
-            </div>
-          )}
+              </div>
+            )}
         </div>
       </CardContent>
     </Card>
@@ -320,7 +351,9 @@ export function TabletPrepAssignments({
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Prep Work Assignments</CardTitle>
-              <CardDescription>Manage prep work and assign tasks to kitchen staff</CardDescription>
+              <CardDescription>
+                Manage prep work and assign tasks to kitchen staff
+              </CardDescription>
             </div>
             <Button
               onClick={() => setShowCreateAssignment(true)}
@@ -368,7 +401,8 @@ export function TabletPrepAssignments({
               <Alert>
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  No active prep assignments. Create new assignments to distribute prep work.
+                  No active prep assignments. Create new assignments to
+                  distribute prep work.
                 </AlertDescription>
               </Alert>
             ) : (
@@ -378,49 +412,64 @@ export function TabletPrepAssignments({
                 ))}
               </div>
             )
+          ) : myAssignments.length === 0 ? (
+            <Alert>
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                You have no active prep assignments. Check back for new tasks.
+              </AlertDescription>
+            </Alert>
           ) : (
-            myAssignments.length === 0 ? (
-              <Alert>
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>
-                  You have no active prep assignments. Check back for new tasks.
-                </AlertDescription>
-              </Alert>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {myAssignments.map((assignment) => (
-                  <AssignmentCard key={assignment.id} assignment={assignment} />
-                ))}
-              </div>
-            )
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {myAssignments.map((assignment) => (
+                <AssignmentCard key={assignment.id} assignment={assignment} />
+              ))}
+            </div>
           )}
         </CardContent>
       </Card>
 
       {/* Create Assignment Dialog */}
-      <Dialog open={showCreateAssignment} onOpenChange={setShowCreateAssignment}>
+      <Dialog
+        open={showCreateAssignment}
+        onOpenChange={setShowCreateAssignment}
+      >
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>Assign Prep Work</DialogTitle>
-            <DialogDescription>Create a new prep work assignment for kitchen staff</DialogDescription>
+            <DialogDescription>
+              Create a new prep work assignment for kitchen staff
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Task Name *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Task Name *
+              </label>
               <Input
                 placeholder="e.g., Chop vegetables, Marinate chicken"
                 value={newAssignment.taskName}
-                onChange={(e) => setNewAssignment({ ...newAssignment, taskName: e.target.value })}
+                onChange={(e) =>
+                  setNewAssignment({
+                    ...newAssignment,
+                    taskName: e.target.value,
+                  })
+                }
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Assign To *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Assign To *
+              </label>
               <Select
                 value={newAssignment.assignedToEmployeeId}
                 onValueChange={(value) =>
-                  setNewAssignment({ ...newAssignment, assignedToEmployeeId: value })
+                  setNewAssignment({
+                    ...newAssignment,
+                    assignedToEmployeeId: value,
+                  })
                 }
               >
                 <SelectTrigger>
@@ -437,49 +486,77 @@ export function TabletPrepAssignments({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Due Date *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Due Date *
+              </label>
               <Input
                 type="date"
                 value={newAssignment.dueDate}
-                onChange={(e) => setNewAssignment({ ...newAssignment, dueDate: e.target.value })}
+                onChange={(e) =>
+                  setNewAssignment({
+                    ...newAssignment,
+                    dueDate: e.target.value,
+                  })
+                }
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Ingredients (Optional)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Ingredients (Optional)
+              </label>
               <textarea
                 placeholder="List ingredients (one per line)"
                 value={newAssignment.ingredients}
-                onChange={(e) => setNewAssignment({ ...newAssignment, ingredients: e.target.value })}
+                onChange={(e) =>
+                  setNewAssignment({
+                    ...newAssignment,
+                    ingredients: e.target.value,
+                  })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 rows={3}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Instructions (Optional)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Instructions (Optional)
+              </label>
               <textarea
                 placeholder="Detailed prep instructions..."
                 value={newAssignment.instructions}
-                onChange={(e) => setNewAssignment({ ...newAssignment, instructions: e.target.value })}
+                onChange={(e) =>
+                  setNewAssignment({
+                    ...newAssignment,
+                    instructions: e.target.value,
+                  })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 rows={3}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Notes (Optional)
+              </label>
               <textarea
                 placeholder="Any additional notes or special requirements..."
                 value={newAssignment.notes}
-                onChange={(e) => setNewAssignment({ ...newAssignment, notes: e.target.value })}
+                onChange={(e) =>
+                  setNewAssignment({ ...newAssignment, notes: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 rows={2}
               />
             </div>
 
             <div className="flex gap-3 pt-4">
-              <Button variant="outline" onClick={() => setShowCreateAssignment(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setShowCreateAssignment(false)}
+              >
                 Cancel
               </Button>
               <Button

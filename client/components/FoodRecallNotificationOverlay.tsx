@@ -58,11 +58,15 @@ export default function FoodRecallNotificationOverlay({
   const fetchRecalls = useCallback(async () => {
     try {
       const response = await fetch(
-        `/api/inventory/recalls/device/${deviceId}?acknowledged=false`
+        `/api/inventory/recalls/device/${deviceId}?acknowledged=false`,
       );
 
       if (!response.ok) {
-        console.error("Recalls API error:", response.status, response.statusText);
+        console.error(
+          "Recalls API error:",
+          response.status,
+          response.statusText,
+        );
         return;
       }
 
@@ -77,7 +81,8 @@ export default function FoodRecallNotificationOverlay({
                 recall_id: notification.recall_id,
                 item_name: notification.food_recall_notifications?.item_name,
                 severity: notification.food_recall_notifications?.severity,
-                description: notification.food_recall_notifications?.description,
+                description:
+                  notification.food_recall_notifications?.description,
                 action_required:
                   notification.food_recall_notifications?.action_required,
                 issued_at: notification.food_recall_notifications?.issued_at,
@@ -137,7 +142,7 @@ export default function FoodRecallNotificationOverlay({
             device_id: deviceId,
             acknowledged_by: `Manager (${managerPassword})`,
           }),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -146,7 +151,7 @@ export default function FoodRecallNotificationOverlay({
 
       // Remove acknowledged recall from list
       setActiveRecalls((prev) =>
-        prev.filter((r) => r.recall_id !== selectedRecall.recall_id)
+        prev.filter((r) => r.recall_id !== selectedRecall.recall_id),
       );
 
       toast({
@@ -266,7 +271,8 @@ export default function FoodRecallNotificationOverlay({
               </div>
 
               <p className="text-xs text-slate-600">
-                This action will be logged in the system for compliance tracking.
+                This action will be logged in the system for compliance
+                tracking.
               </p>
             </div>
 

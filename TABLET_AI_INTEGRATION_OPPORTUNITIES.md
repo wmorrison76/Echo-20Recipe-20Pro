@@ -9,11 +9,14 @@ The kitchen tablet system has significant opportunities to leverage AI to improv
 ## 1. Smart Recipe Recommendations
 
 ### Location
+
 - Recipe Labels page (TabletLabels.tsx)
 - Prep Assignments page (TabletPrepAssignments.tsx)
 
 ### Opportunity
+
 **AI-powered recipe suggestions** based on:
+
 - Available ingredients from inventory counts
 - Current staff skill levels
 - Seasonal ingredients and cost optimization
@@ -21,6 +24,7 @@ The kitchen tablet system has significant opportunities to leverage AI to improv
 - Equipment availability
 
 ### Implementation
+
 ```typescript
 // Suggested API endpoint
 GET /api/tablet/recipes/recommend?ingredients=tomato,chicken&skillLevel=intermediate&season=spring
@@ -42,6 +46,7 @@ GET /api/tablet/recipes/recommend?ingredients=tomato,chicken&skillLevel=intermed
 ```
 
 ### Benefits
+
 - Reduces food waste by suggesting recipes matching available ingredients
 - Improves staff utilization by recommending recipes at appropriate skill levels
 - Increases profitability by suggesting high-margin recipes
@@ -52,11 +57,14 @@ GET /api/tablet/recipes/recommend?ingredients=tomato,chicken&skillLevel=intermed
 ## 2. Inventory Intelligence & Predictive Reordering
 
 ### Location
+
 - Low Stock Alerts (TabletLowStockAlerts.tsx)
 - Inventory Shelf Count (TabletInventoryShelfCount.tsx)
 
 ### Opportunity
+
 **Predictive inventory management** using:
+
 - Historical usage patterns
 - Seasonal demand variations
 - Storage capacity constraints
@@ -64,6 +72,7 @@ GET /api/tablet/recipes/recommend?ingredients=tomato,chicken&skillLevel=intermed
 - Cost optimization algorithms
 
 ### Implementation
+
 ```typescript
 // AI analyzes historical shelf counts and suggests optimal reorder quantities
 POST /api/tablet/inventory/predict?itemId=item-456&weeks=4
@@ -82,6 +91,7 @@ POST /api/tablet/inventory/predict?itemId=item-456&weeks=4
 ```
 
 ### Benefits
+
 - Prevents stockouts by predicting demand
 - Reduces over-purchasing and waste
 - Optimizes cash flow
@@ -92,10 +102,13 @@ POST /api/tablet/inventory/predict?itemId=item-456&weeks=4
 ## 3. Smart Prep Assignment Optimization
 
 ### Location
+
 - Prep Assignments (TabletPrepAssignments.tsx)
 
 ### Opportunity
+
 **Intelligent task distribution** based on:
+
 - Staff skill levels and certifications
 - Historical performance metrics
 - Current workload and fatigue levels
@@ -103,6 +116,7 @@ POST /api/tablet/inventory/predict?itemId=item-456&weeks=4
 - Time-to-complete predictions
 
 ### Implementation
+
 ```typescript
 // AI suggests optimal staff assignment for a prep task
 POST /api/tablet/prep/suggest-assignment?taskId=prep-789
@@ -119,7 +133,7 @@ POST /api/tablet/prep/suggest-assignment?taskId=prep-789
       reasoning: "Expert in knife skills, currently 40% utilized"
     },
     {
-      employeeId: "emp003", 
+      employeeId: "emp003",
       name: "Miguel",
       matchScore: 0.78,
       estimatedTime: "32 minutes",
@@ -131,6 +145,7 @@ POST /api/tablet/prep/suggest-assignment?taskId=prep-789
 ```
 
 ### Benefits
+
 - Improves task completion time
 - Provides staff training opportunities
 - Prevents overloading individual employees
@@ -141,17 +156,21 @@ POST /api/tablet/prep/suggest-assignment?taskId=prep-789
 ## 4. Waste Analysis & Prevention
 
 ### Location
+
 - Waste Tracking (TabletWasteTracking.tsx)
 - Low Stock Alerts (for prevention)
 
 ### Opportunity
+
 **Waste pattern analysis** to identify:
+
 - Root causes of waste
 - High-waste ingredients or dishes
 - Process inefficiencies
 - Preventive measures
 
 ### Implementation
+
 ```typescript
 // AI analyzes waste entries over time
 GET /api/tablet/waste/analyze?timePeriod=30days&category=vegetables
@@ -177,6 +196,7 @@ GET /api/tablet/waste/analyze?timePeriod=30days&category=vegetables
 ```
 
 ### Benefits
+
 - Identifies cost-saving opportunities
 - Improves training programs
 - Reduces environmental impact
@@ -187,10 +207,13 @@ GET /api/tablet/waste/analyze?timePeriod=30days&category=vegetables
 ## 5. Production Timeline Prediction
 
 ### Location
+
 - Production Updates (TabletProductionUpdates.tsx)
 
 ### Opportunity
+
 **Intelligent ETA prediction** based on:
+
 - Current production stage analysis from photos
 - Historical completion rates
 - Staff skill levels
@@ -198,6 +221,7 @@ GET /api/tablet/waste/analyze?timePeriod=30days&category=vegetables
 - Queue position
 
 ### Implementation
+
 ```typescript
 // AI analyzes production screenshot and predicts completion
 POST /api/tablet/production/predict-time
@@ -225,6 +249,7 @@ POST /api/tablet/production/predict-time
 ```
 
 ### Benefits
+
 - Accurate service time promises
 - Early warning of delays
 - Better kitchen coordination
@@ -235,16 +260,20 @@ POST /api/tablet/production/predict-time
 ## 6. Low Stock Prediction
 
 ### Location
+
 - Low Stock Alerts (TabletLowStockAlerts.tsx)
 
 ### Opportunity
+
 **Predictive low-stock alerts** that anticipate shortages before they occur using:
+
 - Current usage velocity
 - Scheduled menu items
 - Lead times
 - Seasonal variations
 
 ### Implementation
+
 ```typescript
 // AI predicts when items will run out
 GET /api/tablet/inventory/predict-shortage?itemId=item-789
@@ -262,6 +291,7 @@ GET /api/tablet/inventory/predict-shortage?itemId=item-789
 ```
 
 ### Benefits
+
 - Prevents service disruptions
 - Reduces emergency orders (higher cost)
 - Enables bulk purchasing discounts
@@ -272,10 +302,13 @@ GET /api/tablet/inventory/predict-shortage?itemId=item-789
 ## 7. Quality Control from Photos
 
 ### Location
+
 - Production Updates (TabletProductionUpdates.tsx)
 
 ### Opportunity
+
 **Visual quality assessment** using image recognition to detect:
+
 - Proper cooking temperatures (color analysis)
 - Plating standards
 - Contamination risks
@@ -283,6 +316,7 @@ GET /api/tablet/inventory/predict-shortage?itemId=item-789
 - Equipment cleanliness
 
 ### Implementation
+
 ```typescript
 // AI analyzes production photos for quality metrics
 POST /api/tablet/production/quality-check
@@ -302,6 +336,7 @@ POST /api/tablet/production/quality-check
 ```
 
 ### Benefits
+
 - Maintains consistent quality
 - Reduces customer complaints
 - Documents compliance
@@ -312,10 +347,13 @@ POST /api/tablet/production/quality-check
 ## 8. Staff Schedule Optimization
 
 ### Location
+
 - Prep Assignments (TabletPrepAssignments.tsx) - Integration with scheduling system
 
 ### Opportunity
+
 **Intelligent scheduling** considering:
+
 - Staff skills and certifications
 - Availability and preferences
 - Historical performance
@@ -324,6 +362,7 @@ POST /api/tablet/production/quality-check
 - Labor cost optimization
 
 ### Implementation
+
 ```typescript
 // AI suggests optimal staff schedule
 POST /api/tablet/schedule/optimize?date=2024-01-15&serviceType=dinner
@@ -350,6 +389,7 @@ POST /api/tablet/schedule/optimize?date=2024-01-15&serviceType=dinner
 ```
 
 ### Benefits
+
 - Optimal staff utilization
 - Reduced labor costs
 - Better service delivery
@@ -360,10 +400,13 @@ POST /api/tablet/schedule/optimize?date=2024-01-15&serviceType=dinner
 ## 9. Integration with Echo Chef AI
 
 ### Location
+
 - All tablet pages for recipe and knowledge queries
 
 ### Opportunity
+
 **Echo Chef AI integration** for:
+
 - Quick recipe lookups
 - Ingredient substitutions
 - Cooking technique guidance
@@ -372,6 +415,7 @@ POST /api/tablet/schedule/optimize?date=2024-01-15&serviceType=dinner
 - Dietary restriction alternatives
 
 ### Implementation
+
 ```typescript
 // Voice/text query to Echo Chef directly from tablet
 POST /api/tablet/echo-chef/query
@@ -395,6 +439,7 @@ POST /api/tablet/echo-chef/query
 ```
 
 ### Benefits
+
 - Immediate culinary guidance
 - Consistency with Echo Recipe Pro
 - Faster problem-solving
@@ -405,16 +450,19 @@ POST /api/tablet/echo-chef/query
 ## Implementation Priority
 
 ### Phase 1 (High Priority - Immediate)
+
 1. **Smart Inventory Predictions** - Highest ROI on waste reduction
 2. **Waste Analysis** - Easy to implement, immediate cost savings
 3. **Production Timeline Prediction** - Improves customer service
 
 ### Phase 2 (Medium Priority - Next Quarter)
+
 4. **Recipe Recommendations** - Enhances menu planning efficiency
 5. **Low Stock Prediction** - Prevents service disruptions
 6. **Prep Assignment Optimization** - Improves staff utilization
 
 ### Phase 3 (Long-term)
+
 7. **Quality Control from Photos** - Requires robust image recognition
 8. **Staff Schedule Optimization** - Requires integration with scheduling system
 9. **Echo Chef Integration** - Extends existing AI capabilities
@@ -424,8 +472,9 @@ POST /api/tablet/echo-chef/query
 ## Technical Architecture
 
 ### Data Pipeline
+
 ```
-Tablet Data (Inventory, Waste, Production) 
+Tablet Data (Inventory, Waste, Production)
   ↓
 Data Collection Service (/api/tablet/data/collect)
   ↓
@@ -437,6 +486,7 @@ Tablet Interface (Real-time Recommendations)
 ```
 
 ### Required Integrations
+
 - OpenAI API for NLP and analysis
 - Custom ML models for image recognition (if quality control)
 - Historical data aggregation and analysis
@@ -447,16 +497,19 @@ Tablet Interface (Real-time Recommendations)
 ## Success Metrics
 
 ### Financial Impact
+
 - Waste reduction target: 15-25% ($X/month savings)
 - Labor efficiency: +10-15% productivity
 - Inventory optimization: 10% reduction in carrying costs
 
 ### Operational Metrics
+
 - Prevention of stockouts: >95%
 - Prep assignment optimization: >90% staff utilization
 - Production timeline accuracy: >85% predictions within ±5 minutes
 
 ### User Adoption
+
 - Staff engagement with AI recommendations: >80%
 - Implementation of AI suggestions: >70%
 - Time saved per shift: 2-3 hours

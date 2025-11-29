@@ -344,7 +344,9 @@ const RecipeInputPage = () => {
   const [ingredients, setIngredients] = useState<IngredientRow[]>([
     createIngredientRow(),
   ]);
-  const [focusedIngredientRow, setFocusedIngredientRow] = useState<number | null>(null);
+  const [focusedIngredientRow, setFocusedIngredientRow] = useState<
+    number | null
+  >(null);
   const historyRef = useRef<any[]>([]);
   const futureRef = useRef<any[]>([]);
   const autoSnapshotTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
@@ -2408,7 +2410,9 @@ const RecipeInputPage = () => {
       source: "manual",
       taxonomy,
       chefNotes,
-      portionSize: portionSize ? { value: portionSize, unit: portionSizeUnit } : undefined,
+      portionSize: portionSize
+        ? { value: portionSize, unit: portionSizeUnit }
+        : undefined,
       serverNotes: recipeExport,
     };
 
@@ -2871,8 +2875,17 @@ const RecipeInputPage = () => {
                   data-echo-key="field:add:description"
                 />
 
-                <div className="mt-4 p-3 border rounded-lg" style={{backgroundColor: isDarkMode ? "rgba(0,0,0,0.3)" : "rgba(100,150,200,0.05)"}}>
-                  <label className={`text-xs font-semibold uppercase ${isDarkMode ? "text-cyan-300" : "text-slate-600"} block mb-2`}>
+                <div
+                  className="mt-4 p-3 border rounded-lg"
+                  style={{
+                    backgroundColor: isDarkMode
+                      ? "rgba(0,0,0,0.3)"
+                      : "rgba(100,150,200,0.05)",
+                  }}
+                >
+                  <label
+                    className={`text-xs font-semibold uppercase ${isDarkMode ? "text-cyan-300" : "text-slate-600"} block mb-2`}
+                  >
                     {t("recipe.labels.portionSize", "PORTION SIZE")}
                   </label>
                   <div className="flex items-center gap-2">
@@ -2885,7 +2898,10 @@ const RecipeInputPage = () => {
                       className={`flex-1 border rounded px-2 py-1.5 text-sm ${isDarkMode ? "bg-black/50 border-cyan-400/50 text-cyan-300" : "bg-white border-gray-300"}`}
                       data-echo-key="field:add:portion-size"
                     />
-                    <Select value={portionSizeUnit} onValueChange={setPortionSizeUnit}>
+                    <Select
+                      value={portionSizeUnit}
+                      onValueChange={setPortionSizeUnit}
+                    >
                       <SelectTrigger className="w-24 text-sm">
                         <SelectValue />
                       </SelectTrigger>
@@ -2906,8 +2922,13 @@ const RecipeInputPage = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  <p className={`text-xs mt-1 ${isDarkMode ? "text-cyan-400/60" : "text-slate-500"}`}>
-                    {t("recipe.hints.portionSize", "The standard portion size used for labeling (e.g., 1 gallon, 6 oz). Multiplied by prep count for total yield.")}
+                  <p
+                    className={`text-xs mt-1 ${isDarkMode ? "text-cyan-400/60" : "text-slate-500"}`}
+                  >
+                    {t(
+                      "recipe.hints.portionSize",
+                      "The standard portion size used for labeling (e.g., 1 gallon, 6 oz). Multiplied by prep count for total yield.",
+                    )}
                   </p>
                 </div>
 
@@ -4012,7 +4033,11 @@ const RecipeInputPage = () => {
               {nutritionDisplay && (
                 <div className="space-y-4">
                   <NutritionAuditPanel
-                    nutrition={nutritionPerServing ? nutritionDisplay.perServing : nutritionDisplay}
+                    nutrition={
+                      nutritionPerServing
+                        ? nutritionDisplay.perServing
+                        : nutritionDisplay
+                    }
                     servingSize={nutritionDisplay.servingSize}
                     servingsPerContainer={servingsForLabel}
                     recipeName={recipeName}
@@ -4033,7 +4058,8 @@ const RecipeInputPage = () => {
                         {servingsForLabel}
                       </div>
                       <div>
-                        <span className="font-semibold">Unit:</span> {portionUnit}
+                        <span className="font-semibold">Unit:</span>{" "}
+                        {portionUnit}
                       </div>
                     </div>
                   </div>

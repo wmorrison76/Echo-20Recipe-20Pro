@@ -24,7 +24,7 @@ self.addEventListener("install", (event) => {
         console.log("[Tablet SW] Cache opened");
         return cache;
       })
-      .then(() => self.skipWaiting())
+      .then(() => self.skipWaiting()),
   );
 });
 
@@ -47,10 +47,10 @@ self.addEventListener("activate", (event) => {
             .map((cacheName) => {
               console.log("[Tablet SW] Deleting cache:", cacheName);
               return caches.delete(cacheName);
-            })
+            }),
         );
       })
-      .then(() => self.clients.claim())
+      .then(() => self.clients.claim()),
   );
 });
 
@@ -107,13 +107,13 @@ self.addEventListener("fetch", (event) => {
                   headers: new Headers({
                     "Content-Type": "application/json",
                   }),
-                }
+                },
               );
             }
 
             return new Response("Offline", { status: 503 });
           });
-        })
+        }),
     );
     return;
   }
@@ -128,7 +128,11 @@ self.addEventListener("fetch", (event) => {
       return fetch(request)
         .then((response) => {
           // Only cache successful responses
-          if (!response || response.status !== 200 || response.type === "error") {
+          if (
+            !response ||
+            response.status !== 200 ||
+            response.type === "error"
+          ) {
             return response;
           }
 
@@ -143,7 +147,7 @@ self.addEventListener("fetch", (event) => {
           // Return offline page or cached response
           return caches.match(request);
         });
-    })
+    }),
   );
 });
 
@@ -175,7 +179,7 @@ self.addEventListener("message", (event) => {
       new Promise((resolve) => {
         console.log("[Tablet SW] Syncing print queue...");
         resolve();
-      })
+      }),
     );
   }
 });
@@ -190,7 +194,7 @@ if ("sync" in self) {
         new Promise((resolve) => {
           console.log("[Tablet SW] Syncing print history...");
           resolve();
-        })
+        }),
       );
     }
   });

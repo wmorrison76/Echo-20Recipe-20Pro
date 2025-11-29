@@ -7,10 +7,7 @@ const CACHE_NAME = "tablet-labels-v1";
 const RECIPE_CACHE = "tablet-recipes-v1";
 const OFFLINE_PAGE = "/tablet/labels";
 
-const CACHE_URLS = [
-  "/tablet/labels",
-  "/api/tablet/recipes",
-];
+const CACHE_URLS = ["/tablet/labels", "/api/tablet/recipes"];
 
 // Install event - cache essential files
 self.addEventListener("install", (event: ExtendedInstallEvent) => {
@@ -19,7 +16,7 @@ self.addEventListener("install", (event: ExtendedInstallEvent) => {
       const cache = await caches.open(CACHE_NAME);
       await cache.addAll(CACHE_URLS);
       (self as unknown as ServiceWorkerGlobalScope).skipWaiting();
-    })()
+    })(),
   );
 });
 
@@ -31,10 +28,10 @@ self.addEventListener("activate", (event: ExtendedActivateEvent) => {
       await Promise.all(
         cacheNames
           .filter((name) => name !== CACHE_NAME && name !== RECIPE_CACHE)
-          .map((name) => caches.delete(name))
+          .map((name) => caches.delete(name)),
       );
       (self as unknown as ServiceWorkerGlobalScope).clients.claim();
-    })()
+    })(),
   );
 });
 
@@ -69,7 +66,7 @@ self.addEventListener("fetch", (event: ExtendedFetchEvent) => {
             headers: { "Content-Type": "application/json" },
           });
         }
-      })()
+      })(),
     );
     return;
   }
@@ -95,7 +92,7 @@ self.addEventListener("fetch", (event: ExtendedFetchEvent) => {
           }
           throw new Error("Offline");
         }
-      })()
+      })(),
     );
     return;
   }
@@ -158,10 +155,7 @@ function openIndexedDB(): Promise<IDBDatabase> {
   });
 }
 
-function getFromDB(
-  db: IDBDatabase,
-  storeName: string
-): Promise<any[]> {
+function getFromDB(db: IDBDatabase, storeName: string): Promise<any[]> {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(storeName, "readonly");
     const store = transaction.objectStore(storeName);
@@ -175,7 +169,7 @@ function getFromDB(
 function deleteFromDB(
   db: IDBDatabase,
   storeName: string,
-  key: string
+  key: string,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(storeName, "readwrite");

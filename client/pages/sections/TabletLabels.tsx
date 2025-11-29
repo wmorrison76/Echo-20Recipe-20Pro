@@ -21,7 +21,11 @@ import {
   Sun,
   ArrowLeft,
 } from "lucide-react";
-import { generateQRCodeString, getQRCodeImageUrl, formatLabelHTML } from "@/lib/qr-code-generator";
+import {
+  generateQRCodeString,
+  getQRCodeImageUrl,
+  formatLabelHTML,
+} from "@/lib/qr-code-generator";
 import { useTabletServiceWorker } from "@/hooks/use-tablet-sw";
 import { TabletNav } from "@/components/TabletNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -53,7 +57,8 @@ export default function TabletLabels() {
   const { toast } = useToast();
   const { swRegistered, isOnline: swOnline } = useTabletServiceWorker();
 
-  const deviceToken = searchParams.get("device") || localStorage.getItem("tablet:deviceToken");
+  const deviceToken =
+    searchParams.get("device") || localStorage.getItem("tablet:deviceToken");
   const [isOnline, setIsOnline] = useState(navigator.onLine || swOnline);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
@@ -136,7 +141,7 @@ export default function TabletLabels() {
   const filteredRecipes = useMemo(() => {
     if (!searchTerm) return recipes;
     return recipes.filter((r) =>
-      r.name.toLowerCase().includes(searchTerm.toLowerCase())
+      r.name.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }, [recipes, searchTerm]);
 
@@ -296,7 +301,9 @@ export default function TabletLabels() {
       <div className="w-full h-screen flex items-center justify-center bg-red-50">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-800 mb-2">Disabled</h1>
-          <p className="text-red-600">Tablet label printing is currently disabled</p>
+          <p className="text-red-600">
+            Tablet label printing is currently disabled
+          </p>
         </div>
       </div>
     );
@@ -329,17 +336,23 @@ export default function TabletLabels() {
                 <ArrowLeft className="w-5 h-5" />
               </Button>
             )}
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Recipe Labels</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Recipe Labels
+            </h1>
             <div className="flex items-center gap-1 text-sm">
               {isOnline ? (
                 <>
                   <Wifi className="w-4 h-4 text-green-600 dark:text-green-500" />
-                  <span className="text-green-600 dark:text-green-400">Online</span>
+                  <span className="text-green-600 dark:text-green-400">
+                    Online
+                  </span>
                 </>
               ) : (
                 <>
                   <WifiOff className="w-4 h-4 text-yellow-600 dark:text-yellow-500" />
-                  <span className="text-yellow-600 dark:text-yellow-400">Offline</span>
+                  <span className="text-yellow-600 dark:text-yellow-400">
+                    Offline
+                  </span>
                 </>
               )}
             </div>
@@ -358,208 +371,231 @@ export default function TabletLabels() {
           </div>
         </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left Panel - Search */}
-        <div className="w-80 bg-white dark:bg-slate-800 border-r border-gray-200 dark:border-slate-700 flex flex-col">
-          <div className="p-4 border-b border-gray-200 dark:border-slate-700">
-            <div className="relative">
-              <Search className="absolute left-2 top-3 w-4 h-4 text-gray-400 dark:text-slate-500" />
-              <Input
-                placeholder="Search recipes..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-8 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-slate-400"
-              />
-            </div>
-          </div>
-
-          {/* Recipe List */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-2">
-            {isLoading ? (
-              <div className="flex justify-center items-center h-full">
-                <Loader2 className="w-6 h-6 animate-spin text-blue-600 dark:text-blue-500" />
-              </div>
-            ) : filteredRecipes.length === 0 ? (
-              <div className="text-center text-gray-500 dark:text-slate-400 py-8">No recipes found</div>
-            ) : (
-              filteredRecipes.map((recipe) => (
-                <button
-                  key={recipe.id}
-                  onClick={() => setSelectedRecipe(recipe)}
-                  className={`w-full text-left p-3 rounded-lg transition ${
-                    selectedRecipe?.id === recipe.id
-                      ? "bg-blue-100 dark:bg-blue-900 border-2 border-blue-500 dark:border-blue-400"
-                      : "bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 hover:bg-gray-100 dark:hover:bg-slate-600"
-                  }`}
-                >
-                  <div className="font-semibold text-gray-900 dark:text-white">{recipe.name}</div>
-                  {recipe.portionSize && (
-                    <div className="text-xs text-gray-600 dark:text-slate-400 mt-1">
-                      Portion: {recipe.portionSize.value} {recipe.portionSize.unit}
-                    </div>
-                  )}
-                </button>
-              ))
-            )}
-          </div>
-
-          {/* Prep Count & Print Controls */}
-          <div className="p-4 border-t border-gray-200 dark:border-slate-700 space-y-4">
-            <div>
-              <label className="text-sm font-semibold text-gray-700 dark:text-slate-300 block mb-2">
-                # Prep Labels
-              </label>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPrepCount(Math.max(1, prepCount - 1))}
-                  className="dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
-                >
-                  -
-                </Button>
+        {/* Main Content */}
+        <div className="flex-1 flex overflow-hidden">
+          {/* Left Panel - Search */}
+          <div className="w-80 bg-white dark:bg-slate-800 border-r border-gray-200 dark:border-slate-700 flex flex-col">
+            <div className="p-4 border-b border-gray-200 dark:border-slate-700">
+              <div className="relative">
+                <Search className="absolute left-2 top-3 w-4 h-4 text-gray-400 dark:text-slate-500" />
                 <Input
-                  type="number"
-                  min="1"
-                  value={prepCount}
-                  onChange={(e) => setPrepCount(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="text-center flex-1 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                  placeholder="Search recipes..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-8 dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-slate-400"
                 />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPrepCount(prepCount + 1)}
-                  className="dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
-                >
-                  +
-                </Button>
               </div>
             </div>
 
-            {config?.credentialMode === "employee_id" && (
+            {/* Recipe List */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+              {isLoading ? (
+                <div className="flex justify-center items-center h-full">
+                  <Loader2 className="w-6 h-6 animate-spin text-blue-600 dark:text-blue-500" />
+                </div>
+              ) : filteredRecipes.length === 0 ? (
+                <div className="text-center text-gray-500 dark:text-slate-400 py-8">
+                  No recipes found
+                </div>
+              ) : (
+                filteredRecipes.map((recipe) => (
+                  <button
+                    key={recipe.id}
+                    onClick={() => setSelectedRecipe(recipe)}
+                    className={`w-full text-left p-3 rounded-lg transition ${
+                      selectedRecipe?.id === recipe.id
+                        ? "bg-blue-100 dark:bg-blue-900 border-2 border-blue-500 dark:border-blue-400"
+                        : "bg-gray-50 dark:bg-slate-700 border border-gray-200 dark:border-slate-600 hover:bg-gray-100 dark:hover:bg-slate-600"
+                    }`}
+                  >
+                    <div className="font-semibold text-gray-900 dark:text-white">
+                      {recipe.name}
+                    </div>
+                    {recipe.portionSize && (
+                      <div className="text-xs text-gray-600 dark:text-slate-400 mt-1">
+                        Portion: {recipe.portionSize.value}{" "}
+                        {recipe.portionSize.unit}
+                      </div>
+                    )}
+                  </button>
+                ))
+              )}
+            </div>
+
+            {/* Prep Count & Print Controls */}
+            <div className="p-4 border-t border-gray-200 dark:border-slate-700 space-y-4">
               <div>
                 <label className="text-sm font-semibold text-gray-700 dark:text-slate-300 block mb-2">
-                  Employee ID
+                  # Prep Labels
                 </label>
-                <Input
-                  type="text"
-                  placeholder="Enter ID"
-                  value={employeeId}
-                  onChange={(e) => setEmployeeId(e.target.value)}
-                  className="dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-slate-400"
-                />
-              </div>
-            )}
-
-            <Button
-              onClick={handlePrint}
-              disabled={!selectedRecipe || isLoading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-700 dark:hover:bg-blue-600"
-              size="lg"
-            >
-              <Printer className="w-4 h-4 mr-2" />
-              Print Labels
-            </Button>
-          </div>
-        </div>
-
-        {/* Right Panel - Recipe Display */}
-        {selectedRecipe ? (
-          <div className="flex-1 overflow-y-auto p-8 bg-white dark:bg-slate-800">
-            <div className="max-w-3xl mx-auto">
-              {/* Recipe Image */}
-              {selectedRecipe.image && (
-                <img
-                  src={selectedRecipe.image}
-                  alt={selectedRecipe.name}
-                  className="w-full h-64 object-cover rounded-lg mb-6"
-                />
-              )}
-
-              {/* Recipe Header */}
-              <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                {selectedRecipe.name}
-              </h2>
-              {selectedRecipe.description && (
-                <p className="text-gray-600 dark:text-slate-400 mb-4">{selectedRecipe.description}</p>
-              )}
-
-              {/* Timing & Portion Info */}
-              <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-gray-50 dark:bg-slate-700 rounded-lg">
-                {selectedRecipe.prepTime && (
-                  <div>
-                    <div className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase">
-                      Prep Time
-                    </div>
-                    <div className="text-lg font-bold text-gray-900 dark:text-white">
-                      {selectedRecipe.prepTime}
-                    </div>
-                  </div>
-                )}
-                {selectedRecipe.cookTime && (
-                  <div>
-                    <div className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase">
-                      Cook Time
-                    </div>
-                    <div className="text-lg font-bold text-gray-900 dark:text-white">
-                      {selectedRecipe.cookTime}
-                    </div>
-                  </div>
-                )}
-                {selectedRecipe.portionSize && (
-                  <div>
-                    <div className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase">
-                      Portion
-                    </div>
-                    <div className="text-lg font-bold text-gray-900 dark:text-white">
-                      {selectedRecipe.portionSize.value} {selectedRecipe.portionSize.unit}
-                    </div>
-                  </div>
-                )}
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPrepCount(Math.max(1, prepCount - 1))}
+                    className="dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
+                  >
+                    -
+                  </Button>
+                  <Input
+                    type="number"
+                    min="1"
+                    value={prepCount}
+                    onChange={(e) =>
+                      setPrepCount(Math.max(1, parseInt(e.target.value) || 1))
+                    }
+                    className="text-center flex-1 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPrepCount(prepCount + 1)}
+                    className="dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
+                  >
+                    +
+                  </Button>
+                </div>
               </div>
 
-              {/* Allergens */}
-              {selectedRecipe.allergens && selectedRecipe.allergens.length > 0 && (
-                <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
-                  <div className="font-bold text-red-800 dark:text-red-300 mb-2">⚠️ Allergens</div>
-                  <div className="text-red-700 dark:text-red-200">{selectedRecipe.allergens.join(", ")}</div>
-                </div>
-              )}
-
-              {/* Ingredients */}
-              {selectedRecipe.ingredients && selectedRecipe.ingredients.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Ingredients</h3>
-                  <ul className="space-y-2">
-                    {selectedRecipe.ingredients.map((ing, i) => (
-                      <li key={i} className="text-gray-700 dark:text-slate-300">
-                        • {ing}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Instructions */}
-              {selectedRecipe.instructions && (
+              {config?.credentialMode === "employee_id" && (
                 <div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Instructions</h3>
-                  <div className="text-gray-700 dark:text-slate-300 whitespace-pre-wrap">
-                    {selectedRecipe.instructions}
-                  </div>
+                  <label className="text-sm font-semibold text-gray-700 dark:text-slate-300 block mb-2">
+                    Employee ID
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="Enter ID"
+                    value={employeeId}
+                    onChange={(e) => setEmployeeId(e.target.value)}
+                    className="dark:bg-slate-700 dark:border-slate-600 dark:text-white dark:placeholder-slate-400"
+                  />
                 </div>
               )}
+
+              <Button
+                onClick={handlePrint}
+                disabled={!selectedRecipe || isLoading}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-700 dark:hover:bg-blue-600"
+                size="lg"
+              >
+                <Printer className="w-4 h-4 mr-2" />
+                Print Labels
+              </Button>
             </div>
           </div>
-        ) : (
-          <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-slate-800">
-            <div className="text-center text-gray-500 dark:text-slate-400">
-              <p className="text-lg">Select a recipe to view details</p>
+
+          {/* Right Panel - Recipe Display */}
+          {selectedRecipe ? (
+            <div className="flex-1 overflow-y-auto p-8 bg-white dark:bg-slate-800">
+              <div className="max-w-3xl mx-auto">
+                {/* Recipe Image */}
+                {selectedRecipe.image && (
+                  <img
+                    src={selectedRecipe.image}
+                    alt={selectedRecipe.name}
+                    className="w-full h-64 object-cover rounded-lg mb-6"
+                  />
+                )}
+
+                {/* Recipe Header */}
+                <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                  {selectedRecipe.name}
+                </h2>
+                {selectedRecipe.description && (
+                  <p className="text-gray-600 dark:text-slate-400 mb-4">
+                    {selectedRecipe.description}
+                  </p>
+                )}
+
+                {/* Timing & Portion Info */}
+                <div className="grid grid-cols-3 gap-4 mb-6 p-4 bg-gray-50 dark:bg-slate-700 rounded-lg">
+                  {selectedRecipe.prepTime && (
+                    <div>
+                      <div className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase">
+                        Prep Time
+                      </div>
+                      <div className="text-lg font-bold text-gray-900 dark:text-white">
+                        {selectedRecipe.prepTime}
+                      </div>
+                    </div>
+                  )}
+                  {selectedRecipe.cookTime && (
+                    <div>
+                      <div className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase">
+                        Cook Time
+                      </div>
+                      <div className="text-lg font-bold text-gray-900 dark:text-white">
+                        {selectedRecipe.cookTime}
+                      </div>
+                    </div>
+                  )}
+                  {selectedRecipe.portionSize && (
+                    <div>
+                      <div className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase">
+                        Portion
+                      </div>
+                      <div className="text-lg font-bold text-gray-900 dark:text-white">
+                        {selectedRecipe.portionSize.value}{" "}
+                        {selectedRecipe.portionSize.unit}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Allergens */}
+                {selectedRecipe.allergens &&
+                  selectedRecipe.allergens.length > 0 && (
+                    <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
+                      <div className="font-bold text-red-800 dark:text-red-300 mb-2">
+                        ⚠️ Allergens
+                      </div>
+                      <div className="text-red-700 dark:text-red-200">
+                        {selectedRecipe.allergens.join(", ")}
+                      </div>
+                    </div>
+                  )}
+
+                {/* Ingredients */}
+                {selectedRecipe.ingredients &&
+                  selectedRecipe.ingredients.length > 0 && (
+                    <div className="mb-6">
+                      <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                        Ingredients
+                      </h3>
+                      <ul className="space-y-2">
+                        {selectedRecipe.ingredients.map((ing, i) => (
+                          <li
+                            key={i}
+                            className="text-gray-700 dark:text-slate-300"
+                          >
+                            • {ing}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                {/* Instructions */}
+                {selectedRecipe.instructions && (
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                      Instructions
+                    </h3>
+                    <div className="text-gray-700 dark:text-slate-300 whitespace-pre-wrap">
+                      {selectedRecipe.instructions}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          ) : (
+            <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-slate-800">
+              <div className="text-center text-gray-500 dark:text-slate-400">
+                <p className="text-lg">Select a recipe to view details</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

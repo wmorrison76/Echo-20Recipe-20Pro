@@ -1,6 +1,7 @@
 # Recipe Label Print Feature - Comprehensive Planning Document
 
 ## Executive Summary
+
 This document outlines the planning for a **Kitchen Tablet Label Printing System** that allows chefs and cooks to search recipes, view details, and print preparation labels with QR codes. This feature fills a gap in kitchen workflow management, as most competing systems (HACCP, production management tools) focus on compliance tracking rather than integrated recipe access + labeling.
 
 ---
@@ -10,12 +11,15 @@ This document outlines the planning for a **Kitchen Tablet Label Printing System
 ### 1.1 Market Analysis - Similar Systems
 
 #### A. Direct Competitors (Recipe Management + Printing)
+
 **Marginally Relevant:**
+
 - **MarginEdge, Toast, BlueCart**: Focus on inventory/ordering, minimal recipe integration
 - **Cookspire, Plate IQ**: Cloud recipe management but no kitchen tablet interface for printing
 - **ServSafe/HACCP Systems**: Compliance-focused, not kitchen workflow
 
 **Key Finding:** No single system combines:
+
 - Recipe search & display
 - Integrated label printing with QR codes
 - Multi-credential authentication options
@@ -23,13 +27,16 @@ This document outlines the planning for a **Kitchen Tablet Label Printing System
 - Persistent tablet accessibility
 
 #### B. Partial Solutions We Could Integrate
+
 1. **QR Code Libraries**: `qrcode.react`, `qr-scanner` (already available in ecosystem)
 2. **Print Management**: Browser's native print API (simpler than external printing services)
 3. **Authentication**: Employee ID systems (already exist in your app)
 4. **Kitchen Display Systems (KDS)**: MarginEdge, Toast provide inspiration for tablet UI
 
 #### C. Competitive Advantage
+
 Your system will be **first-to-market** for this combination:
+
 - ✅ Unified recipe access + prep labeling
 - ✅ QR code generation with configurable data
 - ✅ Flexible authentication (0-ID, camera, employee ID)
@@ -70,6 +77,7 @@ Your system will be **first-to-market** for this combination:
 ### 2.2 Tablet Setup Process
 
 #### Step 1: Physical Setup
+
 1. **Device**: iPad (preferred) or Android tablet, 7-10 inch
 2. **Network**: Connect to reliable WiFi (or cellular as backup)
 3. **Power**: Wall-mounted with auto-lock on AC adapter
@@ -79,6 +87,7 @@ Your system will be **first-to-market** for this combination:
    - Bookmark home URL on home screen
 
 #### Step 2: Initial Credential Setup (Admin Does Once)
+
 ```
 https://app.example.com/tablet/setup?token=ADMIN_TOKEN
 ├─ Admin scans QR code or enters setup code
@@ -89,6 +98,7 @@ https://app.example.com/tablet/setup?token=ADMIN_TOKEN
 ```
 
 #### Step 3: Tablet Runtime
+
 - **URL Bookmarked**: `https://app.example.com/tablet/labels`
 - **Device Token**: Stored in `localStorage` (survives browser refresh)
 - **Session Token**: Stored in httpOnly cookie (auto-renewed)
@@ -122,6 +132,7 @@ https://app.example.com/tablet/setup?token=ADMIN_TOKEN
 ### 2.4 URL Access Strategy
 
 #### Public URLs
+
 ```
 /tablet/labels           → Main tablet interface (requires device token)
 /tablet/login            → Initial login page
@@ -129,11 +140,13 @@ https://app.example.com/tablet/setup?token=ADMIN_TOKEN
 ```
 
 #### Why Not `/kitchen/labels`?
+
 - Keeps tablet route separate from main app
 - Simplifies analytics and access control
 - Reduces risk of accidental tablet data exposure
 
 #### Deep Link Strategy
+
 ```
 https://app.example.com/tablet/labels?recipe=beef-bourguignon
 ├─ Pre-selects recipe on load
@@ -205,18 +218,19 @@ https://app.example.com/tablet/labels?recipe=beef-bourguignon
 
 ### 3.3 Authentication Options
 
-| Option | Flow | When to Use |
-|--------|------|------------|
-| **No Credentials** | Tablet opens directly to search | Testing, open kitchen |
-| **Camera/Photo** | Tablet prompts "Smile for the camera", takes photo on print | Insurance/accountability |
-| **Employee ID** | Badge scan or manual ID entry | Compliance-required, large teams |
-| **Disabled** | Settings unavailable, feature hidden | Offline kitchen or emergency |
+| Option             | Flow                                                        | When to Use                      |
+| ------------------ | ----------------------------------------------------------- | -------------------------------- |
+| **No Credentials** | Tablet opens directly to search                             | Testing, open kitchen            |
+| **Camera/Photo**   | Tablet prompts "Smile for the camera", takes photo on print | Insurance/accountability         |
+| **Employee ID**    | Badge scan or manual ID entry                               | Compliance-required, large teams |
+| **Disabled**       | Settings unavailable, feature hidden                        | Offline kitchen or emergency     |
 
 ---
 
 ## Part 4: Technical Architecture
 
 ### 4.1 Frontend Stack
+
 - **React** (existing)
 - **TailwindCSS** (existing)
 - **QR Code**: `qrcode.react` library
@@ -255,8 +269,8 @@ POST   /api/tablet/qr-code         → Generate QR data
 // Tablet Configuration (stored in Supabase)
 interface TabletConfig {
   id: string;
-  device_id: string;              // Unique identifier
-  device_name: string;            // "Kitchen-1", "Pastry-A"
+  device_id: string; // Unique identifier
+  device_name: string; // "Kitchen-1", "Pastry-A"
   credential_mode: "none" | "camera" | "employee_id" | "disabled";
   include_chef_name: boolean;
   enabled: boolean;
@@ -266,8 +280,8 @@ interface TabletConfig {
 
 // Tablet Session
 interface TabletSession {
-  device_token: string;           // Stored in localStorage
-  session_token: string;          // httpOnly cookie
+  device_token: string; // Stored in localStorage
+  session_token: string; // httpOnly cookie
   expires_at: timestamp;
   last_activity: timestamp;
 }
@@ -416,6 +430,7 @@ Network Request Pattern:
 ```
 
 ### 6.2 Offline Features
+
 - ✅ Search cached recipes
 - ✅ View recipe details
 - ✅ Generate QR codes (all client-side)
@@ -424,6 +439,7 @@ Network Request Pattern:
 - ⚠️ Print history limited to device storage
 
 ### 6.3 Sync on Reconnect
+
 ```
 Interval: Every 5 minutes or on manual sync
 ├─ Refresh recipe list from server
@@ -437,12 +453,14 @@ Interval: Every 5 minutes or on manual sync
 ## Part 7: Security Considerations
 
 ### 7.1 Authentication Security
+
 - **Device Token**: 256-bit random, stored in `localStorage` (accessible to JavaScript)
 - **Session Token**: httpOnly cookie (not accessible to JavaScript, prevents XSS attacks)
 - **Expiration**: 30-day sliding window (renewed on each request)
 - **Revocation**: Admin can revoke via device dashboard
 
 ### 7.2 API Security
+
 ```
 Every tablet request includes:
 ├─ Device-Token header (from localStorage)
@@ -451,6 +469,7 @@ Every tablet request includes:
 ```
 
 ### 7.3 Data Privacy
+
 - ✅ Print history NOT stored on tablet
 - ✅ Camera photos (if enabled) encrypted in transit
 - ✅ No personal data in QR codes (only recipe/allergen)
@@ -461,6 +480,7 @@ Every tablet request includes:
 ## Part 8: Implementation Roadmap
 
 ### Phase 1: Core (Week 1)
+
 - [ ] New route: `/tablet/labels` (landing page)
 - [ ] Setup page: `/tablet/setup?token=ADMIN_TOKEN`
 - [ ] Recipe search & display (read-only)
@@ -468,24 +488,28 @@ Every tablet request includes:
 - [ ] Device token generation & validation
 
 ### Phase 2: Printing (Week 2)
+
 - [ ] Print label template design
 - [ ] QR code generation (configurable content)
 - [ ] Browser print dialog integration
 - [ ] Print history logging
 
 ### Phase 3: Authentication (Week 3)
+
 - [ ] Credential mode selection (0/camera/ID)
 - [ ] Camera capture + storage (optional)
 - [ ] Employee ID scanner integration
 - [ ] Session token management
 
 ### Phase 4: Admin Dashboard (Week 4)
+
 - [ ] Tablet settings page in main app
 - [ ] Print history viewer
 - [ ] Device enable/disable
 - [ ] Remote session management
 
 ### Phase 5: Offline & Polish (Week 5)
+
 - [ ] Service Worker caching
 - [ ] Offline fallback UI
 - [ ] Network status indicator
@@ -517,4 +541,3 @@ Before we code:
 5. ✏️ **Printer Hardware**: Label thermal printer (zebra, brother), or regular printer?
 6. ✏️ **Allergen Display**: Should allergens be sorted by allergen type (dairy, nut, etc.)?
 7. ✏️ **Recipe Image**: Smaller thumbnail or hide image entirely on tablet view?
-

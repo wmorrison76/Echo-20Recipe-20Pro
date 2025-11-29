@@ -30,7 +30,10 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { TabletNav } from "@/components/TabletNav";
-import { RecipeAccessManagement, type RecipeAccess } from "@/components/RecipeAccessManagement";
+import {
+  RecipeAccessManagement,
+  type RecipeAccess,
+} from "@/components/RecipeAccessManagement";
 
 interface TabletDevice {
   id: string;
@@ -176,7 +179,8 @@ export default function TabletAdminDashboard() {
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to create device",
+        description:
+          error instanceof Error ? error.message : "Failed to create device",
         variant: "destructive",
       });
     } finally {
@@ -204,8 +208,9 @@ export default function TabletAdminDashboard() {
   const downloadReport = () => {
     const csv = [
       "Device,Recipe,Portions,Employee,Date",
-      ...printHistory.map((r) =>
-        `"${r.device_name}","${r.recipe_name}","${r.total_portions}","${r.employee_id}","${r.printed_at}"`
+      ...printHistory.map(
+        (r) =>
+          `"${r.device_name}","${r.recipe_name}","${r.total_portions}","${r.employee_id}","${r.printed_at}"`,
       ),
     ].join("\n");
 
@@ -239,8 +244,8 @@ export default function TabletAdminDashboard() {
         prev.map((r) =>
           r.recipe_id === recipeId
             ? { ...r, confirmed_at: new Date().toISOString() }
-            : r
-        )
+            : r,
+        ),
       );
     } catch (error) {
       toast({
@@ -270,8 +275,8 @@ export default function TabletAdminDashboard() {
 
       setRecipes((prev) =>
         prev.map((r) =>
-          r.recipe_id === recipeId ? { ...r, is_active: !isActive } : r
-        )
+          r.recipe_id === recipeId ? { ...r, is_active: !isActive } : r,
+        ),
       );
     } catch (error) {
       toast({
@@ -295,337 +300,406 @@ export default function TabletAdminDashboard() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Tablet Admin</h1>
-            <p className="text-gray-600 mt-1">Manage kitchen tablet devices and compliance</p>
+            <p className="text-gray-600 mt-1">
+              Manage kitchen tablet devices and compliance
+            </p>
           </div>
-        <Button
-          onClick={() => setShowNewDevice(true)}
-          className="bg-blue-600 hover:bg-blue-700"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          New Device
-        </Button>
-      </div>
-
-      {/* Devices Section */}
-      <div className="mb-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Devices</h2>
-        {isLoading ? (
-          <div className="flex justify-center items-center h-32">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-          </div>
-        ) : devices.length === 0 ? (
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-            <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600">No devices configured</p>
-            <p className="text-sm text-gray-500 mt-1">Create your first tablet device to get started</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {devices.map((device) => (
-              <div
-                key={device.id}
-                className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="font-bold text-gray-900">{device.device_name}</h3>
-                    <p className="text-xs text-gray-500 mt-1">{device.device_id}</p>
-                  </div>
-                  {device.enabled ? (
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                  ) : (
-                    <AlertCircle className="w-5 h-5 text-red-600" />
-                  )}
-                </div>
-
-                <div className="space-y-2 text-sm mb-4">
-                  <div>
-                    <span className="text-gray-600">Credential Mode: </span>
-                    <span className="font-semibold text-gray-900">{device.credential_mode}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">Chef Name: </span>
-                    <span className="font-semibold text-gray-900">{device.include_chef_name ? "Yes" : "No"}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">Created: </span>
-                    <span className="font-semibold text-gray-900">
-                      {format(new Date(device.created_at), "MMM d, yyyy")}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1">
-                    <Edit2 className="w-4 h-4 mr-1" />
-                    Edit
-                  </Button>
-                  <Button variant="outline" size="sm" className="flex-1">
-                    <Trash2 className="w-4 h-4 mr-1" />
-                    Delete
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Recipe Management Section */}
-      <div className="mb-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Recipe Access Management</h2>
-        <RecipeAccessManagement
-          recipes={recipes}
-          onConfirm={async (recipeId) => {
-            await confirmRecipeAccuracy(recipeId);
-          }}
-          onToggleAccess={async (recipeId, isActive) => {
-            await toggleRecipeAccess(recipeId, isActive);
-          }}
-        />
-      </div>
-
-      {/* Compliance Report Section */}
-      <div>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-gray-900">Compliance Report</h2>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <Filter className="w-4 h-4 mr-2" />
-              Filters
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={downloadReport}
-              disabled={printHistory.length === 0}
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Export CSV
-            </Button>
-          </div>
+          <Button
+            onClick={() => setShowNewDevice(true)}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            New Device
+          </Button>
         </div>
 
-        {/* Filters */}
-        {showFilters && (
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Input
-              placeholder="Device ID"
-              value={filters.deviceId}
-              onChange={(e) => setFilters({ ...filters, deviceId: e.target.value })}
-            />
-            <Input
-              type="date"
-              value={filters.startDate}
-              onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
-            />
-            <Input
-              type="date"
-              value={filters.endDate}
-              onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-            />
-          </div>
-        )}
+        {/* Devices Section */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Devices</h2>
+          {isLoading ? (
+            <div className="flex justify-center items-center h-32">
+              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            </div>
+          ) : devices.length === 0 ? (
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+              <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600">No devices configured</p>
+              <p className="text-sm text-gray-500 mt-1">
+                Create your first tablet device to get started
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {devices.map((device) => (
+                <div
+                  key={device.id}
+                  className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="font-bold text-gray-900">
+                        {device.device_name}
+                      </h3>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {device.device_id}
+                      </p>
+                    </div>
+                    {device.enabled ? (
+                      <CheckCircle className="w-5 h-5 text-green-600" />
+                    ) : (
+                      <AlertCircle className="w-5 h-5 text-red-600" />
+                    )}
+                  </div>
 
-        {/* Print History Table */}
-        {isLoading ? (
-          <div className="flex justify-center items-center h-32">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-          </div>
-        ) : printHistory.length === 0 ? (
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-            <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600">No print history available</p>
-          </div>
-        ) : (
-          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Device</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Recipe</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Portions</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Employee</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">Allergens</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {printHistory.map((record) => (
-                  <tr key={record.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-3 text-sm text-gray-900">{record.device_name}</td>
-                    <td className="px-6 py-3 text-sm text-gray-900">{record.recipe_name}</td>
-                    <td className="px-6 py-3 text-sm text-gray-900">{record.total_portions}</td>
-                    <td className="px-6 py-3 text-sm text-gray-900">{record.employee_id || "-"}</td>
-                    <td className="px-6 py-3 text-sm text-gray-900">
-                      {format(new Date(record.printed_at), "MMM d, HH:mm")}
-                    </td>
-                    <td className="px-6 py-3 text-sm text-gray-900">
-                      {record.allergens && record.allergens.length > 0 ? (
-                        <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">
-                          {record.allergens.join(", ")}
-                        </span>
-                      ) : (
-                        "-"
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+                  <div className="space-y-2 text-sm mb-4">
+                    <div>
+                      <span className="text-gray-600">Credential Mode: </span>
+                      <span className="font-semibold text-gray-900">
+                        {device.credential_mode}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Chef Name: </span>
+                      <span className="font-semibold text-gray-900">
+                        {device.include_chef_name ? "Yes" : "No"}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600">Created: </span>
+                      <span className="font-semibold text-gray-900">
+                        {format(new Date(device.created_at), "MMM d, yyyy")}
+                      </span>
+                    </div>
+                  </div>
 
-      {/* New Device Dialog */}
-      <Dialog open={showNewDevice} onOpenChange={setShowNewDevice}>
-        <DialogContent className="sm:max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>{qrCodeData ? "Device Created - Setup QR Code" : "Create New Tablet Device"}</DialogTitle>
-            <DialogDescription>
-              {qrCodeData
-                ? "Scan this QR code on the new tablet to automatically configure it"
-                : "Set up a new kitchen tablet for recipe access and label printing"}
-            </DialogDescription>
-          </DialogHeader>
-
-          {qrCodeData ? (
-            <div className="space-y-6 py-4">
-              <div className="flex flex-col items-center space-y-4">
-                <img
-                  src={qrCodeData.qr_code_url}
-                  alt="Device Setup QR Code"
-                  className="w-64 h-64 border-4 border-gray-200 rounded-lg"
-                />
-                <p className="text-center text-sm text-gray-600 max-w-sm">
-                  {qrCodeData.setup_instructions}
-                </p>
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                <div className="text-sm">
-                  <label className="block font-semibold text-gray-700 mb-2">Device Name</label>
-                  <p className="text-gray-900 font-mono text-sm p-2 bg-white rounded border border-gray-200">
-                    {qrCodeData.device_name}
-                  </p>
-                </div>
-
-                <div className="text-sm">
-                  <label className="block font-semibold text-gray-700 mb-2">Pairing URL</label>
                   <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={qrCodeData.pairing_url}
-                      readOnly
-                      className="flex-1 px-3 py-2 border border-gray-200 rounded text-xs font-mono text-gray-600"
-                    />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => copyToClipboard(qrCodeData.pairing_url, "URL")}
-                    >
-                      Copy
+                    <Button variant="outline" size="sm" className="flex-1">
+                      <Edit2 className="w-4 h-4 mr-1" />
+                      Edit
+                    </Button>
+                    <Button variant="outline" size="sm" className="flex-1">
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      Delete
                     </Button>
                   </div>
                 </div>
-              </div>
-
-              <div className="flex gap-2 pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => downloadQRCode(qrCodeData.qr_code_url, qrCodeData.device_name)}
-                  className="flex-1"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Download QR Code
-                </Button>
-                <Button
-                  onClick={() => {
-                    setShowNewDevice(false);
-                    setQrCodeData(null);
-                    setNewDevice({ deviceName: "", credentialMode: "none", includeChefName: false });
-                  }}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700"
-                >
-                  Done
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-4 py-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Device Name
-                </label>
-                <Input
-                  placeholder="e.g., Kitchen-Station-1"
-                  value={newDevice.deviceName}
-                  onChange={(e) =>
-                    setNewDevice({ ...newDevice, deviceName: e.target.value })
-                  }
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Credential Mode
-                </label>
-                <Select
-                  value={newDevice.credentialMode}
-                  onValueChange={(value: any) =>
-                    setNewDevice({ ...newDevice, credentialMode: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">No Credentials</SelectItem>
-                    <SelectItem value="camera">Camera/Photo</SelectItem>
-                    <SelectItem value="employee_id">Employee ID</SelectItem>
-                    <SelectItem value="disabled">Disabled</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={newDevice.includeChefName}
-                  onChange={(e) =>
-                    setNewDevice({ ...newDevice, includeChefName: e.target.checked })
-                  }
-                />
-                <span className="text-sm text-gray-700">Include chef name in QR code</span>
-              </label>
-
-              <div className="flex gap-2 pt-4">
-                <Button variant="outline" onClick={() => setShowNewDevice(false)}>
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleCreateDevice}
-                  disabled={isCreatingDevice}
-                  className="bg-blue-600 hover:bg-blue-700"
-                >
-                  {isCreatingDevice ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Creating...
-                    </>
-                  ) : (
-                    "Create Device"
-                  )}
-                </Button>
-              </div>
+              ))}
             </div>
           )}
-        </DialogContent>
-      </Dialog>
+        </div>
+
+        {/* Recipe Management Section */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            Recipe Access Management
+          </h2>
+          <RecipeAccessManagement
+            recipes={recipes}
+            onConfirm={async (recipeId) => {
+              await confirmRecipeAccuracy(recipeId);
+            }}
+            onToggleAccess={async (recipeId, isActive) => {
+              await toggleRecipeAccess(recipeId, isActive);
+            }}
+          />
+        </div>
+
+        {/* Compliance Report Section */}
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Compliance Report
+            </h2>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <Filter className="w-4 h-4 mr-2" />
+                Filters
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={downloadReport}
+                disabled={printHistory.length === 0}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Export CSV
+              </Button>
+            </div>
+          </div>
+
+          {/* Filters */}
+          {showFilters && (
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Input
+                placeholder="Device ID"
+                value={filters.deviceId}
+                onChange={(e) =>
+                  setFilters({ ...filters, deviceId: e.target.value })
+                }
+              />
+              <Input
+                type="date"
+                value={filters.startDate}
+                onChange={(e) =>
+                  setFilters({ ...filters, startDate: e.target.value })
+                }
+              />
+              <Input
+                type="date"
+                value={filters.endDate}
+                onChange={(e) =>
+                  setFilters({ ...filters, endDate: e.target.value })
+                }
+              />
+            </div>
+          )}
+
+          {/* Print History Table */}
+          {isLoading ? (
+            <div className="flex justify-center items-center h-32">
+              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            </div>
+          ) : printHistory.length === 0 ? (
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+              <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600">No print history available</p>
+            </div>
+          ) : (
+            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">
+                      Device
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">
+                      Recipe
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">
+                      Portions
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">
+                      Employee
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">
+                      Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700">
+                      Allergens
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {printHistory.map((record) => (
+                    <tr key={record.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-3 text-sm text-gray-900">
+                        {record.device_name}
+                      </td>
+                      <td className="px-6 py-3 text-sm text-gray-900">
+                        {record.recipe_name}
+                      </td>
+                      <td className="px-6 py-3 text-sm text-gray-900">
+                        {record.total_portions}
+                      </td>
+                      <td className="px-6 py-3 text-sm text-gray-900">
+                        {record.employee_id || "-"}
+                      </td>
+                      <td className="px-6 py-3 text-sm text-gray-900">
+                        {format(new Date(record.printed_at), "MMM d, HH:mm")}
+                      </td>
+                      <td className="px-6 py-3 text-sm text-gray-900">
+                        {record.allergens && record.allergens.length > 0 ? (
+                          <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">
+                            {record.allergens.join(", ")}
+                          </span>
+                        ) : (
+                          "-"
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* New Device Dialog */}
+        <Dialog open={showNewDevice} onOpenChange={setShowNewDevice}>
+          <DialogContent className="sm:max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>
+                {qrCodeData
+                  ? "Device Created - Setup QR Code"
+                  : "Create New Tablet Device"}
+              </DialogTitle>
+              <DialogDescription>
+                {qrCodeData
+                  ? "Scan this QR code on the new tablet to automatically configure it"
+                  : "Set up a new kitchen tablet for recipe access and label printing"}
+              </DialogDescription>
+            </DialogHeader>
+
+            {qrCodeData ? (
+              <div className="space-y-6 py-4">
+                <div className="flex flex-col items-center space-y-4">
+                  <img
+                    src={qrCodeData.qr_code_url}
+                    alt="Device Setup QR Code"
+                    className="w-64 h-64 border-4 border-gray-200 rounded-lg"
+                  />
+                  <p className="text-center text-sm text-gray-600 max-w-sm">
+                    {qrCodeData.setup_instructions}
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                  <div className="text-sm">
+                    <label className="block font-semibold text-gray-700 mb-2">
+                      Device Name
+                    </label>
+                    <p className="text-gray-900 font-mono text-sm p-2 bg-white rounded border border-gray-200">
+                      {qrCodeData.device_name}
+                    </p>
+                  </div>
+
+                  <div className="text-sm">
+                    <label className="block font-semibold text-gray-700 mb-2">
+                      Pairing URL
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={qrCodeData.pairing_url}
+                        readOnly
+                        className="flex-1 px-3 py-2 border border-gray-200 rounded text-xs font-mono text-gray-600"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          copyToClipboard(qrCodeData.pairing_url, "URL")
+                        }
+                      >
+                        Copy
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      downloadQRCode(
+                        qrCodeData.qr_code_url,
+                        qrCodeData.device_name,
+                      )
+                    }
+                    className="flex-1"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Download QR Code
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setShowNewDevice(false);
+                      setQrCodeData(null);
+                      setNewDevice({
+                        deviceName: "",
+                        credentialMode: "none",
+                        includeChefName: false,
+                      });
+                    }}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  >
+                    Done
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4 py-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Device Name
+                  </label>
+                  <Input
+                    placeholder="e.g., Kitchen-Station-1"
+                    value={newDevice.deviceName}
+                    onChange={(e) =>
+                      setNewDevice({ ...newDevice, deviceName: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Credential Mode
+                  </label>
+                  <Select
+                    value={newDevice.credentialMode}
+                    onValueChange={(value: any) =>
+                      setNewDevice({ ...newDevice, credentialMode: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No Credentials</SelectItem>
+                      <SelectItem value="camera">Camera/Photo</SelectItem>
+                      <SelectItem value="employee_id">Employee ID</SelectItem>
+                      <SelectItem value="disabled">Disabled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={newDevice.includeChefName}
+                    onChange={(e) =>
+                      setNewDevice({
+                        ...newDevice,
+                        includeChefName: e.target.checked,
+                      })
+                    }
+                  />
+                  <span className="text-sm text-gray-700">
+                    Include chef name in QR code
+                  </span>
+                </label>
+
+                <div className="flex gap-2 pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowNewDevice(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleCreateDevice}
+                    disabled={isCreatingDevice}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    {isCreatingDevice ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Creating...
+                      </>
+                    ) : (
+                      "Create Device"
+                    )}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

@@ -1,7 +1,13 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Select,
@@ -51,10 +57,29 @@ export interface TabletInventoryShelfCountProps {
   onClose?: () => void;
 }
 
-const STORAGE_UNITS = ["pcs", "lbs", "kg", "oz", "ml", "L", "cups", "tbsp", "tsp"];
-const STORAGE_LOCATIONS = ["Walk-in Cooler", "Walk-in Freezer", "Dry Storage", "Pantry", "Shelf"];
+const STORAGE_UNITS = [
+  "pcs",
+  "lbs",
+  "kg",
+  "oz",
+  "ml",
+  "L",
+  "cups",
+  "tbsp",
+  "tsp",
+];
+const STORAGE_LOCATIONS = [
+  "Walk-in Cooler",
+  "Walk-in Freezer",
+  "Dry Storage",
+  "Pantry",
+  "Shelf",
+];
 
-export function TabletInventoryShelfCount({ deviceId, onClose }: TabletInventoryShelfCountProps) {
+export function TabletInventoryShelfCount({
+  deviceId,
+  onClose,
+}: TabletInventoryShelfCountProps) {
   const { toast } = useToast();
 
   const [countSession, setCountSession] = useState<ShelfCountSession>({
@@ -163,7 +188,8 @@ export function TabletInventoryShelfCount({ deviceId, onClose }: TabletInventory
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to submit count",
+        description:
+          error instanceof Error ? error.message : "Failed to submit count",
         variant: "destructive",
       });
     } finally {
@@ -178,11 +204,15 @@ export function TabletInventoryShelfCount({ deviceId, onClose }: TabletInventory
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Monthly Inventory Shelf Count</CardTitle>
-              <CardDescription>Record current inventory quantities</CardDescription>
+              <CardDescription>
+                Record current inventory quantities
+              </CardDescription>
             </div>
             <div className="text-right">
               <p className="text-sm text-gray-600">Count Date</p>
-              <p className="text-lg font-semibold text-gray-900">{countSession.countDate}</p>
+              <p className="text-lg font-semibold text-gray-900">
+                {countSession.countDate}
+              </p>
             </div>
           </div>
         </CardHeader>
@@ -242,7 +272,9 @@ export function TabletInventoryShelfCount({ deviceId, onClose }: TabletInventory
           {/* Items Table */}
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Items Counted</h3>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Items Counted
+              </h3>
               <Button
                 onClick={() => setShowAddItem(true)}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
@@ -264,22 +296,44 @@ export function TabletInventoryShelfCount({ deviceId, onClose }: TabletInventory
                 <table className="w-full">
                   <thead className="bg-gray-50 border-b border-gray-200">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Item Name</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Quantity</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Unit</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Location</th>
-                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Notes</th>
-                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">Action</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">
+                        Item Name
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">
+                        Quantity
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">
+                        Unit
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">
+                        Location
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">
+                        Notes
+                      </th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700">
+                        Action
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     {countSession.items.map((item) => (
                       <tr key={item.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 text-sm text-gray-900 font-medium">{item.name}</td>
-                        <td className="px-4 py-3 text-sm text-gray-900">{item.quantity}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600">{item.unit}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600">{item.location}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate">{item.notes || "-"}</td>
+                        <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                          {item.name}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {item.quantity}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          {item.unit}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          {item.location}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600 max-w-xs truncate">
+                          {item.notes || "-"}
+                        </td>
                         <td className="px-4 py-3 text-center">
                           <Button
                             variant="ghost"
@@ -298,7 +352,10 @@ export function TabletInventoryShelfCount({ deviceId, onClose }: TabletInventory
             )}
 
             <p className="text-sm text-gray-600 mt-2">
-              Total items counted: <span className="font-semibold text-gray-900">{countSession.items.length}</span>
+              Total items counted:{" "}
+              <span className="font-semibold text-gray-900">
+                {countSession.items.length}
+              </span>
             </p>
           </div>
 
@@ -335,34 +392,52 @@ export function TabletInventoryShelfCount({ deviceId, onClose }: TabletInventory
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Add Inventory Item</DialogTitle>
-            <DialogDescription>Add a new item to your inventory count</DialogDescription>
+            <DialogDescription>
+              Add a new item to your inventory count
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Item Name *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Item Name *
+              </label>
               <Input
                 placeholder="e.g., Tomatoes, Chicken Breast, Olive Oil"
                 value={newItem.name}
-                onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
+                onChange={(e) =>
+                  setNewItem({ ...newItem, name: e.target.value })
+                }
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Quantity *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Quantity *
+                </label>
                 <Input
                   type="number"
                   placeholder="0"
                   value={newItem.quantity}
                   onChange={(e) =>
-                    setNewItem({ ...newItem, quantity: parseFloat(e.target.value) || 0 })
+                    setNewItem({
+                      ...newItem,
+                      quantity: parseFloat(e.target.value) || 0,
+                    })
                   }
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Unit *</label>
-                <Select value={newItem.unit} onValueChange={(value) => setNewItem({ ...newItem, unit: value })}>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Unit *
+                </label>
+                <Select
+                  value={newItem.unit}
+                  onValueChange={(value) =>
+                    setNewItem({ ...newItem, unit: value })
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -378,10 +453,14 @@ export function TabletInventoryShelfCount({ deviceId, onClose }: TabletInventory
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Storage Location *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Storage Location *
+              </label>
               <Select
                 value={newItem.location}
-                onValueChange={(value) => setNewItem({ ...newItem, location: value })}
+                onValueChange={(value) =>
+                  setNewItem({ ...newItem, location: value })
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -397,11 +476,15 @@ export function TabletInventoryShelfCount({ deviceId, onClose }: TabletInventory
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Notes (Optional)
+              </label>
               <textarea
                 placeholder="Any observations about this item..."
                 value={newItem.notes}
-                onChange={(e) => setNewItem({ ...newItem, notes: e.target.value })}
+                onChange={(e) =>
+                  setNewItem({ ...newItem, notes: e.target.value })
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
                 rows={2}
               />
@@ -411,7 +494,10 @@ export function TabletInventoryShelfCount({ deviceId, onClose }: TabletInventory
               <Button variant="outline" onClick={() => setShowAddItem(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleAddItem} className="flex-1 bg-blue-600 hover:bg-blue-700">
+              <Button
+                onClick={handleAddItem}
+                className="flex-1 bg-blue-600 hover:bg-blue-700"
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Item
               </Button>

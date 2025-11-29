@@ -242,53 +242,65 @@ const App = () => (
                   <CollaborationProvider>
                     <KeyboardShortcutsProvider>
                       <BrowserRouter>
-                      <Suspense fallback={<LoadingFallback />}>
-                        <Routes>
-                          <Route path="/login" element={<Login />} />
-                          <Route
-                            path="/password-reset"
-                            element={<PasswordReset />}
-                          />
-                          <Route
-                            path="/"
-                            element={
-                              <ProtectedRoute>
-                                <Index />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/recipe/:id"
-                            element={
-                              <ProtectedRoute>
-                                <RecipeEditor />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route
-                            path="/recipe/:id/view"
-                            element={
-                              <ProtectedRoute>
-                                <RecipeTemplate />
-                              </ProtectedRoute>
-                            }
-                          />
-                          <Route path="/tablet/setup" element={<TabletSetup />} />
-                          <Route path="/tablet/labels" element={<TabletLabels />} />
-                          <Route path="/tablet/waste" element={<TabletWasteTracking />} />
-                          <Route path="/tablet/transfers" element={<TabletInventoryTransfer />} />
-                          <Route
-                            path="/tablet/admin"
-                            element={
-                              <ProtectedRoute>
-                                <TabletAdminDashboard />
-                              </ProtectedRoute>
-                            }
-                          />
-                          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                          <Route path="*" element={<NotFound />} />
-                        </Routes>
-                      </Suspense>
+                        <Suspense fallback={<LoadingFallback />}>
+                          <Routes>
+                            <Route path="/login" element={<Login />} />
+                            <Route
+                              path="/password-reset"
+                              element={<PasswordReset />}
+                            />
+                            <Route
+                              path="/"
+                              element={
+                                <ProtectedRoute>
+                                  <Index />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/recipe/:id"
+                              element={
+                                <ProtectedRoute>
+                                  <RecipeEditor />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/recipe/:id/view"
+                              element={
+                                <ProtectedRoute>
+                                  <RecipeTemplate />
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/tablet/setup"
+                              element={<TabletSetup />}
+                            />
+                            <Route
+                              path="/tablet/labels"
+                              element={<TabletLabels />}
+                            />
+                            <Route
+                              path="/tablet/waste"
+                              element={<TabletWasteTracking />}
+                            />
+                            <Route
+                              path="/tablet/transfers"
+                              element={<TabletInventoryTransfer />}
+                            />
+                            <Route
+                              path="/tablet/admin"
+                              element={
+                                <ProtectedRoute>
+                                  <TabletAdminDashboard />
+                                </ProtectedRoute>
+                              }
+                            />
+                            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                            <Route path="*" element={<NotFound />} />
+                          </Routes>
+                        </Suspense>
                       </BrowserRouter>
                     </KeyboardShortcutsProvider>
                   </CollaborationProvider>

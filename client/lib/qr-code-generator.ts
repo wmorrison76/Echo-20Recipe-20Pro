@@ -35,7 +35,7 @@ export function generateQRCodeString(data: QRCodeData): string {
 export function getQRCodeImageUrl(
   data: string,
   size: number = 200,
-  service: "qrserver" | "google" = "qrserver"
+  service: "qrserver" | "google" = "qrserver",
 ): string {
   const encoded = encodeURIComponent(data);
 

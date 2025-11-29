@@ -58,21 +58,29 @@ export function TabletNav() {
               "flex items-start gap-3 px-3 py-3 rounded-lg transition-all group",
               currentPath === item.path
                 ? "bg-emerald-600/20 text-emerald-300 border border-emerald-500/30"
-                : "text-slate-300 hover:bg-slate-800/50 border border-transparent"
+                : "text-slate-300 hover:bg-slate-800/50 border border-transparent",
             )}
           >
-            <div className={cn(
-              "mt-0.5 flex-shrink-0",
-              currentPath === item.path ? "text-emerald-400" : "text-slate-400 group-hover:text-slate-300"
-            )}>
+            <div
+              className={cn(
+                "mt-0.5 flex-shrink-0",
+                currentPath === item.path
+                  ? "text-emerald-400"
+                  : "text-slate-400 group-hover:text-slate-300",
+              )}
+            >
               {item.icon}
             </div>
             <div className="flex-1 min-w-0">
               <div className="font-medium text-sm">{item.label}</div>
-              <div className={cn(
-                "text-xs mt-0.5",
-                currentPath === item.path ? "text-emerald-300/70" : "text-slate-500"
-              )}>
+              <div
+                className={cn(
+                  "text-xs mt-0.5",
+                  currentPath === item.path
+                    ? "text-emerald-300/70"
+                    : "text-slate-500",
+                )}
+              >
                 {item.description}
               </div>
             </div>
@@ -87,9 +95,7 @@ export function TabletSidebar({ children }: { children: React.ReactNode }) {
   return (
     <div className="w-full h-screen flex flex-col overflow-hidden bg-slate-50">
       <TabletNav />
-      <div className="flex-1 overflow-auto">
-        {children}
-      </div>
+      <div className="flex-1 overflow-auto">{children}</div>
     </div>
   );
 }

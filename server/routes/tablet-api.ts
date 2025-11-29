@@ -25,7 +25,9 @@ router.post("/device/create", async (req: Request, res: Response) => {
     const { deviceName, credentialMode, includeChefName } = req.body;
 
     if (!deviceName || !credentialMode) {
-      return res.status(400).json({ error: "Missing required fields: deviceName, credentialMode" });
+      return res
+        .status(400)
+        .json({ error: "Missing required fields: deviceName, credentialMode" });
     }
 
     // Generate device credentials
@@ -50,7 +52,9 @@ router.post("/device/create", async (req: Request, res: Response) => {
 
     if (dbError) {
       console.error("Database error:", dbError);
-      return res.status(500).json({ error: "Failed to create device: " + dbError.message });
+      return res
+        .status(500)
+        .json({ error: "Failed to create device: " + dbError.message });
     }
 
     // Generate QR code image URL
@@ -82,7 +86,9 @@ router.get("/device/list", async (req: Request, res: Response) => {
   try {
     const { data: devices, error } = await supabase
       .from("tablet_configs")
-      .select("id, device_id, device_name, credential_mode, include_chef_name, enabled, created_at, updated_at")
+      .select(
+        "id, device_id, device_name, credential_mode, include_chef_name, enabled, created_at, updated_at",
+      )
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -125,7 +131,9 @@ router.post("/device/register", async (req: Request, res: Response) => {
 
     // Create session token for this tablet
     const sessionToken = crypto.randomBytes(32).toString("hex");
-    const expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(); // 1 year
+    const expiresAt = new Date(
+      Date.now() + 365 * 24 * 60 * 60 * 1000,
+    ).toISOString(); // 1 year
 
     // Update device with registration info and session
     const { error: updateError } = await supabase
@@ -138,16 +146,20 @@ router.post("/device/register", async (req: Request, res: Response) => {
       .eq("device_id", deviceId);
 
     if (updateError) {
-      return res.status(500).json({ error: "Failed to register device: " + updateError.message });
+      return res
+        .status(500)
+        .json({ error: "Failed to register device: " + updateError.message });
     }
 
     // Store session
-    const { error: sessionError } = await supabase.from("tablet_sessions").insert({
-      device_id: deviceId,
-      session_token: sessionToken,
-      expires_at: expiresAt,
-      status: "active",
-    });
+    const { error: sessionError } = await supabase
+      .from("tablet_sessions")
+      .insert({
+        device_id: deviceId,
+        session_token: sessionToken,
+        expires_at: expiresAt,
+        status: "active",
+      });
 
     if (sessionError) {
       console.warn("Session storage error (non-critical):", sessionError);
@@ -175,8 +187,10 @@ router.put("/device/:deviceId", async (req: Request, res: Response) => {
 
     const updateData: any = {};
     if (deviceName !== undefined) updateData.device_name = deviceName;
-    if (credentialMode !== undefined) updateData.credential_mode = credentialMode;
-    if (includeChefName !== undefined) updateData.include_chef_name = includeChefName;
+    if (credentialMode !== undefined)
+      updateData.credential_mode = credentialMode;
+    if (includeChefName !== undefined)
+      updateData.include_chef_name = includeChefName;
     if (enabled !== undefined) updateData.enabled = enabled;
 
     updateData.updated_at = new Date().toISOString();
@@ -225,9 +239,11 @@ function generateQRData(
   recipeName: string,
   allergens: string[],
   chefName?: string,
-  timestamp?: number
+  timestamp?: number,
 ): string {
-  const printedAt = timestamp ? new Date(timestamp).toISOString().split("T")[0] : new Date().toISOString().split("T")[0];
+  const printedAt = timestamp
+    ? new Date(timestamp).toISOString().split("T")[0]
+    : new Date().toISOString().split("T")[0];
   const allergenStr = allergens.join(",");
   const chef = chefName ? `|${chefName}` : "";
   return `RECIPE:${recipeName}|ALLERGEN:${allergenStr}|DATE:${printedAt}${chef}`;
@@ -246,7 +262,8 @@ function generateSessionToken(): string {
 // POST /api/tablet/setup - Initial device setup (admin only)
 router.post("/setup", async (req: Request, res: Response) => {
   try {
-    const { adminToken, deviceName, credentialMode, includeChefName, outlet } = req.body;
+    const { adminToken, deviceName, credentialMode, includeChefName, outlet } =
+      req.body;
 
     if (!adminToken || !deviceName || !credentialMode) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -343,15 +360,19 @@ router.post("/login", async (req: Request, res: Response) => {
     }
 
     const sessionToken = generateSessionToken();
-    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+    const expiresAt = new Date(
+      Date.now() + 30 * 24 * 60 * 60 * 1000,
+    ).toISOString();
 
-    const { error: insertError } = await supabase.from("tablet_sessions").insert({
-      device_token: deviceToken,
-      session_token: sessionToken,
-      tablet_config_id: config.id,
-      employee_id: employeeId,
-      expires_at: expiresAt,
-    });
+    const { error: insertError } = await supabase
+      .from("tablet_sessions")
+      .insert({
+        device_token: deviceToken,
+        session_token: sessionToken,
+        tablet_config_id: config.id,
+        employee_id: employeeId,
+        expires_at: expiresAt,
+      });
 
     if (insertError) {
       return res.status(500).json({ error: insertError.message });
@@ -372,7 +393,9 @@ router.get("/recipes", async (req: Request, res: Response) => {
   try {
     const { search, limit = "50" } = req.query;
 
-    let query = supabase.from("user_recipes").select("id, title, description, imageNames, extra");
+    let query = supabase
+      .from("user_recipes")
+      .select("id, title, description, imageNames, extra");
 
     if (search && typeof search === "string") {
       query = query.ilike("title", `%${search}%`);
@@ -464,9 +487,14 @@ router.post("/print-label", async (req: Request, res: Response) => {
     }
 
     const bornOn = new Date().toISOString().split("T")[0];
-    const expiresOn = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+    const expiresOn = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split("T")[0];
     const qrData = generateQRData(recipeName, allergens || [], chefName);
-    const totalPortions = portionSize && portionMultiplier ? `${portionMultiplier} x ${portionSize}` : undefined;
+    const totalPortions =
+      portionSize && portionMultiplier
+        ? `${portionMultiplier} x ${portionSize}`
+        : undefined;
 
     const { error } = await supabase.from("tablet_print_history").insert({
       device_id: deviceToken,
@@ -595,7 +623,15 @@ router.put("/settings", async (req: Request, res: Response) => {
 // POST /api/tablet/waste - Record waste entry from tablet
 router.post("/waste", async (req: Request, res: Response) => {
   try {
-    const { category, itemName, quantity, unit, costPerUnit, reason, employeeId } = req.body;
+    const {
+      category,
+      itemName,
+      quantity,
+      unit,
+      costPerUnit,
+      reason,
+      employeeId,
+    } = req.body;
 
     if (!itemName || !quantity || !unit) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -690,7 +726,16 @@ router.post("/inventory/shelf-count", async (req: Request, res: Response) => {
 // POST /api/tablet/inventory/low-stock - Create low stock alert/order suggestion
 router.post("/inventory/low-stock", async (req: Request, res: Response) => {
   try {
-    const { deviceId, itemName, currentQuantity, unit, reorderLevel, suggestedQuantity, employeeId, notes } = req.body;
+    const {
+      deviceId,
+      itemName,
+      currentQuantity,
+      unit,
+      reorderLevel,
+      suggestedQuantity,
+      employeeId,
+      notes,
+    } = req.body;
 
     if (!deviceId || !itemName || currentQuantity === undefined) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -736,13 +781,18 @@ router.get("/inventory/low-stock", async (req: Request, res: Response) => {
   try {
     const { deviceId, status = "pending" } = req.query;
 
-    let query = supabase.from("tablet_low_stock_alerts").select("*").eq("status", status);
+    let query = supabase
+      .from("tablet_low_stock_alerts")
+      .select("*")
+      .eq("status", status);
 
     if (deviceId) {
       query = query.eq("device_id", deviceId);
     }
 
-    const { data: alerts, error } = await query.order("created_at", { ascending: false });
+    const { data: alerts, error } = await query.order("created_at", {
+      ascending: false,
+    });
 
     if (error) {
       return res.status(500).json({ error: error.message });
@@ -758,35 +808,38 @@ router.get("/inventory/low-stock", async (req: Request, res: Response) => {
 });
 
 // PUT /api/tablet/inventory/low-stock/:alertId - Update low stock alert status
-router.put("/inventory/low-stock/:alertId", async (req: Request, res: Response) => {
-  try {
-    const { alertId } = req.params;
-    const { status, resolvedNotes } = req.body;
+router.put(
+  "/inventory/low-stock/:alertId",
+  async (req: Request, res: Response) => {
+    try {
+      const { alertId } = req.params;
+      const { status, resolvedNotes } = req.body;
 
-    if (!status) {
-      return res.status(400).json({ error: "Missing status field" });
+      if (!status) {
+        return res.status(400).json({ error: "Missing status field" });
+      }
+
+      const updateData: any = { status };
+      if (resolvedNotes) {
+        updateData.resolved_notes = resolvedNotes;
+        updateData.resolved_at = new Date().toISOString();
+      }
+
+      const { error } = await supabase
+        .from("tablet_low_stock_alerts")
+        .update(updateData)
+        .eq("id", alertId);
+
+      if (error) {
+        return res.status(500).json({ error: error.message });
+      }
+
+      res.json({ success: true, message: "Alert status updated" });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
     }
-
-    const updateData: any = { status };
-    if (resolvedNotes) {
-      updateData.resolved_notes = resolvedNotes;
-      updateData.resolved_at = new Date().toISOString();
-    }
-
-    const { error } = await supabase
-      .from("tablet_low_stock_alerts")
-      .update(updateData)
-      .eq("id", alertId);
-
-    if (error) {
-      return res.status(500).json({ error: error.message });
-    }
-
-    res.json({ success: true, message: "Alert status updated" });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-});
+  },
+);
 
 // ========================================
 // PRODUCTION & PREP ASSIGNMENT
@@ -795,7 +848,14 @@ router.put("/inventory/low-stock/:alertId", async (req: Request, res: Response) 
 // POST /api/tablet/production/update - Update production status with screenshot
 router.post("/production/update", async (req: Request, res: Response) => {
   try {
-    const { deviceId, productionTaskId, status, screenshotUrl, notes, employeeId } = req.body;
+    const {
+      deviceId,
+      productionTaskId,
+      status,
+      screenshotUrl,
+      notes,
+      employeeId,
+    } = req.body;
 
     if (!deviceId || !productionTaskId || !status) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -832,7 +892,15 @@ router.post("/production/update", async (req: Request, res: Response) => {
 // POST /api/tablet/prep/assign - Assign prep work to staff member
 router.post("/prep/assign", async (req: Request, res: Response) => {
   try {
-    const { deviceId, prepTaskId, assignedToEmployeeId, dueDate, ingredients, instructions, notes } = req.body;
+    const {
+      deviceId,
+      prepTaskId,
+      assignedToEmployeeId,
+      dueDate,
+      ingredients,
+      instructions,
+      notes,
+    } = req.body;
 
     if (!deviceId || !prepTaskId || !assignedToEmployeeId) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -883,7 +951,9 @@ router.get("/prep/assigned", async (req: Request, res: Response) => {
       .eq("assigned_to_employee_id", employeeId)
       .eq("status", status);
 
-    const { data: assignments, error } = await query.order("due_date", { ascending: true });
+    const { data: assignments, error } = await query.order("due_date", {
+      ascending: true,
+    });
 
     if (error) {
       return res.status(500).json({ error: error.message });

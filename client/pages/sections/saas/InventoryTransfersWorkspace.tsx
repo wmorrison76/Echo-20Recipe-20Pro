@@ -136,7 +136,7 @@ export default function InventoryTransfersWorkspace() {
         }
 
         const response = await fetch(
-          `/api/inventory/transfers?${params.toString()}`
+          `/api/inventory/transfers?${params.toString()}`,
         );
         if (response.ok) {
           const data = await response.json();
@@ -225,10 +225,10 @@ export default function InventoryTransfersWorkspace() {
     const byDepartment = DEPARTMENTS.map((dept) => ({
       name: dept,
       received: transfers.filter(
-        (t) => t.to_department === dept && t.status === "completed"
+        (t) => t.to_department === dept && t.status === "completed",
       ).length,
       pending: transfers.filter(
-        (t) => t.to_department === dept && t.status === "pending"
+        (t) => t.to_department === dept && t.status === "pending",
       ).length,
     }));
 
@@ -356,7 +356,7 @@ export default function InventoryTransfersWorkspace() {
                     </SelectTrigger>
                     <SelectContent>
                       {DEPARTMENTS.filter(
-                        (d) => d !== newTransfer.fromDepartment
+                        (d) => d !== newTransfer.fromDepartment,
                       ).map((dept) => (
                         <SelectItem key={dept} value={dept}>
                           {dept}
@@ -423,9 +423,7 @@ export default function InventoryTransfersWorkspace() {
             <div className="text-3xl font-bold text-amber-600">
               {analytics.pending}
             </div>
-            <p className="text-xs text-slate-600 mt-1">
-              Awaiting completion
-            </p>
+            <p className="text-xs text-slate-600 mt-1">Awaiting completion</p>
           </CardContent>
         </Card>
 
@@ -439,9 +437,7 @@ export default function InventoryTransfersWorkspace() {
             <div className="text-3xl font-bold text-green-600">
               {analytics.completed}
             </div>
-            <p className="text-xs text-slate-600 mt-1">
-              This period
-            </p>
+            <p className="text-xs text-slate-600 mt-1">This period</p>
           </CardContent>
         </Card>
 
@@ -455,9 +451,7 @@ export default function InventoryTransfersWorkspace() {
             <div className="text-3xl font-bold text-blue-600">
               {transfers.length}
             </div>
-            <p className="text-xs text-slate-600 mt-1">
-              All time
-            </p>
+            <p className="text-xs text-slate-600 mt-1">All time</p>
           </CardContent>
         </Card>
       </div>
@@ -475,7 +469,9 @@ export default function InventoryTransfersWorkspace() {
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
-                    data={analytics.statusDistribution.filter((d) => d.value > 0)}
+                    data={analytics.statusDistribution.filter(
+                      (d) => d.value > 0,
+                    )}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
@@ -506,7 +502,9 @@ export default function InventoryTransfersWorkspace() {
             <CardDescription>Received transfers per department</CardDescription>
           </CardHeader>
           <CardContent>
-            {analytics.byDepartment.some((d) => d.received > 0 || d.pending > 0) ? (
+            {analytics.byDepartment.some(
+              (d) => d.received > 0 || d.pending > 0,
+            ) ? (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart
                   data={analytics.byDepartment}
@@ -642,7 +640,9 @@ export default function InventoryTransfersWorkspace() {
                           {transfer.requested_by}
                         </TableCell>
                         <TableCell className="text-sm text-slate-600">
-                          {new Date(transfer.transfer_date).toLocaleDateString()}
+                          {new Date(
+                            transfer.transfer_date,
+                          ).toLocaleDateString()}
                         </TableCell>
                         <TableCell>
                           <Badge

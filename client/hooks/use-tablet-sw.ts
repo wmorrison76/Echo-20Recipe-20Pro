@@ -24,7 +24,7 @@ export function useTabletServiceWorker() {
         const swCheck = await fetch(swPath, { method: "HEAD" });
         if (!swCheck.ok) {
           throw new Error(
-            `Service Worker file not found at ${swPath} (HTTP ${swCheck.status})`
+            `Service Worker file not found at ${swPath} (HTTP ${swCheck.status})`,
           );
         }
 
@@ -36,17 +36,19 @@ export function useTabletServiceWorker() {
         setSwRegistered(true);
 
         // Check for updates periodically
-        const updateInterval = setInterval(() => {
-          registration.update().catch((error) => {
-            console.warn("[Tablet SW] Update check failed:", error);
-          });
-        }, 60 * 60 * 1000); // Check every hour
+        const updateInterval = setInterval(
+          () => {
+            registration.update().catch((error) => {
+              console.warn("[Tablet SW] Update check failed:", error);
+            });
+          },
+          60 * 60 * 1000,
+        ); // Check every hour
 
         // Cleanup interval on unmount
         return () => clearInterval(updateInterval);
       } catch (error) {
-        const errorMsg =
-          error instanceof Error ? error.message : String(error);
+        const errorMsg = error instanceof Error ? error.message : String(error);
         console.error("[Tablet SW] Registration failed:", errorMsg);
         setSwError(error instanceof Error ? error : new Error(errorMsg));
       }
@@ -74,7 +76,7 @@ export function useTabletServiceWorker() {
       if ("sync" in registration) {
         // Use Background Sync API if available
         await (navigator.serviceWorker.ready as any).then((reg: any) =>
-          reg.sync.register("sync-print-history")
+          reg.sync.register("sync-print-history"),
         );
       }
     } catch (error) {
@@ -101,7 +103,7 @@ export function useTabletServiceWorker() {
         throw error;
       }
     },
-    [isOnline, triggerSync]
+    [isOnline, triggerSync],
   );
 
   return {
@@ -136,7 +138,7 @@ function openDB(): Promise<IDBDatabase> {
 function saveToDB(
   db: IDBDatabase,
   storeName: string,
-  data: any
+  data: any,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(storeName, "readwrite");

@@ -11,9 +11,9 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 function fuzzyMatch(searchText: string, item: string): number {
   const search = searchText.toLowerCase();
   const text = item.toLowerCase();
-  
+
   if (text.includes(search)) return 100;
-  
+
   let matches = 0;
   let searchIdx = 0;
   for (let i = 0; i < text.length && searchIdx < search.length; i++) {
@@ -22,7 +22,7 @@ function fuzzyMatch(searchText: string, item: string): number {
       searchIdx++;
     }
   }
-  
+
   return searchIdx === search.length ? (matches / text.length) * 100 : 0;
 }
 
@@ -30,20 +30,20 @@ function fuzzyMatch(searchText: string, item: string): number {
 router.get("/items", async (req: Request, res: Response) => {
   try {
     const { q } = req.query;
-    
+
     const { data: items, error } = await supabase
       .from("inventory_items")
       .select("id, name, category, item_type, unit")
       .limit(50);
-    
+
     if (error) {
       return res.status(500).json({ error: error.message });
     }
-    
+
     if (!q) {
       return res.json(items);
     }
-    
+
     const searchText = String(q);
     const results = items
       .map((item) => ({
@@ -53,7 +53,7 @@ router.get("/items", async (req: Request, res: Response) => {
       .filter((item) => item.score > 0)
       .sort((a, b) => b.score - a.score)
       .slice(0, 20);
-    
+
     res.json(results.map(({ score, ...item }) => item));
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -64,17 +64,17 @@ router.get("/items", async (req: Request, res: Response) => {
 router.get("/items/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    
+
     const { data: item, error } = await supabase
       .from("inventory_items")
       .select("*")
       .eq("id", id)
       .single();
-    
+
     if (error) {
       return res.status(404).json({ error: "Item not found" });
     }
-    
+
     res.json(item);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -84,21 +84,21 @@ router.get("/items/:id", async (req: Request, res: Response) => {
 // POST /api/inventory/transfers - Create inventory transfer
 router.post("/transfers", async (req: Request, res: Response) => {
   try {
-    const { 
-      item_id, 
-      item_name, 
-      quantity, 
-      unit, 
-      from_department, 
-      to_department, 
+    const {
+      item_id,
+      item_name,
+      quantity,
+      unit,
+      from_department,
+      to_department,
       requested_by,
-      notes 
+      notes,
     } = req.body;
-    
+
     if (!item_name || !quantity || !to_department || !requested_by) {
       return res.status(400).json({ error: "Missing required fields" });
     }
-    
+
     const { data: transfer, error } = await supabase
       .from("inventory_transfers")
       .insert({
@@ -114,11 +114,11 @@ router.post("/transfers", async (req: Request, res: Response) => {
       })
       .select()
       .single();
-    
+
     if (error) {
       return res.status(500).json({ error: error.message });
     }
-    
+
     res.status(201).json(transfer);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -128,40 +128,45 @@ router.post("/transfers", async (req: Request, res: Response) => {
 // GET /api/inventory/transfers - Get transfers with filters
 router.get("/transfers", async (req: Request, res: Response) => {
   try {
-    const { to_department, from_department, status, start_date, end_date, limit = "50" } = req.query;
-    
-    let query = supabase
-      .from("inventory_transfers")
-      .select("*");
-    
+    const {
+      to_department,
+      from_department,
+      status,
+      start_date,
+      end_date,
+      limit = "50",
+    } = req.query;
+
+    let query = supabase.from("inventory_transfers").select("*");
+
     if (to_department) {
       query = query.eq("to_department", to_department);
     }
-    
+
     if (from_department) {
       query = query.eq("from_department", from_department);
     }
-    
+
     if (status) {
       query = query.eq("status", status);
     }
-    
+
     if (start_date) {
       query = query.gte("transfer_date", start_date);
     }
-    
+
     if (end_date) {
       query = query.lte("transfer_date", end_date);
     }
-    
+
     const { data: transfers, error } = await query
       .order("transfer_date", { ascending: false })
       .limit(Number(limit));
-    
+
     if (error) {
       return res.status(500).json({ error: error.message });
     }
-    
+
     res.json(transfers);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -172,17 +177,17 @@ router.get("/transfers", async (req: Request, res: Response) => {
 router.get("/transfers/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    
+
     const { data: transfer, error } = await supabase
       .from("inventory_transfers")
       .select("*")
       .eq("id", id)
       .single();
-    
+
     if (error) {
       return res.status(404).json({ error: "Transfer not found" });
     }
-    
+
     res.json(transfer);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -194,32 +199,32 @@ router.put("/transfers/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { status, transferred_by, received_date } = req.body;
-    
+
     if (!status) {
       return res.status(400).json({ error: "Status is required" });
     }
-    
+
     const updateData: any = { status, updated_at: new Date().toISOString() };
-    
+
     if (transferred_by) {
       updateData.transferred_by = transferred_by;
     }
-    
+
     if (received_date) {
       updateData.received_date = received_date;
     }
-    
+
     const { data: transfer, error } = await supabase
       .from("inventory_transfers")
       .update(updateData)
       .eq("id", id)
       .select()
       .single();
-    
+
     if (error) {
       return res.status(500).json({ error: error.message });
     }
-    
+
     res.json(transfer);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -229,12 +234,13 @@ router.put("/transfers/:id", async (req: Request, res: Response) => {
 // POST /api/inventory/recalls - Create food recall notification
 router.post("/recalls", async (req: Request, res: Response) => {
   try {
-    const { recall_id, item_name, severity, description, action_required } = req.body;
-    
+    const { recall_id, item_name, severity, description, action_required } =
+      req.body;
+
     if (!recall_id || !item_name || !severity || !description) {
       return res.status(400).json({ error: "Missing required fields" });
     }
-    
+
     const { data: recall, error } = await supabase
       .from("food_recall_notifications")
       .insert({
@@ -246,11 +252,11 @@ router.post("/recalls", async (req: Request, res: Response) => {
       })
       .select()
       .single();
-    
+
     if (error) {
       return res.status(500).json({ error: error.message });
     }
-    
+
     res.status(201).json(recall);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -261,24 +267,25 @@ router.post("/recalls", async (req: Request, res: Response) => {
 router.get("/recalls", async (req: Request, res: Response) => {
   try {
     const { severity, include_resolved = "false" } = req.query;
-    
+
     let query = supabase.from("food_recall_notifications").select("*");
-    
+
     if (include_resolved === "false") {
       query = query.is("resolved_at", null);
     }
-    
+
     if (severity) {
       query = query.eq("severity", severity);
     }
-    
-    const { data: recalls, error } = await query
-      .order("issued_at", { ascending: false });
-    
+
+    const { data: recalls, error } = await query.order("issued_at", {
+      ascending: false,
+    });
+
     if (error) {
       return res.status(500).json({ error: error.message });
     }
-    
+
     res.json(recalls);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -289,17 +296,17 @@ router.get("/recalls", async (req: Request, res: Response) => {
 router.get("/recalls/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    
+
     const { data: recall, error } = await supabase
       .from("food_recall_notifications")
       .select("*")
       .eq("id", id)
       .single();
-    
+
     if (error) {
       return res.status(404).json({ error: "Recall not found" });
     }
-    
+
     res.json(recall);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -307,57 +314,62 @@ router.get("/recalls/:id", async (req: Request, res: Response) => {
 });
 
 // POST /api/inventory/recalls/:id/device-notification - Notify device about recall
-router.post("/recalls/:id/device-notification", async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const { device_id, device_name } = req.body;
-    
-    if (!device_id) {
-      return res.status(400).json({ error: "device_id is required" });
+router.post(
+  "/recalls/:id/device-notification",
+  async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { device_id, device_name } = req.body;
+
+      if (!device_id) {
+        return res.status(400).json({ error: "device_id is required" });
+      }
+
+      // Check if device already notified
+      const { data: existing } = await supabase
+        .from("food_recall_device_notifications")
+        .select("id")
+        .eq("recall_id", id)
+        .eq("device_id", device_id)
+        .single();
+
+      if (existing) {
+        return res.json(existing);
+      }
+
+      const { data: notification, error } = await supabase
+        .from("food_recall_device_notifications")
+        .insert({
+          recall_id: id,
+          device_id,
+          device_name,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        return res.status(500).json({ error: error.message });
+      }
+
+      res.status(201).json(notification);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
     }
-    
-    // Check if device already notified
-    const { data: existing } = await supabase
-      .from("food_recall_device_notifications")
-      .select("id")
-      .eq("recall_id", id)
-      .eq("device_id", device_id)
-      .single();
-    
-    if (existing) {
-      return res.json(existing);
-    }
-    
-    const { data: notification, error } = await supabase
-      .from("food_recall_device_notifications")
-      .insert({
-        recall_id: id,
-        device_id,
-        device_name,
-      })
-      .select()
-      .single();
-    
-    if (error) {
-      return res.status(500).json({ error: error.message });
-    }
-    
-    res.status(201).json(notification);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-});
+  },
+);
 
 // PUT /api/inventory/recalls/:id/acknowledge - Acknowledge recall on device
 router.put("/recalls/:id/acknowledge", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { device_id, acknowledged_by } = req.body;
-    
+
     if (!device_id || !acknowledged_by) {
-      return res.status(400).json({ error: "device_id and acknowledged_by are required" });
+      return res
+        .status(400)
+        .json({ error: "device_id and acknowledged_by are required" });
     }
-    
+
     const { data: notification, error } = await supabase
       .from("food_recall_device_notifications")
       .update({
@@ -368,11 +380,11 @@ router.put("/recalls/:id/acknowledge", async (req: Request, res: Response) => {
       .eq("device_id", device_id)
       .select()
       .single();
-    
+
     if (error) {
       return res.status(500).json({ error: error.message });
     }
-    
+
     res.json(notification);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -380,31 +392,36 @@ router.put("/recalls/:id/acknowledge", async (req: Request, res: Response) => {
 });
 
 // GET /api/inventory/recalls/device/:device_id - Get recalls for a device
-router.get("/recalls/device/:device_id", async (req: Request, res: Response) => {
-  try {
-    const { device_id } = req.params;
-    const { acknowledged = "false" } = req.query;
-    
-    let query = supabase
-      .from("food_recall_device_notifications")
-      .select("*, food_recall_notifications(*)")
-      .eq("device_id", device_id);
-    
-    if (acknowledged === "false") {
-      query = query.is("acknowledged_at", null);
+router.get(
+  "/recalls/device/:device_id",
+  async (req: Request, res: Response) => {
+    try {
+      const { device_id } = req.params;
+      const { acknowledged = "false" } = req.query;
+
+      let query = supabase
+        .from("food_recall_device_notifications")
+        .select("*, food_recall_notifications(*)")
+        .eq("device_id", device_id);
+
+      if (acknowledged === "false") {
+        query = query.is("acknowledged_at", null);
+      }
+
+      const { data: notifications, error } = await query.order(
+        "first_notified_at",
+        { ascending: false },
+      );
+
+      if (error) {
+        return res.status(500).json({ error: error.message });
+      }
+
+      res.json(notifications);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
     }
-    
-    const { data: notifications, error } = await query
-      .order("first_notified_at", { ascending: false });
-    
-    if (error) {
-      return res.status(500).json({ error: error.message });
-    }
-    
-    res.json(notifications);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-});
+  },
+);
 
 export default router;

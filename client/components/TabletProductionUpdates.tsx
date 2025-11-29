@@ -1,6 +1,12 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Select,
@@ -41,7 +47,7 @@ export function TabletProductionUpdates({
   const { toast } = useToast();
 
   const [selectedTask, setSelectedTask] = useState<ProductionTask | null>(
-    tasks.length > 0 ? tasks[0] : null
+    tasks.length > 0 ? tasks[0] : null,
   );
   const [isUploading, setIsUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -104,15 +110,23 @@ export function TabletProductionUpdates({
           const ctx = canvas.getContext("2d");
           if (ctx) {
             ctx.drawImage(video, 0, 0);
-            canvas.toBlob((blob) => {
-              if (blob) {
-                const file = new File([blob], `production-${Date.now()}.jpg`, {
-                  type: "image/jpeg",
-                });
-                setSelectedFile(file);
-                setPreviewUrl(canvas.toDataURL("image/jpeg"));
-              }
-            }, "image/jpeg", 0.95);
+            canvas.toBlob(
+              (blob) => {
+                if (blob) {
+                  const file = new File(
+                    [blob],
+                    `production-${Date.now()}.jpg`,
+                    {
+                      type: "image/jpeg",
+                    },
+                  );
+                  setSelectedFile(file);
+                  setPreviewUrl(canvas.toDataURL("image/jpeg"));
+                }
+              },
+              "image/jpeg",
+              0.95,
+            );
           }
 
           // Stop stream
@@ -175,7 +189,8 @@ export function TabletProductionUpdates({
 
       toast({
         title: "Success",
-        description: "Production status updated. All tablets have been notified.",
+        description:
+          "Production status updated. All tablets have been notified.",
       });
 
       // Clear form
@@ -186,7 +201,10 @@ export function TabletProductionUpdates({
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to update production status",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to update production status",
         variant: "destructive",
       });
     } finally {
@@ -199,14 +217,17 @@ export function TabletProductionUpdates({
       <Card className="bg-white">
         <CardHeader>
           <CardTitle>Production Updates</CardTitle>
-          <CardDescription>Update production status with screenshots for all kitchen stations</CardDescription>
+          <CardDescription>
+            Update production status with screenshots for all kitchen stations
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {tasks.length === 0 ? (
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                No active production tasks. Create tasks in the production system to track them here.
+                No active production tasks. Create tasks in the production
+                system to track them here.
               </AlertDescription>
             </Alert>
           ) : (
@@ -238,22 +259,34 @@ export function TabletProductionUpdates({
 
               {selectedTask && (
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h3 className="font-semibold text-gray-900">{selectedTask.name}</h3>
-                  <p className="text-sm text-gray-600 mt-1">Current Status: {selectedTask.status}</p>
+                  <h3 className="font-semibold text-gray-900">
+                    {selectedTask.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Current Status: {selectedTask.status}
+                  </p>
                   {selectedTask.expectedDueTime && (
-                    <p className="text-sm text-gray-600">Due: {selectedTask.expectedDueTime}</p>
+                    <p className="text-sm text-gray-600">
+                      Due: {selectedTask.expectedDueTime}
+                    </p>
                   )}
                 </div>
               )}
 
               {/* Screenshot Section */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">Production Screenshot</h3>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Production Screenshot
+                </h3>
 
                 {previewUrl ? (
                   <div className="space-y-3">
                     <div className="relative bg-gray-100 rounded-lg overflow-hidden max-w-md mx-auto">
-                      <img src={previewUrl} alt="Production screenshot" className="w-full h-auto" />
+                      <img
+                        src={previewUrl}
+                        alt="Production screenshot"
+                        className="w-full h-auto"
+                      />
                       <Button
                         variant="outline"
                         size="sm"

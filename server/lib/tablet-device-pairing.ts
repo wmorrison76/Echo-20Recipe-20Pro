@@ -44,7 +44,7 @@ export function generateDeviceCredentials(): {
 export function generatePairingQRData(
   deviceId: string,
   deviceToken: string,
-  baseUrl: string
+  baseUrl: string,
 ): QRCodeData {
   const pairingUrl = `${baseUrl}/tablet/setup?device=${deviceId}&token=${deviceToken}`;
 
@@ -62,7 +62,7 @@ export function generatePairingQRData(
 export function verifyDeviceCredentials(
   deviceId: string,
   deviceToken: string,
-  storedToken: string
+  storedToken: string,
 ): boolean {
   return deviceId && deviceToken === storedToken;
 }
@@ -73,7 +73,7 @@ export function verifyDeviceCredentials(
  */
 export function getQRCodeImageUrl(
   pairingUrl: string,
-  size: number = 300
+  size: number = 300,
 ): string {
   const encoded = encodeURIComponent(pairingUrl);
   return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encoded}`;
