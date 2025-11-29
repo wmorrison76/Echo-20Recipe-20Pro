@@ -236,6 +236,7 @@ export default function TabletInventoryTransfer() {
 
   return (
     <div className="w-full h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex flex-col overflow-hidden">
+      <FoodRecallNotificationOverlay deviceId={deviceId} />
       {/* Header */}
       <div className="bg-white border-b shadow-sm p-4">
         <div className="flex items-center justify-between">
