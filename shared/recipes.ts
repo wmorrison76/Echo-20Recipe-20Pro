@@ -82,6 +82,8 @@ export type Recipe = {
   rating?: number;
   deletedAt?: number | null;
   blurhash?: string;
+  portionSize?: string;
+  portionUnit?: string;
 };
 
 type NormalizeInput = {
