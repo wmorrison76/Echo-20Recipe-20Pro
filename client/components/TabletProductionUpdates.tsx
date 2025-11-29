@@ -229,18 +229,17 @@ export function TabletProductionUpdates({
         </CardHeader>
         <CardContent className="space-y-6">
           {tasks.length === 0 ? (
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
+            <Alert className="border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800">
+              <AlertCircle className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+              <AlertDescription className="text-slate-700 dark:text-slate-300">
                 No active production tasks. Create tasks in the production
                 system to track them here.
               </AlertDescription>
             </Alert>
           ) : (
             <>
-              {/* Task Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                   Select Production Task *
                 </label>
                 <Select
@@ -250,10 +249,10 @@ export function TabletProductionUpdates({
                     setSelectedTask(task || null);
                   }}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="dark:bg-slate-800 dark:border-slate-700 dark:text-slate-50">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="dark:bg-slate-800 dark:border-slate-700">
                     {tasks.map((task) => (
                       <SelectItem key={task.id} value={task.id}>
                         {task.name} ({task.status})
@@ -264,15 +263,15 @@ export function TabletProductionUpdates({
               </div>
 
               {selectedTask && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h3 className="font-semibold text-gray-900">
+                <div className="bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-lg p-4">
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-50">
                     {selectedTask.name}
                   </h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Current Status: {selectedTask.status}
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                    Current Status: <span className="font-semibold">{selectedTask.status}</span>
                   </p>
                   {selectedTask.expectedDueTime && (
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
                       Due: {selectedTask.expectedDueTime}
                     </p>
                   )}
