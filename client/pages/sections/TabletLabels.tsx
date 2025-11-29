@@ -45,9 +45,10 @@ interface TabletConfig {
 export default function TabletLabels() {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const { swRegistered, isOnline: swOnline } = useTabletServiceWorker();
 
   const deviceToken = searchParams.get("device") || localStorage.getItem("tablet:deviceToken");
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [isOnline, setIsOnline] = useState(navigator.onLine || swOnline);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
