@@ -265,6 +265,14 @@ const App = () => (
                             }
                           />
                           <Route path="/tablet/labels" element={<TabletLabels />} />
+                          <Route
+                            path="/tablet/admin"
+                            element={
+                              <ProtectedRoute>
+                                <TabletAdminDashboard />
+                              </ProtectedRoute>
+                            }
+                          />
                           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                           <Route path="*" element={<NotFound />} />
                         </Routes>
