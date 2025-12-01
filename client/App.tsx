@@ -162,6 +162,9 @@ const TabletInventoryTransfer = lazyWithErrorBoundary(
 const TabletInventoryShelfToSheet = lazyWithErrorBoundary(
   () => import("./pages/sections/TabletInventoryShelfToSheet"),
 );
+const TabletReceivingCheckIn = lazyWithErrorBoundary(
+  () => import("./pages/sections/TabletReceivingCheckIn"),
+);
 const Login = lazyWithErrorBoundary(() => import("./pages/Login"));
 const PasswordReset = lazyWithErrorBoundary(
   () => import("./pages/PasswordReset"),
