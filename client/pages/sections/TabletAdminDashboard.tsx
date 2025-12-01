@@ -194,13 +194,34 @@ export default function TabletAdminDashboard() {
     });
   };
 
-  const downloadQRCode = (qrUrl: string, deviceName: string) => {
-    const a = document.createElement("a");
-    a.href = qrUrl;
-    a.download = `tablet-setup-${deviceName}-${Date.now()}.png`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+  const downloadQRCode = async (qrUrl: string, deviceName: string) => {
+    try {
+      const response = await fetch(qrUrl);
+      if (!response.ok) throw new Error("Failed to fetch QR code");
+
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = `tablet-setup-${deviceName}-${Date.now()}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      URL.revokeObjectURL(blobUrl);
+
+      toast({
+        title: "Downloaded",
+        description: `QR code downloaded for ${deviceName}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to download QR code",
+        variant: "destructive",
+      });
+    }
   };
 
   const downloadReport = () => {
