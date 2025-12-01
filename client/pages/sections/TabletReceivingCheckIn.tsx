@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ShoppingCart } from "lucide-react";
 import { TabletNav } from "@/components/TabletNav";
+import { TabletBackButton } from "@/components/TabletBackButton";
 import { TabletReceivingCheckIn } from "@/components/TabletReceivingCheckIn";
 
 export default function TabletReceivingCheckInPage() {
