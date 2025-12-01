@@ -31,13 +31,16 @@ export default function TabletInventoryShelfToSheet() {
         {/* Header */}
         <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200/50 shadow-sm p-6">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-900">
-                Inventory Management
-              </h1>
-              <p className="text-sm text-slate-600 mt-1">
-                Manage shelf counts, stock levels, and daily orders
-              </p>
+            <div className="flex items-center gap-4">
+              <TabletBackButton />
+              <div>
+                <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-50">
+                  Inventory Management
+                </h1>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                  Manage shelf counts, stock levels, and daily orders
+                </p>
+              </div>
             </div>
             <div className="hidden md:block">
               <div className="text-right">
