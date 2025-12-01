@@ -159,6 +159,9 @@ const TabletWasteTracking = lazyWithErrorBoundary(
 const TabletInventoryTransfer = lazyWithErrorBoundary(
   () => import("./pages/sections/TabletInventoryTransfer"),
 );
+const TabletInventoryShelfToSheet = lazyWithErrorBoundary(
+  () => import("./pages/sections/TabletInventoryShelfToSheet"),
+);
 const Login = lazyWithErrorBoundary(() => import("./pages/Login"));
 const PasswordReset = lazyWithErrorBoundary(
   () => import("./pages/PasswordReset"),
