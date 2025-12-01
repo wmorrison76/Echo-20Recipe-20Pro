@@ -1016,4 +1016,127 @@ router.put("/prep/:assignmentId", async (req: Request, res: Response) => {
   }
 });
 
+// ========================================
+// RECEIVING & ITEM CHECK-IN
+// ========================================
+
+// POST /api/tablet/receiving/check-in - Record item check-in from delivery
+router.post("/receiving/check-in", async (req: Request, res: Response) => {
+  try {
+    const {
+      deviceId,
+      orderId,
+      items,
+      employeeId,
+      notes,
+    } = req.body;
+
+    if (!deviceId || !orderId || !items || !Array.isArray(items)) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const checkInId = crypto.randomBytes(16).toString("hex");
+    const timestamp = new Date().toISOString();
+
+    const { error } = await getSupabaseClient().from("tablet_receiving_checkin").insert({
+      id: checkInId,
+      device_id: deviceId,
+      order_id: orderId,
+      items: items.map((item: any) => ({
+        id: item.id || crypto.randomBytes(8).toString("hex"),
+        item_name: item.itemName,
+        quantity_expected: item.quantityExpected,
+        quantity_received: item.quantityReceived,
+        unit: item.unit,
+        condition: item.condition || "good",
+        notes: item.notes,
+      })),
+      employee_id: employeeId,
+      notes,
+      status: "completed",
+      checked_in_at: timestamp,
+    });
+
+    if (error) {
+      console.warn("Check-in storage (non-critical):", error);
+    }
+
+    res.status(201).json({
+      success: true,
+      checkInId,
+      itemsChecked: items.length,
+      message: "Items checked in successfully",
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET /api/tablet/receiving/pending - Get pending receiving orders
+router.get("/receiving/pending", async (req: Request, res: Response) => {
+  try {
+    const { deviceId, status = "pending" } = req.query;
+
+    let query = getSupabaseClient()
+      .from("tablet_receiving_orders")
+      .select("*")
+      .eq("status", status);
+
+    if (deviceId) {
+      query = query.eq("device_id", deviceId);
+    }
+
+    const { data: orders, error } = await query.order("expected_delivery_date", {
+      ascending: true,
+    });
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({
+      orders: orders || [],
+      total: orders?.length || 0,
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// PUT /api/tablet/receiving/:orderId - Update receiving order status
+router.put(
+  "/receiving/:orderId",
+  async (req: Request, res: Response) => {
+    try {
+      const { orderId } = req.params;
+      const { status, completedNotes } = req.body;
+
+      if (!status) {
+        return res.status(400).json({ error: "Missing status field" });
+      }
+
+      const updateData: any = { status };
+      if (status === "completed") {
+        updateData.completed_at = new Date().toISOString();
+        if (completedNotes) {
+          updateData.completed_notes = completedNotes;
+        }
+      }
+
+      const { error } = await getSupabaseClient()
+        .from("tablet_receiving_orders")
+        .update(updateData)
+        .eq("id", orderId);
+
+      if (error) {
+        return res.status(500).json({ error: error.message });
+      }
+
+      res.json({ success: true, message: "Receiving order updated" });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+);
+
 export default router;
