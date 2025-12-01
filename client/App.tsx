@@ -285,6 +285,10 @@ const App = () => (
                               element={<TabletLabels />}
                             />
                             <Route
+                              path="/tablet/inventory"
+                              element={<TabletInventoryShelfToSheet />}
+                            />
+                            <Route
                               path="/tablet/waste"
                               element={<TabletWasteTracking />}
                             />
