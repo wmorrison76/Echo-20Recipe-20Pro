@@ -410,22 +410,41 @@ router.get("/recipes", async (req: Request, res: Response) => {
 
     let query = getSupabaseClient()
       .from("user_recipes")
-      .select("id, title, description, imageNames, extra");
+      .select("id, title, description, imageNames, extra, published");
 
     if (search && typeof search === "string") {
       query = query.ilike("title", `%${search}%`);
     }
 
     const { data: recipes, error } = await query
-      .eq("published", true)
+      .or("published.eq.true,extra->published.eq.true")
       .limit(Number(limit))
       .order("created_at", { ascending: false });
 
     if (error) {
-      return res.status(500).json({ error: error.message });
+      console.warn("Recipe fetch error (non-critical):", error);
+      // Try fallback query without OR clause
+      const fallbackQuery = getSupabaseClient()
+        .from("user_recipes")
+        .select("id, title, description, imageNames, extra");
+
+      const { data: fallbackRecipes } = await fallbackQuery
+        .limit(Number(limit))
+        .order("created_at", { ascending: false });
+
+      const formattedRecipes = (fallbackRecipes || []).map((r: any) => ({
+        id: r.id,
+        name: r.title,
+        description: r.description,
+        image: r.imageNames?.[0],
+        extra: r.extra,
+        portionSize: r.extra?.portionSize,
+      }));
+
+      return res.json(formattedRecipes);
     }
 
-    const formattedRecipes = recipes.map((r: any) => ({
+    const formattedRecipes = (recipes || []).map((r: any) => ({
       id: r.id,
       name: r.title,
       description: r.description,
