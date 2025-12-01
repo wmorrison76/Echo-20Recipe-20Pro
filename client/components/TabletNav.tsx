@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Printer, Trash2, TrendingUp, Settings, Package } from "lucide-react";
+import { Printer, Trash2, TrendingUp, Settings, Package, ShoppingCart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
@@ -22,6 +22,12 @@ const TABLET_NAV_ITEMS: NavItem[] = [
     label: "Inventory Management",
     icon: <Package className="h-5 w-5" />,
     description: "Shelf counts & orders",
+  },
+  {
+    path: "/tablet/receiving",
+    label: "Receiving Check-In",
+    icon: <ShoppingCart className="h-5 w-5" />,
+    description: "Check in deliveries",
   },
   {
     path: "/tablet/waste",
