@@ -8,6 +8,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { TabletNav } from "@/components/TabletNav";
+import { TabletBackButton } from "@/components/TabletBackButton";
 import { TabletInventoryShelfCount } from "@/components/TabletInventoryShelfCount";
 import { TabletLowStockAlerts } from "@/components/TabletLowStockAlerts";
 
