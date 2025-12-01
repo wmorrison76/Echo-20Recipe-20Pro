@@ -23,16 +23,19 @@ export default function TabletReceivingCheckInPage() {
         {/* Header */}
         <div className="bg-white/80 backdrop-blur-sm border-b border-slate-200/50 shadow-sm p-6">
           <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <ShoppingCart className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-                <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-50">
-                  Receiving Check-In
-                </h1>
+            <div className="flex items-center gap-4">
+              <TabletBackButton />
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <ShoppingCart className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                  <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-50">
+                    Receiving Check-In
+                  </h1>
+                </div>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                  Confirm delivery orders and check in items
+                </p>
               </div>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                Confirm delivery orders and check in items
-              </p>
             </div>
             <div className="hidden md:block">
               <div className="text-right">
