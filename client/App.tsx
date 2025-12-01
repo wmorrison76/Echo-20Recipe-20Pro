@@ -292,6 +292,10 @@ const App = () => (
                               element={<TabletInventoryShelfToSheet />}
                             />
                             <Route
+                              path="/tablet/receiving"
+                              element={<TabletReceivingCheckIn />}
+                            />
+                            <Route
                               path="/tablet/waste"
                               element={<TabletWasteTracking />}
                             />
