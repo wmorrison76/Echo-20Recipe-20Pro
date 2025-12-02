@@ -91,7 +91,10 @@ export async function generateEmbedding(text: string): Promise<number[]> {
     try {
       // Create abort controller for request timeout
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+      const timeoutId = setTimeout(
+        () => controller.abort(),
+        REQUEST_TIMEOUT_MS,
+      );
 
       try {
         const response = await fetch("https://api.openai.com/v1/embeddings", {
@@ -142,18 +145,13 @@ export async function generateEmbedding(text: string): Promise<number[]> {
       }
     } catch (error) {
       lastError = error as Error;
-      const errorMsg =
-        error instanceof Error ? error.message : String(error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
 
       // Check for timeout or network errors
-      const isTimeout =
-        error instanceof Error && error.name === "AbortError";
+      const isTimeout = error instanceof Error && error.name === "AbortError";
 
       if (attempt < maxRetries) {
-        const backoffMs = Math.min(
-          1000 * Math.pow(2, attempt - 1),
-          20000,
-        );
+        const backoffMs = Math.min(1000 * Math.pow(2, attempt - 1), 20000);
         console.warn(
           `[GenerateEmbedding] Attempt ${attempt}/${maxRetries} failed${isTimeout ? " (timeout)" : ""}, backing off ${backoffMs}ms: ${errorMsg}`,
         );

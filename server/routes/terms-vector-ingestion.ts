@@ -152,7 +152,6 @@ async function startIngestion(): Promise<void> {
   );
 
   try {
-
     // Phase 1: Fetch and prepare terms - using controlled sequential embedding generation
     currentProgress.currentPhase = "embedding";
     currentProgress.message = "Generating embeddings...";
@@ -172,7 +171,9 @@ async function startIngestion(): Promise<void> {
         });
 
         currentProgress.embeddingsGenerated++;
-        currentProgress.processedTerms = currentProgress.embeddingsGenerated + currentProgress.embeddingsFailed;
+        currentProgress.processedTerms =
+          currentProgress.embeddingsGenerated +
+          currentProgress.embeddingsFailed;
         currentProgress.overallProgress = Math.round(
           (currentProgress.processedTerms / allTerms.length) * 25, // Embedding is ~25% of total work
         );
@@ -185,10 +186,11 @@ async function startIngestion(): Promise<void> {
           );
         }
       } catch (error) {
-        const errorMsg =
-          error instanceof Error ? error.message : String(error);
+        const errorMsg = error instanceof Error ? error.message : String(error);
         currentProgress.embeddingsFailed++;
-        currentProgress.processedTerms = currentProgress.embeddingsGenerated + currentProgress.embeddingsFailed;
+        currentProgress.processedTerms =
+          currentProgress.embeddingsGenerated +
+          currentProgress.embeddingsFailed;
 
         const errorStr = `Failed to embed term "${term.term}": ${errorMsg}`;
         if (currentProgress.errors.length < 10) {
@@ -269,29 +271,27 @@ async function startIngestion(): Promise<void> {
       }
 
       // Convert to Pinecone format (as TerminologyKnowledge)
-      const pineconeItems = termsWithEmbeddings.map(
-        ({ term }, idx) => {
-          const knowledgeItem = {
-            id: `terminology-${idx}-${Date.now()}`,
-            type: "terminology" as const,
-            title: term.term,
-            description: `${term.usage?.primary || term.definition}`,
-            content: term.definition,
-            source: "culinary-dictionary",
-            sourceType: "user_imported" as const,
-            tags: term.categories,
-            domain: "culinary" as const,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            confidence: term.confidence,
-            definition: term.definition,
-            etymology: term.etymology?.originalWord || term.term,
-            context: term.usage?.context || "culinary",
-            synonyms: term.relatedTerms,
-          };
-          return knowledgeItem;
-        },
-      );
+      const pineconeItems = termsWithEmbeddings.map(({ term }, idx) => {
+        const knowledgeItem = {
+          id: `terminology-${idx}-${Date.now()}`,
+          type: "terminology" as const,
+          title: term.term,
+          description: `${term.usage?.primary || term.definition}`,
+          content: term.definition,
+          source: "culinary-dictionary",
+          sourceType: "user_imported" as const,
+          tags: term.categories,
+          domain: "culinary" as const,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          confidence: term.confidence,
+          definition: term.definition,
+          etymology: term.etymology?.originalWord || term.term,
+          context: term.usage?.context || "culinary",
+          synonyms: term.relatedTerms,
+        };
+        return knowledgeItem;
+      });
 
       const pineconeEmbeddings = termsWithEmbeddings.map(
         ({ embedding }) => embedding,

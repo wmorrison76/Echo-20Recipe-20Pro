@@ -110,7 +110,9 @@ function getSupabaseClient() {
  * Accepts optional pre-generated embedding to avoid regenerating multiple times
  */
 export async function storeInternalKnowledgeVector(
-  knowledge: Omit<InternalKnowledgeVector, "id"> | InternalKnowledgeVectorWithOptionalEmbedding,
+  knowledge:
+    | Omit<InternalKnowledgeVector, "id">
+    | InternalKnowledgeVectorWithOptionalEmbedding,
   preGeneratedEmbedding?: number[],
 ): Promise<{ id: string; success: boolean; error?: string }> {
   try {
@@ -205,7 +207,10 @@ export async function storeInternalKnowledgeVector(
  * Accepts optional embeddings array to avoid regenerating embeddings
  */
 export async function storeInternalKnowledgeBatch(
-  knowledgeItems: Array<Omit<InternalKnowledgeVector, "id"> | InternalKnowledgeVectorWithOptionalEmbedding>,
+  knowledgeItems: Array<
+    | Omit<InternalKnowledgeVector, "id">
+    | InternalKnowledgeVectorWithOptionalEmbedding
+  >,
   maxConcurrent: number = 5,
   preGeneratedEmbeddings?: number[][],
 ): Promise<{
