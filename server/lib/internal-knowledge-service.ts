@@ -202,10 +202,12 @@ export async function storeInternalKnowledgeVector(
 
 /**
  * Store multiple knowledge vectors in batch
+ * Accepts optional embeddings array to avoid regenerating embeddings
  */
 export async function storeInternalKnowledgeBatch(
-  knowledgeItems: Array<Omit<InternalKnowledgeVector, "id" | "embedding">>,
+  knowledgeItems: Array<Omit<InternalKnowledgeVector, "id"> | InternalKnowledgeVectorWithOptionalEmbedding>,
   maxConcurrent: number = 5,
+  preGeneratedEmbeddings?: number[][],
 ): Promise<{
   success: number;
   failed: number;
@@ -224,35 +226,41 @@ export async function storeInternalKnowledgeBatch(
   }
 
   console.log(
-    `[Internal Knowledge] Starting batch storage of ${knowledgeItems.length} items`,
+    `[Internal Knowledge] Starting batch storage of ${knowledgeItems.length} items (concurrency: ${maxConcurrent})`,
   );
 
-  const queue = [...knowledgeItems];
+  const queue = knowledgeItems.map((item, idx) => ({
+    knowledge: item,
+    embedding: preGeneratedEmbeddings?.[idx],
+  }));
   const workers: Promise<void>[] = [];
 
   for (let i = 0; i < Math.min(maxConcurrent, knowledgeItems.length); i++) {
     workers.push(
       (async () => {
         while (queue.length > 0) {
-          const knowledge = queue.shift();
-          if (!knowledge) break;
+          const item = queue.shift();
+          if (!item) break;
 
           try {
-            const result = await storeInternalKnowledgeVector(knowledge);
+            const result = await storeInternalKnowledgeVector(
+              item.knowledge,
+              item.embedding,
+            );
             if (result.success) {
               results.success++;
               results.ids.push(result.id);
             } else {
               results.failed++;
               results.errors.push({
-                title: knowledge.title,
+                title: item.knowledge.title,
                 error: result.error || "Unknown error",
               });
             }
           } catch (error) {
             results.failed++;
             results.errors.push({
-              title: knowledge.title,
+              title: item.knowledge.title,
               error: error instanceof Error ? error.message : String(error),
             });
           }
