@@ -187,14 +187,39 @@ router.post(
         async "web-crawler"() {
           try {
             console.log("[Training] Starting web crawler...");
-            // This would trigger the crawler service
-            // For now, just mark as pending
+            trainingOrchestrator.startSource("web-crawler");
             trainingOrchestrator.updateSourceProgress("web-crawler", {
-              status: "pending",
-              message: "Crawler module pending implementation",
-              progress: 0,
+              message: "Initializing web recipe crawler...",
+              progress: 5,
             });
+
+            // Crawl recipes with limits
+            const crawlResult = await webRecipeCrawler.crawlRecipes({
+              limit: 5000, // Configurable limit for training
+              includeRegions: ["global"],
+            });
+
+            const recipesFound = crawlResult.recipes?.length || 0;
+
+            trainingOrchestrator.updateSourceProgress("web-crawler", {
+              message: `Found ${recipesFound} recipes, extracting knowledge...`,
+              progress: 50,
+              totalItems: recipesFound,
+            });
+
+            // Knowledge extraction happens automatically in crawlRecipes
+            // The recipes are already converted to knowledge items
+            trainingOrchestrator.completeSource(
+              "web-crawler",
+              recipesFound,
+              crawlResult.failed || 0,
+            );
+
+            console.log(
+              `[Training] Web crawler completed: ${recipesFound} recipes found`,
+            );
           } catch (error) {
+            console.error("[Training] Web crawler error:", error);
             trainingOrchestrator.failSource(
               "web-crawler",
               error instanceof Error ? error.message : String(error),
