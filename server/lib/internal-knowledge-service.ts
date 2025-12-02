@@ -107,9 +107,11 @@ function getSupabaseClient() {
 
 /**
  * Store knowledge vector in PostgreSQL with pgvector
+ * Accepts optional pre-generated embedding to avoid regenerating multiple times
  */
 export async function storeInternalKnowledgeVector(
-  knowledge: Omit<InternalKnowledgeVector, "id" | "embedding">,
+  knowledge: Omit<InternalKnowledgeVector, "id"> | InternalKnowledgeVectorWithOptionalEmbedding,
+  preGeneratedEmbedding?: number[],
 ): Promise<{ id: string; success: boolean; error?: string }> {
   try {
     const client = getSupabaseClient();
@@ -127,24 +129,31 @@ export async function storeInternalKnowledgeVector(
       };
     }
 
-    // Generate embedding from content
-    const textToEmbed = [
-      knowledge.title,
-      knowledge.description,
-      knowledge.content,
-    ]
-      .filter(Boolean)
-      .join(" ");
+    let embedding: number[];
 
-    if (!textToEmbed || textToEmbed.trim().length === 0) {
-      return {
-        id: "",
-        success: false,
-        error: "Cannot generate embedding from empty content",
-      };
+    // Use pre-generated embedding if provided, otherwise generate new one
+    if (preGeneratedEmbedding && preGeneratedEmbedding.length === 1536) {
+      embedding = preGeneratedEmbedding;
+    } else {
+      // Generate embedding from content only if not provided
+      const textToEmbed = [
+        knowledge.title,
+        knowledge.description,
+        knowledge.content,
+      ]
+        .filter(Boolean)
+        .join(" ");
+
+      if (!textToEmbed || textToEmbed.trim().length === 0) {
+        return {
+          id: "",
+          success: false,
+          error: "Cannot generate embedding from empty content",
+        };
+      }
+
+      embedding = await generateEmbedding(textToEmbed);
     }
-
-    const embedding = await generateEmbedding(textToEmbed);
 
     // Store in knowledge_vectors table
     const { data, error } = await client
