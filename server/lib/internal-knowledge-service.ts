@@ -58,6 +58,11 @@ export interface InternalKnowledgeVector {
   };
 }
 
+export interface InternalKnowledgeVectorWithOptionalEmbedding
+  extends Omit<InternalKnowledgeVector, "embedding"> {
+  embedding?: number[];
+}
+
 export interface KnowledgeSearchResult {
   id: string;
   title: string;
