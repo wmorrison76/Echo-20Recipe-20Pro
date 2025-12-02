@@ -395,11 +395,24 @@ router.post(
         `[TermIngestion] Direct ingestion of ${allTerms.length} terms started`,
       );
 
-      const supabaseItems = allTerms.map((term) => ({
+      // Generate embeddings first
+      const termsWithEmbeddings: Array<{ term: any; embedding: number[] }> = [];
+      for (const term of allTerms) {
+        try {
+          const textToEmbed = `${term.term} ${term.definition}`;
+          const embedding = await generateEmbedding(textToEmbed);
+          termsWithEmbeddings.push({ term, embedding });
+        } catch (error) {
+          console.warn(
+            `[TermIngestion] Failed to embed term "${term.term}": ${error instanceof Error ? error.message : String(error)}`,
+          );
+        }
+      }
+
+      const supabaseItems = termsWithEmbeddings.map(({ term }) => ({
         title: term.term,
         content: term.definition,
         description: `${term.usage?.primary || term.definition}`,
-        embedding: new Array(1536).fill(0), // Placeholder, will be generated
         sourceType: "culinary-dictionary" as const,
         source: "master-culinary-dictionary",
         metadata: {
@@ -411,9 +424,12 @@ router.post(
         },
       }));
 
+      const embeddings = termsWithEmbeddings.map(({ embedding }) => embedding);
+
       const supabaseResult = await storeInternalKnowledgeBatch(
         supabaseItems,
         5,
+        embeddings,
       );
 
       return res.json({
@@ -423,6 +439,7 @@ router.post(
           success: supabaseResult.success,
           failed: supabaseResult.failed,
           totalTerms: allTerms.length,
+          embeddingsGenerated: termsWithEmbeddings.length,
         },
       });
     } catch (error) {
