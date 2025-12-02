@@ -148,10 +148,12 @@ export async function storeKnowledgeVector(
 
 /**
  * Store multiple knowledge items in batch with proper concurrency control
+ * Accepts optional embeddings array to avoid regenerating embeddings
  */
 export async function storeKnowledgeBatch(
   knowledgeItems: AnyKnowledge[],
   maxConcurrent = 5,
+  preGeneratedEmbeddings?: number[][],
 ): Promise<{
   success: number;
   failed: number;
@@ -182,11 +184,14 @@ export async function storeKnowledgeBatch(
   let completed = 0;
 
   console.log(
-    `[Knowledge] Starting batch storage of ${knowledgeItems.length} items with ${maxConcurrent} concurrent workers`,
+    `[Knowledge] Starting batch storage of ${knowledgeItems.length} items with ${maxConcurrent} concurrent workers (embeddings ${preGeneratedEmbeddings ? "provided" : "will be generated"})`,
   );
 
   // Create a queue-based system for proper concurrency control
-  const queue = [...knowledgeItems];
+  const queue = knowledgeItems.map((item, idx) => ({
+    knowledge: item,
+    embedding: preGeneratedEmbeddings?.[idx],
+  }));
   const workers: Promise<void>[] = [];
 
   // Create worker functions that process items from the queue
@@ -194,12 +199,12 @@ export async function storeKnowledgeBatch(
     workers.push(
       (async () => {
         while (queue.length > 0) {
-          const knowledge = queue.shift();
-          if (!knowledge) break;
+          const item = queue.shift();
+          if (!item) break;
 
           try {
             running++;
-            await storeKnowledgeVector(knowledge);
+            await storeKnowledgeVector(item.knowledge, item.embedding);
             results.success++;
             completed++;
 
@@ -212,9 +217,9 @@ export async function storeKnowledgeBatch(
             const errorMsg =
               error instanceof Error ? error.message : String(error);
             results.failed++;
-            results.errors.push({ id: knowledge.id, error: errorMsg });
+            results.errors.push({ id: item.knowledge.id, error: errorMsg });
             console.error(
-              `[Knowledge] Failed to store ${knowledge.id}: ${errorMsg}`,
+              `[Knowledge] Failed to store ${item.knowledge.id}: ${errorMsg}`,
             );
           } finally {
             running--;
