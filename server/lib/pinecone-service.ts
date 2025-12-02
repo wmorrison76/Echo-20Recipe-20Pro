@@ -72,7 +72,7 @@ async function getPineconeClient() {
 }
 
 /**
- * Generate embeddings using OpenAI API with simple retry logic
+ * Generate embeddings using OpenAI API with timeout and exponential backoff
  */
 export async function generateEmbedding(text: string): Promise<number[]> {
   const openaiKey =
@@ -83,46 +83,87 @@ export async function generateEmbedding(text: string): Promise<number[]> {
     return generateMockEmbedding(text);
   }
 
-  const maxRetries = 2;
+  const maxRetries = 3;
+  const REQUEST_TIMEOUT_MS = 15000; // 15 second timeout per request
   let lastError: Error | null = null;
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      const response = await fetch("https://api.openai.com/v1/embeddings", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${openaiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          input: text,
-          model: "text-embedding-3-small",
-        }),
-      });
+      // Create abort controller for request timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`OpenAI API error: ${response.status} ${errorText}`);
+      try {
+        const response = await fetch("https://api.openai.com/v1/embeddings", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${openaiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            input: text,
+            model: "text-embedding-3-small",
+          }),
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        // Handle rate limiting (429) with exponential backoff
+        if (response.status === 429) {
+          const retryAfter = response.headers.get("retry-after");
+          const backoffMs = retryAfter
+            ? parseInt(retryAfter) * 1000
+            : Math.min(1000 * Math.pow(2, attempt - 1), 30000);
+
+          if (attempt < maxRetries) {
+            console.warn(
+              `[GenerateEmbedding] Rate limited (429), backing off ${backoffMs}ms before retry ${attempt}/${maxRetries}`,
+            );
+            await new Promise((resolve) => setTimeout(resolve, backoffMs));
+            continue;
+          }
+
+          throw new Error(
+            `OpenAI API rate limited: ${response.status} (final attempt)`,
+          );
+        }
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`OpenAI API error: ${response.status} ${errorText}`);
+        }
+
+        const data = (await response.json()) as EmbeddingResponse;
+        return data.data[0]?.embedding || generateMockEmbedding(text);
+      } catch (error) {
+        clearTimeout(timeoutId);
+        throw error;
       }
-
-      const data = (await response.json()) as EmbeddingResponse;
-      return data.data[0]?.embedding || generateMockEmbedding(text);
     } catch (error) {
       lastError = error as Error;
+      const errorMsg =
+        error instanceof Error ? error.message : String(error);
 
-      // Only log retries, don't flood logs with every failure
+      // Check for timeout or network errors
+      const isTimeout =
+        error instanceof Error && error.name === "AbortError";
+
       if (attempt < maxRetries) {
-        console.warn(
-          `[GenerateEmbedding] Attempt ${attempt}/${maxRetries} failed, retrying...`,
+        const backoffMs = Math.min(
+          1000 * Math.pow(2, attempt - 1),
+          20000,
         );
-        // Simple delay before retry
-        await new Promise((resolve) => setTimeout(resolve, 200));
+        console.warn(
+          `[GenerateEmbedding] Attempt ${attempt}/${maxRetries} failed${isTimeout ? " (timeout)" : ""}, backing off ${backoffMs}ms: ${errorMsg}`,
+        );
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
       }
     }
   }
 
-  console.warn(
-    `[GenerateEmbedding] All retries failed for text "${text.substring(0, 50)}...", using mock embedding`,
+  console.error(
+    `[GenerateEmbedding] All retries failed for text "${text.substring(0, 50)}...", error: ${lastError?.message || "Unknown"}. Using mock embedding as fallback.`,
   );
   return generateMockEmbedding(text);
 }
