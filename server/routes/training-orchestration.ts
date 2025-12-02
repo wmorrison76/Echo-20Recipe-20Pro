@@ -169,14 +169,68 @@ router.post(
         async "pdf-library"() {
           try {
             console.log("[Training] Starting PDF library ingestion...");
-            // This would be triggered when users upload PDFs
-            // For now, just mark as pending
+            trainingOrchestrator.startSource("pdf-library");
+
+            // Check if there are any uploaded PDFs in the system
+            await uploadedTermsStore.ensureLoaded();
+            const uploadedTermsCount = uploadedTermsStore.getCount();
+
+            if (uploadedTermsCount === 0) {
+              trainingOrchestrator.updateSourceProgress("pdf-library", {
+                message: "No PDFs available for processing",
+                progress: 0,
+              });
+              trainingOrchestrator.completeSource("pdf-library", 0, 0);
+              return;
+            }
+
             trainingOrchestrator.updateSourceProgress("pdf-library", {
-              status: "pending",
-              message: "Waiting for PDF uploads",
-              progress: 0,
+              message: `Processing ${uploadedTermsCount} uploaded terms from PDFs...`,
+              progress: 10,
+              totalItems: uploadedTermsCount,
             });
+
+            // Get the uploaded terms and ensure they're in the master dictionary
+            const uploadedTerms = uploadedTermsStore.getAllTerms();
+            let successCount = 0;
+            let failCount = 0;
+
+            for (const term of uploadedTerms) {
+              try {
+                const termKey = term.term
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")
+                  .replace(/[^\w-]/g, "");
+                masterCulinaryDictionary.addTerm(termKey, term);
+                successCount++;
+
+                // Update progress every 100 items
+                if (successCount % 100 === 0) {
+                  const progress = Math.min(
+                    90,
+                    10 + (successCount / uploadedTermsCount) * 80,
+                  );
+                  trainingOrchestrator.updateSourceProgress("pdf-library", {
+                    message: `Processed ${successCount}/${uploadedTermsCount} terms...`,
+                    progress: Math.round(progress),
+                  });
+                }
+              } catch (err) {
+                console.warn(`[Training] Failed to add term ${term.term}:`, err);
+                failCount++;
+              }
+            }
+
+            trainingOrchestrator.completeSource(
+              "pdf-library",
+              successCount,
+              failCount,
+            );
+            console.log(
+              `[Training] PDF library ingestion completed: ${successCount} success, ${failCount} failed`,
+            );
           } catch (error) {
+            console.error("[Training] PDF library error:", error);
             trainingOrchestrator.failSource(
               "pdf-library",
               error instanceof Error ? error.message : String(error),
