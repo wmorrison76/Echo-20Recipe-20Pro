@@ -270,7 +270,7 @@ async function startIngestion(): Promise<void> {
 
       // Convert to Pinecone format (as TerminologyKnowledge)
       const pineconeItems = termsWithEmbeddings.map(
-        ({ term, embedding }, idx) => {
+        ({ term }, idx) => {
           const knowledgeItem = {
             id: `terminology-${idx}-${Date.now()}`,
             type: "terminology" as const,
@@ -293,7 +293,15 @@ async function startIngestion(): Promise<void> {
         },
       );
 
-      const pineconeResult = await storeKnowledgeBatch(pineconeItems);
+      const pineconeEmbeddings = termsWithEmbeddings.map(
+        ({ embedding }) => embedding,
+      );
+
+      const pineconeResult = await storeKnowledgeBatch(
+        pineconeItems,
+        3,
+        pineconeEmbeddings,
+      );
 
       currentProgress.pineconeSuccess = pineconeResult.success;
       currentProgress.pineconeErrors = pineconeResult.failed;
