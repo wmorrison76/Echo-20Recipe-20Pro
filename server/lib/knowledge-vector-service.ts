@@ -65,9 +65,11 @@ export interface KnowledgeSearchResultWithSource {
 
 /**
  * Store knowledge in Pinecone with embeddings and retry logic
+ * Accepts optional pre-generated embedding to avoid regenerating
  */
 export async function storeKnowledgeVector(
   knowledge: AnyKnowledge,
+  preGeneratedEmbedding?: number[],
   retryCount = 0,
   maxRetries = 3,
 ): Promise<void> {
@@ -80,16 +82,23 @@ export async function storeKnowledgeVector(
     const client = await getPineconeClient();
     const index = client.Index(KNOWLEDGE_INDEX);
 
-    const knowledgeText = buildKnowledgeText(knowledge);
+    let embedding: number[];
 
-    if (!knowledgeText || knowledgeText.trim().length === 0) {
-      console.warn(
-        `[Knowledge] Skipping vector with empty text: ${knowledge.id}`,
-      );
-      return;
+    // Use pre-generated embedding if provided, otherwise generate new one
+    if (preGeneratedEmbedding && preGeneratedEmbedding.length === 1536) {
+      embedding = preGeneratedEmbedding;
+    } else {
+      const knowledgeText = buildKnowledgeText(knowledge);
+
+      if (!knowledgeText || knowledgeText.trim().length === 0) {
+        console.warn(
+          `[Knowledge] Skipping vector with empty text: ${knowledge.id}`,
+        );
+        return;
+      }
+
+      embedding = await generateEmbedding(knowledgeText);
     }
-
-    const embedding = await generateEmbedding(knowledgeText);
 
     const vectorId = `${knowledge.type}-${knowledge.id}`;
     const metadata = {
@@ -122,7 +131,12 @@ export async function storeKnowledgeVector(
       );
 
       await new Promise((resolve) => setTimeout(resolve, delayMs));
-      return storeKnowledgeVector(knowledge, retryCount + 1, maxRetries);
+      return storeKnowledgeVector(
+        knowledge,
+        preGeneratedEmbedding,
+        retryCount + 1,
+        maxRetries,
+      );
     }
 
     console.error(
