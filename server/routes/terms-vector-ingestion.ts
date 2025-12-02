@@ -211,11 +211,10 @@ async function startIngestion(): Promise<void> {
     currentProgress.currentPhase = "supabase";
     currentProgress.message = "Ingesting to Supabase pgvector...";
 
-    const supabaseItems = termsWithEmbeddings.map(({ term, embedding }) => ({
+    const supabaseItems = termsWithEmbeddings.map(({ term }) => ({
       title: term.term,
       content: term.definition,
       description: `${term.usage?.primary || term.definition}`,
-      embedding,
       sourceType: "culinary-dictionary" as const,
       source: "master-culinary-dictionary",
       metadata: {
@@ -227,11 +226,16 @@ async function startIngestion(): Promise<void> {
       },
     }));
 
+    const supabaseEmbeddings = termsWithEmbeddings.map(
+      ({ embedding }) => embedding,
+    );
+
     try {
       const supabaseStartTime = Date.now();
       const supabaseResult = await storeInternalKnowledgeBatch(
         supabaseItems,
-        10,
+        5,
+        supabaseEmbeddings,
       );
 
       currentProgress.supabaseSuccess = supabaseResult.success;
