@@ -11,6 +11,10 @@ import {
 } from "../lib/training-orchestrator";
 import { ingestionController } from "../lib/knowledge-ingestion-service";
 import { countPineconeVectors } from "../lib/pinecone-extraction-service";
+import { webRecipeCrawler } from "../lib/web-recipe-crawler";
+import { handlePDFUpload } from "../lib/pdf-upload-handler";
+import { uploadedTermsStore } from "../lib/uploaded-terms-store";
+import { masterCulinaryDictionary } from "../lib/master-culinary-dictionary";
 
 const router = Router();
 
