@@ -153,6 +153,70 @@ export function EchoTrainingCenter() {
     }, 500);
   }, [mode, selectedSources, initializeSession, startTraining]);
 
+  const handleStartCrawler = useCallback(async () => {
+    setIsCrawlerRunning(true);
+    try {
+      const response = await fetch("/api/echo/crawler/start-crawl", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sources: ["recipes", "hospitality"],
+          limit: 5000,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      toast.success(`Crawler started: ${data.sessionId}`);
+
+      // Connect to crawler progress stream (SSE)
+      const eventSource = new EventSource("/api/echo/crawler/progress");
+      eventSource.onmessage = (event) => {
+        try {
+          const progress = JSON.parse(event.data);
+          setCrawlerProgress(progress);
+        } catch (error) {
+          console.error("[EchoTrainingCenter] Error parsing progress:", error);
+        }
+      };
+
+      eventSource.onerror = (error) => {
+        console.error("[EchoTrainingCenter] Progress stream error:", error);
+        eventSource.close();
+        setIsCrawlerRunning(false);
+        toast.error("Crawler progress stream disconnected");
+      };
+
+      // Stop listening when crawler finishes
+      const checkInterval = setInterval(async () => {
+        try {
+          const statsResponse = await fetch("/api/echo/crawler/stats");
+          if (statsResponse.ok) {
+            const stats = await statsResponse.json();
+            if (stats.activeSessions && stats.activeSessions.length === 0) {
+              clearInterval(checkInterval);
+              eventSource.close();
+              setIsCrawlerRunning(false);
+              toast.success(
+                `Crawler completed: ${stats.totalRecipes || 0} recipes found`
+              );
+            }
+          }
+        } catch (error) {
+          console.error("[EchoTrainingCenter] Error checking crawler stats:", error);
+        }
+      }, 2000);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to start crawler";
+      toast.error(message);
+      setIsCrawlerRunning(false);
+    }
+  }, []);
+
   const toggleSource = (sourceId: string) => {
     setSelectedSources((prev) =>
       prev.includes(sourceId)
