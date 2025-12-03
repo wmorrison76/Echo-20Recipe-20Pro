@@ -30,6 +30,7 @@ import knowledgeDiagnosticsRouter from "./routes/knowledge-diagnostics";
 import trainingOrchestrationRouter from "./routes/training-orchestration";
 import { termUploaderRouter } from "./routes/term-uploader";
 import { termsVectorIngestionRouter } from "./routes/terms-vector-ingestion";
+import loadTestingRouter from "./routes/load-testing";
 import { knowledgeInitializer } from "./lib/knowledge-initialization";
 import { uploadedTermsStore } from "./lib/uploaded-terms-store";
 import tabletApiRouter from "./routes/tablet-api";
