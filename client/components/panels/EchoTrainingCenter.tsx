@@ -92,6 +92,8 @@ export function EchoTrainingCenter() {
   const [showStartOptions, setShowStartOptions] = useState(!session);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [knowledgeStats, setKnowledgeStats] = useState<any>(null);
+  const [isCrawlerRunning, setIsCrawlerRunning] = useState(false);
+  const [crawlerProgress, setCrawlerProgress] = useState<any>(null);
 
   // Fetch knowledge statistics on mount
   useEffect(() => {
