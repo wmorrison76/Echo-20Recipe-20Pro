@@ -177,6 +177,9 @@ export function createServer() {
   // Training Orchestration - Unified training management
   app.use("/api/training", trainingOrchestrationRouter);
 
+  // Load Testing - Verify system performance with scaled term volumes (Phase 2)
+  app.use("/api", loadTestingRouter);
+
   // Tablet Label Printing System - Kitchen prep label management
   app.use("/api/tablet", tabletApiRouter);
 
