@@ -10,7 +10,6 @@
 import { deduplicationService, type TermForDedup } from "./deduplication-service";
 import { embeddingQueueService } from "./embedding-queue-service";
 import { dualStoragePipeline, type StorageRecord } from "./dual-storage-pipeline";
-import { getEmbedding } from "./embedding-provider";
 
 export interface IngestionStats {
   totalInput: number;
