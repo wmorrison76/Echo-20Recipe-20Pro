@@ -10,7 +10,7 @@
  * - Automatic retry with configurable limits
  */
 
-import { getEmbedding } from "./embedding-provider";
+import { generateEmbedding } from "./pinecone-service";
 
 export interface EmbeddingJob {
   itemId: string;
