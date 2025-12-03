@@ -350,6 +350,74 @@ export function EchoTrainingCenter() {
         {/* Terms Vector Ingestion - Push to Supabase + Pinecone */}
         <TermsVectorIngestionPanel />
 
+        {/* Web Crawler Section */}
+        <Card className="p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Globe className="w-6 h-6 text-green-600" />
+              <div>
+                <h3 className="font-semibold text-lg">Web Crawler</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Crawl recipes from 30+ global recipe platforms
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {crawlerProgress && (
+            <div className="space-y-3 p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Crawler Progress</span>
+                <span className="text-sm font-bold text-blue-600">
+                  {crawlerProgress.progress || 0}%
+                </span>
+              </div>
+              <Progress value={crawlerProgress.progress || 0} className="h-2" />
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                {crawlerProgress.message || "Processing..."}
+              </p>
+              {crawlerProgress.itemsProcessed && (
+                <div className="text-xs text-gray-500 dark:text-gray-500">
+                  {crawlerProgress.itemsProcessed} items processed
+                </div>
+              )}
+            </div>
+          )}
+
+          <Button
+            onClick={handleStartCrawler}
+            disabled={isCrawlerRunning}
+            className="w-full bg-green-600 hover:bg-green-700"
+          >
+            {isCrawlerRunning ? (
+              <>
+                <Loader className="w-4 h-4 mr-2 animate-spin" />
+                Crawler Running...
+              </>
+            ) : (
+              <>
+                <Play className="w-4 h-4 mr-2" />
+                Start Web Crawler
+              </>
+            )}
+          </Button>
+        </Card>
+
+        {/* PDF Upload Section */}
+        <Card className="p-6 space-y-4">
+          <div className="flex items-center gap-3">
+            <FileText className="w-6 h-6 text-orange-600" />
+            <div>
+              <h3 className="font-semibold text-lg">PDF Library Upload</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Import culinary books and reference materials
+              </p>
+            </div>
+          </div>
+
+          <PDFBatchUploader />
+        </Card>
+
         {/* Mode Selection */}
         <Card className="p-6 space-y-4">
           <h2 className="text-xl font-semibold">Training Mode</h2>
