@@ -19,6 +19,165 @@ import type { PDFMetadata } from "../lib/pdf-knowledge-extractor";
 
 export const pdfLibraryImportRouter = Router();
 
+// Configure multer for in-memory PDF storage
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit per file
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === "application/pdf") {
+      cb(null, true);
+    } else {
+      cb(new Error("Only PDF files allowed"));
+    }
+  },
+});
+
+/**
+ * POST /api/pdf-library/upload-multipart
+ * Accept multipart PDF upload (alternative to base64)
+ * Use FormData with 'pdf' field to upload
+ * Optional fields in FormData:
+ * - title: Book title (optional)
+ * - author: Book author (optional)
+ * - cuisine: Cuisine type (optional)
+ * - language: Language (optional, default: English)
+ */
+export async function uploadPDFMultipart(req: Request, res: Response) {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        status: "error",
+        message: "No PDF file provided",
+        instruction: "Send multipart form with 'pdf' field containing the PDF file",
+      });
+    }
+
+    const buffer = req.file.buffer;
+    const fileName = req.file.originalname;
+    const { title, author, cuisine, language } = req.body;
+
+    console.log(
+      `[PDF Import] Processing multipart upload: ${fileName} (${buffer.length} bytes)`,
+    );
+
+    // Extract text from PDF
+    let pdfText: string;
+    try {
+      pdfText = await extractTextFromPDFBuffer(buffer, fileName);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      console.error(`[PDF Import] Text extraction failed: ${errorMessage}`);
+
+      if (
+        errorMessage.includes("no readable text") ||
+        errorMessage.includes("empty")
+      ) {
+        return res.status(400).json({
+          status: "error",
+          error: "PDF has no readable text",
+          recommendation:
+            "The PDF appears to be image-based. Try using OCR mode or ensure the PDF contains selectable text.",
+          fileName,
+        });
+      }
+
+      return res.status(400).json({
+        status: "error",
+        error: `Failed to extract text from PDF: ${errorMessage}`,
+        fileName,
+      });
+    }
+
+    if (pdfText.trim().length < 50) {
+      return res.status(400).json({
+        status: "error",
+        error: "PDF extraction returned insufficient text",
+        recommendation:
+          "The extracted text is too small. Try a different PDF or use OCR for scanned documents.",
+        fileName,
+        extractedLength: pdfText.length,
+      });
+    }
+
+    // Create metadata
+    const metadata: PDFMetadata = {
+      title: title || extractPDFMetadata(fileName, pdfText).title,
+      author: author || undefined,
+      cuisine: cuisine || undefined,
+      language: language || "English",
+      specialization: "culinary-book",
+    };
+
+    console.log(`[PDF Import] Extracted metadata: ${JSON.stringify(metadata)}`);
+
+    // Convert to master culinary terms
+    const extraction = convertPDFToMasterTerms(pdfText, metadata);
+
+    console.log(
+      `[PDF Import] Conversion complete: ${extraction.terms.length} terms identified`,
+    );
+
+    // Add all extracted terms to master dictionary
+    let addedCount = 0;
+    const failedTerms: string[] = [];
+
+    for (const term of extraction.terms) {
+      try {
+        masterCulinaryDictionary.addTerm(term.term.toLowerCase(), term);
+        addedCount++;
+      } catch (error) {
+        failedTerms.push(term.term);
+        console.error(
+          `[PDF Import] Failed to add term "${term.term}":`,
+          error,
+        );
+      }
+    }
+
+    const stats = masterCulinaryDictionary.getStatistics();
+
+    console.log(`[PDF Import] Complete: Added ${addedCount}/${extraction.terms.length} terms`);
+
+    res.json({
+      status: "success",
+      import: {
+        file: fileName,
+        source: metadata.title,
+        author: metadata.author,
+        cuisine: metadata.cuisine,
+        language: metadata.language,
+        termsExtracted: extraction.terms.length,
+        termsAdded: addedCount,
+        textExtracted: pdfText.length,
+        averageConfidence: extraction.metadata.confidence,
+        failedTerms: failedTerms.length > 0 ? failedTerms : undefined,
+        timestamp: new Date().toISOString(),
+      },
+      dictionaryUpdate: {
+        totalTerms: stats.totalTerms,
+        categories: stats.categories,
+        message: `🎓 Echo learned ${addedCount} culinary terms from "${metadata.title}"!`,
+      },
+      masteryBreakdown: {
+        fundamental: stats.masteryLevels.fundamental || 0,
+        intermediate: stats.masteryLevels.intermediate || 0,
+        advanced: stats.masteryLevels.advanced || 0,
+        expert: stats.masteryLevels.expert || 0,
+        master: stats.masteryLevels.master || 0,
+      },
+    });
+  } catch (error) {
+    console.error("[PDF Import] Multipart upload error:", error);
+    return res.status(500).json({
+      status: "error",
+      error:
+        error instanceof Error ? error.message : "Upload failed",
+      message: "Failed to process PDF upload",
+    });
+  }
+}
+
 /**
  * POST /api/pdf-library/upload
  * Upload a single PDF file and import knowledge
