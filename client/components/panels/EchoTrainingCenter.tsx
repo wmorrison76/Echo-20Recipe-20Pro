@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
 import {
   useTrainingOrchestration,
   type TrainingMode,
@@ -7,6 +8,7 @@ import { hibernationPrevention } from "@/lib/hibernation-prevention";
 import { KnowledgeProgressDashboard } from "@/components/KnowledgeProgressDashboard";
 import { TermJsonUploader } from "@/components/panels/TermJsonUploader";
 import { TermsVectorIngestionPanel } from "@/components/panels/TermsVectorIngestionPanel";
+import { PDFBatchUploader } from "@/components/panels/PDFBatchUploader";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +25,7 @@ import {
   CheckCircle,
   Clock,
   ArrowRight,
+  Loader,
 } from "lucide-react";
 
 interface TrainingSourceConfig {
