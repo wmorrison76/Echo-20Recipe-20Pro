@@ -188,10 +188,10 @@ export class EmbeddingQueueService {
 
     // Use batch embedding if available, otherwise fall back to individual
     try {
-      // For OpenAI, we can send multiple texts in one call
+      // Generate embeddings for each text
       for (const text of texts) {
         try {
-          const embedding = await getEmbedding(text);
+          const embedding = await generateEmbedding(text);
           embeddings.push(embedding);
         } catch (error) {
           console.error(`[EmbeddingQueue] Failed to embed text:`, error);
