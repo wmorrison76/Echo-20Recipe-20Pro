@@ -5,6 +5,7 @@
 
 import type { Request, Response } from "express";
 import { Router } from "express";
+import multer from "multer";
 import { masterCulinaryDictionary } from "../lib/master-culinary-dictionary";
 import {
   processPDFUpload,
