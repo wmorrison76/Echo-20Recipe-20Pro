@@ -955,6 +955,11 @@ export async function browseDefinitionsByCategory(req: Request, res: Response) {
 }
 
 // Register routes
+pdfLibraryImportRouter.post(
+  "/pdf-library/upload-multipart",
+  upload.single("pdf"),
+  uploadPDFMultipart,
+);
 pdfLibraryImportRouter.post("/pdf-library/upload", uploadPDFFile);
 pdfLibraryImportRouter.post("/pdf-library/upload-batch", uploadPDFBatch);
 pdfLibraryImportRouter.get("/pdf-library/status", getPDFImportStatus);
