@@ -81,59 +81,48 @@ export function PDFBatchUploader() {
     }
   };
 
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const result = reader.result as string;
-        resolve(result.split(",")[1]); // Remove data:application/pdf;base64, prefix
-      };
-      reader.onerror = reject;
-    });
-  };
-
   const uploadFile = async (file: File, index: number) => {
     const currentProgress = [...uploadProgress];
     currentProgress[index].status = "uploading";
-    currentProgress[index].message = "Converting to base64...";
+    currentProgress[index].message = "Preparing upload...";
     currentProgress[index].progress = 10;
     setUploadProgress(currentProgress);
 
     try {
-      // Convert to base64
-      const base64 = await fileToBase64(file);
-
       currentProgress[index].message = "Uploading to server...";
-      currentProgress[index].progress = 40;
+      currentProgress[index].progress = 30;
       setUploadProgress([...currentProgress]);
 
-      // Upload to server
+      // Create FormData for multipart upload
+      const formData = new FormData();
+      formData.append("pdf", file); // The multer middleware expects 'pdf' field
+      formData.append("title", file.name.replace(/\.pdf$/i, "")); // Use filename as title
+      formData.append("language", "English");
+
+      // Upload to server using multipart
       const response = await fetch("/api/pdf-library/upload-multipart", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          pdf: base64,
-          fileName: file.name,
-          fileSize: file.size,
-        }),
+        body: formData,
+        // Don't set Content-Type header - browser will set it with boundary
       });
 
       if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
         throw new Error(
+          errorData.error ||
+          errorData.message ||
           `Server error: ${response.status} ${response.statusText}`,
         );
       }
 
       const result = await response.json();
 
-      if (!result.success) {
-        throw new Error(result.error || "Upload failed");
+      if (result.status !== "success") {
+        throw new Error(result.error || result.message || "Upload failed");
       }
 
       currentProgress[index].status = "success";
-      currentProgress[index].message = `${result.termsExtracted || 0} terms extracted`;
+      currentProgress[index].message = `${result.import?.termsAdded || result.import?.termsExtracted || 0} terms extracted`;
       currentProgress[index].progress = 100;
       setUploadProgress([...currentProgress]);
 
