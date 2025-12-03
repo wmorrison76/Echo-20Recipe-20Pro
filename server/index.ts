@@ -175,6 +175,9 @@ export function createServer() {
   // Terms Vector Ingestion - Ingest uploaded terms to Supabase pgvector and Pinecone
   app.use("/api/terms", termsVectorIngestionRouter);
 
+  // Terms Batch Ingestion - Phase 3 production 180K term import
+  app.use("/api/terms", termsBatchIngestionRouter);
+
   // Training Orchestration - Unified training management
   app.use("/api/training", trainingOrchestrationRouter);
 
