@@ -3,7 +3,7 @@
 /**
  * Batch Ingestion Script
  * Reads terms from JSON file and ingests them through the production pipeline
- * 
+ *
  * Usage:
  *   node scripts/ingest-batch.js <path-to-terms-file.json>
  *   node scripts/ingest-batch.js data/batch-aa
@@ -48,14 +48,14 @@ class BatchIngester {
         batches.push(terms.slice(i, i + BATCH_SIZE));
       }
 
-      console.log(`[Ingestion] Split into ${batches.length} batches of ${BATCH_SIZE} terms`);
+      console.log(
+        `[Ingestion] Split into ${batches.length} batches of ${BATCH_SIZE} terms`,
+      );
 
       // Process batches concurrently
       const batchGroups = [];
       for (let i = 0; i < batches.length; i += CONCURRENT_BATCHES) {
-        batchGroups.push(
-          batches.slice(i, i + CONCURRENT_BATCHES),
-        );
+        batchGroups.push(batches.slice(i, i + CONCURRENT_BATCHES));
       }
 
       let batchIndex = 0;
@@ -133,7 +133,7 @@ class BatchIngester {
         this.stats.failed += result.failed || 0;
 
         console.log(
-          `[Ingestion] Batch ${batchIndex + 1}: ${batch.length} terms (${(result.successful || batch.length)} success, ${result.failed || 0} failed)`,
+          `[Ingestion] Batch ${batchIndex + 1}: ${batch.length} terms (${result.successful || batch.length} success, ${result.failed || 0} failed)`,
         );
 
         return; // Success
@@ -188,7 +188,9 @@ class BatchIngester {
     console.log(`[Ingestion] Failed: ${this.stats.failed}`);
     console.log(`[Ingestion] Success rate: ${successRate}%`);
     console.log(`[Ingestion] Time taken: ${minutes}m (${hours}h)`);
-    console.log(`[Ingestion] Rate: ${((this.stats.succeeded / elapsed) * 60).toFixed(0)} terms/min`);
+    console.log(
+      `[Ingestion] Rate: ${((this.stats.succeeded / elapsed) * 60).toFixed(0)} terms/min`,
+    );
     console.log("[Ingestion] ==========================================\n");
 
     if (this.stats.failed > 0) {

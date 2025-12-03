@@ -1,7 +1,7 @@
 /**
  * Migration script: Move master dictionary from JSON to Postgres
  * Run with: npx ts-node scripts/migrate-terms-to-postgres.ts
- * 
+ *
  * This script:
  * 1. Loads all terms from in-memory master dictionary
  * 2. Loads all uploaded terms from JSON file
@@ -13,7 +13,10 @@
 import { createClient } from "@supabase/supabase-js";
 import { masterCulinaryDictionary } from "../server/lib/master-culinary-dictionary";
 import { uploadedTermsStore } from "../server/lib/uploaded-terms-store";
-import { deduplicationService, type TermForDedup } from "../server/lib/deduplication-service";
+import {
+  deduplicationService,
+  type TermForDedup,
+} from "../server/lib/deduplication-service";
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -21,7 +24,10 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!supabaseUrl || !supabaseKey) {
   console.error("[Migration] Missing Supabase credentials");
   console.error("  SUPABASE_URL:", supabaseUrl ? "set" : "not set");
-  console.error("  SUPABASE_SERVICE_ROLE_KEY:", supabaseKey ? "set" : "not set");
+  console.error(
+    "  SUPABASE_SERVICE_ROLE_KEY:",
+    supabaseKey ? "set" : "not set",
+  );
   process.exit(1);
 }
 
@@ -55,7 +61,7 @@ async function migrateTermsToPostgres() {
     console.log(`  - Uploaded terms: ${uploadedTerms.length}`);
 
     // Convert to dedup format
-    const termsForDedup: TermForDedup[] = allTerms.map(t => ({
+    const termsForDedup: TermForDedup[] = allTerms.map((t) => ({
       term: t.term,
       definition: t.definition,
       categories: t.categories,
@@ -77,12 +83,14 @@ async function migrateTermsToPostgres() {
     const dedupResult = deduplicationService.deduplicate(termsForDedup);
     console.log(`[Migration] Deduplication complete:`);
     console.log(`  - Unique terms: ${dedupResult.unique.length}`);
-    console.log(`  - Deduplication rate: ${dedupResult.deduplicationRate.toFixed(1)}%`);
+    console.log(
+      `  - Deduplication rate: ${dedupResult.deduplicationRate.toFixed(1)}%`,
+    );
     console.log(`  - Duplicates found: ${dedupResult.duplicates.size}`);
 
     // Prepare records for insert
     console.log("[Migration] Preparing records for database insert...");
-    const records: TermRecord[] = dedupResult.unique.map(term => ({
+    const records: TermRecord[] = dedupResult.unique.map((term) => ({
       term_key: normalizeTermKey(term.term),
       term_name: term.term,
       definition: term.definition,
@@ -97,7 +105,9 @@ async function migrateTermsToPostgres() {
     }));
 
     // Batch insert
-    console.log(`[Migration] Inserting ${records.length} terms into database...`);
+    console.log(
+      `[Migration] Inserting ${records.length} terms into database...`,
+    );
     const batchSize = 500; // Insert in smaller batches for better performance
     let successCount = 0;
     let errorCount = 0;
@@ -128,7 +138,10 @@ async function migrateTermsToPostgres() {
           );
         }
       } catch (error) {
-        console.warn(`[Migration] Batch ${batchNum}/${totalBatches} exception:`, error);
+        console.warn(
+          `[Migration] Batch ${batchNum}/${totalBatches} exception:`,
+          error,
+        );
         errorCount += batch.length;
       }
     }
@@ -152,7 +165,9 @@ async function migrateTermsToPostgres() {
     console.log(`  After deduplication: ${dedupResult.unique.length}`);
     console.log(`  Successfully inserted: ${successCount}`);
     console.log(`  Failed: ${errorCount}`);
-    console.log(`  Deduplication rate: ${dedupResult.deduplicationRate.toFixed(1)}%`);
+    console.log(
+      `  Deduplication rate: ${dedupResult.deduplicationRate.toFixed(1)}%`,
+    );
     console.log(`  Database total: ${count || "unknown"}`);
 
     process.exit(0);

@@ -45,7 +45,9 @@ export class OCRService {
       console.log("[OCR] Tesseract initialized successfully");
     } catch (error) {
       console.error("[OCR] Initialization failed:", error);
-      throw new Error(`Failed to initialize OCR: ${error instanceof Error ? error.message : "Unknown error"}`);
+      throw new Error(
+        `Failed to initialize OCR: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   }
 
@@ -62,7 +64,10 @@ export class OCRService {
    * Extract text from PDF using OCR
    * Converts each PDF page to image, then extracts text
    */
-  async extractFromPDF(pdfBuffer: Buffer, fileName: string): Promise<OCRResult> {
+  async extractFromPDF(
+    pdfBuffer: Buffer,
+    fileName: string,
+  ): Promise<OCRResult> {
     if (!this.initialized) {
       await this.initialize();
     }
@@ -84,18 +89,19 @@ export class OCRService {
 
       for (let pageNum = 1; pageNum <= pagesToProcess; pageNum++) {
         try {
-          const pageData = await pdf.default(pdfBuffer, { pagerender: this.pageToImage });
-          
+          const pageData = await pdf.default(pdfBuffer, {
+            pagerender: this.pageToImage,
+          });
+
           if (pageData.version) {
             // Page rendering succeeded
-            const pageResult = await this.ocrPage(
-              pageNum,
-              pageData.text || "",
-            );
+            const pageResult = await this.ocrPage(pageNum, pageData.text || "");
             pageResults.push(pageResult);
             totalConfidence += pageResult.confidence;
 
-            console.log(`[OCR] Page ${pageNum} complete (confidence: ${(pageResult.confidence * 100).toFixed(1)}%)`);
+            console.log(
+              `[OCR] Page ${pageNum} complete (confidence: ${(pageResult.confidence * 100).toFixed(1)}%)`,
+            );
           }
         } catch (error) {
           console.warn(`[OCR] Failed to process page ${pageNum}:`, error);
@@ -109,11 +115,13 @@ export class OCRService {
       }
 
       const averageConfidence = totalConfidence / pageResults.length;
-      const allText = pageResults.map(p => p.text).join("\n\n");
+      const allText = pageResults.map((p) => p.text).join("\n\n");
 
       console.log(`[OCR] Extraction complete:`);
       console.log(`  Pages processed: ${pageResults.length}/${totalPages}`);
-      console.log(`  Average confidence: ${(averageConfidence * 100).toFixed(1)}%`);
+      console.log(
+        `  Average confidence: ${(averageConfidence * 100).toFixed(1)}%`,
+      );
       console.log(`  Total text length: ${allText.length} characters`);
 
       return {

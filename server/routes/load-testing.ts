@@ -1,7 +1,7 @@
 /**
  * Load Testing Routes
  * Endpoints for testing the system's ability to handle large term volumes
- * 
+ *
  * Tests:
  * - Small load: 1,000 terms
  * - Medium load: 10,000 terms
@@ -10,7 +10,10 @@
 
 import { Router, type Request, type Response } from "express";
 import { ingestionOrchestrator } from "../lib/ingestion-orchestrator";
-import { deduplicationService, type TermForDedup } from "../lib/deduplication-service";
+import {
+  deduplicationService,
+  type TermForDedup,
+} from "../lib/deduplication-service";
 
 export const loadTestingRouter = Router();
 
@@ -78,101 +81,115 @@ function generateSyntheticTerms(count: number): TermForDedup[] {
  * POST /api/load-test/small
  * Test with 1,000 terms
  */
-loadTestingRouter.post("/load-test/small", async (req: Request, res: Response) => {
-  try {
-    console.log("[LoadTest] Starting small load test (1,000 terms)");
+loadTestingRouter.post(
+  "/load-test/small",
+  async (req: Request, res: Response) => {
+    try {
+      console.log("[LoadTest] Starting small load test (1,000 terms)");
 
-    const terms = generateSyntheticTerms(1000);
-    const startTime = Date.now();
+      const terms = generateSyntheticTerms(1000);
+      const startTime = Date.now();
 
-    const result = await ingestionOrchestrator.ingestTerms(terms, (progress) => {
-      console.log(
-        `[LoadTest] ${progress.phase}: ${progress.progress}% - ${progress.message}`,
+      const result = await ingestionOrchestrator.ingestTerms(
+        terms,
+        (progress) => {
+          console.log(
+            `[LoadTest] ${progress.phase}: ${progress.progress}% - ${progress.message}`,
+          );
+        },
       );
-    });
 
-    const duration = (Date.now() - startTime) / 1000;
+      const duration = (Date.now() - startTime) / 1000;
 
-    res.json({
-      success: true,
-      test: "small",
-      duration,
-      result,
-      metricsPerTerm: {
-        averageTimeMs: (result.totalTime / result.afterDedup) || 0,
-        deduplicationRatePercent: result.deduplicationRate,
-        embeddingSuccessRate:
-          (result.embeddingsGenerated /
-            (result.embeddingsGenerated + result.embeddingsFailed)) *
-          100,
-        storageSuccessRate:
-          (result.storageSuccessful /
-            (result.storageSuccessful + result.storageFailed)) *
-          100,
-      },
-    });
-  } catch (error) {
-    console.error("[LoadTest] Small test error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+      res.json({
+        success: true,
+        test: "small",
+        duration,
+        result,
+        metricsPerTerm: {
+          averageTimeMs: result.totalTime / result.afterDedup || 0,
+          deduplicationRatePercent: result.deduplicationRate,
+          embeddingSuccessRate:
+            (result.embeddingsGenerated /
+              (result.embeddingsGenerated + result.embeddingsFailed)) *
+            100,
+          storageSuccessRate:
+            (result.storageSuccessful /
+              (result.storageSuccessful + result.storageFailed)) *
+            100,
+        },
+      });
+    } catch (error) {
+      console.error("[LoadTest] Small test error:", error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  },
+);
 
 /**
  * POST /api/load-test/medium
  * Test with 10,000 terms
  */
-loadTestingRouter.post("/load-test/medium", async (req: Request, res: Response) => {
-  try {
-    console.log("[LoadTest] Starting medium load test (10,000 terms)");
+loadTestingRouter.post(
+  "/load-test/medium",
+  async (req: Request, res: Response) => {
+    try {
+      console.log("[LoadTest] Starting medium load test (10,000 terms)");
 
-    const terms = generateSyntheticTerms(10000);
-    const startTime = Date.now();
+      const terms = generateSyntheticTerms(10000);
+      const startTime = Date.now();
 
-    const result = await ingestionOrchestrator.ingestTerms(terms, (progress) => {
-      if (progress.progress % 10 === 0) {
-        console.log(
-          `[LoadTest] ${progress.phase}: ${progress.progress}% - ${progress.message}`,
-        );
-      }
-    });
+      const result = await ingestionOrchestrator.ingestTerms(
+        terms,
+        (progress) => {
+          if (progress.progress % 10 === 0) {
+            console.log(
+              `[LoadTest] ${progress.phase}: ${progress.progress}% - ${progress.message}`,
+            );
+          }
+        },
+      );
 
-    const duration = (Date.now() - startTime) / 1000;
+      const duration = (Date.now() - startTime) / 1000;
 
-    res.json({
-      success: true,
-      test: "medium",
-      duration,
-      durationMinutes: (duration / 60).toFixed(2),
-      result,
-      metricsPerTerm: {
-        averageTimeMs: (result.totalTime / result.afterDedup) || 0,
-        deduplicationRatePercent: result.deduplicationRate,
-        embeddingSuccessRate:
-          (result.embeddingsGenerated /
-            (result.embeddingsGenerated + result.embeddingsFailed)) *
-          100,
-        storageSuccessRate:
-          (result.storageSuccessful /
-            (result.storageSuccessful + result.storageFailed)) *
-          100,
-      },
-      projectedTimeFor180K: {
-        estimatedSeconds: (result.totalTime / result.afterDedup) * 180000,
-        estimatedMinutes: ((result.totalTime / result.afterDedup) * 180000) / 60,
-        estimatedHours: (((result.totalTime / result.afterDedup) * 180000) / 60) / 60,
-      },
-    });
-  } catch (error) {
-    console.error("[LoadTest] Medium test error:", error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+      res.json({
+        success: true,
+        test: "medium",
+        duration,
+        durationMinutes: (duration / 60).toFixed(2),
+        result,
+        metricsPerTerm: {
+          averageTimeMs: result.totalTime / result.afterDedup || 0,
+          deduplicationRatePercent: result.deduplicationRate,
+          embeddingSuccessRate:
+            (result.embeddingsGenerated /
+              (result.embeddingsGenerated + result.embeddingsFailed)) *
+            100,
+          storageSuccessRate:
+            (result.storageSuccessful /
+              (result.storageSuccessful + result.storageFailed)) *
+            100,
+        },
+        projectedTimeFor180K: {
+          estimatedSeconds: (result.totalTime / result.afterDedup) * 180000,
+          estimatedMinutes:
+            ((result.totalTime / result.afterDedup) * 180000) / 60,
+          estimatedHours:
+            ((result.totalTime / result.afterDedup) * 180000) / 60 / 60,
+        },
+      });
+    } catch (error) {
+      console.error("[LoadTest] Medium test error:", error);
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  },
+);
 
 /**
  * POST /api/load-test/deduplication
@@ -194,11 +211,13 @@ loadTestingRouter.post(
 
       // Add duplicates (with slight variations)
       for (let i = 0; i < Math.floor(termCount * duplicateRate); i++) {
-        const baseTerm = baseTerms[Math.floor(Math.random() * baseTerms.length)];
+        const baseTerm =
+          baseTerms[Math.floor(Math.random() * baseTerms.length)];
         duplicates.push({
           ...baseTerm,
           term: baseTerm.term + (Math.random() > 0.5 ? " variant" : ""),
-          definition: baseTerm.definition + (Math.random() > 0.5 ? " (variation)" : ""),
+          definition:
+            baseTerm.definition + (Math.random() > 0.5 ? " (variation)" : ""),
         });
       }
 

@@ -1,7 +1,7 @@
 /**
  * Dual Storage Pipeline
  * Stores embeddings to both Supabase (pgvector) and Pinecone for redundancy
- * 
+ *
  * Primary: Supabase pgvector for semantic search
  * Backup: Pinecone for high-scale operations
  */
@@ -113,10 +113,7 @@ export class DualStoragePipeline {
       } catch (error) {
         result.pinecone.error =
           error instanceof Error ? error.message : "Unknown error";
-        console.error(
-          "[DualStorage] Pinecone error:",
-          result.pinecone.error,
-        );
+        console.error("[DualStorage] Pinecone error:", result.pinecone.error);
       }
     }
 
@@ -206,7 +203,7 @@ export class DualStoragePipeline {
 
         if (queryResult.matches) {
           results.push(
-            ...queryResult.matches.map(m => ({
+            ...queryResult.matches.map((m) => ({
               id: m.id,
               score: m.score,
               metadata: m.metadata,
@@ -220,7 +217,7 @@ export class DualStoragePipeline {
 
     // Deduplicate and sort by score
     const deduped = Array.from(
-      new Map(results.map(r => [r.id, r])).values(),
+      new Map(results.map((r) => [r.id, r])).values(),
     ).sort((a, b) => (b.score || 0) - (a.score || 0));
 
     return deduped.slice(0, limit);

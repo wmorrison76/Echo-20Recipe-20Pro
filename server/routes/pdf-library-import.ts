@@ -48,7 +48,8 @@ export async function uploadPDFMultipart(req: Request, res: Response) {
       return res.status(400).json({
         status: "error",
         message: "No PDF file provided",
-        instruction: "Send multipart form with 'pdf' field containing the PDF file",
+        instruction:
+          "Send multipart form with 'pdf' field containing the PDF file",
       });
     }
 
@@ -128,16 +129,15 @@ export async function uploadPDFMultipart(req: Request, res: Response) {
         addedCount++;
       } catch (error) {
         failedTerms.push(term.term);
-        console.error(
-          `[PDF Import] Failed to add term "${term.term}":`,
-          error,
-        );
+        console.error(`[PDF Import] Failed to add term "${term.term}":`, error);
       }
     }
 
     const stats = masterCulinaryDictionary.getStatistics();
 
-    console.log(`[PDF Import] Complete: Added ${addedCount}/${extraction.terms.length} terms`);
+    console.log(
+      `[PDF Import] Complete: Added ${addedCount}/${extraction.terms.length} terms`,
+    );
 
     res.json({
       status: "success",
@@ -171,8 +171,7 @@ export async function uploadPDFMultipart(req: Request, res: Response) {
     console.error("[PDF Import] Multipart upload error:", error);
     return res.status(500).json({
       status: "error",
-      error:
-        error instanceof Error ? error.message : "Upload failed",
+      error: error instanceof Error ? error.message : "Upload failed",
       message: "Failed to process PDF upload",
     });
   }

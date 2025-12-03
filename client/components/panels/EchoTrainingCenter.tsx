@@ -201,12 +201,15 @@ export function EchoTrainingCenter() {
               eventSource.close();
               setIsCrawlerRunning(false);
               toast.success(
-                `Crawler completed: ${stats.totalRecipes || 0} recipes found`
+                `Crawler completed: ${stats.totalRecipes || 0} recipes found`,
               );
             }
           }
         } catch (error) {
-          console.error("[EchoTrainingCenter] Error checking crawler stats:", error);
+          console.error(
+            "[EchoTrainingCenter] Error checking crawler stats:",
+            error,
+          );
         }
       }, 2000);
     } catch (error) {

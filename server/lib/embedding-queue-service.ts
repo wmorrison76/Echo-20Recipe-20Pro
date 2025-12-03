@@ -1,7 +1,7 @@
 /**
  * Embedding Queue Service
  * Manages batched embedding generation with rate limiting and concurrent workers
- * 
+ *
  * Key features:
  * - Batch embedding (100 items per API call, not 1 per call)
  * - 5 concurrent workers to balance throughput + rate limit compliance
@@ -34,12 +34,12 @@ export class EmbeddingQueueService {
   private processing: Set<string> = new Set();
   private completed: Map<string, number[]> = new Map();
   private failed: Map<string, Error> = new Map();
-  
+
   private workers: number = 5;
   private batchSize: number = 100;
   private retryLimit: number = 3;
   private rateLimitWait: number = 1000; // Start with 1 second
-  
+
   private startTime: number = 0;
   private stats = {
     completed: 0,
@@ -69,12 +69,12 @@ export class EmbeddingQueueService {
   getStats(): EmbeddingQueueStats {
     const processed = this.stats.completed + this.stats.failed;
     const remaining = this.queue.length + this.processing.size;
-    const avgTime = this.stats.totalBatches > 0 
-      ? this.stats.totalTime / this.stats.totalBatches 
-      : 0;
-    const estimatedRemaining = remaining > 0 
-      ? Math.ceil(remaining / this.batchSize) * avgTime 
-      : 0;
+    const avgTime =
+      this.stats.totalBatches > 0
+        ? this.stats.totalTime / this.stats.totalBatches
+        : 0;
+    const estimatedRemaining =
+      remaining > 0 ? Math.ceil(remaining / this.batchSize) * avgTime : 0;
 
     return {
       pending: this.queue.length,
@@ -87,7 +87,9 @@ export class EmbeddingQueueService {
     };
   }
 
-  async processQueue(onProgress?: (stats: EmbeddingQueueStats) => void): Promise<void> {
+  async processQueue(
+    onProgress?: (stats: EmbeddingQueueStats) => void,
+  ): Promise<void> {
     this.startTime = Date.now();
     const totalJobs = this.queue.length;
 
@@ -103,26 +105,33 @@ export class EmbeddingQueueService {
     await Promise.all(workerPromises);
 
     const totalSeconds = (Date.now() - this.startTime) / 1000;
-    console.log(`[EmbeddingQueue] Queue processing complete in ${totalSeconds.toFixed(1)}s`);
+    console.log(
+      `[EmbeddingQueue] Queue processing complete in ${totalSeconds.toFixed(1)}s`,
+    );
     console.log(`  Completed: ${this.stats.completed}`);
     console.log(`  Failed: ${this.stats.failed}`);
     console.log(`  Total batches: ${this.stats.totalBatches}`);
-    console.log(`  Avg time per batch: ${(this.stats.totalTime / Math.max(1, this.stats.totalBatches)).toFixed(1)}ms`);
+    console.log(
+      `  Avg time per batch: ${(this.stats.totalTime / Math.max(1, this.stats.totalBatches)).toFixed(1)}ms`,
+    );
   }
 
-  private async workerLoop(totalJobs: number, onProgress?: (stats: EmbeddingQueueStats) => void): Promise<void> {
+  private async workerLoop(
+    totalJobs: number,
+    onProgress?: (stats: EmbeddingQueueStats) => void,
+  ): Promise<void> {
     while (this.queue.length > 0 || this.processing.size > 0) {
       // Get next batch
       const batch = this.queue.splice(0, this.batchSize);
       if (batch.length === 0) {
         // Wait a bit before checking again
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
         continue;
       }
 
       // Mark items as processing
-      const jobIds = batch.map(j => j.itemId);
-      jobIds.forEach(id => this.processing.add(id));
+      const jobIds = batch.map((j) => j.itemId);
+      jobIds.forEach((id) => this.processing.add(id));
 
       try {
         const batchStartTime = Date.now();
@@ -150,9 +159,9 @@ export class EmbeddingQueueService {
         console.error(`[EmbeddingQueue] Batch error:`, error);
 
         // Retry logic
-        const retryableJobs = batch.filter(job => {
-          const attempts = Array.from(this.failed.values()).filter(
-            e => e.message.includes(job.itemId),
+        const retryableJobs = batch.filter((job) => {
+          const attempts = Array.from(this.failed.values()).filter((e) =>
+            e.message.includes(job.itemId),
           ).length;
           return attempts < this.retryLimit;
         });
@@ -160,19 +169,24 @@ export class EmbeddingQueueService {
         if (retryableJobs.length > 0) {
           this.queue.push(...retryableJobs);
           this.rateLimitWait = Math.min(this.rateLimitWait * 2, 30000); // Exponential backoff
-          await new Promise(resolve => setTimeout(resolve, this.rateLimitWait));
+          await new Promise((resolve) =>
+            setTimeout(resolve, this.rateLimitWait),
+          );
         }
 
         // Mark failed items
-        batch.forEach(job => {
-          if (retryableJobs.every(j => j.itemId !== job.itemId)) {
-            this.failed.set(job.itemId, new Error(`Failed after ${this.retryLimit} retries`));
+        batch.forEach((job) => {
+          if (retryableJobs.every((j) => j.itemId !== job.itemId)) {
+            this.failed.set(
+              job.itemId,
+              new Error(`Failed after ${this.retryLimit} retries`),
+            );
             this.stats.failed++;
           }
         });
       } finally {
         // Remove from processing
-        jobIds.forEach(id => this.processing.delete(id));
+        jobIds.forEach((id) => this.processing.delete(id));
 
         // Report progress
         if (onProgress) {
@@ -182,8 +196,10 @@ export class EmbeddingQueueService {
     }
   }
 
-  private async generateBatchEmbeddings(jobs: EmbeddingJob[]): Promise<(number[] | null)[]> {
-    const texts = jobs.map(j => j.text);
+  private async generateBatchEmbeddings(
+    jobs: EmbeddingJob[],
+  ): Promise<(number[] | null)[]> {
+    const texts = jobs.map((j) => j.text);
     const embeddings: (number[] | null)[] = [];
 
     // Use batch embedding if available, otherwise fall back to individual

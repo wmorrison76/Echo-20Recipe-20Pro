@@ -110,8 +110,8 @@ export function PDFBatchUploader() {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
           errorData.error ||
-          errorData.message ||
-          `Server error: ${response.status} ${response.statusText}`,
+            errorData.message ||
+            `Server error: ${response.status} ${response.statusText}`,
         );
       }
 
@@ -122,7 +122,8 @@ export function PDFBatchUploader() {
       }
 
       currentProgress[index].status = "success";
-      currentProgress[index].message = `${result.import?.termsAdded || result.import?.termsExtracted || 0} terms extracted`;
+      currentProgress[index].message =
+        `${result.import?.termsAdded || result.import?.termsExtracted || 0} terms extracted`;
       currentProgress[index].progress = 100;
       setUploadProgress([...currentProgress]);
 
@@ -173,7 +174,9 @@ export function PDFBatchUploader() {
 
   const handleClearCompleted = () => {
     setUploadProgress(
-      uploadProgress.filter((p) => p.status !== "success" && p.status !== "error"),
+      uploadProgress.filter(
+        (p) => p.status !== "success" && p.status !== "error",
+      ),
     );
     setFiles(files.filter((_, i) => uploadProgress[i].status === "pending"));
   };
@@ -230,7 +233,9 @@ export function PDFBatchUploader() {
             <Upload className="w-12 h-12 mx-auto text-gray-400" />
             <div>
               <p className="font-semibold">
-                {isDragActive ? "Drop PDFs here" : "Drag PDFs here or click to select"}
+                {isDragActive
+                  ? "Drop PDFs here"
+                  : "Drag PDFs here or click to select"}
               </p>
               <p className="text-xs text-gray-500">
                 Supports PDF files up to 50MB each
@@ -244,7 +249,8 @@ export function PDFBatchUploader() {
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium">
-                Upload Progress: {successCount + errorCount}/{uploadProgress.length}
+                Upload Progress: {successCount + errorCount}/
+                {uploadProgress.length}
               </span>
               <div className="flex gap-2">
                 {successCount > 0 && (
@@ -264,10 +270,7 @@ export function PDFBatchUploader() {
                 )}
               </div>
             </div>
-            <Progress
-              value={totalProgress}
-              className="h-2"
-            />
+            <Progress value={totalProgress} className="h-2" />
           </div>
         )}
 
@@ -295,12 +298,11 @@ export function PDFBatchUploader() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{file.fileName}</p>
+                  <p className="text-sm font-medium truncate">
+                    {file.fileName}
+                  </p>
                   <div className="flex items-center gap-2 mt-1">
-                    <Progress
-                      value={file.progress}
-                      className="flex-1 h-1.5"
-                    />
+                    <Progress value={file.progress} className="flex-1 h-1.5" />
                     <span className="text-xs text-gray-600 min-w-fit">
                       {file.progress}%
                     </span>
@@ -362,8 +364,12 @@ export function PDFBatchUploader() {
               {uploadProgress.length}
             </p>
             <p>
-              <span className="font-semibold">Completed:</span> {successCount + errorCount}{" "}
-              ({Math.round(((successCount + errorCount) / uploadProgress.length) * 100)}%)
+              <span className="font-semibold">Completed:</span>{" "}
+              {successCount + errorCount} (
+              {Math.round(
+                ((successCount + errorCount) / uploadProgress.length) * 100,
+              )}
+              %)
             </p>
             {successCount > 0 && (
               <p className="text-green-700">

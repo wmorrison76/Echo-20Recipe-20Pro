@@ -1,7 +1,7 @@
 /**
  * Deduplication Service
  * Removes duplicate culinary terms using fuzzy matching and normalization
- * 
+ *
  * Expected deduplication rate: 15-20% of input
  * Reduces 180K terms to ~150K unique terms
  */
@@ -30,14 +30,19 @@ export class DeduplicationService {
   private minLength: number = 3;
 
   constructor(similarityThreshold: number = 0.85) {
-    this.similarityThreshold = Math.max(0.5, Math.min(1.0, similarityThreshold));
+    this.similarityThreshold = Math.max(
+      0.5,
+      Math.min(1.0, similarityThreshold),
+    );
   }
 
   deduplicate(terms: TermForDedup[]): TermDeduplicationResult {
-    console.log(`[Deduplication] Starting deduplication of ${terms.length} terms`);
+    console.log(
+      `[Deduplication] Starting deduplication of ${terms.length} terms`,
+    );
 
     // Normalize all terms
-    const normalized = terms.map(t => ({
+    const normalized = terms.map((t) => ({
       original: t,
       key: this.normalizeTermKey(t.term),
     }));
@@ -77,8 +82,8 @@ export class DeduplicationService {
       // Record duplicates
       if (group.length > 1) {
         const dupes = group
-          .filter(g => g !== canonical)
-          .map(g => g.original.term);
+          .filter((g) => g !== canonical)
+          .map((g) => g.original.term);
         if (dupes.length > 0) {
           duplicates.set(canonical.original.term, dupes);
         }
@@ -181,7 +186,10 @@ export class DeduplicationService {
 
     for (let i = 0; i < terms.length; i++) {
       for (let j = i + 1; j < terms.length; j++) {
-        const similarity = this.calculateSimilarity(terms[i].term, terms[j].term);
+        const similarity = this.calculateSimilarity(
+          terms[i].term,
+          terms[j].term,
+        );
         if (similarity >= threshold) {
           duplicatePairs.push([terms[i], terms[j], similarity]);
         }

@@ -6,7 +6,10 @@
 
 import { Router, type Request, type Response } from "express";
 import { ingestionOrchestrator } from "../lib/ingestion-orchestrator";
-import { deduplicationService, type TermForDedup } from "../lib/deduplication-service";
+import {
+  deduplicationService,
+  type TermForDedup,
+} from "../lib/deduplication-service";
 
 export const termsBatchIngestionRouter = Router();
 
@@ -40,7 +43,7 @@ interface BatchIngestResponse {
 /**
  * POST /api/terms/ingest-batch
  * Ingest a batch of terms (500-1000 recommended)
- * 
+ *
  * Request body:
  * {
  *   "terms": [...],
@@ -100,7 +103,10 @@ termsBatchIngestionRouter.post(
         message: `Batch ${batchIndex}: Ingested ${stats.afterDedup} unique terms in ${(duration / 1000).toFixed(1)}s`,
       };
 
-      console.log(`[TermsIngestion] Batch ${batchIndex} complete:`, response.message);
+      console.log(
+        `[TermsIngestion] Batch ${batchIndex} complete:`,
+        response.message,
+      );
 
       res.json(response);
     } catch (error) {
@@ -175,24 +181,26 @@ termsBatchIngestionRouter.post(
  * GET /api/terms/ingest-status
  * Get status of ongoing ingestion
  */
-termsBatchIngestionRouter.get("/ingest-status", (req: Request, res: Response) => {
-  try {
-    const stats = ingestionOrchestrator.getStats();
+termsBatchIngestionRouter.get(
+  "/ingest-status",
+  (req: Request, res: Response) => {
+    try {
+      const stats = ingestionOrchestrator.getStats();
 
-    res.json({
-      success: true,
-      status: stats.totalInput > 0 ? "active" : "idle",
-      stats,
-      estimatedCompletion: stats.totalTime > 0
-        ? new Date(Date.now() + stats.totalTime)
-        : null,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
-  }
-});
+      res.json({
+        success: true,
+        status: stats.totalInput > 0 ? "active" : "idle",
+        stats,
+        estimatedCompletion:
+          stats.totalTime > 0 ? new Date(Date.now() + stats.totalTime) : null,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  },
+);
 
 export default termsBatchIngestionRouter;

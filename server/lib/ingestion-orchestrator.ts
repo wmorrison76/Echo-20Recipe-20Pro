@@ -7,9 +7,15 @@
  * 4. Progress tracking
  */
 
-import { deduplicationService, type TermForDedup } from "./deduplication-service";
+import {
+  deduplicationService,
+  type TermForDedup,
+} from "./deduplication-service";
 import { embeddingQueueService } from "./embedding-queue-service";
-import { dualStoragePipeline, type StorageRecord } from "./dual-storage-pipeline";
+import {
+  dualStoragePipeline,
+  type StorageRecord,
+} from "./dual-storage-pipeline";
 
 export interface IngestionStats {
   totalInput: number;
@@ -134,9 +140,7 @@ export class IngestionOrchestrator {
 
       for (let i = 0; i < dedupResult.unique.length; i++) {
         const term = dedupResult.unique[i];
-        const embedding = embeddingQueueService.getCompleted(
-          `term-${i}`,
-        );
+        const embedding = embeddingQueueService.getCompleted(`term-${i}`);
 
         if (embedding) {
           storageRecords.push({
@@ -179,9 +183,15 @@ export class IngestionOrchestrator {
       console.log(
         `[IngestionOrchestrator] Ingestion complete in ${(this.stats.totalTime / 1000).toFixed(1)}s`,
       );
-      console.log(`  Deduplication: ${this.stats.totalInput} → ${this.stats.afterDedup} (${this.stats.deduplicationRate.toFixed(1)}%)`);
-      console.log(`  Embeddings: ${this.stats.embeddingsGenerated} generated, ${this.stats.embeddingsFailed} failed`);
-      console.log(`  Storage: ${this.stats.storageSuccessful} successful, ${this.stats.storageFailed} failed`);
+      console.log(
+        `  Deduplication: ${this.stats.totalInput} → ${this.stats.afterDedup} (${this.stats.deduplicationRate.toFixed(1)}%)`,
+      );
+      console.log(
+        `  Embeddings: ${this.stats.embeddingsGenerated} generated, ${this.stats.embeddingsFailed} failed`,
+      );
+      console.log(
+        `  Storage: ${this.stats.storageSuccessful} successful, ${this.stats.storageFailed} failed`,
+      );
 
       onProgress?.({
         phase: "complete",
