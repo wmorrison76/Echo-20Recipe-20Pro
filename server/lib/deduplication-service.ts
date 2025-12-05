@@ -6,7 +6,7 @@
  * Reduces 180K terms to ~150K unique terms
  */
 
-import { levenshteinDistance } from "fast-levenshtein";
+import levenshtein from "fast-levenshtein";
 
 export interface TermDeduplicationResult {
   unique: TermForDedup[];
