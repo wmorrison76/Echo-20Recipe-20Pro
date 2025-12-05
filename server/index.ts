@@ -32,6 +32,7 @@ import { termUploaderRouter } from "./routes/term-uploader";
 import { termsVectorIngestionRouter } from "./routes/terms-vector-ingestion";
 import loadTestingRouter from "./routes/load-testing";
 import termsBatchIngestionRouter from "./routes/terms-batch-ingestion";
+import flavorAnalysisRouter from "./routes/flavor-analysis";
 import { knowledgeInitializer } from "./lib/knowledge-initialization";
 import { uploadedTermsStore } from "./lib/uploaded-terms-store";
 import tabletApiRouter from "./routes/tablet-api";
