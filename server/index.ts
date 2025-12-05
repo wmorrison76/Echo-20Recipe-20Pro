@@ -185,6 +185,9 @@ export function createServer() {
   // Load Testing - Verify system performance with scaled term volumes (Phase 2)
   app.use("/api", loadTestingRouter);
 
+  // Flavor Analysis API - EchoAi³ Flavor Engine routes (Phase 2)
+  app.use("/api/echo", flavorAnalysisRouter);
+
   // Tablet Label Printing System - Kitchen prep label management
   app.use("/api/tablet", tabletApiRouter);
 
