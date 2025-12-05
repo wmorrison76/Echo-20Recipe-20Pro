@@ -169,7 +169,7 @@ export class DeduplicationService {
 
     // Levenshtein distance based similarity
     const maxLen = Math.max(key1.length, key2.length);
-    const distance = levenshteinDistance(key1, key2);
+    const distance = levenshtein.getDistance(key1, key2);
     const similarity = 1 - distance / maxLen;
 
     return Math.max(0, Math.min(1, similarity));
