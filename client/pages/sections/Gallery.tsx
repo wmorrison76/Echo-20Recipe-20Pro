@@ -20,6 +20,8 @@ import { ResponsiveImage as ResponsiveGalleryImage } from "@/components/Responsi
 import { GallerySidebar } from "@/components/gallery/GallerySidebar";
 import { GalleryTileBoards } from "@/components/gallery/GalleryTileBoards";
 import { PhotoStudioPanel } from "@/components/gallery/PhotoStudioPanel";
+import { PhotoQueuePanel } from "@/components/gallery/PhotoQueuePanel";
+import { usePhotoUploadQueue } from "@/hooks/use-photo-upload-queue";
 import type { LucideIcon } from "lucide-react";
 import {
   Download,
@@ -365,6 +367,8 @@ export default function GallerySection() {
   const [galleryView, setGalleryView] = useState<"grid" | "tiles">("grid");
   const [activeTileBoardId, setActiveTileBoardId] = useState<string | null>(null);
   const [uploadLoading, setUploadLoading] = useState(false);
+  const { queue, addPhotos, removePhoto, updatePhoto, clearQueue, stats } = usePhotoUploadQueue();
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
 
   const uploadInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -613,9 +617,60 @@ export default function GallerySection() {
 
   const handleFiles = (files: File[]) => {
     if (!files.length) return;
-    setImportTags("");
-    setShowTagDialog(true);
-    (window as any).__pending_files = files;
+    const { added, errors } = addPhotos(files);
+
+    if (errors.length > 0) {
+      setStatus(`⚠️ ${errors[0]}`);
+    }
+
+    if (added.length > 0) {
+      setStatus(`✓ Added ${added.length} file${added.length !== 1 ? "s" : ""} to queue. ${stats.total - added.length} more can be added.`);
+    }
+  };
+
+  const handleProcessQueue = async () => {
+    const filesToUpload = queue.filter((p) => p.status === "pending");
+    if (filesToUpload.length === 0) return;
+
+    setUploadLoading(true);
+    setStatus(`Uploading ${filesToUpload.length} file${filesToUpload.length !== 1 ? "s" : ""}...`);
+
+    let successCount = 0;
+    const newProgress: Record<string, number> = {};
+
+    for (const queuedPhoto of filesToUpload) {
+      updatePhoto(queuedPhoto.id, { status: "uploading" });
+      newProgress[queuedPhoto.id] = 0;
+      setUploadProgress(newProgress);
+
+      try {
+        // Simulate upload progress
+        for (let i = 1; i <= 10; i++) {
+          await new Promise((resolve) => setTimeout(resolve, 50));
+          newProgress[queuedPhoto.id] = i / 10;
+          setUploadProgress({ ...newProgress });
+        }
+
+        // Add images with tags
+        const added = await addImages([queuedPhoto.file], { tags: queuedPhoto.tags });
+        if (added > 0) {
+          updatePhoto(queuedPhoto.id, { status: "success" });
+          successCount += added;
+        } else {
+          updatePhoto(queuedPhoto.id, { status: "error", error: "Failed to process image" });
+        }
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        updatePhoto(queuedPhoto.id, { status: "error", error: errorMessage });
+        console.error("Error uploading photo:", error);
+      }
+    }
+
+    setUploadLoading(false);
+    const failedCount = filesToUpload.length - successCount;
+    const summary = `✓ Uploaded ${successCount} image${successCount === 1 ? "" : "s"}`;
+    const errorSummary = failedCount > 0 ? ` (${failedCount} file${failedCount !== 1 ? "s" : ""} failed)` : "";
+    setStatus(summary + errorSummary);
   };
 
   const handleConfirmImport = async () => {
@@ -1031,6 +1086,7 @@ export default function GallerySection() {
 
         <Dropzone
           multiple
+          accept="image/jpeg,image/png,image/webp,image/gif"
           onFiles={handleFiles}
           busy={uploadLoading}
           className={cn("relative overflow-hidden rounded-[32px] border", mainSurface)}
@@ -1187,49 +1243,61 @@ export default function GallerySection() {
           </div>
         </Dropzone>
 
-        <PhotoStudioPanel
-          surfaceClassName={detailSurface}
-          activeImage={activeImage}
-          adjustments={activeAdjustment}
-          adjustmentControls={ADJUSTMENT_CONTROLS}
-          adjustmentPresets={ADJUSTMENT_PRESETS}
-          activePresetKey={activePresetKey}
-          onApplyPreset={applyPresetToActive}
-          onResetAdjustments={resetAdjustments}
-          onUpdateAdjustment={updateAdjustment}
-          onApplyAdjustmentsToSelection={applyAdjustmentsToSelection}
-          canApplyAdjustmentsToSelection={canApplyAdjustmentsToSelection}
-          selectionCount={selectedIds.length}
-          creativeTools={CREATIVE_TOOLS}
-          quickActions={QUICK_ACTIONS}
-          activeTool={activeTool}
-          activeToolLabel={activeToolLabel}
-          onSelectTool={setActiveTool}
-          activeQuickAction={activeQuickAction}
-          onQuickAction={handleQuickAction}
-          layerList={layerList}
-          visibleLayers={visibleLayers}
-          onToggleLayer={toggleLayerVisibility}
-          onToggleFavorite={toggleFavorite}
-          inspectorImageStyle={inspectorImageStyle}
-          onOpenLightbox={handleOpenLightbox}
-          onLaunchStudio={() => setOverlayOpen(true)}
-          nameDraft={nameDraft}
-          onNameDraftChange={setNameDraft}
-          tagDraft={tagDraft}
-          onTagDraftChange={setTagDraft}
-          onSaveMetadata={handleSaveMetadata}
-          onResetMetadata={handleResetMetadata}
-          lookbooks={lookbooks}
-          onToggleLookbook={handleToggleLookbookMembership}
-          onDropFiles={handleFiles}
-          urlText={urlText}
-          onUrlTextChange={setUrlText}
-          urlLoading={urlLoading}
-          onImportByUrl={handleAddImagesFromUrls}
-          selectedIdsCount={selectedIds.length}
-          isActiveInSelection={isActiveInSelection}
-        />
+        {queue.length > 0 ? (
+          <PhotoQueuePanel
+            queue={queue}
+            isUploading={uploadLoading}
+            onRemovePhoto={removePhoto}
+            onUpdatePhoto={updatePhoto}
+            onProcessQueue={handleProcessQueue}
+            onClearQueue={clearQueue}
+            uploadProgress={uploadProgress}
+          />
+        ) : (
+          <PhotoStudioPanel
+            surfaceClassName={detailSurface}
+            activeImage={activeImage}
+            adjustments={activeAdjustment}
+            adjustmentControls={ADJUSTMENT_CONTROLS}
+            adjustmentPresets={ADJUSTMENT_PRESETS}
+            activePresetKey={activePresetKey}
+            onApplyPreset={applyPresetToActive}
+            onResetAdjustments={resetAdjustments}
+            onUpdateAdjustment={updateAdjustment}
+            onApplyAdjustmentsToSelection={applyAdjustmentsToSelection}
+            canApplyAdjustmentsToSelection={canApplyAdjustmentsToSelection}
+            selectionCount={selectedIds.length}
+            creativeTools={CREATIVE_TOOLS}
+            quickActions={QUICK_ACTIONS}
+            activeTool={activeTool}
+            activeToolLabel={activeToolLabel}
+            onSelectTool={setActiveTool}
+            activeQuickAction={activeQuickAction}
+            onQuickAction={handleQuickAction}
+            layerList={layerList}
+            visibleLayers={visibleLayers}
+            onToggleLayer={toggleLayerVisibility}
+            onToggleFavorite={toggleFavorite}
+            inspectorImageStyle={inspectorImageStyle}
+            onOpenLightbox={handleOpenLightbox}
+            onLaunchStudio={() => setOverlayOpen(true)}
+            nameDraft={nameDraft}
+            onNameDraftChange={setNameDraft}
+            tagDraft={tagDraft}
+            onTagDraftChange={setTagDraft}
+            onSaveMetadata={handleSaveMetadata}
+            onResetMetadata={handleResetMetadata}
+            lookbooks={lookbooks}
+            onToggleLookbook={handleToggleLookbookMembership}
+            onDropFiles={handleFiles}
+            urlText={urlText}
+            onUrlTextChange={setUrlText}
+            urlLoading={urlLoading}
+            onImportByUrl={handleAddImagesFromUrls}
+            selectedIdsCount={selectedIds.length}
+            isActiveInSelection={isActiveInSelection}
+          />
+        )}
       </div>
 
       {status && (
