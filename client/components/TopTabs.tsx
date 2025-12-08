@@ -1,231 +1,816 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import type { LucideIcon } from "lucide-react";
+import {
+  BookMarked,
+  ChefHat,
+  ChevronLeft,
+  ChevronDown,
+  ListChecks,
+  DollarSign,
+  Warehouse,
+  FileText,
+  ImageIcon,
+  PencilLine,
+  Shield,
+  Leaf,
+  Save,
+  ShoppingCart,
+  Trash,
+  UtensilsCrossed,
+  Beaker,
+  Atom,
+  Palette,
+  Cake,
+  Wind,
+  Zap,
+  Smartphone,
+  ArrowRightLeft,
+} from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Scale,
-  NotebookPen,
-  ArrowLeftRight,
-  CircleDollarSign,
-  HelpCircle,
-  Save,
-} from "lucide-react";
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { useTranslation } from "@/context/LanguageContext";
 
-function TabLink({ to, label }: { to: string; label: string }) {
+type NavShortcut = {
+  key: string;
+  display: string;
+};
+
+type NavItemConfig = {
+  to: string;
+  labelKey: string;
+  fallback: string;
+  icon: LucideIcon;
+  shortcut?: NavShortcut;
+};
+
+type NavItem = NavItemConfig & { label: string };
+
+type NavGroup = {
+  id: string;
+  labelKey: string;
+  fallback: string;
+  items: NavItemConfig[];
+};
+
+const navGroups: NavGroup[] = [
+  {
+    id: "training",
+    labelKey: "nav.group.training",
+    fallback: "ECHO TRAINING",
+    items: [
+      {
+        to: "/?tab=echo-training",
+        labelKey: "nav.echoTraining",
+        fallback: "ECHO TRAINING CENTER",
+        icon: Zap,
+      },
+    ],
+  },
+  {
+    id: "recipes-design",
+    labelKey: "nav.group.recipesDesign",
+    fallback: "RECIPES & DESIGN",
+    items: [
+      {
+        to: "/?tab=search",
+        labelKey: "nav.recipes",
+        fallback: "RECIPES",
+        icon: BookMarked,
+        shortcut: { key: "Digit1", display: "1" },
+      },
+      {
+        to: "/?tab=add-recipe",
+        labelKey: "nav.addRecipe",
+        fallback: "ADD RECIPE",
+        icon: PencilLine,
+        shortcut: { key: "Digit2", display: "2" },
+      },
+      {
+        to: "/?tab=menu-design",
+        labelKey: "nav.menuDesignStudio",
+        fallback: "MENU DESIGN STUDIO",
+        icon: ChefHat,
+        shortcut: { key: "KeyM", display: "M" },
+      },
+      {
+        to: "/?tab=gallery",
+        labelKey: "nav.gallery",
+        fallback: "GALLERY",
+        icon: ImageIcon,
+        shortcut: { key: "Digit9", display: "9" },
+      },
+      {
+        to: "/?tab=dish-assembly",
+        labelKey: "nav.dishAssembly",
+        fallback: "DISH ASSEMBLY",
+        icon: UtensilsCrossed,
+        shortcut: { key: "KeyD", display: "D" },
+      },
+    ],
+  },
+  {
+    id: "innovation",
+    labelKey: "nav.group.innovation",
+    fallback: "INNOVATION & R&D",
+    items: [
+      {
+        to: "/?tab=rdlabs",
+        labelKey: "nav.rdlabs",
+        fallback: "R&D LABS",
+        icon: Atom,
+      },
+    ],
+  },
+  {
+    id: "pastry-bakery",
+    labelKey: "nav.group.pastryBakery",
+    fallback: "PASTRY & BAKERY",
+    items: [
+      {
+        to: "/?tab=pastry",
+        labelKey: "nav.pastryModule",
+        fallback: "PASTRY MODULE",
+        icon: Cake,
+        shortcut: { key: "KeyP", display: "P" },
+      },
+      {
+        to: "/?tab=echo-canvas",
+        labelKey: "nav.echoCanvas",
+        fallback: "ECHO CANVAS",
+        icon: Palette,
+      },
+      {
+        to: "/?tab=cake-builder",
+        labelKey: "nav.cakeBuilder",
+        fallback: "CAKE BUILDER",
+        icon: Cake,
+      },
+      {
+        to: "/?tab=bakery",
+        labelKey: "nav.bakeryModule",
+        fallback: "BAKERY",
+        icon: Wind,
+      },
+    ],
+  },
+  {
+    id: "operations",
+    labelKey: "nav.group.operations",
+    fallback: "OPERATIONS",
+    items: [
+      {
+        to: "/?tab=production",
+        labelKey: "nav.production",
+        fallback: "PRODUCTION",
+        icon: Warehouse,
+        shortcut: { key: "Digit4", display: "4" },
+      },
+      {
+        to: "/?tab=server-notes",
+        labelKey: "nav.serverNotes",
+        fallback: "SERVER NOTES",
+        icon: ListChecks,
+        shortcut: { key: "Digit3", display: "3" },
+      },
+      {
+        to: "/?tab=operations-docs",
+        labelKey: "nav.operationsDocs",
+        fallback: "OPERATIONS DOCS",
+        icon: FileText,
+        shortcut: { key: "KeyO", display: "O" },
+      },
+      {
+        to: "/tablet/waste",
+        labelKey: "nav.tabletWaste",
+        fallback: "TABLET WASTE",
+        icon: Smartphone,
+      },
+      {
+        to: "/tablet/transfers",
+        labelKey: "nav.tabletTransfers",
+        fallback: "TABLET TRANSFERS",
+        icon: Smartphone,
+      },
+    ],
+  },
+  {
+    id: "supply-chain",
+    labelKey: "nav.group.supplyChain",
+    fallback: "SUPPLY CHAIN",
+    items: [
+      {
+        to: "/?tab=purch-rec",
+        labelKey: "nav.purchasingReceiving",
+        fallback: "PURCH/REC",
+        icon: ShoppingCart,
+        shortcut: { key: "Digit0", display: "0" },
+      },
+      {
+        to: "/?tab=inventory-transfers",
+        labelKey: "nav.inventoryTransfers",
+        fallback: "INVENTORY TRANSFERS",
+        icon: ArrowRightLeft,
+      },
+    ],
+  },
+  {
+    id: "analysis-compliance",
+    labelKey: "nav.group.analysisCompliance",
+    fallback: "ANALYSIS & COMPLIANCE",
+    items: [
+      {
+        to: "/?tab=plate-costing",
+        labelKey: "nav.plateCosting",
+        fallback: "COSTING",
+        icon: DollarSign,
+      },
+      {
+        to: "/?tab=haccp",
+        labelKey: "nav.haccpCompliance",
+        fallback: "HACCP/COMPLIANCE",
+        icon: Shield,
+        shortcut: { key: "Digit8", display: "8" },
+      },
+      {
+        to: "/?tab=waste-tracking",
+        labelKey: "nav.wasteTracking",
+        fallback: "WASTE TRACKING",
+        icon: Trash,
+      },
+      {
+        to: "/?tab=nutrition",
+        labelKey: "nav.nutritionAllergens",
+        fallback: "NUTRITION/ALLERGENS",
+        icon: Leaf,
+        shortcut: { key: "Digit7", display: "7" },
+      },
+    ],
+  },
+];
+
+type DissolvingTextProps = {
+  collapsed: boolean;
+  children: ReactNode;
+  className?: string;
+  ariaHidden?: boolean;
+  expandedMaxWidthClass?: string;
+  expandedWrapperClassName?: string;
+  collapsedWrapperClassName?: string;
+  expandedClassName?: string;
+  collapsedClassName?: string;
+};
+
+function DissolvingText({
+  collapsed,
+  children,
+  className,
+  ariaHidden,
+  expandedMaxWidthClass = "max-w-full",
+  expandedWrapperClassName,
+  collapsedWrapperClassName,
+  expandedClassName,
+  collapsedClassName,
+}: DissolvingTextProps) {
+  return (
+    <span
+      aria-hidden={ariaHidden}
+      className={cn(
+        "relative block overflow-hidden whitespace-nowrap transition-all duration-500 ease-in-out",
+        collapsed
+          ? cn("max-w-0", collapsedWrapperClassName)
+          : cn(expandedMaxWidthClass, expandedWrapperClassName),
+      )}
+    >
+      <span
+        className={cn(
+          "block transition-all duration-300 ease-out",
+          collapsed
+            ? cn("opacity-0 blur-sm translate-y-[2px]", collapsedClassName)
+            : cn("opacity-100 blur-0 translate-y-0", expandedClassName),
+          className,
+        )}
+      >
+        {children}
+      </span>
+    </span>
+  );
+}
+
+type TabLinkProps = {
+  to: string;
+  label: string;
+  icon: LucideIcon;
+  collapsed: boolean;
+  shortcutDisplay?: string;
+  onNavigate?: () => void;
+};
+
+function TabLink({
+  to,
+  label,
+  icon: Icon,
+  collapsed,
+  shortcutDisplay,
+  onNavigate,
+}: TabLinkProps) {
   const loc = useLocation();
   const active = new URLSearchParams(loc.search).get("tab") ?? "search";
   const value = new URLSearchParams(to.split("?")[1] || "").get("tab") || "";
   const isActive = active === value;
-  return (
+
+  const link = (
     <Link
       to={to}
-      className={`rounded-lg px-4 py-2 text-sm font-medium ${isActive ? "bg-white text-black shadow" : "text-foreground/80 hover:text-foreground"} bg-muted`}
+      aria-label={label}
+      className={cn(
+        "group flex w-full items-center text-sm font-medium transition-all duration-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring relative",
+        "hover:bg-white/10 dark:hover:bg-white/5 rounded-lg",
+        collapsed
+          ? "justify-center gap-0 px-1.5 py-1.5"
+          : "gap-1.5 px-2.5 py-1.5",
+        isActive ? "text-primary" : "text-foreground/60 hover:text-foreground",
+      )}
+      onClick={onNavigate}
     >
-      {label}
+      <Icon
+        className={cn(
+          "h-4 w-4 flex-shrink-0 transition-all duration-500",
+          isActive
+            ? "scale-110"
+            : "group-hover:scale-110 group-hover:translate-y-[-2px]",
+        )}
+        aria-hidden
+      />
+      <DissolvingText
+        collapsed={collapsed}
+        ariaHidden={collapsed}
+        className="text-ellipsis"
+        expandedClassName="ml-2"
+        collapsedClassName="ml-0"
+        expandedMaxWidthClass="max-w-[180px]"
+      >
+        {label}
+      </DissolvingText>
     </Link>
+  );
+
+  if (!collapsed) {
+    return link;
+  }
+
+  return (
+    <Tooltip delayDuration={0}>
+      <TooltipTrigger asChild>{link}</TooltipTrigger>
+      <TooltipContent
+        side="right"
+        align="center"
+        className="text-xs font-medium"
+      >
+        <div className="flex flex-col items-start">
+          <span>{label}</span>
+          {shortcutDisplay ? (
+            <span className="mt-1 text-[10px] font-normal uppercase tracking-[0.12em] text-muted-foreground">
+              {shortcutDisplay}
+            </span>
+          ) : null}
+        </div>
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
+type GroupHeaderProps = {
+  label: string;
+  collapsed: boolean;
+  isExpanded: boolean;
+  onToggle: () => void;
+};
+
+function GroupHeader({
+  label,
+  collapsed,
+  isExpanded,
+  onToggle,
+}: GroupHeaderProps) {
+  if (collapsed) {
+    return null;
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className={cn(
+        "flex w-full items-center justify-between px-2.5 py-2 text-xs font-semibold uppercase tracking-[0.15em] text-foreground/50 hover:text-foreground/70 transition-colors duration-300",
+        "hover:bg-white/5 dark:hover:bg-white/5 rounded-lg",
+      )}
+    >
+      <DissolvingText collapsed={collapsed} ariaHidden={collapsed}>
+        {label}
+      </DissolvingText>
+      <ChevronDown
+        className={cn(
+          "h-3 w-3 transition-transform duration-300",
+          isExpanded ? "rotate-0" : "-rotate-90",
+        )}
+      />
+    </button>
   );
 }
 
 export default function TopTabs() {
-  const isAdd =
-    new URLSearchParams(useLocation().search).get("tab") === "add-recipe";
-  const [showHelp, setShowHelp] = React.useState(false);
+  const { t } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const storedPreferenceRef = useRef(false);
+  const collapseTimerRef = useRef<number | null>(null);
+  const asideRef = useRef<HTMLDivElement | null>(null);
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+    const stored = window.sessionStorage.getItem("nav:collapsed");
+    if (stored === "true" || stored === "false") {
+      storedPreferenceRef.current = true;
+      return stored === "true";
+    }
+    return false;
+  });
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
+    new Set(["recipes-design", "innovation"]),
+  );
+
+  const shortcutLabel = useMemo(() => {
+    if (typeof navigator === "undefined") {
+      return "Ctrl";
+    }
+    return /(mac|iphone|ipad|ipod)/i.test(navigator.platform) ? "⌘" : "Ctrl";
+  }, []);
+
+  useEffect(() => {
+    if (storedPreferenceRef.current) {
+      return;
+    }
+
+    collapseTimerRef.current = window.setTimeout(() => {
+      setCollapsed((prev) => {
+        if (prev) return prev;
+        if (typeof window !== "undefined") {
+          window.sessionStorage.setItem("nav:collapsed", "true");
+        }
+        return true;
+      });
+    }, 425);
+
+    return () => {
+      if (collapseTimerRef.current !== null) {
+        window.clearTimeout(collapseTimerRef.current);
+        collapseTimerRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof document === "undefined") {
+      return;
+    }
+    const baseOffset = 88;
+    document.documentElement.style.setProperty(
+      "--sidebar-offset",
+      `${baseOffset}px`,
+    );
+    return () => {
+      document.documentElement.style.removeProperty("--sidebar-offset");
+    };
+  }, []);
+
+  const navToggleShortcut = `${shortcutLabel}+Shift+N`;
+
+  const translatedGroups: (NavGroup & { label: string; items: NavItem[] })[] =
+    useMemo(
+      () =>
+        navGroups.map((group) => ({
+          ...group,
+          label: t(group.labelKey, group.fallback),
+          items: group.items.map((item) => ({
+            ...item,
+            label: t(item.labelKey, item.fallback),
+          })),
+        })),
+      [t],
+    );
+
+  const navShortcutMap = useMemo(() => {
+    const map: Record<string, string> = {};
+    navGroups.forEach((group) => {
+      group.items.forEach((item) => {
+        if (item.shortcut) {
+          map[item.shortcut.key] = item.to;
+        }
+      });
+    });
+    return map;
+  }, []);
+
+  const setCollapsedManual = useCallback(
+    (value: boolean | ((prev: boolean) => boolean)) => {
+      storedPreferenceRef.current = true;
+      if (collapseTimerRef.current !== null) {
+        window.clearTimeout(collapseTimerRef.current);
+        collapseTimerRef.current = null;
+      }
+      setCollapsed((prev) => {
+        const next =
+          typeof value === "function"
+            ? (value as (state: boolean) => boolean)(prev)
+            : value;
+        if (typeof window !== "undefined") {
+          window.sessionStorage.setItem("nav:collapsed", String(next));
+        }
+        return next;
+      });
+    },
+    [],
+  );
+
+  const toggleGroup = useCallback((groupId: string) => {
+    setExpandedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(groupId)) {
+        next.delete(groupId);
+      } else {
+        next.add(groupId);
+      }
+      return next;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const isMac = shortcutLabel === "⌘";
+
+    const handleKeydown = (event: KeyboardEvent) => {
+      const modifier = isMac ? event.metaKey : event.ctrlKey;
+      if (!modifier || !event.shiftKey) return;
+      if (event.key.toLowerCase() !== "n") return;
+      event.preventDefault();
+      setCollapsedManual((prev) => !prev);
+    };
+
+    window.addEventListener("keydown", handleKeydown);
+    return () => window.removeEventListener("keydown", handleKeydown);
+  }, [setCollapsedManual, shortcutLabel]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const isMac = shortcutLabel === "⌘";
+
+    const handleNavShortcut = (event: KeyboardEvent) => {
+      const modifier = isMac ? event.metaKey : event.ctrlKey;
+      if (!modifier || event.repeat) return;
+      const target = navShortcutMap[event.code];
+      if (!target) return;
+      event.preventDefault();
+      navigate(target);
+    };
+
+    window.addEventListener("keydown", handleNavShortcut);
+    return () => window.removeEventListener("keydown", handleNavShortcut);
+  }, [navigate, navShortcutMap, shortcutLabel]);
+
+  // Close sidebar when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!asideRef.current) return;
+      const target = event.target as Node;
+
+      // Check if click is outside the sidebar
+      if (!asideRef.current.contains(target)) {
+        // Only close if sidebar is expanded
+        if (!collapsed) {
+          setCollapsedManual(true);
+        }
+      }
+    };
+
+    // Only attach listener if sidebar is expanded
+    if (!collapsed) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }
+  }, [collapsed, setCollapsedManual]);
+
   return (
-    <header className="border-b backdrop-blur bg-transparent supports-[backdrop-filter]:bg-transparent">
-      <div className="container mx-auto flex h-14 items-center justify-between gap-4">
-        <a
-          href="/?tab=search"
-          className="flex items-center gap-2"
-          aria-label="Home"
-        >
-          <img
-            src="https://cdn.builder.io/api/v1/image/assets%2Faccc7891edf04665961a321335d9540b%2F3daeec161e9e466b9f19d163a3c58f71?format=webp&width=360"
-            alt="Echo Recipe Pro"
-            className="h-8 md:h-9"
-          />
-          <span className="sr-only">Echo Recipe Pro</span>
-        </a>
-        <nav className="flex items-center gap-2 rounded-xl bg-muted p-1">
-          <TabLink to="/?tab=search" label="Recipe Search" />
-          <TabLink to="/?tab=gallery" label="Gallery" />
-          <TabLink to="/?tab=add-recipe" label="Add Recipe" />
-          <TabLink to="/?tab=saas" label="SaaS" />
-          <TabLink to="/?tab=production" label="Production" />
-        </nav>
-        <div className="flex items-center gap-1">
-          <button
-            title="Finalize & Clear"
-            onClick={() => {
-              window.dispatchEvent(
-                new CustomEvent("recipe:action", {
-                  detail: { type: "finalizeImport" },
-                }),
-              );
-            }}
-            className="p-1 rounded hover:bg-black/10"
-          >
-            <Save className="w-4 h-4" />
-          </button>
-          <button
-            title="Help"
-            onClick={() => setShowHelp(true)}
-            className="p-1 rounded hover:bg-black/10"
-          >
-            <HelpCircle className="w-4 h-4" />
-          </button>
-          {isAdd && (
-            <div className="flex items-center gap-1 pr-1">
-              <button
-                title="Convert Units"
-                onClick={() =>
-                  window.dispatchEvent(
-                    new CustomEvent("recipe:action", {
-                      detail: { type: "convertUnits" },
-                    }),
-                  )
-                }
-                className="p-1 rounded hover:bg-black/10"
-              >
-                <Scale className="w-4 h-4" />
-              </button>
-              <button
-                title="Save Snapshot"
-                onClick={() =>
-                  window.dispatchEvent(
-                    new CustomEvent("recipe:action", {
-                      detail: { type: "saveVersion" },
-                    }),
-                  )
-                }
-                className="p-1 rounded hover:bg-black/10"
-              >
-                <NotebookPen className="w-4 h-4" />
-              </button>
-              <button
-                title="Convert Units"
-                onClick={() =>
-                  window.dispatchEvent(
-                    new CustomEvent("recipe:action", {
-                      detail: { type: "convertUnits" },
-                    }),
-                  )
-                }
-                className="p-1 rounded hover:bg-black/10"
-              >
-                <ArrowLeftRight className="w-4 h-4" />
-              </button>
-              <button
-                title="Currency"
-                onClick={() =>
-                  window.dispatchEvent(
-                    new CustomEvent("recipe:action", {
-                      detail: { type: "cycleCurrency" },
-                    }),
-                  )
-                }
-                className="p-1 rounded hover:bg-black/10"
-              >
-                <CircleDollarSign className="w-4 h-4" />
-              </button>
-              <button
-                title="R&D Labs (Yield Lab)"
-                onClick={() =>
-                  window.dispatchEvent(
-                    new CustomEvent("recipe:action", {
-                      detail: { type: "openYieldLab" },
-                    }),
-                  )
-                }
-                className="p-1 rounded hover:bg-black/10"
-              >
-                {/* Flask icon via SVG to avoid extra imports */}
-                <svg
-                  viewBox="0 0 24 24"
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M10 2v3l-5 9a5 5 0 0 0 4.5 7h5a5 5 0 0 0 4.5-7l-5-9V2" />
-                  <path d="M8 6h8" />
-                </svg>
-              </button>
-            </div>
+    <>
+      <TooltipProvider delayDuration={collapsed ? 0 : 200}>
+        <aside
+          ref={asideRef}
+          className={cn(
+            "pointer-events-auto absolute left-0 top-20 z-[3200] flex flex-col overflow-hidden rounded-3xl transition-all duration-1000 group",
+            "backdrop-blur-2xl dark:shadow-[0_0_24px_rgba(6,182,212,0.15)]",
+            collapsed ? "w-14 space-y-2 p-2" : "w-60 space-y-2 p-4",
           )}
-          <ThemeToggle />
-        </div>
-      </div>
-      <Dialog open={showHelp} onOpenChange={setShowHelp}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Help & Shortcuts</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-2 text-sm leading-relaxed">
-            <p className="font-medium">Keyboard shortcuts (hold Control/⌘):</p>
-            <ul className="list-disc pl-5">
-              <li>P=Pastry</li>
-              <li>T=Technique</li>
-              <li>C=Course</li>
-              <li>A=Allergens</li>
-              <li>D=Diets</li>
-              <li>M=Meal Period</li>
-              <li>U=Cuisine</li>
-              <li>S=Service Style</li>
-              <li>Y=Difficulty</li>
-              <li>E=Equipment</li>
-            </ul>
-            <p className="font-medium mt-2">Adding recipes</p>
-            <ul className="list-disc pl-5">
-              <li>
-                Use Add Recipe to type/paste. “Save” persists immediately. CSV
-                export includes Directions; Share and SMS send a formatted
-                recipe.
-              </li>
-              <li>
-                Import from the web: paste a URL in the right sidebar. The
-                importer reads JSON‑LD or page sections, pulls times/yield, and
-                attaches the cover image to the gallery.
-              </li>
-            </ul>
-            <p className="font-medium mt-2">Importing a Book PDF</p>
-            <ul className="list-disc pl-5">
-              <li>
-                Select a PDF in Recipe Search → Library. We parse the appendix
-                (recipe index) and show a selectable checklist with hidden
-                scrollbar.
-              </li>
-              <li>
-                Choose the recipes to import; each is processed one‑by‑one with
-                page cross‑reference, metadata (prep/cook/total/yield/temp) and
-                a photo when available.
-              </li>
-            </ul>
-            <p className="font-medium mt-2">Gallery</p>
-            <ul className="list-disc pl-5">
-              <li>
-                Grid or Masonry layout; choose thumbnail size
-                (Small/Medium/Large). Hover to get a soft glow; click to open
-                the lightbox.
-              </li>
-              <li>
-                Use tags to group photos and create Look Books. Open a Look Book
-                for a flipbook with click, swipe or arrow‑key navigation.
-              </li>
-            </ul>
-            <p className="text-muted-foreground">
-              Tip: Use “Link to recipes” to auto‑match images to recipes by
-              filename.
-            </p>
+          style={{
+            maxHeight: "calc(100% - 80px)",
+            backgroundColor: "rgba(255, 255, 255, 0.05)",
+            borderWidth: "1.5px",
+            borderColor: document.documentElement.classList.contains("dark")
+              ? "rgba(6, 182, 212, 0.3)"
+              : "rgba(0, 0, 0, 0.1)",
+            boxShadow: document.documentElement.classList.contains("dark")
+              ? "0 8px 32px 0 rgba(31, 38, 135, 0.02), 0 0 0 1.5px rgba(6, 182, 212, 0.3), 0 0 24px rgba(6, 182, 212, 0.15)"
+              : "0 8px 32px 0 rgba(31, 38, 135, 0.02), 0 0 0 1.5px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08)",
+          }}
+          onMouseEnter={(e) => {
+            const isDark = document.documentElement.classList.contains("dark");
+            if (isDark) {
+              e.currentTarget.style.borderColor = "#06b6d4";
+              e.currentTarget.style.boxShadow =
+                "0 8px 32px 0 rgba(31, 38, 135, 0.08), 0 0 0 1.5px rgba(6, 182, 212, 0.6), 0 0 32px rgba(6, 182, 212, 0.3), 0 0 20px rgba(6, 182, 212, 0.2)";
+            } else {
+              e.currentTarget.style.borderColor = "#000000";
+              e.currentTarget.style.boxShadow =
+                "0 8px 32px 0 rgba(31, 38, 135, 0.12), 0 0 0 1.5px rgba(0, 0, 0, 0.25), 0 8px 20px rgba(0, 0, 0, 0.12)";
+            }
+          }}
+          onMouseLeave={(e) => {
+            const isDark = document.documentElement.classList.contains("dark");
+            if (isDark) {
+              e.currentTarget.style.borderColor = "rgba(6, 182, 212, 0.3)";
+              e.currentTarget.style.boxShadow =
+                "0 8px 32px 0 rgba(31, 38, 135, 0.02), 0 0 0 1.5px rgba(6, 182, 212, 0.3), 0 0 24px rgba(6, 182, 212, 0.15)";
+            } else {
+              e.currentTarget.style.borderColor = "rgba(0, 0, 0, 0.1)";
+              e.currentTarget.style.boxShadow =
+                "0 8px 32px 0 rgba(31, 38, 135, 0.02), 0 0 0 1.5px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08)";
+            }
+          }}
+        >
+          <div className="relative flex h-full flex-col">
+            {!collapsed ? (
+              <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-foreground/50 px-2.5 py-0.5">
+                Navigation
+              </span>
+            ) : null}
+
+            <nav
+              className={cn(
+                "max-h-[70vh] space-y-2 overflow-y-auto pr-1 transition-all duration-700",
+                collapsed && "pr-0",
+              )}
+            >
+              {translatedGroups.map((group) => (
+                <div key={group.id} className="space-y-1">
+                  <GroupHeader
+                    label={group.label}
+                    collapsed={collapsed}
+                    isExpanded={expandedGroups.has(group.id)}
+                    onToggle={() => toggleGroup(group.id)}
+                  />
+
+                  {(collapsed || expandedGroups.has(group.id)) && (
+                    <div className={cn(collapsed ? "space-y-1" : "space-y-1")}>
+                      {group.items.map((item) => (
+                        <TabLink
+                          key={item.to}
+                          to={item.to}
+                          label={item.label}
+                          icon={item.icon}
+                          collapsed={collapsed}
+                          shortcutDisplay={
+                            item.shortcut
+                              ? `${shortcutLabel}+${item.shortcut.display}`
+                              : undefined
+                          }
+                          onNavigate={() => setCollapsedManual(true)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </nav>
+
+            <div
+              className={cn(
+                "space-y-3 border-t border-white/50 pt-3 text-sm transition-all duration-700 dark:border-slate-800/60 mt-auto",
+                collapsed && "border-transparent pt-2",
+              )}
+            >
+              <div
+                className={cn(
+                  "flex items-center justify-between px-2.5 py-1.5 text-sm font-medium text-foreground/75 transition-all duration-300 hover:text-foreground hover:bg-white/10 dark:hover:bg-white/5 rounded-lg",
+                  collapsed && "flex-col gap-1.5 px-2 py-1.5",
+                )}
+              >
+                <ThemeToggle />
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setCollapsedManual((prev) => !prev)}
+              className="group absolute right-[-18px] top-1/2 z-10 -translate-y-1/2 select-none rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              style={{
+                background: document.documentElement.classList.contains("dark")
+                  ? "rgba(255, 255, 255, 0.15)"
+                  : "rgba(0, 0, 0, 0.12)",
+                backdropFilter: "blur(20px)",
+                border: document.documentElement.classList.contains("dark")
+                  ? "1px solid #06b6d4"
+                  : "1px solid rgba(0, 0, 0, 0.3)",
+                boxShadow: document.documentElement.classList.contains("dark")
+                  ? "0 8px 32px 0 rgba(31, 38, 135, 0.1)"
+                  : "0 8px 32px 0 rgba(0, 0, 0, 0.08)",
+                padding: "10px 6px",
+              }}
+              onMouseEnter={(e) => {
+                const isDark =
+                  document.documentElement.classList.contains("dark");
+                if (isDark) {
+                  e.currentTarget.style.background =
+                    "rgba(255, 255, 255, 0.25)";
+                  e.currentTarget.style.boxShadow =
+                    "0 8px 32px 0 rgba(31, 38, 135, 0.2)";
+                } else {
+                  e.currentTarget.style.background = "rgba(0, 0, 0, 0.18)";
+                  e.currentTarget.style.boxShadow =
+                    "0 8px 32px 0 rgba(0, 0, 0, 0.15), 0 0 0 1.5px rgba(0, 0, 0, 0.2)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                const isDark =
+                  document.documentElement.classList.contains("dark");
+                if (isDark) {
+                  e.currentTarget.style.background =
+                    "rgba(255, 255, 255, 0.15)";
+                  e.currentTarget.style.boxShadow =
+                    "0 8px 32px 0 rgba(31, 38, 135, 0.1)";
+                } else {
+                  e.currentTarget.style.background = "rgba(0, 0, 0, 0.12)";
+                  e.currentTarget.style.boxShadow =
+                    "0 8px 32px 0 rgba(0, 0, 0, 0.08)";
+                }
+              }}
+              aria-label={
+                collapsed ? "Expand navigation" : "Collapse navigation"
+              }
+              aria-pressed={!collapsed}
+              aria-expanded={!collapsed}
+              title={`${collapsed ? "Expand navigation" : "Collapse navigation"} (${navToggleShortcut})`}
+            >
+              <div className="flex flex-col items-center gap-0.5">
+                <span
+                  className={cn(
+                    "block h-4 w-0.5 rounded-full bg-primary/80 transition-all duration-300 dark:bg-cyan-300",
+                    collapsed
+                      ? "translate-y-0 rotate-0"
+                      : "-translate-y-[3px] rotate-45",
+                  )}
+                />
+                <span
+                  className={cn(
+                    "block h-4 w-0.5 rounded-full bg-primary/80 transition-all duration-300 dark:bg-cyan-300",
+                    collapsed
+                      ? "opacity-100 scale-y-100"
+                      : "opacity-0 scale-y-0",
+                  )}
+                />
+                <span
+                  className={cn(
+                    "block h-4 w-0.5 rounded-full bg-primary/80 transition-all duration-300 dark:bg-cyan-300",
+                    collapsed
+                      ? "translate-y-0 rotate-0"
+                      : "translate-y-[3px] -rotate-45",
+                  )}
+                />
+              </div>
+            </button>
           </div>
-        </DialogContent>
-      </Dialog>
-    </header>
+        </aside>
+      </TooltipProvider>
+    </>
   );
 }

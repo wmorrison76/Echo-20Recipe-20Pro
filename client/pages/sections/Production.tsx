@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAppData } from "@/context/AppDataContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, Trash, Users, CalendarClock, ClipboardList, ChefHat, Printer, Check, RotateCcw } from "lucide-react";
+import { useTranslation } from "@/context/LanguageContext";
 import { GlobalCalendar } from "@/components/panels/GlobalCalendar";
 import type { CalendarEvent } from "@/stores/beoStore";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -68,6 +69,7 @@ async function sha256Hex(text: string){
 }
 
 export default function ProductionSection(){
+  const { t } = useTranslation();
   const { recipes } = useAppData();
 
   const [roles, setRoles] = useState<Role[]>(()=> readLS(LS_ROLES, [ { id: uid(), name: "Baker" }, { id: uid(), name: "Chocolates & Confections" } ]));
@@ -510,36 +512,36 @@ export default function ProductionSection(){
     <div className="container mx-auto px-4 py-4 space-y-4">
       <div className="rounded-xl border p-3 bg-white/95 dark:bg-zinc-900 ring-1 ring-black/5 dark:ring-sky-500/15">
         <div className="flex items-center justify-between">
-          <div className="text-base font-semibold flex items-center gap-2"><CalendarClock className="w-4 h-4"/> Chef Production Calendar</div>
+          <div className="text-base font-semibold flex items-center gap-2"><CalendarClock className="w-4 h-4"/> {t("production.chef")}</div>
           <div className="flex items-center gap-2 text-sm">
             <input type="date" value={date} onChange={(e)=> setDate(e.target.value)} className="rounded-md border px-2 py-1" />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button size="sm"><Plus className="w-4 h-4 mr-1"/>Add task</Button>
+                <Button size="sm"><Plus className="w-4 h-4 mr-1"/>{t("production.addTask")}</Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Add task</DropdownMenuLabel>
-                <DropdownMenuItem onClick={()=> openTaskDialog({ category:'production', title:'', roleId: roles[0]?.id })}>Production…</DropdownMenuItem>
-                <DropdownMenuItem onClick={()=> openTaskDialog({ category:'housekeeping', title:'Clean workstation' })}>Housekeeping…</DropdownMenuItem>
+                <DropdownMenuLabel>{t("production.addTask")}</DropdownMenuLabel>
+                <DropdownMenuItem onClick={()=> openTaskDialog({ category:'production', title:'', roleId: roles[0]?.id })}>{t("production.production")}</DropdownMenuItem>
+                <DropdownMenuItem onClick={()=> openTaskDialog({ category:'housekeeping', title:'Clean workstation' })}>{t("production.housekeeping")}</DropdownMenuItem>
                 <DropdownMenuItem onClick={()=> openTaskDialog({ category:'delivery', title:'Delivery to outlet' })}>Delivery���</DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={()=> openTaskDialog({})}>Custom…</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button size="sm" variant="secondary" onClick={openQuick}><Plus className="w-4 h-4 mr-1"/>Add order</Button>
-            <Button size="sm" variant="outline" onClick={()=> setPrepOpen(true)}><Printer className="w-4 h-4 mr-1"/>Prep sheet</Button>
+            <Button size="sm" variant="secondary" onClick={openQuick}><Plus className="w-4 h-4 mr-1"/>{t("production.addOrder")}</Button>
+            <Button size="sm" variant="outline" onClick={()=> setPrepOpen(true)}><Printer className="w-4 h-4 mr-1"/>{t("production.prepSheet")}</Button>
           </div>
         </div>
       </div>
 
       <Tabs defaultValue="calendar" className="w-full">
         <TabsList className="flex flex-wrap gap-1 p-1 bg-muted rounded-lg">
-          <TabsTrigger value="calendar">Calendar</TabsTrigger>
-          <TabsTrigger value="global-cal">Global Calendar</TabsTrigger>
-          <TabsTrigger value="orders">Orders</TabsTrigger>
-          <TabsTrigger value="staff">Staff & Duties</TabsTrigger>
-          <TabsTrigger value="outlets">Outlets</TabsTrigger>
-          <TabsTrigger value="trash">Trash <span style={{ marginLeft:6, background:trashColor, color:'#fff', borderRadius:12, padding:'0 6px' }}>{trashCount}</span></TabsTrigger>
+          <TabsTrigger value="calendar">{t("production.calendar")}</TabsTrigger>
+          <TabsTrigger value="global-cal">{t("production.globalCalendar")}</TabsTrigger>
+          <TabsTrigger value="orders">{t("production.orders")}</TabsTrigger>
+          <TabsTrigger value="staff">{t("production.staffDuties")}</TabsTrigger>
+          <TabsTrigger value="outlets">{t("production.outlets")}</TabsTrigger>
+          <TabsTrigger value="trash">{t("production.trash")} <span style={{ marginLeft:6, background:trashColor, color:'#fff', borderRadius:12, padding:'0 6px' }}>{trashCount}</span></TabsTrigger>
         </TabsList>
 
         <TabsContent value="calendar">
@@ -734,7 +736,7 @@ export default function ProductionSection(){
               {outlets.map(o=> (
                 <li key={o.id} className="flex items-center justify-between border-t py-1 gap-2">
                   <span className="flex-1">{o.name} • {o.type}</span>
-                  <span className="text-xs text-muted-foreground">Cutoff {o.orderCutoff||'—'} | Hours {o.open||'—'}–{o.close||'—'}</span>
+                  <span className="text-xs text-muted-foreground">Cutoff {o.orderCutoff||'—'} | Hours {o.open||'—'}–{o.close||'���'}</span>
                   <div className="flex items-center gap-2">
                     <Button size="sm" variant="secondary" onClick={()=> setGuideOutlet(o)}>Edit</Button>
                     <button onClick={()=> setOutlets(prev=> prev.filter(x=> x.id!==o.id))}><Trash className="w-4 h-4"/></button>

@@ -1,208 +1,269 @@
 import type { Request, Response } from "express";
+import {
+  DENSITY_CUP_G,
+  EACH_WEIGHT_G,
+  INGREDIENT_SYNONYMS,
+  NUTRITION_DATABASE,
+  STOP_WORDS,
+  UNIT_TO_GRAMS,
+  resolveIngredientKey,
+  type NutritionProfile,
+} from "../../shared/nutrition";
 
-// Very small nutrition dictionary per 100g. Values approximate and for demo purposes.
-const NUTRITION_DB: Record<
-  string,
-  { kcal: number; fat: number; carbs: number; protein: number }
-> = {
-  flour: { kcal: 364, fat: 1, carbs: 76, protein: 10 },
-  sugar: { kcal: 387, fat: 0, carbs: 100, protein: 0 },
-  confectioners_sugar: { kcal: 387, fat: 0, carbs: 100, protein: 0 },
-  powdered_sugar: { kcal: 387, fat: 0, carbs: 100, protein: 0 },
-  cocoa_powder: { kcal: 228, fat: 13.7, carbs: 57.9, protein: 19.6 },
-  vanilla_extract: { kcal: 288, fat: 0, carbs: 12.7, protein: 0 },
-  butter: { kcal: 717, fat: 81, carbs: 0, protein: 1 },
-  egg: { kcal: 155, fat: 11, carbs: 1.1, protein: 13 },
-  milk: { kcal: 42, fat: 1, carbs: 5, protein: 3.4 },
-  cream: { kcal: 340, fat: 36, carbs: 3, protein: 2 },
-  salt: { kcal: 0, fat: 0, carbs: 0, protein: 0 },
-  olive_oil: { kcal: 884, fat: 100, carbs: 0, protein: 0 },
-  veg_oil: { kcal: 884, fat: 100, carbs: 0, protein: 0 },
-  chicken: { kcal: 239, fat: 14, carbs: 0, protein: 27 },
-  beef: { kcal: 250, fat: 15, carbs: 0, protein: 26 },
-  rice: { kcal: 130, fat: 0.3, carbs: 28, protein: 2.7 },
-  tomato: { kcal: 18, fat: 0.2, carbs: 3.9, protein: 0.9 },
-  onion: { kcal: 40, fat: 0.1, carbs: 9.3, protein: 1.1 },
-  garlic: { kcal: 149, fat: 0.5, carbs: 33, protein: 6.4 },
-  carrot: { kcal: 41, fat: 0.2, carbs: 10, protein: 0.9 },
-  potato: { kcal: 77, fat: 0.1, carbs: 17, protein: 2 },
-  cheese: { kcal: 402, fat: 33, carbs: 1.3, protein: 25 },
-  cream: { kcal: 340, fat: 36, carbs: 3, protein: 2 },
-  fish: { kcal: 206, fat: 12, carbs: 0, protein: 22 },
-  shrimp: { kcal: 99, fat: 0.3, carbs: 0.2, protein: 24 },
-  almond: { kcal: 579, fat: 50, carbs: 22, protein: 21 },
-  water: { kcal: 0, fat: 0, carbs: 0, protein: 0 },
-  baking_powder: { kcal: 0, fat: 0, carbs: 0, protein: 0 },
-  baking_soda: { kcal: 0, fat: 0, carbs: 0, protein: 0 },
-  espresso_powder: { kcal: 0, fat: 0, carbs: 0, protein: 0 },
+const TBSP_PER_CUP = 16;
+const TSP_PER_TBSP = 3;
+
+const COOKING_FALLBACKS: Array<{ pattern: RegExp; yieldFactor: number }> = [
+  { pattern: /fried|grill|roast|bake|sear|broil/, yieldFactor: 0.88 },
+  { pattern: /poach|boil|simmer|stew|steam|blanch/, yieldFactor: 0.95 },
+  { pattern: /.*/, yieldFactor: 0.92 },
+];
+
+const ZERO_MACROS = () => ({
+  calories: 0,
+  fat: 0,
+  saturatedFat: 0,
+  transFat: 0,
+  carbs: 0,
+  fiber: 0,
+  sugars: 0,
+  protein: 0,
+  sodium: 0,
+});
+
+type MacroTotals = ReturnType<typeof ZERO_MACROS>;
+
+type ParsedIngredient = {
+  quantity: number;
+  unit: string;
+  item: string;
+  prep: string;
 };
 
-const UNIT_TO_G: Record<string, number> = {
-  g: 1,
-  gram: 1,
-  grams: 1,
-  kg: 1000,
-  oz: 28.3495,
-  ounce: 28.3495,
-  ounces: 28.3495,
-  lb: 453.592,
-  lbs: 453.592,
-  pound: 453.592,
-  pounds: 453.592,
-  ml: 1,
-  milliliter: 1,
-  milliliters: 1,
-  l: 1000,
-  liter: 1000,
-  litres: 1000,
-  liters: 1000,
-  tsp: 4.2,
-  teaspoon: 4.2,
-  teaspoons: 4.2,
-  "tsp.": 4.2,
-  tbsp: 14.3,
-  tablespoon: 14.3,
-  tablespoons: 14.3,
-  "tbsp.": 14.3,
-  tbl: 14.3,
-  tbls: 14.3,
-  cup: 240,
-  cups: 240,
-  pt: 473.176,
-  pint: 473.176,
-  pints: 473.176,
-  qt: 946.353,
-  qts: 946.353,
-  quart: 946.353,
-  quarts: 946.353,
-  gal: 3785.41,
-  gallon: 3785.41,
-  gallons: 3785.41,
+type BreakdownRow = {
+  original: string;
+  normalized: string;
+  matchKey: string | null;
+  confidence: number;
+  grams: number;
+  rawGrams: number;
+  yieldFactor: number;
+  macros: MacroTotals;
 };
 
-function parseQtyUnit(line: string) {
-  // Extract leading quantity and unit (supports unicode fractions like ½)
-  let qty = 0;
-  let unit = "";
-  let prep = "";
-  const map: Record<string, string> = {
-    "¼": "1/4",
-    "½": "1/2",
-    "¾": "3/4",
-    "⅐": "1/7",
-    "⅑": "1/9",
-    "⅒": "1/10",
-    "⅓": "1/3",
-    "⅔": "2/3",
-    "⅕": "1/5",
-    "⅖": "2/5",
-    "⅗": "3/5",
-    "⅘": "4/5",
-    "⅙": "1/6",
-    "⅚": "5/6",
-    "⅛": "1/8",
-    "⅜": "3/8",
-    "⅝": "5/8",
-    "⅞": "7/8",
-  };
-  let t = line.trim().replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (c) => map[c] || c);
-  t = t.replace(/(\d)(\s*)(\d\/\d)/, "$1 $3");
-  // Match quantity, unit, and the rest of the string (item[, prep])
-  const m = t.match(
-    /^\s*([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/[0-9]+)?|[0-9]+\/[0-9]+)\s*([a-zA-Z\.\-]+)?\s*(.*)$/,
+type UnknownRow = {
+  original: string;
+  suggestion: string;
+};
+
+const unicodeFractions: Record<string, string> = {
+  "¼": "1/4",
+  "½": "1/2",
+  "¾": "3/4",
+  "⅐": "1/7",
+  "⅑": "1/9",
+  "⅒": "1/10",
+  "⅓": "1/3",
+  "⅔": "2/3",
+  "⅕": "1/5",
+  "⅖": "2/5",
+  "⅗": "3/5",
+  "⅘": "4/5",
+  "⅙": "1/6",
+  "⅚": "5/6",
+  "⅛": "1/8",
+  "⅜": "3/8",
+  "⅝": "5/8",
+  "⅞": "7/8",
+};
+
+function parseIngredientLine(line: string): ParsedIngredient {
+  let text = line.trim().replace(/[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, (c) => unicodeFractions[c] ?? c);
+  text = text.replace(/(\d)(\s*)(\d\/\d)/g, "$1 $3");
+  const match = text.match(
+    /^\s*([0-9]+(?:\.[0-9]+)?(?:\s+[0-9]+\/\d+)?|[0-9]+\/\d+)\s*([a-zA-Z\.\-]+)?\s*(.*)$/, // quantity + optional unit + remainder
   );
-  if (m) {
-    const rawQty = m[1];
-    const rawUnit = m[2] || "";
-    let remaining = m[3].trim();
-
-    // Parse quantity (supports mixed and simple fractions)
-    const qtyParts = rawQty.split(" ");
-    if (qtyParts.length === 2 && /\d+\/\d+/.test(qtyParts[1])) {
-      const [n, d] = qtyParts[1].split("/").map(Number);
-      qty = Number(qtyParts[0]) + (d ? n / d : 0);
-    } else if (/\d+\/\d+/.test(rawQty)) {
-      const [n, d] = rawQty.split("/").map(Number);
-      qty = d ? n / d : Number(rawQty);
-    } else qty = Number(rawQty);
-
-    unit = (rawUnit || "").toLowerCase();
-
-    // If unit is empty, assume 'each'
-    if (!unit && qty > 0) unit = "each";
-
-    // Split item and prep by first comma
-    let item = remaining;
-    const commaIdx = remaining.indexOf(",");
-    if (commaIdx >= 0) {
-      item = remaining.slice(0, commaIdx).trim();
-      const after = remaining.slice(commaIdx + 1).trim();
-      if (after) prep = after.toLowerCase();
+  if (match) {
+    const [_, quantityRaw, unitRaw = "", remainder] = match;
+    let quantity = 0;
+    const parts = quantityRaw.split(" ");
+    if (parts.length === 2 && /\d+\/\d+/.test(parts[1])) {
+      const [whole, fraction] = parts;
+      const [num, denom] = fraction.split("/").map(Number);
+      quantity = Number(whole) + (denom ? num / denom : 0);
+    } else if (/\d+\/\d+/.test(quantityRaw)) {
+      const [num, denom] = quantityRaw.split("/").map(Number);
+      quantity = denom ? num / denom : Number(quantityRaw);
+    } else {
+      quantity = Number(quantityRaw);
     }
 
-    // Handle leading prep like "chopped onion"
-    const leadPrep =
-      /^(chopped|diced|minced|sliced|grated|crushed|pureed|melted|softened|cubed|julienned|shredded)\s+(.*)$/i;
-    const lp = item.match(leadPrep);
-    if (lp) {
-      prep = prep || lp[1].toLowerCase();
-      item = lp[2].trim();
+    const unit = (unitRaw || "").toLowerCase();
+    let item = remainder.trim();
+    let prep = "";
+    const commaIndex = item.indexOf(",");
+    if (commaIndex >= 0) {
+      prep = item.slice(commaIndex + 1).trim().toLowerCase();
+      item = item.slice(0, commaIndex).trim();
     }
 
-    return { qty, unit, prep, item };
+    const leadPrep = /^(chopped|diced|minced|sliced|grated|crushed|pureed|melted|softened|cubed|julienned|shredded|mashed)\s+(.*)$/i;
+    const leadMatch = item.match(leadPrep);
+    if (leadMatch) {
+      prep = prep || leadMatch[1].toLowerCase();
+      item = leadMatch[2].trim();
+    }
+
+    return {
+      quantity,
+      unit: unit || (quantity > 0 ? "each" : unit),
+      item,
+      prep,
+    };
   }
-  // If no quantity/unit found, try to split by comma for prep
+
   const parts = line.split(",");
   if (parts.length > 1) {
     return {
-      qty: 1,
+      quantity: 1,
       unit: "each",
+      item: parts[0]!.trim(),
       prep: parts.slice(1).join(",").trim().toLowerCase(),
-      item: parts[0].trim(),
     };
   }
-  // Treat the whole line as item, assume 1 each
-  return { qty: 1, unit: "each", prep: "", item: line.trim() };
+
+  return {
+    quantity: 1,
+    unit: "each",
+    item: line.trim(),
+    prep: "",
+  };
 }
 
-function normalizeItemName(s: string) {
-  const t = s.toLowerCase();
-  const map: [RegExp, string][] = [
-    [/\ball[-\s]?purpose flour\b|\bap flour\b|\bflour\b/, "flour"],
-    [
-      /\bgranulated sugar\b|\bcaster sugar\b|\bpowdered sugar\b|\bconfectioners'? sugar\b|\bicing sugar\b|\bsugar\b/,
-      "sugar",
-    ],
-    [/\bunsalted butter\b|\bbutter\b/, "butter"],
-    [/\begg(s)?\b|\bwhole egg\b/, "egg"],
-    [/\bwhole milk\b|\bmilk\b/, "milk"],
-    [/\bheavy cream\b|\bdouble cream\b|\bwhipping cream\b|\bcream\b/, "cream"],
-    [/\bextra virgin olive oil\b|\bolive oil\b/, "olive_oil"],
-    [
-      /\bvegetable oil\b|\bcanola oil\b|\bsunflower oil\b|\bcorn oil\b|\bneutral oil\b/,
-      "veg_oil",
-    ],
-    [/\bunsweetened cocoa powder\b|\bcocoa powder\b|\bcocoa\b/, "cocoa_powder"],
-    [/\bvanilla extract\b|\bvanilla\b/, "vanilla_extract"],
-    [/\bbaking soda\b|\bbicarbonate of soda\b/, "baking_soda"],
-    [/\bbaking powder\b/, "baking_powder"],
-    [/\bespresso powder\b|\binstant espresso\b/, "espresso_powder"],
-    [/\bwater\b|\bice water\b|\bwarm water\b/, "water"],
-    [/\bcheddar\b|\bmozzarella\b|\bparmesan\b|\bcheese\b/, "cheese"],
-    [/\bshrimp\b|\bprawn\b/, "shrimp"],
-    [/\bbeef\b/, "beef"],
-    [/\bchicken\b/, "chicken"],
-    [/\btomato(es)?\b/, "tomato"],
-    [/\bonion(s)?\b/, "onion"],
-    [/\bgarlic\b/, "garlic"],
-    [/\bcarrot(s)?\b/, "carrot"],
-    [/\bpotato(es)?\b/, "potato"],
-    [/\bfish\b|\bsalmon\b|\btuna\b|\bcod\b|\btrout\b|\bhalibut\b/, "fish"],
-    [/\balmond(s)?\b/, "almond"],
-    [/\bsalt\b|\bkosher salt\b|\bsea salt\b/, "salt"],
-  ];
-  for (const [re, k] of map) if (re.test(t)) return k;
-  return "";
+const ALIAS_ORDER = INGREDIENT_SYNONYMS.map(([, key]) => key);
+
+function estimateGrams(matchKey: string | null, unit: string, quantity: number): number {
+  const lowerUnit = unit.toLowerCase();
+  if (!Number.isFinite(quantity) || quantity <= 0) return 0;
+
+  const direct = UNIT_TO_GRAMS[lowerUnit as keyof typeof UNIT_TO_GRAMS];
+  if (direct && direct > 0) {
+    return quantity * direct;
+  }
+
+  if (matchKey) {
+    if ((lowerUnit === "cup" || lowerUnit === "cups") && DENSITY_CUP_G[matchKey]) {
+      return quantity * DENSITY_CUP_G[matchKey];
+    }
+    if (
+      (lowerUnit === "tbsp" || lowerUnit === "tablespoon" || lowerUnit === "tablespoons" || lowerUnit === "tbsp.") &&
+      DENSITY_CUP_G[matchKey]
+    ) {
+      return quantity * (DENSITY_CUP_G[matchKey] / TBSP_PER_CUP);
+    }
+    if (
+      (lowerUnit === "tsp" || lowerUnit === "teaspoon" || lowerUnit === "teaspoons" || lowerUnit === "tsp.") &&
+      DENSITY_CUP_G[matchKey]
+    ) {
+      return quantity * (DENSITY_CUP_G[matchKey] / (TBSP_PER_CUP * TSP_PER_TBSP));
+    }
+    if ((lowerUnit === "each" || lowerUnit === "ea") && EACH_WEIGHT_G[matchKey]) {
+      return quantity * EACH_WEIGHT_G[matchKey];
+    }
+  }
+
+  if (lowerUnit === "each" || lowerUnit === "ea") {
+    return quantity * 30; // generic single unit fallback
+  }
+
+  if (lowerUnit === "pinch" || lowerUnit === "dash") {
+    return quantity * 0.5;
+  }
+
+  if (lowerUnit === "sprig" || lowerUnit === "sprigs") {
+    return quantity * 2;
+  }
+
+  if (lowerUnit === "bunch" || lowerUnit === "bunches") {
+    return quantity * 85;
+  }
+
+  return quantity * 28.3495; // fallback to 1oz equivalent
+}
+
+function multiplyProfile(profile: NutritionProfile, grams: number): MacroTotals {
+  const factor = grams / 100;
+  return {
+    calories: profile.calories * factor,
+    fat: profile.fat * factor,
+    saturatedFat: profile.saturatedFat * factor,
+    transFat: profile.transFat * factor,
+    carbs: profile.carbs * factor,
+    fiber: profile.fiber * factor,
+    sugars: profile.sugars * factor,
+    protein: profile.protein * factor,
+    sodium: profile.sodium * factor,
+  };
+}
+
+function addTotals(target: MacroTotals, delta: MacroTotals) {
+  target.calories += delta.calories;
+  target.fat += delta.fat;
+  target.saturatedFat += delta.saturatedFat;
+  target.transFat += delta.transFat;
+  target.carbs += delta.carbs;
+  target.fiber += delta.fiber;
+  target.sugars += delta.sugars;
+  target.protein += delta.protein;
+  target.sodium += delta.sodium;
+}
+
+function scaleTotals(source: MacroTotals, factor: number): MacroTotals {
+  if (!Number.isFinite(factor) || factor <= 0) return ZERO_MACROS();
+  return {
+    calories: source.calories * factor,
+    fat: source.fat * factor,
+    saturatedFat: source.saturatedFat * factor,
+    transFat: source.transFat * factor,
+    carbs: source.carbs * factor,
+    fiber: source.fiber * factor,
+    sugars: source.sugars * factor,
+    protein: source.protein * factor,
+    sodium: source.sodium * factor,
+  };
+}
+
+function roundTotals(source: MacroTotals): MacroTotals {
+  return {
+    calories: Math.round(source.calories),
+    fat: Number(source.fat.toFixed(2)),
+    saturatedFat: Number(source.saturatedFat.toFixed(2)),
+    transFat: Number(source.transFat.toFixed(2)),
+    carbs: Number(source.carbs.toFixed(2)),
+    fiber: Number(source.fiber.toFixed(2)),
+    sugars: Number(source.sugars.toFixed(2)),
+    protein: Number(source.protein.toFixed(2)),
+    sodium: Math.round(source.sodium),
+  };
+}
+
+function computeYieldFactor(index: number, providedYields: (number | null)[], ingredientKey: string | null, fallback: number): number {
+  const provided = providedYields[index];
+  if (typeof provided === "number" && Number.isFinite(provided) && provided >= 0) {
+    return Math.max(0, Math.min(1, provided / 100));
+  }
+  if (ingredientKey && /salt|spice|pepper|powder/.test(ingredientKey)) {
+    return 1;
+  }
+  return fallback;
+}
+
+function inferFallbackYield(prepText: string): number {
+  const normalized = prepText.toLowerCase();
+  for (const entry of COOKING_FALLBACKS) {
+    if (entry.pattern.test(normalized)) return entry.yieldFactor;
+  }
+  return 0.92;
 }
 
 export async function handleNutritionAnalyze(req: Request, res: Response) {
@@ -212,164 +273,151 @@ export async function handleNutritionAnalyze(req: Request, res: Response) {
       yields = [],
       yieldQty = 1,
       yieldUnit = "SERVING",
+      prepMethod = "",
     } = req.body as {
       ingr: string[];
       yields?: (number | null)[];
       yieldQty?: number;
       yieldUnit?: string;
+      prepMethod?: string;
     };
-    if (!Array.isArray(ingr) || !ingr.length)
+
+    if (!Array.isArray(ingr) || !ingr.length) {
       return res.status(400).json({ error: "No ingredients provided" });
+    }
 
-    let totalG = 0;
-    let kcal = 0,
-      fat = 0,
-      carbs = 0,
-      protein = 0;
-    const breakdown: any[] = [];
+    const fallbackYield = inferFallbackYield(prepMethod || "");
 
-    // Approximate fallback yield by prep method keywords
-    const prepText = (req.body.prepMethod || "").toString().toLowerCase();
-    const fallbackYield = /fried|grill|roast|bake/.test(prepText)
-      ? 0.88
-      : /poach|boil|simmer|stew/.test(prepText)
-        ? 0.95
-        : 0.92;
+    const totals = ZERO_MACROS();
+    let totalWeight = 0;
+    let matchedWeight = 0;
+    const breakdown: BreakdownRow[] = [];
+    const unknown: UnknownRow[] = [];
 
-    const EACH_WEIGHT_G: Record<string, number> = {
-      egg: 50,
-      onion: 110,
-      garlic: 3,
-      tomato: 120,
-      carrot: 60,
-      potato: 210,
-      shrimp: 12,
-    };
-    const DENSITY_CUP_G: Record<string, number> = {
-      flour: 120,
-      sugar: 200,
-      powdered_sugar: 120,
-      confectioners_sugar: 120,
-      cocoa_powder: 85,
-      butter: 227,
-      milk: 240,
-      cream: 240,
-      olive_oil: 218,
-      veg_oil: 218,
-    };
-    const tbspFromCup = 16;
-    const tspFromTbsp = 3;
+    for (let index = 0; index < ingr.length; index++) {
+      const original = ingr[index] ?? "";
+      const parsed = parseIngredientLine(original);
+      const match = resolveIngredientKey(parsed.item);
+      const matchKey = match.key;
+      let gramsRaw = estimateGrams(matchKey, parsed.unit, parsed.quantity);
+      const yieldFactor = computeYieldFactor(index, yields, matchKey, fallbackYield);
+      const grams = gramsRaw * yieldFactor;
+      totalWeight += grams;
 
-    for (let i = 0; i < ingr.length; i++) {
-      const line = ingr[i];
-      const { qty, unit } = parseQtyUnit(line);
-      const itemName = normalizeItemName(line);
-      let gramsRaw = 0;
-      const u = (unit || "").toLowerCase();
-      if (UNIT_TO_G[u as keyof typeof UNIT_TO_G]) {
-        gramsRaw = qty * UNIT_TO_G[u as keyof typeof UNIT_TO_G];
-      } else if (
-        (u === "each" || u === "ea") &&
-        itemName &&
-        EACH_WEIGHT_G[itemName]
-      ) {
-        gramsRaw = qty * EACH_WEIGHT_G[itemName];
-      } else if (
-        (u === "cup" || u === "cups") &&
-        itemName &&
-        DENSITY_CUP_G[itemName]
-      ) {
-        gramsRaw = qty * DENSITY_CUP_G[itemName];
-      } else if (
-        (u === "tbsp" ||
-          u === "tablespoon" ||
-          u === "tablespoons" ||
-          u === "tbsp.") &&
-        itemName &&
-        DENSITY_CUP_G[itemName]
-      ) {
-        gramsRaw = qty * (DENSITY_CUP_G[itemName] / tbspFromCup);
-      } else if (
-        (u === "tsp" ||
-          u === "teaspoon" ||
-          u === "teaspoons" ||
-          u === "tsp.") &&
-        itemName &&
-        DENSITY_CUP_G[itemName]
-      ) {
-        gramsRaw =
-          qty * (DENSITY_CUP_G[itemName] / (tbspFromCup * tspFromTbsp));
-      } else if ((u === "stick" || u === "sticks") && itemName === "butter") {
-        gramsRaw = qty * 113;
-      } else if ((u === "clove" || u === "cloves") && itemName === "garlic") {
-        gramsRaw = qty * 3;
-      } else if (u === "pinch" || u === "dash") {
-        gramsRaw = qty * 0.5;
-      }
-      let y = yields[i];
-      if (typeof y !== "number" || !(y >= 0)) y = undefined as any;
-      // Salt/spices no loss
-      let factor = 1;
-      if (itemName && /salt/.test(itemName)) factor = 1;
-      else if (itemName === "onion")
-        factor =
-          typeof y === "number" ? Math.max(0, Math.min(1, y / 100)) : 0.89;
-      else
-        factor =
-          typeof y === "number"
-            ? Math.max(0, Math.min(1, y / 100))
-            : fallbackYield;
-      const grams = gramsRaw * factor;
-
-      totalG += grams;
-      const nut = itemName ? NUTRITION_DB[itemName] : undefined;
-      if (nut && grams > 0) {
-        const f = grams / 100;
-        const add = {
-          item: itemName,
+      if (matchKey && NUTRITION_DATABASE[matchKey]) {
+        matchedWeight += grams;
+        const macros = multiplyProfile(NUTRITION_DATABASE[matchKey], grams);
+        addTotals(totals, macros);
+        breakdown.push({
+          original,
+          normalized: matchKey,
+          matchKey,
+          confidence: match.confidence,
           grams,
-          kcal: nut.kcal * f,
-          fat: nut.fat * f,
-          carbs: nut.carbs * f,
-          protein: nut.protein * f,
-        };
-        breakdown.push(add);
-        kcal += add.kcal;
-        fat += add.fat;
-        carbs += add.carbs;
-        protein += add.protein;
+          rawGrams: gramsRaw,
+          yieldFactor,
+          macros: roundTotals(macros),
+        });
       } else {
         breakdown.push({
-          item: itemName || "unknown",
+          original,
+          normalized: match.normalized,
+          matchKey: null,
+          confidence: match.confidence,
           grams,
-          kcal: 0,
-          fat: 0,
-          carbs: 0,
-          protein: 0,
+          rawGrams: gramsRaw,
+          yieldFactor,
+          macros: ZERO_MACROS(),
+        });
+        unknown.push({
+          original,
+          suggestion: suggestClosestMatch(match.normalized),
         });
       }
     }
 
-    const data = {
-      calories: Math.max(0, Math.round(kcal)),
-      totalNutrients: {
-        ENERC_KCAL: {
-          label: "Energy",
-          quantity: Math.max(0, kcal),
-          unit: "kcal",
-        },
-        FAT: { label: "Fat", quantity: Math.max(0, fat), unit: "g" },
-        CHOCDF: { label: "Carbs", quantity: Math.max(0, carbs), unit: "g" },
-        PROCNT: { label: "Protein", quantity: Math.max(0, protein), unit: "g" },
+    const servings = Number.isFinite(yieldQty) && yieldQty > 0 ? yieldQty : 1;
+    const perServing = scaleTotals(totals, 1 / servings);
+    const per100g = totalWeight > 0 ? scaleTotals(totals, 100 / totalWeight) : ZERO_MACROS();
+
+    const totalNutrients = {
+      ENERC_KCAL: {
+        label: "Energy",
+        quantity: totals.calories,
+        unit: "kcal",
       },
-      totalWeight: totalG,
-      yieldQty,
-      yieldUnit,
-      breakdown,
+      FAT: {
+        label: "Total Fat",
+        quantity: totals.fat,
+        unit: "g",
+      },
+      FASAT: {
+        label: "Saturated Fat",
+        quantity: totals.saturatedFat,
+        unit: "g",
+      },
+      FATRN: {
+        label: "Trans Fat",
+        quantity: totals.transFat,
+        unit: "g",
+      },
+      CHOCDF: {
+        label: "Total Carbohydrate",
+        quantity: totals.carbs,
+        unit: "g",
+      },
+      FIBTG: {
+        label: "Dietary Fiber",
+        quantity: totals.fiber,
+        unit: "g",
+      },
+      SUGAR: {
+        label: "Sugars",
+        quantity: totals.sugars,
+        unit: "g",
+      },
+      PROCNT: {
+        label: "Protein",
+        quantity: totals.protein,
+        unit: "g",
+      },
+      NA: {
+        label: "Sodium",
+        quantity: totals.sodium,
+        unit: "mg",
+      },
     };
 
-    res.json(data);
-  } catch (e: any) {
-    res.status(500).json({ error: e?.message || "Nutrition analysis failed" });
+    const response = {
+      calories: Math.round(totals.calories),
+      totals: roundTotals(totals),
+      perServing: roundTotals(perServing),
+      per100g: roundTotals(per100g),
+      totalNutrients,
+      totalWeight,
+      matchedWeight,
+      coverage: totalWeight > 0 ? matchedWeight / totalWeight : 0,
+      yieldQty: servings,
+      yieldUnit,
+      breakdown,
+      unknown,
+    };
+
+    res.json(response);
+  } catch (error: any) {
+    res.status(500).json({ error: error?.message || "Nutrition analysis failed" });
   }
+}
+
+function suggestClosestMatch(normalized: string): string {
+  if (!normalized) return "";
+  const tokens = normalized
+    .split(/\s+/)
+    .map((token) => token.trim())
+    .filter((token) => token && !STOP_WORDS.has(token));
+  for (const token of tokens) {
+    const aliasIndex = ALIAS_ORDER.findIndex((key) => key.includes(token));
+    if (aliasIndex >= 0) return ALIAS_ORDER[aliasIndex] || "";
+  }
+  return tokens[0] || normalized;
 }

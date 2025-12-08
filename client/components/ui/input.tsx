@@ -1,9 +1,52 @@
 import * as React from "react";
 
+import type { FuzzySuggestionScope } from "@/hooks/use-fuzzy-suggestions";
 import { cn } from "@/lib/utils";
 
-const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
-  ({ className, type, ...props }, ref) => {
+type InputProps = React.ComponentProps<"input"> & {
+  enableSuggestions?: boolean;
+  suggestionScope?: FuzzySuggestionScope | FuzzySuggestionScope[];
+  suggestionLimit?: number;
+  suggestionThreshold?: number;
+  minSuggestionQueryLength?: number;
+};
+
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  (
+    {
+      className,
+      type,
+      enableSuggestions = true,
+      suggestionScope,
+      suggestionLimit,
+      suggestionThreshold,
+      minSuggestionQueryLength,
+      ...props
+    },
+    ref,
+  ) => {
+    const dataAttributes: Record<string, string> = {};
+
+    if (enableSuggestions) {
+      if (suggestionScope) {
+        const scopeValue = Array.isArray(suggestionScope)
+          ? suggestionScope.join(",")
+          : suggestionScope;
+        dataAttributes["data-fuzzy-scope"] = scopeValue;
+      }
+      if (suggestionLimit != null) {
+        dataAttributes["data-fuzzy-limit"] = String(suggestionLimit);
+      }
+      if (suggestionThreshold != null) {
+        dataAttributes["data-fuzzy-threshold"] = String(suggestionThreshold);
+      }
+      if (minSuggestionQueryLength != null) {
+        dataAttributes["data-fuzzy-min"] = String(minSuggestionQueryLength);
+      }
+    } else {
+      dataAttributes["data-fuzzy"] = "off";
+    }
+
     return (
       <input
         type={type}
@@ -13,6 +56,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
         )}
         ref={ref}
         {...props}
+        {...dataAttributes}
       />
     );
   },

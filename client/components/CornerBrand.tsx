@@ -7,7 +7,7 @@ export default function CornerBrand() {
   const style: React.CSSProperties = {
     position: "fixed",
     right: 12,
-    bottom: 0,
+    bottom: -12,
     zIndex: 25,
     pointerEvents: "none",
     width: 140,

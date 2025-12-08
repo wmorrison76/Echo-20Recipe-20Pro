@@ -185,12 +185,44 @@ export async function handleRecipeImport(req: Request, res: Response) {
     if (!url || !/^https?:\/\//i.test(url))
       return res.status(400).json({ error: "Invalid url" });
 
-    const r = await fetch(url, {
-      headers: { "user-agent": "Mozilla/5.0 RecipeStudioBot" },
-    });
-    if (!r.ok)
-      return res.status(400).json({ error: `Fetch failed (${r.status})` });
+    let r: globalThis.Response;
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+      try {
+        r = await fetch(url, {
+          headers: { "user-agent": "Mozilla/5.0 RecipeStudioBot" },
+          signal: controller.signal,
+        });
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    } catch (fetchError: any) {
+      console.error(
+        "[handleRecipeImport] Fetch error for URL:",
+        url,
+        fetchError,
+      );
+      const errorMsg =
+        fetchError?.name === "AbortError"
+          ? "Request timed out (took too long to fetch)"
+          : fetchError?.message || "Network error";
+      return res.status(503).json({
+        error: `Could not fetch URL: ${errorMsg}. The URL may be unreachable or the server may be unavailable.`,
+      });
+    }
+
+    if (!r.ok) {
+      return res
+        .status(400)
+        .json({ error: `Fetch failed (${r.status}): ${r.statusText}` });
+    }
+
     const html = await r.text();
+    if (!html || html.length === 0) {
+      return res.status(400).json({ error: "No content received from URL" });
+    }
 
     const rec = parseJsonLdRecipe(html) || scrapeRecipeFallback(html);
     if (!rec) return res.status(404).json({ error: "No recipe found on page" });
@@ -201,6 +233,7 @@ export async function handleRecipeImport(req: Request, res: Response) {
 
     res.json(rec);
   } catch (e: any) {
+    console.error("[handleRecipeImport] Error:", e);
     res.status(500).json({ error: e?.message || "Import failed" });
   }
 }
